@@ -1,0 +1,12 @@
+# Fill values below and rename this file to application.conf
+AWSAccessKeyId=
+SecretAccessKey=
+queue=
+
+smtpHost=
+smtpPort=
+smtpUsername=
+smtpPassword=
+from=
+encoding=UTF-8
+resetLinkPattern=

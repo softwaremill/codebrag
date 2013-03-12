@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codebrag</title>
+    <link href="styles/bootstrap.css" rel="stylesheet">
+    <link href="styles/bootstrap-responsive.css" rel="stylesheet">
+    <link href="styles/application.css" rel="stylesheet">
+    <link rel="shortcut icon" href="img/favicon.gif" type="image/x-icon">
+
+    <!-- Workaround for IE to provide console object -->
+    <script type="text/javascript"> if (!window.console) console = {log: function() {}}; </script>
+    <script type="text/javascript" src="scripts/vendor/jquery-1.8.2-min.js"></script>
+    <script type="text/javascript" src="scripts/vendor/jquery-blockui.min.js"></script>
+
+    <script type="text/javascript" src="scripts/vendor/bootstrap-2.2.2.js"></script>
+
+    <!-- angular stuff -->
+    <script type="text/javascript" src="scripts/vendor/angular-1.1.1.js"></script>
+    <script type="text/javascript" src="scripts/vendor/angular-resource-1.1.1.js"></script>
+    <script type="text/javascript" src="scripts/vendor/angular-sanitize-1.1.1.js"></script>
+    <script type="text/javascript" src="scripts/vendor/angular-cookies-1.1.1.js"></script>
+
+    <!-- effects -->
+    <script type="text/javascript" src="scripts/effects/effects.js"></script>
+
+    <!-- logic -->
+    <script type="text/javascript" src="scripts/app.js"></script>
+    <script type="text/javascript" src="scripts/controllers/entriesCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/entryEditCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/loginCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/passwordRecoveryCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/profileCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/registerCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/uptimeCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/userSessionCtrl.js"></script>
+    <script type="text/javascript" src="scripts/services/entriesService.js"></script>
+    <script type="text/javascript" src="scripts/services/flashService.js"></script>
+    <script type="text/javascript" src="scripts/services/passwordRecoveryService.js"></script>
+    <script type="text/javascript" src="scripts/services/profileService.js"></script>
+    <script type="text/javascript" src="scripts/services/registerService.js"></script>
+    <script type="text/javascript" src="scripts/services/userSessionService.js"></script>
+    <script type="text/javascript" src="scripts/services/utilService.js"></script>
+    <script type="text/javascript" src="scripts/directives/bsBlur.js"></script>
+    <script type="text/javascript" src="scripts/directives/bsRepeatPassword.js"></script>
+
+    <!-- filters -->
+    <script type="text/javascript" src="scripts/filters/newlines.js"></script>
+
+</head>
+<body ng-app="smlCodebrag">
+
+    <span style="display: none">
+        <ajaxthrobber>
+            <br/><br/><br/>
+            <h4><img src="img/busy.gif" border="0" id="ajaxthrobber"> Please wait ...</h4>
+            <br/><br/><br/>
+        </ajaxthrobber>
+    </span>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a href="#" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <a class="brand" href="#">Codebrag</a>
+                <div class="nav-collapse collapse">
+                    <ul class="nav">
+                        <li class="active"><a href="/#/">Home</a></li>
+                    </ul>
+                    <ul class="nav pull-right" ng-controller="UserSessionCtrl">
+                        <li ng-show="isNotLogged()"><a id="registerLink" href="#/register">Register</a></li>
+                        <li ng-show="isNotLogged()"><a id="loginLink" href="#/login">Login</a></li>
+                        <li ng-show="isLogged()"><a id="profileLink" href="#/profile">Logged in as {{getLoggedUserName()}}</a></li>
+                        <li ng-show="isLogged()"><a id="logoutLink" href ng-click="logout();">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="content">
+            <div class="wrapper">
+                <div class="proper-content">
+
+                    <div class="row-fluid feedback-container">
+                        <div id="feedback" class="span6">
+                            <div class="alert alert-error hide">
+                                <a class="close" onclick="$('.alert-error').fadeOut()">&times;</a>
+                                <strong>Error!</strong>
+                                <span id="error-message"></span>
+                            </div>
+                            <div class="alert alert-info hide">
+                                <a class="close" onclick="$('.alert-message').fadeOut()">&times;</a>
+                                <strong>Info!</strong>
+                                <span id="info-message"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid"><!-- spacer for feedback block above -->
+                        <div class="span12"></div>
+                    </div>
+
+                    <div ng-view>
+                    </div>
+                </div>
+                <div class="push"></div>
+            </div>
+            <div class="footer-wrapper">
+                <footer>
+                    <div class="span7 offset2 well">
+                        <div style="text-align: center">
+                            Demo application by <a href="http://SoftwareMill.com">SoftwareMill</a>
+                        </div>
+                    </div>
+
+                </footer>
+            </div>
+
+        </div>
+    </div>
+
+
+</body>
+</html>

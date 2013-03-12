@@ -1,0 +1,68 @@
+.info {
+    text-color: green;
+    background: #b2ffaa;
+}
+
+.error {
+    text-color: red;
+    background: #ffb1a6;
+}
+
+.entryText {
+    font-size: 18px;
+    overflow-x: auto;
+    overflow-y:hidden;
+}
+
+.user-info-dashboard {
+    padding-top: 10px;
+    color: white;
+}
+
+.feedback-container {
+    position: absolute;
+    top: 40px;
+    z-index: 1090;
+}
+
+#feedback {
+    margin: 0 auto 0 auto;
+    float: none;
+    z-index: 1090;
+}
+
+.new-entries-box {
+    text-align: center;
+    font-style: italic;
+    cursor: pointer;
+}
+
+/* Sticky Footer Start */
+html, body, .container, .content {
+    height: 100%;
+}
+
+.container, .content {
+    position: relative;
+}
+
+.proper-content {
+    padding-top: 40px; /* >= navbar height */
+}
+
+.wrapper {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -60px; /* same as the footer */
+}
+
+.push {
+    height: 60px; /* same as the footer */
+}
+.footer-wrapper {
+    position: relative;
+    height: 60px;
+}
+
+/* Sticky Footer End */
