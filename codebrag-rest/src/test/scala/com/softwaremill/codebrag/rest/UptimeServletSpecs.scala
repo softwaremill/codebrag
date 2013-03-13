@@ -1,6 +1,6 @@
-package pl.softwaremill.codebrag.rest
+package com.softwaremill.codebrag.rest
 
-import pl.softwaremill.codebrag.CodebragServletSpec
+import com.softwaremill.codebrag.CodebragServletSpec
 
 class UptimeServletSpecs extends CodebragServletSpec {
   addServlet(new MockedUptimeServlet(), "/*")

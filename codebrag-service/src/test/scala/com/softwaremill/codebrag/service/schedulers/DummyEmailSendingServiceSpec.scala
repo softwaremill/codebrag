@@ -1,7 +1,7 @@
-package pl.softwaremill.codebrag.service.schedulers
+package com.softwaremill.codebrag.service.schedulers
 
 import org.scalatest.FunSpec
-import pl.softwaremill.codebrag.service.templates.EmailContentWithSubject
+import com.softwaremill.codebrag.service.templates.EmailContentWithSubject
 import org.scalatest.matchers.ShouldMatchers
 
 class DummyEmailSendingServiceSpec extends FunSpec with ShouldMatchers {

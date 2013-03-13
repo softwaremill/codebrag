@@ -1,7 +1,7 @@
-package pl.softwaremill.codebrag.rest
+package com.softwaremill.codebrag.rest
 
 import org.json4s.{ DefaultFormats, Formats }
-import pl.softwaremill.codebrag.auth.RememberMeSupport
+import com.softwaremill.codebrag.auth.RememberMeSupport
 
 abstract class JsonServletWithAuthentication extends JsonServlet with RememberMeSupport {
 

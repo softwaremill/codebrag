@@ -1,9 +1,9 @@
-package pl.softwaremill.codebrag.service.user
+package com.softwaremill.codebrag.service.user
 
-import pl.softwaremill.codebrag.dao.{InMemoryUserDAO, UserDAO}
-import pl.softwaremill.codebrag.domain.User
-import pl.softwaremill.codebrag.service.schedulers.EmailSendingService
-import pl.softwaremill.codebrag.service.templates.{EmailContentWithSubject, EmailTemplatingEngine}
+import com.softwaremill.codebrag.dao.{InMemoryUserDAO, UserDAO}
+import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.service.schedulers.EmailSendingService
+import com.softwaremill.codebrag.service.templates.{EmailContentWithSubject, EmailTemplatingEngine}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.{BeforeAndAfter, FlatSpec}

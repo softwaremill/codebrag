@@ -1,6 +1,6 @@
-package pl.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao
 
-import pl.softwaremill.codebrag.domain.Entry
+import com.softwaremill.codebrag.domain.Entry
 
 trait EntryDAO {
 

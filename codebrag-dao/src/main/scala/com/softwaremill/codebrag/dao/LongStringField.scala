@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao
 
 import net.liftweb.record.Record
 import net.liftweb.record.field.StringField

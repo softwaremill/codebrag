@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag
+package com.softwaremill.codebrag
 
 import org.json4s.JsonDSL._
 import org.json4s.jackson.JsonMethods._

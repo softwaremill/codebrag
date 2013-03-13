@@ -1,12 +1,12 @@
-package pl.softwaremill.codebrag.rest
+package com.softwaremill.codebrag.rest
 
-import pl.softwaremill.codebrag.service.user.UserService
-import pl.softwaremill.codebrag.CodebragServletSpec
+import com.softwaremill.codebrag.service.user.UserService
+import com.softwaremill.codebrag.CodebragServletSpec
 import org.json4s.JsonDSL._
 import org.json4s.JsonAST.JValue
-import pl.softwaremill.codebrag.service.data.{EntriesWithTimeStamp, UserJson, EntryJson}
-import pl.softwaremill.codebrag.service.entry.EntryService
-import pl.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.service.data.{EntriesWithTimeStamp, UserJson, EntryJson}
+import com.softwaremill.codebrag.service.entry.EntryService
+import com.softwaremill.codebrag.domain.User
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.mockito.BDDMockito._

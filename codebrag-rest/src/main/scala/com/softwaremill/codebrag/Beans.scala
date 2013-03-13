@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag
+package com.softwaremill.codebrag
 
 import dao.{MongoFactory, InMemoryFactory}
 import service.config.CodebragConfiguration

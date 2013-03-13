@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag.common
+package com.softwaremill.codebrag.common
 
 import org.joda.time.{ DateTime, Duration }
 

@@ -1,6 +1,6 @@
-package pl.softwaremill.codebrag.service.data
+package com.softwaremill.codebrag.service.data
 
-import pl.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.domain.User
 
 case class UserJson(login: String, email:String, token: String)
 

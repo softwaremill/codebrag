@@ -1,9 +1,9 @@
-package pl.softwaremill.codebrag.service.entry
+package com.softwaremill.codebrag.service.entry
 
-import pl.softwaremill.codebrag.domain.{User, Entry}
-import pl.softwaremill.codebrag.dao.{ UserDAO, EntryDAO }
-import pl.softwaremill.codebrag.common.Utils
-import pl.softwaremill.codebrag.service.data.{EntriesWithTimeStamp, EntryJson}
+import com.softwaremill.codebrag.domain.{User, Entry}
+import com.softwaremill.codebrag.dao.{ UserDAO, EntryDAO }
+import com.softwaremill.codebrag.common.Utils
+import com.softwaremill.codebrag.service.data.{EntriesWithTimeStamp, EntryJson}
 import pl.softwaremill.common.util.time.{Clock, RealTimeClock}
 
 class EntryService(entryDAO: EntryDAO, userDAO: UserDAO, clock: Clock = new RealTimeClock()) {

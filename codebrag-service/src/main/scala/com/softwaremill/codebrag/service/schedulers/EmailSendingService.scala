@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag.service.schedulers
+package com.softwaremill.codebrag.service.schedulers
 
 import com.typesafe.scalalogging.slf4j.Logging
 

@@ -1,10 +1,10 @@
-package pl.softwaremill.codebrag.service.user
+package com.softwaremill.codebrag.service.user
 
-import pl.softwaremill.codebrag.dao.UserDAO
-import pl.softwaremill.codebrag.domain.User
-import pl.softwaremill.codebrag.service.data.UserJson
-import pl.softwaremill.codebrag.service.schedulers.EmailScheduler
-import pl.softwaremill.codebrag.service.templates.EmailTemplatingEngine
+import com.softwaremill.codebrag.dao.UserDAO
+import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.service.data.UserJson
+import com.softwaremill.codebrag.service.schedulers.EmailScheduler
+import com.softwaremill.codebrag.service.templates.EmailTemplatingEngine
 import pl.softwaremill.common.util.RichString
 import java.util.UUID
 

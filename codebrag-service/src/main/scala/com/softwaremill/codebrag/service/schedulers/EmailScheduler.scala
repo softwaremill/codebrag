@@ -1,6 +1,6 @@
-package pl.softwaremill.codebrag.service.schedulers
+package com.softwaremill.codebrag.service.schedulers
 
-import pl.softwaremill.codebrag.service.templates.EmailContentWithSubject
+import com.softwaremill.codebrag.service.templates.EmailContentWithSubject
 
 trait EmailScheduler {
 

@@ -1,10 +1,10 @@
-package pl.softwaremill.codebrag.auth
+package com.softwaremill.codebrag.auth
 
 import org.scalatra.{ CookieOptions, Cookie, CookieSupport, ScalatraBase }
 import org.scalatra.auth.ScentryStrategy
-import pl.softwaremill.codebrag.common.Utils
-import pl.softwaremill.codebrag.service.user.UserService
-import pl.softwaremill.codebrag.service.data.UserJson
+import com.softwaremill.codebrag.common.Utils
+import com.softwaremill.codebrag.service.user.UserService
+import com.softwaremill.codebrag.service.data.UserJson
 
 class RememberMeStrategy(protected val app: ScalatraBase with CookieSupport, rememberMe: Boolean, val userService: UserService) extends ScentryStrategy[UserJson] {
 

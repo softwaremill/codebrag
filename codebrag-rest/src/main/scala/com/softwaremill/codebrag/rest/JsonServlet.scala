@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag.rest
+package com.softwaremill.codebrag.rest
 
 import org.scalatra._
 import org.scalatra.json.{ JValueResult, JacksonJsonSupport }

@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag.common
+package com.softwaremill.codebrag.common
 
 import Utils._
 import org.scalatest.matchers.ShouldMatchers

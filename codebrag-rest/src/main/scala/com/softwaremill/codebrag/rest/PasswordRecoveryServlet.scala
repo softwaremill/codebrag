@@ -1,9 +1,9 @@
-package pl.softwaremill.codebrag.rest
+package com.softwaremill.codebrag.rest
 
-import pl.softwaremill.codebrag.service.PasswordRecoveryService
+import com.softwaremill.codebrag.service.PasswordRecoveryService
 import org.apache.commons.lang3.StringUtils
 import org.scalatra.BadRequest
-import pl.softwaremill.codebrag.common.JsonWrapper
+import com.softwaremill.codebrag.common.JsonWrapper
 
 /**
  * Servlet handling requests related to password recovery.

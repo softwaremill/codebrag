@@ -1,6 +1,6 @@
-package pl.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao
 
-import pl.softwaremill.codebrag.domain.PasswordResetCode
+import com.softwaremill.codebrag.domain.PasswordResetCode
 import org.bson.types.ObjectId
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{FlatSpec, BeforeAndAfterAll}

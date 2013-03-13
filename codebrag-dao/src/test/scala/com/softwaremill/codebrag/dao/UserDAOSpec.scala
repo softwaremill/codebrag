@@ -1,6 +1,6 @@
-package pl.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao
 
-import pl.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.domain.User
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{FlatSpec, BeforeAndAfterAll}
 import org.bson.types.ObjectId

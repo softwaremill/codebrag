@@ -1,12 +1,12 @@
-package pl.softwaremill.codebrag.service
+package com.softwaremill.codebrag.service
 
 import config.CodebragConfiguration
 import schedulers.EmailSendingService
-import pl.softwaremill.codebrag.dao.{PasswordResetCodeDAO, UserDAO}
+import com.softwaremill.codebrag.dao.{PasswordResetCodeDAO, UserDAO}
 import templates.EmailTemplatingEngine
-import pl.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.domain.User
 import pl.softwaremill.common.util.RichString
-import pl.softwaremill.codebrag.domain.PasswordResetCode
+import com.softwaremill.codebrag.domain.PasswordResetCode
 import org.joda.time.DateTime
 import com.typesafe.scalalogging.slf4j.Logging
 

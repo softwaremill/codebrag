@@ -1,3 +1,3 @@
-package pl.softwaremill.codebrag.service.templates
+package com.softwaremill.codebrag.service.templates
 
 case class EmailContentWithSubject(content: String, subject: String)

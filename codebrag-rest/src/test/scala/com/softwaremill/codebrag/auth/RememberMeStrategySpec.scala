@@ -1,10 +1,10 @@
-package pl.softwaremill.codebrag.auth
+package com.softwaremill.codebrag.auth
 
 import org.scalatra.SweetCookies
 import javax.servlet.http.HttpServletResponse
-import pl.softwaremill.codebrag.rest.EntriesServlet
-import pl.softwaremill.codebrag.service.user.UserService
-import pl.softwaremill.codebrag.service.data.UserJson
+import com.softwaremill.codebrag.rest.EntriesServlet
+import com.softwaremill.codebrag.service.user.UserService
+import com.softwaremill.codebrag.service.data.UserJson
 import org.scalatra.test.scalatest.ScalatraFlatSpec
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._

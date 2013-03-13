@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao
 
 import java.io.File
 import pl.softwaremill.common.util.io.KillableProcess

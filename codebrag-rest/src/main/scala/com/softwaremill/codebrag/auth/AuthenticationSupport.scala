@@ -1,12 +1,12 @@
-package pl.softwaremill.codebrag.auth
+package com.softwaremill.codebrag.auth
 
 import org.scalatra._
 import org.scalatra.auth.ScentryAuthStore.CookieAuthStore
 import org.scalatra.auth.{ Scentry, ScentryConfig, ScentrySupport }
 import scala.Some
-import pl.softwaremill.codebrag.common.{ Utils, JsonWrapper }
-import pl.softwaremill.codebrag.service.user.UserService
-import pl.softwaremill.codebrag.service.data.UserJson
+import com.softwaremill.codebrag.common.{ Utils, JsonWrapper }
+import com.softwaremill.codebrag.service.user.UserService
+import com.softwaremill.codebrag.service.data.UserJson
 
 /**
  * It should be used with each servlet to support RememberMe functionality for whole application

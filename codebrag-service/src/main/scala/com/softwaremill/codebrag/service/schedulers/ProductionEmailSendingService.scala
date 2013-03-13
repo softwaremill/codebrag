@@ -1,13 +1,13 @@
-package pl.softwaremill.codebrag.service.schedulers
+package com.softwaremill.codebrag.service.schedulers
 
 import pl.softwaremill.common.sqs.email.EmailSender
-import pl.softwaremill.codebrag.service.config.CodebragConfiguration._
+import com.softwaremill.codebrag.service.config.CodebragConfiguration._
 import pl.softwaremill.common.sqs.util.EmailDescription
 import javax.mail.MessagingException
 import pl.softwaremill.common.sqs.{ ReceivedMessage, Queue, SQS }
 import com.google.common.base.Optional
 import scala.util.control.Breaks._
-import pl.softwaremill.codebrag.service.templates.EmailContentWithSubject
+import com.softwaremill.codebrag.service.templates.EmailContentWithSubject
 
 class ProductionEmailSendingService extends EmailSendingService {
 

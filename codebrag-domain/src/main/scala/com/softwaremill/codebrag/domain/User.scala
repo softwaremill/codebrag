@@ -1,6 +1,6 @@
-package pl.softwaremill.codebrag.domain
+package com.softwaremill.codebrag.domain
 
-import pl.softwaremill.codebrag.common.Utils
+import com.softwaremill.codebrag.common.Utils
 import org.bson.types.ObjectId
 
 case class User(id: ObjectId, login: String, loginLowerCased: String, email: String, password: String, salt: String,

@@ -1,6 +1,6 @@
-package pl.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao
 
-import pl.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.domain.User
 import java.util.UUID
 import org.bson.types.ObjectId
 

@@ -1,9 +1,9 @@
-package pl.softwaremill.codebrag.rest
+package com.softwaremill.codebrag.rest
 
 import org.scalatra._
-import pl.softwaremill.codebrag.common.JsonWrapper
-import pl.softwaremill.codebrag.service.user.UserService
-import pl.softwaremill.codebrag.service.data.UserJson
+import com.softwaremill.codebrag.common.JsonWrapper
+import com.softwaremill.codebrag.service.user.UserService
+import com.softwaremill.codebrag.service.data.UserJson
 import org.apache.commons.lang3.StringEscapeUtils._
 
 class UsersServlet(val userService: UserService) extends JsonServletWithAuthentication with CookieSupport {

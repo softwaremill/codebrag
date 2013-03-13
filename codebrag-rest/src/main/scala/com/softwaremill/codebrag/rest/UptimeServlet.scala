@@ -1,6 +1,6 @@
-package pl.softwaremill.codebrag.rest
+package com.softwaremill.codebrag.rest
 
-import pl.softwaremill.codebrag.common.{ UptimeSupport, JsonWrapper }
+import com.softwaremill.codebrag.common.{ UptimeSupport, JsonWrapper }
 
 class UptimeServlet extends JsonServlet with UptimeSupport {
 

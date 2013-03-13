@@ -1,12 +1,12 @@
-package pl.softwaremill.codebrag.rest
+package com.softwaremill.codebrag.rest
 
-import pl.softwaremill.codebrag.service.user.{RegistrationDataValidator, UserService}
-import pl.softwaremill.codebrag.dao.InMemoryUserDAO
-import pl.softwaremill.codebrag.domain.User
-import pl.softwaremill.codebrag.CodebragServletSpec
+import com.softwaremill.codebrag.service.user.{RegistrationDataValidator, UserService}
+import com.softwaremill.codebrag.dao.InMemoryUserDAO
+import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.CodebragServletSpec
 import org.json4s.JsonDSL._
-import pl.softwaremill.codebrag.service.schedulers.DummyEmailSendingService
-import pl.softwaremill.codebrag.service.templates.EmailTemplatingEngine
+import com.softwaremill.codebrag.service.schedulers.DummyEmailSendingService
+import com.softwaremill.codebrag.service.templates.EmailTemplatingEngine
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.mockito.Matchers

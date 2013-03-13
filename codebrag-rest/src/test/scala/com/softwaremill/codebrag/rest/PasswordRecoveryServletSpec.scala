@@ -1,8 +1,8 @@
-package pl.softwaremill.codebrag.rest
+package com.softwaremill.codebrag.rest
 
-import pl.softwaremill.codebrag.CodebragServletSpec
+import com.softwaremill.codebrag.CodebragServletSpec
 import org.json4s.JsonDSL._
-import pl.softwaremill.codebrag.service.PasswordRecoveryService
+import com.softwaremill.codebrag.service.PasswordRecoveryService
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.mockito.BDDMockito._

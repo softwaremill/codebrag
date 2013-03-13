@@ -1,8 +1,8 @@
-package pl.softwaremill.codebrag.service
+package com.softwaremill.codebrag.service
 
 import schedulers.EmailSendingService
-import pl.softwaremill.codebrag.dao.{PasswordResetCodeDAO, UserDAO, InMemoryUserDAO}
-import pl.softwaremill.codebrag.domain.{PasswordResetCode, User}
+import com.softwaremill.codebrag.dao.{PasswordResetCodeDAO, UserDAO, InMemoryUserDAO}
+import com.softwaremill.codebrag.domain.{PasswordResetCode, User}
 import templates.{EmailTemplatingEngine, EmailContentWithSubject}
 import org.mockito.Matchers
 import org.bson.types.ObjectId

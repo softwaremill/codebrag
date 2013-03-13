@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag.common
+package com.softwaremill.codebrag.common
 
 object SafeLong {
   val LongPattern = "-?([0-9]+)"

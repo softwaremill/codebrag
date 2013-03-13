@@ -1,9 +1,9 @@
-package pl.softwaremill.codebrag.rest
+package com.softwaremill.codebrag.rest
 
-import pl.softwaremill.codebrag.CodebragServletSpec
-import pl.softwaremill.codebrag.service.user.UserService
+import com.softwaremill.codebrag.CodebragServletSpec
+import com.softwaremill.codebrag.service.user.UserService
 import org.scalatra.auth.Scentry
-import pl.softwaremill.codebrag.service.data.UserJson
+import com.softwaremill.codebrag.service.data.UserJson
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 

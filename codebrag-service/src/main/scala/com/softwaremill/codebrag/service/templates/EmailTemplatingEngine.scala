@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag.service.templates
+package com.softwaremill.codebrag.service.templates
 
 import org.fusesource.scalate._
 import java.io.File

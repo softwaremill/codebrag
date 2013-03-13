@@ -1,8 +1,8 @@
-package pl.softwaremill.codebrag.rest
+package com.softwaremill.codebrag.rest
 
-import pl.softwaremill.codebrag.service.user.UserService
-import pl.softwaremill.codebrag.common.{ SafeLong, NotEscapedJsonWrapper, JsonWrapper }
-import pl.softwaremill.codebrag.service.entry.EntryService
+import com.softwaremill.codebrag.service.user.UserService
+import com.softwaremill.codebrag.common.{ SafeLong, NotEscapedJsonWrapper, JsonWrapper }
+import com.softwaremill.codebrag.service.entry.EntryService
 
 class EntriesServlet(entryService: EntryService, val userService: UserService) extends JsonServletWithAuthentication {
 

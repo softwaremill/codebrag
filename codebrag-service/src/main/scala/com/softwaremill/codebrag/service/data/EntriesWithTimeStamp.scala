@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag.service.data
+package com.softwaremill.codebrag.service.data
 
 import pl.softwaremill.common.util.time.Clock
 

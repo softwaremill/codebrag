@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao
 
 import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 import net.liftweb.mongodb.{MongoDB, DefaultMongoIdentifier}

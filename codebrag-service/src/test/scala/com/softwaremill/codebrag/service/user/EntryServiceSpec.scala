@@ -1,13 +1,13 @@
-package pl.softwaremill.codebrag.service.user
+package com.softwaremill.codebrag.service.user
 
-import pl.softwaremill.codebrag.dao.{UserDAO, EntryDAO}
+import com.softwaremill.codebrag.dao.{UserDAO, EntryDAO}
 import org.bson.types.ObjectId
-import pl.softwaremill.codebrag.domain.{User, Entry}
-import pl.softwaremill.codebrag.service.entry.EntryService
+import com.softwaremill.codebrag.domain.{User, Entry}
+import com.softwaremill.codebrag.service.entry.EntryService
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
-import pl.softwaremill.codebrag.service.data.{EntryJson, EntriesWithTimeStamp}
-import pl.softwaremill.codebrag.common.Utils
+import com.softwaremill.codebrag.service.data.{EntryJson, EntriesWithTimeStamp}
+import com.softwaremill.codebrag.common.Utils
 import org.joda.time.DateTime
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Matchers._

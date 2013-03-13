@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag.domain
+package com.softwaremill.codebrag.domain
 
 import org.joda.time.DateTime
 import org.bson.types.ObjectId

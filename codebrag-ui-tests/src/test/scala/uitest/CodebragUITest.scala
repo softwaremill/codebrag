@@ -6,8 +6,8 @@ import org.eclipse.jetty.webapp.WebAppContext
 import javax.servlet.ServletContext
 import org.openqa.selenium.firefox.FirefoxDriver
 import java.util.concurrent.TimeUnit
-import pl.softwaremill.codebrag.Beans
-import pl.softwaremill.codebrag.service.schedulers.DummyEmailSendingService
+import com.softwaremill.codebrag.Beans
+import com.softwaremill.codebrag.service.schedulers.DummyEmailSendingService
 import pages.{MessagesPage, LoginPage}
 import org.openqa.selenium.support.PageFactory
 

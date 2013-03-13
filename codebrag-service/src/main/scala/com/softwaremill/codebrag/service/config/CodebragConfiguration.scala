@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag.service.config
+package com.softwaremill.codebrag.service.config
 
 import pl.softwaremill.common.conf.{ MapWrapper, Configuration, Config }
 import java.util

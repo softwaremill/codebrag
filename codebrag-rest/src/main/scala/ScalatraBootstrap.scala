@@ -1,8 +1,8 @@
 import com.mongodb.Mongo
 import java.util.concurrent.TimeUnit
 import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB}
-import pl.softwaremill.codebrag.Beans
-import pl.softwaremill.codebrag.rest.{PasswordRecoveryServlet, UsersServlet, EntriesServlet, UptimeServlet}
+import com.softwaremill.codebrag.Beans
+import com.softwaremill.codebrag.rest.{PasswordRecoveryServlet, UsersServlet, EntriesServlet, UptimeServlet}
 import org.scalatra._
 import javax.servlet.ServletContext
 

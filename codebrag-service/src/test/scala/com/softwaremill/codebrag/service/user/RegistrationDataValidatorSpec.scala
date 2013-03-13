@@ -1,4 +1,4 @@
-package pl.softwaremill.codebrag.service.user
+package com.softwaremill.codebrag.service.user
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec

@@ -1,10 +1,10 @@
-package pl.softwaremill.codebrag.rest
+package com.softwaremill.codebrag.rest
 
-import pl.softwaremill.codebrag.service.user.UserService
-import pl.softwaremill.codebrag.CodebragServletSpec
-import pl.softwaremill.codebrag.service.data.{EntriesWithTimeStamp, EntryJson}
+import com.softwaremill.codebrag.service.user.UserService
+import com.softwaremill.codebrag.CodebragServletSpec
+import com.softwaremill.codebrag.service.data.{EntriesWithTimeStamp, EntryJson}
 import org.json4s.JsonDSL._
-import pl.softwaremill.codebrag.service.entry.EntryService
+import com.softwaremill.codebrag.service.entry.EntryService
 import org.mockito.Mockito._
 
 class EntriesServletSpec extends CodebragServletSpec {
