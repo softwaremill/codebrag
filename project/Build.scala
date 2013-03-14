@@ -79,6 +79,9 @@ object Dependencies {
   val json4s = "org.json4s" %% "json4s-jackson" % "3.1.0"
   val scalatraAuth = "org.scalatra" %% "scalatra-auth" % scalatraVersion  exclude("commons-logging", "commons-logging")
 
+  val swaggerCore = "com.wordnik"  % "swagger-core_2.10.0"  % "1.2.1-SNAPSHOT"
+  val scalatraSwagger = "org.scalatra" %% "scalatra-swagger"  % "2.2.0"
+
   val jodaTime = "joda-time" % "joda-time" % "2.0"
   val jodaConvert = "org.joda" % "joda-convert" % "1.2"
 
@@ -92,7 +95,7 @@ object Dependencies {
   val scalatest = "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
 
   val jodaDependencies = Seq(jodaTime, jodaConvert)
-  val scalatraStack = Seq(scalatra, scalatraScalatest, scalatraJson, json4s, scalatraAuth, commonsLang)
+  val scalatraStack = Seq(scalatra, scalatraScalatest, scalatraJson, json4s, scalatraAuth, commonsLang, swaggerCore, scalatraSwagger)
 
   val testingDependencies = Seq(mockito, scalatest)
 
