@@ -6,7 +6,6 @@ angular.module('smlCodebrag.maintenance', ['ngResource']);
 angular.module('smlCodebrag.profile', ['smlCodebrag.maintenance', 'smlCodebrag.session', 'smlCodebrag.directives']).config(function ($routeProvider) {
     $routeProvider.
         when("/login", {controller: 'LoginCtrl', templateUrl: "views/login.html"}).
-        when("/register", {controller: 'RegisterCtrl', templateUrl: "views/register.html"}).
         when("/profile", {controller: "ProfileCtrl", templateUrl: "views/secured/profile.html"});
 });
 
