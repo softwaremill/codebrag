@@ -3,7 +3,6 @@ package com.softwaremill.codebrag
 import dao.{MongoFactory, InMemoryFactory}
 import rest.CodebragSwagger
 import service.config.CodebragConfiguration
-import service.entry.EntryService
 import service.schedulers.{DummyEmailSendingService, ProductionEmailSendingService}
 import service.templates.EmailTemplatingEngine
 import service.user.UserService
@@ -27,8 +26,6 @@ trait Beans {
   lazy val userService = new UserService(userDao, emailSendingService, emailTemplatingEngine)
 
   lazy val userDao = daoFactory.userDAO
-
-  lazy val entryService = new EntryService(daoFactory.entryDAO, userDao)
 
   val swagger = new CodebragSwagger
 }

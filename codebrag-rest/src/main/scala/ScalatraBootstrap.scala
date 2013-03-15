@@ -1,8 +1,9 @@
 import com.mongodb.Mongo
-import com.softwaremill.codebrag.rest.{EntriesServlet, UptimeServlet, UsersServlet, SwaggerApiDoc}
+import com.softwaremill.codebrag.rest.SwaggerApiDoc
 import java.util.concurrent.TimeUnit
 import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB}
 import com.softwaremill.codebrag.Beans
+import com.softwaremill.codebrag.rest.{UsersServlet, UptimeServlet}
 import org.scalatra._
 import javax.servlet.ServletContext
 
@@ -19,7 +20,6 @@ class ScalatraBootstrap extends LifeCycle with Beans {
 
     scheduler.scheduleAtFixedRate(emailSendingService, 60, 1, TimeUnit.SECONDS)
 
-    context.mount(new EntriesServlet(entryService, userService, swagger), Prefix + EntriesServlet.MAPPING_PATH)
     context.mount(new UptimeServlet, Prefix + "uptime")
     context.mount(new UsersServlet(userService), Prefix + "users")
     context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")
