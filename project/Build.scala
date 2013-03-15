@@ -127,6 +127,9 @@ object Dependencies {
   val liftMongoRecord = "net.liftweb" %% "lift-mongodb-record" % "2.5-M4"
 
   val rogue = Seq(rogueCore, rogueField, rogueLift, liftMongoRecord)
+
+  val egitGithubApi = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.3"
+
 }
 
 object SmlCodebragBuild extends Build {
@@ -150,7 +153,7 @@ object SmlCodebragBuild extends Build {
   lazy val domain: Project = Project(
     "codebrag-domain",
     file("codebrag-domain"),
-    settings = buildSettings ++ Seq(libraryDependencies += bson)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson, egitGithubApi))
   ) dependsOn (common)
 
   lazy val dao: Project = Project(
