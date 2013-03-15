@@ -21,7 +21,8 @@ class ScalatraBootstrap extends LifeCycle with Beans {
     scheduler.scheduleAtFixedRate(emailSendingService, 60, 1, TimeUnit.SECONDS)
 
     context.mount(new UptimeServlet, Prefix + "uptime")
-    context.mount(new UsersServlet(userService), Prefix + "users")
+    context.mount(new UsersServlet(userService, swagger), Prefix + "users")
+
     context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")
 
     context.put("codebrag", this)

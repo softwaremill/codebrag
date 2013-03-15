@@ -19,7 +19,7 @@ class UsersServletSpec extends CodebragServletSpec {
 
     val userService = spy(new UserService(dao, new DummyEmailSendingService(), new EmailTemplatingEngine))
 
-    servlet = new UsersServlet(userService)
+    servlet = new UsersServlet(userService, new CodebragSwagger)
     addServlet(servlet, "/*")
 
     testToExecute(userService)
