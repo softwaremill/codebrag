@@ -24,12 +24,10 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/profileCtrl.js")
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/entriesCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/entryEditCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/loginCtrl.js");
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/passwordRecoveryCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/registerCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/userSessionCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "services/entriesService.js");
 
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "services/passwordRecoveryService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "services/registerService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "services/userSessionService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/uptimeCtrl.js");

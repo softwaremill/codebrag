@@ -7,8 +7,6 @@ angular.module('smlCodebrag.profile', ['smlCodebrag.maintenance', 'smlCodebrag.s
     $routeProvider.
         when("/login", {controller: 'LoginCtrl', templateUrl: "views/login.html"}).
         when("/register", {controller: 'RegisterCtrl', templateUrl: "views/register.html"}).
-        when("/recover-lost-password", {controller: 'PasswordRecoveryCtrl', templateUrl: "views/recover-lost-password.html"}).
-        when("/password-reset", {controller: "PasswordRecoveryCtrl", templateUrl: "views/password-reset.html"}).
         when("/profile", {controller: "ProfileCtrl", templateUrl: "views/secured/profile.html"});
 });
 
