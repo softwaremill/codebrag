@@ -49,18 +49,4 @@ class UserService(userDAO: UserDAO, emailScheduler: EmailScheduler,
     UserJson(userDAO.findByEmail(email.toLowerCase))
   }
 
-  def changeLogin(currentLogin: String, newLogin: String): Either[String, Unit] = {
-    findByLogin(newLogin) match {
-      case Some(u) => Left("Login is already taken")
-      case None => Right(userDAO.changeLogin(currentLogin, newLogin))
-    }
-  }
-
-  def changeEmail(currentEmail: String, newEmail: String): Either[String, Unit] = {
-    findByEmail(newEmail) match {
-      case Some(u) => Left("E-mail used by another user")
-      case None => Right(userDAO.changeEmail(currentEmail, newEmail))
-    }
-  }
-
 }

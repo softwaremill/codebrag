@@ -52,28 +52,4 @@ class InMemoryUserDAO extends UserDAO {
     users.find(user => user.token == token)
   }
 
-  def changePassword(userId: String, password: String) {
-    load(userId) match {
-      case Some(u) => users = users.updated(users.indexOf(u), u.copy(password = password))
-      case None =>
-    }
-  }
-
-  def changeLogin(currentLogin: String, newLogin: String) {
-    findByLowerCasedLogin(currentLogin) match {
-      case Some(user) => {
-        users = users.updated(users.indexOf(user), user.copy(login = newLogin, loginLowerCased = newLogin.toLowerCase))
-      }
-      case _ =>
-    }
-  }
-
-  def changeEmail(currentEmail: String, newEmail: String) {
-    findByEmail(currentEmail) match {
-      case Some(user) => {
-        users = users.updated(users.indexOf(user), user.copy(email = newEmail))
-      }
-      case _ =>
-    }
-  }
 }

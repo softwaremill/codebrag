@@ -46,40 +46,5 @@ class UsersServlet(val userService: UserService) extends JsonServletWithAuthenti
     (parsedBody \ "email").extractOpt[String].getOrElse("")
   }
 
-  patch("/") {
-    haltIfNotAuthenticated()
-    logger.debug("Updating user profile")
-    var messageOpt: Option[String] = None
-
-    if (!login.isEmpty) {
-      messageOpt = changeLogin()
-    }
-
-    if (!email.isEmpty) {
-      messageOpt = changeEmail()
-    }
-
-    messageOpt match {
-      case Some(message) => halt(403, JsonWrapper(message))
-      case None => Ok
-    }
-  }
-
-  private def changeLogin(): Option[String] = {
-    logger.debug(s"Updating login: ${user.login} -> ${login}")
-    userService.changeLogin(user.login, login) match {
-      case Left(error) => Some(error)
-      case _ => None
-    }
-  }
-
-  private def changeEmail(): Option[String] = {
-    logger.debug(s"Updating email: ${user.email} -> ${email}")
-    userService.changeEmail(user.email, email.toLowerCase) match {
-      case Left(error) => Some(error)
-      case _ => None
-    }
-  }
-
 }
 

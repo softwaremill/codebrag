@@ -231,36 +231,4 @@ trait UserDAOSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterAll wi
     }
   }
 
-  it should "change password" in {
-    val login = "user1"
-    val password = User.encryptPassword("pass11", "salt1")
-    val user = userDAO.findByLoginOrEmail(login).get
-    userDAO.changePassword(user.id.toString, password)
-    val postModifyUserOpt = userDAO.findByLoginOrEmail(login)
-    val u = postModifyUserOpt.get
-    u should be (user.copy(password = password))
-  }
-
-  it should "change login" in {
-    val user = userDAO.findByLowerCasedLogin("user1")
-    val u = user.get
-    val newLogin: String = "changedUser1"
-    userDAO.changeLogin(u.login, newLogin)
-    val postModifyUser = userDAO.findByLowerCasedLogin(newLogin)
-    postModifyUser match {
-      case Some(pmu) => pmu should be (u.copy(login = newLogin, loginLowerCased = newLogin.toLowerCase))
-      case None => fail("Changed user was not found. Maybe login wasn't really changed?")
-    }
-  }
-
-  it should "change email" in {
-    val newEmail = "newmail@sml.pl"
-    val user = userDAO.findByEmail("1email@sml.com")
-    val u = user.get
-    userDAO.changeEmail(u.email, newEmail)
-    userDAO.findByEmail(newEmail) match {
-      case Some(cu) => cu should be (u.copy(email = newEmail))
-      case None => fail("User couldn't be found. Maybe e-mail wasn't really changed?")
-    }
-  }
 }

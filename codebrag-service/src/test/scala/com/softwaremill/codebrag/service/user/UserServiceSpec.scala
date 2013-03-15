@@ -42,35 +42,4 @@ class UserServiceSpec extends FlatSpec with ShouldMatchers with MockitoSugar wit
     userOpt.map(_.login) should be (Some("Admin"))
   }
 
-  "changeEmail" should "change email for specified user" in {
-    val user = userDAO.findByLowerCasedLogin("admin")
-    val userEmail = user.get.email
-    val newEmail = "new@email.com"
-    userService.changeEmail(userEmail, newEmail) should be ('right)
-    userDAO.findByEmail(newEmail) match {
-      case Some(cu) =>
-      case None => fail("User not found. Maybe e-mail wasn't really changed?")
-    }
-  }
-
-  "changeEmail" should "not change email if already used by someone else" in {
-    userService.changeEmail("admin@sml.com", "admin2@sml.com") should be ('left)
-  }
-
-  "changeLogin" should "change login for specified user" in {
-    val user = userDAO.findByLowerCasedLogin("admin")
-    val userLogin = user.get.login
-    val newLogin = "newadmin"
-    userService.changeLogin(userLogin, newLogin) should be ('right)
-    userDAO.findByLowerCasedLogin(newLogin) match {
-      case Some(cu) =>
-      case None => fail("User not found. Maybe login wasn't really changed?")
-    }
-  }
-
-  "changeLogin" should "not change login if already used by someone else" in {
-    userService.changeLogin("admin", "admin2") should be ('left)
-  }
-
-
 }

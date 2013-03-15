@@ -7,9 +7,7 @@ import com.softwaremill.codebrag.CodebragServletSpec
 import org.json4s.JsonDSL._
 import com.softwaremill.codebrag.service.schedulers.DummyEmailSendingService
 import com.softwaremill.codebrag.service.templates.EmailTemplatingEngine
-import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.mockito.Matchers
 
 class UsersServletSpec extends CodebragServletSpec {
   var servlet: UsersServlet = _
@@ -25,113 +23,6 @@ class UsersServletSpec extends CodebragServletSpec {
     addServlet(servlet, "/*")
 
     testToExecute(userService)
-  }
-
-  "PATCH /" should "not update email when not in request" in {
-    onServletWithMocks(userService => {
-      patch("/", mapToJson(Map("irrelevant" -> "")), defaultJsonHeaders) {
-        verify(userService, never()).changeEmail(anyString, anyString)
-      }
-    })
-  }
-
-  "PATCH /" should "not update email when email is blank" in {
-    onServletWithMocks(userService => {
-      patch("/", mapToJson(Map("email" -> "")), defaultJsonHeaders) {
-        verify(userService, never()).changeEmail(anyString, anyString)
-      }
-    })
-  }
-
-  "PATCH /" should "update email when email is given" in {
-    onServletWithMocks(userService => {
-      val email = "coolmail@awesome.rox"
-      session {
-        //authenticate to perform change
-        post("/", mapToJson(Map("login" -> "admin", "password" -> "pass")), defaultJsonHeaders) {
-          status should be (200)
-        }
-
-        patch("/", mapToJson(Map("email" -> email)), defaultJsonHeaders) {
-          status should be (200)
-          verify(userService).changeEmail(anyString, Matchers.eq(email))
-        }
-      }
-    })
-  }
-
-  "PATCH /" should "complain when user is not authenticated" in {
-    onServletWithMocks(userService => {
-      val email = "coolmail@awesome.rox"
-      patch("/", mapToJson(Map("email" -> email)), defaultJsonHeaders) {
-        status should be (401)
-      }
-    })
-  }
-
-  "PATCH /" should "not update email when it's used by another user" in {
-    onServletWithMocks(userService => {
-      session {
-        //authenticate to perform change
-        post("/", mapToJson(Map("login" -> "admin", "password" -> "pass")), defaultJsonHeaders) {
-          status should be (200)
-        }
-        patch("/", mapToJson(Map("email" -> "admin2@sml.com")), defaultJsonHeaders) {
-          val opt = (stringToJson(body) \ "value").extractOpt[String]
-          status should be (403)
-          opt must be (Some("E-mail used by another user"))
-        }
-      }
-    })
-  }
-
-  "PATCH /" should "not update login when not in request" in {
-    onServletWithMocks(userService => {
-      patch("/", mapToJson(Map("irrelevant" -> "")), defaultJsonHeaders) {
-        verify(userService, never()).changeLogin(anyString, anyString)
-      }
-    })
-  }
-
-  "PATCH /" should "not update login when login is blank" in {
-    onServletWithMocks(userService => {
-      patch("/", mapToJson(Map("login" -> "")), defaultJsonHeaders) {
-        verify(userService, never()).changeLogin(anyString, anyString)
-      }
-    })
-  }
-
-  "PATCH /" should "update login when login is given" in {
-    onServletWithMocks(userService => {
-      val login = "coolNewLogin"
-      session {
-        //authenticate to perform change
-        post("/", mapToJson(Map("login" -> "admin", "password" -> "pass")), defaultJsonHeaders) {
-          status should be (200)
-        }
-
-        patch("/", mapToJson(Map("login" -> login)), defaultJsonHeaders) {
-          status should be (200)
-          verify(userService).changeLogin(anyString, Matchers.eq(login))
-        }
-      }
-    })
-  }
-
-  "PATCH /" should "not update login when already used by another user" in {
-    onServletWithMocks(userService => {
-      session {
-        //authenticate to perform change
-        post("/", mapToJson(Map("login" -> "admin", "password" -> "pass")), defaultJsonHeaders) {
-          status should be (200)
-        }
-        patch("/", mapToJson(Map("login" -> "admin2")), defaultJsonHeaders) {
-          val opt = (stringToJson(body) \ "value").extractOpt[String]
-          status should be (403)
-          opt must be (Some("Login is already taken"))
-        }
-      }
-    })
   }
 
 }

@@ -50,18 +50,6 @@ class MongoUserDAO extends UserDAO {
     UserRecord where (_.token eqs token) get()
   }
 
-  def changePassword(userId: String, password: String) {
-    UserRecord where (_.id eqs new ObjectId(userId)) modify (_.password setTo password) updateOne()
-  }
-
-  def changeLogin(currentLogin: String, newLogin: String) {
-    UserRecord where (_.login eqs currentLogin) modify (_.login setTo newLogin) and (_.loginLowerCase setTo newLogin.toLowerCase) updateOne()
-  }
-
-  def changeEmail(currentEmail: String, newEmail: String) {
-    UserRecord where (_.email eqs currentEmail) modify (_.email setTo newEmail) updateOne()
-  }
-
   private object UserImplicits {
     implicit def fromRecord(user: UserRecord): User = {
       User(user.id.get, user.login.get, user.loginLowerCase.get, user.email.get, user.password.get, user.salt.get, user.token.get)

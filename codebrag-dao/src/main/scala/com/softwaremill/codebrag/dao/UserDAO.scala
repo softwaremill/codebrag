@@ -33,10 +33,4 @@ trait UserDAO {
 
   def findByToken(token: String): Option[User]
 
-  def changePassword(userId:String, password: String)
-
-  def changeLogin(currentLogin: String, newLogin: String)
-
-  def changeEmail(currentEmail: String, newEmail: String)
-
 }
