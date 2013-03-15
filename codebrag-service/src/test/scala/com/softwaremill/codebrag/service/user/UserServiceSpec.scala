@@ -19,7 +19,6 @@ class UserServiceSpec extends FlatSpec with ShouldMatchers with MockitoSugar wit
     dao
   }
 
-  val registrationDataValidator: RegistrationDataValidator = mock[RegistrationDataValidator]
   val emailSendingService: EmailSendingService = mock[EmailSendingService]
   val emailTemplatingEngine = mock[EmailTemplatingEngine]
   var userDAO: UserDAO = _
@@ -27,7 +26,7 @@ class UserServiceSpec extends FlatSpec with ShouldMatchers with MockitoSugar wit
 
   before {
     userDAO = prepareUserDAOMock
-    userService = new UserService(userDAO, registrationDataValidator, emailSendingService, emailTemplatingEngine)
+    userService = new UserService(userDAO, emailSendingService, emailTemplatingEngine)
   }
 
   // this test is silly :\
@@ -41,68 +40,6 @@ class UserServiceSpec extends FlatSpec with ShouldMatchers with MockitoSugar wit
     val userOpt = userService.findByEmail("ADMIN@SML.COM")
 
     userOpt.map(_.login) should be (Some("Admin"))
-  }
-
-  "checkExistence" should "don't find given user login and e-mail" in {
-    val userExistence: Either[String, Unit] = userService.checkUserExistenceFor("newUser", "newUser@sml.com")
-    userExistence.isRight should be (true)
-  }
-
-  "checkExistence" should "find duplicated login" in {
-    val userExistence: Either[String, Unit] = userService.checkUserExistenceFor("Admin", "newUser@sml.com")
-
-    userExistence.isLeft should be (true)
-    userExistence.left.get.equals("Login already in use!")
-  }
-
-  "checkExistence" should "find duplicated login written as upper cased string" in {
-    val userExistence: Either[String, Unit] = userService.checkUserExistenceFor("ADMIN", "newUser@sml.com")
-
-    userExistence.isLeft should be (true)
-    userExistence.left.get.equals("Login already in use!")
-  }
-
-  "checkExistence" should "find duplicated email" in {
-    val userExistence: Either[String, Unit] = userService.checkUserExistenceFor("newUser", "admin@sml.com")
-
-    userExistence.isLeft should be (true)
-    userExistence.left.get.equals("E-mail already in use!")
-  }
-
-  "checkExistence" should "find duplicated email written as upper cased string" in {
-    val userExistence: Either[String, Unit] = userService.checkUserExistenceFor("newUser", "ADMIN@sml.com")
-
-    userExistence.isLeft should be (true)
-    userExistence.left.get.equals("E-mail already in use!")
-  }
-
-
-  "registerNewUser" should "add user with unique lowercased login info" in {
-    // When
-    userService.registerNewUser("John", "newUser@sml.com", "password")
-
-    // Then
-    val userOpt: Option[User] = userDAO.findByLowerCasedLogin("John")
-    userOpt.isDefined should be (true)
-    val user = userOpt.get
-
-    user.login should be ("John")
-    user.loginLowerCased should be ("john")
-    verify(emailTemplatingEngine).registrationConfirmation(Matchers.eq("John"))
-    verify(emailSendingService)
-      .scheduleEmail(Matchers.eq("newUser@sml.com"), any[EmailContentWithSubject])
-  }
-
-  "registerNewUser" should "not schedule an email on existing login" in {
-    // When
-    try {
-      userService.registerNewUser("Admin", "secondEmail@sml.com", "password")
-    }
-    catch {
-      case e: Exception =>
-    }
-    // Then
-    verify(emailSendingService, never()).scheduleEmail(Matchers.eq("secondEmail@sml.com"), any[EmailContentWithSubject])
   }
 
   "changeEmail" should "change email for specified user" in {

@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.service.user.{RegistrationDataValidator, UserService}
+import com.softwaremill.codebrag.service.user.UserService
 import com.softwaremill.codebrag.dao.InMemoryUserDAO
 import com.softwaremill.codebrag.domain.User
 import com.softwaremill.codebrag.CodebragServletSpec
@@ -19,43 +19,12 @@ class UsersServletSpec extends CodebragServletSpec {
     dao.add(User("Admin", "admin@sml.com", "pass", "salt", "token1"))
     dao.add(User("Admin2", "admin2@sml.com", "pass", "salt", "token2"))
 
-    val userService = spy(new UserService(dao, new RegistrationDataValidator(), new DummyEmailSendingService(), new EmailTemplatingEngine))
+    val userService = spy(new UserService(dao, new DummyEmailSendingService(), new EmailTemplatingEngine))
 
     servlet = new UsersServlet(userService)
     addServlet(servlet, "/*")
 
     testToExecute(userService)
-  }
-
-  "POST /" should "register new user" in {
-    onServletWithMocks {
-      (userService) =>
-        post("/register", mapToJson(Map("login" -> "newUser", "email" -> "newUser@sml.com", "password" -> "secret")),
-          defaultJsonHeaders) {
-          verify(userService).registerNewUser("newUser", "newUser@sml.com", "secret")
-          status should be (200)
-        }
-    }
-  }
-
-  "POST / with invalid data" should "return error message" in {
-    onServletWithMocks {
-      (userService) =>
-        post("/register", defaultJsonHeaders) {
-          val option: Option[String] = (stringToJson(body) \ "value").extractOpt[String]
-          option should be(Some("Wrong user data!"))
-          status should be (200)
-        }
-    }
-  }
-
-  "POST /register" should "use escaped Strings" in {
-    onServletWithMocks {
-      (userService) =>
-        post("/register", mapToJson(Map("login" -> "<script>alert('haxor');</script>", "email" -> "newUser@sml.com", "password" -> "secret")), defaultJsonHeaders) {
-          verify(userService).registerNewUser("&lt;script&gt;alert('haxor');&lt;/script&gt;", "newUser@sml.com", "secret")
-        }
-    }
   }
 
   "PATCH /" should "not update email when not in request" in {

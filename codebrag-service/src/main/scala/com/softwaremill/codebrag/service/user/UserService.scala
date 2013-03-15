@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.service.templates.EmailTemplatingEngine
 import pl.softwaremill.common.util.RichString
 import java.util.UUID
 
-class UserService(userDAO: UserDAO, registrationDataValidator: RegistrationDataValidator, emailScheduler: EmailScheduler,
+class UserService(userDAO: UserDAO, emailScheduler: EmailScheduler,
                   emailTemplatingEngine: EmailTemplatingEngine) {
 
   def load(userId: String) = {
@@ -21,14 +21,6 @@ class UserService(userDAO: UserDAO, registrationDataValidator: RegistrationDataV
 
   def count(): Long = {
     userDAO.countItems()
-  }
-
-  def registerNewUser(login: String, email: String, password: String) {
-    val salt = RichString.generateRandom(16)
-    val token = UUID.randomUUID().toString
-    userDAO.add(User(login, email.toLowerCase, password, salt, token))
-    val confirmationEmail = emailTemplatingEngine.registrationConfirmation(login)
-    emailScheduler.scheduleEmail(email, confirmationEmail)
   }
 
   def authenticate(login: String, nonEncryptedPassword: String): Option[UserJson] = {
@@ -55,19 +47,6 @@ class UserService(userDAO: UserDAO, registrationDataValidator: RegistrationDataV
 
   def findByEmail(email: String): Option[UserJson] = {
     UserJson(userDAO.findByEmail(email.toLowerCase))
-  }
-
-  def isUserDataValid(loginOpt: Option[String], emailOpt: Option[String], passwordOpt: Option[String]): Boolean = {
-    registrationDataValidator.isDataValid(loginOpt, emailOpt, passwordOpt)
-  }
-
-  def checkUserExistenceFor(userLogin: String, userEmail: String): Either[String, Unit] = {
-    var messageEither: Either[String, Unit] = Right(None)
-
-    findByLogin(userLogin) foreach (_ => messageEither = Left("Login already in use!"))
-    findByEmail(userEmail) foreach (_ => messageEither = Left("E-mail already in use!"))
-
-    messageEither
   }
 
   def changeLogin(currentLogin: String, newLogin: String): Either[String, Unit] = {

@@ -6,7 +6,7 @@ import service.config.CodebragConfiguration
 import service.entry.EntryService
 import service.schedulers.{DummyEmailSendingService, ProductionEmailSendingService}
 import service.templates.EmailTemplatingEngine
-import service.user.{RegistrationDataValidator, UserService}
+import service.user.UserService
 import java.util.concurrent.Executors
 
 trait Beans {
@@ -24,7 +24,7 @@ trait Beans {
 
   lazy val emailTemplatingEngine = new EmailTemplatingEngine
 
-  lazy val userService = new UserService(userDao, new RegistrationDataValidator(), emailSendingService, emailTemplatingEngine)
+  lazy val userService = new UserService(userDao, emailSendingService, emailTemplatingEngine)
 
   lazy val userDao = daoFactory.userDAO
 
