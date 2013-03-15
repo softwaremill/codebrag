@@ -17,10 +17,6 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "app.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "services/flashService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "effects/effects.js")
 
-
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "services/profileService.js");
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/profileCtrl.js")
-
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/entriesCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/entryEditCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/loginCtrl.js");
@@ -30,7 +26,5 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "services/entriesService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "services/userSessionService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/uptimeCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "services/utilService.js");
-
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "directives/bsBlur.js");
 
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "filters/newlines.js");
