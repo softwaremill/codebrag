@@ -5,9 +5,6 @@ trait StorageFactory {
   def userDAO: UserDAO
 
   def entryDAO: EntryDAO
-
-  def codeDAO: PasswordResetCodeDAO
-
 }
 
 class MongoFactory extends StorageFactory {
@@ -20,10 +17,6 @@ class MongoFactory extends StorageFactory {
     new MongoEntryDAO
   }
 
-  def codeDAO = {
-    new MongoPasswordResetCodeDAO()
-  }
-
 }
 
 class InMemoryFactory() extends StorageFactory {
@@ -34,10 +27,6 @@ class InMemoryFactory() extends StorageFactory {
 
   def entryDAO = {
     new InMemoryEntryDAO()
-  }
-
-  def codeDAO = {
-    new InMemoryPasswordResetCodeDAO()
   }
 
 }

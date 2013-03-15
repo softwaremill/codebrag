@@ -1,8 +1,8 @@
 import com.mongodb.Mongo
+import com.softwaremill.codebrag.rest.{EntriesServlet, UptimeServlet, UsersServlet, SwaggerApiDoc}
 import java.util.concurrent.TimeUnit
 import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB}
 import com.softwaremill.codebrag.Beans
-import com.softwaremill.codebrag.rest._
 import org.scalatra._
 import javax.servlet.ServletContext
 
@@ -22,8 +22,6 @@ class ScalatraBootstrap extends LifeCycle with Beans {
     context.mount(new EntriesServlet(entryService, userService, swagger), Prefix + EntriesServlet.MAPPING_PATH)
     context.mount(new UptimeServlet, Prefix + "uptime")
     context.mount(new UsersServlet(userService), Prefix + "users")
-    context.mount(new PasswordRecoveryServlet(passwordRecoveryService), Prefix + "passwordrecovery")
-
     context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")
 
     context.put("codebrag", this)

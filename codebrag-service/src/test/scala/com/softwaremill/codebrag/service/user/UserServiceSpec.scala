@@ -136,31 +136,4 @@ class UserServiceSpec extends FlatSpec with ShouldMatchers with MockitoSugar wit
   }
 
 
-  "changePassword" should "change password if current is correct and new is present" in {
-    // Given
-    val user = userDAO.findByLowerCasedLogin("admin").get
-    val currentPassword = "pass"
-    val newPassword = "newPass"
-
-    // When
-    userService.changePassword(user.token, currentPassword, newPassword) should be ('right)
-
-    // Then
-    userDAO.findByLowerCasedLogin("admin") match {
-      case Some(cu) => cu.password should be (User.encryptPassword(newPassword, cu.salt))
-      case None => fail("Something bad happened, maybe mocked DAO is broken?")
-    }
-  }
-
-  "changePassword" should "not change password if current is incorrect" in {
-    // Given
-    val user = userDAO.findByLowerCasedLogin("admin").get
-
-    // When, Then
-    userService.changePassword(user.token, "someillegalpass", "newpass") should be ('left)
-  }
-
-  "changePassword" should "complain when user cannot be found" in {
-    userService.changePassword("someirrelevanttoken", "pass", "newpass") should be ('left)
-  }
 }

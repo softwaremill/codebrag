@@ -4,7 +4,6 @@ import dao.{MongoFactory, InMemoryFactory}
 import rest.CodebragSwagger
 import service.config.CodebragConfiguration
 import service.entry.EntryService
-import service.PasswordRecoveryService
 import service.schedulers.{DummyEmailSendingService, ProductionEmailSendingService}
 import service.templates.EmailTemplatingEngine
 import service.user.{RegistrationDataValidator, UserService}
@@ -31,8 +30,5 @@ trait Beans {
 
   lazy val entryService = new EntryService(daoFactory.entryDAO, userDao)
 
-  lazy val passwordRecoveryService = new PasswordRecoveryService(userDao, daoFactory.codeDAO, emailSendingService, emailTemplatingEngine)
-
   val swagger = new CodebragSwagger
-
 }
