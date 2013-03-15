@@ -9,7 +9,6 @@ import com.softwaremill.codebrag.service.entry.EntryService
 import com.softwaremill.codebrag.domain.User
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.mockito.BDDMockito._
 
 
 class EntriesServletWithUserSpec extends CodebragServletSpec {
@@ -78,7 +77,7 @@ class EntriesServletWithUserSpec extends CodebragServletSpec {
     )
   }
 
-  class EntriesServletWithUser(entryService: EntryService, userService: UserService, login: String) extends EntriesServlet(entryService, userService) {
+  class EntriesServletWithUser(entryService: EntryService, userService: UserService, login: String) extends EntriesServlet(entryService, userService, new CodebragSwagger) {
     override def isAuthenticated(implicit request: javax.servlet.http.HttpServletRequest) = true
     override def user(implicit request: javax.servlet.http.HttpServletRequest) = new UserJson(login, "kowalski@kowalski.net", User.encryptPassword("password", "salt"))
   }

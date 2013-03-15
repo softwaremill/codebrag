@@ -1,6 +1,7 @@
 package com.softwaremill.codebrag
 
 import dao.{MongoFactory, InMemoryFactory}
+import rest.CodebragSwagger
 import service.config.CodebragConfiguration
 import service.entry.EntryService
 import service.PasswordRecoveryService
@@ -31,5 +32,7 @@ trait Beans {
   lazy val entryService = new EntryService(daoFactory.entryDAO, userDao)
 
   lazy val passwordRecoveryService = new PasswordRecoveryService(userDao, daoFactory.codeDAO, emailSendingService, emailTemplatingEngine)
+
+  val swagger = new CodebragSwagger
 
 }

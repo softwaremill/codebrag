@@ -21,7 +21,7 @@ class EntriesServletSpec extends CodebragServletSpec {
     when(entryService.countNewerThan(10000)) thenReturn 10
 
 
-    val servlet: EntriesServlet = new EntriesServlet(entryService, userService)
+    val servlet: EntriesServlet = new EntriesServlet(entryService, userService, new CodebragSwagger)
     addServlet(servlet, "/*")
 
     test(entryService, userService)

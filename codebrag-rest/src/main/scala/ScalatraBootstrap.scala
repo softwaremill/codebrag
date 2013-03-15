@@ -2,7 +2,7 @@ import com.mongodb.Mongo
 import java.util.concurrent.TimeUnit
 import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB}
 import com.softwaremill.codebrag.Beans
-import com.softwaremill.codebrag.rest.{PasswordRecoveryServlet, UsersServlet, EntriesServlet, UptimeServlet}
+import com.softwaremill.codebrag.rest._
 import org.scalatra._
 import javax.servlet.ServletContext
 
@@ -12,17 +12,19 @@ import javax.servlet.ServletContext
  * run at application start (e.g. database configurations), and init params.
  */
 class ScalatraBootstrap extends LifeCycle with Beans {
-  val Prefix = "/rest"
+  val Prefix = "/rest/"
 
   override def init(context: ServletContext) {
     MongoDB.defineDb(DefaultMongoIdentifier, new Mongo, "codebrag")
 
     scheduler.scheduleAtFixedRate(emailSendingService, 60, 1, TimeUnit.SECONDS)
 
-    context.mount(new EntriesServlet(entryService, userService), Prefix + "/entries")
-    context.mount(new UptimeServlet, Prefix + "/uptime")
-    context.mount(new UsersServlet(userService), Prefix + "/users")
-    context.mount(new PasswordRecoveryServlet(passwordRecoveryService), Prefix + "/passwordrecovery")
+    context.mount(new EntriesServlet(entryService, userService, swagger), Prefix + EntriesServlet.MAPPING_PATH)
+    context.mount(new UptimeServlet, Prefix + "uptime")
+    context.mount(new UsersServlet(userService), Prefix + "users")
+    context.mount(new PasswordRecoveryServlet(passwordRecoveryService), Prefix + "passwordrecovery")
+
+    context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")
 
     context.put("codebrag", this)
   }
