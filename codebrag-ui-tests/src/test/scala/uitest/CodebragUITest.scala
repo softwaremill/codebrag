@@ -8,7 +8,7 @@ import org.openqa.selenium.firefox.FirefoxDriver
 import java.util.concurrent.TimeUnit
 import com.softwaremill.codebrag.Beans
 import com.softwaremill.codebrag.service.schedulers.DummyEmailSendingService
-import pages.{MessagesPage, LoginPage}
+import pages.{MainPage, LoginPage}
 import org.openqa.selenium.support.PageFactory
 
 class CodebragUITest extends FunSuite with EmbeddedJetty with BeforeAndAfterAll with BeforeAndAfter {
@@ -19,14 +19,13 @@ class CodebragUITest extends FunSuite with EmbeddedJetty with BeforeAndAfterAll 
   var driver: FirefoxDriver = _
   var emailService: DummyEmailSendingService = _
   var loginPage: LoginPage = _
-  var messagesPage: MessagesPage = _
+  var mainPage: MainPage = _
   var beans: Beans = _
 
   override def beforeAll() {
     sys.props.put("withInMemory", "true")
     startJetty()
     beans = context.getAttribute("codebrag").asInstanceOf[Beans]
-    beans.userService.registerNewUser(REGUSER, REGMAIL, REGPASS)
     emailService = beans.emailSendingService.asInstanceOf[DummyEmailSendingService]
   }
 
@@ -34,7 +33,7 @@ class CodebragUITest extends FunSuite with EmbeddedJetty with BeforeAndAfterAll 
     driver = new FirefoxDriver()
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS)
     loginPage = PageFactory.initElements(driver, classOf[LoginPage])
-    messagesPage = PageFactory.initElements(driver, classOf[MessagesPage])
+    mainPage = PageFactory.initElements(driver, classOf[MainPage])
   }
 
   after {

@@ -7,8 +7,8 @@ class ScalaLoginUITest extends CodebragUITest {
     loginPage.openLoginPage()
     loginPage.login(REGUSER, REGPASS)
 
-    Assertions.assertThat(messagesPage.isUserLogged(REGUSER)).isTrue()
-    messagesPage.logout()
+    Assertions.assertThat(mainPage.isUserLogged(REGUSER)).isTrue()
+    mainPage.logout()
   }
 
 }
