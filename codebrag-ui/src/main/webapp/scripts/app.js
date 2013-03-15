@@ -5,14 +5,9 @@ angular.module('smlCodebrag.maintenance', ['ngResource']);
 
 angular.module('smlCodebrag.profile', ['smlCodebrag.maintenance', 'smlCodebrag.session', 'smlCodebrag.directives']).config(function ($routeProvider) {
     $routeProvider.
+        when("/", {controller: 'LoginCtrl', templateUrl: "views/main.html"}).
         when("/login", {controller: 'LoginCtrl', templateUrl: "views/login.html"}).
         when("/profile", {controller: "ProfileCtrl", templateUrl: "views/secured/profile.html"});
-});
-
-angular.module('smlCodebrag.entries', ['smlCodebrag.session', 'smlCodebrag.filters']).config(function ($routeProvider) {
-    $routeProvider.
-        when('/', {controller: 'EntriesCtrl', templateUrl: 'views/main.html'}).
-        when("/entry/:entryId", {controller: 'EntryEditCtrl', templateUrl: "views/entry.html"});
 });
 
 angular.module('smlCodebrag.session', ['ngCookies', 'ngResource']);
@@ -21,14 +16,13 @@ angular.module(
         'smlCodebrag', [
             'smlCodebrag.filters',
             'smlCodebrag.profile',
-            'smlCodebrag.entries',
             'smlCodebrag.maintenance',
             'smlCodebrag.session',
             'smlCodebrag.directives', 'ngSanitize', 'ajaxthrobber']).config(function ($routeProvider) {
         $routeProvider.
-            when("/error404", {controller: 'EntriesCtrl', templateUrl: "views/errorpages/error404.html"}).
-            when("/error500", {controller: 'EntriesCtrl', templateUrl: "views/errorpages/error500.html"}).
-            when("/error", {controller: 'EntriesCtrl', templateUrl: "views/errorpages/error500.html"}).
+            when("/error404", {controller: 'LoginCtrl', templateUrl: "views/errorpages/error404.html"}).
+            when("/error500", {controller: 'LoginCtrl', templateUrl: "views/errorpages/error500.html"}).
+            when("/error", {controller: 'LoginCtrl', templateUrl: "views/errorpages/error500.html"}).
             otherwise({redirectTo: '/error404'});
     })
 
