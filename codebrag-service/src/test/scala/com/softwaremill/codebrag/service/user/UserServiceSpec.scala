@@ -2,14 +2,9 @@ package com.softwaremill.codebrag.service.user
 
 import com.softwaremill.codebrag.dao.{InMemoryUserDAO, UserDAO}
 import com.softwaremill.codebrag.domain.User
-import com.softwaremill.codebrag.service.schedulers.EmailSendingService
-import com.softwaremill.codebrag.service.templates.{EmailContentWithSubject, EmailTemplatingEngine}
-import org.mockito.Matchers._
-import org.mockito.Mockito._
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
-import org.mockito.Matchers
 
 class UserServiceSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter {
   def prepareUserDAOMock: UserDAO = {
@@ -19,14 +14,12 @@ class UserServiceSpec extends FlatSpec with ShouldMatchers with MockitoSugar wit
     dao
   }
 
-  val emailSendingService: EmailSendingService = mock[EmailSendingService]
-  val emailTemplatingEngine = mock[EmailTemplatingEngine]
   var userDAO: UserDAO = _
   var userService: UserService = _
 
   before {
     userDAO = prepareUserDAOMock
-    userService = new UserService(userDAO, emailSendingService, emailTemplatingEngine)
+    userService = new UserService(userDAO)
   }
 
   // this test is silly :\

@@ -3,13 +3,8 @@ package com.softwaremill.codebrag.service.user
 import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.domain.User
 import com.softwaremill.codebrag.service.data.UserJson
-import com.softwaremill.codebrag.service.schedulers.EmailScheduler
-import com.softwaremill.codebrag.service.templates.EmailTemplatingEngine
-import pl.softwaremill.common.util.RichString
-import java.util.UUID
 
-class UserService(userDAO: UserDAO, emailScheduler: EmailScheduler,
-                  emailTemplatingEngine: EmailTemplatingEngine) {
+class UserService(userDAO: UserDAO) {
 
   def load(userId: String) = {
     UserJson(userDAO.load(userId))

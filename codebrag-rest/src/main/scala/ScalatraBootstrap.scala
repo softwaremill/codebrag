@@ -1,6 +1,5 @@
 import com.mongodb.Mongo
 import com.softwaremill.codebrag.rest.SwaggerApiDoc
-import java.util.concurrent.TimeUnit
 import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB}
 import com.softwaremill.codebrag.Beans
 import com.softwaremill.codebrag.rest.{UsersServlet, UptimeServlet}
@@ -18,8 +17,6 @@ class ScalatraBootstrap extends LifeCycle with Beans {
   override def init(context: ServletContext) {
     MongoDB.defineDb(DefaultMongoIdentifier, new Mongo, "codebrag")
 
-    scheduler.scheduleAtFixedRate(emailSendingService, 60, 1, TimeUnit.SECONDS)
-
     context.mount(new UptimeServlet, Prefix + "uptime")
     context.mount(new UsersServlet(userService, swagger), Prefix + "users")
 
@@ -28,9 +25,5 @@ class ScalatraBootstrap extends LifeCycle with Beans {
     context.put("codebrag", this)
   }
 
-
-  override def destroy(context: ServletContext) {
-    scheduler.shutdownNow()
-  }
 
 }
