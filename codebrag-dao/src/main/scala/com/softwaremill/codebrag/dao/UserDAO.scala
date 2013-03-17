@@ -2,34 +2,25 @@ package com.softwaremill.codebrag.dao
 
 import com.softwaremill.codebrag.domain.User
 import java.util.UUID
-import org.bson.types.ObjectId
+import pl.softwaremill.common.util.RichString
 
 trait UserDAO {
 
-  def loadAll: List[User]
-
-  def countItems(): Long
-
-  def add(user: User) {
-    if (findByLowerCasedLogin(user.login).isDefined || findByEmail(user.email).isDefined) {
-      throw new Exception("User with given e-mail or login already exists")
-    }
-    internalAddUser(user)
+  protected def newDummyUser(login: String): User = {
+    val token = UUID.randomUUID().toString
+    val salt = RichString.generateRandom(16)
+    val user = User(login, email = login + "@sml.com", plainPassword = login, salt, token)
+    add(user)
+    user
   }
 
-  protected def internalAddUser(user: User)
-
-  def remove(userId: String)
-
-  def load(userId: String): Option[User]
+  def add(user: User)
 
   def findByEmail(email: String): Option[User]
 
   def findByLowerCasedLogin(login: String): Option[User]
 
   def findByLoginOrEmail(loginOrEmail: String): Option[User]
-
-  def findForIdentifiers(ids: List[ObjectId]): List[User]
 
   def findByToken(token: String): Option[User]
 

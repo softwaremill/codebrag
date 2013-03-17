@@ -38,60 +38,28 @@ trait UserDAOSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterAll wi
     }
   }
 
-  it should "load all users" in {
-    userDAO.loadAll should have size (3)
-  }
-
-  it should "count all users" in {
-    userDAO.countItems() should be (3)
-  }
-
-  it should "add new user" in {
+  it should "add user with existing login" in {
     // Given
-    val numberOfUsersBefore = userDAO.countItems()
-    val login = "newuser"
-    val email = "newemail@sml.com"
+    val login = "user1"
+    val email = "anotherEmaill@sml.com"
 
     // When
     userDAO.add(User(login, email, "pass", "salt", "token"))
 
-    // Then
-    (userDAO.countItems() - numberOfUsersBefore) should be (1)
+    // then
+    assert(userDAO.findByLoginOrEmail(login).isDefined)
   }
 
-
-  it should "throw exception when trying to add user with existing login" in {
-    // Given
-    val login = "newuser"
-    val email = "anotherEmaill@sml.com"
-
-    // When & then
-    intercept[Exception] {
-      userDAO.add(User(login, email, "pass", "salt", "token"))
-    }
-  }
-
-  it should "throw exception when trying to add user with existing email" in {
+  it should "add user with existing email" in {
     // Given
     val login = "anotherUser"
-    val email = "newemail@sml.com"
+    val email = "1email@sml.com"
 
     // When
-    intercept[Exception] {
-      userDAO.add(User(login, email, "pass", "salt", "token"))
-    }
-  }
+    userDAO.add(User(login, email, "pass", "salt", "token"))
 
-  it should "remove user" in {
-    // Given
-    val numberOfUsersBefore = userDAO.countItems()
-    val userOpt: Option[User] = userDAO.findByLoginOrEmail("newuser")
-
-    // When
-    userOpt.foreach(u => userDAO.remove(u.id.toString))
-
-    // Then
-    (userDAO.countItems() - numberOfUsersBefore) should be (-1)
+    // then
+    assert(userDAO.findByLoginOrEmail(email).isDefined)
   }
 
   it should "find by email" in {
@@ -104,6 +72,48 @@ trait UserDAOSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterAll wi
     // Then
     userOpt match {
       case Some(u) => u.email should be (email)
+      case _ => fail("User option should be defined")
+    }
+  }
+
+  it should "not find non-existing user by email" in {
+    // Given
+    val email: String = "anyEmail@sml.com"
+
+    // When
+    val userOpt: Option[User] = userDAO.findByEmail(email)
+
+    // Then
+    userOpt match {
+      case Some(_) => fail("User option should be defined")
+      case _ => // ok
+    }
+  }
+
+  it should "find non-existing user by login" in {
+    // Given
+    val login: String = "non_existing_login"
+
+    // When
+    val userOpt: Option[User] = userDAO.findByLowerCasedLogin(login)
+
+    // Then
+    userOpt match {
+      case Some(u) => u.login should be (login)
+      case _ => fail("User option should be defined")
+    }
+  }
+
+  it should "find non-existing user by login or email" in {
+    // Given
+    val login: String = "non_existing_login"
+
+    // When
+    val userOpt: Option[User] = userDAO.findByLoginOrEmail(login)
+
+    // Then
+    userOpt match {
+      case Some(u) => u.login should be (login)
       case _ => fail("User option should be defined")
     }
   }
@@ -136,16 +146,6 @@ trait UserDAOSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterAll wi
     }
   }
 
-  it should "find users by identifiers" in {
-    // Given
-    val ids: List[ObjectId] = List(1, 2, 2);
-
-    // When
-    val users = userDAO.findForIdentifiers(ids)
-
-    // Then
-    users.map(user => user.login) should be(List("user1", "user2"))
-  }
 
   it should "find by uppercased login" in {
     // Given

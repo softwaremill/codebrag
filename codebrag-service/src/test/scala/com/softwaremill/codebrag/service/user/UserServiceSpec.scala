@@ -1,38 +1,45 @@
 package com.softwaremill.codebrag.service.user
 
-import com.softwaremill.codebrag.dao.{InMemoryUserDAO, UserDAO}
-import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.dao.UserDAO
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
+import org.mockito.Mockito._
+import org.mockito.BDDMockito._
+import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.service.data.UserJson
 
 class UserServiceSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter {
-  def prepareUserDAOMock: UserDAO = {
-    val dao = new InMemoryUserDAO
-    dao.add(User("Admin", "admin@sml.com", "pass", "salt", "token1"))
-    dao.add(User("Admin2", "admin2@sml.com", "pass", "salt", "token2"))
-    dao
-  }
 
   var userDAO: UserDAO = _
   var userService: UserService = _
+  var userDAOMock: UserDAO = _
+  val fixtureUser = User("someLogin", "someLogin@sml.com", "somePassword", "salt", "token")
+  val fixtureLogin: String = "someLogin"
+  val fixturePassword: String = "somePassword"
 
   before {
-    userDAO = prepareUserDAOMock
-    userService = new UserService(userDAO)
+    userDAOMock = mock[UserDAO]
+    userService = new UserService(userDAOMock)
   }
 
-  // this test is silly :\
-  "findByEmail" should "return user for admin@sml.pl" in {
-    val userOpt = userService.findByEmail("admin@sml.com")
+  it should "call dao to authenticate user" in {
+    // when
+    userService.authenticate(fixtureLogin, fixturePassword)
 
-    userOpt.map(_.login) should be (Some("Admin"))
+    // then
+    verify(userDAOMock) findByLoginOrEmail(fixtureLogin)
   }
 
-  "findByEmail" should  "return user for uppercased ADMIN@SML.PL" in {
-    val userOpt = userService.findByEmail("ADMIN@SML.COM")
+  it should "wrap dao response in UserJson" in {
+    // given
+    given(userDAOMock.findByLoginOrEmail(fixtureLogin)).willReturn(Some(fixtureUser))
 
-    userOpt.map(_.login) should be (Some("Admin"))
+    // when
+    val result: Option[UserJson] = userService.authenticate(fixtureLogin, fixturePassword)
+
+    // then
+    result should equal(Option(UserJson(fixtureUser)))
   }
 
 }

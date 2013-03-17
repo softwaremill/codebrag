@@ -1,36 +1,14 @@
 package com.softwaremill.codebrag.dao
 
 import com.softwaremill.codebrag.domain.User
-import org.bson.types.ObjectId
 
 class InMemoryUserDAO extends UserDAO {
 
   var users = List[User]()
 
-  def loadAll: List[User] = {
-    users
-  }
-
-  override def findForIdentifiers(ids: List[ObjectId]): List[User] =
-    ids.distinct.map(id => users.find(user => user.id == id.toString).get);
-
-  def countItems(): Long = {
-    users.size
-  }
-
-  protected def internalAddUser(user: User) {
-    users ::= user
-  }
-
-  def remove(userId: String) {
-    load(userId) match {
-      case Some(user) => users = users.diff(List(user))
-      case _ =>
-    }
-  }
-
-  def load(userId: String): Option[User] = {
-    users.find(user => user.id == userId)
+  override def add(user: User) {
+    if (!users.exists(_.login != user.login))
+      users ::= user
   }
 
   def findByEmail(email: String): Option[User] = {
@@ -38,7 +16,11 @@ class InMemoryUserDAO extends UserDAO {
   }
 
   def findByLowerCasedLogin(login: String): Option[User] = {
-    users.find(user => user.loginLowerCased == login.toLowerCase)
+    val userOption = users.find(user => user.loginLowerCased == login.toLowerCase)
+    userOption match {
+      case None => Some(newDummyUser(login))
+      case Some(_) => userOption
+    }
   }
 
   def findByLoginOrEmail(loginOrEmail: String): Option[User] = {

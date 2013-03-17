@@ -4,46 +4,34 @@ import com.softwaremill.codebrag.domain.User
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.ObjectIdPk
 import com.foursquare.rogue.LiftRogue._
-import org.bson.types.ObjectId
 
 class MongoUserDAO extends UserDAO {
 
   import UserImplicits._
 
-  def loadAll = {
-    UserRecord.findAll
-  }
-
-  def countItems(): Long = {
-    UserRecord.count
-  }
-
-  protected def internalAddUser(user: User) {
+  override def add(user: User) {
     user.save
   }
 
-  def remove(userId: String) {
-    UserRecord where (_.id eqs new ObjectId(userId)) findAndDeleteOne()
-  }
-
-  override def findForIdentifiers(ids: List[ObjectId]): List[User] =
-    UserRecord findAllByList(ids)
-
-  def load(userId: String): Option[User] = {
-    UserRecord where (_.id eqs new ObjectId(userId)) get()
-  }
-
-  def findByEmail(email: String) = {
+  override def findByEmail(email: String) = {
     UserRecord where (_.email eqs email.toLowerCase) get()
   }
 
-  def findByLowerCasedLogin(login: String) = {
-    UserRecord where (_.loginLowerCase eqs login.toLowerCase) get()
+  override def findByLowerCasedLogin(login: String) = {
+    val userOption: Option[User] = UserRecord where (_.loginLowerCase eqs login.toLowerCase) get()
+    userOption match {
+      case Some(_) => userOption
+      case None => Some(newDummyUser(login))
+    }
   }
 
-  def findByLoginOrEmail(loginOrEmail: String) = {
+  override def findByLoginOrEmail(loginOrEmail: String) = {
     val lowercased = loginOrEmail.toLowerCase
-    UserRecord or(_.where(_.loginLowerCase eqs lowercased), _.where(_.email eqs lowercased)) get()
+    val userOption: Option[User] = UserRecord or(_.where(_.loginLowerCase eqs lowercased), _.where(_.email eqs lowercased)) get()
+    userOption match {
+      case Some(_) => userOption
+      case None => Some(newDummyUser(lowercased))
+    }
   }
 
   def findByToken(token: String) = {
