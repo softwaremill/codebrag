@@ -9,10 +9,10 @@ import org.mockito.BDDMockito._
 import com.softwaremill.codebrag.domain.User
 import com.softwaremill.codebrag.service.data.UserJson
 
-class UserServiceSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter {
+class AuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter {
 
   var userDAO: UserDAO = _
-  var userService: UserService = _
+  var authenticator: Authenticator = _
   var userDAOMock: UserDAO = _
   val fixtureUser = User("someLogin", "someLogin@sml.com", "somePassword", "salt", "token")
   val fixtureLogin: String = "someLogin"
@@ -20,12 +20,12 @@ class UserServiceSpec extends FlatSpec with ShouldMatchers with MockitoSugar wit
 
   before {
     userDAOMock = mock[UserDAO]
-    userService = new UserService(userDAOMock)
+    authenticator = new Authenticator(userDAOMock)
   }
 
   it should "call dao to authenticate user" in {
     // when
-    userService.authenticate(fixtureLogin, fixturePassword)
+    authenticator.authenticate(fixtureLogin, fixturePassword)
 
     // then
     verify(userDAOMock) findByLoginOrEmail(fixtureLogin)
@@ -36,7 +36,7 @@ class UserServiceSpec extends FlatSpec with ShouldMatchers with MockitoSugar wit
     given(userDAOMock.findByLoginOrEmail(fixtureLogin)).willReturn(Some(fixtureUser))
 
     // when
-    val result: Option[UserJson] = userService.authenticate(fixtureLogin, fixturePassword)
+    val result: Option[UserJson] = authenticator.authenticate(fixtureLogin, fixturePassword)
 
     // then
     result should equal(Option(UserJson(fixtureUser)))

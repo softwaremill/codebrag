@@ -3,10 +3,10 @@ package com.softwaremill.codebrag.auth
 import org.scalatra.{ CookieOptions, Cookie, CookieSupport, ScalatraBase }
 import org.scalatra.auth.ScentryStrategy
 import com.softwaremill.codebrag.common.Utils
-import com.softwaremill.codebrag.service.user.UserService
+import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.service.data.UserJson
 
-class RememberMeStrategy(protected val app: ScalatraBase with CookieSupport, rememberMe: Boolean, val userService: UserService) extends ScentryStrategy[UserJson] {
+class RememberMeStrategy(protected val app: ScalatraBase with CookieSupport, rememberMe: Boolean, val authenticator: Authenticator) extends ScentryStrategy[UserJson] {
 
   private val CookieKey = "rememberMe"
 
@@ -25,7 +25,7 @@ class RememberMeStrategy(protected val app: ScalatraBase with CookieSupport, rem
   }
 
   override def authenticate() = {
-    app.cookies.get(CookieKey).flatMap(userService.authenticateWithToken(_))
+    app.cookies.get(CookieKey).flatMap(authenticator.authenticateWithToken(_))
   }
 
   override def beforeLogout(user: UserJson) {

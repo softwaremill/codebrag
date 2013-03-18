@@ -2,10 +2,10 @@ package com.softwaremill.codebrag.auth
 
 import org.scalatra.ScalatraBase
 import org.scalatra.auth.ScentryStrategy
-import com.softwaremill.codebrag.service.user.UserService
+import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.service.data.UserJson
 
-class UserPasswordStrategy(protected val app: ScalatraBase, login: String, password: String, val userService: UserService) extends ScentryStrategy[UserJson] {
+class UserPasswordStrategy(protected val app: ScalatraBase, login: String, password: String, val authenticator: Authenticator) extends ScentryStrategy[UserJson] {
 
   override def name: String = UserPassword.name
 
@@ -14,7 +14,7 @@ class UserPasswordStrategy(protected val app: ScalatraBase, login: String, passw
   }
 
   override def authenticate() = {
-    userService.authenticate(login, password)
+    authenticator.authenticate(login, password)
   }
 
 }

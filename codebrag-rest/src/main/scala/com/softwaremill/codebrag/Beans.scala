@@ -2,11 +2,11 @@ package com.softwaremill.codebrag
 
 import dao.MongoUserDAO
 import rest.CodebragSwagger
-import service.user.UserService
+import service.user.Authenticator
 
 trait Beans {
 
-  lazy val userService = new UserService(userDao)
+  lazy val authenticator = new Authenticator(userDao)
   lazy val userDao = new MongoUserDAO
-  val swagger = new CodebragSwagger
+  lazy val swagger = new CodebragSwagger
 }

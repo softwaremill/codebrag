@@ -5,7 +5,7 @@ import org.scalatra.auth.ScentryAuthStore.CookieAuthStore
 import org.scalatra.auth.{ Scentry, ScentryConfig, ScentrySupport }
 import scala.Some
 import com.softwaremill.codebrag.common.{ Utils, JsonWrapper }
-import com.softwaremill.codebrag.service.user.UserService
+import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.service.data.UserJson
 
 /**
@@ -27,16 +27,16 @@ trait AuthenticationSupport extends ScentrySupport[UserJson] {
 
   self: ScalatraBase =>
 
-  def userService: UserService
+  def authenticator: Authenticator
 
   override protected def registerAuthStrategies {
-    scentry.register(RememberMe.name, app => new RememberMeStrategy(app.asInstanceOf[ScalatraBase with CookieSupport], rememberMe, userService))
-    scentry.register(UserPassword.name, app => new UserPasswordStrategy(app, login, password, userService))
+    scentry.register(RememberMe.name, app => new RememberMeStrategy(app.asInstanceOf[ScalatraBase with CookieSupport], rememberMe, authenticator))
+    scentry.register(UserPassword.name, app => new UserPasswordStrategy(app, login, password, authenticator))
   }
 
   protected def fromSession = {
     case id: String => {
-      val userOpt: Option[UserJson] = userService.findByLogin(id)
+      val userOpt: Option[UserJson] = authenticator.findByLogin(id)
       userOpt match {
         case Some(u) => u
         case _ => null

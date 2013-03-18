@@ -18,7 +18,7 @@ class ScalatraBootstrap extends LifeCycle with Beans {
     MongoDB.defineDb(DefaultMongoIdentifier, new Mongo, "codebrag")
 
     context.mount(new UptimeServlet, Prefix + "uptime")
-    context.mount(new UsersServlet(userService, swagger), Prefix + "users")
+    context.mount(new UsersServlet(authenticator, swagger), Prefix + "users")
 
     context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")
 

@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.rest
 
 import org.scalatra._
-import com.softwaremill.codebrag.service.user.UserService
+import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.service.data.UserJson
 import swagger.{Swagger, SwaggerSupport}
 
-class UsersServlet(val userService: UserService, val swagger: Swagger) extends JsonServletWithAuthentication with UsersServletSwaggerDefinition with CookieSupport {
+class UsersServlet(val authenticator: Authenticator, val swagger: Swagger) extends JsonServletWithAuthentication with UsersServletSwaggerDefinition with CookieSupport {
 
   post(operation(loginOperation)) {
     val userOpt: Option[UserJson] = authenticate()
