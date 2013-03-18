@@ -7,7 +7,6 @@ import javax.servlet.ServletContext
 import org.openqa.selenium.firefox.FirefoxDriver
 import java.util.concurrent.TimeUnit
 import com.softwaremill.codebrag.Beans
-import com.softwaremill.codebrag.service.schedulers.DummyEmailSendingService
 import pages.{MainPage, LoginPage}
 import org.openqa.selenium.support.PageFactory
 
@@ -17,16 +16,13 @@ class CodebragUITest extends FunSuite with EmbeddedJetty with BeforeAndAfterAll 
   final val REGMAIL = "reguser@regmail.pl"
 
   var driver: FirefoxDriver = _
-  var emailService: DummyEmailSendingService = _
   var loginPage: LoginPage = _
   var mainPage: MainPage = _
   var beans: Beans = _
 
   override def beforeAll() {
-    sys.props.put("withInMemory", "true")
     startJetty()
     beans = context.getAttribute("codebrag").asInstanceOf[Beans]
-    emailService = beans.emailSendingService.asInstanceOf[DummyEmailSendingService]
   }
 
   before {
@@ -42,7 +38,6 @@ class CodebragUITest extends FunSuite with EmbeddedJetty with BeforeAndAfterAll 
   }
 
   override def afterAll() {
-    sys.props.remove("withInMemory")
     stopJetty()
   }
 }
