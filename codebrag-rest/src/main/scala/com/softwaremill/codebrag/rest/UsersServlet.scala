@@ -61,13 +61,13 @@ trait UsersServletSwaggerDefinition extends SwaggerSupport {
     .summary("log user in")
     .parameter(bodyParam[String]("login").description("user login").required)
     .parameter(bodyParam[String]("password").description("user password").required)
-    .parameter(bodyParam[String]("rememberme").description("whether user session should be remembered").required)
+    .parameter(bodyParam[Boolean]("rememberme").description("whether user session should be remembered").required)
 
   val userProfileOperation = apiOperation[UserJson]("userProfile")
     .summary("gets logged in user")
     .notes("Requires user to be authenticated")
 
-  val logoutOperation = apiOperation[Unit]("userProfile")
+  val logoutOperation = apiOperation[Unit]("logout")
     .summary("logs user out")
     .notes("Requires user to be authenticated")
 
