@@ -7,7 +7,7 @@ import net.liftweb.mongodb.record.field.ObjectIdPk
 trait CommitInfoDAO {
   def storeCommit(commit: CommitInfo)
 
-  def storeCommitsSeq(commits: Seq[CommitInfo])
+  def storeCommits(commits: Seq[CommitInfo])
 }
 
 
