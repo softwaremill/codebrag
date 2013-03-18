@@ -6,7 +6,7 @@ import pl.softwaremill.common.util.RichString
 
 trait UserDAO {
 
-  protected def newDummyUser(login: String): User = {
+  protected def createAndSaveDummyUser(login: String): User = {
     val token = UUID.randomUUID().toString
     val salt = RichString.generateRandom(16)
     val user = User(login, email = login + "@sml.com", plainPassword = login, salt, token)

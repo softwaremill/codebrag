@@ -21,7 +21,7 @@ class MongoUserDAO extends UserDAO {
     val userOption: Option[User] = UserRecord where (_.loginLowerCase eqs login.toLowerCase) get()
     userOption match {
       case Some(_) => userOption
-      case None => Some(newDummyUser(login))
+      case None => Some(createAndSaveDummyUser(login))
     }
   }
 
@@ -30,7 +30,7 @@ class MongoUserDAO extends UserDAO {
     val userOption: Option[User] = UserRecord or(_.where(_.loginLowerCase eqs lowercased), _.where(_.email eqs lowercased)) get()
     userOption match {
       case Some(_) => userOption
-      case None => Some(newDummyUser(lowercased))
+      case None => Some(createAndSaveDummyUser(lowercased))
     }
   }
 
