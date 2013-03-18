@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.github
 
 import org.eclipse.egit.github.core.service.CommitService
-import org.eclipse.egit.github.core.{RepositoryCommit, IRepositoryIdProvider}
+import org.eclipse.egit.github.core.IRepositoryIdProvider
 import scala.collection.JavaConversions._
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 
@@ -16,6 +16,11 @@ class GitHubCommitImportService(commitService: CommitService, converter: GitHubC
   def importRepoCommits(owner: String, repo: String) {
     val commits = commitService.getCommits(repoId(owner, repo)).map(converter.convertToCommitInfo(_))
     dao.storeCommits(commits)
+  }
+
+  def importCommitDetails(commitId: String, owner: String, repo: String) {
+    val commit = commitService.getCommit(repoId(owner, repo), commitId)
+    dao.storeCommit(converter.convertToCommitInfo(commit))
   }
 }
 
