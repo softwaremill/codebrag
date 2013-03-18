@@ -9,6 +9,6 @@ trait CommitInfoConverter[T] {
 
 class GitHubCommitInfoConverter extends CommitInfoConverter[RepositoryCommit] {
   def convertToCommitInfo(commit: RepositoryCommit): CommitInfo = {
-    CommitInfo(commit.getSha)
+    CommitInfo(commit.getSha, commit.getCommit.getMessage, commit.getCommit.getAuthor.getName)
   }
 }

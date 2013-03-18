@@ -1,8 +1,7 @@
 package com.softwaremill.codebrag.service.github
 
 import org.scalatest.{BeforeAndAfter, GivenWhenThen, FunSpec}
-import org.eclipse.egit.github.core.RepositoryCommit
-import com.softwaremill.codebrag.common.Utils
+import org.eclipse.egit.github.core.{CommitUser, Commit, RepositoryCommit}
 import org.scalatest.matchers.ShouldMatchers
 
 class GitHubCommitInfoConverterSpec extends FunSpec with GivenWhenThen with ShouldMatchers with BeforeAndAfter {
@@ -14,17 +13,22 @@ class GitHubCommitInfoConverterSpec extends FunSpec with GivenWhenThen with Shou
   }
 
   describe("GitHub Commit Info Converter") {
-    it("should import sha of commit") {
-      val sha: String = Utils.sha1("a")
-      Given(s"repository commit with sha $sha")
-      val commit = new RepositoryCommit
-      commit.setSha(sha)
+    it("should import commit's data") {
+      Given("a repository commit")
+      val sha = "sha"
+      val message: String = "some message"
+      val authorName: String = "Soft o'Ware"
+      val author = new CommitUser().setName(authorName)
+      val rawCommit = new Commit().setMessage(message).setAuthor(author)
+      val commit = new RepositoryCommit().setSha(sha).setCommit(rawCommit)
 
       When("Importer imports that commit")
       val commitInfo = converter.convertToCommitInfo(commit)
 
-      Then("commit info should have the same sha")
+      Then("commit info should have proper data")
       commitInfo.sha should equal(sha)
+      commitInfo.message should equal(message)
+      commitInfo.authorName should equal(authorName)
     }
   }
 }

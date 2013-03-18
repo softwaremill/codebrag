@@ -3,9 +3,10 @@ package com.softwaremill.codebrag.dao
 import org.scalatest.{BeforeAndAfterAll, GivenWhenThen}
 import com.softwaremill.codebrag.domain.CommitInfo
 import org.scalatest.matchers.ShouldMatchers
+import pl.softwaremill.common.util.RichString
 
 class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with BeforeAndAfterAll with ShouldMatchers {
-  val sampleCommit = CommitInfo("sha1")
+  val sampleCommit = createCommit()
   var commitInfoDAO: MongoCommitInfoDAO = _
 
   override def beforeAll() {
@@ -30,25 +31,31 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
 
   it should "store a single commit" in {
     Given("a commit")
-    val commit = CommitInfo("sha")
+    val commit = createCommit()
 
     When("trying to store it")
     commitInfoDAO.storeCommit(commit)
 
     Then("it is stored")
-    commitInfoDAO.findBySha("sha") should be('defined)
+    commitInfoDAO.findBySha(commit.sha) should be('defined)
   }
 
   it should "store a collection of commits" in {
     Given("a collection of commits")
-    val commits = Seq[CommitInfo](CommitInfo("a"), CommitInfo("b"))
+    val commit1 = createCommit()
+    val commit2 = createCommit()
+    val commits = Seq[CommitInfo](commit1, commit2)
 
     When("trying to store them")
     commitInfoDAO.storeCommits(commits)
 
     Then("they are stored")
-    commitInfoDAO.findBySha("a") should be(Some(CommitInfo("a")))
-    commitInfoDAO.findBySha("b") should be(Some(CommitInfo("b")))
+    commitInfoDAO.findBySha(commit1.sha) should be(Some(commit1))
+    commitInfoDAO.findBySha(commit2.sha) should be(Some(commit2))
+  }
+
+  def createCommit() = {
+    CommitInfo(RichString.generateRandom(10), RichString.generateRandom(11), RichString.generateRandom(8))
   }
 
 }
