@@ -24,7 +24,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
   private object CommitInfoImplicits {
 
     implicit def toCommitInfo(record: CommitInfoRecord): CommitInfo = {
-      CommitInfo(record.sha.get, record.message.get, record.authorName.get)
+      CommitInfo(record.sha.get, record.message.get, record.committerName.get)
     }
 
     implicit def toCommitInfo(record: Option[CommitInfoRecord]): Option[CommitInfo] = {
@@ -32,7 +32,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
     }
 
     implicit def toCommitInfoRecord(commit: CommitInfo): CommitInfoRecord = {
-      CommitInfoRecord.createRecord.sha(commit.sha).message(commit.message).authorName(commit.authorName)
+      CommitInfoRecord.createRecord.sha(commit.sha).message(commit.message).committerName(commit.committerName)
     }
 
     implicit def toCommitInfoRecordList(commits: List[CommitInfo]): List[CommitInfoRecord] = {
@@ -49,7 +49,7 @@ private class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with Object
 
   object message extends LongStringField(this)
 
-  object authorName extends LongStringField(this)
+  object committerName extends LongStringField(this)
 
 }
 
