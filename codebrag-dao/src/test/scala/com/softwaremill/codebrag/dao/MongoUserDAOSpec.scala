@@ -2,24 +2,11 @@ package com.softwaremill.codebrag.dao
 
 import com.softwaremill.codebrag.domain.User
 import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.{FlatSpec, BeforeAndAfterAll}
+import org.scalatest.BeforeAndAfterAll
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
 
-class MongoUserDAOSpec extends FlatSpecWithMongo with UserDAOSpec {
-  behavior of "MongoUserDAO"
-
-  def createDAO = new MongoUserDAO()
-}
-
-class InMemoryUserDAOSpec extends FlatSpecWithMongo with UserDAOSpec {
-  behavior of "InMemoryUserDAO"
-
-  def createDAO = new InMemoryUserDAO()
-}
-
-trait UserDAOSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterAll with Logging {
-  def createDAO: UserDAO
+class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with BeforeAndAfterAll with Logging {
 
   val userIdPrefix = "507f1f77bcf86cd79943901"
   var userDAO: UserDAO = null
@@ -27,7 +14,7 @@ trait UserDAOSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterAll wi
 
   override def beforeAll() {
     super.beforeAll()
-    userDAO = createDAO
+    userDAO = new MongoUserDAO
 
     for (i <- 1 to 3) {
       val login = "user" + i
@@ -230,5 +217,4 @@ trait UserDAOSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterAll wi
       case _ => fail("User option should be defined")
     }
   }
-
 }
