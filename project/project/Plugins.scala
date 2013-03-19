@@ -19,7 +19,7 @@ object Plugins extends Build {
     uri("git://github.com/steppenwells/sbt-sh.git"),
 
     // execute jasmin tests during sbt test phase
-    uri("git://github.com/guardian/sbt-jasmine-plugin.git#0.7")
+    uri("git://github.com/softwaremill/sbt-jasmine-plugin.git#0.8.1")
   )
 
 }
