@@ -153,7 +153,7 @@ object SmlCodebragBuild extends Build {
   lazy val domain: Project = Project(
     "codebrag-domain",
     file("codebrag-domain"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson, egitGithubApi))
+    settings = buildSettings ++ Seq(libraryDependencies += bson)
   ) dependsOn (common)
 
   lazy val dao: Project = Project(
@@ -166,7 +166,7 @@ object SmlCodebragBuild extends Build {
     "codebrag-service",
     file("codebrag-service"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator, smlCommonSqs, smlCommonConfig,
-      javaxMail, scalate))
+      javaxMail, scalate, egitGithubApi))
   ) dependsOn(domain, dao, common)
 
   lazy val rest: Project = Project(
