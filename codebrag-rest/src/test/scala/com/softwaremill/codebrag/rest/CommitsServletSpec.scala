@@ -7,11 +7,12 @@ import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import com.softwaremill.codebrag.domain.CommitInfo
 import org.mockito.Mockito._
+import org.joda.time.DateTime
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
-  val SamplePendingCommits = List(CommitInfo("abcd0123", "this is commit message", "mostr", "michal"))
+  val SamplePendingCommits = List(CommitInfo("abcd0123", "this is commit message", "mostr", "michal", new DateTime(), List("abc00001")))
 
   var commitsInfoDao = mock[CommitInfoDAO]
 
