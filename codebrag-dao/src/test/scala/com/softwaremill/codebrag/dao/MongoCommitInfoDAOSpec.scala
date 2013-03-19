@@ -54,6 +54,18 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
     commitInfoDAO.findBySha(commit2.sha) should be(Some(commit2))
   }
 
+  it should "find all commits pending review" in {
+    Given("a sample commit and another one stored")
+    val anotherCommit = createCommit()
+    commitInfoDAO.storeCommit(anotherCommit)
+
+    When("trying to find all stored commits")
+    val pendingCommits = commitInfoDAO.findAllPendingCommits
+
+    Then("sample commit stored should be fetched")
+    pendingCommits should be equals(Seq(sampleCommit, anotherCommit))
+  }
+
   def createCommit() = {
     val sha = RichString.generateRandom(10)
     val message = RichString.generateRandom(10)

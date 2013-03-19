@@ -21,6 +21,10 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
     CommitInfoRecord where (_.sha eqs sha) get()
   }
 
+  def findAllPendingCommits: List[CommitInfo] = {
+    CommitInfoRecord.findAll
+  }
+
   private object CommitInfoImplicits {
 
     implicit def toCommitInfo(record: CommitInfoRecord): CommitInfo = {
@@ -38,6 +42,10 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
     implicit def toCommitInfoRecordList(commits: List[CommitInfo]): List[CommitInfoRecord] = {
       commits.map(toCommitInfoRecord(_))
     }
+    implicit def toCommitInfoList(commits: List[CommitInfoRecord]): List[CommitInfo] = {
+      commits.map(toCommitInfo(_))
+    }
+
   }
 
 }

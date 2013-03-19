@@ -1,18 +1,17 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.{AuthenticatableServletSpec, CodebragServletSpec}
+import com.softwaremill.codebrag.AuthenticatableServletSpec
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
-import org.scalatest.mock.MockitoSugar
-import org.mockito.Mockito._
-import com.softwaremill.codebrag.auth.AuthenticationSupport
-import org.scalatra.{Ok, ScalatraBase}
-import org.scalatest.BeforeAndAfter
 import com.softwaremill.codebrag.dao.CommitInfoDAO
+import com.softwaremill.codebrag.domain.CommitInfo
+import org.mockito.Mockito._
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
+
+  val SAMPLE_PENDING_COMMITS = Seq(CommitInfo("abcd0123", "this is commit message", "mostr", "michal"))
 
   var commitsInfoDao = mock[CommitInfoDAO]
 
@@ -32,10 +31,17 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     }
   }
 
-  "GET /commits?type=pending" should "respond with empty HTTP 200 when user is authenticated" in {
+  "GET /commits?type=pending" should "should return commits pending review" in {
     userIsAuthenticated
+    when(commitsInfoDao.findAllPendingCommits).thenReturn(SAMPLE_PENDING_COMMITS)
     get("/?type=pending") {
       status should be (200)
+      body should equal(asJson(CommitsResponse(SAMPLE_PENDING_COMMITS)))
+    }
+
+    def asJson(resp: CommitsResponse) = {
+      implicit val formats = net.liftweb.json.DefaultFormats
+      net.liftweb.json.Serialization.write(resp)
     }
   }
 
@@ -44,4 +50,6 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
 }
+
+
 
