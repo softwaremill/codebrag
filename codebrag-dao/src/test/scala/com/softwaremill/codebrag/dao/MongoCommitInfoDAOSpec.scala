@@ -55,7 +55,11 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
   }
 
   def createCommit() = {
-    CommitInfo(RichString.generateRandom(10), RichString.generateRandom(11), RichString.generateRandom(8))
+    val sha = RichString.generateRandom(10)
+    val message = RichString.generateRandom(10)
+    val authorName = RichString.generateRandom(10)
+    val committerName = RichString.generateRandom(10)
+    CommitInfo(sha, message, authorName, committerName)
   }
 
 }

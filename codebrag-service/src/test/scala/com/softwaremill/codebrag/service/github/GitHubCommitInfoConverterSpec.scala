@@ -19,7 +19,9 @@ class GitHubCommitInfoConverterSpec extends FunSpec with GivenWhenThen with Shou
       val message: String = "some message"
       val committerName: String = "Soft o'Ware"
       val committer = new CommitUser().setName(committerName)
-      val rawCommit = new Commit().setMessage(message).setCommitter(committer)
+      val authorName:String = "Software Millkovsky"
+      val author = new CommitUser().setName(authorName)
+      val rawCommit = new Commit().setMessage(message).setCommitter(committer).setAuthor(author)
       val commit = new RepositoryCommit().setSha(sha).setCommit(rawCommit)
 
       When("Importer imports that commit")
@@ -28,6 +30,7 @@ class GitHubCommitInfoConverterSpec extends FunSpec with GivenWhenThen with Shou
       Then("commit info should have proper data")
       commitInfo.sha should equal(sha)
       commitInfo.message should equal(message)
+      commitInfo.authorName should equal(authorName)
       commitInfo.committerName should equal(committerName)
     }
   }
