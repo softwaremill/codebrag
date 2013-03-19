@@ -9,6 +9,7 @@ import org.eclipse.egit.github.core.{RepositoryCommit, IRepositoryIdProvider}
 import com.softwaremill.codebrag.domain.CommitInfo
 import scala.collection.JavaConversions._
 import org.mockito.Matchers._
+import org.mockito.Mockito._
 
 class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with MockitoSugar with BeforeAndAfter {
   var commitService: CommitService = _
@@ -34,7 +35,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
         service.importRepoCommits(owner, repo)
 
         Then("commit service should be called with proper repository id")
-        Mockito.verify(commitService).getCommits(argThat(new RepoIdMatcher(owner, repo)))
+        verify(commitService).getCommits(argThat(new RepoIdMatcher(owner, repo)))
       }
 
       it("should convert retrieved commits to internal format") {
@@ -46,7 +47,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
         service.importRepoCommits("a", "b")
 
         Then("they are converted to CommitInfo instances")
-        Mockito.verify(converter, Mockito.times(2)).convertToCommitInfo(any[RepositoryCommit])
+        verify(converter, times(2)).convertToCommitInfo(any[RepositoryCommit])
       }
 
       it("should store retrieved commits") {
@@ -58,7 +59,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
         service.importRepoCommits("a", "b")
 
         Then("they should be stored")
-        Mockito.verify(dao, Mockito.times(1)).storeCommits(any[List[CommitInfo]])
+        verify(dao).storeCommits(any[List[CommitInfo]])
       }
 
       it("should not access data layer when no commits were retrieved") {
@@ -69,7 +70,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
         service.importRepoCommits("a", "b")
 
         Then("nothing happens after it")
-        Mockito.verify(dao, Mockito.never()).storeCommit(any[CommitInfo])
+        verify(dao, never()).storeCommit(any[CommitInfo])
       }
     }
 
@@ -86,7 +87,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
         service.importCommitDetails(sha, owner, repo)
 
         Then("commit service should be called with proper repository id")
-        Mockito.verify(commitService).getCommit(argThat(new RepoIdMatcher(owner, repo)), Matchers.eq(sha))
+        verify(commitService).getCommit(argThat(new RepoIdMatcher(owner, repo)), Matchers.eq(sha))
       }
 
       it("should convert commit to internal representation") {
@@ -98,7 +99,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
         service.importCommitDetails("sha", "o", "r")
 
         Then("it should be converted")
-        Mockito.verify(converter, Mockito.times(1)).convertToCommitInfo(commit)
+        verify(converter).convertToCommitInfo(commit)
       }
 
       it("should store retrieved data") {
@@ -110,7 +111,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
         service.importCommitDetails("sha", "o", "r")
 
         Then("it should be stored")
-        Mockito.verify(dao, Mockito.times(1)).storeCommit(any[CommitInfo])
+        verify(dao).storeCommit(any[CommitInfo])
       }
     }
   }
