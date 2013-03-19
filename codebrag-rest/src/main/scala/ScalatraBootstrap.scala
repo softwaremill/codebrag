@@ -1,8 +1,7 @@
 import com.mongodb.Mongo
-import com.softwaremill.codebrag.rest.SwaggerApiDoc
+import com.softwaremill.codebrag.rest._
 import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB}
 import com.softwaremill.codebrag.Beans
-import com.softwaremill.codebrag.rest.{UsersServlet, UptimeServlet}
 import org.scalatra._
 import javax.servlet.ServletContext
 
@@ -19,6 +18,7 @@ class ScalatraBootstrap extends LifeCycle with Beans {
 
     context.mount(new UptimeServlet, Prefix + "uptime")
     context.mount(new UsersServlet(authenticator, swagger), Prefix + "users")
+    context.mount(new CommitsServlet(authenticator, commitInfoDao, swagger), Prefix + CommitsServlet.MAPPING_PATH)
 
     context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")
 
