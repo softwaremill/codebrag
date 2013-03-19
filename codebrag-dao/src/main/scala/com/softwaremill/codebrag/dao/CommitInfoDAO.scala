@@ -4,7 +4,7 @@ import com.softwaremill.codebrag.domain.CommitInfo
 
 trait CommitInfoDAO {
 
-  def findAllPendingCommits: Seq[CommitInfo]
+  def findAllPendingCommits(): List[CommitInfo]
 
   def storeCommit(commit: CommitInfo)
 

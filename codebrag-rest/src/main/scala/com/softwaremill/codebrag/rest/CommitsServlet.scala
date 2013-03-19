@@ -18,7 +18,7 @@ class CommitsServlet(val authenticator: Authenticator, val commitInfoDao: Commit
   get("/") { // for /commits?type=* only
     haltIfNotAuthenticated
     params.get("type") match {
-      case Some("pending") => CommitsResponse(commitInfoDao.findAllPendingCommits)
+      case Some("pending") => CommitsResponse(commitInfoDao.findAllPendingCommits())
       case _ => pass()
     }
   }

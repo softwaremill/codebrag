@@ -60,7 +60,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
     commitInfoDAO.storeCommit(anotherCommit)
 
     When("trying to find all stored commits")
-    val pendingCommits = commitInfoDAO.findAllPendingCommits
+    val pendingCommits = commitInfoDAO.findAllPendingCommits()
 
     Then("sample commit stored should be fetched")
     pendingCommits should be equals(Seq(sampleCommit, anotherCommit))

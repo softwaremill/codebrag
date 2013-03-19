@@ -11,7 +11,7 @@ import org.mockito.Mockito._
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
-  val SAMPLE_PENDING_COMMITS = Seq(CommitInfo("abcd0123", "this is commit message", "mostr", "michal"))
+  val SamplePendingCommits = List(CommitInfo("abcd0123", "this is commit message", "mostr", "michal"))
 
   var commitsInfoDao = mock[CommitInfoDAO]
 
@@ -33,10 +33,10 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET /commits?type=pending" should "should return commits pending review" in {
     userIsAuthenticated
-    when(commitsInfoDao.findAllPendingCommits).thenReturn(SAMPLE_PENDING_COMMITS)
+    when(commitsInfoDao.findAllPendingCommits()).thenReturn(SamplePendingCommits)
     get("/?type=pending") {
       status should be (200)
-      body should equal(asJson(CommitsResponse(SAMPLE_PENDING_COMMITS)))
+      body should equal(asJson(CommitsResponse(SamplePendingCommits)))
     }
 
     def asJson(resp: CommitsResponse) = {

@@ -21,7 +21,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
     CommitInfoRecord where (_.sha eqs sha) get()
   }
 
-  def findAllPendingCommits: List[CommitInfo] = {
+  def findAllPendingCommits(): List[CommitInfo] = {
     CommitInfoRecord.findAll
   }
 
