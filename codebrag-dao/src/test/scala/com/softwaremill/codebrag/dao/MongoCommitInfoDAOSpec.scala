@@ -4,6 +4,7 @@ import org.scalatest.{BeforeAndAfterAll, GivenWhenThen}
 import com.softwaremill.codebrag.domain.CommitInfo
 import org.scalatest.matchers.ShouldMatchers
 import pl.softwaremill.common.util.RichString
+import org.joda.time.DateTime
 
 class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with BeforeAndAfterAll with ShouldMatchers {
   val sampleCommit = createCommit()
@@ -71,7 +72,8 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
     val message = RichString.generateRandom(10)
     val authorName = RichString.generateRandom(10)
     val committerName = RichString.generateRandom(10)
-    CommitInfo(sha, message, authorName, committerName)
+    val parent = RichString.generateRandom(10)
+    CommitInfo(sha, message, authorName, committerName, new DateTime(), List(parent))
   }
 
 }

@@ -2,8 +2,9 @@ package com.softwaremill.codebrag.dao
 
 import com.softwaremill.codebrag.domain.CommitInfo
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
-import net.liftweb.mongodb.record.field.ObjectIdPk
+import net.liftweb.mongodb.record.field.{MongoListField, DateField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
+import org.joda.time.DateTime
 
 class MongoCommitInfoDAO extends CommitInfoDAO {
 
@@ -28,7 +29,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
   private object CommitInfoImplicits {
 
     implicit def toCommitInfo(record: CommitInfoRecord): CommitInfo = {
-      CommitInfo(record.sha.get, record.message.get, record.authorName.get, record.committerName.get)
+      CommitInfo(record.sha.get, record.message.get, record.authorName.get, record.committerName.get, new DateTime(record.date.get), record.parents.get)
     }
 
     implicit def toCommitInfo(record: Option[CommitInfoRecord]): Option[CommitInfo] = {
@@ -36,7 +37,13 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
     }
 
     implicit def toCommitInfoRecord(commit: CommitInfo): CommitInfoRecord = {
-      CommitInfoRecord.createRecord.sha(commit.sha).message(commit.message).authorName(commit.authorName).committerName(commit.committerName)
+      CommitInfoRecord.createRecord
+        .sha(commit.sha)
+        .message(commit.message)
+        .authorName(commit.authorName)
+        .committerName(commit.committerName)
+        .date(commit.date.toDate)
+        .parents(commit.parents)
     }
 
     implicit def toCommitInfoRecordList(commits: List[CommitInfo]): List[CommitInfoRecord] = {
@@ -60,6 +67,10 @@ private class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with Object
   object authorName extends LongStringField(this)
 
   object committerName extends LongStringField(this)
+
+  object date extends DateField(this)
+
+  object parents extends MongoListField[CommitInfoRecord, String](this)
 
 }
 
