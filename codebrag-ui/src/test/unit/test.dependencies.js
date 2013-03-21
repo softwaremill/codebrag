@@ -18,6 +18,7 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "services/flashService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "effects/effects.js")
 
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/loginCtrl.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/commitsCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "controllers/userSessionCtrl.js");
 
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "services/userSessionService.js");

@@ -1,0 +1,9 @@
+<div class="row">
+    <ul>
+        Commits awaiting review:
+        <br/>
+        <li ng-repeat="commit in commits">
+            {{commit.message}} by {{commit.authorName}}/{{commit.commiterName}} ({{commit.sha}})
+        </li>
+    </ul>
+</div>

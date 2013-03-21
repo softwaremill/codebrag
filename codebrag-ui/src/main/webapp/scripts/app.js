@@ -12,12 +12,20 @@ angular.module('smlCodebrag.profile', ['smlCodebrag.maintenance', 'smlCodebrag.s
 
 angular.module('smlCodebrag.session', ['ngCookies', 'ngResource']);
 
+
+angular.module('codebrag.commits', ['ngResource']).
+    config(function($routeProvider) {
+        $routeProvider.when("/commits", {controller: 'CommitsCtrl', templateUrl: "views/commits.html"});
+});
+
+
 angular.module(
         'smlCodebrag', [
             'smlCodebrag.filters',
             'smlCodebrag.profile',
             'smlCodebrag.maintenance',
             'smlCodebrag.session',
+            'codebrag.commits',
             'smlCodebrag.directives', 'ngSanitize', 'ajaxthrobber']).config(function ($routeProvider) {
         $routeProvider.
             when("/error404", {controller: 'LoginCtrl', templateUrl: "views/errorpages/error404.html"}).
