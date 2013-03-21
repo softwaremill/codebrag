@@ -27,7 +27,6 @@
 
     <!-- logic -->
     <script type="text/javascript" src="scripts/app.js"></script>
-    <script type="text/javascript" src="scripts/controllers/commitsCtrl.js"></script>
     <script type="text/javascript" src="scripts/controllers/loginCtrl.js"></script>
     <script type="text/javascript" src="scripts/controllers/profileCtrl.js"></script>
     <script type="text/javascript" src="scripts/controllers/uptimeCtrl.js"></script>
@@ -62,10 +61,10 @@
                         <li class="active"><a href="/#/">Home</a></li>
                     </ul>
                     <ul class="nav pull-right" ng-controller="UserSessionCtrl">
-                        <li ng-show="isNotLogged()"><a id="loginLink" href="#/login">Login</a></li>
-                        <li ng-show="isLogged()"><a id="profileLink" href="#/profile">Logged in as {{getLoggedUserName()}}</a></li>
+                        <li ng-show="isNotLogged()"><a id="loginLink" href="#/login">Sign in</a></li>
+                        <li ng-show="isLogged()"><a id="profileLink" href="#/profile">Signed in as {{getLoggedUserName()}}</a></li>
                         <li ng-show="isLogged()"><a id="commitsLink" href="#/commits">Commits</a></li>
-                        <li ng-show="isLogged()"><a id="logoutLink" href ng-click="logout();">Logout</a></li>
+                        <li ng-show="isLogged()"><a id="logoutLink" href ng-click="logout();">Sign out</a></li>
                     </ul>
                 </div>
             </div>

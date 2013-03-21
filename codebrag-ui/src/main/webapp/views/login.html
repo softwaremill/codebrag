@@ -22,7 +22,10 @@
                         <label class="checkbox">
                             <input type="checkbox" ng-model="user.rememberme"> Remember me
                         </label>
-                        <button type="submit" class="btn" ng-click="login()" >Login</button>
+                        <button type="submit" class="btn" ng-click="login()" >Sign in</button>
+                        <a class="btn" href="https://github.com/login/oauth/authorize?client_id=5bd745ba65be4fdfaeee&redirect_uri=http://localhost:8080/rest/github/auth_callback&scope=repo">
+                            <img src="/img/blacktocat-16.png">&nbsp;&nbsp;Sign in via GitHub
+                        </a>
                     </div>
                 </div>
             </form>
