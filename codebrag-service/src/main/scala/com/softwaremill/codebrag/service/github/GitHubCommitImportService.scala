@@ -7,6 +7,7 @@ import com.softwaremill.codebrag.dao.CommitInfoDAO
 
 class GitHubCommitImportService(commitService: CommitService, converter: GitHubCommitInfoConverter, dao: CommitInfoDAO) {
 
+
   def repoId(owner: String, repo: String) = {
     new IRepositoryIdProvider {
       def generateId(): String = s"$owner/$repo"

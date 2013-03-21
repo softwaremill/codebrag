@@ -6,6 +6,8 @@ import com.softwaremill.codebrag.service.data.UserJson
 import swagger.{Swagger, SwaggerSupport}
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import com.softwaremill.codebrag.domain.CommitInfo
+import com.softwaremill.codebrag.service.github.{GitHubCommitInfoConverter, GitHubCommitImportService}
+import org.eclipse.egit.github.core.service.CommitService
 
 class CommitsServlet(val authenticator: Authenticator, val commitInfoDao: CommitInfoDAO, val swagger: Swagger) extends JsonServletWithAuthentication with CommitsServletSwaggerDefinition {
 
@@ -18,9 +20,21 @@ class CommitsServlet(val authenticator: Authenticator, val commitInfoDao: Commit
   get("/") { // for /commits?type=* only
     haltIfNotAuthenticated
     params.get("type") match {
-      case Some("pending") => CommitsResponse(commitInfoDao.findAllPendingCommits())
+      case Some("pending") => fetchPendingCommits()
       case _ => pass()
     }
+  }
+
+
+  post("/sync") { // synchronizes commits
+    haltIfNotAuthenticated
+    val importer = new GitHubCommitImportService(new CommitService, new GitHubCommitInfoConverter(), commitInfoDao);
+    importer.importRepoCommits("softwaremill", "bootzooka");
+    fetchPendingCommits()
+  }
+
+  def fetchPendingCommits(): CommitsResponse = {
+    CommitsResponse(commitInfoDao.findAllPendingCommits())
   }
 
 }
