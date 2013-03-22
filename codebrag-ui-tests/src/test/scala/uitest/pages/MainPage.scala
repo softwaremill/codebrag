@@ -21,7 +21,7 @@ class MainPage(driver: WebDriver) {
   }
 
   def isUserLogged(user: String): Boolean = {
-    sc.waitForElementVisible(By.linkText("Logged in as " + user))
+    sc.waitForElementVisible(By.linkText("Signed in as " + user))
     return true
   }
 
