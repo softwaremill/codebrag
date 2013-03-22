@@ -28,8 +28,8 @@ class CommitsServlet(val authenticator: Authenticator, val commitInfoDao: Commit
 
   post("/sync") { // synchronizes commits
     haltIfNotAuthenticated
-    val importer = new GitHubCommitImportService(new CommitService, new GitHubCommitInfoConverter(), commitInfoDao);
-    importer.importRepoCommits("softwaremill", "bootzooka");
+    val importer = new GitHubCommitImportService(new CommitService, new GitHubCommitInfoConverter(), commitInfoDao)
+    importer.importRepoCommits("pbuda", "testrepo")
     fetchPendingCommits()
   }
 
