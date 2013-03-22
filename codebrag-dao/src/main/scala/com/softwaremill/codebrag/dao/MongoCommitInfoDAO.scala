@@ -23,7 +23,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
   }
 
   def findAllPendingCommits(): List[CommitInfo] = {
-    CommitInfoRecord.findAll
+    CommitInfoRecord.orderDesc(_.date).fetch()
   }
 
   private object CommitInfoImplicits {

@@ -5,6 +5,11 @@ angular.module('codebrag.commits')
             $scope.commits = responseData.commits;
         });
 
+        $scope.formatCommitDate = function(date) {
+            var parsed = moment(date);
+            return parsed.fromNow();
+        }
+
         $scope.syncCommits = function() {
             $http({method: 'POST', url: 'rest/commits/sync'})
                 .success(function(data) {

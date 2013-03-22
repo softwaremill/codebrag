@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.AuthenticatableServletSpec
 import com.softwaremill.codebrag.service.user.Authenticator
+import com.softwaremill.codebrag.AuthenticatableServletSpec
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.dao.CommitInfoDAO
@@ -41,7 +41,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     }
 
     def asJson(resp: CommitsResponse) = {
-      implicit val formats = net.liftweb.json.DefaultFormats
+      implicit val formats = net.liftweb.json.DefaultFormats ++ net.liftweb.json.ext.JodaTimeSerializers.all
       net.liftweb.json.Serialization.write(resp)
     }
   }

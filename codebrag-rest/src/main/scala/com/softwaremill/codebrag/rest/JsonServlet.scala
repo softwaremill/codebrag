@@ -12,7 +12,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 
 class JsonServlet extends ScalatraServlet with JacksonJsonSupport with JValueResult with Logging {
 
-  protected implicit val jsonFormats: Formats = DefaultFormats
+  protected implicit val jsonFormats: Formats = DefaultFormats ++ org.json4s.ext.JodaTimeSerializers.all
 
   val Expire = new Date().toString
 

@@ -1,20 +1,18 @@
 package com.softwaremill.codebrag.dao
 
-import org.scalatest.{BeforeAndAfterAll, GivenWhenThen}
 import com.softwaremill.codebrag.domain.CommitInfo
+import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, GivenWhenThen}
 import org.scalatest.matchers.ShouldMatchers
 import pl.softwaremill.common.util.RichString
 import org.joda.time.DateTime
 
-class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with BeforeAndAfterAll with ShouldMatchers {
+class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with BeforeAndAfterEach with ShouldMatchers {
   val sampleCommit = createCommit()
   var commitInfoDAO: MongoCommitInfoDAO = _
 
-  override def beforeAll() {
-    super.beforeAll()
-
+  override def beforeEach() {
+    CommitInfoRecord.drop // drop collection to start every test with fresh database
     commitInfoDAO = new MongoCommitInfoDAO
-
     commitInfoDAO.storeCommit(sampleCommit)
   }
 
@@ -55,16 +53,19 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
     commitInfoDAO.findBySha(commit2.sha) should be(Some(commit2))
   }
 
-  it should "find all commits pending review" in {
+  it should "find all commits pending review starting from newest" in {
     Given("a sample commit and another one stored")
-    val anotherCommit = createCommit()
-    commitInfoDAO.storeCommit(anotherCommit)
+    val olderCommit = sampleCommit
+    val newerCommit = CommitInfo("123123123", "this is newer commit", "mostr", "mostr", new DateTime(), List())
+    val anotherNewerCommit = CommitInfo("123123123", "this is newer commit", "mostr", "mostr", new DateTime(), List())
+    commitInfoDAO.storeCommit(newerCommit)
 
     When("trying to find all stored commits")
     val pendingCommits = commitInfoDAO.findAllPendingCommits()
 
     Then("sample commit stored should be fetched")
-    pendingCommits should be equals(Seq(sampleCommit, anotherCommit))
+    pendingCommits(0) should equal(newerCommit)
+    pendingCommits(1) should equal(olderCommit)
   }
 
   def createCommit() = {
