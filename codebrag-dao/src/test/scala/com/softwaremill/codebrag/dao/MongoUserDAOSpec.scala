@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.BeforeAndAfterAll
 import org.bson.types.ObjectId
@@ -10,6 +10,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
 
   val userIdPrefix = "507f1f77bcf86cd79943901"
   var userDAO: UserDAO = null
+
   implicit def intSuffixToObjectId(suffix: Int): ObjectId = new ObjectId(userIdPrefix + suffix)
 
   override def beforeAll() {
@@ -21,7 +22,8 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
       val password = "pass" + i
       val salt = "salt" + i
       val token = "token" + i
-      userDAO.add(User(i, login, login.toLowerCase, i + "email@sml.com", password, salt, token))
+      val name = s"User Name $i"
+      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token))
     }
   }
 
@@ -29,9 +31,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     // Given
     val login = "user1"
     val email = "anotherEmaill@sml.com"
+    val authentication = Authentication.basic(login, login)
+    val name = "User Name"
+    val token = "token"
 
     // When
-    userDAO.add(User(login, email, "pass", "salt", "token"))
+    userDAO.add(User(authentication, name, email, token))
 
     // then
     assert(userDAO.findByLoginOrEmail(login).isDefined)
@@ -41,9 +46,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     // Given
     val login = "anotherUser"
     val email = "1email@sml.com"
+    val authentication = Authentication.basic(login, login)
+    val name = "User Name"
+    val token = "token"
 
     // When
-    userDAO.add(User(login, email, "pass", "salt", "token"))
+    userDAO.add(User(authentication, name, email, token))
 
     // then
     assert(userDAO.findByLoginOrEmail(email).isDefined)
@@ -58,7 +66,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
 
     // Then
     userOpt match {
-      case Some(u) => u.email should be (email)
+      case Some(u) => u.email should be(email)
       case _ => fail("User option should be defined")
     }
   }
@@ -86,7 +94,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
 
     // Then
     userOpt match {
-      case Some(u) => u.login should be (login)
+      case Some(u) => u.authentication.username should be(login)
       case _ => fail("User option should be defined")
     }
   }
@@ -100,7 +108,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
 
     // Then
     userOpt match {
-      case Some(u) => u.login should be (login)
+      case Some(u) => u.authentication.username should be(login)
       case _ => fail("User option should be defined")
     }
   }
@@ -114,7 +122,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
 
     // Then
     userOpt match {
-      case Some(u) => u.email should be (email.toLowerCase)
+      case Some(u) => u.email should be(email.toLowerCase)
       case _ => fail("User option should be defined")
     }
   }
@@ -128,7 +136,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
 
     // Then
     userOpt match {
-      case Some(u) => u.login should be (login)
+      case Some(u) => u.authentication.username should be(login)
       case _ => fail("User option should be defined")
     }
   }
@@ -143,7 +151,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
 
     // Then
     userOpt match {
-      case Some(u) => u.login should be (login.toLowerCase())
+      case Some(u) => u.authentication.usernameLowerCase should be(login.toLowerCase)
       case _ => fail("User option should be defined")
     }
   }
@@ -157,7 +165,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
 
     // Then
     userOpt match {
-      case Some(u) => u.login should be (login.toLowerCase())
+      case Some(u) => u.authentication.username should be(login.toLowerCase())
       case _ => fail("User option should be defined")
     }
   }
@@ -171,7 +179,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
 
     // Then
     userOpt match {
-      case Some(u) => u.login should be (login.toLowerCase())
+      case Some(u) => u.authentication.username should be(login.toLowerCase())
       case _ => fail("User option should be defined")
     }
   }
@@ -185,7 +193,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
 
     // Then
     userOpt match {
-      case Some(u) => u.email should be (email.toLowerCase())
+      case Some(u) => u.email should be(email.toLowerCase())
       case _ => fail("User option should be defined")
     }
   }
@@ -199,7 +207,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
 
     // Then
     userOpt match {
-      case Some(u) => u.email should be (email.toLowerCase())
+      case Some(u) => u.email should be(email.toLowerCase())
       case _ => fail("User option should be defined")
     }
   }
@@ -213,8 +221,21 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
 
     // Then
     userOpt match {
-      case Some(u) => u.token should be (token)
+      case Some(u) => u.token should be(token)
       case _ => fail("User option should be defined")
     }
   }
+
+  it should "replace existing authentication" in {
+    val auth = Authentication.github("u", "at")
+
+    userDAO.changeAuthentication(1, auth)
+
+    userDAO.findByEmail("user1@sml.com") match {
+      case Some(u) => u.authentication should equal(auth)
+      case None => fail("Authentication didn't change")
+    }
+
+  }
+
 }

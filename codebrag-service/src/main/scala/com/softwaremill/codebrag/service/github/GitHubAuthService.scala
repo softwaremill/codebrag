@@ -25,13 +25,13 @@ class GitHubAuthService {
     client.setOAuth2Token(accessToken.access_token)
     val userService = new UserService(client)
     val user = userService.getUser
-    GitHubUser(user.getLogin, user.getName)
+    GitHubUser(user.getLogin, user.getName, user.getEmail)
   }
 }
 
 case class AccessToken(access_token: String, token_type: String)
 
-case class GitHubUser(login: String, name: String)
+case class GitHubUser(login: String, name: String, email: String)
 
 object CodebragGitHub {
   val ClientId = "5bd745ba65be4fdfaeee"

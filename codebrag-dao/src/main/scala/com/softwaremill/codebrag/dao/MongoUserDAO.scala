@@ -1,9 +1,10 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.User
-import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
-import net.liftweb.mongodb.record.field.ObjectIdPk
+import com.softwaremill.codebrag.domain.{Authentication, User}
+import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
+import net.liftweb.mongodb.record.field.{BsonRecordField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
+import org.bson.types.ObjectId
 
 class MongoUserDAO extends UserDAO {
 
@@ -18,7 +19,7 @@ class MongoUserDAO extends UserDAO {
   }
 
   override def findByLowerCasedLogin(login: String) = {
-    val userOption: Option[User] = UserRecord where (_.loginLowerCase eqs login.toLowerCase) get()
+    val userOption: Option[User] = UserRecord where (_.authentication.subfield(_.usernameLowerCase) eqs login.toLowerCase) get()
     userOption match {
       case Some(_) => userOption
       case None => Some(createAndSaveDummyUser(login))
@@ -27,7 +28,7 @@ class MongoUserDAO extends UserDAO {
 
   override def findByLoginOrEmail(loginOrEmail: String) = {
     val lowercased = loginOrEmail.toLowerCase
-    val userOption: Option[User] = UserRecord or(_.where(_.loginLowerCase eqs lowercased), _.where(_.email eqs lowercased)) get()
+    val userOption: Option[User] = UserRecord or(_.where(_.authentication.subfield(_.usernameLowerCase) eqs lowercased), _.where(_.email eqs lowercased)) get()
     userOption match {
       case Some(_) => userOption
       case None => Some(createAndSaveDummyUser(lowercased))
@@ -38,9 +39,13 @@ class MongoUserDAO extends UserDAO {
     UserRecord where (_.token eqs token) get()
   }
 
+  def changeAuthentication(id: ObjectId, authentication: Authentication) {
+    UserRecord where (_.id eqs id) modify (_.authentication setTo (authentication)) updateOne()
+  }
+
   private object UserImplicits {
     implicit def fromRecord(user: UserRecord): User = {
-      User(user.id.get, user.login.get, user.loginLowerCase.get, user.email.get, user.password.get, user.salt.get, user.token.get)
+      User(user.id.get, user.authentication.get, user.name.get, user.email.get, user.token.get)
     }
 
     implicit def fromRecords(users: List[UserRecord]): List[User] = {
@@ -52,14 +57,24 @@ class MongoUserDAO extends UserDAO {
     }
 
     implicit def toRecord(user: User): UserRecord = {
-      UserRecord.createRecord
-        .id(user.id)
-        .login(user.login)
-        .loginLowerCase(user.loginLowerCased)
-        .email(user.email)
-        .password(user.password)
-        .salt(user.salt)
+      UserRecord.createRecord.id(user.id)
+        .name(user.name)
         .token(user.token)
+        .email(user.email)
+        .authentication(user.authentication)
+    }
+
+    implicit def toRecord(authentication: Authentication): AuthenticationRecord = {
+      AuthenticationRecord.createRecord
+        .provider(authentication.provider)
+        .username(authentication.username)
+        .usernameLowerCase(authentication.usernameLowerCase)
+        .token(authentication.token)
+        .salt(authentication.salt)
+    }
+
+    implicit def fromRecord(record: AuthenticationRecord): Authentication = {
+      Authentication(record.provider.get, record.username.get, record.usernameLowerCase.get, record.token.get, record.salt.get)
     }
   }
 
@@ -68,20 +83,33 @@ class MongoUserDAO extends UserDAO {
 private class UserRecord extends MongoRecord[UserRecord] with ObjectIdPk[UserRecord] {
   def meta = UserRecord
 
-  object login extends LongStringField(this)
+  object authentication extends BsonRecordField(this, AuthenticationRecord)
 
-  object loginLowerCase extends LongStringField(this)
+  object name extends LongStringField(this)
 
   object email extends LongStringField(this)
-
-  object password extends LongStringField(this)
-
-  object salt extends LongStringField(this)
 
   object token extends LongStringField(this)
 
 }
 
-private object  UserRecord extends UserRecord with MongoMetaRecord[UserRecord] {
+private object UserRecord extends UserRecord with MongoMetaRecord[UserRecord] {
   override def collectionName: String = "users"
 }
+
+private class AuthenticationRecord extends BsonRecord[AuthenticationRecord] {
+  def meta = AuthenticationRecord
+
+  object provider extends LongStringField(this)
+
+  object username extends LongStringField(this)
+
+  object usernameLowerCase extends LongStringField(this)
+
+  object token extends LongStringField(this)
+
+  object salt extends LongStringField(this)
+
+}
+
+private object AuthenticationRecord extends AuthenticationRecord with BsonMetaRecord[AuthenticationRecord]

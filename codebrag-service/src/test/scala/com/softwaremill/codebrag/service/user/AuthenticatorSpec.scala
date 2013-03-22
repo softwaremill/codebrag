@@ -6,7 +6,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.BDDMockito._
-import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.service.data.UserJson
 
 class AuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter {
@@ -14,9 +14,9 @@ class AuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar w
   var userDAO: UserDAO = _
   var authenticator: Authenticator = _
   var userDAOMock: UserDAO = _
-  val fixtureUser = User("someLogin", "someLogin@sml.com", "somePassword", "salt", "token")
   val fixtureLogin: String = "someLogin"
   val fixturePassword: String = "somePassword"
+  val fixtureUser = User(Authentication.basic(fixtureLogin, fixturePassword), "name", "someLogin@sml.com", "token")
 
   before {
     userDAOMock = mock[UserDAO]
