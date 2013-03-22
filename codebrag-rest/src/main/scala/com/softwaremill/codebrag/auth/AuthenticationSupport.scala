@@ -30,7 +30,7 @@ trait AuthenticationSupport extends ScentrySupport[UserJson] {
   def authenticator: Authenticator
 
   override protected def registerAuthStrategies {
-    scentry.register(RememberMe.name, app => new RememberMeStrategy(app.asInstanceOf[ScalatraBase with CookieSupport], rememberMe, authenticator))
+    scentry.register(RememberMe.name, app => new RememberMeStrategy(app, rememberMe, authenticator))
     scentry.register(UserPassword.name, app => new UserPasswordStrategy(app, login, password, authenticator))
   }
 

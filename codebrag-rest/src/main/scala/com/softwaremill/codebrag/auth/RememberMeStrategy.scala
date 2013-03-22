@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.common.Utils
 import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.service.data.UserJson
 
-class RememberMeStrategy(protected val app: ScalatraBase with CookieSupport, rememberMe: Boolean, val authenticator: Authenticator) extends ScentryStrategy[UserJson] {
+class RememberMeStrategy(protected val app: ScalatraBase, rememberMe: Boolean, val authenticator: Authenticator) extends ScentryStrategy[UserJson] {
 
   private val CookieKey = "rememberMe"
 
