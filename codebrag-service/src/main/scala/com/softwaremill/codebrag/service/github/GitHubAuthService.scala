@@ -5,6 +5,8 @@ import org.json4s.jackson.JsonMethods._
 import org.eclipse.egit.github.core.client.GitHubClient
 import org.json4s.DefaultFormats
 import org.eclipse.egit.github.core.service.UserService
+import org.eclipse.egit.github.core.User
+import scala.collection.JavaConversions._
 
 class GitHubAuthService {
   implicit val formats = DefaultFormats
@@ -25,7 +27,15 @@ class GitHubAuthService {
     client.setOAuth2Token(accessToken.access_token)
     val userService = new UserService(client)
     val user = userService.getUser
-    GitHubUser(user.getLogin, user.getName, user.getEmail)
+    GitHubUser(user.getLogin, user.getName, readEmail(user, userService))
+  }
+
+  def readEmail(user: User, service: UserService) = {
+    if (user.getEmail != null) {
+      user.getEmail
+    } else {
+      service.getEmails.headOption getOrElse (throw new IllegalArgumentException("User doesn't have email address"))
+    }
   }
 }
 
