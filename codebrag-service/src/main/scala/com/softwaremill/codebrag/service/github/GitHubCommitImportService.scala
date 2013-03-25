@@ -16,7 +16,8 @@ class GitHubCommitImportService(commitService: CommitService, converter: GitHubC
 
   def importRepoCommits(owner: String, repo: String) {
     val commits = commitService.getCommits(repoId(owner, repo)).map(converter.convertToCommitInfo(_))
-    dao.storeCommits(commits)
+    val storedCommits = dao.findAllPendingCommits()
+    dao.storeCommits(commits -- storedCommits)
   }
 
   def importCommitDetails(commitId: String, owner: String, repo: String) {
