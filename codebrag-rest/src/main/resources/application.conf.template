@@ -10,3 +10,6 @@ smtpPassword=
 from=
 encoding=UTF-8
 resetLinkPattern=
+
+GitHubClientId=
+GitHubClientSecret=

@@ -7,6 +7,7 @@ import org.json4s.DefaultFormats
 import org.eclipse.egit.github.core.service.UserService
 import org.eclipse.egit.github.core.User
 import scala.collection.JavaConversions._
+import com.softwaremill.codebrag.service.config.CodebragConfiguration
 
 class GitHubAuthService {
   implicit val formats = DefaultFormats
@@ -20,11 +21,14 @@ class GitHubAuthService {
     parse(response).extract[AccessToken]
   }
 
-  private def authData(code: String) = s"""{"client_id":"${CodebragGitHub.ClientId}", "client_secret":"${CodebragGitHub.Secret}", "code":"$code"}"""
+  private def authData(code: String) = {
+    val clientId = Option(CodebragConfiguration.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
+    val clientSecret = Option(CodebragConfiguration.githubClientSecret) getOrElse (throw new IllegalStateException("No GitHub Client Secret found, check your application.conf"))
+    s"""{"client_id":"$clientId", "client_secret":"$clientSecret", "code":"$code"}"""
+  }
 
   def loadUserData(accessToken: AccessToken) = {
-    val client = new GitHubClient
-    client.setOAuth2Token(accessToken.access_token)
+    val client = new GitHubClient().setOAuth2Token(accessToken.access_token)
     val userService = new UserService(client)
     val user = userService.getUser
     GitHubUser(user.getLogin, user.getName, readEmail(user, userService))
@@ -42,8 +46,3 @@ class GitHubAuthService {
 case class AccessToken(access_token: String, token_type: String)
 
 case class GitHubUser(login: String, name: String, email: String)
-
-object CodebragGitHub {
-  val ClientId = "5bd745ba65be4fdfaeee"
-  val Secret = "fbb3f249e1e26805c7d7be2accc01d9b1de07db4"
-}

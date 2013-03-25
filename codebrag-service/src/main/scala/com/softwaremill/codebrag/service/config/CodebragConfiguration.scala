@@ -21,5 +21,7 @@ object CodebragConfiguration {
   val awsSecretAccessKey  = config.get("SecretAccessKey")
   val encoding            = config.get("encoding")
   val resetLinkPattern    = config.get("resetLinkPattern")
+  val githubClientId      = config.get("GitHubClientId")
+  val githubClientSecret  = config.get("GitHubClientSecret")
 
 }
