@@ -25,7 +25,7 @@ class GithubAuthorizationServlet(val authenticator:Authenticator, ghAuthService:
     tmpLogin = user.login
     tmpPassword = accessToken.access_token
     authenticate()
-    SeeOther("/")
+    SeeOther("/#/commits")
   }
 
   override protected def login: String = tmpLogin
