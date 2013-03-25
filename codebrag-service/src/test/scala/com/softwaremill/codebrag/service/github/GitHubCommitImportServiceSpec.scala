@@ -22,6 +22,8 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
     converter = mock[GitHubCommitInfoConverter]
     dao = mock[CommitInfoDAO]
     service = new GitHubCommitImportService(commitService, converter, dao)
+
+    Mockito.when(dao.findAllPendingCommits()) thenReturn(List())
   }
 
   describe("GitHub Commit Service") {
