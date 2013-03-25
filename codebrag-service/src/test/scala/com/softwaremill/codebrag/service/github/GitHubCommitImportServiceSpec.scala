@@ -4,14 +4,16 @@ import org.scalatest.{BeforeAndAfter, GivenWhenThen, FunSpec}
 import org.scalatest.mock.MockitoSugar
 import org.eclipse.egit.github.core.service.CommitService
 import com.softwaremill.codebrag.dao.CommitInfoDAO
-import org.mockito.{Matchers, ArgumentMatcher, Mockito}
+import org.mockito.{ArgumentCaptor, Matchers, ArgumentMatcher, Mockito}
 import org.eclipse.egit.github.core.{RepositoryCommit, IRepositoryIdProvider}
 import com.softwaremill.codebrag.domain.CommitInfo
 import scala.collection.JavaConversions._
 import org.mockito.Matchers._
 import org.mockito.Mockito._
+import org.joda.time.DateTime
+import org.scalatest.matchers.ShouldMatchers
 
-class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with MockitoSugar with BeforeAndAfter {
+class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with MockitoSugar with BeforeAndAfter with ShouldMatchers {
   var commitService: CommitService = _
   var converter: GitHubCommitInfoConverter = _
   var dao: CommitInfoDAO = _
@@ -23,7 +25,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
     dao = mock[CommitInfoDAO]
     service = new GitHubCommitImportService(commitService, converter, dao)
 
-    Mockito.when(dao.findAllPendingCommits()) thenReturn(List())
+    Mockito.when(dao.findAllPendingCommits()) thenReturn (List())
   }
 
   describe("GitHub Commit Service") {
@@ -73,6 +75,30 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
 
         Then("nothing happens after it")
         verify(dao, never()).storeCommit(any[CommitInfo])
+      }
+
+      it("should store only newest commits") {
+        Given("some stored commits")
+        val date: DateTime = new DateTime
+        val commits = List(CommitInfo("sha", "message", "author", "committer", date, List("parent1")))
+        Mockito.when(dao.findAllPendingCommits()).thenReturn(commits)
+        And("some commits in repo")
+        val oldCommit: RepositoryCommit = createRepoCommit("sha")
+        val newCommit: RepositoryCommit = createRepoCommit("reposha")
+        val retrieved = List(oldCommit, newCommit)
+        Mockito.when(commitService.getCommits(any[IRepositoryIdProvider])).thenReturn(retrieved)
+        Mockito.when(converter.convertToCommitInfo(Matchers.eq(newCommit))).thenReturn(CommitInfo("reposha", "", "", "", new DateTime, List("parent2")))
+        Mockito.when(converter.convertToCommitInfo(Matchers.eq(oldCommit))).thenReturn(CommitInfo("sha", "message", "author", "committer", date, List("parent1")))
+
+        When("importing repo commits")
+        service.importRepoCommits("o", "r")
+
+        Then("only commits not already stored are saved")
+        val commitCapturer: ArgumentCaptor[Seq[CommitInfo]] = ArgumentCaptor.forClass(classOf[Seq[CommitInfo]])
+        verify(dao).storeCommits(commitCapturer.capture())
+        val capturedCommits = commitCapturer.getAllValues
+        capturedCommits.head should have size (1)
+        capturedCommits.head.head.sha should be ("reposha")
       }
     }
 
