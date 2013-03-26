@@ -31,12 +31,11 @@ angular.module('codebrag.session')
             requestCurrentUser: function() {
                 if (authService.isAuthenticated()) {
                     return $q.when(authService.loggedInUser);
-                } else {
-                    return $http.get('/rest/users').then(function(response) {
-                        authService.loggedInUser = response.data;
-                        return authService.loggedInUser;
-                    });
                 }
+                return $http.get('/rest/users').then(function(response) {
+                    authService.loggedInUser = response.data;
+                    return authService.loggedInUser;
+                });
             }
 
         };

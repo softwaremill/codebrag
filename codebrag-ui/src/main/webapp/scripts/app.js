@@ -15,6 +15,11 @@ angular.module('codebrag', [
             'codebrag.common.services',
             'codebrag.commits',
             'ajaxthrobber'])
+
+    .run(function(authService) {
+        authService.requestCurrentUser();
+    })
+
     .config(function ($routeProvider) {
         $routeProvider.
             when("/error404", {controller: 'SessionCtrl', templateUrl: "views/errorpages/error404.html"}).
@@ -43,5 +48,4 @@ angular.module('codebrag', [
                 showInfoMessage(message);
             }
         });
-        authService.requestCurrentUser();
     });
