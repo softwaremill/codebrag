@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.CommitInfo
-import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, GivenWhenThen}
+import com.softwaremill.codebrag.domain.{CommitComment, CommitInfo}
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatest.matchers.ShouldMatchers
 import pl.softwaremill.common.util.RichString
 import org.joda.time.DateTime
@@ -9,6 +9,8 @@ import org.joda.time.DateTime
 class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with BeforeAndAfterEach with ShouldMatchers {
   val sampleCommit = createCommit()
   var commitInfoDAO: MongoCommitInfoDAO = _
+  val FixtureComments = List(CommitComment("1", "sofokles", "nice one", new DateTime),
+                              CommitComment("2", "robert", "I like your style", new DateTime));
 
   override def beforeEach() {
     CommitInfoRecord.drop // drop collection to start every test with fresh database
@@ -56,16 +58,19 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
   it should "find all commits starting from newest" in {
     Given("a sample commit and another one stored")
     val olderCommit = sampleCommit
-    val newerCommit = CommitInfo("123123123", "this is newer commit", "mostr", "mostr", new DateTime(), List())
-    val anotherNewerCommit = CommitInfo("123123123", "this is newer commit", "mostr", "mostr", new DateTime(), List())
+    val newerCommit = CommitInfo("123123123", "this is newer commit", "mostr", "mostr", new DateTime(), List.empty, List.empty)
+    val anotherNewerCommit = CommitInfo("123123123", "this is another newer commit", "mostr", "mostr", new DateTime(), List.empty, FixtureComments)
     commitInfoDAO.storeCommit(newerCommit)
+    commitInfoDAO.storeCommit(anotherNewerCommit)
 
     When("trying to find all stored commits")
     val commits = commitInfoDAO.findAll()
 
     Then("sample commit stored should be fetched")
+
     commits(0) should equal(newerCommit)
-    commits(1) should equal(olderCommit)
+    commits(1) should equal(anotherNewerCommit)
+    commits(2) should equal(olderCommit)
   }
 
   def createCommit() = {
@@ -74,7 +79,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
     val authorName = RichString.generateRandom(10)
     val committerName = RichString.generateRandom(10)
     val parent = RichString.generateRandom(10)
-    CommitInfo(sha, message, authorName, committerName, new DateTime(), List(parent))
+    CommitInfo(sha, message, authorName, committerName, new DateTime(), List(parent), List.empty)
   }
 
 }

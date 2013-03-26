@@ -18,7 +18,8 @@ class GitHubCommitInfoConverter extends CommitInfoConverter[RepositoryCommit] {
       rawCommit.getAuthor.getName,
       rawCommit.getCommitter.getName,
       new DateTime(rawCommit.getAuthor.getDate),
-      commit.getParents.map(_.getSha).toList
+      commit.getParents.map(_.getSha).toList,
+      List.empty
     )
   }
 

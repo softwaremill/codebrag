@@ -26,8 +26,8 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with GivenWhenThen wit
   it should "find all pending commits starting from newest" in {
     Given("a sample commit and another one stored")
     val olderCommit = sampleCommit
-    val newerCommit = CommitInfo("123123123", "this is newer commit", "mostr", "mostr", FixtureDateTime, List())
-    val anotherNewerCommit = CommitInfo("123123123", "this is newer commit2", "mostr", "mostr", FixtureDateTime, List())
+    val newerCommit = CommitInfo("123123123", "this is newer commit", "mostr", "mostr", FixtureDateTime, List.empty, List.empty)
+    val anotherNewerCommit = CommitInfo("123123123", "this is newer commit2", "mostr", "mostr", FixtureDateTime, List.empty, List.empty)
     commitInfoDAO.storeCommit(newerCommit)
     commitInfoDAO.storeCommit(anotherNewerCommit)
 
@@ -59,7 +59,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with GivenWhenThen wit
     val authorName = RichString.generateRandom(10)
     val committerName = RichString.generateRandom(10)
     val parent = RichString.generateRandom(10)
-    CommitInfo(sha, message, authorName, committerName, new DateTime(), List(parent))
+    CommitInfo(sha, message, authorName, committerName, new DateTime(), List(parent), List.empty)
   }
 
 }
