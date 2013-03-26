@@ -25,7 +25,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
     dao = mock[CommitInfoDAO]
     service = new GitHubCommitImportService(commitService, converter, dao)
 
-    BDDMockito.given(dao.findAllPendingCommits()) willReturn (List())
+    BDDMockito.given(dao.findAll()) willReturn (List())
   }
 
   describe("GitHub Commit Service") {
@@ -81,7 +81,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
         Given("some stored commits")
         val date: DateTime = new DateTime
         val commits = List(CommitInfo("sha", "message", "author", "committer", date, List("parent1")))
-        BDDMockito.given(dao.findAllPendingCommits()).willReturn(commits)
+        BDDMockito.given(dao.findAll()).willReturn(commits)
         And("some commits in repo")
         val oldCommit: RepositoryCommit = createRepoCommit("sha")
         val newCommit: RepositoryCommit = createRepoCommit("reposha")

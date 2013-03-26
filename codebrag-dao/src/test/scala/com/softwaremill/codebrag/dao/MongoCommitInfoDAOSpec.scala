@@ -53,7 +53,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
     commitInfoDAO.findBySha(commit2.sha) should be(Some(commit2))
   }
 
-  it should "find all commits pending review starting from newest" in {
+  it should "find all commits starting from newest" in {
     Given("a sample commit and another one stored")
     val olderCommit = sampleCommit
     val newerCommit = CommitInfo("123123123", "this is newer commit", "mostr", "mostr", new DateTime(), List())
@@ -61,11 +61,11 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
     commitInfoDAO.storeCommit(newerCommit)
 
     When("trying to find all stored commits")
-    val pendingCommits = commitInfoDAO.findAllPendingCommits()
+    val commits = commitInfoDAO.findAll()
 
     Then("sample commit stored should be fetched")
-    pendingCommits(0) should equal(newerCommit)
-    pendingCommits(1) should equal(olderCommit)
+    commits(0) should equal(newerCommit)
+    commits(1) should equal(olderCommit)
   }
 
   def createCommit() = {

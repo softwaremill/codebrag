@@ -9,8 +9,10 @@ import com.softwaremill.codebrag.domain.CommitInfo
 import com.softwaremill.codebrag.service.github.{GitHubCommitInfoConverter, GitHubCommitImportService}
 import org.eclipse.egit.github.core.service.CommitService
 import com.softwaremill.codebrag.service.comments.CommentListDTO
+import com.softwaremill.codebrag.dao.reporting.CommitListFinder
 
-class CommitsServlet(val authenticator: Authenticator, val commitInfoDao: CommitInfoDAO, val swagger: Swagger)
+class CommitsServlet(val authenticator: Authenticator, val commitInfoDao: CommitInfoDAO,
+                     val commitListFinder: CommitListFinder, val swagger: Swagger)
   extends JsonServletWithAuthentication with CommitsServletSwaggerDefinition with JacksonJsonSupport {
 
   get("/") { // for all /commits/*
@@ -45,9 +47,7 @@ class CommitsServlet(val authenticator: Authenticator, val commitInfoDao: Commit
     fetchPendingCommits()
   }
 
-  def fetchPendingCommits(): CommitsResponse = {
-    CommitsResponse(commitInfoDao.findAllPendingCommits())
-  }
+  private def fetchPendingCommits() = commitListFinder.findAllPendingCommits()
 }
 
 object CommitsServlet {

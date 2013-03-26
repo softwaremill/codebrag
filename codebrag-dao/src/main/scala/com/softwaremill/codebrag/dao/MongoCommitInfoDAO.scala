@@ -22,7 +22,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
     CommitInfoRecord where (_.sha eqs sha) get()
   }
 
-  def findAllPendingCommits(): List[CommitInfo] = {
+  def findAll(): List[CommitInfo] = {
     CommitInfoRecord.orderDesc(_.date).fetch()
   }
 
@@ -57,7 +57,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
 
 }
 
-private class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with ObjectIdPk[CommitInfoRecord] {
+class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with ObjectIdPk[CommitInfoRecord] {
   def meta = CommitInfoRecord
 
   object sha extends LongStringField(this)
@@ -74,6 +74,6 @@ private class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with Object
 
 }
 
-private object CommitInfoRecord extends CommitInfoRecord with MongoMetaRecord[CommitInfoRecord] {
+object CommitInfoRecord extends CommitInfoRecord with MongoMetaRecord[CommitInfoRecord] {
   override def collectionName: String = "commitInfos"
 }

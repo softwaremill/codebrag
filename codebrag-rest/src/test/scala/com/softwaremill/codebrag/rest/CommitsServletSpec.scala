@@ -5,16 +5,17 @@ import com.softwaremill.codebrag.AuthenticatableServletSpec
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.dao.CommitInfoDAO
-import com.softwaremill.codebrag.domain.CommitInfo
 import org.mockito.Mockito._
-import org.joda.time.DateTime
+import com.softwaremill.codebrag.dao.reporting.{CommitListDTO, CommitListFinder, CommitListItemDTO}
+import java.util.Date
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
-  val SamplePendingCommits = List(CommitInfo("abcd0123", "this is commit message", "mostr", "michal", new DateTime(), List("abc00001")))
+  val SamplePendingCommits = CommitListDTO(List(CommitListItemDTO("abcd0123", "this is commit message", "mostr", "michal", new Date())))
 
   var commitsInfoDao = mock[CommitInfoDAO]
+  var commitsListFinder = mock[CommitListFinder]
 
   def bindServlet = addServlet(new TestableCommitsServlet(commitsInfoDao, fakeAuthenticator, fakeScentry), "/*")
 
@@ -34,23 +35,21 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET /commits?type=pending" should "should return commits pending review" in {
     userIsAuthenticated
-    when(commitsInfoDao.findAllPendingCommits()).thenReturn(SamplePendingCommits)
+    when(commitsListFinder.findAllPendingCommits()).thenReturn(SamplePendingCommits)
     get("/?type=pending") {
       status should be (200)
-      body should equal(asJson(CommitsResponse(SamplePendingCommits)))
+      body should equal(asJson(SamplePendingCommits))
     }
 
-    def asJson(resp: CommitsResponse) = {
+    def asJson(resp: CommitListDTO) = {
       implicit val formats = net.liftweb.json.DefaultFormats ++ net.liftweb.json.ext.JodaTimeSerializers.all
       net.liftweb.json.Serialization.write(resp)
     }
   }
 
-  class TestableCommitsServlet(commitInfoDao: CommitInfoDAO, fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson]) extends CommitsServlet(fakeAuthenticator, commitsInfoDao, new CodebragSwagger) {
+  class TestableCommitsServlet(commitInfoDao: CommitInfoDAO, fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
+    extends CommitsServlet(fakeAuthenticator, commitInfoDao, commitsListFinder, new CodebragSwagger) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 
 }
-
-
-
