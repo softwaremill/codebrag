@@ -2,15 +2,13 @@
 
 describe("Flash Service", function () {
 
-    beforeEach(module('smlCodebrag.maintenance'));
+    beforeEach(module('codebrag.common.services'));
 
     var scope, srv;
 
-    beforeEach(inject(function ($rootScope, $injector) {
-
+    beforeEach(inject(function ($rootScope, $injector, flashService) {
         scope = $rootScope.$new();
-        srv = $injector.get('FlashService');
-
+        srv = flashService;
     }));
 
     it('Should push message to service', function () {

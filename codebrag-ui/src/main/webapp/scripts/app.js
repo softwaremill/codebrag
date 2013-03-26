@@ -23,7 +23,14 @@ angular.module('codebrag', [
             otherwise({redirectTo: '/error404'});
     })
 
+    .config(function($httpProvider) {
+        $httpProvider.responseInterceptors.push('httpAuthInterceptor');
+    })
+
     .run(function ($rootScope, $location, authService, flashService) {
+        $rootScope.$on("codebrag:httpAuthError", function(event, data) {
+            flashService.set(data.message);
+        });
         $rootScope.$on("$routeChangeStart", function (event, next, current) {
             var nextRouteIsSecured = (typeof next.templateUrl !== "undefined") && next.templateUrl.indexOf("/secured/") > -1;
             if (authService.isNotAuthenticated() && nextRouteIsSecured) {
