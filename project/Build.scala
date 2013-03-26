@@ -155,7 +155,7 @@ object SmlCodebragBuild extends Build {
   lazy val domain: Project = Project(
     "codebrag-domain",
     file("codebrag-domain"),
-    settings = buildSettings ++ Seq(libraryDependencies += bson)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson, smlCommonUtil))
   ) dependsOn (common)
 
   lazy val dao: Project = Project(

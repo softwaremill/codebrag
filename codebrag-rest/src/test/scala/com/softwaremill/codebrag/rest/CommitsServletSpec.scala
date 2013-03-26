@@ -8,12 +8,13 @@ import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.reporting.{CommitListDTO, CommitListFinder, CommitListItemDTO}
 import java.util.Date
+import com.softwaremill.codebrag.service.comments.CommentService
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
   val SamplePendingCommits = CommitListDTO(List(CommitListItemDTO("abcd0123", "this is commit message", "mostr", "michal", new Date())))
-
+  var commentsService = mock[CommentService]
   var commitsInfoDao = mock[CommitInfoDAO]
   var commitsListFinder = mock[CommitListFinder]
 
@@ -48,7 +49,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableCommitsServlet(commitInfoDao: CommitInfoDAO, fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends CommitsServlet(fakeAuthenticator, commitInfoDao, commitsListFinder, new CodebragSwagger) {
+    extends CommitsServlet(fakeAuthenticator, commitInfoDao, commitsListFinder, commentsService, new CodebragSwagger) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

@@ -5,14 +5,15 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import json.JacksonJsonSupport
 import swagger.{Swagger, SwaggerSupport}
 import com.softwaremill.codebrag.dao.CommitInfoDAO
-import com.softwaremill.codebrag.domain.CommitInfo
 import com.softwaremill.codebrag.service.github.{GitHubCommitInfoConverter, GitHubCommitImportService}
 import org.eclipse.egit.github.core.service.CommitService
-import com.softwaremill.codebrag.service.comments.CommentListDTO
+
+import com.softwaremill.codebrag.service.comments.{CommentService, AddCommentCommand, CommentListDTO}
 import com.softwaremill.codebrag.dao.reporting.{CommitListDTO, CommitListFinder}
 
 class CommitsServlet(val authenticator: Authenticator, val commitInfoDao: CommitInfoDAO,
-                     val commitListFinder: CommitListFinder, val swagger: Swagger)
+                     val commitListFinder: CommitListFinder,
+                     val commentService: CommentService, val swagger: Swagger)
   extends JsonServletWithAuthentication with CommitsServletSwaggerDefinition with JacksonJsonSupport {
 
   get("/") { // for all /commits/*
@@ -21,9 +22,11 @@ class CommitsServlet(val authenticator: Authenticator, val commitInfoDao: Commit
 
   post("/:id/comments/", operation(addCommentOperation)) {
     haltIfNotAuthenticated
-    val addCommand = parse(request.body).extract[AddCommentWebRequest]
     val commitId = params("id")
-    AddCommentWebResponse("new_comment_id")
+    val messageBody = (parsedBody \ "body").extract[String]
+    val authorLogin = authenticate().get.login
+    val command = AddCommentCommand(commitId, authorLogin, messageBody)
+    commentService.addCommentToCommit(command)
   }
 
   get("/:id/comments/", operation(getCommentsOperation)) {
@@ -73,6 +76,4 @@ trait CommitsServletSwaggerDefinition extends SwaggerSupport {
     .parameter(pathParam[String]("id").description("Commit identifier").required)
 }
 
-case class CommitsResponse(commits: Seq[CommitInfo])
-case class AddCommentWebRequest(body: String)
 case class AddCommentWebResponse(id: String)
