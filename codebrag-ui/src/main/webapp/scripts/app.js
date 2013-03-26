@@ -1,6 +1,5 @@
 "use strict";
 angular.module('smlCodebrag.directives', []);
-angular.module('smlCodebrag.filters', []);
 angular.module('smlCodebrag.maintenance', ['ngResource']);
 
 angular.module('smlCodebrag.profile', ['smlCodebrag.maintenance', 'smlCodebrag.session', 'smlCodebrag.directives']).config(function ($routeProvider) {
@@ -21,7 +20,7 @@ angular.module('codebrag.commits', ['ngResource']).
 
 angular.module(
         'smlCodebrag', [
-            'smlCodebrag.filters',
+            'codebrag.common.filters',
             'smlCodebrag.profile',
             'smlCodebrag.maintenance',
             'smlCodebrag.session',

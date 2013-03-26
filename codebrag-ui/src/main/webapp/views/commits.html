@@ -23,7 +23,7 @@
                     </div>
                     <div class="row">
                         <div class="span12">
-                            <span>{{formatCommitDate(commit.date)}} by {{commit.authorName}}</span>
+                            <span>{{commit.date | relativeDate}} by {{commit.authorName}}</span>
                         </div>
                     </div>
                     <div class="row">
