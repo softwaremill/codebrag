@@ -3,7 +3,6 @@ package com.softwaremill.codebrag.service.github
 import org.scalatest.{BeforeAndAfter, GivenWhenThen, FunSpec}
 import org.eclipse.egit.github.core.{CommitUser, Commit, RepositoryCommit}
 import org.scalatest.matchers.ShouldMatchers
-import java.util.Date
 import scala.collection.JavaConversions._
 import org.joda.time.DateTime
 

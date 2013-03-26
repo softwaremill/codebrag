@@ -5,7 +5,7 @@ import org.scalatest.mock.MockitoSugar
 import org.eclipse.egit.github.core.User
 import org.mockito.Mockito._
 import org.eclipse.egit.github.core.service.UserService
-import org.mockito.Mockito
+import org.mockito.BDDMockito
 
 class GitHubAuthServiceSpec extends FlatSpec with MockitoSugar with GivenWhenThen {
   behavior of ("GitHub Auth Service")
@@ -15,7 +15,7 @@ class GitHubAuthServiceSpec extends FlatSpec with MockitoSugar with GivenWhenThe
     val service = new GitHubAuthService
     And("loaded user data")
     val user = mock[User]
-    Mockito.when(user.getEmail).thenReturn("some@email.com")
+    BDDMockito.given(user.getEmail).willReturn("some@email.com")
 
     When("Extracting user email")
     service.readEmail(user, null)
@@ -32,7 +32,7 @@ class GitHubAuthServiceSpec extends FlatSpec with MockitoSugar with GivenWhenThe
     And("user service")
     val userService = mock[UserService]
     val user = mock[User]
-    Mockito.when(userService.getEmails).thenReturn(List("email@email.com"))
+    BDDMockito.given(userService.getEmails).willReturn(List("email@email.com"))
 
     When("extracting user data")
     service.readEmail(user, userService)

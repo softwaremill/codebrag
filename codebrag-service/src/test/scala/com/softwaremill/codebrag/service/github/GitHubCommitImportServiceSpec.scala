@@ -4,14 +4,14 @@ import org.scalatest.{BeforeAndAfter, GivenWhenThen, FunSpec}
 import org.scalatest.mock.MockitoSugar
 import org.eclipse.egit.github.core.service.CommitService
 import com.softwaremill.codebrag.dao.CommitInfoDAO
-import org.mockito.{ArgumentCaptor, Matchers, ArgumentMatcher, Mockito}
+import org.mockito._
 import org.eclipse.egit.github.core.{RepositoryCommit, IRepositoryIdProvider}
-import com.softwaremill.codebrag.domain.CommitInfo
 import scala.collection.JavaConversions._
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.joda.time.DateTime
 import org.scalatest.matchers.ShouldMatchers
+import com.softwaremill.codebrag.domain.CommitInfo
 
 class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with MockitoSugar with BeforeAndAfter with ShouldMatchers {
   var commitService: CommitService = _
@@ -25,7 +25,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
     dao = mock[CommitInfoDAO]
     service = new GitHubCommitImportService(commitService, converter, dao)
 
-    Mockito.when(dao.findAllPendingCommits()) thenReturn (List())
+    BDDMockito.given(dao.findAllPendingCommits()) willReturn (List())
   }
 
   describe("GitHub Commit Service") {
@@ -45,7 +45,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
       it("should convert retrieved commits to internal format") {
         Given("some commits")
         val commits = List[RepositoryCommit](createRepoCommit("a"), createRepoCommit("b"))
-        Mockito.when(commitService.getCommits(any[IRepositoryIdProvider])).thenReturn(commits)
+        BDDMockito.given(commitService.getCommits(any[IRepositoryIdProvider])).willReturn(commits)
 
         When("importing them")
         service.importRepoCommits("a", "b")
@@ -57,7 +57,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
       it("should store retrieved commits") {
         Given("some commits")
         val commits = List[RepositoryCommit](createRepoCommit("a"), createRepoCommit("b"), createRepoCommit("c"))
-        Mockito.when(commitService.getCommits(any[IRepositoryIdProvider])).thenReturn(commits)
+        BDDMockito.given(commitService.getCommits(any[IRepositoryIdProvider])).willReturn(commits)
 
         When("importing them")
         service.importRepoCommits("a", "b")
@@ -68,7 +68,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
 
       it("should not access data layer when no commits were retrieved") {
         Given("no commits")
-        Mockito.when(commitService.getCommits(any[IRepositoryIdProvider])).thenReturn(List[RepositoryCommit]())
+        BDDMockito.given(commitService.getCommits(any[IRepositoryIdProvider])).willReturn(List[RepositoryCommit]())
 
         When("running import")
         service.importRepoCommits("a", "b")
@@ -81,14 +81,14 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
         Given("some stored commits")
         val date: DateTime = new DateTime
         val commits = List(CommitInfo("sha", "message", "author", "committer", date, List("parent1")))
-        Mockito.when(dao.findAllPendingCommits()).thenReturn(commits)
+        BDDMockito.given(dao.findAllPendingCommits()).willReturn(commits)
         And("some commits in repo")
         val oldCommit: RepositoryCommit = createRepoCommit("sha")
         val newCommit: RepositoryCommit = createRepoCommit("reposha")
         val retrieved = List(oldCommit, newCommit)
-        Mockito.when(commitService.getCommits(any[IRepositoryIdProvider])).thenReturn(retrieved)
-        Mockito.when(converter.convertToCommitInfo(Matchers.eq(newCommit))).thenReturn(CommitInfo("reposha", "", "", "", new DateTime, List("parent2")))
-        Mockito.when(converter.convertToCommitInfo(Matchers.eq(oldCommit))).thenReturn(CommitInfo("sha", "message", "author", "committer", date, List("parent1")))
+        BDDMockito.given(commitService.getCommits(any[IRepositoryIdProvider])).willReturn(retrieved)
+        BDDMockito.given(converter.convertToCommitInfo(Matchers.eq(newCommit))).willReturn(CommitInfo("reposha", "", "", "", new DateTime, List("parent2")))
+        BDDMockito.given(converter.convertToCommitInfo(Matchers.eq(oldCommit))).willReturn(CommitInfo("sha", "message", "author", "committer", date, List("parent1")))
 
         When("importing repo commits")
         service.importRepoCommits("o", "r")
@@ -98,7 +98,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
         verify(dao).storeCommits(commitCapturer.capture())
         val capturedCommits = commitCapturer.getAllValues
         capturedCommits.head should have size (1)
-        capturedCommits.head.head.sha should be ("reposha")
+        capturedCommits.head.head.sha should be("reposha")
       }
     }
 
@@ -121,7 +121,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
       it("should convert commit to internal representation") {
         Given("a commit")
         val commit = createRepoCommit("sha")
-        Mockito.when(commitService.getCommit(any[IRepositoryIdProvider], Matchers.eq("sha"))).thenReturn(commit)
+        BDDMockito.given(commitService.getCommit(any[IRepositoryIdProvider], Matchers.eq("sha"))).willReturn(commit)
 
         When("importing it")
         service.importCommitDetails("sha", "o", "r")
@@ -133,7 +133,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
       it("should store retrieved data") {
         Given("a commit")
         val commit = createRepoCommit("sha")
-        Mockito.when(commitService.getCommit(any[IRepositoryIdProvider], Matchers.eq("sha"))).thenReturn(commit)
+        BDDMockito.given(commitService.getCommit(any[IRepositoryIdProvider], Matchers.eq("sha"))).willReturn(commit)
 
         When("importing it")
         service.importCommitDetails("sha", "o", "r")
