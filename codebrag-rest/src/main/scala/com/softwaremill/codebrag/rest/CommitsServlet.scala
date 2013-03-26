@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.domain.CommitInfo
 import com.softwaremill.codebrag.service.github.{GitHubCommitInfoConverter, GitHubCommitImportService}
 import org.eclipse.egit.github.core.service.CommitService
 import com.softwaremill.codebrag.service.comments.CommentListDTO
-import com.softwaremill.codebrag.dao.reporting.CommitListFinder
+import com.softwaremill.codebrag.dao.reporting.{CommitListDTO, CommitListFinder}
 
 class CommitsServlet(val authenticator: Authenticator, val commitInfoDao: CommitInfoDAO,
                      val commitListFinder: CommitListFinder, val swagger: Swagger)
@@ -32,7 +32,7 @@ class CommitsServlet(val authenticator: Authenticator, val commitInfoDao: Commit
     CommentListDTO(List.empty)
   }
 
-  get("/") { // for /commits?type=* only
+  get("/", operation(getCommitsOperation)) { // for /commits?type=* only
     haltIfNotAuthenticated
     params.get("type") match {
       case Some("pending") => fetchPendingCommits()
@@ -58,6 +58,10 @@ trait CommitsServletSwaggerDefinition extends SwaggerSupport {
 
   override protected val applicationName = Some(CommitsServlet.MAPPING_PATH)
   protected val applicationDescription: String = "Commits information endpoint"
+
+  val getCommitsOperation = apiOperation[CommitListDTO]("get")
+    .parameter(queryParam[String]("type").description("Type of selection (can be 'pending')").required)
+    .summary("Gets all commits pending for review")
 
   val addCommentOperation = apiOperation[AddCommentWebResponse]("add")
     .summary("Posts a new comment")
