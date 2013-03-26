@@ -5,8 +5,11 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import json.JacksonJsonSupport
 import swagger.{Swagger, SwaggerSupport}
 import com.softwaremill.codebrag.dao.CommitInfoDAO
+import com.softwaremill.codebrag.domain.CommitInfo
 import com.softwaremill.codebrag.service.github.{GitHubCommitInfoConverter, GitHubCommitImportService}
 import org.eclipse.egit.github.core.service.CommitService
+import com.softwaremill.codebrag.service.comments.CommentListDTO
+import com.softwaremill.codebrag.dao.reporting.CommitListFinder
 
 import com.softwaremill.codebrag.service.comments.{CommentService, AddCommentCommand, CommentListDTO}
 import com.softwaremill.codebrag.dao.reporting.{CommitListDTO, CommitListFinder}
@@ -35,6 +38,8 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
     CommentListDTO(List.empty)
   }
 
+  get("/") {
+    // for /commits?type=* only
   get("/", operation(getCommitsOperation)) { // for /commits?type=* only
     haltIfNotAuthenticated
     params.get("type") match {
@@ -43,12 +48,18 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
     }
   }
 
-  post("/sync") { // synchronizes commits
+  post("/sync") {
+    // synchronizes commits
     haltIfNotAuthenticated
     implicit val idGenerator = new ObjectIdGenerator()
     val importer = new GitHubCommitImportService(new CommitService, new GitHubCommitInfoConverter(), commitInfoDao)
     importer.importRepoCommits("pbuda", "testrepo")
     fetchPendingCommits()
+  }
+
+  get("/:id") {
+    val commitId = params("id")
+    CommitOverviewResponse()
   }
 
   private def fetchPendingCommits() = commitListFinder.findAllPendingCommits()
@@ -78,3 +89,6 @@ trait CommitsServletSwaggerDefinition extends SwaggerSupport {
 }
 
 case class AddCommentWebResponse(id: String)
+
+case class CommitOverviewResponse()
+  
