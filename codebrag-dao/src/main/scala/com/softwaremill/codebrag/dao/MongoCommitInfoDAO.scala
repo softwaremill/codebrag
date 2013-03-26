@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{CommitComment, CommitInfo}
+import com.softwaremill.codebrag.domain.{CommitComment, CommitFileInfo, CommitInfo}
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{BsonRecordListField, MongoListField, DateField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
@@ -30,9 +30,9 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
   private object CommitInfoImplicits {
 
     implicit def toCommitInfo(record: CommitInfoRecord): CommitInfo = {
-      val comments = record.comments;
+      val comments = record.comments
       CommitInfo(record.id.get, record.sha.get, record.message.get, record.authorName.get, record.committerName.get, new DateTime(record.date.get), record.parents.get,
-      comments.get)
+      comments.get, record.files.get.toList)
     }
 
     implicit def toCommentRecord(comment: CommitComment) = {
@@ -69,13 +69,23 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
         .date(commit.date.toDate)
         .parents(commit.parents)
         .comments(commit.comments)
+        .files(commit.files)
     }
 
     implicit def toCommitInfoRecordList(commits: List[CommitInfo]): List[CommitInfoRecord] = {
       commits.map(toCommitInfoRecord(_))
     }
+
     implicit def toCommitInfoList(commits: List[CommitInfoRecord]): List[CommitInfo] = {
       commits.map(toCommitInfo(_))
+    }
+
+    implicit def toCommitFileInfoList(files: List[CommitFileInfoRecord]): List[CommitFileInfo] = {
+      files.map(file => CommitFileInfo(file.filename.get, file.patch.get))
+    }
+
+    implicit def commitFilesToCommitFilesRecords(files: List[CommitFileInfo]):List[CommitFileInfoRecord]= {
+      files.map(file => CommitFileInfoRecord.createRecord.filename(file.filename).patch(file.patch))
     }
 
   }
@@ -111,8 +121,22 @@ class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with ObjectIdPk[Com
   object parents extends MongoListField[CommitInfoRecord, String](this)
 
   object comments extends BsonRecordListField(this, CommentRecord)
+
+  object files extends BsonRecordListField(this, CommitFileInfoRecord)
+
 }
 
 object CommitInfoRecord extends CommitInfoRecord with MongoMetaRecord[CommitInfoRecord] {
   override def collectionName: String = "commitInfos"
 }
+
+class CommitFileInfoRecord extends BsonRecord[CommitFileInfoRecord] {
+  def meta = CommitFileInfoRecord
+
+  object filename extends LongStringField(this)
+
+  object patch extends LongStringField(this)
+
+}
+
+object CommitFileInfoRecord extends CommitFileInfoRecord with BsonMetaRecord[CommitFileInfoRecord]

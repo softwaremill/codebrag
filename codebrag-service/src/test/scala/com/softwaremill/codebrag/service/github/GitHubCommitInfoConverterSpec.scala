@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.github
 
 import org.scalatest.{BeforeAndAfter, GivenWhenThen, FunSpec}
-import org.eclipse.egit.github.core.{CommitUser, Commit, RepositoryCommit}
+import org.eclipse.egit.github.core.{CommitFile, CommitUser, Commit, RepositoryCommit}
 import org.scalatest.matchers.ShouldMatchers
 import scala.collection.JavaConversions._
 import org.joda.time.DateTime
@@ -41,6 +41,22 @@ class GitHubCommitInfoConverterSpec extends FunSpec with GivenWhenThen with Shou
       commitInfo.committerName should equal(committerName)
       commitInfo.date should equal(authoredDate)
       commitInfo.parents should equal(parents)
+    }
+
+
+  }
+
+  describe("Commit File Info converter") {
+    it("should convert file") {
+      Given("a commit file")
+      val file = new CommitFile().setFilename("filename.txt").setPatch("patch")
+
+      When("it is converted")
+      val commitFileInfo = converter.convertToCommitFileInfo(file)
+
+      Then("it should have proper data")
+      commitFileInfo.filename should be("filename.txt")
+      commitFileInfo.patch should be("patch")
     }
   }
 }

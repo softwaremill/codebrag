@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.reporting
 import com.softwaremill.codebrag.dao.{CommitInfoBuilder, MongoCommitInfoDAO, CommitInfoRecord, FlatSpecWithMongo}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.CommitInfo
+import com.softwaremill.codebrag.domain.{CommitFileInfo, CommitInfo}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 
@@ -13,6 +13,9 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   var commitListFinder: MongoCommitListFinder = _
   var commitInfoDAO: MongoCommitInfoDAO = _
   val FixtureDateTime: DateTime = new DateTime()
+  val EmptyListOfParents = List.empty
+  val EmptyListOfComments = List.empty
+  val EmptyListOfFiles = List.empty
 
   override def beforeEach() {
     CommitInfoRecord.drop // drop collection to start every test with fresh database
@@ -26,15 +29,15 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   it should "find all pending commits starting from newest" in {
     // given
     val olderCommit = sampleCommit
-    val newerCommit = CommitInfo(new ObjectId(), "123123123", "this is newer commit", "mostr", "mostr", FixtureDateTime, List.empty, List.empty)
-    val anotherNewerCommit = CommitInfo(new ObjectId(), "123123123", "this is newer commit2", "mostr", "mostr", FixtureDateTime, List.empty, List.empty)
+    val newerCommit = CommitInfo(new ObjectId(), "123123123", "this is newer commit", "mostr", "mostr", FixtureDateTime, EmptyListOfParents, EmptyListOfComments, EmptyListOfFiles)
+    val anotherNewerCommit = CommitInfo(new ObjectId(), "123123123", "this is newer commit2", "mostr", "mostr", FixtureDateTime, EmptyListOfParents, EmptyListOfComments, EmptyListOfFiles)
     commitInfoDAO.storeCommit(newerCommit)
     commitInfoDAO.storeCommit(anotherNewerCommit)
 
     // when
     val pendingCommitList = commitListFinder.findAllPendingCommits()
 
-    // then
+    //then
     pendingCommitList.commits.length should equal (3)
     pendingCommitList.commits(0) should equal(CommitListItemDTO("123123123", "this is newer commit", "mostr", "mostr", FixtureDateTime.toDate))
     pendingCommitList.commits(1) should equal(CommitListItemDTO("123123123", "this is newer commit2", "mostr", "mostr", FixtureDateTime.toDate))
@@ -49,9 +52,8 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     // when
     val pendingCommitList = commitListFinder.findAllPendingCommits()
 
-    // then
+    //then
     pendingCommitList.commits should be ('empty)
   }
-
 
 }

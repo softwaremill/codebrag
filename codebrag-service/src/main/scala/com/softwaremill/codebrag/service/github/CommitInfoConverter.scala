@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.github
 
-import org.eclipse.egit.github.core.RepositoryCommit
-import com.softwaremill.codebrag.domain.CommitInfo
+import org.eclipse.egit.github.core.{CommitFile, RepositoryCommit}
+import com.softwaremill.codebrag.domain.{CommitFileInfo, CommitInfo}
 import scala.collection.JavaConversions._
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.common.IdGenerator
@@ -21,8 +21,20 @@ class GitHubCommitInfoConverter(implicit idGenerator: IdGenerator) extends Commi
       rawCommit.getCommitter.getName,
       new DateTime(rawCommit.getAuthor.getDate),
       commit.getParents.map(_.getSha).toList,
-      List.empty
+      List.empty,
+      files(commit)
     )
+  }
+
+  def files(commit: RepositoryCommit): List[CommitFileInfo] = {
+    Option(commit.getFiles) match {
+      case None => List()
+      case Some(list) => list.map(convertToCommitFileInfo(_)).toList
+    }
+  }
+
+  def convertToCommitFileInfo(file: CommitFile): CommitFileInfo = {
+    CommitFileInfo(file.getFilename, file.getPatch)
   }
 
 }

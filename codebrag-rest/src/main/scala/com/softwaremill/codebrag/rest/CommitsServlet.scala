@@ -5,11 +5,8 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import json.JacksonJsonSupport
 import swagger.{Swagger, SwaggerSupport}
 import com.softwaremill.codebrag.dao.CommitInfoDAO
-import com.softwaremill.codebrag.domain.CommitInfo
 import com.softwaremill.codebrag.service.github.{GitHubCommitInfoConverter, GitHubCommitImportService}
 import org.eclipse.egit.github.core.service.CommitService
-import com.softwaremill.codebrag.service.comments.CommentListDTO
-import com.softwaremill.codebrag.dao.reporting.CommitListFinder
 
 import com.softwaremill.codebrag.service.comments.{CommentService, AddCommentCommand, CommentListDTO}
 import com.softwaremill.codebrag.dao.reporting.{CommitListDTO, CommitListFinder}
@@ -20,7 +17,8 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
                      commentService: CommentService, val swagger: Swagger)
   extends JsonServletWithAuthentication with CommitsServletSwaggerDefinition with JacksonJsonSupport {
 
-  get("/") { // for all /commits/*
+  get("/") {
+    // for all /commits/*
     halt(404)
   }
 
@@ -38,9 +36,8 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
     CommentListDTO(List.empty)
   }
 
-  get("/") {
+  get("/", operation(getCommitsOperation)) {
     // for /commits?type=* only
-  get("/", operation(getCommitsOperation)) { // for /commits?type=* only
     haltIfNotAuthenticated
     params.get("type") match {
       case Some("pending") => fetchPendingCommits()

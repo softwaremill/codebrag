@@ -16,6 +16,8 @@ import org.bson.types.ObjectId
 class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
   behavior of "CommentService"
+  val EmptyListOfParents = List.empty
+  val EmptyListOfFiles = List.empty
   val FixtureCommentId = new ObjectId("507f191e810c19729de860ea")
   val FixtureCommitId = new ObjectId("507f191e810c19729de860eb")
   val NewCommentId = new ObjectId("507f1f77bcf86cd799439011")
@@ -27,7 +29,7 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
     "Bob", "bob@sml.com", "token")
   val FixtureComment = new CommitComment(FixtureCommentId, "commentAuthor", "commentMsg", new DateTime(FixtureTime))
   val FixtureCommit = new CommitInfo(FixtureCommitId, "fixture-commit-sha", "msg", "authorName", "committerName",
-    new DateTime(FixtureTime), List.empty, List(FixtureComment))
+    new DateTime(FixtureTime), EmptyListOfParents, List(FixtureComment), EmptyListOfFiles)
 
   var commentService: CommentService = _
   var commitDaoMock: CommitInfoDAO = _

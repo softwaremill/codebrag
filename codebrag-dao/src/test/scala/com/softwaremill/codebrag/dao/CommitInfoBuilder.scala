@@ -10,6 +10,10 @@ import org.bson.types.ObjectId
  */
 object CommitInfoBuilder {
 
+  val EmptyListOfComments = List.empty
+
+  val EmptyListOfFiles = List.empty
+
   def createRandomCommit(): CommitInfo = createRandomCommit(new ObjectId())
 
   def createRandomCommit(number: Long): CommitInfo = createRandomCommit(new ObjectId("507f191e810c19729de860e" + number))
@@ -20,7 +24,7 @@ object CommitInfoBuilder {
     val authorName = RichString.generateRandom(10)
     val committerName = RichString.generateRandom(10)
     val parent = RichString.generateRandom(10)
-    CommitInfo(id, sha, message, authorName, committerName, new DateTime(), List(parent), List.empty)
+    CommitInfo(id, sha, message, authorName, committerName, new DateTime(), List(parent), EmptyListOfComments, EmptyListOfFiles)
   }
 
 }
