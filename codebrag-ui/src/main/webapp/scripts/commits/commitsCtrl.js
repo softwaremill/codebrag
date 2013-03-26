@@ -1,5 +1,15 @@
 angular.module('codebrag.commits')
 
+    .config(function($routeProvider) {
+        $routeProvider.when("/commits", {controller: 'CommitsCtrl', templateUrl: "views/commits.html"});
+    })
+
+
+    .factory('PendingCommits', function($resource) {
+        var pendingCommitQueryParams = {type: 'pending'};
+        return $resource('rest/commits', pendingCommitQueryParams);
+    })
+
     .controller('CommitsCtrl', function CommitsCtrl($location, $scope, $http, PendingCommits) {
         PendingCommits.get(function(responseData) {
             $scope.commits = responseData.commits;
@@ -14,10 +24,6 @@ angular.module('codebrag.commits')
                     $location.path("/error500");
                 });
         }
-    })
-
-    .factory('PendingCommits', function($resource) {
-        var pendingCommitQueryParams = {type: 'pending'};
-        return $resource('rest/commits', pendingCommitQueryParams);
     });
+
 

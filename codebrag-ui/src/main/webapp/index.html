@@ -23,25 +23,27 @@
     <script type="text/javascript" src="scripts/vendor/angular-sanitize-1.1.1.js"></script>
     <script type="text/javascript" src="scripts/vendor/angular-cookies-1.1.1.js"></script>
 
-    <!-- effects -->
-    <script type="text/javascript" src="scripts/effects/effects.js"></script>
-
-    <!-- logic -->
+    <!-- main module -->
     <script type="text/javascript" src="scripts/app.js"></script>
-    <script type="text/javascript" src="scripts/controllers/commitsCtrl.js"></script>
-    <script type="text/javascript" src="scripts/controllers/loginCtrl.js"></script>
-    <script type="text/javascript" src="scripts/controllers/profileCtrl.js"></script>
-    <script type="text/javascript" src="scripts/controllers/uptimeCtrl.js"></script>
-    <script type="text/javascript" src="scripts/controllers/userSessionCtrl.js"></script>
-    <script type="text/javascript" src="scripts/services/flashService.js"></script>
-    <script type="text/javascript" src="scripts/services/userSessionService.js"></script>
-    <script type="text/javascript" src="scripts/services/utilService.js"></script>
 
+    <!-- session -->
+    <script type="text/javascript" src="scripts/session/sessionModuleConfig.js"></script>
+    <script type="text/javascript" src="scripts/session/authService.js"></script>
+    <script type="text/javascript" src="scripts/session/loginCtrl.js"></script>
+    <script type="text/javascript" src="scripts/session/profileCtrl.js"></script>
+
+    <!-- commits -->
+    <script type="text/javascript" src="scripts/commits/commitsCtrl.js"></script>
+
+    <!--commons -->
     <script type="text/javascript" src="scripts/common/filters/dateFormatFilter.js"></script>
-
+    <script type="text/javascript" src="scripts/common/services/flashService.js"></script>
+    <script type="text/javascript" src="scripts/common/services/utilService.js"></script>
+    <script type="text/javascript" src="scripts/common/ajaxthrobber.js"></script>
+    <script type="text/javascript" src="scripts/common/effects.js"></script>
 
 </head>
-<body ng-app="smlCodebrag">
+<body ng-app="codebrag">
 
     <span style="display: none">
         <ajaxthrobber>
@@ -64,7 +66,7 @@
                     <ul class="nav">
                         <li class="active"><a href="/#/">Home</a></li>
                     </ul>
-                    <ul class="nav pull-right" ng-controller="UserSessionCtrl">
+                    <ul class="nav pull-right" ng-controller="SessionCtrl">
                         <li ng-show="isNotLogged()"><a id="loginLink" href="#/login">Sign in</a></li>
                         <li ng-show="isLogged()"><a id="profileLink" href="#/profile">Signed in as {{getLoggedUserName()}}</a></li>
                         <li ng-show="isLogged()"><a id="commitsLink" href="#/commits">Commits</a></li>
