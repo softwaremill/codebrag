@@ -1,5 +1,4 @@
 <div class="row">
-    <div class="span12">
         <form class="form-horizontal">
             <div class="control-group">
                 <label class="control-label">Commits awaiting review</label>
@@ -8,31 +7,21 @@
                 </div>
             </div>
         </form>
-
-    </div>
 </div>
 <div class="row">
-    <div class="span12">
+    <div class="span4">
         <ul class="unstyled">
             <li ng-repeat="commit in commits">
-                <div class="well well-small">
-                    <div class="row">
-                        <div class="span12">
-                            <h5>{{commit.message}}</h5>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="span12">
-                            <span>{{commit.date | relativeDate}} by {{commit.authorName}}</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="span12">
-                            <small>{{commit.sha}}</small>
-                        </div>
+                <div class="row">
+                    <div class="well well-small">
+                        <h5>{{commit.message}}</h5>
+                        <span>{{commit.date | relativeDate}} by {{commit.authorName}}</span>
+                        <small>{{commit.sha}}</small>
                     </div>
                 </div>
             </li>
         </ul>
+    </div>
+    <div class="span8" ng-include="'views/empty.html'">
     </div>
 </div>
