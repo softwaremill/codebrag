@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function CommitsCtrl($location, $scope, $http, PendingCommits) {
+    .controller('CommitsListCtrl', function CommitsListCtrl($location, $scope, $http, PendingCommits) {
         PendingCommits.get(function(responseData) {
             $scope.commits = responseData.commits;
         });
@@ -13,7 +13,9 @@ angular.module('codebrag.commits')
                 .error(function() {
                     $location.path("/error500");
                 });
-        }
+        };
+
+        // TODO: maybe this controler doesn't need to know what to render?
+        $scope.detailsSection = {templateName: "views/empty.html"}
+
     });
-
-
