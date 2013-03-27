@@ -24,7 +24,7 @@ describe("Commits Controller", function () {
         $httpBackend.whenGET('rest/commits?type=pending').respond(response);
 
         // When
-        ctrl('CommitsCtrl', {$scope: scope});
+        ctrl('CommitsListCtrl', {$scope: scope});
         $httpBackend.flush();
 
         //Then
