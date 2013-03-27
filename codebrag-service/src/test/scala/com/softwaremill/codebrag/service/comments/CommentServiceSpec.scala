@@ -1,19 +1,19 @@
 package com.softwaremill.codebrag.service.comments
 
-import org.scalatest.{BeforeAndAfterEach, GivenWhenThen, FlatSpec}
+import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.common.FakeIdGenerator
 import com.softwaremill.codebrag.dao.{UserDAO, CommitInfoDAO}
 import pl.softwaremill.common.util.time.FixtureTimeClock
-import org.mockito.BDDMockito
+import org.mockito.BDDMockito._
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.{Authentication, User, CommitComment, CommitInfo}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 
-class CommentServiceSpec extends FlatSpec with MockitoSugar with GivenWhenThen with ShouldMatchers with BeforeAndAfterEach {
+class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
   behavior of "CommentService"
   implicit val IdGenerator = new FakeIdGenerator("fixture-new-comment-id")
@@ -37,44 +37,43 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with GivenWhenThen w
   }
 
   it should "add new comment to a commit and call dao to persist this commit" in {
-    Given("One commit in dao and fixture user")
-    BDDMockito.given(commitDaoMock.findBySha("fixture-commit-id")) willReturn (Some(FixtureCommit))
-    BDDMockito.given(userDaoMock.findByLoginOrEmail("fixture-user-login")).willReturn(Some(FixtureUser))
+
+    given(commitDaoMock.findBySha("fixture-commit-id")) willReturn (Some(FixtureCommit))
+    given(userDaoMock.findByLoginOrEmail("fixture-user-login")).willReturn(Some(FixtureUser))
     val command = AddCommentCommand("fixture-commit-id", "fixture-user-login", "new comment message")
 
-    When("Command is executed on service")
+    // when
     commentService.addCommentToCommit(command)
 
-    Then("User and commit dao should be queried")
+    // then
     verify(commitDaoMock).findBySha("fixture-commit-id")
     verify(userDaoMock).findByLoginOrEmail("fixture-user-login")
-    And("Commit dao should be called to persist new data")
     verify(commitDaoMock).storeCommit(any[CommitInfo])
   }
 
   it should "return new comment identifier as a result" in {
-    Given("One commit in dao and fixture user")
-    BDDMockito.given(commitDaoMock.findBySha("fixture-commit-id")) willReturn (Some(FixtureCommit))
-    BDDMockito.given(userDaoMock.findByLoginOrEmail("fixture-user-login")).willReturn(Some(FixtureUser))
+
+    given(commitDaoMock.findBySha("fixture-commit-id")) willReturn (Some(FixtureCommit))
+    given(userDaoMock.findByLoginOrEmail("fixture-user-login")).willReturn(Some(FixtureUser))
     val command = AddCommentCommand("fixture-commit-id", "fixture-user-login", "new comment message")
 
-    When("Command is executed on service")
+    // when
     val newCommentId = commentService.addCommentToCommit(command)
 
-    Then("User and commit dao should be queried")
+    // then
     newCommentId should equal("fixture-new-comment-id")
   }
 
   it should "throw exception when cannot find commit" in {
-    Given("Commit dao returns no commits")
-    BDDMockito.given(commitDaoMock.findBySha(any[String])) willReturn (None)
+
+    given(commitDaoMock.findBySha(any[String])) willReturn (None)
     val command = AddCommentCommand("fixture-commit-id", "fixture-user-login", "new comment message")
 
-    When("Command is executed on service")
+    // when
     val thrown = intercept[IllegalArgumentException] {
       commentService.addCommentToCommit(command)
     }
-    Then("Exception should be thrown")
+    // then
     thrown.getMessage should equal ("Cannot load commit with id = fixture-commit-id")
   }
 

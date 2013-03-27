@@ -7,7 +7,7 @@ import pl.softwaremill.common.util.RichString
 import com.softwaremill.codebrag.domain.CommitInfo
 import org.joda.time.DateTime
 
-class MongoCommitListFinderSpec extends FlatSpecWithMongo with GivenWhenThen with BeforeAndAfterEach with ShouldMatchers {
+class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
   val sampleCommit = createCommit()
   var commitListFinder: MongoCommitListFinder = _
@@ -24,17 +24,17 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with GivenWhenThen wit
   behavior of "MongoCommitListFinder"
 
   it should "find all pending commits starting from newest" in {
-    Given("a sample commit and another one stored")
+    // given
     val olderCommit = sampleCommit
     val newerCommit = CommitInfo("123123123", "this is newer commit", "mostr", "mostr", FixtureDateTime, List.empty, List.empty)
     val anotherNewerCommit = CommitInfo("123123123", "this is newer commit2", "mostr", "mostr", FixtureDateTime, List.empty, List.empty)
     commitInfoDAO.storeCommit(newerCommit)
     commitInfoDAO.storeCommit(anotherNewerCommit)
 
-    When("trying to find all pending commits")
+    // when
     val pendingCommitList = commitListFinder.findAllPendingCommits()
 
-    Then("sample commit stored should be fetched")
+    // then
     pendingCommitList.commits.length should equal (3)
     pendingCommitList.commits(0) should equal(CommitListItemDTO("123123123", "this is newer commit", "mostr", "mostr", FixtureDateTime.toDate))
     pendingCommitList.commits(1) should equal(CommitListItemDTO("123123123", "this is newer commit2", "mostr", "mostr", FixtureDateTime.toDate))
@@ -43,13 +43,13 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with GivenWhenThen wit
   }
 
   it should "find empty list if no commits in database" in {
-    Given("empty database")
+    // given
     CommitInfoRecord.drop
 
-    When("trying to find all pending commits")
+    // when
     val pendingCommitList = commitListFinder.findAllPendingCommits()
 
-    Then("result list should be empty")
+    // then
     pendingCommitList.commits should be ('empty)
   }
 
