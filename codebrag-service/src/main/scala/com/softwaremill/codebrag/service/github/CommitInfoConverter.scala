@@ -21,7 +21,6 @@ class GitHubCommitInfoConverter(implicit idGenerator: IdGenerator) extends Commi
       rawCommit.getCommitter.getName,
       new DateTime(rawCommit.getAuthor.getDate),
       commit.getParents.map(_.getSha).toList,
-      List.empty,
       files(commit)
     )
   }

@@ -8,8 +8,10 @@ import com.softwaremill.codebrag.dao.CommitInfoDAO
 import com.softwaremill.codebrag.service.github.{GitHubCommitInfoConverter, GitHubCommitImportService}
 import org.eclipse.egit.github.core.service.CommitService
 
-import com.softwaremill.codebrag.service.comments.{CommentService, AddCommentCommand, CommentListDTO}
+import com.softwaremill.codebrag.service.comments.{CommentService, CommentListDTO}
 import com.softwaremill.codebrag.dao.reporting.{CommitListDTO, CommitListFinder}
+import org.bson.types.ObjectId
+import com.softwaremill.codebrag.service.comments.command.AddComment
 import com.softwaremill.codebrag.common.ObjectIdGenerator
 
 class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfoDAO,
@@ -26,7 +28,7 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
     haltIfNotAuthenticated
     val commitId = params("id")
     val messageBody = (parsedBody \ "body").extract[String]
-    val command = AddCommentCommand(commitId, user.login, messageBody)
+    val command = AddComment(new ObjectId(commitId), user.login, messageBody)
     commentService.addCommentToCommit(command)
   }
 

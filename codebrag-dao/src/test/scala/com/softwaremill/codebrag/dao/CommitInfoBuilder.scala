@@ -24,7 +24,7 @@ object CommitInfoBuilder {
     val authorName = RichString.generateRandom(10)
     val committerName = RichString.generateRandom(10)
     val parent = RichString.generateRandom(10)
-    CommitInfo(id, sha, message, authorName, committerName, new DateTime(), List(parent), EmptyListOfComments, EmptyListOfFiles)
+    CommitInfo(id, sha, message, authorName, committerName, new DateTime(), List(parent), EmptyListOfFiles)
   }
 
 }

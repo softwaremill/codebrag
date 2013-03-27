@@ -82,7 +82,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with MockitoSugar with Befor
       it("should store only newest commits") {
         //given
         val date: DateTime = new DateTime
-        val oldCommitInfo = CommitInfo(new ObjectId("507f1f77bcf86cd799439011"), "sha", "message", "author", "committer", date, List("parent1"), List.empty, List.empty)
+        val oldCommitInfo = CommitInfo(new ObjectId("507f1f77bcf86cd799439011"), "sha", "message", "author", "committer", date, List("parent1"),List.empty)
         val commits = List(oldCommitInfo)
         given(dao.findAll()).willReturn(commits)
         val oldCommit: RepositoryCommit = createRepoCommit("sha")
@@ -90,7 +90,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with MockitoSugar with Befor
         val retrieved = List(oldCommit, newCommit)
         val newCommitId = new ObjectId("507f1f77bcf86cd799439012");
         given(commitService.getCommits(any[IRepositoryIdProvider])).willReturn(retrieved)
-        given(converter.convertToCommitInfo(Matchers.eq(newCommit))).willReturn(CommitInfo(newCommitId, "reposha", "", "", "", new DateTime, List("parent2"), List.empty, List.empty))
+        given(converter.convertToCommitInfo(Matchers.eq(newCommit))).willReturn(CommitInfo(newCommitId, "reposha", "", "", "", new DateTime, List("parent2"), List.empty))
         given(converter.convertToCommitInfo(Matchers.eq(oldCommit))).willReturn(oldCommitInfo)
 
         //when

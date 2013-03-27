@@ -10,14 +10,7 @@ import org.bson.types.ObjectId
 class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with BeforeAndAfterEach with ShouldMatchers {
   val sampleCommit = createRandomCommit(0)
   var commitInfoDAO: MongoCommitInfoDAO = _
-  val FixtureCommentId1 = new ObjectId("507f191e810c19729de860ea")
-  val FixtureCommentId2 = new ObjectId("507f191e810c19729de860eb")
-
-  val FixtureComments = List(CommitComment(FixtureCommentId1, "sofokles", "nice one", new DateTime),
-                              CommitComment(FixtureCommentId2, "robert", "I like your style", new DateTime))
-
   val EmptyListOfParents = List.empty
-  val EmptyListOfComments = List.empty
   val EmptyListOfFiles = List.empty
 
   override def beforeEach() {
@@ -66,8 +59,8 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
   it should "find all commits starting from newest" in {
     Given("a sample commit and another one stored")
     val olderCommit = sampleCommit
-    val newerCommit = CommitInfo(commitId(1), "123123123", "this is newer commit", "mostr", "mostr", new DateTime(), EmptyListOfParents, EmptyListOfComments, EmptyListOfFiles)
-    val anotherNewerCommit = CommitInfo(commitId(2), "123123123", "this is newer commit", "mostr", "mostr", new DateTime(), EmptyListOfParents, FixtureComments, EmptyListOfFiles)
+    val newerCommit = CommitInfo(commitId(1), "123123123", "this is newer commit", "mostr", "mostr", new DateTime(), EmptyListOfParents, EmptyListOfFiles)
+    val anotherNewerCommit = CommitInfo(commitId(2), "123123123", "this is newer commit", "mostr", "mostr", new DateTime(), EmptyListOfParents, EmptyListOfFiles)
     commitInfoDAO.storeCommit(newerCommit)
     commitInfoDAO.storeCommit(anotherNewerCommit)
 

@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.reporting
 import com.softwaremill.codebrag.dao.{CommitInfoBuilder, MongoCommitInfoDAO, CommitInfoRecord, FlatSpecWithMongo}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{CommitFileInfo, CommitInfo}
+import com.softwaremill.codebrag.domain.CommitInfo
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 
@@ -29,18 +29,21 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   it should "find all pending commits starting from newest" in {
     // given
     val olderCommit = sampleCommit
-    val newerCommit = CommitInfo(new ObjectId(), "123123123", "this is newer commit", "mostr", "mostr", FixtureDateTime, EmptyListOfParents, EmptyListOfComments, EmptyListOfFiles)
-    val anotherNewerCommit = CommitInfo(new ObjectId(), "123123123", "this is newer commit2", "mostr", "mostr", FixtureDateTime, EmptyListOfParents, EmptyListOfComments, EmptyListOfFiles)
+
+    val newerCommitTime: DateTime = FixtureDateTime.plusSeconds(5)
+    val newestCommitTime: DateTime = FixtureDateTime.plusSeconds(10)
+    val newerCommit = CommitInfo(new ObjectId(), "123123123", "this is newer commit", "mostr", "mostr", newerCommitTime, EmptyListOfParents, EmptyListOfFiles)
+    val newestCommit = CommitInfo(new ObjectId(), "123123123", "this is newer commit2", "mostr", "mostr", newestCommitTime, EmptyListOfParents, EmptyListOfFiles)
+    commitInfoDAO.storeCommit(newestCommit)
     commitInfoDAO.storeCommit(newerCommit)
-    commitInfoDAO.storeCommit(anotherNewerCommit)
 
     // when
     val pendingCommitList = commitListFinder.findAllPendingCommits()
 
     //then
     pendingCommitList.commits.length should equal (3)
-    pendingCommitList.commits(0) should equal(CommitListItemDTO("123123123", "this is newer commit", "mostr", "mostr", FixtureDateTime.toDate))
-    pendingCommitList.commits(1) should equal(CommitListItemDTO("123123123", "this is newer commit2", "mostr", "mostr", FixtureDateTime.toDate))
+    pendingCommitList.commits(0) should equal(CommitListItemDTO("123123123", "this is newer commit2", "mostr", "mostr", newestCommitTime.toDate))
+    pendingCommitList.commits(1) should equal(CommitListItemDTO("123123123", "this is newer commit", "mostr", "mostr", newerCommitTime.toDate))
     pendingCommitList.commits(2) should equal(CommitListItemDTO(olderCommit.sha, olderCommit.message,
       olderCommit.authorName, olderCommit.committerName, olderCommit.date.toDate))
   }
