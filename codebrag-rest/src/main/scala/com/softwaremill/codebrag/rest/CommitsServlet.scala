@@ -11,9 +11,9 @@ import org.eclipse.egit.github.core.service.CommitService
 import com.softwaremill.codebrag.service.comments.{CommentService, AddCommentCommand, CommentListDTO}
 import com.softwaremill.codebrag.dao.reporting.{CommitListDTO, CommitListFinder}
 
-class CommitsServlet(val authenticator: Authenticator, val commitInfoDao: CommitInfoDAO,
-                     val commitListFinder: CommitListFinder,
-                     val commentService: CommentService, val swagger: Swagger)
+class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfoDAO,
+                     commitListFinder: CommitListFinder,
+                     commentService: CommentService, val swagger: Swagger)
   extends JsonServletWithAuthentication with CommitsServletSwaggerDefinition with JacksonJsonSupport {
 
   get("/") { // for all /commits/*
