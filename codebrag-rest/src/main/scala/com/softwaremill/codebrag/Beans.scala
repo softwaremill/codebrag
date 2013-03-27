@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag
 
-import common.{UuidGenerator, IdGenerator}
+import common.{ObjectIdGenerator, IdGenerator}
 import dao.reporting.MongoCommitListFinder
 import dao.{MongoCommitInfoDAO, MongoUserDAO}
 import rest.CodebragSwagger
@@ -12,7 +12,7 @@ import pl.softwaremill.common.util.time.RealTimeClock
 
 trait Beans {
   implicit lazy val clock = new RealTimeClock
-  implicit lazy val idGenerator: IdGenerator = new UuidGenerator
+  implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator
 
   lazy val authenticator = new Authenticator(userDao)
   lazy val userDao = new MongoUserDAO

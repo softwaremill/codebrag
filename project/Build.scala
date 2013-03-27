@@ -149,7 +149,7 @@ object SmlCodebragBuild extends Build {
   lazy val common: Project = Project(
     "codebrag-common",
     file("codebrag-common"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= jodaDependencies)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies)
   )
 
   lazy val domain: Project = Project(

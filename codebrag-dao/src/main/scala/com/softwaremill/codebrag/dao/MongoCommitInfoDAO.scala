@@ -5,6 +5,7 @@ import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, 
 import net.liftweb.mongodb.record.field.{BsonRecordListField, MongoListField, DateField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
+import org.bson.types.ObjectId
 
 class MongoCommitInfoDAO extends CommitInfoDAO {
 
@@ -36,7 +37,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
 
     implicit def toCommentRecord(comment: CommitComment) = {
       CommentRecord.createRecord
-      .id(comment.id)
+      .id(comment.id.toString)
       .authorName(comment.commentAuthorName)
       .message(comment.message)
       .date(comment.postingTime.toDate)
@@ -55,7 +56,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
     }
 
       implicit def commentRecordToComment(record: CommentRecord): CommitComment = {
-      CommitComment(record.id.get, record.authorName.get, record.message.get, new DateTime(record.date.get))
+      CommitComment(new ObjectId(record.id.get), record.authorName.get, record.message.get, new DateTime(record.date.get))
     }
 
     implicit def toCommitInfoRecord(commit: CommitInfo): CommitInfoRecord = {

@@ -16,13 +16,15 @@ import org.bson.types.ObjectId
 class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
   behavior of "CommentService"
-  implicit val IdGenerator = new FakeIdGenerator("fixture-new-comment-id")
+  val FixtureCommentId = new ObjectId("507f191e810c19729de860ea")
+  val NewCommentId = new ObjectId("507f1f77bcf86cd799439011")
+  implicit val IdGenerator = new FakeIdGenerator(NewCommentId.toString)
   val FixtureTime = 123456789
   implicit val Clock = new FixtureTimeClock(FixtureTime)
   val authentication: Authentication = new Authentication("github", "fixture-user-login", "fixture-user-login", "token", "salt")
   val FixtureUser = new User(new ObjectId("507f1f77bcf86cd799439011"), authentication,
     "Bob", "bob@sml.com", "token")
-  val FixtureComment = new CommitComment("fixture-comment-id", "commentAuthor", "commentMsg", new DateTime(FixtureTime))
+  val FixtureComment = new CommitComment(FixtureCommentId, "commentAuthor", "commentMsg", new DateTime(FixtureTime))
   val FixtureCommit = new CommitInfo("fixture-commit-id", "msg", "authorName", "committerName",
     new DateTime(FixtureTime), List.empty, List(FixtureComment))
 
@@ -61,7 +63,7 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
     val newCommentId = commentService.addCommentToCommit(command)
 
     // then
-    newCommentId should equal("fixture-new-comment-id")
+    newCommentId should equal(NewCommentId)
   }
 
   it should "throw exception when cannot find commit" in {

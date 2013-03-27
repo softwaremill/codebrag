@@ -1,16 +1,17 @@
 package com.softwaremill.codebrag.common
 
-import java.util.UUID
+import org.bson.types.ObjectId
 
 trait IdGenerator {
-  def generateRandom(): String
+  def generateRandom(): ObjectId
 }
 
-class UuidGenerator extends IdGenerator {
+class ObjectIdGenerator extends IdGenerator {
 
-  def generateRandom(): String = UUID.randomUUID().toString
+  override def generateRandom() = new ObjectId()
 }
 
 class FakeIdGenerator(val id: String) extends IdGenerator {
-  def generateRandom(): String = id
+
+  override def generateRandom() = new ObjectId(id)
 }

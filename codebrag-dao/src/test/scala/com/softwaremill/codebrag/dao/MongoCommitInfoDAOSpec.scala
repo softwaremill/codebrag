@@ -5,12 +5,16 @@ import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao.CommitInfoBuilder._
 import org.joda.time.DateTime
+import org.bson.types.ObjectId
 
 class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with BeforeAndAfterEach with ShouldMatchers {
   val sampleCommit = createRandomCommit()
   var commitInfoDAO: MongoCommitInfoDAO = _
-  val FixtureComments = List(CommitComment("1", "sofokles", "nice one", new DateTime),
-                              CommitComment("2", "robert", "I like your style", new DateTime));
+  val FixtureCommentId1 = new ObjectId("507f191e810c19729de860ea")
+  val FixtureCommentId2 = new ObjectId("507f191e810c19729de860eb")
+
+  val FixtureComments = List(CommitComment(FixtureCommentId1, "sofokles", "nice one", new DateTime),
+                              CommitComment(FixtureCommentId2, "robert", "I like your style", new DateTime));
 
   override def beforeEach() {
     CommitInfoRecord.drop // drop collection to start every test with fresh database
