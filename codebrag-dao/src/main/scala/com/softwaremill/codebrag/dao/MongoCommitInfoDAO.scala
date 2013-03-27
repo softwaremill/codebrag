@@ -31,7 +31,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
     implicit def toCommitInfo(record: CommitInfoRecord): CommitInfo = {
       val comments = record.comments;
       CommitInfo(record.sha.get, record.message.get, record.authorName.get, record.committerName.get, new DateTime(record.date.get), record.parents.get,
-      commentRecordsToCommentList(comments.get))
+      comments.get)
     }
 
     implicit def toCommentRecord(comment: CommitComment) = {
