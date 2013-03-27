@@ -7,11 +7,11 @@
     </div>
     <div class="row">
         <div class="span7">
-            <form>
+            <form ng-controller="CommentCtrl">
                 <fieldset>
                     <label>Your comment</label>
-                    <textarea rows="5" style="width: 100%; resize: vertical"></textarea>
-                    <button type="submit" class="btn">Submit</button>
+                    <textarea rows="5" style="width: 100%; resize: vertical" ng-model="commentContent"></textarea>
+                    <button class="btn" ng-click="submitComment()">Submit</button>
                 </fieldset>
             </form>
         </div>

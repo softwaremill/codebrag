@@ -13,7 +13,9 @@ angular.module('codebrag.session', ['ngCookies'])
             when("/profile", {controller: "ProfileCtrl", templateUrl: "views/secured/profile.html"});
     });
 
-angular.module('codebrag.commits', ['ngResource'])
+angular.module('codebrag.commits.comments', [])
+
+angular.module('codebrag.commits', ['ngResource', 'codebrag.commits.comments'])
     .config(function($routeProvider) {
         $routeProvider.
             when("/commits", {controller: 'CommitsListCtrl', templateUrl: "views/commits.html"});
