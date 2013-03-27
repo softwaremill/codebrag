@@ -1,4 +1,19 @@
 <div ng-controller="CommitDetailsCtrl">
-    <h3>Commit details</h3>
-    <p>{{commitId}}</p>
+    <div class="row">
+        <div class="span7">
+            <h3>Commit details</h3>
+            <p>{{commitId}}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span7">
+            <form>
+                <fieldset>
+                    <label>Your comment</label>
+                    <textarea rows="5" style="width: 100%; resize: vertical"></textarea>
+                    <button type="submit" class="btn">Submit</button>
+                </fieldset>
+            </form>
+        </div>
+    </div>
 </div>
