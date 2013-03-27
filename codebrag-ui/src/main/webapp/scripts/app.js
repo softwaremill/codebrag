@@ -5,9 +5,19 @@ angular.module("ajaxthrobber", []);
 angular.module('codebrag.common.services', []);
 angular.module('codebrag.common.filters', []);
 
-angular.module('codebrag.session', ['ngCookies']);
-angular.module('codebrag.commits', ['ngResource']);
+angular.module('codebrag.session', ['ngCookies'])
+    .config(function ($routeProvider) {
+        $routeProvider.
+            when("/", {controller: 'SessionCtrl', templateUrl: "views/main.html"}).
+            when("/login", {controller: 'SessionCtrl', templateUrl: "views/login.html"}).
+            when("/profile", {controller: "ProfileCtrl", templateUrl: "views/secured/profile.html"});
+    });
 
+angular.module('codebrag.commits', ['ngResource'])
+    .config(function($routeProvider) {
+        $routeProvider.
+            when("/commits", {controller: 'CommitsCtrl', templateUrl: "views/commits.html"});
+    });
 
 angular.module('codebrag', [
             'codebrag.session',

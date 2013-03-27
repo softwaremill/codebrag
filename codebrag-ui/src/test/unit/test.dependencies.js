@@ -16,12 +16,12 @@ EnvJasmine.loadGlobal(EnvJasmine.testDir + "../lib/angular/angular-mocks-1.1.1.j
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "app.js");
 
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/httpAuthInterceptor.js");
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/sessionModuleConfig.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/authService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/sessionCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/profileCtrl.js");
 
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsCtrl.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/pendingCommitsResource.js");
 
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/filters/dateFormatFilter.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/services/flashService.js");
