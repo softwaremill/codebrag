@@ -14,10 +14,6 @@ angular.module('codebrag.commits')
                     $location.path("/error500");
                 });
         }
-    })
-
-    .factory('PendingCommits', function($resource) {
-        var pendingCommitQueryParams = {type: 'pending'};
-        return $resource('rest/commits', pendingCommitQueryParams);
     });
+
 

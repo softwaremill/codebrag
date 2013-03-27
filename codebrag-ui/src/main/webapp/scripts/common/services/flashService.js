@@ -1,6 +1,6 @@
 "use strict";
 
-angular.module("smlCodebrag.maintenance").factory("FlashService", function () {
+angular.module("codebrag.common.services").factory("flashService", function () {
 
     var queue = [];
 

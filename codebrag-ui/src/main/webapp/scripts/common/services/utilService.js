@@ -1,6 +1,6 @@
 "user strict";
 
-angular.module("smlCodebrag.maintenance").factory('UtilService', function ($resource) {
+angular.module("codebrag.common.services").factory('utilService', function ($resource) {
 
     var self = this;
     var dontBlockOnAjaxHeader = { "dontBlockPageOnAjax": "true" };

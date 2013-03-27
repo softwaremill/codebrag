@@ -17,26 +17,38 @@
     <script type="text/javascript" src="../main/webapp/scripts/vendor/angular-sanitize-1.1.1.js"></script>
     <script type="text/javascript" src="../main/webapp/scripts/vendor/angular-cookies-1.1.1.js"></script>
     <script type="text/javascript" src="../main/webapp/scripts/vendor/bootstrap-2.2.2.js"></script>
+    <script type="text/javascript" src="../main/webapp/scripts/vendor/moment.js"></script>
 
     <!-- vendor test libraries -->
     <script type="text/javascript" src="lib/angular/angular-mocks-1.1.1.js"></script>
 
     <!-- application sources -->
+
+    <!-- main module -->
     <script type="text/javascript" src="../main/webapp/scripts/app.js"></script>
-    <script type="text/javascript" src="../main/webapp/scripts/effects/effects.js"></script>
-    <script type="text/javascript" src="../main/webapp/scripts/services/flashService.js"></script>
-    <script type="text/javascript" src="../main/webapp/scripts/controllers/loginCtrl.js"></script>
-    <script type="text/javascript" src="../main/webapp/scripts/controllers/profileCtrl.js"></script>
-    <script type="text/javascript" src="../main/webapp/scripts/controllers/uptimeCtrl.js"></script>
-    <script type="text/javascript" src="../main/webapp/scripts/controllers/userSessionCtrl.js"></script>
-    <script type="text/javascript" src="../main/webapp/scripts/services/userSessionService.js"></script>
-    <script type="text/javascript" src="../main/webapp/scripts/services/utilService.js"></script>
+
+    <!-- session -->
+    <script type="text/javascript" src="../main/webapp/scripts/session/httpAuthInterceptor.js"></script>
+    <script type="text/javascript" src="../main/webapp/scripts/session/authService.js"></script>
+    <script type="text/javascript" src="../main/webapp/scripts/session/sessionCtrl.js"></script>
+    <script type="text/javascript" src="../main/webapp/scripts/session/profileCtrl.js"></script>
+
+    <!-- commits -->
+    <script type="text/javascript" src="../main/webapp/scripts/commits/commitsCtrl.js"></script>
+    <script type="text/javascript" src="../main/webapp/scripts/commits/pendingCommitsResource.js"></script>
+
+    <!--commons -->
+    <script type="text/javascript" src="../main/webapp/scripts/common/filters/dateFormatFilter.js"></script>
+    <script type="text/javascript" src="../main/webapp/scripts/common/services/flashService.js"></script>
+    <script type="text/javascript" src="../main/webapp/scripts/common/services/utilService.js"></script>
+    <script type="text/javascript" src="../main/webapp/scripts/common/ajaxthrobber.js"></script>
+    <script type="text/javascript" src="../main/webapp/scripts/common/effects.js"></script>
+
 
     <!-- application specs -->
-    <script type="text/javascript" src="unit/specs/controllers/flashService-spec.js"></script>
-    <script type="text/javascript" src="unit/specs/controllers/loginCtrl-spec.js"></script>
-    <script type="text/javascript" src="unit/specs/controllers/uptimeCtrl-spec.js"></script>
-    <script type="text/javascript" src="unit/specs/controllers/userSessionCtrl-spec.js"></script>
+    <script type="text/javascript" src="unit/specs/common/services/flashService-spec.js"></script>
+    <script type="text/javascript" src="unit/specs/commits/commitsCtrl-spec.js"></script>
+    <script type="text/javascript" src="unit/specs/session/sessionCtrl-spec.js"></script>
 
 
     <script type="text/javascript">
