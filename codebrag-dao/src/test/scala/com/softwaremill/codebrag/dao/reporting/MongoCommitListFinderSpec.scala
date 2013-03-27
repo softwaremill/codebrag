@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao.reporting
 
-import com.softwaremill.codebrag.dao.{MongoCommitInfoDAO, CommitInfoRecord, FlatSpecWithMongo}
+import com.softwaremill.codebrag.dao.{CommitInfoBuilder, MongoCommitInfoDAO, CommitInfoRecord, FlatSpecWithMongo}
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatest.matchers.ShouldMatchers
 import pl.softwaremill.common.util.RichString
@@ -9,7 +9,7 @@ import org.joda.time.DateTime
 
 class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
-  val sampleCommit = createCommit()
+  val sampleCommit = CommitInfoBuilder.createRandomCommit()
   var commitListFinder: MongoCommitListFinder = _
   var commitInfoDAO: MongoCommitInfoDAO = _
   val FixtureDateTime: DateTime = new DateTime()
@@ -53,13 +53,5 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     pendingCommitList.commits should be ('empty)
   }
 
-  def createCommit() = {
-    val sha = RichString.generateRandom(10)
-    val message = RichString.generateRandom(10)
-    val authorName = RichString.generateRandom(10)
-    val committerName = RichString.generateRandom(10)
-    val parent = RichString.generateRandom(10)
-    CommitInfo(sha, message, authorName, committerName, new DateTime(), List(parent), List.empty)
-  }
 
 }

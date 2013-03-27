@@ -3,11 +3,11 @@ package com.softwaremill.codebrag.dao
 import com.softwaremill.codebrag.domain.{CommitComment, CommitInfo}
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatest.matchers.ShouldMatchers
-import pl.softwaremill.common.util.RichString
+import com.softwaremill.codebrag.dao.CommitInfoBuilder._
 import org.joda.time.DateTime
 
 class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with BeforeAndAfterEach with ShouldMatchers {
-  val sampleCommit = createCommit()
+  val sampleCommit = createRandomCommit()
   var commitInfoDAO: MongoCommitInfoDAO = _
   val FixtureComments = List(CommitComment("1", "sofokles", "nice one", new DateTime),
                               CommitComment("2", "robert", "I like your style", new DateTime));
@@ -32,7 +32,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
 
   it should "store a single commit" in {
     Given("a commit")
-    val commit = createCommit()
+    val commit = createRandomCommit()
 
     When("trying to store it")
     commitInfoDAO.storeCommit(commit)
@@ -43,8 +43,8 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
 
   it should "store a collection of commits" in {
     Given("a collection of commits")
-    val commit1 = createCommit()
-    val commit2 = createCommit()
+    val commit1 = createRandomCommit()
+    val commit2 = createRandomCommit()
     val commits = Seq[CommitInfo](commit1, commit2)
 
     When("trying to store them")
@@ -71,15 +71,6 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
     commits(0) should equal(newerCommit)
     commits(1) should equal(anotherNewerCommit)
     commits(2) should equal(olderCommit)
-  }
-
-  def createCommit() = {
-    val sha = RichString.generateRandom(10)
-    val message = RichString.generateRandom(10)
-    val authorName = RichString.generateRandom(10)
-    val committerName = RichString.generateRandom(10)
-    val parent = RichString.generateRandom(10)
-    CommitInfo(sha, message, authorName, committerName, new DateTime(), List(parent), List.empty)
   }
 
 }
