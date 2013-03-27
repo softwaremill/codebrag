@@ -10,16 +10,17 @@ class CommitInfoSpec extends FlatSpec with MockitoSugar with GivenWhenThen with 
 
   val FixtureDate = new DateTime
   val FixtureCommentId = new ObjectId("507f191e810c19729de860ea")
+  val FixtureCommitId = new ObjectId("507f191e810c19729de860eb")
 
   behavior of "CommitInfo"
     it should "add a new comment" in {
       Given("empty commit info")
-      val commitInfo = CommitInfo("1", "msg", "authorName", "authorName", FixtureDate, List.empty, List.empty)
+      val commitInfo = CommitInfo(FixtureCommitId, "1", "msg", "authorName", "authorName", FixtureDate, List.empty, List.empty)
       val newComment = CommitComment(FixtureCommentId, "new comment", "bob", FixtureDate)
       When("add new comment")
       val resultInfo = commitInfo.addComment(newComment)
       Then("result commit should contain new comment")
-      resultInfo should equal (CommitInfo("1", "msg", "authorName", "authorName", FixtureDate, List.empty, List(
+      resultInfo should equal (CommitInfo(FixtureCommitId, "1", "msg", "authorName", "authorName", FixtureDate, List.empty, List(
                                CommitComment(FixtureCommentId, "new comment", "bob", FixtureDate))
       ))
     }

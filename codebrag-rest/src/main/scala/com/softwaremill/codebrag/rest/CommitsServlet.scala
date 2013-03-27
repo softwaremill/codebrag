@@ -10,6 +10,7 @@ import org.eclipse.egit.github.core.service.CommitService
 
 import com.softwaremill.codebrag.service.comments.{CommentService, AddCommentCommand, CommentListDTO}
 import com.softwaremill.codebrag.dao.reporting.{CommitListDTO, CommitListFinder}
+import com.softwaremill.codebrag.common.ObjectIdGenerator
 
 class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfoDAO,
                      commitListFinder: CommitListFinder,
@@ -44,6 +45,7 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
 
   post("/sync") { // synchronizes commits
     haltIfNotAuthenticated
+    implicit val idGenerator = new ObjectIdGenerator()
     val importer = new GitHubCommitImportService(new CommitService, new GitHubCommitInfoConverter(), commitInfoDao)
     importer.importRepoCommits("pbuda", "testrepo")
     fetchPendingCommits()

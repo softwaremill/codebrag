@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.dao.reporting
 
 import com.softwaremill.codebrag.dao.{CommitInfoBuilder, MongoCommitInfoDAO, CommitInfoRecord, FlatSpecWithMongo}
-import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
-import pl.softwaremill.common.util.RichString
 import com.softwaremill.codebrag.domain.CommitInfo
 import org.joda.time.DateTime
+import org.bson.types.ObjectId
 
 class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
@@ -26,8 +26,8 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   it should "find all pending commits starting from newest" in {
     // given
     val olderCommit = sampleCommit
-    val newerCommit = CommitInfo("123123123", "this is newer commit", "mostr", "mostr", FixtureDateTime, List.empty, List.empty)
-    val anotherNewerCommit = CommitInfo("123123123", "this is newer commit2", "mostr", "mostr", FixtureDateTime, List.empty, List.empty)
+    val newerCommit = CommitInfo(new ObjectId(), "123123123", "this is newer commit", "mostr", "mostr", FixtureDateTime, List.empty, List.empty)
+    val anotherNewerCommit = CommitInfo(new ObjectId(), "123123123", "this is newer commit2", "mostr", "mostr", FixtureDateTime, List.empty, List.empty)
     commitInfoDAO.storeCommit(newerCommit)
     commitInfoDAO.storeCommit(anotherNewerCommit)
 

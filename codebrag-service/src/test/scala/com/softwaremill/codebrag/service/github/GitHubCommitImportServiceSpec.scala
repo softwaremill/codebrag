@@ -12,6 +12,7 @@ import org.mockito.Mockito._
 import org.joda.time.DateTime
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.CommitInfo
+import org.bson.types.ObjectId
 
 class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with MockitoSugar with BeforeAndAfter with ShouldMatchers {
   var commitService: CommitService = _
@@ -80,15 +81,17 @@ class GitHubCommitImportServiceSpec extends FunSpec with GivenWhenThen with Mock
       it("should store only newest commits") {
         Given("some stored commits")
         val date: DateTime = new DateTime
-        val commits = List(CommitInfo("sha", "message", "author", "committer", date, List("parent1"), List.empty))
+        val oldCommitInfo = CommitInfo(new ObjectId("507f1f77bcf86cd799439011"), "sha", "message", "author", "committer", date, List("parent1"), List.empty)
+        val commits = List(oldCommitInfo)
         BDDMockito.given(dao.findAll()).willReturn(commits)
         And("some commits in repo")
         val oldCommit: RepositoryCommit = createRepoCommit("sha")
         val newCommit: RepositoryCommit = createRepoCommit("reposha")
         val retrieved = List(oldCommit, newCommit)
+        val newCommitId = new ObjectId("507f1f77bcf86cd799439012");
         BDDMockito.given(commitService.getCommits(any[IRepositoryIdProvider])).willReturn(retrieved)
-        BDDMockito.given(converter.convertToCommitInfo(Matchers.eq(newCommit))).willReturn(CommitInfo("reposha", "", "", "", new DateTime, List("parent2"), List.empty))
-        BDDMockito.given(converter.convertToCommitInfo(Matchers.eq(oldCommit))).willReturn(CommitInfo("sha", "message", "author", "committer", date, List("parent1"), List.empty))
+        BDDMockito.given(converter.convertToCommitInfo(Matchers.eq(newCommit))).willReturn(CommitInfo(newCommitId, "reposha", "", "", "", new DateTime, List("parent2"), List.empty))
+        BDDMockito.given(converter.convertToCommitInfo(Matchers.eq(oldCommit))).willReturn(oldCommitInfo)
 
         When("importing repo commits")
         service.importRepoCommits("o", "r")

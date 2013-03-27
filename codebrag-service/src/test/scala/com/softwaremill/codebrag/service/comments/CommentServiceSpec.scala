@@ -17,6 +17,7 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
 
   behavior of "CommentService"
   val FixtureCommentId = new ObjectId("507f191e810c19729de860ea")
+  val FixtureCommitId = new ObjectId("507f191e810c19729de860eb")
   val NewCommentId = new ObjectId("507f1f77bcf86cd799439011")
   implicit val IdGenerator = new FakeIdGenerator(NewCommentId.toString)
   val FixtureTime = 123456789
@@ -25,7 +26,7 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
   val FixtureUser = new User(new ObjectId("507f1f77bcf86cd799439011"), authentication,
     "Bob", "bob@sml.com", "token")
   val FixtureComment = new CommitComment(FixtureCommentId, "commentAuthor", "commentMsg", new DateTime(FixtureTime))
-  val FixtureCommit = new CommitInfo("fixture-commit-id", "msg", "authorName", "committerName",
+  val FixtureCommit = new CommitInfo(FixtureCommitId, "fixture-commit-sha", "msg", "authorName", "committerName",
     new DateTime(FixtureTime), List.empty, List(FixtureComment))
 
   var commentService: CommentService = _

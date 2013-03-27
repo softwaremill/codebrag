@@ -5,10 +5,12 @@ import org.eclipse.egit.github.core.{CommitUser, Commit, RepositoryCommit}
 import org.scalatest.matchers.ShouldMatchers
 import scala.collection.JavaConversions._
 import org.joda.time.DateTime
+import com.softwaremill.codebrag.common.{FakeIdGenerator, IdGenerator}
 
 class GitHubCommitInfoConverterSpec extends FunSpec with GivenWhenThen with ShouldMatchers with BeforeAndAfter {
 
   var converter: GitHubCommitInfoConverter = _
+  implicit val idGenerator: IdGenerator = new FakeIdGenerator("507f1f77bcf86cd799439011")
 
   before {
     converter = new GitHubCommitInfoConverter
