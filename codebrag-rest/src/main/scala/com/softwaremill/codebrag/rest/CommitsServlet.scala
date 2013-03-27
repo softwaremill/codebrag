@@ -24,8 +24,7 @@ class CommitsServlet(val authenticator: Authenticator, val commitInfoDao: Commit
     haltIfNotAuthenticated
     val commitId = params("id")
     val messageBody = (parsedBody \ "body").extract[String]
-    val authorLogin = authenticate().get.login
-    val command = AddCommentCommand(commitId, authorLogin, messageBody)
+    val command = AddCommentCommand(commitId, user.login, messageBody)
     commentService.addCommentToCommit(command)
   }
 
