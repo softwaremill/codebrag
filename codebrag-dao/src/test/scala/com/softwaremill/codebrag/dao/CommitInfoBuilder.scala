@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.dao
 
 import pl.softwaremill.common.util.RichString
-import com.softwaremill.codebrag.domain.CommitInfo
+import com.softwaremill.codebrag.domain.{CommitFileInfo, CommitInfo}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 
@@ -25,6 +25,10 @@ object CommitInfoBuilder {
     val committerName = RichString.generateRandom(10)
     val parent = RichString.generateRandom(10)
     CommitInfo(id, sha, message, authorName, committerName, new DateTime(), List(parent), EmptyListOfFiles)
+  }
+
+  def createRandomCommitWithFiles(files: List[CommitFileInfo]): CommitInfo = {
+    createRandomCommit().copy(files = files)
   }
 
 }

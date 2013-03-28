@@ -1,25 +1,38 @@
 package com.softwaremill.codebrag.service.diff
 
-class DiffService {
+import com.softwaremill.codebrag.dao.CommitInfoDAO
+import annotation.tailrec
+
+class DiffService(commitInfoDao: CommitInfoDAO) {
 
   val Info = """@@ -(\d+),(\d+) \+(\d+),(\d+) @@""".r
 
   def parseDiff(diff: String): List[DiffLine] = {
-    def convertToDiffLines(lines: List[String], lineNumber: Int): List[DiffLine] = {
+    @tailrec
+    def convertToDiffLines(lines: List[String], lineNumber: Int, accu: List[DiffLine]): List[DiffLine] = {
       if (lines.isEmpty) {
-        List()
+        accu.reverse
       } else {
         lines.head match {
-          case line@Info(startOld, countOld, startNew, countNew) => DiffLine(line, 0) :: convertToDiffLines(lines.tail, startOld.toInt)
-          case line => DiffLine(line, lineNumber) :: convertToDiffLines(lines.tail, lineNumber + 1)
+          case line@Info(startOld, countOld, startNew, countNew) => convertToDiffLines(lines.tail, startOld.toInt, DiffLine(line, 0) :: accu)
+          case line => convertToDiffLines(lines.tail, lineNumber + 1, DiffLine(line, lineNumber) :: accu)
         }
       }
     }
 
     val diffLines = diff.split("\n").toList
 
-    convertToDiffLines(diffLines, 0)
+    convertToDiffLines(diffLines, 0, List())
+  }
+
+  def getFilesWithDiffs(commitId: String): Either[String, List[FileWithDiff]] = {
+    commitInfoDao.findBySha(commitId) match {
+      case Some(commit) => Right(commit.files.map(file => FileWithDiff(file.filename, parseDiff(file.patch))))
+      case None => Left("No such commit")
+    }
   }
 }
 
 case class DiffLine(line: String, lineNumber: Int)
+
+case class FileWithDiff(filename: String, lines: List[DiffLine])
