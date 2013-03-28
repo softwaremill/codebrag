@@ -1,10 +1,7 @@
 package com.softwaremill.codebrag.dao.reporting
 
-import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
-import net.liftweb.mongodb.record.field.{DateField, ObjectIdPk}
-import com.softwaremill.codebrag.dao.{CommitInfoRecord, LongStringField}
+import com.softwaremill.codebrag.dao.CommitInfoRecord
 import com.foursquare.rogue.LiftRogue._
-import org.joda.time.DateTime
 import java.util.Date
 import org.bson.types.ObjectId
 
