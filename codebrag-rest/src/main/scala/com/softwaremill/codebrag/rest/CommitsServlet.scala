@@ -24,7 +24,7 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
     halt(404)
   }
 
-  post("/:id/comments/", operation(addCommentOperation)) {
+  post("/:id/comments", operation(addCommentOperation)) {
     haltIfNotAuthenticated
     val commitId = params("id")
     val messageBody = (parsedBody \ "body").extract[String]
@@ -32,7 +32,7 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
     commentService.addCommentToCommit(command)
   }
 
-  get("/:id/comments/", operation(getCommentsOperation)) {
+  get("/:id/comments", operation(getCommentsOperation)) {
     haltIfNotAuthenticated
     val commitId = params("id")
     CommentListDTO(List.empty)
