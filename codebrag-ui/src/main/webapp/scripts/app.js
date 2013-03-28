@@ -4,6 +4,7 @@ angular.module("ajaxthrobber", []);
 
 angular.module('codebrag.common.services', []);
 angular.module('codebrag.common.filters', []);
+angular.module('codebrag.common.directives', ['codebrag.common.services']);
 
 angular.module('codebrag.session', ['ngCookies'])
     .config(function ($routeProvider) {
@@ -13,7 +14,7 @@ angular.module('codebrag.session', ['ngCookies'])
             when("/profile", {controller: "ProfileCtrl", templateUrl: "views/secured/profile.html"});
     });
 
-angular.module('codebrag.commits.comments', [])
+angular.module('codebrag.commits.comments', []);
 
 angular.module('codebrag.commits', ['ngResource', 'codebrag.commits.comments'])
     .config(function($routeProvider) {
@@ -25,6 +26,7 @@ angular.module('codebrag', [
             'codebrag.session',
             'codebrag.common.filters',
             'codebrag.common.services',
+            'codebrag.common.directives',
             'codebrag.commits',
             'ajaxthrobber'])
 
@@ -32,16 +34,9 @@ angular.module('codebrag', [
         authService.requestCurrentUser();
     })
 
-    .config(function ($routeProvider) {
-        $routeProvider.
-            when("/error404", {controller: 'SessionCtrl', templateUrl: "views/errorpages/error404.html"}).
-            when("/error500", {controller: 'SessionCtrl', templateUrl: "views/errorpages/error500.html"}).
-            when("/error", {controller: 'SessionCtrl', templateUrl: "views/errorpages/error500.html"}).
-            otherwise({redirectTo: '/error404'});
-    })
-
     .config(function($httpProvider) {
         $httpProvider.responseInterceptors.push('httpAuthInterceptor');
+        $httpProvider.responseInterceptors.push('httpErrorsInterceptor');
     })
 
     .run(function ($rootScope, $location, authService, flashService) {

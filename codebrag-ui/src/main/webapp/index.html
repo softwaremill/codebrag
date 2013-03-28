@@ -28,6 +28,7 @@
 
     <!-- session -->
     <script type="text/javascript" src="scripts/session/httpAuthInterceptor.js"></script>
+    <script type="text/javascript" src="scripts/session/httpErrorsInterceptor.js"></script>
     <script type="text/javascript" src="scripts/session/authService.js"></script>
     <script type="text/javascript" src="scripts/session/sessionCtrl.js"></script>
     <script type="text/javascript" src="scripts/session/profileCtrl.js"></script>
@@ -45,6 +46,7 @@
     <script type="text/javascript" src="scripts/common/filters/dateFormatFilter.js"></script>
     <script type="text/javascript" src="scripts/common/services/flashService.js"></script>
     <script type="text/javascript" src="scripts/common/services/utilService.js"></script>
+    <script type="text/javascript" src="scripts/common/directives/messagePopup.js"></script>
     <script type="text/javascript" src="scripts/common/ajaxthrobber.js"></script>
     <script type="text/javascript" src="scripts/common/effects.js"></script>
 
@@ -87,25 +89,14 @@
         <div class="content">
             <div class="wrapper">
                 <div class="proper-content">
-
-                    <div class="row-fluid feedback-container">
-                        <div id="feedback" class="span6">
-                            <div class="alert alert-error hide">
-                                <a class="close" onclick="$('.alert-error').fadeOut()">&times;</a>
-                                <strong>Error!</strong>
-                                <span id="error-message"></span>
-                            </div>
-                            <div class="alert alert-info hide">
-                                <a class="close" onclick="$('.alert-message').fadeOut()">&times;</a>
-                                <strong>Info!</strong>
-                                <span id="info-message"></span>
-                            </div>
+                    <div message-popup class="row-fluid feedback-container hide">
+                        <div class="alert alert-error span4 offset8">
+                            <strong>{{errorMsg.status}}</strong> - {{errorMsg.text}}
                         </div>
                     </div>
                     <div class="row-fluid"><!-- spacer for feedback block above -->
                         <div class="span12"></div>
                     </div>
-
                     <div ng-view>
                     </div>
                 </div>

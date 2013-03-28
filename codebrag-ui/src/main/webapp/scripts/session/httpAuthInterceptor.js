@@ -14,15 +14,6 @@ angular.module("codebrag.session")
                     $rootScope.$broadcast("codebrag:httpAuthError", {status: response.status, message: 'Your session timed out. Please login again.'});
                     $location.path("/login");
                 }
-            } else if (response.status === 403) {
-                console.log(response.data);
-                // do nothing, user is trying to modify data without privileges
-            } else if (response.status === 404) {
-                $location.path("/error404");
-            } else if (response.status === 500) {
-                $location.path("/error500");
-            } else {
-                $location.path("/error");
             }
             return $q.reject(response);
         }
