@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{CommitComment, CommitInfo}
+import com.softwaremill.codebrag.domain.CommitInfo
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao.CommitInfoBuilder._
@@ -59,8 +59,8 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
   it should "find all commits starting from newest" in {
     Given("a sample commit and another one stored")
     val olderCommit = sampleCommit
-    val newerCommit = CommitInfo(commitId(1), "123123123", "this is newer commit", "mostr", "mostr", new DateTime(), EmptyListOfParents, EmptyListOfFiles)
-    val anotherNewerCommit = CommitInfo(commitId(2), "123123123", "this is newer commit", "mostr", "mostr", new DateTime(), EmptyListOfParents, EmptyListOfFiles)
+    val newerCommit = CommitInfo(commitId(1), "123123123", "this is newer commit", "mostr", "mostr", nowPlusSeconds(100), EmptyListOfParents, EmptyListOfFiles)
+    val anotherNewerCommit = CommitInfo(commitId(2), "123123123", "this is newer commit", "mostr", "mostr", nowPlusSeconds(50), EmptyListOfParents, EmptyListOfFiles)
     commitInfoDAO.storeCommit(newerCommit)
     commitInfoDAO.storeCommit(anotherNewerCommit)
 
@@ -75,4 +75,6 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
   }
 
   private def commitId(number: Long): ObjectId = new ObjectId("507f191e810c19729de860e" + number)
+  private def nowPlusSeconds(offset: Int) = new DateTime().plusSeconds(offset)
+
 }
