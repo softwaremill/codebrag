@@ -22,6 +22,8 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/profileCtrl.js");
 
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsListCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/pendingCommitsResource.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/comments/commentCtrl.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/comments/commentsService.js");
 
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/filters/dateFormatFilter.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/services/flashService.js");
