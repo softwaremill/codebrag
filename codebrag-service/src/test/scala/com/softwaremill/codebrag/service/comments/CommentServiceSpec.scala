@@ -27,7 +27,7 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
   implicit val Clock = new FixtureTimeClock(FixtureTime)
   val authentication: Authentication = new Authentication("github", "fixture-user-login", "fixture-user-login", "token", "salt")
   val FixtureUser = new User(FixtureAuthorId, authentication, "Bob", "bob@sml.com", "token")
-  val FixtureComment = new CommitComment(FixtureCommentId, FixtureAuthorId, "commentMsg", new DateTime(FixtureTime, DateTimeZone.UTC))
+  val FixtureComment = new CommitComment(FixtureCommentId, FixtureAuthorId, "commentMsg", currentTimeUTC())
   val FixtureReview = CommitReview(FixtureCommitId, List(FixtureComment))
 
   var commentService: CommentService = _
@@ -44,13 +44,14 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
   it should "create a new review with new commit and persist this review" in {
     given(reviewDaoMock.findById(FixtureCommitId)) willReturn None
     val command = AddComment(FixtureCommitId, "fixture-user-login", "new comment message")
+    val comment = CommitComment(FixtureGeneratedId, FixtureAuthorId, "new comment message", currentTimeUTC())
+    val commitWithOneComment = CommitReview(FixtureCommitId, List(comment))
 
     // when
     commentService.addCommentToCommit(command)
 
     // then
-    verify(reviewDaoMock).save(CommitReview(FixtureCommitId, List(CommitComment(FixtureGeneratedId,
-      FixtureAuthorId, "new comment message", new DateTime(FixtureTime, DateTimeZone.UTC)))))
+    verify(reviewDaoMock).save(commitWithOneComment)
   }
 
   it should "add new comment to a review and call dao to persist this review" in {
@@ -79,4 +80,5 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
     newCommentId should equal(FixtureGeneratedId)
   }
 
+  def currentTimeUTC() = new DateTime(FixtureTime, DateTimeZone.UTC)
 }

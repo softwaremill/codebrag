@@ -26,7 +26,7 @@ class MongoCommitReviewDAO extends CommitReviewDAO {
 
   private def toReviewOption(recordOption: Option[CommitReviewRecord]): Option[CommitReview] = {
     recordOption.map(record =>
-      CommitReview(record.id.get, record.comments.get.map(commentRecordToComment(_))));
+      CommitReview(record.id.get, record.comments.get.map(commentRecordToComment(_))))
   }
 
   private def commentRecordToComment(record: CommentRecord): CommitComment = {
