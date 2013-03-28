@@ -13,7 +13,7 @@ import com.softwaremill.codebrag.service.comments.CommentService
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
-  val SamplePendingCommits = CommitListDTO(List(CommitListItemDTO("abcd0123", "this is commit message", "mostr", "michal", new Date())))
+  val SamplePendingCommits = CommitListDTO(List(CommitListItemDTO("id", "abcd0123", "this is commit message", "mostr", "michal", new Date())))
   var commentsService = mock[CommentService]
   var commitsInfoDao = mock[CommitInfoDAO]
   var commitsListFinder = mock[CommitListFinder]

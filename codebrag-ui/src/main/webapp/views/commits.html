@@ -13,7 +13,7 @@
         <ul class="unstyled">
             <li ng-repeat="commit in commits" ng-controller="CommitsListItemCtrl">
                 <div class="row">
-                    <div class="well well-small" ng-click="openCommitDetails(commit.sha)">
+                    <div class="well well-small" ng-click="openCommitDetails(commit)">
                         <h5>{{commit.message}}</h5>
                         <span>{{commit.date | relativeDate}} by {{commit.authorName}}</span>
                         <small>{{commit.sha}}</small>
