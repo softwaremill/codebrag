@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.comments
+package com.softwaremill.codebrag.dao.reporting
 
 import java.util.Date
 

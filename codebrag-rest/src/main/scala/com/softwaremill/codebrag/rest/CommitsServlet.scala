@@ -8,8 +8,8 @@ import com.softwaremill.codebrag.dao.CommitInfoDAO
 import com.softwaremill.codebrag.service.github.{GitHubCommitInfoConverter, GitHubCommitImportService}
 import org.eclipse.egit.github.core.service.CommitService
 
-import com.softwaremill.codebrag.service.comments.{CommentService, CommentListDTO}
-import com.softwaremill.codebrag.dao.reporting.{CommitListDTO, CommitListFinder}
+import com.softwaremill.codebrag.service.comments.{CommentService}
+import com.softwaremill.codebrag.dao.reporting.{CommentListFinder, CommentListDTO, CommitListDTO, CommitListFinder}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.comments.command.AddComment
 import com.softwaremill.codebrag.common.ObjectIdGenerator
@@ -17,6 +17,7 @@ import com.softwaremill.codebrag.service.diff.{FileWithDiff, DiffService}
 
 class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfoDAO,
                      commitListFinder: CommitListFinder,
+                     commentListFinder: CommentListFinder,
                      commentService: CommentService, val swagger: Swagger,
                      diffService: DiffService)
   extends JsonServletWithAuthentication with CommitsServletSwaggerDefinition with JacksonJsonSupport {
@@ -37,7 +38,7 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
   get("/:id/comments", operation(getCommentsOperation)) {
     haltIfNotAuthenticated
     val commitId = params("id")
-    CommentListDTO(List.empty)
+    commentListFinder.findAllForCommit(new ObjectId(commitId))
   }
 
   get("/", operation(getCommitsOperation)) {

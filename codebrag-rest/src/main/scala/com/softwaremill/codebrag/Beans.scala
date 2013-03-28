@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag
 
 import common.{ObjectIdGenerator, IdGenerator}
-import dao.reporting.MongoCommitListFinder
+import dao.reporting.{MongoCommentListFinder, CommentListDTO, CommentListFinder, MongoCommitListFinder}
 import dao.{MongoCommitReviewDAO, CommitReviewDAO, MongoCommitInfoDAO, MongoUserDAO}
 import rest.CodebragSwagger
 import service.comments.CommentService
@@ -9,6 +9,7 @@ import service.diff.DiffService
 import service.github.GitHubAuthService
 import service.user.Authenticator
 import pl.softwaremill.common.util.time.RealTimeClock
+import org.bson.types.ObjectId
 
 
 trait Beans {
@@ -20,6 +21,7 @@ trait Beans {
   lazy val reviewDao = new MongoCommitReviewDAO
   lazy val commitInfoDao = new MongoCommitInfoDAO
   lazy val commitListFinder = new MongoCommitListFinder
+  lazy val commentListFinder = new MongoCommentListFinder
   lazy val swagger = new CodebragSwagger
   lazy val ghService = new GitHubAuthService
   lazy val commentService = new CommentService(reviewDao, userDao)
