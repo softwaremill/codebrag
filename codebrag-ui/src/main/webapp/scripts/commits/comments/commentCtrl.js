@@ -22,15 +22,8 @@ angular.module('codebrag.commits.comments')
         };
 
         $scope.submitComment = function () {
-            Comments.save($scope.addComment, function (data) {
-                // TODO: replace this with full comment data returned from server when done
-                var addedComment = {
-                    id: data,
-                    authorName: 'mostr',
-                    message: $scope.addComment.body,
-                    time: new Date().toString()
-                };
-                $scope.commentsList.push(addedComment);
+            Comments.save($scope.addComment, function (comment) {
+                $scope.commentsList.push(comment);
             })
         }
 
