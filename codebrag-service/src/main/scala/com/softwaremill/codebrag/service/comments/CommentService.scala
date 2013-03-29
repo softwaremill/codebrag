@@ -15,9 +15,10 @@ class CommentService(reviewDAO: CommitReviewDAO, userDAO: UserDAO)(implicit idGe
     val reviewOpt = reviewDAO.findById(commitId)
     val user = userDAO.findByLoginOrEmail(command.authorLogin).get
     val newCommentId = idGenerator.generateRandom()
+    val time = clock.currentDateTimeUTC()
     val reviewWithComment = reviewOpt match {
-      case Some(review) => review.addComment(newCommentId, user.id, command.message, clock)
-      case None => CommitReview.createWithComment(commitId, newCommentId, user.id, command.message, clock)
+      case Some(review) => review.addComment(newCommentId, user.id, command.message, time)
+      case None => CommitReview.createWithComment(commitId, newCommentId, user.id, command.message, time)
     }
     reviewDAO.save(reviewWithComment)
     newCommentId
