@@ -5,7 +5,9 @@ angular.module('codebrag.commits')
         $scope.openCommitDetails = function(commit) {
             currentCommit.id = commit.id
             currentCommit.sha = commit.sha
-            $scope.$parent.detailsSection.templateName = "views/commitDetails.html?id=" + commit.id;
+            if($scope.$parent && $scope.$parent.detailsSection) {
+                $scope.$parent.detailsSection.templateName = "views/commitDetails.html?id=" + commit.id;
+            }
         }
 
     });
