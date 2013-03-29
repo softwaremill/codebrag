@@ -8,12 +8,16 @@ import com.softwaremill.codebrag.dao.CommitInfoDAO
 import com.softwaremill.codebrag.service.github.{GitHubCommitInfoConverter, GitHubCommitImportService}
 import org.eclipse.egit.github.core.service.CommitService
 
-import com.softwaremill.codebrag.service.comments.{CommentService}
-import com.softwaremill.codebrag.dao.reporting.{CommentListFinder, CommentListDTO, CommitListDTO, CommitListFinder}
+import com.softwaremill.codebrag.service.comments.CommentService
+import com.softwaremill.codebrag.dao.reporting._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.service.comments.command.AddComment
 import com.softwaremill.codebrag.common.ObjectIdGenerator
-import com.softwaremill.codebrag.service.diff.{FileWithDiff, DiffService}
+import com.softwaremill.codebrag.service.diff.DiffService
+import com.softwaremill.codebrag.dao.reporting.CommitListDTO
+import scala.Some
+import com.softwaremill.codebrag.dao.reporting.CommentListDTO
+import com.softwaremill.codebrag.service.diff.FileWithDiff
+import com.softwaremill.codebrag.service.comments.command.AddComment
 
 class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfoDAO,
                      commitListFinder: CommitListFinder,
@@ -83,7 +87,7 @@ trait CommitsServletSwaggerDefinition extends SwaggerSupport {
     .parameter(queryParam[String]("type").description("Type of selection (can be 'pending')").required)
     .summary("Gets all commits pending for review")
 
-  val addCommentOperation = apiOperation[AddCommentWebResponse]("add")
+  val addCommentOperation = apiOperation[CommentListItemDTO]("add")
     .summary("Posts a new comment")
     .parameter(pathParam[String]("id").description("Commit identifier").required)
     .parameter(bodyParam[String]("body").description("Message body").required)
@@ -96,5 +100,3 @@ trait CommitsServletSwaggerDefinition extends SwaggerSupport {
     .summary("Get a list of files with diffs")
     .parameter(pathParam[String]("id").description("Identifier of the commit").required)
 }
-
-case class AddCommentWebResponse(id: String)

@@ -1,15 +1,15 @@
 package com.softwaremill.codebrag.service.comments
 
-import com.softwaremill.codebrag.dao.{CommitReviewDAO, UserDAO, CommitInfoDAO}
-import com.softwaremill.codebrag.domain.{CommitReview, User, CommitComment, CommitInfo}
+import com.softwaremill.codebrag.dao.{CommitReviewDAO, UserDAO}
+import com.softwaremill.codebrag.domain.CommitReview
 import command.AddComment
 import pl.softwaremill.common.util.time.Clock
 import com.softwaremill.codebrag.common.IdGenerator
-import org.bson.types.ObjectId
+import com.softwaremill.codebrag.dao.reporting.CommentListItemDTO
 
 class CommentService(reviewDAO: CommitReviewDAO, userDAO: UserDAO)(implicit idGenerator: IdGenerator, clock: Clock) {
 
-  def addCommentToCommit(command: AddComment) = {
+  def addCommentToCommit(command: AddComment): CommentListItemDTO = {
 
     val commitId = command.commitId
     val reviewOpt = reviewDAO.findById(commitId)
@@ -21,6 +21,6 @@ class CommentService(reviewDAO: CommitReviewDAO, userDAO: UserDAO)(implicit idGe
       case None => CommitReview.createWithComment(commitId, newCommentId, user.id, command.message, time)
     }
     reviewDAO.save(reviewWithComment)
-    newCommentId
+    CommentListItemDTO(newCommentId.toString, user.name, command.message, time.toDate)
   }
 }

@@ -14,6 +14,8 @@ import com.softwaremill.codebrag.domain._
 import org.joda.time.{DateTimeZone, DateTime}
 import org.bson.types.ObjectId
 import scala.Some
+import com.softwaremill.codebrag.dao.reporting.CommentListItemDTO
+import java.util.Date
 
 class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
@@ -68,16 +70,16 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
     verify(reviewDaoMock).save(any[CommitReview])
   }
 
-  it should "return new comment identifier as a result" in {
+  it should "return new comment list item as a result" in {
 
     given(reviewDaoMock.findById(FixtureCommitId)) willReturn (Some(FixtureReview))
     val command = AddComment(FixtureCommitId, "fixture-user-login", "new comment message")
 
     // when
-    val newCommentId = commentService.addCommentToCommit(command)
+    val newCommentItem = commentService.addCommentToCommit(command)
 
     // then
-    newCommentId should equal(FixtureGeneratedId)
+    newCommentItem should equal(CommentListItemDTO(FixtureGeneratedId.toString, "Bob", "new comment message", new Date(FixtureTime)))
   }
 
   def currentTimeUTC() = new DateTime(FixtureTime, DateTimeZone.UTC)
