@@ -36,7 +36,7 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
     val commitId = params("id")
     val messageBody = (parsedBody \ "body").extract[String]
     val command = AddComment(new ObjectId(commitId), user.login, messageBody)
-    commentService.addCommentToCommit(command)
+    AddCommentResponse(commentService.addCommentToCommit(command))
   }
 
   get("/:id/comments", operation(getCommentsOperation)) {
@@ -87,7 +87,7 @@ trait CommitsServletSwaggerDefinition extends SwaggerSupport {
     .parameter(queryParam[String]("type").description("Type of selection (can be 'pending')").required)
     .summary("Gets all commits pending for review")
 
-  val addCommentOperation = apiOperation[CommentListItemDTO]("add")
+  val addCommentOperation = apiOperation[AddCommentResponse]("add")
     .summary("Posts a new comment")
     .parameter(pathParam[String]("id").description("Commit identifier").required)
     .parameter(bodyParam[String]("body").description("Message body").required)
@@ -100,3 +100,5 @@ trait CommitsServletSwaggerDefinition extends SwaggerSupport {
     .summary("Get a list of files with diffs")
     .parameter(pathParam[String]("id").description("Identifier of the commit").required)
 }
+
+case class AddCommentResponse(item: CommentListItemDTO)

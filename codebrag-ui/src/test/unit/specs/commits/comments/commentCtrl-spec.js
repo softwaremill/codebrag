@@ -22,9 +22,11 @@ describe("Comment Controller", function () {
 
     it('should post a new comment to the server', inject(function ($controller) {
         // Given
-        var expectedSavePayload = {commitId: selectedCommit.id, body: "new message"};
-        $httpBackend.whenGET(commentsEndpointAddress).respond({comments:[]});
-        $httpBackend.expectPOST(commentsEndpointAddress, expectedSavePayload).respond({});
+        var addCommand = {commitId: selectedCommit.id, body: "new message"};
+        var serverResponseComment = {"id":"1","authorName":"author","message":"ok","time":"2013-03-29T15:14:10Z"}
+        var alreadyPresentComment = {"id":"0","authorName":"robert","message":":)","time":"2013-02-29T15:14:10Z"}
+        $httpBackend.whenGET(commentsEndpointAddress).respond({comments:[alreadyPresentComment]});
+        $httpBackend.expectPOST(commentsEndpointAddress, addCommand).respond({item: serverResponseComment});
         $controller('CommentCtrl', {$scope: scope, currentCommit: selectedCommit});
 
         // When
@@ -32,8 +34,9 @@ describe("Comment Controller", function () {
         scope.submitComment()
         $httpBackend.flush();
 
-        //Then
-        // server was called as expected
+        // Then
+        expect(scope.commentsList[0]).toEqual(alreadyPresentComment)
+        expect(scope.commentsList[1]).toEqual(serverResponseComment)
     }));
 
     it('should load all comments for selected commit on start', inject(function($controller) {
