@@ -19,7 +19,7 @@ angular.module('codebrag.commits.comments', []);
 angular.module('codebrag.commits', ['ngResource', 'codebrag.commits.comments'])
     .config(function($routeProvider) {
         $routeProvider.
-            when("/commits", {controller: 'CommitsListCtrl', templateUrl: "views/commits.html"});
+            when("/commits", {controller: 'CommitsCtrl', templateUrl: "views/commits.html"});
     });
 
 angular.module('codebrag', [

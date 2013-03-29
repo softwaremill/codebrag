@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsListCtrl', function CommitsListCtrl($location, $scope, $http, PendingCommits) {
+    .controller('CommitsCtrl', function ($location, $scope, $http, PendingCommits) {
         PendingCommits.get(function(responseData) {
             $scope.commits = responseData.commits;
         });
