@@ -25,6 +25,11 @@
         </ul>
     </div>
     <div class="span7 offset1">
-        <div ng-include src="detailsSection.templateName"></div>
+        <div ng-hide="currentCommit.id">
+            <div ng-include src="'views/empty.html'"></div>
+        </div>
+        <div ng-show="currentCommit.id">
+            <div ng-include src="'views/commitDetails.html?id=' + currentCommit.id"></div>
+        </div>
     </div>
 </div>
