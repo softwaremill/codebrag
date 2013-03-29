@@ -6,6 +6,18 @@
             <p>Id: {{currentCommit.id}}</p>
         </div>
     </div>
+    <div class="row" ng-repeat="file in files">
+        <div class="span7">
+            <div class="row">
+                <div class="well">{{file.filename}} - {{file.status}}</div>
+            </div>
+            <div class="row">
+                <div ng-repeat="line in file.lines" ng-hide="file.lines.length == 0">
+                    {{line.lineNumber}} {{line.line}}
+                </div>
+            </div>
+        </div>
+    </div>
     <div ng-controller="CommentCtrl">
     <div class="row">
         <div class="span7">
