@@ -31,7 +31,7 @@ describe("Session Controller", function () {
 
     it('Should call login rest service when form is valid', function () {
         // Given
-        $httpBackend.expectPOST('/rest/users').respond('anything');
+        $httpBackend.expectPOST('rest/users').respond('anything');
 
         // When
         scope.login();
@@ -67,7 +67,7 @@ describe("Session Controller", function () {
 
     it('Calling logout should log out from angular layer', function () {
         // Given
-        $httpBackend.expectGET('/rest/users/logout').respond('');
+        $httpBackend.expectGET('rest/users/logout').respond('');
 
         // When
         scope.logout();

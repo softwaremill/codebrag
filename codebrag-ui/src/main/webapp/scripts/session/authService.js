@@ -7,14 +7,14 @@ angular.module('codebrag.session')
             loggedInUser: null,
 
             login: function(user) {
-                var loginRequest = $http.post('/rest/users', user);
+                var loginRequest = $http.post('rest/users', user);
                 return loginRequest.then(function(response) {
                     authService.loggedInUser = response.data;
                 });
             },
 
             logout: function() {
-                var logoutRequest = $http.get('/rest/users/logout');
+                var logoutRequest = $http.get('rest/users/logout');
                 return logoutRequest.then(function() {
                     authService.loggedInUser = null;
                 })
@@ -32,7 +32,7 @@ angular.module('codebrag.session')
                 if (authService.isAuthenticated()) {
                     return $q.when(authService.loggedInUser);
                 }
-                return $http.get('/rest/users').then(function(response) {
+                return $http.get('rest/users').then(function(response) {
                     authService.loggedInUser = response.data;
                     return authService.loggedInUser;
                 });
