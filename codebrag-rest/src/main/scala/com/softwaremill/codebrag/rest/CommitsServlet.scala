@@ -13,10 +13,12 @@ import com.softwaremill.codebrag.dao.reporting.{CommitListDTO, CommitListFinder}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.comments.command.AddComment
 import com.softwaremill.codebrag.common.ObjectIdGenerator
+import com.softwaremill.codebrag.service.diff.{FileWithDiff, DiffService}
 
 class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfoDAO,
                      commitListFinder: CommitListFinder,
-                     commentService: CommentService, val swagger: Swagger)
+                     commentService: CommentService, val swagger: Swagger,
+                     diffService: DiffService)
   extends JsonServletWithAuthentication with CommitsServletSwaggerDefinition with JacksonJsonSupport {
 
   get("/") {
@@ -56,9 +58,12 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
     fetchPendingCommits()
   }
 
-  get("/:id") {
+  get("/:id", operation(getFilesForCommit)) {
     val commitId = params("id")
-    CommitOverviewResponse()
+    diffService.getFilesWithDiffs(commitId) match {
+      case Right(files) => files
+      case Left(error) => NotFound(error)
+    }
   }
 
   private def fetchPendingCommits() = commitListFinder.findAllPendingCommits()
@@ -85,9 +90,10 @@ trait CommitsServletSwaggerDefinition extends SwaggerSupport {
   val getCommentsOperation = apiOperation[CommentListDTO]("getList")
     .summary("Get a lists of comments")
     .parameter(pathParam[String]("id").description("Commit identifier").required)
+
+  val getFilesForCommit = apiOperation[List[FileWithDiff]]("get")
+    .summary("Get a list of files with diffs")
+    .parameter(pathParam[String]("id").description("Identifier of the commit").required)
 }
 
 case class AddCommentWebResponse(id: String)
-
-case class CommitOverviewResponse()
-  

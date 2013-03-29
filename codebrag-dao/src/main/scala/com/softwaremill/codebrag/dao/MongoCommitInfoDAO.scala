@@ -15,10 +15,6 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
     commit.save
   }
 
-  def storeCommits(commits: Seq[CommitInfo]) {
-    CommitInfoRecord.insertAll(commits.toList)
-  }
-
   def findBySha(sha: String): Option[CommitInfo] = {
     CommitInfoRecord where (_.sha eqs sha) get()
   }
@@ -60,11 +56,11 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
     }
 
     implicit def toCommitFileInfoList(files: List[CommitFileInfoRecord]): List[CommitFileInfo] = {
-      files.map(file => CommitFileInfo(file.filename.get, file.patch.get))
+      files.map(file => CommitFileInfo(file.filename.get, file.status.get, file.patch.get))
     }
 
     implicit def commitFilesToCommitFilesRecords(files: List[CommitFileInfo]):List[CommitFileInfoRecord]= {
-      files.map(file => CommitFileInfoRecord.createRecord.filename(file.filename).patch(file.patch))
+      files.map(file => CommitFileInfoRecord.createRecord.filename(file.filename).status(file.status).patch(file.patch))
     }
 
   }
@@ -98,6 +94,8 @@ class CommitFileInfoRecord extends BsonRecord[CommitFileInfoRecord] {
   def meta = CommitFileInfoRecord
 
   object filename extends LongStringField(this)
+
+  object status extends LongStringField(this)
 
   object patch extends LongStringField(this)
 

@@ -6,8 +6,6 @@ trait CommitInfoDAO {
 
   def storeCommit(commit: CommitInfo)
 
-  def storeCommits(commits: Seq[CommitInfo])
-
   def findBySha(sha: String): Option[CommitInfo]
 
   def findAll(): List[CommitInfo]

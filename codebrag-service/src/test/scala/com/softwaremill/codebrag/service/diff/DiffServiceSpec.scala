@@ -2,13 +2,18 @@ package com.softwaremill.codebrag.service.diff
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.{CommitInfoBuilder, CommitInfoDAO}
+import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.scalatest.mock.MockitoSugar
 import org.mockito.BDDMockito._
-import com.softwaremill.codebrag.domain.CommitFileInfo
+import com.softwaremill.codebrag.domain.{CommitInfo, CommitFileInfo}
+import org.joda.time.DateTime
 
 class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers with MockitoSugar {
+
   behavior of "Diff Service for changes in one file"
+
+  val EmptyParentsList = List.empty
+  val EmptyFilesList = List.empty
 
   val SampleDiff =
     """@@ -2,7 +2,7 @@
@@ -88,7 +93,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
   it should "be right when finds commit" in {
     //given
-    val commit = Some(CommitInfoBuilder.createRandomCommitWithFiles(List()))
+    val commit = Some(CommitInfo("s", "m", "a", "m", new DateTime, EmptyParentsList, EmptyFilesList))
     given(dao.findBySha("1")).willReturn(commit)
 
     //when
@@ -100,7 +105,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
   it should "return list of files with their diffs" in {
     //given
-    val file1 = CommitFileInfo("file1.txt", """@@ -2,7 +2,7 @@
+    val file1 = CommitFileInfo("file1.txt", "", """@@ -2,7 +2,7 @@
                                               | {
                                               |        "user":
                                               |        {
@@ -109,7 +114,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
                                               |                "pass":"2hf23jbd23d2839f2kejdn",
                                               |                "passsalt":"1231e123123",
                                               |                "id":1""")
-    val file2 = CommitFileInfo("file2.txt", """@@ -47,6 +47,6 @@
+    val file2 = CommitFileInfo("file2.txt", "", """@@ -47,6 +47,6 @@
                                               |                 "passsalt":"1231e123123",
                                               |                 "id":1
                                               |         },
@@ -117,7 +122,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
                                               |+        "joined":"1900-01-02"
                                               | }
                                               | ]""")
-    val commit = Some(CommitInfoBuilder.createRandomCommitWithFiles(List(file1, file2)))
+    val commit = Some(CommitInfo("sha", "m", "a", "c", new DateTime, EmptyParentsList, List(file1, file2)))
     given(dao.findBySha("1")).willReturn(commit)
 
     //when

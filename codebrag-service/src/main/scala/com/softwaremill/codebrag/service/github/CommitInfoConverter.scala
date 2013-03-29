@@ -33,7 +33,7 @@ class GitHubCommitInfoConverter(implicit idGenerator: IdGenerator) extends Commi
   }
 
   def convertToCommitFileInfo(file: CommitFile): CommitFileInfo = {
-    CommitFileInfo(file.getFilename, file.getPatch)
+    CommitFileInfo(file.getFilename, file.getStatus, file.getPatch)
   }
 
 }

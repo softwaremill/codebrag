@@ -5,6 +5,7 @@ import dao.reporting.MongoCommitListFinder
 import dao.{MongoCommitReviewDAO, CommitReviewDAO, MongoCommitInfoDAO, MongoUserDAO}
 import rest.CodebragSwagger
 import service.comments.CommentService
+import service.diff.DiffService
 import service.github.GitHubAuthService
 import service.user.Authenticator
 import pl.softwaremill.common.util.time.RealTimeClock
@@ -22,4 +23,5 @@ trait Beans {
   lazy val swagger = new CodebragSwagger
   lazy val ghService = new GitHubAuthService
   lazy val commentService = new CommentService(reviewDao, userDao)
+  lazy val diffService = new DiffService(commitInfoDao)
 }

@@ -9,6 +9,7 @@ import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.reporting.{CommitListDTO, CommitListFinder, CommitListItemDTO}
 import java.util.Date
 import com.softwaremill.codebrag.service.comments.CommentService
+import com.softwaremill.codebrag.service.diff.DiffService
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
@@ -17,20 +18,23 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var commentsService = mock[CommentService]
   var commitsInfoDao = mock[CommitInfoDAO]
   var commitsListFinder = mock[CommitListFinder]
+  var diffService = mock[DiffService]
 
-  def bindServlet = addServlet(new TestableCommitsServlet(commitsInfoDao, fakeAuthenticator, fakeScentry), "/*")
+  def bindServlet {
+    addServlet(new TestableCommitsServlet(commitsInfoDao, fakeAuthenticator, fakeScentry), "/*")
+  }
 
   "GET /commits" should "respond with HTTP 401 when user is not authenticated" in {
     userIsNotAuthenticated
     get("/") {
-      status should be (401)
+      status should be(401)
     }
   }
 
   "GET /commits" should "respond with HTTP 404 (not yet done) when user is authenticated" in {
     userIsAuthenticated
     get("/") {
-      status should be (404)
+      status should be(404)
     }
   }
 
@@ -38,7 +42,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     userIsAuthenticated
     when(commitsListFinder.findAllPendingCommits()).thenReturn(SamplePendingCommits)
     get("/?type=pending") {
-      status should be (200)
+      status should be(200)
       body should equal(asJson(SamplePendingCommits))
     }
 
@@ -49,7 +53,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableCommitsServlet(commitInfoDao: CommitInfoDAO, fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends CommitsServlet(fakeAuthenticator, commitInfoDao, commitsListFinder, commentsService, new CodebragSwagger) {
+    extends CommitsServlet(fakeAuthenticator, commitInfoDao, commitsListFinder, commentsService, new CodebragSwagger, diffService) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

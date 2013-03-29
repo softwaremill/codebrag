@@ -65,7 +65,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with MockitoSugar with Befor
         service.importRepoCommits("a", "b")
 
         //then
-        verify(dao).storeCommits(any[List[CommitInfo]])
+        verify(dao, times(3)).storeCommit(any[CommitInfo])
       }
 
       it("should not access data layer when no commits were retrieved") {
@@ -90,6 +90,7 @@ class GitHubCommitImportServiceSpec extends FunSpec with MockitoSugar with Befor
         val retrieved = List(oldCommit, newCommit)
         val newCommitId = new ObjectId("507f1f77bcf86cd799439012");
         given(commitService.getCommits(any[IRepositoryIdProvider])).willReturn(retrieved)
+        given(commitService.getCommit(any[IRepositoryIdProvider], Matchers.eq("reposha"))).willReturn(newCommit)
         given(converter.convertToCommitInfo(Matchers.eq(newCommit))).willReturn(CommitInfo(newCommitId, "reposha", "", "", "", new DateTime, List("parent2"), List.empty))
         given(converter.convertToCommitInfo(Matchers.eq(oldCommit))).willReturn(oldCommitInfo)
 
@@ -97,52 +98,14 @@ class GitHubCommitImportServiceSpec extends FunSpec with MockitoSugar with Befor
         service.importRepoCommits("o", "r")
 
         //then
-        val commitCapturer: ArgumentCaptor[Seq[CommitInfo]] = ArgumentCaptor.forClass(classOf[Seq[CommitInfo]])
-        verify(dao).storeCommits(commitCapturer.capture())
+        val commitCapturer: ArgumentCaptor[CommitInfo] = ArgumentCaptor.forClass(classOf[CommitInfo])
+        verify(dao).storeCommit(commitCapturer.capture())
         val capturedCommits = commitCapturer.getAllValues
-        capturedCommits.head should have size (1)
-        capturedCommits.head.head.sha should be("reposha")
+        capturedCommits should have size (1)
+        capturedCommits.head.sha should be("reposha")
       }
     }
 
-    describe("importing a single commit") {
-      it("should call api for proper repo") {
-        //given
-        val owner = "a"
-        val repo = "b"
-        val sha = "somesha"
-
-        //when
-        service.importCommitDetails(sha, owner, repo)
-
-        //then
-        verify(commitService).getCommit(argThat(new RepoIdMatcher(owner, repo)), Matchers.eq(sha))
-      }
-
-      it("should convert commit to internal representation") {
-        //given
-        val commit = createRepoCommit("sha")
-        given(commitService.getCommit(any[IRepositoryIdProvider], Matchers.eq("sha"))).willReturn(commit)
-
-        //when
-        service.importCommitDetails("sha", "o", "r")
-
-        //then
-        verify(converter).convertToCommitInfo(commit)
-      }
-
-      it("should store retrieved data") {
-        //given
-        val commit = createRepoCommit("sha")
-        given(commitService.getCommit(any[IRepositoryIdProvider], Matchers.eq("sha"))).willReturn(commit)
-
-        //when
-        service.importCommitDetails("sha", "o", "r")
-
-        //then
-        verify(dao).storeCommit(any[CommitInfo])
-      }
-    }
   }
 
   private def createRepoCommit(sha: String): RepositoryCommit = {

@@ -42,20 +42,6 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
     commitInfoDAO.findBySha(commit.sha) should be('defined)
   }
 
-  it should "store a collection of commits" in {
-    Given("a collection of commits")
-    val commit1 = createRandomCommit()
-    val commit2 = createRandomCommit()
-    val commits = Seq[CommitInfo](commit1, commit2)
-
-    When("trying to store them")
-    commitInfoDAO.storeCommits(commits)
-
-    Then("they are stored")
-    commitInfoDAO.findBySha(commit1.sha) should be(Some(commit1))
-    commitInfoDAO.findBySha(commit2.sha) should be(Some(commit2))
-  }
-
   it should "find all commits starting from newest" in {
     Given("a sample commit and another one stored")
     val olderCommit = sampleCommit
