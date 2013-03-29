@@ -6,9 +6,10 @@ import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.domain.{User, Authentication}
 import java.util.UUID
+import com.typesafe.scalalogging.slf4j.Logging
 
 
-class GithubAuthorizationServlet(val authenticator:Authenticator, ghAuthService:GitHubAuthService, userDao:UserDAO) extends JsonServletWithAuthentication {
+class GithubAuthorizationServlet(val authenticator:Authenticator, ghAuthService:GitHubAuthService, userDao:UserDAO) extends JsonServletWithAuthentication with Logging {
 
   var tmpLogin:String = _
   var tmpPassword:String = _
@@ -25,7 +26,9 @@ class GithubAuthorizationServlet(val authenticator:Authenticator, ghAuthService:
     tmpLogin = user.login
     tmpPassword = accessToken.access_token
     authenticate()
-    SeeOther("/#/commits")
+    val redirectPath: String = s"$contextPath/#/commits"
+    logger.debug(s"Redirect path: $redirectPath")
+    SeeOther(redirectPath)
   }
 
   override protected def login: String = tmpLogin
