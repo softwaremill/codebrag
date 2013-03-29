@@ -7,7 +7,7 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User, CommitComment, CommitReview}
 import org.joda.time.DateTime
 
-class MongoCommentListFinderTest extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
+class MongoCommentListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
   behavior of "MongoCommentListFinder"
   var commentListFinder: MongoCommentListFinder = _
