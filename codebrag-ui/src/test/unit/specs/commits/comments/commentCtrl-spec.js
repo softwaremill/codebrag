@@ -4,28 +4,50 @@ describe("Comment Controller", function () {
 
     beforeEach(module('codebrag.commits'));
 
-    var scope, $httpBackend, ctrl, commentService;
+    var scope, $httpBackend, selectedCommit;
+    var commentsEndpointAddress = 'rest/commits/1/comments';
+    var singleStoredComment = {id: 123, authorName: "mostr", message: "this is comment"};
 
-    beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, Comments) {
+    beforeEach(inject(function (_$httpBackend_, $rootScope, currentCommit) {
         $httpBackend = _$httpBackend_;
-        commentService = Comments;
         scope = $rootScope.$new();
-        ctrl = $controller
+        selectedCommit = currentCommit;
+        selectedCommit.id = 1;
     }));
 
-    it('should post a new comment to the server', function () {
+    afterEach(inject(function(_$httpBackend_) {
+        _$httpBackend_.verifyNoOutstandingExpectation();
+        _$httpBackend_.verifyNoOutstandingRequest();
+    }));
+
+    it('should post a new comment to the server', inject(function ($controller) {
         // Given
-        $httpBackend.whenPOST('rest/commits/1/comments').respond({id: 'new-comment-id'});
+        var expectedSavePayload = {commitId: selectedCommit.id, body: "new message"};
+        $httpBackend.whenGET(commentsEndpointAddress).respond({comments:[]});
+        $httpBackend.expectPOST(commentsEndpointAddress, expectedSavePayload).respond({});
+        $controller('CommentCtrl', {$scope: scope, currentCommit: selectedCommit});
 
         // When
-        ctrl('CommentCtrl', {$scope: scope, currentCommit: {id: '1'}});
         scope.addComment.body = "new message"
         scope.submitComment()
         $httpBackend.flush();
 
         //Then
         // server was called as expected
-    })
+    }));
+
+    it('should load all comments for selected commit on start', inject(function($controller) {
+        // Given
+        var commentsList = {comments: [singleStoredComment]};
+        $httpBackend.whenGET(commentsEndpointAddress).respond(commentsList);
+
+        // When
+        $controller('CommentCtrl', {$scope: scope, currentCommit: selectedCommit});
+        $httpBackend.flush();
+
+        // Then
+        expect(scope.commentsList).toEqual(commentsList.comments);
+    }));
 })
 
 
