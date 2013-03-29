@@ -9,12 +9,15 @@
     <div class="row" ng-repeat="file in files">
         <div class="span7">
             <div class="row">
-                <div class="well">{{file.filename}} - {{file.status}}</div>
+                <div class="well">{{file.filename}}</div>
             </div>
             <div class="row">
-                <div ng-repeat="line in file.lines" ng-hide="file.lines.length == 0">
-                    {{line.lineNumber}} {{line.line}}
-                </div>
+                <table class="table">
+                    <tr ng-repeat="line in file.lines">
+                        <td class="diff-table-line-number-cell">{{line.lineNumber}}</td>
+                        <td>{{line.line}}</td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>

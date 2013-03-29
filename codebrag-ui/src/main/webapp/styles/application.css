@@ -65,4 +65,8 @@ html, body, .container, .content {
     height: 60px;
 }
 
+.diff-table-line-number-cell {
+    width: 20px
+}
+
 /* Sticky Footer End */
