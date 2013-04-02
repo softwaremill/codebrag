@@ -30,12 +30,29 @@ describe("Comment Controller", function () {
         // When
         $controller('CommentCtrl', {$scope: scope, currentCommit: selectedCommit});
         scope.addComment.body = "new message"
-        scope.submitComment()
+        scope.submitComment();
         $httpBackend.flush();
 
         // Then
         expect(scope.commentsList[0]).toEqual(singleStoredComment)
         expect(scope.commentsList[1]).toEqual(serverResponseComment)
+    }));
+
+    it('should reset comment form to empty after saving comment', inject(function($controller) {
+        // Given
+        givenStoredSingleComment();
+        $httpBackend.expectPOST(commentsEndpointAddress, scope.addComment).respond('');
+        $controller('CommentCtrl', {$scope: scope, currentCommit: selectedCommit});
+
+        // When
+        scope.addComment.commitId = selectedCommit.id;
+        scope.addComment.body = 'this is comment';
+        scope.submitComment();
+        $httpBackend.flush();
+
+        // Then
+        expect(scope.addComment.body).toEqual('');
+
     }));
 
     it('should load all comments for selected commit on start', inject(function ($controller) {

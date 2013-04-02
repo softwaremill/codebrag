@@ -18,11 +18,15 @@ angular.module('codebrag.commits.comments')
 
         $scope.addComment = {
             commitId: currentCommit.id,
-            body: ''
+            body: '',
+            reset: function() {
+                this.body = '';
+            }
         };
 
         $scope.submitComment = function () {
             Comments.save($scope.addComment, function (commentResponse) {
+                $scope.addComment.reset();
                 $scope.commentsList.push(commentResponse.comment);
             })
         }

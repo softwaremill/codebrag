@@ -14,11 +14,11 @@
                 <br/>
                 <span ng-bind-html-unsafe="comment.message"></span>
             </div>
-            <form>
+            <form name="newCommentForm">
                 <fieldset>
                     <label>Your comment</label>
-                    <textarea rows="5" style="width: 90%; resize: vertical" ng-model="addComment.body"></textarea>
-                    <button class="btn" ng-click="submitComment()">Submit</button>
+                    <textarea rows="5" style="width: 90%; resize: vertical" ng-model="addComment.body" required placeholder="Type your comment here"></textarea>
+                    <button class="btn" ng-disabled="newCommentForm.$invalid" ng-click="submitComment()">Submit</button>
                 </fieldset>
             </form>
         </div>
