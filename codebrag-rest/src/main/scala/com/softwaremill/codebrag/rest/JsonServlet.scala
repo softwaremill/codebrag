@@ -38,6 +38,16 @@ class JsonServlet extends ScalatraServlet with JacksonJsonSupport with JValueRes
     }
   }
 
+  def extractNotEmptyString(key: String) = {
+    val value = (parsedBody \ key).extractOrElse[String](haltWithMissingKey(key))
+    if (value.trim.isEmpty) haltWithMissingKey(key)
+    value
+  }
+
+  def haltWithMissingKey(key: String): Nothing = {
+    halt(400, s"Missing or empty element '$key' in request body")
+  }
+
   def applyNoCache(response: HttpServletResponse) {
     response.addHeader("Expires", Expire)
     response.addHeader("Last-Modified", Expire)
