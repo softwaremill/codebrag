@@ -4,6 +4,7 @@ import pl.softwaremill.common.util.RichString
 import com.softwaremill.codebrag.domain.{CommitFileInfo, CommitInfo}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
+import ObjectIdTestUtils._
 
 /**
  * Test utility to easily build commits.
@@ -16,7 +17,7 @@ object CommitInfoBuilder {
 
   def createRandomCommit(): CommitInfo = createRandomCommit(new ObjectId())
 
-  def createRandomCommit(number: Long): CommitInfo = createRandomCommit(new ObjectId("507f191e810c19729de860e" + number))
+  def createRandomCommit(number: Long): CommitInfo = createRandomCommit(oid(number))
 
   def createRandomCommit(id: ObjectId): CommitInfo = {
     val sha = RichString.generateRandom(10)

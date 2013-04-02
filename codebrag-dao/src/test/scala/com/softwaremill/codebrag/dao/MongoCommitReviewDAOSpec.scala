@@ -20,16 +20,16 @@ class MongoCommitReviewDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach
   it should "return None if provided unknown identifier" in {
     // given empty storage
     // when
-    val reviewOption = commitReviewDAO.findById(new ObjectId())
+    val reviewOption = commitReviewDAO.findById(new ObjectId)
     // then
     reviewOption.isDefined should be(false)
   }
 
   it should "return previously saved review object" in {
     // given
-    val commitReview = CommitReview(new ObjectId(),
-      List(CommitComment(new ObjectId(), new ObjectId(), "comment msg1", new DateTime()),
-        CommitComment(new ObjectId(), new ObjectId(), "comment msg2", new DateTime())))
+    val commitReview = CommitReview(new ObjectId,
+      List(CommitComment(new ObjectId, new ObjectId, "comment msg1", new DateTime()),
+           CommitComment(new ObjectId, new ObjectId, "comment msg2", new DateTime())))
     // when
     commitReviewDAO.save(commitReview)
     val reviewOption = commitReviewDAO.findById(commitReview.commitId)
@@ -38,4 +38,6 @@ class MongoCommitReviewDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach
     reviewOption.isDefined should be(true)
     reviewOption.get should equal(commitReview)
   }
+
+
 }

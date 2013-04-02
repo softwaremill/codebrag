@@ -1,11 +1,12 @@
 package com.softwaremill.codebrag.dao.reporting
 
-import com.softwaremill.codebrag.dao.{CommitInfoBuilder, MongoCommitInfoDAO, CommitInfoRecord, FlatSpecWithMongo}
+import com.softwaremill.codebrag.dao._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.CommitInfo
 import org.joda.time.DateTime
-import org.bson.types.ObjectId
+import ObjectIdTestUtils._
+
 
 class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
@@ -32,8 +33,8 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
 
     val newerCommitTime: DateTime = FixtureDateTime.plusSeconds(5)
     val newestCommitTime: DateTime = FixtureDateTime.plusSeconds(10)
-    val newerCommit = CommitInfo(objId(1), "123123123", "this is newer commit", "mostr", "mostr", newerCommitTime, EmptyListOfParents, EmptyListOfFiles)
-    val newestCommit = CommitInfo(objId(2), "123123123", "this is newer commit2", "mostr", "mostr", newestCommitTime, EmptyListOfParents, EmptyListOfFiles)
+    val newerCommit = CommitInfo(oid(1), "123123123", "this is newer commit", "mostr", "mostr", newerCommitTime, EmptyListOfParents, EmptyListOfFiles)
+    val newestCommit = CommitInfo(oid(2), "123123123", "this is newer commit2", "mostr", "mostr", newestCommitTime, EmptyListOfParents, EmptyListOfFiles)
     commitInfoDAO.storeCommit(newestCommit)
     commitInfoDAO.storeCommit(newerCommit)
 
@@ -42,8 +43,8 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
 
     //then
     pendingCommitList.commits.length should equal (3)
-    pendingCommitList.commits(0) should equal(CommitListItemDTO(objId(2).toString, "123123123", "this is newer commit2", "mostr", "mostr", newestCommitTime.toDate))
-    pendingCommitList.commits(1) should equal(CommitListItemDTO(objId(1).toString, "123123123", "this is newer commit", "mostr", "mostr", newerCommitTime.toDate))
+    pendingCommitList.commits(0) should equal(CommitListItemDTO(oid(2).toString, "123123123", "this is newer commit2", "mostr", "mostr", newestCommitTime.toDate))
+    pendingCommitList.commits(1) should equal(CommitListItemDTO(oid(1).toString, "123123123", "this is newer commit", "mostr", "mostr", newerCommitTime.toDate))
     pendingCommitList.commits(2) should equal(CommitListItemDTO(olderCommit.id.toString, olderCommit.sha, olderCommit.message,
       olderCommit.authorName, olderCommit.committerName, olderCommit.date.toDate))
   }
@@ -58,6 +59,4 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     //then
     pendingCommitList.commits should be ('empty)
   }
-
-  def objId(number: Int) = new ObjectId("507f191e810c19729de860e" + number)
 }
