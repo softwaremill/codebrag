@@ -15,7 +15,7 @@
                 <table class="table">
                     <tr ng-repeat="line in file.lines">
                         <td class="diff-table-line-number-cell">{{line.lineNumber}}</td>
-                        <td>{{line.line}}</td>
+                        <td><span ng-bind-html-unsafe="line.line"></span></td>
                     </tr>
                 </table>
             </div>
