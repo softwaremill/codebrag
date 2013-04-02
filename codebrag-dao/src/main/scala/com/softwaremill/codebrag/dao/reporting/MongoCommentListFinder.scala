@@ -9,11 +9,7 @@ class MongoCommentListFinder extends CommentListFinder {
 
   override def findAllForCommit(commitId: ObjectId) = {
     val recordOption = CommitReviewRecord.where(_.id eqs commitId).get()
-    CommentListDTO(
-      recordOption match {
-        case None => List.empty
-        case Some(record) => buildCommentsFromRecord(record)
-      })
+    CommentListDTO(recordOption.toList.flatMap(buildCommentsFromRecord(_)))
   }
 
   private def buildCommentsFromRecord(record: CommitReviewRecord): List[CommentListItemDTO] = {
@@ -24,8 +20,8 @@ class MongoCommentListFinder extends CommentListFinder {
     }
 
     val comments = record.comments.get.sortBy(_.date.get)
-    val authorIdList = comments.map(_.authorId.get)
-    val idNamesPairs = UserRecord.select(_.id, _.name).where(_.id in authorIdList).fetch
+    val authorIdSet = comments.map(_.authorId.get).toSet
+    val idNamesPairs = UserRecord.select(_.id, _.name).where(_.id in authorIdSet).fetch
     val namesGroupedById = idNamesPairs.toMap
     comments.map(buildCommentItem(_, namesGroupedById))
   }
