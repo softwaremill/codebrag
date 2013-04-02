@@ -69,11 +69,11 @@ html, body, .container, .content {
     width: 20px
 }
 
-.diff-line-added {
+.diff-added {
     background-color: #ddffdd;
 }
 
-.diff-line-removed {
+.diff-removed {
     background-color: #ffdddd;
 }
 
