@@ -9,10 +9,11 @@
     <div ng-controller="CommentCtrl">
     <div class="row">
         <div class="span7">
-            <dl class="well" ng-repeat="comment in commentsList" style="width:90%">
-                <dt>{{comment.time | relativeDate}} {{comment.authorName}} commented:</dt>
-                <dd>{{comment.message}}</dd>
-            </dl>
+            <div class="well" ng-repeat="comment in commentsList" style="width:90%">
+                {{comment.time | relativeDate}} by <strong>{{comment.authorName}}</strong>:
+                <br/>
+                <span ng-bind-html-unsafe="comment.message"></span>
+            </div>
             <form>
                 <fieldset>
                     <label>Your comment</label>
