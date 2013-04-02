@@ -7,11 +7,21 @@ import net.liftweb.mongodb.record.field._
 class MongoFollowUpDAO extends FollowUpDAO {
 
   def create(followUp: FollowUp) {
-//    toRecord(followUp).save();
+    toFollowUpRecord(followUp).save;
   }
 
-  private def toRecord(up: FollowUp): FollowUpRecord = {
-    null
+  private def toFollowUpRecord(followUp: FollowUp): FollowUpRecord = {
+
+    val commitInfo = FollowUpCommitInfoRecord.createRecord
+      .id(followUp.commit.id)
+      .message(followUp.commit.message)
+      .author(followUp.commit.authorName)
+      .date(followUp.commit.date.toDate)
+
+    FollowUpRecord.createRecord
+      .commit(commitInfo)
+      .user_id(followUp.user.id)
+      .status(followUp.status.toString)
   }
 
 }

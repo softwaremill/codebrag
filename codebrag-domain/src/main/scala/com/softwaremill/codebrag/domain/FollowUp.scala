@@ -1,8 +1,7 @@
 package com.softwaremill.codebrag.domain
 
-import org.bson.types.ObjectId
 
-case class FollowUp(commitId: ObjectId, user_id: ObjectId, status: FollowUpStatus.Value)
+case class FollowUp(commit: CommitInfo, user: User, status: FollowUpStatus.Value)
 
 object FollowUpStatus extends Enumeration {
 
