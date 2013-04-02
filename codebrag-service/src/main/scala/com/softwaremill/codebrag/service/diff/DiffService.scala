@@ -8,14 +8,19 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
   val Info = """@@ -(\d+),(\d+) \+(\d+),(\d+) @@""".r
 
   def parseDiff(diff: String): List[DiffLine] = {
+    def lineToChange(line: String): String = {
+      if (line.startsWith("+")) "added"
+      else if (line.startsWith("-")) "removed"
+      else "not-changed"
+    }
     @tailrec
     def convertToDiffLines(lines: List[String], lineNumber: Int, accu: List[DiffLine]): List[DiffLine] = {
       if (lines.isEmpty) {
         accu.reverse
       } else {
         lines.head match {
-          case line@Info(startOld, countOld, startNew, countNew) => convertToDiffLines(lines.tail, startOld.toInt, DiffLine(line, 0) :: accu)
-          case line => convertToDiffLines(lines.tail, lineNumber + 1, DiffLine(line, lineNumber) :: accu)
+          case line@Info(startOld, countOld, startNew, countNew) => convertToDiffLines(lines.tail, startOld.toInt, DiffLine(line, 0, "") :: accu)
+          case line => convertToDiffLines(lines.tail, lineNumber + 1, DiffLine(line, lineNumber, lineToChange(line)) :: accu)
         }
       }
     }
@@ -33,6 +38,6 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
   }
 }
 
-case class DiffLine(line: String, lineNumber: Int)
+case class DiffLine(line: String, lineNumber: Int, change: String)
 
 case class FileWithDiff(filename: String, lines: List[DiffLine])

@@ -69,4 +69,16 @@ html, body, .container, .content {
     width: 20px
 }
 
+.diff-line-added {
+    background-color: #ddffdd;
+}
+
+.diff-line-removed {
+    background-color: #ffdddd;
+}
+
+.diff-not-changed {
+
+}
+
 /* Sticky Footer End */

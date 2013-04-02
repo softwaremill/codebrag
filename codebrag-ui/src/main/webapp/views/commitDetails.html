@@ -12,10 +12,10 @@
                 <div class="well">{{file.filename}}</div>
             </div>
             <div class="row">
-                <table class="table">
+                <table>
                     <tr ng-repeat="line in file.lines">
                         <td class="diff-table-line-number-cell">{{line.lineNumber}}</td>
-                        <td><span ng-bind-html-unsafe="line.line"></span></td>
+                        <td class="diff-{{line.change}}">{{line.line}}</td>
                     </tr>
                 </table>
             </div>
