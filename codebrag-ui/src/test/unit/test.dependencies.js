@@ -21,6 +21,7 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/sessionCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/profileCtrl.js");
 
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsCtrl.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/filesResource.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsListItemCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitDetailsCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/currentCommit.js");
