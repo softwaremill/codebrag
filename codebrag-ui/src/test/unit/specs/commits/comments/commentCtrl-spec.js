@@ -25,7 +25,7 @@ describe("Comment Controller", function () {
         var addCommand = {commitId: selectedCommit.id, body: "new message"};
         var serverResponseComment = {"id": "1", "authorName": "author", "message": "ok", "time": "2013-03-29T15:14:10Z"}
         givenStoredSingleComment();
-        $httpBackend.expectPOST(commentsEndpointAddress, addCommand).respond({item: serverResponseComment});
+        $httpBackend.expectPOST(commentsEndpointAddress, addCommand).respond({comment: serverResponseComment});
 
         // When
         $controller('CommentCtrl', {$scope: scope, currentCommit: selectedCommit});

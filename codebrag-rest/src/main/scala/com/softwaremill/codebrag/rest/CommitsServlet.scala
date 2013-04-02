@@ -101,4 +101,4 @@ trait CommitsServletSwaggerDefinition extends SwaggerSupport {
     .parameter(pathParam[String]("id").description("Identifier of the commit").required)
 }
 
-case class AddCommentResponse(item: CommentListItemDTO)
+case class AddCommentResponse(comment: CommentListItemDTO)

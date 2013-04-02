@@ -23,7 +23,7 @@ angular.module('codebrag.commits.comments')
 
         $scope.submitComment = function () {
             Comments.save($scope.addComment, function (commentResponse) {
-                $scope.commentsList.push(commentResponse.item);
+                $scope.commentsList.push(commentResponse.comment);
             })
         }
 
