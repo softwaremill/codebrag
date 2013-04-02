@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import json.JacksonJsonSupport
 import swagger.{Swagger, SwaggerSupport}
 import com.softwaremill.codebrag.dao.CommitInfoDAO
-import com.softwaremill.codebrag.service.github.{GitHubCommitInfoConverter, GitHubCommitImportService}
+import com.softwaremill.codebrag.service.github.{GitHubClientProvider, GitHubCommitInfoConverter, GitHubCommitImportService}
 import org.eclipse.egit.github.core.service.CommitService
 
 import com.softwaremill.codebrag.service.comments.CommentService
@@ -23,7 +23,7 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
                      commitListFinder: CommitListFinder,
                      commentListFinder: CommentListFinder,
                      commentService: CommentService, val swagger: Swagger,
-                     diffService: DiffService)
+                     diffService: DiffService, githubClientProvider: GitHubClientProvider)
   extends JsonServletWithAuthentication with CommitsServletSwaggerDefinition with JacksonJsonSupport {
 
   get("/") {
@@ -58,8 +58,8 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
     // synchronizes commits
     haltIfNotAuthenticated
     implicit val idGenerator = new ObjectIdGenerator()
-    val importer = new GitHubCommitImportService(new CommitService, new GitHubCommitInfoConverter(), commitInfoDao)
-    importer.importRepoCommits("pbuda", "testrepo")
+    val importer = new GitHubCommitImportService(new CommitService(githubClientProvider.getGitHubClient(user.email)), new GitHubCommitInfoConverter(), commitInfoDao)
+    importer.importRepoCommits("softwaremill", "codebrag")
     fetchPendingCommits()
   }
 

@@ -1,39 +1,62 @@
 package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.service.github.GitHubAuthService
-import org.scalatra.SeeOther
+import org.scalatra.{Forbidden, ScalatraServlet, SeeOther}
 import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.domain.{User, Authentication}
 import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.auth.AuthenticationSupport
 
 
-class GithubAuthorizationServlet(val authenticator:Authenticator, ghAuthService:GitHubAuthService, userDao:UserDAO) extends JsonServletWithAuthentication with Logging {
-
-  var tmpLogin:String = _
-  var tmpPassword:String = _
+class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService: GitHubAuthService, userDao: UserDAO)
+  extends ScalatraServlet with AuthenticationSupport with Logging {
 
   get("/auth_callback") {
     val code = params.get("code").get
+    logger.debug(s"Retrieved code $code")
     val accessToken = ghAuthService.getAccessToken(code)
+    logger.debug(s"Retrieved access token $accessToken")
     val user = ghAuthService.loadUserData(accessToken)
     val auth: Authentication = Authentication.github(user.login, accessToken.access_token)
     userDao.findByEmail(user.email) match {
-      case Some(u) => userDao.changeAuthentication(u.id, auth)
-      case None => userDao.add(User(auth, user.name, user.email, UUID.randomUUID().toString))
+      case Some(u) => {
+        logger.debug(s"Changing Authentication for user $u.id")
+        userDao.changeAuthentication(u.id, auth)
+      }
+      case None => {
+        logger.debug("Creating new user")
+        userDao.add(User(auth, user.name, user.email, UUID.randomUUID().toString))
+      }
     }
-    tmpLogin = user.login
-    tmpPassword = accessToken.access_token
-    authenticate()
-    val redirectPath: String = s"$contextPath/#/commits"
-    logger.debug(s"Redirect path: $redirectPath")
-    SeeOther(redirectPath)
+    request.setAttribute("tmpLogin", user.login)
+    request.setAttribute("tmpPassword", accessToken.access_token)
+    logger.debug("Authenticating")
+    authenticate() match {
+      case Some(u) => {
+        logger.debug("Authentication done")
+        val redirectPath: String = s"$contextPath/#/commits"
+        logger.debug(s"Redirect path: $redirectPath")
+        SeeOther(redirectPath)
+      }
+      case None => Forbidden
+    }
   }
 
-  override protected def login: String = tmpLogin
+  override protected def login: String = {
+    getKeyFromRequest("tmpLogin")
+  }
 
-  override protected def password: String = tmpPassword
+  private def getKeyFromRequest(key: String): String = {
+    val data = request.getAttribute(key).asInstanceOf[String]
+    logger.debug(s"Retrieved non-null data for $key")
+    data
+  }
+
+  override protected def password: String = {
+    getKeyFromRequest("tmpPassword")
+  }
 
   override protected def rememberMe: Boolean = true
 }

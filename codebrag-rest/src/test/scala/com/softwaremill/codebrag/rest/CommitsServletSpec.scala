@@ -10,6 +10,7 @@ import com.softwaremill.codebrag.dao.reporting.{CommentListFinder, CommitListDTO
 import java.util.Date
 import com.softwaremill.codebrag.service.comments.CommentService
 import com.softwaremill.codebrag.service.diff.DiffService
+import com.softwaremill.codebrag.service.github.GitHubClientProvider
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
@@ -20,6 +21,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var commitsListFinder = mock[CommitListFinder]
   var diffService = mock[DiffService]
   var commentListFinder = mock[CommentListFinder]
+  val githubClientProvider = mock[GitHubClientProvider]
 
   def bindServlet {
     addServlet(new TestableCommitsServlet(commitsInfoDao, fakeAuthenticator, fakeScentry), "/*")
@@ -54,7 +56,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableCommitsServlet(commitInfoDao: CommitInfoDAO, fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends CommitsServlet(fakeAuthenticator, commitInfoDao, commitsListFinder, commentListFinder, commentsService, new CodebragSwagger, diffService) {
+    extends CommitsServlet(fakeAuthenticator, commitInfoDao, commitsListFinder, commentListFinder, commentsService, new CodebragSwagger, diffService, githubClientProvider) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

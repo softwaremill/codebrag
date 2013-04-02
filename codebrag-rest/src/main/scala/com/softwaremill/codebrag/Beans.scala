@@ -6,7 +6,7 @@ import dao.{MongoCommitReviewDAO, CommitReviewDAO, MongoCommitInfoDAO, MongoUser
 import rest.CodebragSwagger
 import service.comments.CommentService
 import service.diff.DiffService
-import service.github.GitHubAuthService
+import service.github.{GitHubClientProvider, GitHubAuthService}
 import service.user.Authenticator
 import pl.softwaremill.common.util.time.RealTimeClock
 import org.bson.types.ObjectId
@@ -26,4 +26,5 @@ trait Beans {
   lazy val ghService = new GitHubAuthService
   lazy val commentService = new CommentService(reviewDao, userDao)
   lazy val diffService = new DiffService(commitInfoDao)
+  lazy val githubClientProvider = new GitHubClientProvider(userDao)
 }
