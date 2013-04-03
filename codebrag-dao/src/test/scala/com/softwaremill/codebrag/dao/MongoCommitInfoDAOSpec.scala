@@ -31,6 +31,16 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with B
     commit should be(Some(sampleCommit.copy()))
   }
 
+  it should "find stored commit by its id" in {
+    Given("commit previously stored")
+
+    When("searching for commit by its id")
+    val foundCommit = commitInfoDAO.findByCommitId(sampleCommit.id)
+
+    Then("stored commit should be found")
+    foundCommit should be(Some(sampleCommit.copy()))
+  }
+
   it should "store a single commit" in {
     Given("a commit")
     val commit = createRandomCommit()

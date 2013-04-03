@@ -6,6 +6,7 @@ import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{BsonRecordListField, MongoListField, DateField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
+import org.bson.types.ObjectId
 
 class MongoCommitInfoDAO extends CommitInfoDAO {
 
@@ -17,6 +18,10 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
 
   def findBySha(sha: String): Option[CommitInfo] = {
     CommitInfoRecord where (_.sha eqs sha) get()
+  }
+
+  def findByCommitId(commitId: ObjectId): Option[CommitInfo] = {
+    CommitInfoRecord where (_.id eqs commitId) get()
   }
 
   def findAll(): List[CommitInfo] = {
