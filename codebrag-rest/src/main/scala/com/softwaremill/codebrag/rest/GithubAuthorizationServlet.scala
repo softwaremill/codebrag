@@ -14,6 +14,9 @@ import com.softwaremill.codebrag.service.config.CodebragConfiguration
 class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService: GitHubAuthService, userDao: UserDAO)
   extends ScalatraServlet with AuthenticationSupport with Logging {
 
+  private val TempUserLogin = "tmpLogin"
+  private val TempUserPass = "tmpPassword"
+
   get("/authenticate") {
     val clientId = Option(CodebragConfiguration.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
     SeeOther(s"https://github.com/login/oauth/authorize?client_id=$clientId&scope=user,repo")
@@ -36,8 +39,8 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
         userDao.add(User(auth, user.name, user.email, UUID.randomUUID().toString))
       }
     }
-    request.setAttribute("tmpLogin", user.login)
-    request.setAttribute("tmpPassword", accessToken.access_token)
+    request.setAttribute(TempUserLogin, user.login)
+    request.setAttribute(TempUserPass, accessToken.access_token)
     logger.debug("Authenticating")
     authenticate() match {
       case Some(u) => {
@@ -51,7 +54,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
   }
 
   override protected def login: String = {
-    getKeyFromRequest("tmpLogin")
+    getKeyFromRequest(TempUserLogin)
   }
 
   private def getKeyFromRequest(key: String): String = {
@@ -61,7 +64,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
   }
 
   override protected def password: String = {
-    getKeyFromRequest("tmpPassword")
+    getKeyFromRequest(TempUserPass)
   }
 
   override protected def rememberMe: Boolean = true
