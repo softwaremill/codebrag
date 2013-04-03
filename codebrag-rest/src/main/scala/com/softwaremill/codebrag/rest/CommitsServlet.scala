@@ -5,7 +5,6 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import json.JacksonJsonSupport
 import swagger.{Swagger, SwaggerSupport}
 
-import com.softwaremill.codebrag.service.comments.CommentService
 import com.softwaremill.codebrag.dao.reporting._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.ObjectIdGenerator
@@ -16,11 +15,12 @@ import com.softwaremill.codebrag.dao.reporting.CommentListDTO
 import com.softwaremill.codebrag.service.diff.FileWithDiff
 import com.softwaremill.codebrag.service.comments.command.AddComment
 import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
+import com.softwaremill.codebrag.activities.CommentActivity
 
 class CommitsServlet(val authenticator: Authenticator,
                      commitListFinder: CommitListFinder,
                      commentListFinder: CommentListFinder,
-                     commentService: CommentService, val swagger: Swagger,
+                     commentActivity: CommentActivity, val swagger: Swagger,
                      diffService: DiffService, importerFactory: GitHubCommitImportServiceFactory)
   extends JsonServletWithAuthentication with CommitsServletSwaggerDefinition with JacksonJsonSupport {
 
@@ -34,7 +34,7 @@ class CommitsServlet(val authenticator: Authenticator,
     val commitId = params("id")
     val messageBody = extractNotEmptyString("body")
     val command = AddComment(new ObjectId(commitId), user.login, messageBody)
-    AddCommentResponse(commentService.addCommentToCommit(command))
+    AddCommentResponse(commentActivity.commentOnCommit(command))
   }
 
   get("/:id/comments", operation(getCommentsOperation)) {
