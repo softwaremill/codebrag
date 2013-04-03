@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.domain.FollowUp
 import org.joda.time.DateTime
 import pl.softwaremill.common.util.time.FixtureTimeClock
 
-class MongoFollowUpDAOSpec extends FlatSpecWithRemoteMongo with BeforeAndAfterEach with ShouldMatchers {
+class MongoFollowUpDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
   var followUpDAO: MongoFollowUpDAO = _
 
