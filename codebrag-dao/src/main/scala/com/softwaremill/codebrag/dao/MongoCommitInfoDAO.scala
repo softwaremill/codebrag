@@ -87,7 +87,7 @@ class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with ObjectIdPk[Com
 }
 
 object CommitInfoRecord extends CommitInfoRecord with MongoMetaRecord[CommitInfoRecord] {
-  override def collectionName: String = "commitInfos"
+  override def collectionName: String = "commit_infos"
 }
 
 class CommitFileInfoRecord extends BsonRecord[CommitFileInfoRecord] {
