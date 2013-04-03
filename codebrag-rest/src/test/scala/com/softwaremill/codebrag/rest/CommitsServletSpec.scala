@@ -10,7 +10,7 @@ import com.softwaremill.codebrag.dao.reporting.{CommentListFinder, CommitListDTO
 import java.util.Date
 import com.softwaremill.codebrag.service.comments.CommentService
 import com.softwaremill.codebrag.service.diff.DiffService
-import com.softwaremill.codebrag.service.github.GitHubClientProvider
+import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
@@ -21,10 +21,10 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var commitsListFinder = mock[CommitListFinder]
   var diffService = mock[DiffService]
   var commentListFinder = mock[CommentListFinder]
-  val githubClientProvider = mock[GitHubClientProvider]
+  val importerFactory = mock[GitHubCommitImportServiceFactory]
 
   def bindServlet {
-    addServlet(new TestableCommitsServlet(commitsInfoDao, fakeAuthenticator, fakeScentry), "/*")
+    addServlet(new TestableCommitsServlet(fakeAuthenticator, fakeScentry), "/*")
   }
 
   "GET /commits" should "respond with HTTP 401 when user is not authenticated" in {
@@ -55,8 +55,8 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     }
   }
 
-  class TestableCommitsServlet(commitInfoDao: CommitInfoDAO, fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends CommitsServlet(fakeAuthenticator, commitInfoDao, commitsListFinder, commentListFinder, commentsService, new CodebragSwagger, diffService, githubClientProvider) {
+  class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
+    extends CommitsServlet(fakeAuthenticator, commitsListFinder, commentListFinder, commentsService, new CodebragSwagger, diffService, importerFactory) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 
