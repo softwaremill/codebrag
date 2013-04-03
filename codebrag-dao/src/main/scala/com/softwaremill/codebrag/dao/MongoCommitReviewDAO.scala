@@ -50,7 +50,7 @@ class CommitReviewRecord extends MongoRecord[CommitReviewRecord] with ObjectIdPk
 }
 
 object CommitReviewRecord extends CommitReviewRecord with MongoMetaRecord[CommitReviewRecord] {
-  override def collectionName: String = "commit_reviews"
+  override def collectionName = "commit_reviews"
 }
 
 class CommentRecord extends BsonRecord[CommentRecord] {
