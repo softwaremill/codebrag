@@ -1,12 +1,8 @@
 package com.softwaremill.codebrag.domain
 
+import org.bson.types.ObjectId
+import org.joda.time.DateTime
 
-case class FollowUp(commit: CommitInfo, user: User, status: FollowUpStatus.Value)
 
-object FollowUpStatus extends Enumeration {
-
-  val New = Value("NEW")
-  val Seen = Value("SEEN")
-  val Ignored = Value("IGNORED")
-
+case class FollowUp(commit: CommitInfo, userId: ObjectId, date: DateTime) {
 }

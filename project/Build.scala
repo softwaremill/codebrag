@@ -169,7 +169,7 @@ object SmlCodebragBuild extends Build {
     file("codebrag-service"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator, smlCommonSqs, smlCommonConfig,
       javaxMail, scalate, egitGithubApi, dispatch, json4s))
-  ) dependsOn(domain, dao, common)
+  ) dependsOn(domain, common, dao % "test->test;compile->compile")
 
   lazy val rest: Project = Project(
     "codebrag-rest",

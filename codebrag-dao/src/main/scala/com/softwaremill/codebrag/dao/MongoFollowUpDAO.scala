@@ -20,8 +20,8 @@ class MongoFollowUpDAO extends FollowUpDAO {
 
     FollowUpRecord.createRecord
       .commit(commitInfo)
-      .user_id(followUp.user.id)
-      .status(followUp.status.toString)
+      .user_id(followUp.userId)
+      .date(followUp.date.toDate)
   }
 
 }
@@ -31,7 +31,7 @@ class FollowUpRecord extends MongoRecord[FollowUpRecord] with ObjectIdPk[FollowU
 
   object user_id extends ObjectIdField(this)
   object commit extends BsonRecordField(this, FollowUpCommitInfoRecord)
-  object status extends LongStringField(this)
+  object date extends DateField(this)
 }
 
 object FollowUpRecord extends FollowUpRecord with MongoMetaRecord[FollowUpRecord] {
