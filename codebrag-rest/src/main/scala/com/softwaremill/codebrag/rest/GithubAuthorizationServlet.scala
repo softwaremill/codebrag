@@ -8,10 +8,16 @@ import com.softwaremill.codebrag.domain.{User, Authentication}
 import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.auth.AuthenticationSupport
+import com.softwaremill.codebrag.service.config.CodebragConfiguration
 
 
 class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService: GitHubAuthService, userDao: UserDAO)
   extends ScalatraServlet with AuthenticationSupport with Logging {
+
+  get("/authenticate") {
+    val clientId = Option(CodebragConfiguration.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
+    SeeOther(s"https://github.com/login/oauth/authorize?client_id=$clientId&scope=user,repo")
+  }
 
   get("/auth_callback") {
     val code = params.get("code").get
