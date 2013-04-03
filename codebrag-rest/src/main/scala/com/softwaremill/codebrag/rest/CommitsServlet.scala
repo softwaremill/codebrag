@@ -4,9 +4,6 @@ import org.scalatra._
 import com.softwaremill.codebrag.service.user.Authenticator
 import json.JacksonJsonSupport
 import swagger.{Swagger, SwaggerSupport}
-import com.softwaremill.codebrag.dao.CommitInfoDAO
-import com.softwaremill.codebrag.service.github.{GitHubClientProvider, GitHubCommitInfoConverter, GitHubCommitImportService}
-import org.eclipse.egit.github.core.service.CommitService
 
 import com.softwaremill.codebrag.service.comments.CommentService
 import com.softwaremill.codebrag.dao.reporting._
@@ -18,12 +15,13 @@ import scala.Some
 import com.softwaremill.codebrag.dao.reporting.CommentListDTO
 import com.softwaremill.codebrag.service.diff.FileWithDiff
 import com.softwaremill.codebrag.service.comments.command.AddComment
+import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 
-class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfoDAO,
+class CommitsServlet(val authenticator: Authenticator,
                      commitListFinder: CommitListFinder,
                      commentListFinder: CommentListFinder,
                      commentService: CommentService, val swagger: Swagger,
-                     diffService: DiffService, githubClientProvider: GitHubClientProvider)
+                     diffService: DiffService, importerFactory: GitHubCommitImportServiceFactory)
   extends JsonServletWithAuthentication with CommitsServletSwaggerDefinition with JacksonJsonSupport {
 
   get("/") {
@@ -58,7 +56,7 @@ class CommitsServlet(val authenticator: Authenticator, commitInfoDao: CommitInfo
     // synchronizes commits
     haltIfNotAuthenticated
     implicit val idGenerator = new ObjectIdGenerator()
-    val importer = new GitHubCommitImportService(new CommitService(githubClientProvider.getGitHubClient(user.email)), new GitHubCommitInfoConverter(), commitInfoDao)
+    val importer = importerFactory.createInstance(user.email)
     importer.importRepoCommits("softwaremill", "codebrag")
     fetchPendingCommits()
   }

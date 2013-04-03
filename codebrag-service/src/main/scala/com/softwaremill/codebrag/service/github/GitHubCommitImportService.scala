@@ -7,8 +7,6 @@ import scala.collection.JavaConversions._
 import com.typesafe.scalalogging.slf4j.Logging
 
 class GitHubCommitImportService(commitService: CommitService, converter: GitHubCommitInfoConverter, dao: CommitInfoDAO) extends Logging {
-
-
   def repoId(owner: String, repo: String) = {
     new IRepositoryIdProvider {
       def generateId(): String = s"$owner/$repo"
@@ -29,6 +27,12 @@ class GitHubCommitImportService(commitService: CommitService, converter: GitHubC
   private def importCommitDetails(commitId: String, owner: String, repo: String) {
     val commit = commitService.getCommit(repoId(owner, repo), commitId)
     dao.storeCommit(converter.convertToCommitInfo(commit))
+  }
+}
+
+class GitHubCommitImportServiceFactory(provider: GitHubClientProvider, converter: GitHubCommitInfoConverter, commitInfoDao: CommitInfoDAO) {
+  def createInstance(email: String): GitHubCommitImportService = {
+    new GitHubCommitImportService(new CommitService(provider.getGitHubClient(email)), converter, commitInfoDao)
   }
 }
 
