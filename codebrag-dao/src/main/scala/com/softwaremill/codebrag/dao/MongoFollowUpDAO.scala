@@ -3,11 +3,20 @@ package com.softwaremill.codebrag.dao
 import com.softwaremill.codebrag.domain.FollowUp
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field._
+import com.foursquare.rogue.LiftRogue._
 
 class MongoFollowUpDAO extends FollowUpDAO {
 
-  def create(followUp: FollowUp) {
-    toFollowUpRecord(followUp).save;
+  def createOrUpdateExisting(followUp: FollowUp) {
+    val query = FollowUpRecord.where(_.user_id eqs followUp.userId).and(_.commit.subselect(_.id) eqs followUp.commit.id).asDBObject
+    FollowUpRecord.upsert(query, followUpToRecord(followUp))
+  }
+
+
+  def followUpToRecord(followUp: FollowUp) = {
+    val record = toFollowUpRecord(followUp).asDBObject
+    record.removeField("_id")   // remove _id field, otherwise Mongo screams it cannot modify _id when updating record
+    record
   }
 
   private def toFollowUpRecord(followUp: FollowUp): FollowUpRecord = {

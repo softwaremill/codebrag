@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.dao._
 import pl.softwaremill.common.util.time.FixtureTimeClock
 import com.softwaremill.codebrag.domain.{FollowUp, CommitComment, CommitReview}
 import scala.Some
-import org.joda.time.{DateTimeZone, DateTime}
+import org.joda.time.DateTime
 import org.bson.types.ObjectId
 
 class FollowUpServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with FollowUpServiceSpecFixture{
@@ -27,7 +27,7 @@ class FollowUpServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followUpsService = new FollowUpService(followUpDAO, commitInfoDAO, commitReviewDAO)(TestClock)
   }
 
-  it should "create follow-ups for commit for all commenters involved" in {
+  it should "generate follow-ups for commit for all commenters involved" in {
     // Given
     given(commitInfoDAO.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(commitReviewDAO.findById(Commit.id)).willReturn(Some(CommitReviewWithTwoComments))
@@ -36,8 +36,8 @@ class FollowUpServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followUpsService.generateFollowUpsForCommit(Commit.id)
 
     // Then
-    verify(followUpDAO).create(FollowUp(Commit, UserOneId, FollowUpCreationDateTime))
-    verify(followUpDAO).create(FollowUp(Commit, UserTwoId, FollowUpCreationDateTime))
+    verify(followUpDAO).createOrUpdateExisting(FollowUp(Commit, UserOneId, FollowUpCreationDateTime))
+    verify(followUpDAO).createOrUpdateExisting(FollowUp(Commit, UserTwoId, FollowUpCreationDateTime))
   }
 
   it should "not generate follow-ups when commit not found" in {
@@ -51,7 +51,7 @@ class FollowUpServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
       fail("Should throw exception when commit not found")
     } catch { // Then
       case e: RuntimeException => {
-        e.getMessage should be(s"Commit ${Commit.id} not found. Cannot create follow-ups for nonexisting commit")
+        e.getMessage should be(s"Commit ${Commit.id} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")
       }
     }
     verifyZeroInteractions(followUpDAO)
@@ -68,7 +68,7 @@ class FollowUpServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
       fail("Should throw exception when commit has no comments")
     } catch { // Then
       case e: RuntimeException => {
-        e.getMessage should be(s"Commit review for commit ${Commit.id} not found. Cannot create follow-ups for commit without comments")
+        e.getMessage should be(s"Commit review for commit ${Commit.id} not found. Cannot createOrUpdateExisting follow-ups for commit without comments")
       }
     }
     verifyZeroInteractions(followUpDAO)

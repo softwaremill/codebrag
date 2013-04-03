@@ -4,6 +4,6 @@ import com.softwaremill.codebrag.domain.FollowUp
 
 trait FollowUpDAO {
 
-  def create(followUp: FollowUp)
+  def createOrUpdateExisting(followUp: FollowUp)
 
 }

@@ -11,11 +11,11 @@ class FollowUpService(followUpDAO: FollowUpDAO, commitInfoDAO: CommitInfoDAO, co
     findCommitWithReview(commitId) match {
       case (Some(commit), Some(review)) => {
         findUniqueCommenterIds(review).foreach(userId => {
-          followUpDAO.create(FollowUp(commit, userId, clock.currentDateTimeUTC()))
+          followUpDAO.createOrUpdateExisting(FollowUp(commit, userId, clock.currentDateTimeUTC()))
         })
       }
-      case (None, _) => throwException(s"Commit ${commitId} not found. Cannot create follow-ups for nonexisting commit")
-      case (_, None) => throwException(s"Commit review for commit ${commitId} not found. Cannot create follow-ups for commit without comments")
+      case (None, _) => throwException(s"Commit ${commitId} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")
+      case (_, None) => throwException(s"Commit review for commit ${commitId} not found. Cannot createOrUpdateExisting follow-ups for commit without comments")
     }
 
     def throwException(message: String) = throw new RuntimeException(message)
