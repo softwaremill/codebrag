@@ -4,7 +4,7 @@ angular.module('codebrag.commits')
         $scope.currentCommit = currentCommit;
         $scope.files = [];
 
-        if (typeof currentCommit.sha != "undefined" && $scope.files.length == 0) {
+        if (currentCommit.isSelected()) {
             Files.get({sha: currentCommit.sha}, function (files) {
                 $scope.files = files;
             }, function (error) {
