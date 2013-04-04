@@ -40,6 +40,20 @@ class FollowUpServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     verify(followUpDAO).createOrUpdateExisting(FollowUp(Commit, UserTwoId, FollowUpCreationDateTime))
   }
 
+  it should "generate follow-ups for each commenter only once" in {
+    // Given
+    given(commitInfoDAO.findByCommitId(Commit.id)).willReturn(Some(Commit))
+    given(commitReviewDAO.findById(Commit.id)).willReturn(Some(CommitReviewWithNonUniqueCommenters))
+
+    // When
+    followUpsService.generateFollowUpsForCommit(Commit.id)
+
+    // Then
+    verify(followUpDAO).createOrUpdateExisting(FollowUp(Commit, UserOneId, FollowUpCreationDateTime))
+    verify(followUpDAO).createOrUpdateExisting(FollowUp(Commit, UserTwoId, FollowUpCreationDateTime))
+    verifyNoMoreInteractions(followUpDAO);
+  }
+
   it should "not generate follow-ups when commit not found" in {
     // Given
     given(commitInfoDAO.findByCommitId(Commit.id)).willReturn(None)
@@ -90,7 +104,9 @@ trait FollowUpServiceSpecFixture {
 
   val UserOneComment = CommitComment(new ObjectId(), UserOneId, "user one comment", CommentDateTime)
   val UserTwoComment = CommitComment(new ObjectId(), UserTwoId, "user two comment", CommentDateTime)
+  val UserTwoAnotherComment = CommitComment(new ObjectId(), UserTwoId, "user two another comment", CommentDateTime)
 
   val CommitReviewWithTwoComments = CommitReview(Commit.id, List(UserOneComment, UserTwoComment))
+  val CommitReviewWithNonUniqueCommenters = CommitReview(Commit.id, List(UserOneComment, UserTwoComment, UserTwoAnotherComment))
 
 }

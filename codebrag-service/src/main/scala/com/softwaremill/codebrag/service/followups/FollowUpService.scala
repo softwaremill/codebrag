@@ -26,7 +26,7 @@ class FollowUpService(followUpDAO: FollowUpDAO, commitInfoDAO: CommitInfoDAO, co
   }
 
   private def findUniqueCommenterIds(commitReview: CommitReview): List[ObjectId] = {
-    commitReview.comments.map(_.authorId)
+    commitReview.comments.map(_.authorId).distinct
   }
 
 }
