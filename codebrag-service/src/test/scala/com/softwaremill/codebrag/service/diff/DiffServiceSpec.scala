@@ -76,7 +76,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   it should "assign proper line numbers to diff lines" in {
     val lines = service.parseDiff(SampleDiff)
 
-    (lines(0).lineNumberOriginal, lines(0).lineNumberChanged) should be(("0", "0"))
+    (lines(0).lineNumberOriginal, lines(0).lineNumberChanged) should be(("...", "..."))
     (lines(1).lineNumberOriginal, lines(1).lineNumberChanged) should be(("2", "2"))
     (lines(2).lineNumberOriginal, lines(2).lineNumberChanged) should be(("3", "3"))
     (lines(3).lineNumberOriginal, lines(3).lineNumberChanged) should be(("4", "4"))
@@ -86,7 +86,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     (lines(7).lineNumberOriginal, lines(7).lineNumberChanged) should be(("7", "7"))
     (lines(8).lineNumberOriginal, lines(8).lineNumberChanged) should be(("8", "8"))
 
-    (lines(9).lineNumberOriginal, lines(9).lineNumberChanged) should be(("0", "0"))
+    (lines(9).lineNumberOriginal, lines(9).lineNumberChanged) should be(("...", "..."))
     (lines(10).lineNumberOriginal, lines(10).lineNumberChanged) should be(("47", "47"))
     (lines(11).lineNumberOriginal, lines(11).lineNumberChanged) should be(("48", "48"))
     (lines(12).lineNumberOriginal, lines(12).lineNumberChanged) should be(("49", "49"))

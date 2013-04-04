@@ -69,14 +69,21 @@ html, body, .container, .content {
 .diff-file-data {
     overflow-x: auto;
     overflow-y: hidden;
+    font-family: "Courier New", monospace;
+    border: 1px solid #CCCCCC;
+    table-layout: fixed;
 }
 
 .diff-table-line-number-cell {
-    width: 20px
+    width: 25px;
+    padding: 0 4px;
+    border-right: 1px solid #CCCCCC;
+    text-align: right;
 }
 
 .diff-line {
     white-space: nowrap;
+    padding-left: 10px;
 }
 
 .diff-added {

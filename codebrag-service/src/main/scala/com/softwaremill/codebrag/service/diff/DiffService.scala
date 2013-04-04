@@ -20,7 +20,7 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
         accu.reverse
       } else {
         lines.head match {
-          case line@Info(startOld, countOld, startNew, countNew) => convertToDiffLines(lines.tail, startOld.toInt, startNew.toInt, DiffLine(line, "0", "0", "") :: accu)
+          case line@Info(startOld, countOld, startNew, countNew) => convertToDiffLines(lines.tail, startOld.toInt, startNew.toInt, DiffLine(line, "...", "...", "") :: accu)
           case line => {
             val lineChange = line.substring(0, 1)
             val changeType: String = lineToChange(line)
