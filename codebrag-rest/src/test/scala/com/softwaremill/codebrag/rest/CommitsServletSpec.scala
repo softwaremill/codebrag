@@ -8,7 +8,6 @@ import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.reporting.{CommentListFinder, CommitListDTO, CommitListFinder, CommitListItemDTO}
 import java.util.Date
-import com.softwaremill.codebrag.service.comments.CommentService
 import com.softwaremill.codebrag.service.diff.DiffService
 import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 import com.softwaremill.codebrag.activities.CommentActivity

@@ -54,37 +54,29 @@ class FollowUpServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     verifyNoMoreInteractions(followUpDAO);
   }
 
-  it should "not generate follow-ups when commit not found" in {
+  it should "throw exception and not generate follow-ups when commit not found" in {
     // Given
     given(commitInfoDAO.findByCommitId(Commit.id)).willReturn(None)
     given(commitReviewDAO.findById(Commit.id)).willReturn(Some(CommitReviewWithTwoComments))
 
     // When
-    try {
+    val thrown = intercept[RuntimeException] {
       followUpsService.generateFollowUpsForCommit(Commit.id)
-      fail("Should throw exception when commit not found")
-    } catch { // Then
-      case e: RuntimeException => {
-        e.getMessage should be(s"Commit ${Commit.id} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")
-      }
     }
+    thrown.getMessage should be(s"Commit ${Commit.id} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")
     verifyZeroInteractions(followUpDAO)
   }
 
-  it should "not generate follow-ups for comments when no comments found" in {
+  it should "throw exception and not generate follow-ups for comments when no comments found" in {
     // Given
     given(commitInfoDAO.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(commitReviewDAO.findById(Commit.id)).willReturn(None)
 
     // When
-    try {
+    val thrown = intercept[RuntimeException] {
       followUpsService.generateFollowUpsForCommit(Commit.id)
-      fail("Should throw exception when commit has no comments")
-    } catch { // Then
-      case e: RuntimeException => {
-        e.getMessage should be(s"Commit review for commit ${Commit.id} not found. Cannot createOrUpdateExisting follow-ups for commit without comments")
-      }
     }
+    thrown.getMessage should be(s"Commit review for commit ${Commit.id} not found. Cannot createOrUpdateExisting follow-ups for commit without comments")
     verifyZeroInteractions(followUpDAO)
   }
 
