@@ -9,7 +9,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with BeforeAndAfterAll with Logging {
 
   val userIdPrefix = "507f1f77bcf86cd79943901"
-  var userDAO: UserDAO = null
+  var userDAO: UserDAO = _
 
   implicit def intSuffixToObjectId(suffix: Int): ObjectId = new ObjectId(userIdPrefix + suffix)
 
@@ -236,6 +236,18 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
       case None => fail("Authentication didn't change")
     }
 
+  }
+
+  it should "find user by its Id" in {
+    // given
+    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde")
+    userDAO.add(user)
+
+    // when
+    val foundUser = userDAO.findById(user.id)
+
+    // then
+    foundUser.get should equal(user)
   }
 
 }

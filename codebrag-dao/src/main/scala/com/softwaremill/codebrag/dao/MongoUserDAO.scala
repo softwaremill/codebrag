@@ -39,6 +39,10 @@ class MongoUserDAO extends UserDAO {
     UserRecord where (_.token eqs token) get()
   }
 
+  def findById(userId: ObjectId) = {
+    UserRecord.where(_.id eqs userId).get()
+  }
+
   def changeAuthentication(id: ObjectId, authentication: Authentication) {
     UserRecord where (_.id eqs id) modify (_.authentication setTo (authentication)) updateOne()
   }

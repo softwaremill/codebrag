@@ -15,6 +15,8 @@ trait UserDAO {
 
   def add(user: User)
 
+  def findById(userId: ObjectId): Option[User]
+
   def findByEmail(email: String): Option[User]
 
   def findByLowerCasedLogin(login: String): Option[User]
