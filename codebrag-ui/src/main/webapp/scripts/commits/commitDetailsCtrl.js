@@ -17,7 +17,7 @@ angular.module('codebrag.commits')
             for (var i = 0; i < numOfFiles; i++) {
                 var file = files[i];
                 var numOfLines = file.lines.length;
-                for(var j = 0;j < numOfLines;j++) {
+                for (var j = 0; j < numOfLines; j++) {
                     var line = file.lines[j];
                     line.line = line.line.replace(/ /g, "&nbsp;");
                 }
