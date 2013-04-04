@@ -1,0 +1,37 @@
+<div class="row">
+    <h2>Follow-ups</h2>
+</div>
+<div class="row">
+    <div class="span4">
+        <ul class="unstyled">
+            <li ng-repeat="followup in followups" ng-controller="FollowupListItemCtrl">
+                <div class="row">
+                    <div class="span4 well well-small">
+                        <div class="row">
+                            <div class="span2 offset1">
+                                <p class="text-right">{{followup.date | relativeDate}}</p>
+                            </div>
+                            <div class="span1">
+                                <button class="btn btn-mini btn-success"><i class="icon-ok"></i></button>
+                            </div>
+                        </div>
+                        <div class="row" ng-click="openCommitDetails(followup.commit)">
+                            <div class="span4">
+                                <h5>{{followup.commit.message}}</h5>
+                                <span>by {{followup.commit.authorName}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="span7 offset1">
+        <div ng-hide="currentCommit.id">
+            <div ng-include src="'views/empty.html'"></div>
+        </div>
+        <div ng-show="currentCommit.id">
+            <div ng-include src="'views/commitDetails.html?id=' + currentCommit.id"></div>
+        </div>
+    </div>
+</div>
