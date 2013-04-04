@@ -1,14 +1,14 @@
 package com.softwaremill.codebrag.activities
 
 import com.softwaremill.codebrag.service.comments.CommentService
-import com.softwaremill.codebrag.service.followups.FollowUpService
+import com.softwaremill.codebrag.service.followups.FollowupService
 import com.softwaremill.codebrag.service.comments.command.AddComment
 
-class CommentActivity(commentService: CommentService, followUpService: FollowUpService) {
+class CommentActivity(commentService: CommentService, followupService: FollowupService) {
 
   def commentOnCommit(newComment: AddComment) = {
     val addedComment = commentService.addCommentToCommit(newComment)
-    followUpService.generateFollowUpsForCommit(newComment.commitId)
+    followupService.generateFollowupsForCommit(newComment.commitId)
     addedComment
   }
 

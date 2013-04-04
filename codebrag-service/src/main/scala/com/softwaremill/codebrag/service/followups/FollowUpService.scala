@@ -1,17 +1,17 @@
 package com.softwaremill.codebrag.service.followups
 
-import com.softwaremill.codebrag.dao.{CommitReviewDAO, CommitInfoDAO, FollowUpDAO}
+import com.softwaremill.codebrag.dao.{CommitReviewDAO, CommitInfoDAO, FollowupDAO}
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.{CommitInfo, CommitReview, FollowUp}
+import com.softwaremill.codebrag.domain.{CommitInfo, CommitReview, Followup}
 import pl.softwaremill.common.util.time.Clock
 
-class FollowUpService(followUpDAO: FollowUpDAO, commitInfoDAO: CommitInfoDAO, commitReviewDAO: CommitReviewDAO)(implicit clock: Clock) {
+class FollowupService(followupDAO: FollowupDAO, commitInfoDAO: CommitInfoDAO, commitReviewDAO: CommitReviewDAO)(implicit clock: Clock) {
 
-  def generateFollowUpsForCommit(commitId: ObjectId) {
+  def generateFollowupsForCommit(commitId: ObjectId) {
     findCommitWithReview(commitId) match {
       case (Some(commit), Some(review)) => {
         findUniqueCommenterIds(review).foreach(userId => {
-          followUpDAO.createOrUpdateExisting(FollowUp(commit, userId, clock.currentDateTimeUTC()))
+          followupDAO.createOrUpdateExisting(Followup(commit, userId, clock.currentDateTimeUTC()))
         })
       }
       case (None, _) => throwException(s"Commit ${commitId} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")

@@ -1,9 +1,9 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.FollowUp
+import com.softwaremill.codebrag.domain.Followup
 
-trait FollowUpDAO {
+trait FollowupDAO {
 
-  def createOrUpdateExisting(followUp: FollowUp)
+  def createOrUpdateExisting(followup: Followup)
 
 }

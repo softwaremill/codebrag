@@ -1,54 +1,54 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.FollowUp
+import com.softwaremill.codebrag.domain.Followup
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field._
 import com.foursquare.rogue.LiftRogue._
 
-class MongoFollowUpDAO extends FollowUpDAO {
+class MongoFollowupDAO extends FollowupDAO {
 
-  def createOrUpdateExisting(followUp: FollowUp) {
-    val query = FollowUpRecord.where(_.user_id eqs followUp.userId).and(_.commit.subselect(_.id) eqs followUp.commit.id).asDBObject
-    FollowUpRecord.upsert(query, followUpToRecord(followUp))
+  def createOrUpdateExisting(followup: Followup) {
+    val query = FollowupRecord.where(_.user_id eqs followup.userId).and(_.commit.subselect(_.id) eqs followup.commit.id).asDBObject
+    FollowupRecord.upsert(query, followupToRecord(followup))
   }
 
 
-  def followUpToRecord(followUp: FollowUp) = {
-    val record = toFollowUpRecord(followUp).asDBObject
+  def followupToRecord(followup: Followup) = {
+    val record = toFollowupRecord(followup).asDBObject
     record.removeField("_id")   // remove _id field, otherwise Mongo screams it cannot modify _id when updating record
     record
   }
 
-  private def toFollowUpRecord(followUp: FollowUp): FollowUpRecord = {
+  private def toFollowupRecord(followup: Followup): FollowupRecord = {
 
-    val commitInfo = FollowUpCommitInfoRecord.createRecord
-      .id(followUp.commit.id)
-      .message(followUp.commit.message)
-      .author(followUp.commit.authorName)
-      .date(followUp.commit.date.toDate)
+    val commitInfo = FollowupCommitInfoRecord.createRecord
+      .id(followup.commit.id)
+      .message(followup.commit.message)
+      .author(followup.commit.authorName)
+      .date(followup.commit.date.toDate)
 
-    FollowUpRecord.createRecord
+    FollowupRecord.createRecord
       .commit(commitInfo)
-      .user_id(followUp.userId)
-      .date(followUp.date.toDate)
+      .user_id(followup.userId)
+      .date(followup.date.toDate)
   }
 
 }
 
-class FollowUpRecord extends MongoRecord[FollowUpRecord] with ObjectIdPk[FollowUpRecord] {
-  def meta = FollowUpRecord
+class FollowupRecord extends MongoRecord[FollowupRecord] with ObjectIdPk[FollowupRecord] {
+  def meta = FollowupRecord
 
   object user_id extends ObjectIdField(this)
-  object commit extends BsonRecordField(this, FollowUpCommitInfoRecord)
+  object commit extends BsonRecordField(this, FollowupCommitInfoRecord)
   object date extends DateField(this)
 }
 
-object FollowUpRecord extends FollowUpRecord with MongoMetaRecord[FollowUpRecord] {
+object FollowupRecord extends FollowupRecord with MongoMetaRecord[FollowupRecord] {
   override def collectionName: String = "follow_ups"
 }
 
-class FollowUpCommitInfoRecord extends BsonRecord[FollowUpCommitInfoRecord] {
-  def meta = FollowUpCommitInfoRecord
+class FollowupCommitInfoRecord extends BsonRecord[FollowupCommitInfoRecord] {
+  def meta = FollowupCommitInfoRecord
 
   object id extends ObjectIdField(this)
   object message extends LongStringField(this)
@@ -57,4 +57,4 @@ class FollowUpCommitInfoRecord extends BsonRecord[FollowUpCommitInfoRecord] {
 
 }
 
-object FollowUpCommitInfoRecord extends FollowUpCommitInfoRecord with BsonMetaRecord[FollowUpCommitInfoRecord]
+object FollowupCommitInfoRecord extends FollowupCommitInfoRecord with BsonMetaRecord[FollowupCommitInfoRecord]

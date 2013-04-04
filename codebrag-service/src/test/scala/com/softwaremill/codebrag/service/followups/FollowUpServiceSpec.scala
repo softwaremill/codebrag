@@ -7,24 +7,24 @@ import org.mockito.Mockito._
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao._
 import pl.softwaremill.common.util.time.FixtureTimeClock
-import com.softwaremill.codebrag.domain.{FollowUp, CommitComment, CommitReview}
+import com.softwaremill.codebrag.domain.{Followup, CommitComment, CommitReview}
 import scala.Some
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 
-class FollowUpServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with FollowUpServiceSpecFixture{
+class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with FollowupServiceSpecFixture{
 
-  var followUpDAO: FollowUpDAO = _
+  var followupDAO: FollowupDAO = _
   var commitInfoDAO: CommitInfoDAO = _
   var commitReviewDAO: CommitReviewDAO = _
 
-  var followUpsService: FollowUpService = _
+  var followupsService: FollowupService = _
 
   override def beforeEach() {
-    followUpDAO = mock[FollowUpDAO]
+    followupDAO = mock[FollowupDAO]
     commitInfoDAO = mock[CommitInfoDAO]
     commitReviewDAO = mock[CommitReviewDAO]
-    followUpsService = new FollowUpService(followUpDAO, commitInfoDAO, commitReviewDAO)(TestClock)
+    followupsService = new FollowupService(followupDAO, commitInfoDAO, commitReviewDAO)(TestClock)
   }
 
   it should "generate follow-ups for commit for all commenters involved" in {
@@ -33,11 +33,11 @@ class FollowUpServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     given(commitReviewDAO.findById(Commit.id)).willReturn(Some(CommitReviewWithTwoComments))
 
     // When
-    followUpsService.generateFollowUpsForCommit(Commit.id)
+    followupsService.generateFollowupsForCommit(Commit.id)
 
     // Then
-    verify(followUpDAO).createOrUpdateExisting(FollowUp(Commit, UserOneId, FollowUpCreationDateTime))
-    verify(followUpDAO).createOrUpdateExisting(FollowUp(Commit, UserTwoId, FollowUpCreationDateTime))
+    verify(followupDAO).createOrUpdateExisting(Followup(Commit, UserOneId, FollowupCreationDateTime))
+    verify(followupDAO).createOrUpdateExisting(Followup(Commit, UserTwoId, FollowupCreationDateTime))
   }
 
   it should "generate follow-ups for each commenter only once" in {
@@ -46,12 +46,12 @@ class FollowUpServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     given(commitReviewDAO.findById(Commit.id)).willReturn(Some(CommitReviewWithNonUniqueCommenters))
 
     // When
-    followUpsService.generateFollowUpsForCommit(Commit.id)
+    followupsService.generateFollowupsForCommit(Commit.id)
 
     // Then
-    verify(followUpDAO).createOrUpdateExisting(FollowUp(Commit, UserOneId, FollowUpCreationDateTime))
-    verify(followUpDAO).createOrUpdateExisting(FollowUp(Commit, UserTwoId, FollowUpCreationDateTime))
-    verifyNoMoreInteractions(followUpDAO);
+    verify(followupDAO).createOrUpdateExisting(Followup(Commit, UserOneId, FollowupCreationDateTime))
+    verify(followupDAO).createOrUpdateExisting(Followup(Commit, UserTwoId, FollowupCreationDateTime))
+    verifyNoMoreInteractions(followupDAO);
   }
 
   it should "throw exception and not generate follow-ups when commit not found" in {
@@ -61,10 +61,10 @@ class FollowUpServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
     // When
     val thrown = intercept[RuntimeException] {
-      followUpsService.generateFollowUpsForCommit(Commit.id)
+      followupsService.generateFollowupsForCommit(Commit.id)
     }
     thrown.getMessage should be(s"Commit ${Commit.id} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")
-    verifyZeroInteractions(followUpDAO)
+    verifyZeroInteractions(followupDAO)
   }
 
   it should "throw exception and not generate follow-ups for comments when no comments found" in {
@@ -74,20 +74,20 @@ class FollowUpServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
     // When
     val thrown = intercept[RuntimeException] {
-      followUpsService.generateFollowUpsForCommit(Commit.id)
+      followupsService.generateFollowupsForCommit(Commit.id)
     }
     thrown.getMessage should be(s"Commit review for commit ${Commit.id} not found. Cannot createOrUpdateExisting follow-ups for commit without comments")
-    verifyZeroInteractions(followUpDAO)
+    verifyZeroInteractions(followupDAO)
   }
 
 }
 
-trait FollowUpServiceSpecFixture {
+trait FollowupServiceSpecFixture {
 
   val CommentDateTime = new DateTime()
 
   implicit val TestClock = new FixtureTimeClock(12345)
-  val FollowUpCreationDateTime = TestClock.currentDateTimeUTC()
+  val FollowupCreationDateTime = TestClock.currentDateTimeUTC()
 
   val UserOneId = ObjectIdTestUtils.oid(456)
   val UserTwoId = ObjectIdTestUtils.oid(789)

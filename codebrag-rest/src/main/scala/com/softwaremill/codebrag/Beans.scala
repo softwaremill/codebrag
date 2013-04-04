@@ -7,7 +7,7 @@ import dao._
 import rest.CodebragSwagger
 import service.comments.CommentService
 import service.diff.DiffService
-import service.followups.FollowUpService
+import service.followups.FollowupService
 import service.github._
 import service.user.Authenticator
 import pl.softwaremill.common.util.time.RealTimeClock
@@ -21,7 +21,7 @@ trait Beans {
   lazy val userDao = new MongoUserDAO
   lazy val reviewDao = new MongoCommitReviewDAO
   lazy val commitInfoDao = new MongoCommitInfoDAO
-  lazy val followUpDao = new MongoFollowUpDAO
+  lazy val followupDao = new MongoFollowupDAO
   lazy val commitReviewDao = new MongoCommitReviewDAO
   lazy val commitListFinder = new MongoCommitListFinder
   lazy val commentListFinder = new MongoCommentListFinder
@@ -32,7 +32,7 @@ trait Beans {
   lazy val githubClientProvider = new GitHubClientProvider(userDao)
   lazy val converter = new GitHubCommitInfoConverter()
   lazy val importerFactory = new GitHubCommitImportServiceFactory(githubClientProvider, converter, commitInfoDao)
-  lazy val followUpService = new FollowUpService(followUpDao, commitInfoDao, commitReviewDao)
+  lazy val followupService = new FollowupService(followupDao, commitInfoDao, commitReviewDao)
 
-  lazy val commentActivity = new CommentActivity(commentService, followUpService)
+  lazy val commentActivity = new CommentActivity(commentService, followupService)
 }

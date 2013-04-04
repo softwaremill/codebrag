@@ -3,59 +3,59 @@ package com.softwaremill.codebrag.dao.reporting
 import com.softwaremill.codebrag.dao._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.FollowUp
+import com.softwaremill.codebrag.domain.Followup
 import org.joda.time.DateTime
 
-class MongoFollowUpFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers with MongoFollowUpFinderSpecFixture {
+class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers with MongoFollowupFinderSpecFixture {
 
-  var followUpDao: FollowUpDAO = _
-  var followUpFinder: FollowUpFinder = _
+  var followupDao: FollowupDAO = _
+  var followupFinder: FollowupFinder = _
 
   override def beforeEach() {
-    FollowUpRecord.drop
-    followUpDao = new MongoFollowUpDAO
-    followUpFinder = new MongoFollowUpFinder
+    FollowupRecord.drop
+    followupDao = new MongoFollowupDAO
+    followupFinder = new MongoFollowupFinder
   }
 
 
   it should "find all follow-ups only for given user" in {
     // given
-    storeUserFollowUps
-    storeAnotherUserFollowUp
+    storeUserFollowups
+    storeAnotherUserFollowup
 
     // when
-    val userFollowUps = followUpFinder.findAllFollowUpsForUser(TargetUserId)
+    val userFollowups = followupFinder.findAllFollowupsForUser(TargetUserId)
 
     // then
-    userFollowUps.followUps should have size(2)
+    userFollowups.followups should have size(2)
   }
 
   it should "return user follow-ups with newest first order" in {
     // given
-    storeUserFollowUps
+    storeUserFollowups
 
     // when
-    val userFollowUps = followUpFinder.findAllFollowUpsForUser(TargetUserId).followUps
+    val userFollowups = followupFinder.findAllFollowupsForUser(TargetUserId).followups
 
     // then
-    userFollowUps(First).date should equal(laterDate.toDate)
-    userFollowUps(Second).date should equal(date.toDate)
+    userFollowups(First).date should equal(laterDate.toDate)
+    userFollowups(Second).date should equal(date.toDate)
   }
 
-  def storeUserFollowUps {
+  def storeUserFollowups {
     List(
-      FollowUp(CommitInfoBuilder.createRandomCommit(), TargetUserId, date),
-      FollowUp(CommitInfoBuilder.createRandomCommit(), TargetUserId, laterDate))
-    .foreach(followUpDao.createOrUpdateExisting(_))
+      Followup(CommitInfoBuilder.createRandomCommit(), TargetUserId, date),
+      Followup(CommitInfoBuilder.createRandomCommit(), TargetUserId, laterDate))
+    .foreach(followupDao.createOrUpdateExisting(_))
   }
 
-  def storeAnotherUserFollowUp {
-    followUpDao.createOrUpdateExisting(FollowUp(CommitInfoBuilder.createRandomCommit(), OtherUserId, latestDate))
+  def storeAnotherUserFollowup {
+    followupDao.createOrUpdateExisting(Followup(CommitInfoBuilder.createRandomCommit(), OtherUserId, latestDate))
   }
 
 }
 
-trait MongoFollowUpFinderSpecFixture {
+trait MongoFollowupFinderSpecFixture {
 
   val TargetUserId = ObjectIdTestUtils.oid(12)
   val OtherUserId = ObjectIdTestUtils.oid(25)

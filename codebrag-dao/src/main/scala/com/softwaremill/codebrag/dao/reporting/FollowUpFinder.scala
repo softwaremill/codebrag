@@ -2,8 +2,8 @@ package com.softwaremill.codebrag.dao.reporting
 
 import org.bson.types.ObjectId
 
-trait FollowUpFinder {
+trait FollowupFinder {
 
-  def findAllFollowUpsForUser(userId: ObjectId): FollowUpsList
+  def findAllFollowupsForUser(userId: ObjectId): FollowupsList
 
 }

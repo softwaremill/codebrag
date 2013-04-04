@@ -2,8 +2,8 @@ package com.softwaremill.codebrag.dao.reporting
 
 import java.util.Date
 
-case class FollowUpsList(followUps: List[SingleFollowUpInfo])
+case class FollowupsList(followups: List[SingleFollowupInfo])
 
-case class SingleFollowUpInfo(userId: String, date: Date, commit: FollowUpCommitInfo)
+case class SingleFollowupInfo(userId: String, date: Date, commit: FollowupCommitInfo)
 
-case class FollowUpCommitInfo(commitId: String, authorName: String, message: String, date: Date)
+case class FollowupCommitInfo(commitId: String, authorName: String, message: String, date: Date)
