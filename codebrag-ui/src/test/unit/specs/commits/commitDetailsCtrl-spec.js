@@ -34,11 +34,10 @@ describe("CommitDetailsController", function () {
     it('should load files for selected commit', inject(function ($controller, currentCommit) {
         //given
         currentCommit.id = 1;
-        currentCommit.sha = 'sha';
 
         var currentScope = {};
 
-        $httpBackend.whenGET('rest/commits/sha').respond('[{"filename":"test.txt", "lines":[]}]');
+        $httpBackend.whenGET('rest/commits/1').respond('[{"filename":"test.txt", "lines":[]}]');
 
         //when
         $controller('CommitDetailsCtrl', {$scope: currentScope});
@@ -51,7 +50,6 @@ describe("CommitDetailsController", function () {
     it('should not attempt to load files if no commit is selected', inject(function ($controller, currentCommit) {
         //given
         currentCommit.id = undefined;
-        currentCommit.sha = undefined;
 
         var currentScope = {};
 
@@ -65,11 +63,10 @@ describe("CommitDetailsController", function () {
     it('should convert spaces in diff lines to nbsp tags', inject(function ($controller, currentCommit) {
         //given
         currentCommit.id = 1;
-        currentCommit.sha = 'sha';
 
         var currentScope = {};
 
-        $httpBackend.whenGET('rest/commits/sha').respond('[{"filename":"test.txt", "lines":[{"line":"  test"}]}]');
+        $httpBackend.whenGET('rest/commits/1').respond('[{"filename":"test.txt", "lines":[{"line":"  test"}]}]');
 
         //when
         $controller('CommitDetailsCtrl', {$scope: currentScope});

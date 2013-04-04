@@ -5,7 +5,7 @@ angular.module('codebrag.commits')
         $scope.files = [];
 
         if (currentCommit.isSelected()) {
-            Files.get({sha: currentCommit.sha}, function (files) {
+            Files.get({id: currentCommit.id}, function (files) {
                 $scope.files = preprocessFiles(files);
             }, function (error) {
                 console.error(error);

@@ -2,6 +2,7 @@ package com.softwaremill.codebrag.service.diff
 
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import annotation.tailrec
+import org.bson.types.ObjectId
 
 class DiffService(commitInfoDao: CommitInfoDAO) {
 
@@ -40,7 +41,7 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
   }
 
   def getFilesWithDiffs(commitId: String): Either[String, List[FileWithDiff]] = {
-    commitInfoDao.findBySha(commitId) match {
+    commitInfoDao.findByCommitId(new ObjectId(commitId)) match {
       case Some(commit) => Right(commit.files.map(file => FileWithDiff(file.filename, parseDiff(file.patch))))
       case None => Left("No such commit")
     }

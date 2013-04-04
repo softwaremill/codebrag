@@ -3,6 +3,7 @@ package com.softwaremill.codebrag.service.diff
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao.CommitInfoDAO
+import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.scalatest.mock.MockitoSugar
 import org.mockito.BDDMockito._
 import com.softwaremill.codebrag.domain.{CommitInfo, CommitFileInfo}
@@ -14,7 +15,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
   val EmptyParentsList = List.empty
   val EmptyFilesList = List.empty
-
+  val FixtureCommitId = oid(1)
   val SampleDiff =
     """@@ -2,7 +2,7 @@
       | {
@@ -101,10 +102,10 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   it should "be right when finds commit" in {
     //given
     val commit = Some(CommitInfo("s", "m", "a", "m", new DateTime, EmptyParentsList, EmptyFilesList))
-    given(dao.findBySha("1")).willReturn(commit)
+    given(dao.findByCommitId(FixtureCommitId)).willReturn(commit)
 
     //when
-    val filesEither = service.getFilesWithDiffs("1")
+    val filesEither = service.getFilesWithDiffs(FixtureCommitId.toString)
 
     //then
     filesEither should be('right)
@@ -130,10 +131,10 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
                                                   | }
                                                   | ]""")
     val commit = Some(CommitInfo("sha", "m", "a", "c", new DateTime, EmptyParentsList, List(file1, file2)))
-    given(dao.findBySha("1")).willReturn(commit)
+    given(dao.findByCommitId(FixtureCommitId)).willReturn(commit)
 
     //when
-    val Right(files) = service.getFilesWithDiffs("1")
+    val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
 
     //then
     files should have size (2)
@@ -143,10 +144,10 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
   it should "return information when commit is missing" in {
     //given
-    given(dao.findBySha("a")).willReturn(None)
+    given(dao.findByCommitId(FixtureCommitId)).willReturn(None)
 
     //when
-    val files = service.getFilesWithDiffs("a")
+    val files = service.getFilesWithDiffs(FixtureCommitId.toString)
 
     //then
     files should be('left)
