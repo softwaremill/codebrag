@@ -6,29 +6,24 @@ import org.bson.types.ObjectId
 
 class DiffService(commitInfoDao: CommitInfoDAO) {
 
-  val Info = """@@ -(\d+),(\d+) \+(\d+),(\d+) @@""".r
+  private val IrrelevantLineIndicator = -1
+
+  val Info = """@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)""".r
 
   def parseDiff(diff: String): List[DiffLine] = {
-    def lineToChange(line: String): String = {
-      if (line.startsWith("+")) "added"
-      else if (line.startsWith("-")) "removed"
-      else "not-changed"
-    }
-
     @tailrec
     def convertToDiffLines(lines: List[String], lineNumberOriginal: Int, lineNumberChanged: Int, accu: List[DiffLine]): List[DiffLine] = {
       if (lines.isEmpty) {
         accu.reverse
       } else {
         lines.head match {
-          case line@Info(startOld, countOld, startNew, countNew) => convertToDiffLines(lines.tail, startOld.toInt, startNew.toInt, DiffLine(line, "...", "...", "") :: accu)
+          case line@Info(startOld, countOld, startNew, countNew, rest) => convertToDiffLines(lines.tail, startOld.toInt, startNew.toInt, DiffLine(line, IrrelevantLineIndicator, IrrelevantLineIndicator, "header") :: accu)
           case line => {
             val lineChange = line.substring(0, 1)
-            val changeType: String = lineToChange(line)
             lineChange match {
-              case "-" => convertToDiffLines(lines.tail, lineNumberOriginal + 1, lineNumberChanged, DiffLine(line, lineNumberOriginal.toString, "", changeType) :: accu)
-              case "+" => convertToDiffLines(lines.tail, lineNumberOriginal, lineNumberChanged + 1, DiffLine(line, "", lineNumberChanged.toString, changeType) :: accu)
-              case _ => convertToDiffLines(lines.tail, lineNumberOriginal + 1, lineNumberChanged + 1, DiffLine(line, lineNumberOriginal.toString, lineNumberChanged.toString, changeType) :: accu)
+              case "-" => convertToDiffLines(lines.tail, lineNumberOriginal + 1, lineNumberChanged, DiffLine(line, lineNumberOriginal, IrrelevantLineIndicator, "removed") :: accu)
+              case "+" => convertToDiffLines(lines.tail, lineNumberOriginal, lineNumberChanged + 1, DiffLine(line, IrrelevantLineIndicator, lineNumberChanged, "added") :: accu)
+              case _ => convertToDiffLines(lines.tail, lineNumberOriginal + 1, lineNumberChanged + 1, DiffLine(line, lineNumberOriginal, lineNumberChanged, "not-changed") :: accu)
             }
           }
         }
@@ -48,6 +43,6 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
   }
 }
 
-case class DiffLine(line: String, lineNumberOriginal: String, lineNumberChanged: String, change: String)
+case class DiffLine(line: String, lineNumberOriginal: Int, lineNumberChanged: Int, lineType: String)
 
 case class FileWithDiff(filename: String, lines: List[DiffLine])

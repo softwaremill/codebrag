@@ -14,9 +14,17 @@
             <div class="row diff-file-data">
                 <table class="diff-table">
                     <tr ng-repeat="line in file.lines">
-                        <td class="diff-table-line-number-cell">{{line.lineNumberOriginal}}</td>
-                        <td class="diff-table-line-number-cell">{{line.lineNumberChanged}}</td>
-                        <td class="diff-{{line.change}} diff-line" ng-bind-html-unsafe="line.line"></td>
+                        <td class="diff-table-line-number-cell" ng-switch on="line.lineType">
+                            <span ng-switch-when="header">...</span>
+                            <span ng-switch-when="added"></span>
+                            <span ng-switch-default>{{line.lineNumberOriginal}}</span>
+                        </td>
+                        <td class="diff-table-line-number-cell" ng-switch on="line.lineType">
+                            <span ng-switch-when="header">...</span>
+                            <span ng-switch-when="removed"></span>
+                            <span ng-switch-default>{{line.lineNumberChanged}}</span>
+                        </td>
+                        <td class="diff-{{line.lineType}} diff-line" ng-bind-html-unsafe="line.line"></td>
                     </tr>
                 </table>
             </div>
