@@ -4,7 +4,7 @@ EnvJasmine.loadGlobal(EnvJasmine.libDir + "angular-1.1.1.js");
 EnvJasmine.loadGlobal(EnvJasmine.libDir + "angular-resource-1.1.1.js");
 EnvJasmine.loadGlobal(EnvJasmine.libDir + "angular-sanitize-1.1.1.js");
 EnvJasmine.loadGlobal(EnvJasmine.libDir + "angular-cookies-1.1.1.js");
-EnvJasmine.loadGlobal(EnvJasmine.libDir + "bootstrap-2.2.2.js");
+EnvJasmine.loadGlobal(EnvJasmine.libDir + "bootstrap.js");
 EnvJasmine.loadGlobal(EnvJasmine.libDir + "moment.js");
 
 // Testing libraries
