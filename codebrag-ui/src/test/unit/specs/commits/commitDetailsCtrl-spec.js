@@ -3,10 +3,20 @@
 describe("CommitDetailsController", function () {
 
     var selectedCommit = {id: 123, sha: '123abc123'};
+    var $httpBackend;
 
     beforeEach(module('codebrag.commits'));
 
-    it('should receive selected commit info from commits list element', inject(function($controller) {
+    beforeEach(inject(function (_$httpBackend_) {
+        $httpBackend = _$httpBackend_;
+    }));
+
+    afterEach(inject(function (_$httpBackend_) {
+        _$httpBackend_.verifyNoOutstandingExpectation();
+        _$httpBackend_.verifyNoOutstandingRequest();
+    }));
+
+    it('should receive selected commit info from commits list element', inject(function ($controller) {
         // Given
         var commitsListItemScope = {};
         var commitDetailsScope = {};
@@ -19,6 +29,56 @@ describe("CommitDetailsController", function () {
         // Then
         expect(commitDetailsScope.currentCommit.id).toEqual(selectedCommit.id);
         expect(commitDetailsScope.currentCommit.sha).toEqual(selectedCommit.sha);
+    }));
+
+    it('should load files for selected commit', inject(function ($controller, currentCommit) {
+        //given
+        currentCommit.id = 1;
+        currentCommit.sha = 'sha';
+
+        var currentScope = {};
+
+        $httpBackend.whenGET('rest/commits/sha').respond('[{"filename":"test.txt", "lines":[]}]');
+
+        //when
+        $controller('CommitDetailsCtrl', {$scope: currentScope});
+        $httpBackend.flush();
+
+        //then
+        expect(currentScope.files).not.toBeNull();
+    }));
+
+    it('should not attempt to load files if no commit is selected', inject(function ($controller, currentCommit) {
+        //given
+        currentCommit.id = undefined;
+        currentCommit.sha = undefined;
+
+        var currentScope = {};
+
+        //when
+        $controller('CommitDetailsCtrl', {$scope: currentScope});
+
+        //then
+        //no request to backend was done
+    }));
+
+    it('should convert spaces in diff lines to nbsp tags', inject(function ($controller, currentCommit) {
+        //given
+        currentCommit.id = 1;
+        currentCommit.sha = 'sha';
+
+        var currentScope = {};
+
+        $httpBackend.whenGET('rest/commits/sha').respond('[{"filename":"test.txt", "lines":[{"line":"  test"}]}]');
+
+        //when
+        $controller('CommitDetailsCtrl', {$scope: currentScope});
+        $httpBackend.flush();
+
+        //then
+        var loadedFile = currentScope.files[0];
+        var changedLine = loadedFile.lines[0];
+        expect(changedLine.line).toBe("&nbsp;&nbsp;test");
     }));
 
 });

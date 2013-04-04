@@ -19,7 +19,7 @@ angular.module('codebrag.commits')
                 var numOfLines = file.lines.length;
                 for(var j = 0;j < numOfLines;j++) {
                     var line = file.lines[j];
-                    line.line = line.line.replace(" ", "&nbsp;");
+                    line.line = line.line.replace(/ /g, "&nbsp;");
                 }
             }
             return files;
