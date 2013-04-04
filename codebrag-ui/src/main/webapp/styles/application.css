@@ -70,6 +70,7 @@ html, body, .container, .content {
     overflow-x: auto;
     overflow-y: hidden;
     font-family: "Courier New", monospace;
+    font-size: 13px;
     border: 1px solid #CCCCCC;
     table-layout: fixed;
 }
@@ -96,6 +97,11 @@ html, body, .container, .content {
 
 .diff-not-changed {
 
+}
+
+.diff-header {
+    background-color: #eeeeee;
+    color: #888888;
 }
 
 /* Sticky Footer End */
