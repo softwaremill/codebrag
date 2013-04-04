@@ -11,7 +11,7 @@
 .entryText {
     font-size: 18px;
     overflow-x: auto;
-    overflow-y:hidden;
+    overflow-y: hidden;
 }
 
 .user-info-dashboard {
@@ -60,13 +60,23 @@ html, body, .container, .content {
 .push {
     height: 60px; /* same as the footer */
 }
+
 .footer-wrapper {
     position: relative;
     height: 60px;
 }
 
+.diff-file-data {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
 .diff-table-line-number-cell {
     width: 20px
+}
+
+.diff-line {
+    white-space: nowrap;
 }
 
 .diff-added {
