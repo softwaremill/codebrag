@@ -76,17 +76,24 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   it should "assign proper line numbers to diff lines" in {
     val lines = service.parseDiff(SampleDiff)
 
-    lines(0).lineNumber should be(0)
+    (lines(0).lineNumberOriginal, lines(0).lineNumberChanged) should be(("0", "0"))
+    (lines(1).lineNumberOriginal, lines(1).lineNumberChanged) should be(("2", "2"))
+    (lines(2).lineNumberOriginal, lines(2).lineNumberChanged) should be(("3", "3"))
+    (lines(3).lineNumberOriginal, lines(3).lineNumberChanged) should be(("4", "4"))
+    (lines(4).lineNumberOriginal, lines(4).lineNumberChanged) should be(("5", ""))
+    (lines(5).lineNumberOriginal, lines(5).lineNumberChanged) should be(("", "5"))
+    (lines(6).lineNumberOriginal, lines(6).lineNumberChanged) should be(("6", "6"))
+    (lines(7).lineNumberOriginal, lines(7).lineNumberChanged) should be(("7", "7"))
+    (lines(8).lineNumberOriginal, lines(8).lineNumberChanged) should be(("8", "8"))
 
-    for (i <- 0 to 7) {
-      lines(1 + i).lineNumber should be(2 + i)
-    }
-
-    lines(9).lineNumber should be(0)
-
-    for {i <- 0 to 6} {
-      lines(10 + i).lineNumber should be(47 + i)
-    }
+    (lines(9).lineNumberOriginal, lines(9).lineNumberChanged) should be(("0", "0"))
+    (lines(10).lineNumberOriginal, lines(10).lineNumberChanged) should be(("47", "47"))
+    (lines(11).lineNumberOriginal, lines(11).lineNumberChanged) should be(("48", "48"))
+    (lines(12).lineNumberOriginal, lines(12).lineNumberChanged) should be(("49", "49"))
+    (lines(13).lineNumberOriginal, lines(13).lineNumberChanged) should be(("50", ""))
+    (lines(14).lineNumberOriginal, lines(14).lineNumberChanged) should be(("", "50"))
+    (lines(15).lineNumberOriginal, lines(15).lineNumberChanged) should be(("51", "51"))
+    (lines(16).lineNumberOriginal, lines(16).lineNumberChanged) should be(("52", "52"))
   }
 
   behavior of "Diff service loading files with diffs"
@@ -106,22 +113,22 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   it should "return list of files with their diffs" in {
     //given
     val file1 = CommitFileInfo("file1.txt", "", """@@ -2,7 +2,7 @@
-                                              | {
-                                              |        "user":
-                                              |        {
-                                              |-               "login":"foo",
-                                              |+               "login":"foobar",
-                                              |                "pass":"2hf23jbd23d2839f2kejdn",
-                                              |                "passsalt":"1231e123123",
-                                              |                "id":1""")
+                                                  | {
+                                                  |        "user":
+                                                  |        {
+                                                  |-               "login":"foo",
+                                                  |+               "login":"foobar",
+                                                  |                "pass":"2hf23jbd23d2839f2kejdn",
+                                                  |                "passsalt":"1231e123123",
+                                                  |                "id":1""")
     val file2 = CommitFileInfo("file2.txt", "", """@@ -47,6 +47,6 @@
-                                              |                 "passsalt":"1231e123123",
-                                              |                 "id":1
-                                              |         },
-                                              |-        "joined":"1900-01-01"
-                                              |+        "joined":"1900-01-02"
-                                              | }
-                                              | ]""")
+                                                  |                 "passsalt":"1231e123123",
+                                                  |                 "id":1
+                                                  |         },
+                                                  |-        "joined":"1900-01-01"
+                                                  |+        "joined":"1900-01-02"
+                                                  | }
+                                                  | ]""")
     val commit = Some(CommitInfo("sha", "m", "a", "c", new DateTime, EmptyParentsList, List(file1, file2)))
     given(dao.findBySha("1")).willReturn(commit)
 
