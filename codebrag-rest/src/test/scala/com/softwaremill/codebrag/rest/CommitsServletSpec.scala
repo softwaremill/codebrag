@@ -48,11 +48,6 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
     }
-
-    def asJson(resp: CommitListDTO) = {
-      implicit val formats = net.liftweb.json.DefaultFormats ++ net.liftweb.json.ext.JodaTimeSerializers.all
-      net.liftweb.json.Serialization.write(resp)
-    }
   }
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])

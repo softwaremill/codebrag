@@ -24,4 +24,10 @@ trait CodebragServletSpec extends ScalatraFlatSpec with MockitoSugar {
   def mapToStringifiedJson[T <% JValue](map: Map[String, T]): String = {
     compact(map2jvalue(map))
   }
+
+  def asJson(objToJson: AnyRef) = {
+    implicit val formats = net.liftweb.json.DefaultFormats ++ net.liftweb.json.ext.JodaTimeSerializers.all
+    net.liftweb.json.Serialization.write(objToJson)
+  }
+
 }
