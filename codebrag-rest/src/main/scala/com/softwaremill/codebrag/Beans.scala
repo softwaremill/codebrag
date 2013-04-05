@@ -32,7 +32,7 @@ trait Beans {
   lazy val githubClientProvider = new GitHubClientProvider(userDao)
   lazy val converter = new GitHubCommitInfoConverter()
   lazy val importerFactory = new GitHubCommitImportServiceFactory(githubClientProvider, converter, commitInfoDao)
-  lazy val followupService = new FollowupService(followupDao, commitInfoDao, commitReviewDao)
+  lazy val followupService = new FollowupService(followupDao, commitInfoDao, commitReviewDao, userDao)
   lazy val followupFinder = new MongoFollowupFinder
   lazy val commentActivity = new CommentActivity(commentService, followupService)
 }

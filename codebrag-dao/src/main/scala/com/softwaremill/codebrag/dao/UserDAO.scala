@@ -25,6 +25,8 @@ trait UserDAO {
 
   def findByToken(token: String): Option[User]
 
+  def findByUserName(userName: String): Option[User]
+
   def changeAuthentication(id:ObjectId, authentication:Authentication)
 
 }

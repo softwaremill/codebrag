@@ -7,10 +7,12 @@ import org.mockito.Mockito._
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao._
 import pl.softwaremill.common.util.time.FixtureTimeClock
-import com.softwaremill.codebrag.domain.{Followup, CommitComment, CommitReview}
-import scala.Some
+import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.domain.CommitComment
+import com.softwaremill.codebrag.domain.Followup
+import scala.Some
 import com.softwaremill.codebrag.service.comments.command.AddComment
 
 class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with FollowupServiceSpecFixture{
@@ -18,6 +20,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   var followupDAO: FollowupDAO = _
   var commitInfoDAO: CommitInfoDAO = _
   var commitReviewDAO: CommitReviewDAO = _
+  var userDAO: UserDAO = _
 
   var followupsService: FollowupService = _
 
@@ -25,32 +28,37 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupDAO = mock[FollowupDAO]
     commitInfoDAO = mock[CommitInfoDAO]
     commitReviewDAO = mock[CommitReviewDAO]
-    followupsService = new FollowupService(followupDAO, commitInfoDAO, commitReviewDAO)(TestClock)
+    userDAO = mock[UserDAO]
+    followupsService = new FollowupService(followupDAO, commitInfoDAO, commitReviewDAO, userDAO)(TestClock)
   }
 
-  it should "generate follow-ups for commit for all commenters involved except of current commenter" in {
+  it should "generate follow-ups for commit for commit author and all commenters except of current commenter" in {
     // Given
     given(commitInfoDAO.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(commitReviewDAO.findById(Commit.id)).willReturn(Some(CommitReviewWithTwoDifferentCommenters))
+    given(userDAO.findByUserName(CommitAuthor.name)).willReturn(Some(CommitAuthor))
 
     // When
     followupsService.generateFollowupsForComment(AddCommentByUserOne)
 
     // Then
     verify(followupDAO).createOrUpdateExisting(Followup(Commit, UserTwoId, FollowupCreationDateTime))
+    verify(followupDAO).createOrUpdateExisting(Followup(Commit, CommitAuthorId, FollowupCreationDateTime))
     verifyNoMoreInteractions(followupDAO)
   }
 
-  it should "generate follow-ups for each commenter only once" in {
+  it should "generate follow-ups for each user only once" in {
     // Given
     given(commitInfoDAO.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(commitReviewDAO.findById(Commit.id)).willReturn(Some(CommitReviewWithNonUniqueCommenters))
+    given(userDAO.findByUserName(CommitAuthor.name)).willReturn(Some(CommitAuthor))
 
     // When
     followupsService.generateFollowupsForComment(AddCommentByUserOne)
 
     // Then
     verify(followupDAO).createOrUpdateExisting(Followup(Commit, UserTwoId, FollowupCreationDateTime))
+    verify(followupDAO).createOrUpdateExisting(Followup(Commit, CommitAuthorId, FollowupCreationDateTime))
     verifyNoMoreInteractions(followupDAO);
   }
 
@@ -89,10 +97,13 @@ trait FollowupServiceSpecFixture {
   implicit val TestClock = new FixtureTimeClock(12345)
   val FollowupCreationDateTime = TestClock.currentDateTimeUTC()
 
+  val CommitAuthorId = ObjectIdTestUtils.oid(000)
   val UserOneId = ObjectIdTestUtils.oid(456)
   val UserTwoId = ObjectIdTestUtils.oid(789)
 
   val Commit = CommitInfoBuilder.createRandomCommit()
+
+  val CommitAuthor = User(CommitAuthorId, Authentication.basic("user", "password"), Commit.authorName, "user@email.com", "123213")
 
   val UserOneComment = CommitComment(new ObjectId(), UserOneId, "user one comment", CommentDateTime)
   val UserTwoComment = CommitComment(new ObjectId(), UserTwoId, "user two comment", CommentDateTime)

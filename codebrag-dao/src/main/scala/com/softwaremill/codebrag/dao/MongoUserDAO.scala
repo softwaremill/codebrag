@@ -35,6 +35,10 @@ class MongoUserDAO extends UserDAO {
     }
   }
 
+  def findByUserName(userName: String) = {
+    UserRecord where (_.name eqs userName) get()
+  }
+
   def findByToken(token: String) = {
     UserRecord where (_.token eqs token) get()
   }
