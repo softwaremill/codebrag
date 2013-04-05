@@ -5,6 +5,7 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
+import org.bson.types.ObjectId
 
 
 class UsersServletSpec extends AuthenticatableServletSpec {
@@ -30,7 +31,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
 
   "GET /" should "return user information" in {
     userIsAuthenticated
-    val authenticatedUser = UserJson("user", "user@email.com", "123abc")
+    val authenticatedUser = UserJson(new ObjectId(), "user", "user@email.com", "123abc")
     when(fakeScentry.user).thenReturn(authenticatedUser)
     get("/") {
       status should be (200)

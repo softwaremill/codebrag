@@ -9,6 +9,7 @@ import org.scalatra.test.scalatest.ScalatraFlatSpec
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.BDDMockito._
+import org.bson.types.ObjectId
 
 class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
   behavior of "RememberMe"
@@ -16,7 +17,7 @@ class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
   val httpResponse = mock[HttpServletResponse]
   val app = mock[UsersServlet]
   val userService = mock[Authenticator]
-  val loggedUser: UserJson = UserJson("admin", "admin@admin.net", "token")
+  val loggedUser: UserJson = UserJson(new ObjectId(), "admin", "admin@admin.net", "token")
   when(userService.authenticateWithToken(loggedUser.token)) thenReturn(Option(loggedUser))
 
   val rememberMe = true

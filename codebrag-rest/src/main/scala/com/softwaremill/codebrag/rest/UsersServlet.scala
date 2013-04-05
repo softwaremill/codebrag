@@ -5,9 +5,11 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.service.data.UserJson
 import swagger.{Swagger, SwaggerSupport}
 
-class UsersServlet(val authenticator: Authenticator, val swagger: Swagger) extends JsonServletWithAuthentication with UsersServletSwaggerDefinition with CookieSupport {
+class UsersServlet(val authenticator: Authenticator, val swagger: Swagger) extends JsonServletWithAuthentication with CookieSupport {
 
-  post(operation(loginOperation)) {
+  // FIXME: enable Swagger back for all operations as soon as we find out how to make Swagger work with ObjectId or JodaTime
+
+  post() {
     val userOpt: Option[UserJson] = authenticate()
     userOpt match {
       case Some(loggedUser) =>
@@ -17,12 +19,12 @@ class UsersServlet(val authenticator: Authenticator, val swagger: Swagger) exten
     }
   }
 
-  get(operation(userProfileOperation)) {
+  get() {
     haltIfNotAuthenticated()
     user
   }
 
-  get("/logout", operation(logoutOperation)) {
+  get("/logout") {
     if (isAuthenticated) {
       // call logout only when logged in to avoid NPE
       logOut()
