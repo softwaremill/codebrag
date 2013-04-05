@@ -16,6 +16,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   val EmptyParentsList = List.empty
   val EmptyFilesList = List.empty
   val FixtureCommitId = oid(1)
+  val IrrelevantLineIndicator = -1
   val SampleDiff =
     """@@ -2,7 +2,7 @@
       | {
@@ -76,25 +77,26 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
   it should "assign proper line numbers to diff lines" in {
     val lines = service.parseDiff(SampleDiff)
+    def line(number:Int) = (lines(number).lineNumberOriginal, lines(number).lineNumberChanged)
 
-    (lines(0).lineNumberOriginal, lines(0).lineNumberChanged) should be((-1, -1))
-    (lines(1).lineNumberOriginal, lines(1).lineNumberChanged) should be((2, 2))
-    (lines(2).lineNumberOriginal, lines(2).lineNumberChanged) should be((3, 3))
-    (lines(3).lineNumberOriginal, lines(3).lineNumberChanged) should be((4, 4))
-    (lines(4).lineNumberOriginal, lines(4).lineNumberChanged) should be((5, -1))
-    (lines(5).lineNumberOriginal, lines(5).lineNumberChanged) should be((-1, 5))
-    (lines(6).lineNumberOriginal, lines(6).lineNumberChanged) should be((6, 6))
-    (lines(7).lineNumberOriginal, lines(7).lineNumberChanged) should be((7, 7))
-    (lines(8).lineNumberOriginal, lines(8).lineNumberChanged) should be((8, 8))
+    line(0) should be((IrrelevantLineIndicator, IrrelevantLineIndicator))
+    line(1) should be((2, 2))
+    line(2) should be((3, 3))
+    line(3) should be((4, 4))
+    line(4) should be((5, IrrelevantLineIndicator))
+    line(5) should be((IrrelevantLineIndicator, 5))
+    line(6) should be((6, 6))
+    line(7) should be((7, 7))
+    line(8) should be((8, 8))
 
-    (lines(9).lineNumberOriginal, lines(9).lineNumberChanged) should be((-1, -1))
-    (lines(10).lineNumberOriginal, lines(10).lineNumberChanged) should be((47, 47))
-    (lines(11).lineNumberOriginal, lines(11).lineNumberChanged) should be((48, 48))
-    (lines(12).lineNumberOriginal, lines(12).lineNumberChanged) should be((49, 49))
-    (lines(13).lineNumberOriginal, lines(13).lineNumberChanged) should be((50, -1))
-    (lines(14).lineNumberOriginal, lines(14).lineNumberChanged) should be((-1, 50))
-    (lines(15).lineNumberOriginal, lines(15).lineNumberChanged) should be((51, 51))
-    (lines(16).lineNumberOriginal, lines(16).lineNumberChanged) should be((52, 52))
+    line(9) should be((IrrelevantLineIndicator, IrrelevantLineIndicator))
+    line(10) should be((47, 47))
+    line(11) should be((48, 48))
+    line(12) should be((49, 49))
+    line(13) should be((50, IrrelevantLineIndicator))
+    line(14) should be((IrrelevantLineIndicator, 50))
+    line(15) should be((51, 51))
+    line(16) should be((52, 52))
   }
 
   behavior of "Diff service loading files with diffs"

@@ -6,7 +6,11 @@ import org.bson.types.ObjectId
 
 class DiffService(commitInfoDao: CommitInfoDAO) {
 
-  private val IrrelevantLineIndicator = -1
+  val IrrelevantLineIndicator = -1
+  val LineTypeHeader = "header"
+  val LineTypeRemoved = "removed"
+  val LineTypeAdded = "added"
+  val LineTypeNotChanged = "not-changed"
 
   val Info = """@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)""".r
 
@@ -17,13 +21,13 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
         accu.reverse
       } else {
         lines.head match {
-          case line@Info(startOld, countOld, startNew, countNew, rest) => convertToDiffLines(lines.tail, startOld.toInt, startNew.toInt, DiffLine(line, IrrelevantLineIndicator, IrrelevantLineIndicator, "header") :: accu)
+          case line@Info(startOld, countOld, startNew, countNew, rest) => convertToDiffLines(lines.tail, startOld.toInt, startNew.toInt, DiffLine(line, IrrelevantLineIndicator, IrrelevantLineIndicator, LineTypeHeader) :: accu)
           case line => {
             val lineChange = line.substring(0, 1)
             lineChange match {
-              case "-" => convertToDiffLines(lines.tail, lineNumberOriginal + 1, lineNumberChanged, DiffLine(line, lineNumberOriginal, IrrelevantLineIndicator, "removed") :: accu)
-              case "+" => convertToDiffLines(lines.tail, lineNumberOriginal, lineNumberChanged + 1, DiffLine(line, IrrelevantLineIndicator, lineNumberChanged, "added") :: accu)
-              case _ => convertToDiffLines(lines.tail, lineNumberOriginal + 1, lineNumberChanged + 1, DiffLine(line, lineNumberOriginal, lineNumberChanged, "not-changed") :: accu)
+              case "-" => convertToDiffLines(lines.tail, lineNumberOriginal + 1, lineNumberChanged, DiffLine(line, lineNumberOriginal, IrrelevantLineIndicator, LineTypeRemoved) :: accu)
+              case "+" => convertToDiffLines(lines.tail, lineNumberOriginal, lineNumberChanged + 1, DiffLine(line, IrrelevantLineIndicator, lineNumberChanged, LineTypeAdded) :: accu)
+              case _ => convertToDiffLines(lines.tail, lineNumberOriginal + 1, lineNumberChanged + 1, DiffLine(line, lineNumberOriginal, lineNumberChanged, LineTypeNotChanged) :: accu)
             }
           }
         }
