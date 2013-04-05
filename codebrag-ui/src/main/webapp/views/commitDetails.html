@@ -12,7 +12,7 @@
                 <div class="well">{{file.filename}}</div>
             </div>
             <div class="row diff-file-data">
-                <table class="diff-table">
+                <table>
                     <tr ng-repeat="line in file.lines">
                         <td class="diff-table-line-number-cell" ng-switch on="line.lineType">
                             <span ng-switch-when="header">...</span>
