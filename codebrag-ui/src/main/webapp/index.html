@@ -77,9 +77,6 @@
                 </a>
                 <a class="brand" href="#"><img src="/img/codebrag-rgb-for-dark-bg.png" width="42"></a>
                 <div class="nav-collapse collapse">
-                    <ul class="nav">
-                        <li class="active"><a href="/#/">Home</a></li>
-                    </ul>
                     <ul class="nav pull-right" ng-controller="SessionCtrl">
                         <li ng-show="isNotLogged()"><a id="loginLink" href="#/login">Sign in</a></li>
                         <li ng-show="isLogged()"><a id="profileLink" href="#/profile">Signed in as {{getLoggedUserName()}}</a></li>
