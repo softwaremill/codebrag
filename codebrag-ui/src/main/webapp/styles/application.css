@@ -85,7 +85,7 @@ html, body, .container, .content {
 .diff-line {
     white-space: pre;
     padding-left: 10px;
-    display: block;
+    width: 100%;
 }
 
 .diff-added {
