@@ -6,6 +6,10 @@ angular.module('codebrag.commits')
             sha: undefined,
             isSelected: function() {
                 return this.id !== undefined
+            },
+            reset: function() {
+                this.id = undefined;
+                this.sha = undefined;
             }
         };
 

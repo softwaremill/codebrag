@@ -2,6 +2,8 @@ angular.module('codebrag.commits')
 
     .controller('CommitsCtrl', function ($location, $scope, $http, PendingCommits, currentCommit) {
 
+        currentCommit.reset();
+
         $scope.currentCommit = currentCommit;
 
         PendingCommits.get(function(responseData) {
