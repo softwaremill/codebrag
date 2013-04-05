@@ -83,8 +83,9 @@ html, body, .container, .content {
 }
 
 .diff-line {
-    white-space: nowrap;
+    white-space: pre;
     padding-left: 10px;
+    display: block;
 }
 
 .diff-added {
