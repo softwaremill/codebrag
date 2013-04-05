@@ -33,7 +33,7 @@ class CommitsServlet(val authenticator: Authenticator,
     haltIfNotAuthenticated
     val commitId = params("id")
     val messageBody = extractNotEmptyString("body")
-    val command = AddComment(new ObjectId(commitId), user.login, messageBody)
+    val command = AddComment(new ObjectId(commitId), user.id, messageBody)
     AddCommentResponse(commentActivity.commentOnCommit(command))
   }
 

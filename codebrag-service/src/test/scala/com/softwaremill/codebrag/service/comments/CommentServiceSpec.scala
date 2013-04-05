@@ -32,6 +32,8 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
   val FixtureComment = new CommitComment(FixtureCommentId, FixtureAuthorId, "commentMsg", currentTimeUTC())
   val FixtureReview = CommitReview(FixtureCommitId, List(FixtureComment))
 
+  val FixtureNewComment = AddComment(FixtureCommitId, FixtureAuthorId, "new comment message")
+
   var commentService: CommentService = _
   var reviewDaoMock: CommitReviewDAO = _
   var userDaoMock: UserDAO = _
@@ -39,18 +41,17 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
   override def beforeEach() {
     reviewDaoMock = mock[CommitReviewDAO]
     userDaoMock = mock[UserDAO]
-    given(userDaoMock.findByLoginOrEmail("fixture-user-login")).willReturn(Some(FixtureUser))
+    given(userDaoMock.findById(FixtureAuthorId)).willReturn(Some(FixtureUser))
     commentService = new CommentService(reviewDaoMock, userDaoMock)
   }
 
   it should "create a new review with new commit and persist this review" in {
     given(reviewDaoMock.findById(FixtureCommitId)) willReturn None
-    val command = AddComment(FixtureCommitId, "fixture-user-login", "new comment message")
     val comment = CommitComment(FixtureGeneratedId, FixtureAuthorId, "new comment message", currentTimeUTC())
     val commitWithOneComment = CommitReview(FixtureCommitId, List(comment))
 
     // when
-    commentService.addCommentToCommit(command)
+    commentService.addCommentToCommit(FixtureNewComment)
 
     // then
     verify(reviewDaoMock).save(commitWithOneComment)
@@ -59,24 +60,21 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
   it should "add new comment to a review and call dao to persist this review" in {
 
     given(reviewDaoMock.findById(FixtureCommitId)) willReturn (Some(FixtureReview))
-    val command = AddComment(FixtureCommitId, "fixture-user-login", "new comment message")
 
     // when
-    commentService.addCommentToCommit(command)
+    commentService.addCommentToCommit(FixtureNewComment)
 
     // then
     verify(reviewDaoMock).findById(FixtureCommitId)
-    verify(userDaoMock).findByLoginOrEmail("fixture-user-login")
     verify(reviewDaoMock).save(any[CommitReview])
   }
 
   it should "return new comment list item as a result" in {
 
     given(reviewDaoMock.findById(FixtureCommitId)) willReturn (Some(FixtureReview))
-    val command = AddComment(FixtureCommitId, "fixture-user-login", "new comment message")
 
     // when
-    val newCommentItem = commentService.addCommentToCommit(command)
+    val newCommentItem = commentService.addCommentToCommit(FixtureNewComment)
 
     // then
     newCommentItem should equal(CommentListItemDTO(FixtureGeneratedId.toString, "Bob", "new comment message", new Date(FixtureTime)))

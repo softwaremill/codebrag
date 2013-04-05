@@ -13,7 +13,7 @@ class CommentService(reviewDAO: CommitReviewDAO, userDAO: UserDAO)(implicit idGe
 
     val commitId = command.commitId
     val reviewOpt = reviewDAO.findById(commitId)
-    val user = userDAO.findByLoginOrEmail(command.authorLogin).get
+    val user = userDAO.findById(command.authorId).get
     val newCommentId = idGenerator.generateRandom()
     val time = clock.currentDateTimeUTC()
     val reviewWithComment = reviewOpt match {

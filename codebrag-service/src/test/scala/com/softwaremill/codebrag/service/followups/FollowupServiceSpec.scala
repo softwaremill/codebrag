@@ -11,6 +11,7 @@ import com.softwaremill.codebrag.domain.{Followup, CommitComment, CommitReview}
 import scala.Some
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.service.comments.command.AddComment
 
 class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with FollowupServiceSpecFixture{
 
@@ -27,17 +28,17 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupsService = new FollowupService(followupDAO, commitInfoDAO, commitReviewDAO)(TestClock)
   }
 
-  it should "generate follow-ups for commit for all commenters involved" in {
+  it should "generate follow-ups for commit for all commenters involved except of current commenter" in {
     // Given
     given(commitInfoDAO.findByCommitId(Commit.id)).willReturn(Some(Commit))
-    given(commitReviewDAO.findById(Commit.id)).willReturn(Some(CommitReviewWithTwoComments))
+    given(commitReviewDAO.findById(Commit.id)).willReturn(Some(CommitReviewWithTwoDifferentCommenters))
 
     // When
-    followupsService.generateFollowupsForCommit(Commit.id)
+    followupsService.generateFollowupsForComment(AddCommentByUserOne)
 
     // Then
-    verify(followupDAO).createOrUpdateExisting(Followup(Commit, UserOneId, FollowupCreationDateTime))
     verify(followupDAO).createOrUpdateExisting(Followup(Commit, UserTwoId, FollowupCreationDateTime))
+    verifyNoMoreInteractions(followupDAO)
   }
 
   it should "generate follow-ups for each commenter only once" in {
@@ -46,10 +47,9 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     given(commitReviewDAO.findById(Commit.id)).willReturn(Some(CommitReviewWithNonUniqueCommenters))
 
     // When
-    followupsService.generateFollowupsForCommit(Commit.id)
+    followupsService.generateFollowupsForComment(AddCommentByUserOne)
 
     // Then
-    verify(followupDAO).createOrUpdateExisting(Followup(Commit, UserOneId, FollowupCreationDateTime))
     verify(followupDAO).createOrUpdateExisting(Followup(Commit, UserTwoId, FollowupCreationDateTime))
     verifyNoMoreInteractions(followupDAO);
   }
@@ -57,11 +57,11 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   it should "throw exception and not generate follow-ups when commit not found" in {
     // Given
     given(commitInfoDAO.findByCommitId(Commit.id)).willReturn(None)
-    given(commitReviewDAO.findById(Commit.id)).willReturn(Some(CommitReviewWithTwoComments))
+    given(commitReviewDAO.findById(Commit.id)).willReturn(Some(CommitReviewWithTwoDifferentCommenters))
 
     // When
     val thrown = intercept[RuntimeException] {
-      followupsService.generateFollowupsForCommit(Commit.id)
+      followupsService.generateFollowupsForComment(AddCommentByUserOne)
     }
     thrown.getMessage should be(s"Commit ${Commit.id} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")
     verifyZeroInteractions(followupDAO)
@@ -74,7 +74,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
     // When
     val thrown = intercept[RuntimeException] {
-      followupsService.generateFollowupsForCommit(Commit.id)
+      followupsService.generateFollowupsForComment(AddCommentByUserOne)
     }
     thrown.getMessage should be(s"Commit review for commit ${Commit.id} not found. Cannot createOrUpdateExisting follow-ups for commit without comments")
     verifyZeroInteractions(followupDAO)
@@ -98,7 +98,10 @@ trait FollowupServiceSpecFixture {
   val UserTwoComment = CommitComment(new ObjectId(), UserTwoId, "user two comment", CommentDateTime)
   val UserTwoAnotherComment = CommitComment(new ObjectId(), UserTwoId, "user two another comment", CommentDateTime)
 
-  val CommitReviewWithTwoComments = CommitReview(Commit.id, List(UserOneComment, UserTwoComment))
+  val AddCommentByUserOne = AddComment(Commit.id, UserOneId, UserOneComment.message)
+
+  val CommitReviewWithTwoDifferentCommenters = CommitReview(Commit.id, List(UserOneComment, UserTwoComment))
   val CommitReviewWithNonUniqueCommenters = CommitReview(Commit.id, List(UserOneComment, UserTwoComment, UserTwoAnotherComment))
 
 }
+

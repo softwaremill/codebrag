@@ -8,7 +8,7 @@ class CommentActivity(commentService: CommentService, followupService: FollowupS
 
   def commentOnCommit(newComment: AddComment) = {
     val addedComment = commentService.addCommentToCommit(newComment)
-    followupService.generateFollowupsForCommit(newComment.commitId)
+    followupService.generateFollowupsForComment(newComment)
     addedComment
   }
 
