@@ -18,7 +18,7 @@ describe("Follow-ups Controller", function () {
 
     var $httpBackend;
 
-    beforeEach(module('codebrag.commits'));
+    beforeEach(module('codebrag.followups'));
 
     afterEach(inject(function (_$httpBackend_) {
         _$httpBackend_.verifyNoOutstandingExpectation();

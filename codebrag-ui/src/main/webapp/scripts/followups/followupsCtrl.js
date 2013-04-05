@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('codebrag.commits.followups')
+angular.module('codebrag.followups')
 
     .controller('FollowupsCtrl', function ($location, $scope, $http, Followups, currentCommit) {
 

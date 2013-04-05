@@ -15,13 +15,13 @@ angular.module('codebrag.session', ['ngCookies'])
     });
 
 angular.module('codebrag.commits.comments', []);
-angular.module('codebrag.commits.followups', [])
+angular.module('codebrag.followups', ['codebrag.commits'])
     .config(function($routeProvider) {
         $routeProvider.
             when("/followups", {controller: 'FollowupsCtrl', templateUrl: "views/secured/followups.html"});
     });
 
-angular.module('codebrag.commits', ['ngResource', 'codebrag.commits.comments', 'codebrag.commits.followups'])
+angular.module('codebrag.commits', ['ngResource', 'codebrag.commits.comments'])
     .config(function($routeProvider) {
         $routeProvider.
             when("/commits", {controller: 'CommitsCtrl', templateUrl: "views/commits.html"});
@@ -33,6 +33,7 @@ angular.module('codebrag', [
             'codebrag.common.services',
             'codebrag.common.directives',
             'codebrag.commits',
+            'codebrag.followups',
             'ajaxthrobber'])
 
     .run(function(authService) {

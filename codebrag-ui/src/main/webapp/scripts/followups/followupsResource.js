@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('codebrag.commits.followups')
+angular.module('codebrag.followups')
 
     .factory('Followups', function ($resource) {
         return $resource('rest/followups');
