@@ -30,12 +30,11 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   }
 
   "GET /" should "return user information" in {
-    userIsAuthenticated
-    val authenticatedUser = UserJson(new ObjectId(), "user", "user@email.com", "123abc")
-    when(fakeScentry.user).thenReturn(authenticatedUser)
+    val currentUser = UserJson(new ObjectId(), "user", "user@email.com", "123abc")
+    userIsAuthenticatedAs(currentUser)
     get("/") {
       status should be (200)
-      body should be (asJson(authenticatedUser))
+      body should be (asJson(currentUser))
     }
   }
 

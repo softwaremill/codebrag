@@ -27,6 +27,12 @@ trait AuthenticatableServletSpec extends CodebragServletSpec with BeforeAndAfter
   def beforeSpec: Unit = { /* noop by default */ }
 
   def userIsAuthenticated = when(fakeScentry.isAuthenticated).thenReturn(true)
+
+  def userIsAuthenticatedAs(currentUser: UserJson) = {
+    userIsAuthenticated
+    when(fakeScentry.user).thenReturn(currentUser)
+  }
+
   def userIsNotAuthenticated = when(fakeScentry.isAuthenticated).thenReturn(false)
 
 }

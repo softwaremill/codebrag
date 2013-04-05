@@ -14,17 +14,12 @@ import org.bson.types.ObjectId
 
 class FollowupsServlet(val authenticator: Authenticator,
                        val swagger: Swagger,
-                       followupsService: FollowupService,
-                       followupFinder: FollowupFinder,
-                       userDAO: UserDAO)
+                       followupFinder: FollowupFinder)
   extends JsonServletWithAuthentication with FollowupsServletSwaggerDefinition with JacksonJsonSupport {
 
   get("/", operation(getOperation)) {
     haltIfNotAuthenticated
-    val login = user.login
-    val userOption = userDAO.findByLoginOrEmail(login)
-    val userId = userOption.getOrElse(throw new IllegalStateException(s"User logged in as $login not found!")).id
-    followupFinder.findAllFollowupsForUser(userId)
+    followupFinder.findAllFollowupsForUser(user.id)
   }
 }
 
