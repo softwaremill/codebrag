@@ -59,23 +59,4 @@ describe("CommitDetailsController", function () {
         //then
         //no request to backend was done
     }));
-
-    it('should convert spaces in diff lines to nbsp tags', inject(function ($controller, currentCommit) {
-        //given
-        currentCommit.id = 1;
-
-        var currentScope = {};
-
-        $httpBackend.whenGET('rest/commits/1').respond('[{"filename":"test.txt", "lines":[{"line":"  test"}]}]');
-
-        //when
-        $controller('CommitDetailsCtrl', {$scope: currentScope});
-        $httpBackend.flush();
-
-        //then
-        var loadedFile = currentScope.files[0];
-        var changedLine = loadedFile.lines[0];
-        expect(changedLine.line).toBe("&nbsp;&nbsp;test");
-    }));
-
 });
