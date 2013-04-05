@@ -44,7 +44,7 @@ class FollowupRecord extends MongoRecord[FollowupRecord] with ObjectIdPk[Followu
 }
 
 object FollowupRecord extends FollowupRecord with MongoMetaRecord[FollowupRecord] {
-  override def collectionName: String = "follow_ups"
+  override def collectionName = "follow_ups"
 }
 
 class FollowupCommitInfoRecord extends BsonRecord[FollowupCommitInfoRecord] {

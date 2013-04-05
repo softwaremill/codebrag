@@ -5,7 +5,7 @@ angular.module('codebrag.commits')
         $scope.files = [];
 
         if (currentCommit.isSelected()) {
-            Files.get({id: currentCommit.id}, function (files) {
+            Files.query({id: currentCommit.id}, function (files) {
                 $scope.files = files;
             }, function (error) {
                 console.error(error);

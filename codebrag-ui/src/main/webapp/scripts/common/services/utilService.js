@@ -1,4 +1,4 @@
-"user strict";
+"use strict";
 
 angular.module("codebrag.common.services").factory('utilService', function ($resource) {
 
