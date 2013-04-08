@@ -9,7 +9,14 @@
     <div class="row" ng-repeat="file in files">
         <div class="span7">
             <div class="row">
-                <div class="well">{{file.filename}}</div>
+                <div class="well">
+                    <span ng-switch on="file.status">
+                        <span ng-switch-when="added">+</span>
+                        <span ng-switch-when="removed">-</span>
+                        <span ng-switch-default></span>
+                    </span>
+                    <span>{{file.filename}}</span>
+                </div>
             </div>
             <div class="row diff-file-data">
                 <table>

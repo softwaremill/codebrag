@@ -44,7 +44,7 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
 
   def getFilesWithDiffs(commitId: String): Either[String, List[FileWithDiff]] = {
     commitInfoDao.findByCommitId(new ObjectId(commitId)) match {
-      case Some(commit) => Right(commit.files.map(file => FileWithDiff(file.filename, parseDiff(file.patch))))
+      case Some(commit) => Right(commit.files.map(file => FileWithDiff(file.filename, file.status, parseDiff(file.patch))))
       case None => Left("No such commit")
     }
   }
@@ -52,4 +52,4 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
 
 case class DiffLine(line: String, lineNumberOriginal: Int, lineNumberChanged: Int, lineType: String)
 
-case class FileWithDiff(filename: String, lines: List[DiffLine])
+case class FileWithDiff(filename: String, status: String, lines: List[DiffLine])

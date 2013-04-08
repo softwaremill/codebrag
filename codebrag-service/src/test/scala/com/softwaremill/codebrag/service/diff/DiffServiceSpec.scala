@@ -17,6 +17,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   val EmptyFilesList = List.empty
   val FixtureCommitId = oid(1)
   val IrrelevantLineIndicator = -1
+  val StatusAdded = "added"
   val SampleDiff =
     """@@ -2,7 +2,7 @@
       | {
@@ -179,5 +180,18 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
     //then
     files(0).lines should be ('empty)
+  }
+
+  it should "return status for the file" in {
+    //given
+    val file = CommitFileInfo("filename.txt", StatusAdded, "")
+    val commit = CommitInfo("sha", "message", "author", "committer", new DateTime, EmptyParentsList, List(file))
+    given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
+
+    //when
+    val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
+
+    //then
+    files(0).status should be (StatusAdded)
   }
 }
