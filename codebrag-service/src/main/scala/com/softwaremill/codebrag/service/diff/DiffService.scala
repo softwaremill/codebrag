@@ -34,7 +34,10 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
       }
     }
 
-    val diffLines = diff.split("\n").toList
+    val diffLines = Option(diff) match {
+      case Some(d) => if (d.isEmpty) List() else d.split("\n").toList
+      case None => List.empty
+    }
 
     convertToDiffLines(diffLines, 0, 0, List())
   }

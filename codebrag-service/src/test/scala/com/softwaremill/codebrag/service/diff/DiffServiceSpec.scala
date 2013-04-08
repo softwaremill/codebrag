@@ -77,7 +77,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
   it should "assign proper line numbers to diff lines" in {
     val lines = service.parseDiff(SampleDiff)
-    def line(number:Int) = (lines(number).lineNumberOriginal, lines(number).lineNumberChanged)
+    def line(number: Int) = (lines(number).lineNumberOriginal, lines(number).lineNumberChanged)
 
     line(0) should be((IrrelevantLineIndicator, IrrelevantLineIndicator))
     line(1) should be((2, 2))
@@ -153,5 +153,31 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
     //then
     files should be('left)
+  }
+
+  it should "return file with no diffs when patch is not available" in {
+    //given
+    val file = CommitFileInfo("filename.txt", "", null)
+    val commit = CommitInfo("sha", "message", "author", "committer", new DateTime, EmptyParentsList, List(file))
+    given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
+
+    //when
+    val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
+
+    //then
+    files(0).lines should be ('empty)
+  }
+
+  it should "return file with no diffs when patch is empty" in {
+    //given
+    val file = CommitFileInfo("filename.txt", "", "")
+    val commit = CommitInfo("sha", "message", "author", "committer", new DateTime, EmptyParentsList, List(file))
+    given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
+
+    //when
+    val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
+
+    //then
+    files(0).lines should be ('empty)
   }
 }
