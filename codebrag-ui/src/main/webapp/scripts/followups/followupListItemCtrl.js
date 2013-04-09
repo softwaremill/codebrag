@@ -9,9 +9,9 @@ angular.module('codebrag.followups')
         }
 
         $scope.dismiss = function (followup) {
-            Followups.remove({id: followup.commit.commitId}, function (response) {
-                    console.log("Removed")
-                }
-            )
+            Followups.remove({id: followup.commit.commitId}, function () {
+                var itemIndex = $scope.followups.indexOf(followup)
+                $scope.followups.splice(itemIndex, 1);
+            })
         }
     });
