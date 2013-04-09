@@ -12,7 +12,7 @@
                                 <p class="text-right">{{followup.date | relativeDate}}</p>
                             </div>
                             <div class="span1">
-                                <button class="btn btn-mini btn-success"><i class="icon-ok"></i></button>
+                                <button class="btn btn-mini btn-success" ng-click="dismiss(followup)"><i class="icon-ok"></i></button>
                             </div>
                         </div>
                         <div class="row" ng-click="openCommitDetails(followup.commit)">
