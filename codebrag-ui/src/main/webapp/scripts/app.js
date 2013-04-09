@@ -8,8 +8,8 @@ angular.module('codebrag.common.directives', ['codebrag.common.services']);
 
 angular.module('codebrag.session', ['ngCookies', 'ui.compat']);
 
-angular.module('codebrag.commits', ['ngResource', 'ui.compat', 'codebrag.commits.comments']);
-angular.module('codebrag.commits.comments', []);
+angular.module('codebrag.commits.comments', ['ui.compat']);
+angular.module('codebrag.commits', ['ngResource', 'codebrag.commits.comments']);
 
 angular.module('codebrag', [
     'codebrag.session',

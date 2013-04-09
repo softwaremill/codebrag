@@ -2,22 +2,24 @@
 
 angular.module('codebrag.commits.comments')
 
-    .controller('CommentCtrl',function ($scope, currentCommit, Comments) {
+    .controller('CommentCtrl',function ($scope, $stateParams, Comments) {
 
         $scope.commentsList = [];
 
         loadAllCommentsForCurrentCommit();
 
+        function currentCommitId() {
+            return $stateParams.id;
+        }
+
         function loadAllCommentsForCurrentCommit() {
-            if(currentCommit.isSelected()) {
-                Comments.query({id: currentCommit.id}, function(data) {
-                    $scope.commentsList = data.comments;
-                })
-            }
+            Comments.query({id: currentCommitId()}, function(data) {
+                $scope.commentsList = data.comments;
+            })
         }
 
         $scope.addComment = {
-            commitId: currentCommit.id,
+            commitId: currentCommitId(),
             body: '',
             reset: function() {
                 this.body = '';
