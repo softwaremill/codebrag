@@ -16,11 +16,13 @@ import com.softwaremill.codebrag.service.diff.FileWithDiff
 import com.softwaremill.codebrag.service.comments.command.AddComment
 import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 import com.softwaremill.codebrag.activities.CommentActivity
+import com.softwaremill.codebrag.dao.UserDAO
 
 class CommitsServlet(val authenticator: Authenticator,
                      commitListFinder: CommitListFinder,
                      commentListFinder: CommentListFinder,
-                     commentActivity: CommentActivity, val swagger: Swagger,
+                     commentActivity: CommentActivity,
+                     userDao: UserDAO, val swagger: Swagger,
                      diffService: DiffService, importerFactory: GitHubCommitImportServiceFactory)
   extends JsonServletWithAuthentication with CommitsServletSwaggerDefinition with JacksonJsonSupport {
 
@@ -34,7 +36,11 @@ class CommitsServlet(val authenticator: Authenticator,
     val commitId = params("id")
     val messageBody = extractNotEmptyString("body")
     val command = AddComment(new ObjectId(commitId), user.id, messageBody)
-    AddCommentResponse(commentActivity.commentOnCommit(command))
+    val newComment = commentActivity.commentOnCommit(command)
+    userDao.findById(command.authorId) match {
+      case Some(user) => CommentListItemDTO(newComment.id.toString, user.name, command.message, newComment.postingTime.toDate)
+      case None => halt(400, s"Invalid user id $command.authorId")
+    }
   }
 
   get("/:id/comments", operation(getCommentsOperation)) {

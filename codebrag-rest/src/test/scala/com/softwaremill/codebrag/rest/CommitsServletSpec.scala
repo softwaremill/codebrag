@@ -4,7 +4,7 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.AuthenticatableServletSpec
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
-import com.softwaremill.codebrag.dao.CommitInfoDAO
+import com.softwaremill.codebrag.dao.{UserDAO, CommitInfoDAO}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.reporting.{CommentListFinder, CommitListDTO, CommitListFinder, CommitListItemDTO}
 import java.util.Date
@@ -21,6 +21,8 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var commitsListFinder = mock[CommitListFinder]
   var diffService = mock[DiffService]
   var commentListFinder = mock[CommentListFinder]
+  var userDao = mock[UserDAO]
+
   val importerFactory = mock[GitHubCommitImportServiceFactory]
 
   def bindServlet {
@@ -51,7 +53,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends CommitsServlet(fakeAuthenticator, commitsListFinder, commentListFinder, commentActivity, new CodebragSwagger, diffService, importerFactory) {
+    extends CommitsServlet(fakeAuthenticator, commitsListFinder, commentListFinder, commentActivity, userDao, new CodebragSwagger, diffService, importerFactory) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

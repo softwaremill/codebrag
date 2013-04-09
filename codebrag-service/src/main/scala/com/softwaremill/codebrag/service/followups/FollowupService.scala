@@ -1,54 +1,56 @@
 package com.softwaremill.codebrag.service.followups
 
-import com.softwaremill.codebrag.dao.{UserDAO, CommitReviewDAO, CommitInfoDAO, FollowupDAO}
+import com.softwaremill.codebrag.dao._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.{User, CommitInfo, CommitReview, Followup}
+import com.softwaremill.codebrag.domain._
 import pl.softwaremill.common.util.time.Clock
 import com.softwaremill.codebrag.service.comments.command.AddComment
+import com.softwaremill.codebrag.domain.Followup
+import scala.Some
 
-class FollowupService(followupDAO: FollowupDAO, commitInfoDAO: CommitInfoDAO, commitReviewDAO: CommitReviewDAO, userDAO: UserDAO)(implicit clock: Clock) {
+class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, commitCommentDao: CommitCommentDAO, userDao: UserDAO)(implicit clock: Clock) {
 
   def generateFollowupsForComment(addedComment: AddComment) {
-    findCommitWithReview(addedComment.commitId) match {
-      case (Some(commit), Some(review)) => generateFollowUps(commit, review, addedComment)
+    findCommitWithComments(addedComment.commitId) match {
       case (None, _) => throwException(s"Commit ${addedComment.commitId} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")
-      case (_, None) => throwException(s"Commit review for commit ${addedComment.commitId} not found. Cannot createOrUpdateExisting follow-ups for commit without comments")
+      case (Some(commit), List()) => throwException(s"No stored comments for commit ${addedComment.commitId}. Cannot createOrUpdateExisting follow-ups for commit without comments")
+      case (Some(commit), currentComments) => generateFollowUps(commit, currentComments, addedComment)
     }
 
     def throwException(message: String) = throw new RuntimeException(message)
   }
 
 
-  def generateFollowUps(commit: CommitInfo, review: CommitReview, addedComment: AddComment) {
+  def generateFollowUps(commit: CommitInfo, currentCommits: List[CommitComment], addedComment: AddComment) {
     val followUpCreationDate = clock.currentDateTimeUTC()
-    usersToGenerateFollowUpsFor(commit, review, addedComment).distinct.foreach(userId => {
-      followupDAO.createOrUpdateExisting(Followup(commit, userId, followUpCreationDate))
+    usersToGenerateFollowUpsFor(commit, currentCommits, addedComment).foreach(userId => {
+      followupDao.createOrUpdateExisting(Followup(commit, userId, followUpCreationDate))
     })
   }
 
-  private def findCommitWithReview(commitId: ObjectId): (Option[CommitInfo], Option[CommitReview]) = {
-    (commitInfoDAO.findByCommitId(commitId), commitReviewDAO.findById(commitId))
+  private def findCommitWithComments(commitId: ObjectId): (Option[CommitInfo], List[CommitComment]) = {
+    (commitInfoDao.findByCommitId(commitId), commitCommentDao.findAllForCommit(commitId))
   }
 
-  def usersToGenerateFollowUpsFor(commit: CommitInfo, commitReview: CommitReview, addedComment: AddComment): List[ObjectId] = {
+  def usersToGenerateFollowUpsFor(commit: CommitInfo, comments: List[CommitComment], addedComment: AddComment): Set[ObjectId] = {
 
-    def uniqueCommenters(): List[ObjectId] = {
-      commitReview.comments.map(_.authorId).distinct
+    def uniqueCommenters(): Set[ObjectId] = {
+      comments.map(_.authorId).toSet
     }
 
-    def addCommitAuthor(users: List[ObjectId]): List[ObjectId] = {
+    def addCommitAuthor(users: Set[ObjectId]): Set[ObjectId] = {
 
       def findCommitAuthorId(): ObjectId = {
-        userDAO.findByUserName(commit.authorName) match {
+        userDao.findByUserName(commit.authorName) match {
           case Some(user) => user.id
-          case None => throw new RuntimeException("Cannot find commit author")
+          case None => throw new IllegalStateException(s"Cannot find commit author $commit.authorName")
         }
       }
 
-      findCommitAuthorId:: users
+      users + findCommitAuthorId
     }
 
-    def withoutCurrentCommentAuthor(users: List[ObjectId]): List[ObjectId] = {
+    def withoutCurrentCommentAuthor(users: Set[ObjectId]): Set[ObjectId] = {
       users.filterNot(_.equals(addedComment.authorId))
     }
 

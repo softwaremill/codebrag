@@ -19,20 +19,19 @@ trait Beans {
 
   lazy val authenticator = new Authenticator(userDao)
   lazy val userDao = new MongoUserDAO
-  lazy val reviewDao = new MongoCommitReviewDAO
   lazy val commitInfoDao = new MongoCommitInfoDAO
   lazy val followupDao = new MongoFollowupDAO
-  lazy val commitReviewDao = new MongoCommitReviewDAO
   lazy val commitListFinder = new MongoCommitListFinder
   lazy val commentListFinder = new MongoCommentListFinder
   lazy val swagger = new CodebragSwagger
   lazy val ghService = new GitHubAuthService
-  lazy val commentService = new CommentService(reviewDao, userDao)
+  lazy val commentDao = new MongoCommitCommentDAO
+  lazy val commentService = new CommentService(commentDao)
   lazy val diffService = new DiffService(commitInfoDao)
   lazy val githubClientProvider = new GitHubClientProvider(userDao)
   lazy val converter = new GitHubCommitInfoConverter()
   lazy val importerFactory = new GitHubCommitImportServiceFactory(githubClientProvider, converter, commitInfoDao)
-  lazy val followupService = new FollowupService(followupDao, commitInfoDao, commitReviewDao, userDao)
+  lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
   lazy val followupFinder = new MongoFollowupFinder
   lazy val commentActivity = new CommentActivity(commentService, followupService)
 }

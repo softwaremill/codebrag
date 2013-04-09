@@ -5,17 +5,12 @@ import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.common.FakeIdGenerator
-import com.softwaremill.codebrag.dao.{CommitReviewDAO, UserDAO}
+import com.softwaremill.codebrag.dao.CommitCommentDAO
 import pl.softwaremill.common.util.time.FixtureTimeClock
-import org.mockito.BDDMockito._
-import org.mockito.Matchers._
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain._
 import org.joda.time.{DateTimeZone, DateTime}
 import org.bson.types.ObjectId
-import scala.Some
-import com.softwaremill.codebrag.dao.reporting.CommentListItemDTO
-import java.util.Date
 
 class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
@@ -29,56 +24,36 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
   implicit val Clock = new FixtureTimeClock(FixtureTime)
   val authentication: Authentication = new Authentication("github", "fixture-user-login", "fixture-user-login", "token", "salt")
   val FixtureUser = new User(FixtureAuthorId, authentication, "Bob", "bob@sml.com", "token")
-  val FixtureComment = new CommitComment(FixtureCommentId, FixtureAuthorId, "commentMsg", currentTimeUTC())
-  val FixtureReview = CommitReview(FixtureCommitId, List(FixtureComment))
+  val FixtureComment = new CommitComment(FixtureCommentId, FixtureCommitId, FixtureAuthorId, "commentMsg", currentTimeUTC)
 
   val FixtureNewComment = AddComment(FixtureCommitId, FixtureAuthorId, "new comment message")
 
   var commentService: CommentService = _
-  var reviewDaoMock: CommitReviewDAO = _
-  var userDaoMock: UserDAO = _
+  var commentDaoMock: CommitCommentDAO = _
 
   override def beforeEach() {
-    reviewDaoMock = mock[CommitReviewDAO]
-    userDaoMock = mock[UserDAO]
-    given(userDaoMock.findById(FixtureAuthorId)).willReturn(Some(FixtureUser))
-    commentService = new CommentService(reviewDaoMock, userDaoMock)
+    commentDaoMock = mock[CommitCommentDAO]
+    commentService = new CommentService(commentDaoMock)
   }
 
-  it should "create a new review with new commit and persist this review" in {
-    given(reviewDaoMock.findById(FixtureCommitId)) willReturn None
-    val comment = CommitComment(FixtureGeneratedId, FixtureAuthorId, "new comment message", currentTimeUTC())
-    val commitWithOneComment = CommitReview(FixtureCommitId, List(comment))
+  it should "create a new commit and call dao to persist it" in {
+    val comment = CommitComment(FixtureGeneratedId, FixtureCommitId, FixtureAuthorId, "new comment message", currentTimeUTC)
 
     // when
     commentService.addCommentToCommit(FixtureNewComment)
 
     // then
-    verify(reviewDaoMock).save(commitWithOneComment)
+    verify(commentDaoMock).save(comment)
   }
 
-  it should "add new comment to a review and call dao to persist this review" in {
-
-    given(reviewDaoMock.findById(FixtureCommitId)) willReturn (Some(FixtureReview))
-
-    // when
-    commentService.addCommentToCommit(FixtureNewComment)
-
-    // then
-    verify(reviewDaoMock).findById(FixtureCommitId)
-    verify(reviewDaoMock).save(any[CommitReview])
-  }
-
-  it should "return new comment list item as a result" in {
-
-    given(reviewDaoMock.findById(FixtureCommitId)) willReturn (Some(FixtureReview))
+  it should "return new comment as a result" in {
 
     // when
     val newCommentItem = commentService.addCommentToCommit(FixtureNewComment)
 
     // then
-    newCommentItem should equal(CommentListItemDTO(FixtureGeneratedId.toString, "Bob", "new comment message", new Date(FixtureTime)))
+    newCommentItem should equal(CommitComment(FixtureGeneratedId, FixtureCommitId, FixtureAuthorId, "new comment message", currentTimeUTC))
   }
 
-  def currentTimeUTC() = new DateTime(FixtureTime, DateTimeZone.UTC)
+  val currentTimeUTC = new DateTime(FixtureTime, DateTimeZone.UTC)
 }

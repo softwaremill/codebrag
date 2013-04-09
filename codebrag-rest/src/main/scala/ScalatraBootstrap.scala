@@ -18,7 +18,7 @@ class ScalatraBootstrap extends LifeCycle with Beans {
 
     context.mount(new UptimeServlet, Prefix + "uptime")
     context.mount(new UsersServlet(authenticator, swagger), Prefix + "users")
-    context.mount(new CommitsServlet(authenticator, commitListFinder, commentListFinder, commentActivity, swagger, diffService, importerFactory), Prefix + CommitsServlet.MAPPING_PATH)
+    context.mount(new CommitsServlet(authenticator, commitListFinder, commentListFinder, commentActivity, userDao, swagger, diffService, importerFactory), Prefix + CommitsServlet.MAPPING_PATH)
     context mount(new GithubAuthorizationServlet(authenticator, ghService, userDao), Prefix + "github")
     context mount(new FollowupsServlet(authenticator, swagger, followupFinder), Prefix + FollowupsServlet.MappingPath)
     context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")
