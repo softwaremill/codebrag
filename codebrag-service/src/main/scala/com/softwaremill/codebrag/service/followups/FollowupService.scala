@@ -7,8 +7,10 @@ import pl.softwaremill.common.util.time.Clock
 import com.softwaremill.codebrag.service.comments.command.AddComment
 import com.softwaremill.codebrag.domain.Followup
 import scala.Some
+import com.typesafe.scalalogging.slf4j.Logging
 
-class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, commitCommentDao: CommitCommentDAO, userDao: UserDAO)(implicit clock: Clock) {
+class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, commitCommentDao: CommitCommentDAO, userDao: UserDAO)(implicit clock: Clock)
+  extends Logging {
 
   def generateFollowupsForComment(addedComment: AddComment) {
     findCommitWithComments(addedComment.commitId) match {
@@ -40,14 +42,14 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
 
     def addCommitAuthor(users: Set[ObjectId]): Set[ObjectId] = {
 
-      def findCommitAuthorId(): ObjectId = {
-        userDao.findByUserName(commit.authorName) match {
-          case Some(user) => user.id
-          case None => throw new IllegalStateException(s"Cannot find commit author $commit.authorName")
+      val authorIdOpt = userDao.findByUserName(commit.authorName).map(_.id)
+      authorIdOpt match {
+        case Some(authorId) => users + authorId
+        case None => {
+          logger.warn(s"Unknown commit author ${commit.authorName}. No such user registered. Cannot generate follow-up.")
+          users
         }
       }
-
-      users + findCommitAuthorId
     }
 
     def withoutCurrentCommentAuthor(users: Set[ObjectId]): Set[ObjectId] = {

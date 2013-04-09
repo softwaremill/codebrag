@@ -75,6 +75,18 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     verifyZeroInteractions(followupDao)
   }
 
+  it should "not generate follow-up for commit author if he does not exist in system" in {
+    // Given
+    given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
+    given(commitCommentDao.findAllForCommit(Commit.id)).willReturn(CommentsWithTwoDifferentCommenters)
+    given(userDao.findByUserName(CommitAuthor.name)).willReturn(None)
+
+    // When
+    followupService.generateFollowupsForComment(AddCommentByUserOne)
+    verify(followupDao).createOrUpdateExisting(Followup(Commit, UserTwoId, FollowupCreationDateTime))
+    verifyNoMoreInteractions(followupDao)
+  }
+
   it should "throw exception and not generate follow-ups for comments when no comments found" in {
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
