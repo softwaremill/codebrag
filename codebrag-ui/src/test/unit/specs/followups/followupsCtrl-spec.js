@@ -43,17 +43,4 @@ describe("Follow-ups Controller", function () {
         expect(scope.followups).toEqual(followupList.followups);
     }));
 
-    it('should have no follow-up selected by default on start', inject(function ($controller) {
-        // Given
-        var scope = {};
-        $httpBackend.whenGET('rest/followups').respond(followupList);
-
-        // When
-        $controller('FollowupsCtrl', {$scope: scope});
-        $httpBackend.flush();
-
-        //Then
-        expect(scope.currentCommit.id).toEqual(undefined);
-    }));
-
 });

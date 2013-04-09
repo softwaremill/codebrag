@@ -11,6 +11,8 @@ angular.module('codebrag.session', ['ngCookies', 'ui.compat']);
 angular.module('codebrag.commits.comments', ['ui.compat']);
 angular.module('codebrag.commits', ['ngResource', 'codebrag.commits.comments']);
 
+angular.module('codebrag.followups', ['ngResource', 'ui.compat']);
+
 angular.module('codebrag', [
     'codebrag.session',
     'codebrag.common.filters',
@@ -55,10 +57,22 @@ angular.module('codebrag.commits')
             })
     });
 
-angular.module('codebrag.followups', ['codebrag.commits'])
-    .config(function($routeProvider) {
-        $routeProvider.
-            when("/followups", {controller: 'FollowupsCtrl', templateUrl: "views/secured/followups.html"});
+angular.module('codebrag.followups')
+    .config(function($stateProvider) {
+        $stateProvider
+            .state('followups', {
+                url: '/followups',
+                abstract: true,
+                templateUrl: 'views/secured/followups.html'
+            })
+            .state('followups.list', {
+                url: '',
+                templateUrl: 'views/empty.html'
+            })
+            .state('followups.details', {
+                url: '/{id}',
+                templateUrl: 'views/commitDetails.html'
+            })
     });
 
 angular.module('codebrag')

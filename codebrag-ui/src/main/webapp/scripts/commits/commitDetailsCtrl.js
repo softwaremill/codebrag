@@ -4,7 +4,7 @@ angular.module('codebrag.commits')
 
         $scope.files = [];
 
-        $scope.commitId = $stateParams.id
+        $scope.commitId = $stateParams.id;
 
         Files.query({id: $stateParams.id}, function (files) {
             $scope.files = files;

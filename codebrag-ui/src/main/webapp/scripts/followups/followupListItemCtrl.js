@@ -2,10 +2,10 @@
 
 angular.module('codebrag.followups')
 
-    .controller('FollowupListItemCtrl', function ($scope, currentCommit, Followups) {
+    .controller('FollowupListItemCtrl', function ($scope, $state, Followups) {
 
         $scope.openCommitDetails = function (commit) {
-            currentCommit.id = commit.commitId
+            $state.transitionTo('followups.details', {id: commit.commitId})
         }
 
         $scope.dismiss = function (followup) {
