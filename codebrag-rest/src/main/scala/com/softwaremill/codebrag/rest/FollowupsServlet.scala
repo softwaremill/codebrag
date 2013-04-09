@@ -6,10 +6,13 @@ import org.scalatra.json.JacksonJsonSupport
 import com.softwaremill.codebrag.dao.reporting._
 import com.softwaremill.codebrag.dao.reporting.FollowupsList
 import scala.Some
+import com.softwaremill.codebrag.dao.FollowupDAO
+import org.bson.types.ObjectId
 
 class FollowupsServlet(val authenticator: Authenticator,
                        val swagger: Swagger,
-                       followupFinder: FollowupFinder)
+                       followupFinder: FollowupFinder,
+                       followupDao: FollowupDAO)
   extends JsonServletWithAuthentication with FollowupsServletSwaggerDefinition with JacksonJsonSupport {
 
   get("/", operation(getOperation)) {
@@ -19,6 +22,8 @@ class FollowupsServlet(val authenticator: Authenticator,
 
   delete("/:id", operation(dismissOperation)) {
     haltIfNotAuthenticated
+    val commitId = params("id")
+    followupDao.delete(new ObjectId(commitId))
   }
 }
 

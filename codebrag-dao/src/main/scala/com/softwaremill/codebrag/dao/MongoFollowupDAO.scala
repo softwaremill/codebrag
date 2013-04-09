@@ -4,6 +4,7 @@ import com.softwaremill.codebrag.domain.Followup
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field._
 import com.foursquare.rogue.LiftRogue._
+import org.bson.types.ObjectId
 
 class MongoFollowupDAO extends FollowupDAO {
 
@@ -12,6 +13,9 @@ class MongoFollowupDAO extends FollowupDAO {
     FollowupRecord.upsert(query, followupToRecord(followup))
   }
 
+  override def delete(commitId: ObjectId) {
+    FollowupRecord.where(_.commit.subselect(_.id) eqs commitId).findAndDeleteOne()
+  }
 
   def followupToRecord(followup: Followup) = {
     val record = toFollowupRecord(followup).asDBObject
@@ -32,6 +36,7 @@ class MongoFollowupDAO extends FollowupDAO {
       .user_id(followup.userId)
       .date(followup.date.toDate)
   }
+
 
 }
 

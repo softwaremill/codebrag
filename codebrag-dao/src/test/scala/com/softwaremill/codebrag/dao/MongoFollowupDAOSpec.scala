@@ -51,4 +51,14 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
     followup.date.get should equal(newDate.toDate)
   }
 
+  it should "delete a follow-up from storage" in {
+    followupDAO.createOrUpdateExisting(Followup(Commit, FollowupTargetUserId, DateTime.now()));
+
+    // when
+    followupDAO.delete(Commit.id)
+
+    // then
+    FollowupRecord.findAll should be('empty)
+
+  }
 }
