@@ -1,6 +1,6 @@
 angular.module('codebrag.session')
 
-    .controller('SessionCtrl', function SessionCtrl($scope, authService, $location, $routeParams) {
+    .controller('SessionCtrl', function SessionCtrl($scope, authService, $state, $stateParams) {
 
         $scope.user = {
             login: '',
@@ -18,13 +18,8 @@ angular.module('codebrag.session')
             }
 
             function loginSuccess () {
-                var optionalRedir = $routeParams.page;
-                if (typeof optionalRedir !== "undefined") {
-                    $location.search("page", null);
-                    $location.path(optionalRedir);
-                } else {
-                    $location.path("");
-                }
+                // TODO: handle optionalRedir
+                $state.transitionTo('home');
             }
 
             function loginFailed() {
@@ -48,7 +43,7 @@ angular.module('codebrag.session')
 
         $scope.logout = function () {
             authService.logout().then(function (data) {
-                $location.path("");
+                $state.transitionTo('login');
             });
         };
 

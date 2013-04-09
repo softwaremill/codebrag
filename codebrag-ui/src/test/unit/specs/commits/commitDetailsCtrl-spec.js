@@ -2,8 +2,8 @@
 
 describe("CommitDetailsController", function () {
 
-    var selectedCommit = {id: 123, sha: '123abc123'};
     var $httpBackend;
+    var selectedCommitId = 123;
 
     beforeEach(module('codebrag.commits'));
 
@@ -16,47 +16,36 @@ describe("CommitDetailsController", function () {
         _$httpBackend_.verifyNoOutstandingRequest();
     }));
 
-    it('should receive selected commit info from commits list element', inject(function ($controller) {
+    it('should use commit ID provided in $stateParams to load commit details', inject(function ($controller, $stateParams) {
         // Given
-        var commitsListItemScope = {};
-        var commitDetailsScope = {};
-        $controller('CommitsListItemCtrl', {$scope: commitsListItemScope});
-        $controller('CommitDetailsCtrl', {$scope: commitDetailsScope});
+        var scope = {};
+        $stateParams.id = selectedCommitId;
+        $httpBackend.whenGET(commitDetailsFor(selectedCommitId)).respond('[{"filename":"test.txt", "lines":[]}]');
 
         // When
-        commitsListItemScope.openCommitDetails(selectedCommit);
+        $controller('CommitDetailsCtrl', {$scope:scope});
+        $httpBackend.flush();
 
         // Then
-        expect(commitDetailsScope.currentCommit.id).toEqual(selectedCommit.id);
-        expect(commitDetailsScope.currentCommit.sha).toEqual(selectedCommit.sha);
+        expect(scope.commitId).toEqual($stateParams.id);
     }));
 
-    it('should load files for selected commit', inject(function ($controller, currentCommit) {
-        //given
-        currentCommit.id = 1;
+    it('should load files for selected commit', inject(function ($controller, $stateParams) {
+        // Given
+        var scope = {};
+        $stateParams.id = selectedCommitId;
+        $httpBackend.whenGET(commitDetailsFor(selectedCommitId)).respond('[{"filename":"test.txt", "lines":[]}]');
 
-        var currentScope = {};
-
-        $httpBackend.whenGET('rest/commits/1').respond('[{"filename":"test.txt", "lines":[]}]');
-
-        //when
-        $controller('CommitDetailsCtrl', {$scope: currentScope});
+        // When
+        $controller('CommitDetailsCtrl', {$scope:scope});
         $httpBackend.flush();
 
         //then
-        expect(currentScope.files).not.toBeNull();
+        expect(scope.files).not.toBeNull();
     }));
 
-    it('should not attempt to load files if no commit is selected', inject(function ($controller, currentCommit) {
-        //given
-        currentCommit.id = undefined;
+    function commitDetailsFor(id) {
+        return 'rest/commits/' + id;
+    }
 
-        var currentScope = {};
-
-        //when
-        $controller('CommitDetailsCtrl', {$scope: currentScope});
-
-        //then
-        //no request to backend was done
-    }));
 });

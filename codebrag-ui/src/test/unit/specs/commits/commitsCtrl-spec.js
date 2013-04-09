@@ -30,18 +30,4 @@ describe("Commits Controller", function () {
         expect(scope.commits).toEqual(commitsList.commits);
     }));
 
-    it('should have no commit selected by default on start', inject(function($controller) {
-        // Given
-        var scope = {};
-        $httpBackend.whenGET('rest/commits?type=pending').respond(commitsList);
-
-        // When
-        $controller('CommitsCtrl', {$scope: scope});
-        $httpBackend.flush();
-
-        //Then
-        expect(scope.currentCommit.id).toEqual(undefined);
-        expect(scope.currentCommit.sha).toEqual(undefined);
-    }));
-
 });

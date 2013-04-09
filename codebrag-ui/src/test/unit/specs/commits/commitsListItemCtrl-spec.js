@@ -2,21 +2,21 @@
 
 describe("CommitsListItemController", function () {
 
-    var selectedCommit = {id: 123, sha: '123abc123'};
+    var selectedCommit = {id: 123};
 
     beforeEach(module('codebrag.commits'));
 
-    it('should update current commit information when commit was clicked', inject(function($controller, currentCommit) {
+    it('should transition to commit details state with commit ID provided', inject(function($controller, $state) {
         // Given
         var scope = {};
-        $controller('CommitsListItemCtrl', {$scope: scope, currentCommit: currentCommit});
+        $controller('CommitsListItemCtrl', {$scope: scope});
+        spyOn($state, "transitionTo")
 
         // When
         scope.openCommitDetails(selectedCommit);
 
         // Then
-        expect(currentCommit.id).toEqual(selectedCommit.id);
-        expect(currentCommit.sha).toEqual(selectedCommit.sha);
+        expect($state.transitionTo).toHaveBeenCalledWith('commits.details', {id: selectedCommit.id})
     }));
 
 });

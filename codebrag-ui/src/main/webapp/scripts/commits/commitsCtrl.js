@@ -1,10 +1,6 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($location, $scope, $http, PendingCommits, currentCommit) {
-
-        currentCommit.reset();
-
-        $scope.currentCommit = currentCommit;
+    .controller('CommitsCtrl', function ($scope, $http, PendingCommits) {
 
         PendingCommits.get(function(responseData) {
             $scope.commits = responseData.commits;
@@ -15,9 +11,6 @@ angular.module('codebrag.commits')
                 .success(function(data) {
                     $scope.commits = data.commits;
                 })
-                .error(function() {
-                    $location.path("/error500");
-                });
         };
 
     });

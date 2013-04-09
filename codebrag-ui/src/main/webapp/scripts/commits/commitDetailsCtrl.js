@@ -1,16 +1,16 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitDetailsCtrl', function ($scope, currentCommit, Files) {
-        $scope.currentCommit = currentCommit;
+    .controller('CommitDetailsCtrl', function ($stateParams, $scope, Files) {
+
         $scope.files = [];
 
-        if (currentCommit.isSelected()) {
-            Files.query({id: currentCommit.id}, function (files) {
-                $scope.files = files;
-            }, function (error) {
-                console.error(error);
-            });
-        }
+        $scope.commitId = $stateParams.id
+
+        Files.query({id: $stateParams.id}, function (files) {
+            $scope.files = files;
+        }, function (error) {
+            console.error(error);
+        });
 
     });
 

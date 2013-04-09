@@ -9,14 +9,15 @@ describe("Session Controller", function () {
         _$httpBackend_.verifyNoOutstandingRequest();
     }));
 
-    var scope, $httpBackend, ctrl, authSrv
+    var scope, $httpBackend, ctrl, authSrv, q
 
-    beforeEach(inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, authService) {
+    beforeEach(inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, authService, $q) {
         $httpBackend = _$httpBackend_;
 
         scope = $rootScope.$new();
         authSrv = authService
         ctrl = $controller('SessionCtrl', {$scope: scope, authService: authSrv});
+        q = $q;
 
         scope.loginForm = {
             login: {
@@ -31,22 +32,26 @@ describe("Session Controller", function () {
 
     it('Should call login rest service when form is valid', function () {
         // Given
-        $httpBackend.expectPOST('rest/users').respond('anything');
-
-        // When
-        scope.login();
-        $httpBackend.flush();
-    });
-
-    it('Should not call login rest service when form is invalid', function () {
-        // Given
-        scope.loginForm.$invalid = true;
+        spyOn(authSrv, 'login').andReturn(q.when('anything'));
 
         // When
         scope.login();
 
         // Then
-        // verifyNoOutstandingRequest(); is checked after each test
+        expect(authSrv.login).toHaveBeenCalled();
+    });
+
+    it('Should not call login rest service when form is invalid', function () {
+        // Given
+        scope.loginForm.$invalid = true;
+        spyOn(authSrv, 'login');
+
+        // When
+        scope.login();
+
+        // Then
+        expect(authSrv.login).not.toHaveBeenCalled()
+
     });
 
     it('Should have user not logged', function () {
@@ -65,13 +70,17 @@ describe("Session Controller", function () {
         expect(scope.isLogged()).toBe(true);
     });
 
-    it('Calling logout should log out from angular layer', function () {
+    it('Calling logout should log out from angular layer', inject(function ($state) {
         // Given
-        $httpBackend.expectGET('rest/users/logout').respond('');
+        spyOn($state, 'transitionTo');
+        spyOn(authSrv, 'logout').andReturn(q.when('anything'));
+
 
         // When
         scope.logout();
-        $httpBackend.flush();
 
-    });
+        // Then
+        expect(authSrv.logout).toHaveBeenCalled();
+        expect()
+    }));
 });
