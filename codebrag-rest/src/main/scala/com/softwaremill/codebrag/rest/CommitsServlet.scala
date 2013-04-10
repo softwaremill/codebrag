@@ -38,7 +38,7 @@ class CommitsServlet(val authenticator: Authenticator,
     val command = AddComment(new ObjectId(commitId), user.id, messageBody)
     val newComment = commentActivity.commentOnCommit(command)
     userDao.findById(command.authorId) match {
-      case Some(user) => CommentListItemDTO(newComment.id.toString, user.name, command.message, newComment.postingTime.toDate)
+      case Some(user) => AddCommentResponse(CommentListItemDTO(newComment.id.toString, user.name, command.message, newComment.postingTime.toDate))
       case None => halt(400, s"Invalid user id $command.authorId")
     }
   }
