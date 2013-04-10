@@ -34,7 +34,7 @@ angular.module('codebrag.session')
                 }
                 return $http.get('rest/users').then(function(response) {
                     authService.loggedInUser = response.data;
-                    return authService.loggedInUser;
+                    return $q.when(authService.loggedInUser);
                 });
             }
 

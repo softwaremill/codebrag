@@ -7,13 +7,17 @@ angular.module("codebrag.session")
         }
 
         function error(response) {
+            var eventData = {};
             if (response.status === 401) { // user is not logged in
+                eventData.status = response.status;
                 var authService = $injector.get("authService")
                 if (authService.isAuthenticated()) {
                     authService.logout(); // Http session expired / logged out - logout on Angular layer
-                    $rootScope.$broadcast("codebrag:httpAuthError", {status: response.status, message: 'Your session timed out. Please login again.'});
-                    $location.path("/login");
+                    eventData.text = 'Your session timed out. Please login again.'
+                } else {
+                    eventData.text = 'Login required.'
                 }
+                $rootScope.$broadcast("codebrag:httpAuthError", eventData);
             }
             return $q.reject(response);
         }
