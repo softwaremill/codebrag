@@ -7,6 +7,7 @@ EnvJasmine.loadGlobal(EnvJasmine.libDir + "angular-cookies-1.1.1.js");
 EnvJasmine.loadGlobal(EnvJasmine.libDir + "angular-ui-states.js");
 EnvJasmine.loadGlobal(EnvJasmine.libDir + "bootstrap.js");
 EnvJasmine.loadGlobal(EnvJasmine.libDir + "moment.js");
+EnvJasmine.loadGlobal(EnvJasmine.libDir + "lodash.js");
 
 // Testing libraries
 EnvJasmine.loadGlobal(EnvJasmine.testDir + "../lib/require/require-2.0.6.js");
