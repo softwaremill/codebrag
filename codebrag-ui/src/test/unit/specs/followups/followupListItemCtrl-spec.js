@@ -1,5 +1,7 @@
 'use strict';
 
+var Controller
+
 describe("Follow-ups list item Controller", function () {
 
     var $httpBackend;
@@ -35,6 +37,8 @@ describe("Follow-ups list item Controller", function () {
         }
     }
 
+    var emptyTestState = {}; //empty state to avoid state initialization, fetching templates, resolving etc
+
     beforeEach(module('codebrag.followups'));
 
     afterEach(inject(function (_$httpBackend_) {
@@ -54,7 +58,7 @@ describe("Follow-ups list item Controller", function () {
         var scope = {followups: [followup1, followup2]};
 
         // When
-        $controller('FollowupListItemCtrl', {$scope: scope});
+        $controller('FollowupListItemCtrl', {$scope: scope, $state: emptyTestState});
         scope.dismiss(followup1)
         $httpBackend.flush();
 
@@ -69,7 +73,7 @@ describe("Follow-ups list item Controller", function () {
         var scope = {followups: [followup1, followup2, followup3]};
 
         // When
-        $controller('FollowupListItemCtrl', {$scope: scope});
+        $controller('FollowupListItemCtrl', {$scope: scope, $state: emptyTestState});
         scope.dismiss(followup3)
         $httpBackend.flush();
 
@@ -84,7 +88,7 @@ describe("Follow-ups list item Controller", function () {
         var scope = {followups: [followup1]};
 
         // When
-        $controller('FollowupListItemCtrl', {$scope: scope});
+        $controller('FollowupListItemCtrl', {$scope: scope, $state: emptyTestState});
         scope.dismiss(followup1)
         $httpBackend.flush();
 
@@ -99,7 +103,7 @@ describe("Follow-ups list item Controller", function () {
         var scope = {followups: [followup1, followup2, followup3]};
 
         // When
-        $controller('FollowupListItemCtrl', {$scope: scope});
+        $controller('FollowupListItemCtrl', {$scope: scope, $state: emptyTestState});
         scope.dismiss(followup2)
         $httpBackend.flush();
 
