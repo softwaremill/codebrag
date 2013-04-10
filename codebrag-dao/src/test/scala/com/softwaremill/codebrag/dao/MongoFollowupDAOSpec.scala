@@ -5,13 +5,16 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.Followup
 import org.joda.time.DateTime
 import pl.softwaremill.common.util.time.FixtureTimeClock
+import ObjectIdTestUtils._
 
 class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
   var followupDAO: MongoFollowupDAO = _
 
   val Commit = CommitInfoBuilder.createRandomCommit()
-  val FollowupTargetUserId = ObjectIdTestUtils.oid(12)
+  val FollowupTargetUserId = oid(12)
+  val DifferentUserId1 = oid(15)
+  val DifferentUserId2 = oid(14)
 
   override def beforeEach() {
     followupDAO = new MongoFollowupDAO
@@ -51,14 +54,27 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
     followup.date.get should equal(newDate.toDate)
   }
 
-  it should "delete a follow-up from storage" in {
+  it should "delete a single follow-up from storage" in {
     followupDAO.createOrUpdateExisting(Followup(Commit, FollowupTargetUserId, DateTime.now()));
 
     // when
-    followupDAO.delete(Commit.id)
+    followupDAO.delete(Commit.id, FollowupTargetUserId)
 
     // then
     FollowupRecord.findAll should be('empty)
+  }
 
+
+  it should "not delete follow-ups of other users" in {
+    followupDAO.createOrUpdateExisting(Followup(Commit, DifferentUserId1, DateTime.now()));
+    followupDAO.createOrUpdateExisting(Followup(Commit, FollowupTargetUserId, DateTime.now()));
+    followupDAO.createOrUpdateExisting(Followup(Commit, DifferentUserId2, DateTime.now()));
+
+    // when
+    followupDAO.delete(Commit.id, FollowupTargetUserId)
+
+    // then
+    val storedUserIds = FollowupRecord.findAll.map(_.user_id.get)
+    storedUserIds should equal (List(DifferentUserId1, DifferentUserId2))
   }
 }

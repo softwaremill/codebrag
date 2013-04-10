@@ -13,8 +13,8 @@ class MongoFollowupDAO extends FollowupDAO {
     FollowupRecord.upsert(query, followupToRecord(followup))
   }
 
-  override def delete(commitId: ObjectId) {
-    FollowupRecord.where(_.commit.subselect(_.id) eqs commitId).findAndDeleteOne()
+  override def delete(commitId: ObjectId, userId: ObjectId) {
+    FollowupRecord.where(_.commit.subselect(_.id) eqs commitId).and(_.user_id eqs userId).findAndDeleteOne()
   }
 
   def followupToRecord(followup: Followup) = {

@@ -23,7 +23,7 @@ class FollowupsServlet(val authenticator: Authenticator,
   delete("/:id", operation(dismissOperation)) {
     haltIfNotAuthenticated
     val commitId = params("id")
-    followupDao.delete(new ObjectId(commitId))
+    followupDao.delete(new ObjectId(commitId), user.id)
   }
 }
 

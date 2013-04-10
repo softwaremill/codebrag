@@ -6,6 +6,6 @@ import org.bson.types.ObjectId
 trait FollowupDAO {
 
   def createOrUpdateExisting(followup: Followup)
-  def delete(commitId: ObjectId)
+  def delete(commitId: ObjectId, userId: ObjectId)
 
 }
