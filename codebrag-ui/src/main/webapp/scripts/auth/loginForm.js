@@ -4,7 +4,7 @@ angular.module("codebrag.auth")
 
         return {
             restrict: "E",
-            templateUrl: 'views/loginPopup.html',
+            templateUrl: 'views/login.html',
             scope: {},
             link: function (scope) {
                 scope.$watch(ifLoginRequired, function(newValue) {
