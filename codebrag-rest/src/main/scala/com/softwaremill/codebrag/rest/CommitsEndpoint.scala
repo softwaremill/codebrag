@@ -3,12 +3,15 @@ package com.softwaremill.codebrag.rest
 import com.softwaremill.codebrag.common.ObjectIdGenerator
 import org.scalatra.NotFound
 import org.scalatra.swagger.SwaggerSupport
-import com.softwaremill.codebrag.dao.reporting.CommitListDTO
-import com.softwaremill.codebrag.service.diff.FileWithDiff
+import com.softwaremill.codebrag.dao.reporting.{CommitListFinder, CommitListDTO}
+import com.softwaremill.codebrag.service.diff.{DiffService, FileWithDiff}
+import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 
-trait CommitsEndpoint extends CommitsEndpointSwaggerDefinition {
+trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpointSwaggerDefinition {
 
-  this: CommitsServlet =>
+  def importerFactory: GitHubCommitImportServiceFactory
+  def diffService: DiffService
+  def commitListFinder: CommitListFinder
 
   get("/") {
     // for all /commits/*

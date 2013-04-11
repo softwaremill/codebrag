@@ -2,12 +2,16 @@ package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.service.comments.command.AddComment
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.{CommentListDTO, CommentListItemDTO}
+import com.softwaremill.codebrag.dao.reporting.{CommentListFinder, CommentListDTO, CommentListItemDTO}
 import org.scalatra.swagger.SwaggerSupport
+import com.softwaremill.codebrag.activities.CommentActivity
+import com.softwaremill.codebrag.dao.UserDAO
 
-trait CommentsEndpoint extends CommentsEndpointSwaggerDefinition {
+trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpointSwaggerDefinition {
 
-  this: CommitsServlet =>
+  def commentActivity: CommentActivity
+  def userDao: UserDAO
+  def commentListFinder: CommentListFinder
 
   post("/:id/comments", operation(addCommentOperation)) {
     haltIfNotAuthenticated
