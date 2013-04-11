@@ -66,7 +66,9 @@
     <script type="text/javascript" src="scripts/common/filters/dateFormatFilter.js"></script>
     <script type="text/javascript" src="scripts/common/services/flashService.js"></script>
     <script type="text/javascript" src="scripts/common/services/utilService.js"></script>
+    <script type="text/javascript" src="scripts/common/services/httpRequestTracker.js"></script>
     <script type="text/javascript" src="scripts/common/directives/messagePopup.js"></script>
+    <script type="text/javascript" src="scripts/common/spinnerCtrl.js"></script>
 
 </head>
 <body ng-app="codebrag">
@@ -74,11 +76,6 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container">
-                <a href="#" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
                 <a class="brand" href="#">Codebrag</a>
                 <div class="nav-collapse collapse" ng-controller="SessionCtrl">
                     <ul class="nav pull-right" ng-show="isLogged()">
@@ -96,6 +93,11 @@
         <div class="content">
             <div class="wrapper">
                 <div class="proper-content">
+                    <div class="row-fluid feedback-container" ng-controller="SpinnerCtrl">
+                        <div class="span1 offset11">
+                            <span ng-show="hasPendingRequests()" class="label label-info">Loading...</span>
+                        </div>
+                    </div>
                     <div message-popup class="row-fluid feedback-container hide">
                         <div class="alert alert-error span4 offset8">
                             <strong>{{errorMsg.status}}</strong> - {{errorMsg.text}}
