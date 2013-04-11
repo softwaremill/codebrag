@@ -15,27 +15,38 @@ EnvJasmine.loadGlobal(EnvJasmine.testDir + "require.conf.js");
 EnvJasmine.loadGlobal(EnvJasmine.testDir + "../lib/angular/angular-mocks-1.1.1.js");
 
 // Application
+
+<!-- main module -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "app.js");
 
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/httpAuthInterceptor.js");
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/authService.js");
+<!-- security -->
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/httpAuthInterceptor.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/httpErrorsInterceptor.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/authService.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/currentUserResolver.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/httpRequestsBuffer.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/loginForm.js");
+
+<!-- session -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/sessionCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/profileCtrl.js");
 
+<!-- commits -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsCtrl.js");
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/filesResource.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/pendingCommitsResource.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsListItemCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitDetailsCtrl.js");
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/pendingCommitsResource.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/comments/commentCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/comments/commentsResource.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/filesResource.js");
+
+<!-- follow-ups -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "followups/followupsCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "followups/followupListItemCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "followups/followupsResource.js");
 
+<!--commons -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/filters/dateFormatFilter.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/services/flashService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/services/utilService.js");
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/ajaxthrobber.js");
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/effects.js");
-
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/directives/messagePopup.js");

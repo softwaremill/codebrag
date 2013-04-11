@@ -10,6 +10,9 @@ class UsersServlet(val authenticator: Authenticator, val swagger: Swagger) exten
   // FIXME: enable Swagger back for all operations as soon as we find out how to make Swagger work with ObjectId or JodaTime
 
   post() {
+    if(login.equals("guest")) {
+      halt(401, "Invalid login and/or password")
+    }
     val userOpt: Option[UserJson] = authenticate()
     userOpt match {
       case Some(loggedUser) =>

@@ -1,27 +1,28 @@
-angular.module('codebrag.session')
+angular.module('codebrag.auth')
 
-    .factory('authService', function($http, $q, $cookies) {
+    .factory('authService', function($http, httpRequestsBuffer, $q) {
 
         var authService = {
 
-            loggedInUser: null,
+            loggedInUser: undefined,
 
             login: function(user) {
-                var loginRequest = $http.post('rest/users', user);
+                var loginRequest = $http.post('rest/users', user, {bypassQueue: true});
                 return loginRequest.then(function(response) {
                     authService.loggedInUser = response.data;
+                    httpRequestsBuffer.retryAllRequest();
                 });
             },
 
             logout: function() {
                 var logoutRequest = $http.get('rest/users/logout');
                 return logoutRequest.then(function() {
-                    authService.loggedInUser = null;
+                    authService.loggedInUser = undefined;
                 })
             },
 
             isAuthenticated: function() {
-                return !!authService.loggedInUser && $cookies["scentry.auth.default.user"];
+                return !angular.isUndefined(authService.loggedInUser);
             },
 
             isNotAuthenticated: function() {

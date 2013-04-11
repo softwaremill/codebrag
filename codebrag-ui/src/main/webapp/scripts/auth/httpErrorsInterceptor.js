@@ -1,4 +1,4 @@
-angular.module("codebrag.session")
+angular.module("codebrag.auth")
 
     .factory('httpErrorsInterceptor', function ($q, $location, $rootScope) {
 

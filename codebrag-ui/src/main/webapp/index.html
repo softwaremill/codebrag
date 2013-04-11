@@ -36,10 +36,15 @@
     <!-- main module -->
     <script type="text/javascript" src="scripts/app.js"></script>
 
+    <!-- security -->
+    <script type="text/javascript" src="scripts/auth/httpAuthInterceptor.js"></script>
+    <script type="text/javascript" src="scripts/auth/httpErrorsInterceptor.js"></script>
+    <script type="text/javascript" src="scripts/auth/authService.js"></script>
+    <script type="text/javascript" src="scripts/auth/currentUserResolver.js"></script>
+    <script type="text/javascript" src="scripts/auth/httpRequestsBuffer.js"></script>
+    <script type="text/javascript" src="scripts/auth/loginForm.js"></script>
+
     <!-- session -->
-    <script type="text/javascript" src="scripts/session/httpAuthInterceptor.js"></script>
-    <script type="text/javascript" src="scripts/session/httpErrorsInterceptor.js"></script>
-    <script type="text/javascript" src="scripts/session/authService.js"></script>
     <script type="text/javascript" src="scripts/session/sessionCtrl.js"></script>
     <script type="text/javascript" src="scripts/session/profileCtrl.js"></script>
 
@@ -62,20 +67,10 @@
     <script type="text/javascript" src="scripts/common/services/flashService.js"></script>
     <script type="text/javascript" src="scripts/common/services/utilService.js"></script>
     <script type="text/javascript" src="scripts/common/directives/messagePopup.js"></script>
-    <script type="text/javascript" src="scripts/common/ajaxthrobber.js"></script>
-    <script type="text/javascript" src="scripts/common/effects.js"></script>
 
 </head>
 <body ng-app="codebrag">
-
-    <span style="display: none">
-        <ajaxthrobber>
-            <br/><br/><br/>
-            <h4><img src="img/busy.gif" border="0" id="ajaxthrobber"> Please wait ...</h4>
-            <br/><br/><br/>
-        </ajaxthrobber>
-    </span>
-
+    <login-form></login-form>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container">
@@ -85,13 +80,12 @@
                     <span class="icon-bar"></span>
                 </a>
                 <a class="brand" href="#">Codebrag</a>
-                <div class="nav-collapse collapse">
-                    <ul class="nav pull-right" ng-controller="SessionCtrl">
-                        <li ng-show="isNotLogged()"><a id="loginLink" href="#/login">Sign in</a></li>
-                        <li ng-show="isLogged()"><a id="profileLink" href="#/profile">Signed in as {{getLoggedUserName()}}</a></li>
-                        <li ng-show="isLogged()"><a id="commitsLink" href="#/commits">Commits</a></li>
-                        <li ng-show="isLogged()"><a id="followupsLink" href="#/followups">Follow-ups</a></li>
-                        <li ng-show="isLogged()"><a id="logoutLink" href ng-click="logout();">Sign out</a></li>
+                <div class="nav-collapse collapse" ng-controller="SessionCtrl">
+                    <ul class="nav pull-right" ng-show="isLogged()">
+                        <li><a id="profileLink" href="#/profile">Signed in as {{getLoggedUserName()}}</a></li>
+                        <li><a id="commitsLink" href="#/commits">Commits</a></li>
+                        <li><a id="followupsLink" href="#/followups">Follow-ups</a></li>
+                        <li><a id="logoutLink" href ng-click="logout()">Sign out</a></li>
                     </ul>
                 </div>
             </div>
@@ -128,7 +122,6 @@
 
         </div>
     </div>
-
 
 </body>
 </html>

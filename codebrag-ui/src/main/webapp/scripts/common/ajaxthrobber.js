@@ -1,4 +1,4 @@
-angular.module("ajaxthrobber")
+angular.module("ajaxthrobber", [])
 
     .config(["$httpProvider", function ($httpProvider) {
         var stopAjaxInterceptor;

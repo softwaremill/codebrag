@@ -1,42 +1,48 @@
 "use strict";
 
-angular.module("ajaxthrobber", []);
-
 angular.module('codebrag.common.services', []);
 angular.module('codebrag.common.filters', []);
 angular.module('codebrag.common.directives', ['codebrag.common.services']);
 angular.module('codebrag.common', ['codebrag.common.services', 'codebrag.common.directives', 'codebrag.common.filters']);
 
-angular.module('codebrag.session', ['ngCookies', 'ui.compat']);
+angular.module('codebrag.auth', []);
+
+angular.module('codebrag.session', ['ui.compat', 'codebrag.auth']);
 
 angular.module('codebrag.commits.comments', ['ui.compat']);
-angular.module('codebrag.commits', ['ngResource', 'codebrag.session', 'codebrag.commits.comments']);
+angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments']);
 
-angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.session']);
+angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth']);
 
 angular.module('codebrag', [
+    'codebrag.auth',
     'codebrag.common',
     'codebrag.session',
     'codebrag.commits',
-    'codebrag.followups',
-    'ajaxthrobber']);
+    'codebrag.followups']);
 
-angular.module('codebrag.session').constant('authenticatedUser', {
-    user: function(authService) {
-        return authService.requestCurrentUser();
-    }
-});
+angular.module('codebrag')
+    .run(function(authService) {
+        authService.requestCurrentUser();
+    })
+
+angular.module('codebrag.auth')
+    .config(function($httpProvider) {
+        $httpProvider.responseInterceptors.push('httpAuthInterceptor');
+        $httpProvider.responseInterceptors.push('httpErrorsInterceptor');
+    });
 
 angular.module('codebrag.session')
-    .config(function($stateProvider, authenticatedUser) {
+    .config(function($stateProvider, $urlRouterProvider, authenticatedUser) {
+        $urlRouterProvider.when('', '/');
         $stateProvider
+            .state('home', {
+                url: '/',
+                templateUrl: 'views/main.html'
+            })
             .state('login', {
                 url: '/login',
                 templateUrl: 'views/login.html'
-            })
-            .state('home', {
-                url: '',
-                templateUrl: 'views/main.html'
             })
             .state('profile', {
                 url: '/profile',
@@ -83,14 +89,4 @@ angular.module('codebrag.followups')
             })
     });
 
-angular.module('codebrag')
-    .config(function($httpProvider) {
-        $httpProvider.responseInterceptors.push('httpAuthInterceptor');
-        $httpProvider.responseInterceptors.push('httpErrorsInterceptor');
-    })
 
-    .run(function ($rootScope, $state, $stateParams) {
-        $rootScope.$on("codebrag:httpAuthError", function(event, data) {
-            $state.transitionTo('login');
-        });
-    });

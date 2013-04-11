@@ -1,6 +1,6 @@
 angular.module('codebrag.session')
 
-    .controller('SessionCtrl', function SessionCtrl($scope, authService, $state, $stateParams) {
+    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, $state) {
 
         $scope.user = {
             login: '',
@@ -9,21 +9,9 @@ angular.module('codebrag.session')
         };
 
         $scope.login = function () {
-            // set dirty to show error messages on empty fields when submit is clicked
-            $scope.loginForm.login.$dirty = true;
-            $scope.loginForm.password.$dirty = true;
-
-            if ($scope.loginForm.$invalid === false) {
-                authService.login($scope.user).then(loginSuccess, loginFailed);
-            }
-
-            function loginSuccess () {
-                // TODO: handle optionalRedir
-                $state.transitionTo('home');
-            }
-
-            function loginFailed() {
-                showErrorMessage("Invalid login and/or password.");
+            if (loginFormValid()) {
+                logInUser();
+                clearPasswordField();
             }
         };
 
@@ -43,8 +31,28 @@ angular.module('codebrag.session')
 
         $scope.logout = function () {
             authService.logout().then(function (data) {
-                $state.transitionTo('login');
+                $state.transitionTo('home');
             });
         };
+
+        function clearPasswordField() {
+            $scope.loginForm.password.$dirty = false;
+            $scope.user.password = '';
+        }
+
+        function loginFormValid() {
+            // set dirty to show error messages on empty fields when submit is clicked
+            $scope.loginForm.login.$dirty = true;
+            $scope.loginForm.password.$dirty = true;
+            return $scope.loginForm.$invalid === false
+        }
+
+        function logInUser() {
+            authService.login($scope.user).then(null, function (response) {
+                if (response.status === 401) {
+                    $rootScope.$broadcast('codebrag:httpAuthError', {status: 401, text: 'Invalid credentials'})
+                }
+            });
+        }
 
     });
