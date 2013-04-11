@@ -9,7 +9,8 @@ import ObjectIdTestUtils._
 
 class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
-  var followupDAO: MongoFollowupDAO = _
+  var followupDao: MongoFollowupDAO = _
+  var commitInfoDao: CommitInfoDAO = _
 
   val Commit = CommitInfoBuilder.createRandomCommit()
   val FollowupTargetUserId = oid(12)
@@ -17,8 +18,11 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
   val DifferentUserId2 = oid(14)
 
   override def beforeEach() {
-    followupDAO = new MongoFollowupDAO
+    followupDao = new MongoFollowupDAO
+    commitInfoDao = new MongoCommitInfoDAO
+    CommitInfoRecord.drop
     FollowupRecord.drop
+    commitInfoDao.storeCommit(Commit)
   }
 
   behavior of "MongoFollowupDAO"
@@ -26,10 +30,10 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
   it should "create new follow up for user and commit if one doesn't exist" in {
     // given
     val now = DateTime.now()
-    val followup = Followup(Commit, FollowupTargetUserId, now)
+    val followup = Followup(Commit.id, FollowupTargetUserId, now)
 
     // when
-    followupDAO.createOrUpdateExisting(followup)
+    followupDao.createOrUpdateExisting(followup)
 
     // then
     val allRecords = FollowupRecord.findAll
@@ -41,12 +45,12 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
   }
 
   it should "update existing follow up creation date when one exists for user and commit" in {
-    followupDAO.createOrUpdateExisting(Followup(Commit, FollowupTargetUserId, DateTime.now()));
+    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, DateTime.now()));
 
     // when
     val newDate = new FixtureTimeClock(23213213).currentDateTime()
-    val updatedFollowup = Followup(Commit, FollowupTargetUserId, newDate)
-    followupDAO.createOrUpdateExisting(updatedFollowup)
+    val updatedFollowup = Followup(Commit.id, FollowupTargetUserId, newDate)
+    followupDao.createOrUpdateExisting(updatedFollowup)
 
 
     // then
@@ -55,10 +59,10 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
   }
 
   it should "delete a single follow-up from storage" in {
-    followupDAO.createOrUpdateExisting(Followup(Commit, FollowupTargetUserId, DateTime.now()));
+    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, DateTime.now()));
 
     // when
-    followupDAO.delete(Commit.id, FollowupTargetUserId)
+    followupDao.delete(Commit.id, FollowupTargetUserId)
 
     // then
     FollowupRecord.findAll should be('empty)
@@ -66,12 +70,12 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
 
 
   it should "not delete follow-ups of other users" in {
-    followupDAO.createOrUpdateExisting(Followup(Commit, DifferentUserId1, DateTime.now()));
-    followupDAO.createOrUpdateExisting(Followup(Commit, FollowupTargetUserId, DateTime.now()));
-    followupDAO.createOrUpdateExisting(Followup(Commit, DifferentUserId2, DateTime.now()));
+    followupDao.createOrUpdateExisting(Followup(Commit.id, DifferentUserId1, DateTime.now()));
+    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, DateTime.now()));
+    followupDao.createOrUpdateExisting(Followup(Commit.id, DifferentUserId2, DateTime.now()));
 
     // when
-    followupDAO.delete(Commit.id, FollowupTargetUserId)
+    followupDao.delete(Commit.id, FollowupTargetUserId)
 
     // then
     val storedUserIds = FollowupRecord.findAll.map(_.user_id.get)

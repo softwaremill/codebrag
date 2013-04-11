@@ -9,14 +9,17 @@ import org.joda.time.DateTime
 class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers with MongoFollowupFinderSpecFixture {
 
   var followupDao: FollowupDAO = _
+  var commitInfoDao: CommitInfoDAO = _
   var followupFinder: FollowupFinder = _
 
   override def beforeEach() {
     FollowupRecord.drop
+    CommitInfoRecord.drop
     followupDao = new MongoFollowupDAO
     followupFinder = new MongoFollowupFinder
+    commitInfoDao = new MongoCommitInfoDAO
+    storeAllCommits
   }
-
 
   it should "find all follow-ups only for given user" in {
     // given
@@ -44,13 +47,17 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach 
 
   def storeUserFollowups {
     List(
-      Followup(CommitInfoBuilder.createRandomCommit(), TargetUserId, date),
-      Followup(CommitInfoBuilder.createRandomCommit(), TargetUserId, laterDate))
+      Followup(FixtureCommit1.id, TargetUserId, date),
+      Followup(FixtureCommit2.id, TargetUserId, laterDate))
     .foreach(followupDao.createOrUpdateExisting(_))
   }
 
   def storeAnotherUserFollowup {
-    followupDao.createOrUpdateExisting(Followup(CommitInfoBuilder.createRandomCommit(), OtherUserId, latestDate))
+    followupDao.createOrUpdateExisting(Followup(FixtureCommit3.id, OtherUserId, latestDate))
+  }
+
+  def storeAllCommits {
+    List(FixtureCommit1, FixtureCommit2, FixtureCommit3).foreach(commitInfoDao.storeCommit(_))
   }
 
 }
@@ -67,4 +74,7 @@ trait MongoFollowupFinderSpecFixture {
   val First = 0
   val Second = 1
 
+  val FixtureCommit1 = CommitInfoBuilder.createRandomCommit()
+  val FixtureCommit2 = CommitInfoBuilder.createRandomCommit()
+  val FixtureCommit3 = CommitInfoBuilder.createRandomCommit()
 }

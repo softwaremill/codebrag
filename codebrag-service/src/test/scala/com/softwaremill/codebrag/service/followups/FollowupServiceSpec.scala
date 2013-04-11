@@ -42,8 +42,8 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(AddCommentByUserOne)
 
     // Then
-    verify(followupDao).createOrUpdateExisting(Followup(Commit, UserTwoId, FollowupCreationDateTime))
-    verify(followupDao).createOrUpdateExisting(Followup(Commit, CommitAuthorId, FollowupCreationDateTime))
+    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, UserTwoId, FollowupCreationDateTime))
+    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, CommitAuthorId, FollowupCreationDateTime))
     verifyNoMoreInteractions(followupDao)
   }
 
@@ -57,9 +57,9 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(AddCommentByUserOne)
 
     // Then
-    verify(followupDao).createOrUpdateExisting(Followup(Commit, UserTwoId, FollowupCreationDateTime))
-    verify(followupDao).createOrUpdateExisting(Followup(Commit, CommitAuthorId, FollowupCreationDateTime))
-    verifyNoMoreInteractions(followupDao);
+    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, UserTwoId, FollowupCreationDateTime))
+    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, CommitAuthorId, FollowupCreationDateTime))
+    verifyNoMoreInteractions(followupDao)
   }
 
   it should "throw exception and not generate follow-ups when commit not found" in {
@@ -83,7 +83,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
     // When
     followupService.generateFollowupsForComment(AddCommentByUserOne)
-    verify(followupDao).createOrUpdateExisting(Followup(Commit, UserTwoId, FollowupCreationDateTime))
+    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, UserTwoId, FollowupCreationDateTime))
     verifyNoMoreInteractions(followupDao)
   }
 
