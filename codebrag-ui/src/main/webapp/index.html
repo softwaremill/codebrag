@@ -66,9 +66,8 @@
     <script type="text/javascript" src="scripts/common/filters/dateFormatFilter.js"></script>
     <script type="text/javascript" src="scripts/common/services/flashService.js"></script>
     <script type="text/javascript" src="scripts/common/services/utilService.js"></script>
-    <script type="text/javascript" src="scripts/common/services/httpRequestTracker.js"></script>
     <script type="text/javascript" src="scripts/common/directives/messagePopup.js"></script>
-    <script type="text/javascript" src="scripts/common/spinnerCtrl.js"></script>
+    <script type="text/javascript" src="scripts/common/directives/httpRequestTracker.js"></script>
 
 </head>
 <body ng-app="codebrag">
@@ -93,9 +92,9 @@
         <div class="content">
             <div class="wrapper">
                 <div class="proper-content">
-                    <div class="row-fluid feedback-container" ng-controller="SpinnerCtrl">
+                    <div  http-request-tracker class="row-fluid feedback-container">
                         <div class="span1 offset11">
-                            <span ng-show="hasPendingRequests()" class="label label-info">Loading...</span>
+                            <span class="label label-info">Loading...</span>
                         </div>
                     </div>
                     <div message-popup class="row-fluid feedback-container hide">
