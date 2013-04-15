@@ -1,5 +1,5 @@
 #!/bin/bash
-MONGO_VERSION=mongodb-linux-x86_64-2.2.3
+MONGO_VERSION=mongodb-linux-x86_64-2.4.0
 #
 cd ~
 wget http://fastdl.mongodb.org/linux/$MONGO_VERSION.tgz
