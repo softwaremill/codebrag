@@ -15,6 +15,8 @@ trait UserDAO {
 
   def add(user: User)
 
+  def findAll(): List[User]
+
   def findById(userId: ObjectId): Option[User]
 
   def findByEmail(email: String): Option[User]

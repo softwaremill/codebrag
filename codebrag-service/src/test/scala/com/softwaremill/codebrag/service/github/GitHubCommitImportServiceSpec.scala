@@ -10,6 +10,7 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
 
   var commitsLoader: GithubCommitsLoader = _
   var commitInfoDao: CommitInfoDAO = _
+  var reviewTaskGenerator: ReviewTaskGenerator = _
   var service: GitHubCommitImportService = _
 
   val repoOwner = "johndoe"
@@ -18,7 +19,8 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
   before {
     commitsLoader = mock[GithubCommitsLoader]
     commitInfoDao = mock[CommitInfoDAO]
-    service = new GitHubCommitImportService(commitsLoader, commitInfoDao)
+    reviewTaskGenerator = mock[ReviewTaskGenerator]
+    service = new GitHubCommitImportService(commitsLoader, commitInfoDao, reviewTaskGenerator)
   }
 
   it should "not store anything when no new commits available" in {
@@ -27,6 +29,7 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
     service.importRepoCommits(repoOwner, repoName)
 
     verifyZeroInteractions(commitInfoDao)
+    verifyZeroInteractions(reviewTaskGenerator)
   }
 
   it should "store all new commits available" in {
@@ -35,7 +38,10 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
 
     service.importRepoCommits(repoOwner, repoName)
 
-    newCommits.foreach(verify(commitInfoDao).storeCommit(_))
+    newCommits.foreach(commit => {
+      verify(commitInfoDao).storeCommit(commit)
+      verify(reviewTaskGenerator).createReviewTasksFor(commit)
+    })
   }
 
   def newGithubCommits(commitsNumber: Int) = {

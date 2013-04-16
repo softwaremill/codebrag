@@ -14,6 +14,10 @@ class MongoUserDAO extends UserDAO {
     user.save
   }
 
+  override def findAll() = {
+    UserRecord.findAll
+  }
+
   override def findByEmail(email: String) = {
     UserRecord where (_.email eqs email.toLowerCase) get()
   }
