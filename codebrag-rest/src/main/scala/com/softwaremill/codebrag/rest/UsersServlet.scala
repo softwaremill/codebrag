@@ -7,8 +7,6 @@ import swagger.{Swagger, SwaggerSupport}
 
 class UsersServlet(val authenticator: Authenticator, val swagger: Swagger) extends JsonServletWithAuthentication with CookieSupport {
 
-  // FIXME: enable Swagger back for all operations as soon as we find out how to make Swagger work with ObjectId or JodaTime
-
   post() {
     val userOpt: Option[UserJson] = authenticate()
     userOpt match {
