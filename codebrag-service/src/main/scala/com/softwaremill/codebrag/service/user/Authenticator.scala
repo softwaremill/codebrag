@@ -6,14 +6,14 @@ import com.softwaremill.codebrag.service.data.UserJson
 class Authenticator(userDAO: UserDAO) {
 
   def authenticate(login: String, nonEncryptedPassword: String): Option[UserJson] = {
-    UserJson(userDAO.findByLoginOrEmail(login))
+    userDAO.findByLoginOrEmail(login).map(UserJson(_))
   }
 
   def authenticateWithToken(token: String): Option[UserJson] = {
-    UserJson(userDAO.findByToken(token))
+    userDAO.findByToken(token).map(UserJson(_))
   }
 
   def findByLogin(login: String): Option[UserJson] = {
-    UserJson(userDAO.findByLowerCasedLogin(login))
+    userDAO.findByLowerCasedLogin(login).map(UserJson(_))
   }
 }
