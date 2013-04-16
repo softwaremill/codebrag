@@ -8,7 +8,7 @@ import org.mockito.Mockito._
 
 class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
 
-  var commitsLoader: GithubCommitsLoader = _
+  var commitsLoader: GitHubCommitsLoader = _
   var commitInfoDao: CommitInfoDAO = _
   var reviewTaskGenerator: CommitReviewTaskGenerator = _
   var service: GitHubCommitImportService = _
@@ -17,7 +17,7 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
   val repoName = "project"
 
   before {
-    commitsLoader = mock[GithubCommitsLoader]
+    commitsLoader = mock[GitHubCommitsLoader]
     commitInfoDao = mock[CommitInfoDAO]
     reviewTaskGenerator = mock[CommitReviewTaskGenerator]
     service = new GitHubCommitImportService(commitsLoader, commitInfoDao, reviewTaskGenerator)

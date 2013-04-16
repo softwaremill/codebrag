@@ -8,10 +8,10 @@ import scala.collection.JavaConversions._
 
 
 
-class GithubCommitsLoader(val commitService: CommitService, val commitInfoDao: CommitInfoDAO, val commitInfoConverter: GitHubCommitInfoConverter) {
+class GitHubCommitsLoader(val commitService: CommitService, val commitInfoDao: CommitInfoDAO, val commitInfoConverter: GitHubCommitInfoConverter) {
 
   def loadMissingCommits(repoOwner: String, repoName: String): List[CommitInfo] = {
-    val repository = GithubRepositoryIdProvider(repoOwner, repoName)
+    val repository = GitHubRepositoryIdProvider(repoOwner, repoName)
     val githubCommits = commitService.getCommits(repository)
     val storedShas = commitInfoDao.findAll().map(_.sha)
     githubCommits
@@ -25,7 +25,7 @@ class GithubCommitsLoader(val commitService: CommitService, val commitInfoDao: C
 
 }
 
-case class GithubRepositoryIdProvider(repoOwner: String, repoName: String) extends IRepositoryIdProvider {
-  def generateId(): String = s"${repoOwner}/${repoName}"
+case class GitHubRepositoryIdProvider(repoOwner: String, repoName: String) extends IRepositoryIdProvider {
+  def generateId(): String = s"$repoOwner/$repoName"
 }
 

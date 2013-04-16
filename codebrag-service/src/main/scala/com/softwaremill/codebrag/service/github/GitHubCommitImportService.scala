@@ -5,7 +5,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import org.eclipse.egit.github.core.service.CommitService
 
 
-class GitHubCommitImportService(commitsLoader: GithubCommitsLoader, commitInfoDao: CommitInfoDAO, reviewTasksGenerator: CommitReviewTaskGenerator) extends Logging {
+class GitHubCommitImportService(commitsLoader: GitHubCommitsLoader, commitInfoDao: CommitInfoDAO, reviewTasksGenerator: CommitReviewTaskGenerator) extends Logging {
 
   def importRepoCommits(owner: String, repo: String) {
     logger.debug("Start loading commits")
@@ -23,7 +23,7 @@ class GitHubCommitImportService(commitsLoader: GithubCommitsLoader, commitInfoDa
 class GitHubCommitImportServiceFactory(provider: GitHubClientProvider, commitInfoConverter: GitHubCommitInfoConverter, commitInfoDao: CommitInfoDAO, reviewTaskGenerator: CommitReviewTaskGenerator) {
   def createInstance(email: String): GitHubCommitImportService = {
     val commitService = new CommitService(provider.getGitHubClient(email))
-    val commitsLoader = new GithubCommitsLoader(commitService, commitInfoDao, commitInfoConverter)
+    val commitsLoader = new GitHubCommitsLoader(commitService, commitInfoDao, commitInfoConverter)
     new GitHubCommitImportService(commitsLoader, commitInfoDao, reviewTaskGenerator)
   }
 }

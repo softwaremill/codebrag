@@ -21,11 +21,11 @@ class GithubCommitsLoaderSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
   var commitService = mock[CommitService]
   var commitInfoDao = mock[CommitInfoDAO]
-  val loader = new GithubCommitsLoader(commitService, commitInfoDao, new GitHubCommitInfoConverter)
+  val loader = new GitHubCommitsLoader(commitService, commitInfoDao, new GitHubCommitInfoConverter)
 
   val RepoOwner = "johndoe"
   val RepoName = "project"
-  val GithubRepo = GithubRepositoryIdProvider(RepoOwner, RepoName)
+  val GithubRepo = GitHubRepositoryIdProvider(RepoOwner, RepoName)
   val EmptyList = List()
 
   val GithubCommitsList = githubCommitsList(1, 2, 3, 4, 5)
