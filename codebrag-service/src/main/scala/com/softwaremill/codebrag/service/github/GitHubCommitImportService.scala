@@ -2,8 +2,6 @@ package com.softwaremill.codebrag.service.github
 
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import com.typesafe.scalalogging.slf4j.Logging
-import org.eclipse.egit.github.core.service.CommitService
-
 
 class GitHubCommitImportService(commitsLoader: GitHubCommitsLoader, commitInfoDao: CommitInfoDAO, reviewTasksGenerator: CommitReviewTaskGenerator) extends Logging {
 
@@ -16,14 +14,5 @@ class GitHubCommitImportService(commitsLoader: GitHubCommitsLoader, commitInfoDa
       reviewTasksGenerator.createReviewTasksFor(commit)
     })
     logger.debug("Commits stored. Loading finished.")
-  }
-
-}
-
-class GitHubCommitImportServiceFactory(provider: GitHubClientProvider, commitInfoConverter: GitHubCommitInfoConverter, commitInfoDao: CommitInfoDAO, reviewTaskGenerator: CommitReviewTaskGenerator) {
-  def createInstance(email: String): GitHubCommitImportService = {
-    val commitService = new CommitService(provider.getGitHubClient(email))
-    val commitsLoader = new GitHubCommitsLoader(commitService, commitInfoDao, commitInfoConverter)
-    new GitHubCommitImportService(commitsLoader, commitInfoDao, reviewTaskGenerator)
   }
 }

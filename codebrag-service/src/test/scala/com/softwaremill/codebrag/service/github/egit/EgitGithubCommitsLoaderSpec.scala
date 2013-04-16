@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.github
+package com.softwaremill.codebrag.service.github.egit
 
 import org.scalatest.{FlatSpec, BeforeAndAfter}
 import org.scalatest.mock.MockitoSugar
@@ -14,14 +14,16 @@ import org.joda.time.DateTime
 import com.softwaremill.codebrag.common.{FakeIdGenerator, IdGenerator}
 import org.mockito.stubbing.Answer
 import org.mockito.invocation.InvocationOnMock
+import com.softwaremill.codebrag.service.github.egit.{GitHubRepositoryIdProvider, EgitGitHubCommitsLoader}
+import com.softwaremill.codebrag.service.github.GitHubCommitInfoConverter
 
-class GithubCommitsLoaderSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
+class EgitGithubCommitsLoaderSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
 
   implicit val idGenerator: IdGenerator = new FakeIdGenerator("507f1f77bcf86cd799439011")
 
   var commitService = mock[CommitService]
   var commitInfoDao = mock[CommitInfoDAO]
-  val loader = new GitHubCommitsLoader(commitService, commitInfoDao, new GitHubCommitInfoConverter)
+  val loader = new EgitGitHubCommitsLoader(commitService, commitInfoDao, new GitHubCommitInfoConverter)
 
   val RepoOwner = "johndoe"
   val RepoName = "project"

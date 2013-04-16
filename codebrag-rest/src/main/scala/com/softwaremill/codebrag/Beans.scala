@@ -11,6 +11,7 @@ import service.followups.FollowupService
 import service.github._
 import service.user.Authenticator
 import pl.softwaremill.common.util.time.RealTimeClock
+import com.softwaremill.codebrag.service.github.egit.EgitGitHubCommitImportServiceFactory
 
 
 trait Beans {
@@ -32,7 +33,7 @@ trait Beans {
   lazy val converter = new GitHubCommitInfoConverter()
   lazy val commitToReviewDao = new MongoCommitReviewTaskDAO
   lazy val reviewTaskGenerator = new CommitReviewTaskGenerator(userDao, commitToReviewDao)
-  lazy val importerFactory = new GitHubCommitImportServiceFactory(githubClientProvider, converter, commitInfoDao, reviewTaskGenerator)
+  lazy val importerFactory = new EgitGitHubCommitImportServiceFactory(githubClientProvider, converter, commitInfoDao, reviewTaskGenerator)
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
   lazy val followupFinder = new MongoFollowupFinder
   lazy val commentActivity = new CommentActivity(commentService, followupService)
