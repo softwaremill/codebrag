@@ -124,7 +124,7 @@ object Dependencies {
   val rogueField = "com.foursquare" %% "rogue-field" % rogueVersion intransitive()
   val rogueCore = "com.foursquare" %% "rogue-core" % rogueVersion intransitive()
   val rogueLift = "com.foursquare" %% "rogue-lift" % rogueVersion intransitive()
-  val liftMongoRecord = "net.liftweb" %% "lift-mongodb-record" % "2.5-M4"
+  val liftMongoRecord = "net.liftweb" %% "lift-mongodb-record" % "2.5-RC4"
 
   val rogue = Seq(rogueCore, rogueField, rogueLift, liftMongoRecord)
 
