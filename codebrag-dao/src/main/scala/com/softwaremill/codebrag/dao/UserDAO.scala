@@ -10,7 +10,7 @@ trait UserDAO {
     val token = UUID.randomUUID().toString
     val user = User(Authentication.basic(login, login), login, s"$login@sml.com", token)
     add(user)
-    user
+    findByLoginOrEmail(login).get
   }
 
   def add(user: User)
