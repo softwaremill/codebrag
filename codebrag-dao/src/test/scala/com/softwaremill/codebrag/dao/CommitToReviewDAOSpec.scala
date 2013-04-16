@@ -2,28 +2,28 @@ package com.softwaremill.codebrag.dao
 
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.CommitToReview
+import com.softwaremill.codebrag.domain.CommitReviewTask
 
 class CommitToReviewDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
-  var commitToReviewDao: MongoCommitToReviewDAO = _
+  var commitToReviewDao: MongoCommitReviewTaskDAO = _
 
   val CommitId = ObjectIdTestUtils.oid(10)
   val UserId = ObjectIdTestUtils.oid(200)
 
   override def beforeEach() {
-    CommitToReviewRecord.drop
-    commitToReviewDao = new MongoCommitToReviewDAO
+    CommitReviewTaskRecord.drop
+    commitToReviewDao = new MongoCommitReviewTaskDAO
   }
 
   it should "create commit to review for user" in {
     // given
 
     // when
-    commitToReviewDao.save(CommitToReview(CommitId, UserId))
+    commitToReviewDao.save(CommitReviewTask(CommitId, UserId))
 
     // then
-    val storedCommits = CommitToReviewRecord.findAll
+    val storedCommits = CommitReviewTaskRecord.findAll
     thereIsOneCommitToReviewStored(storedCommits)
     storedCommitIsCorrect(storedCommits.head)
   }
@@ -33,23 +33,23 @@ class CommitToReviewDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wi
     commitToReviewAlreadyStoredForUser()
 
     // when
-    commitToReviewDao.save(CommitToReview(CommitId, UserId))
+    commitToReviewDao.save(CommitReviewTask(CommitId, UserId))
 
     // then
-    val storedCommits = CommitToReviewRecord.findAll
+    val storedCommits = CommitReviewTaskRecord.findAll
     thereIsOneCommitToReviewStored(storedCommits)
   }
 
 
-  def thereIsOneCommitToReviewStored(storedCommits: List[CommitToReviewRecord]) {
+  def thereIsOneCommitToReviewStored(storedCommits: List[CommitReviewTaskRecord]) {
     storedCommits should have size (1)
   }
 
   def commitToReviewAlreadyStoredForUser() {
-    commitToReviewDao.save(CommitToReview(CommitId, UserId))
+    commitToReviewDao.save(CommitReviewTask(CommitId, UserId))
   }
 
-  def storedCommitIsCorrect(storedCommit: CommitToReviewRecord) {
+  def storedCommitIsCorrect(storedCommit: CommitReviewTaskRecord) {
     storedCommit.commitId.get should equal(CommitId)
     storedCommit.userId.get should equal(UserId)
   }

@@ -10,7 +10,7 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
 
   var commitsLoader: GithubCommitsLoader = _
   var commitInfoDao: CommitInfoDAO = _
-  var reviewTaskGenerator: ReviewTaskGenerator = _
+  var reviewTaskGenerator: CommitReviewTaskGenerator = _
   var service: GitHubCommitImportService = _
 
   val repoOwner = "johndoe"
@@ -19,7 +19,7 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
   before {
     commitsLoader = mock[GithubCommitsLoader]
     commitInfoDao = mock[CommitInfoDAO]
-    reviewTaskGenerator = mock[ReviewTaskGenerator]
+    reviewTaskGenerator = mock[CommitReviewTaskGenerator]
     service = new GitHubCommitImportService(commitsLoader, commitInfoDao, reviewTaskGenerator)
   }
 

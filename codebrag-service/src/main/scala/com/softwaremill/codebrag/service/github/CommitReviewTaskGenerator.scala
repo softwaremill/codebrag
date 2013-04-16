@@ -1,9 +1,9 @@
 package com.softwaremill.codebrag.service.github
 
-import com.softwaremill.codebrag.dao.{CommitToReviewDAO, UserDAO}
+import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO, UserDAO}
 import com.softwaremill.codebrag.domain.CommitInfo
 
-class ReviewTaskGenerator(userDao: UserDAO, commitToReviewDao: CommitToReviewDAO) {
+class CommitReviewTaskGenerator(userDao: UserDAO, commitToReviewDao: CommitReviewTaskDAO) {
 
   def createReviewTasksFor(commit: CommitInfo) {
     commit.createReviewTasksFor(repositoryUsers()).foreach(reviewTask => commitToReviewDao.save(reviewTask))
