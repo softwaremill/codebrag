@@ -30,7 +30,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   }
 
   "GET /" should "return user information" in {
-    val currentUser = UserJson(new ObjectId(), "user", "user@email.com", "123abc")
+    val currentUser = UserJson(new ObjectId().toString, "user", "user@email.com", "123abc")
     userIsAuthenticatedAs(currentUser)
     get("/") {
       status should be (200)

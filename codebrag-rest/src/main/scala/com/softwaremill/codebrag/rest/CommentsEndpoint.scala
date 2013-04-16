@@ -17,7 +17,7 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpoi
     haltIfNotAuthenticated
     val commitId = params("id")
     val messageBody = extractNotEmptyString("body")
-    val command = AddComment(new ObjectId(commitId), user.id, messageBody)
+    val command = AddComment(new ObjectId(commitId), new ObjectId(user.id), messageBody)
     val newComment = commentActivity.commentOnCommit(command)
     userDao.findById(command.authorId) match {
       case Some(user) => AddCommentResponse(CommentListItemDTO(newComment.id.toString, user.name, command.message, newComment.postingTime.toDate))

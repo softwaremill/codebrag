@@ -17,13 +17,13 @@ class FollowupsServlet(val authenticator: Authenticator,
 
   get("/", operation(getOperation)) {
     haltIfNotAuthenticated
-    followupFinder.findAllFollowupsForUser(user.id)
+    followupFinder.findAllFollowupsForUser(new ObjectId(user.id))
   }
 
   delete("/:id", operation(dismissOperation)) {
     haltIfNotAuthenticated
     val commitId = params("id")
-    followupDao.delete(new ObjectId(commitId), user.id)
+    followupDao.delete(new ObjectId(commitId), new ObjectId(user.id))
   }
 }
 

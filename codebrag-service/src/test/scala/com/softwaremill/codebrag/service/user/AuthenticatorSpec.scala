@@ -26,6 +26,8 @@ class AuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar w
   }
 
   it should "call dao to authenticate user" in {
+    // given
+    given(userDAOMock.findByLoginOrEmail(fixtureLogin)).willReturn(Some(fixtureUser))
     // when
     authenticator.authenticate(fixtureLogin, fixturePassword)
 

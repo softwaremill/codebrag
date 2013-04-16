@@ -11,7 +11,7 @@ import com.softwaremill.codebrag.dao.FollowupDAO
 
 class FollowupsServletSpec extends AuthenticatableServletSpec {
 
-  val currentUser = UserJson(new ObjectId(), "user", "user@email.com", "123abc")
+  val currentUser = UserJson(new ObjectId().toString, "user", "user@email.com", "123abc")
   var followupFinder = mock[FollowupFinder]
   var followupDao = mock[FollowupDAO]
 
@@ -23,7 +23,7 @@ class FollowupsServletSpec extends AuthenticatableServletSpec {
     userIsAuthenticatedAs(currentUser)
     get("/") {
       status should be (200)
-      verify(followupFinder).findAllFollowupsForUser(currentUser.id)
+      verify(followupFinder).findAllFollowupsForUser(new ObjectId(currentUser.id))
     }
   }
 
