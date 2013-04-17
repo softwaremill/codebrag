@@ -1,75 +1,62 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.CommitInfo
-import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao.CommitInfoBuilder._
-import org.joda.time.DateTime
-import ObjectIdTestUtils._
 
-class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with GivenWhenThen with BeforeAndAfterEach with ShouldMatchers {
-  val sampleCommit = createRandomCommit(0)
+class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
   var commitInfoDAO: MongoCommitInfoDAO = _
-  val EmptyListOfParents = List.empty
-  val EmptyListOfFiles = List.empty
 
   override def beforeEach() {
     CommitInfoRecord.drop // drop collection to start every test with fresh database
     commitInfoDAO = new MongoCommitInfoDAO
-    commitInfoDAO.storeCommit(sampleCommit)
   }
 
-  behavior of "MongoCommitInfoDAO"
-
   it should "find a stored commit" in {
-    Given("a stored commit")
+    // given
+    val commit = CommitInfoAssembler.randomCommit.get
+    commitInfoDAO.storeCommit(commit)
 
-    When("searching for it")
-    val commit = commitInfoDAO.findBySha(sampleCommit.sha)
+    // when
+    val foundCommit = commitInfoDAO.findBySha(commit.sha)
 
-    Then("it is found")
-    commit should be(Some(sampleCommit.copy()))
+    // then
+    foundCommit should be(Some(commit.copy()))
   }
 
   it should "find stored commit by its id" in {
-    Given("commit previously stored")
+    // given
+    val commit = CommitInfoAssembler.randomCommit.get
+    commitInfoDAO.storeCommit(commit)
 
-    When("searching for commit by its id")
-    val foundCommit = commitInfoDAO.findByCommitId(sampleCommit.id)
+    // when
+    val foundCommit = commitInfoDAO.findByCommitId(commit.id)
 
-    Then("stored commit should be found")
-    foundCommit should be(Some(sampleCommit.copy()))
+    // then
+    foundCommit should be(Some(commit.copy()))
   }
 
   it should "store a single commit" in {
-    Given("a commit")
+    // given
     val commit = createRandomCommit()
 
-    When("trying to store it")
+    // when
     commitInfoDAO.storeCommit(commit)
 
-    Then("it is stored")
+    // then
     commitInfoDAO.findBySha(commit.sha) should be('defined)
   }
 
-  it should "find all commits starting from newest" in {
-    Given("a sample commit and another one stored")
-    val olderCommit = sampleCommit
-    val newerCommit = CommitInfo(oid(1), "123123123", "this is newer commit", "mostr", "mostr", nowPlusSeconds(100), EmptyListOfParents, EmptyListOfFiles)
-    val anotherNewerCommit = CommitInfo(oid(2), "123123123", "this is newer commit", "mostr", "mostr", nowPlusSeconds(50), EmptyListOfParents, EmptyListOfFiles)
-    commitInfoDAO.storeCommit(newerCommit)
-    commitInfoDAO.storeCommit(anotherNewerCommit)
+  it should "find all commits SHA" in {
+    // given
+    val commits = List(CommitInfoAssembler.randomCommit.withSha("111").get, CommitInfoAssembler.randomCommit.withSha("222").get)
+    commits.foreach{ commitInfoDAO.storeCommit(_) }
 
-    When("trying to find all stored commits")
-    val commits = commitInfoDAO.findAll()
+    // when
+    val commitsSha = commitInfoDAO.findAllSha()
 
-    Then("sample commit stored should be fetched")
-
-    commits(0) should equal(newerCommit)
-    commits(1) should equal(anotherNewerCommit)
-    commits(2) should equal(olderCommit)
+    // then
+    commitsSha should equal(commits.map(_.sha).toSet)
   }
-
-  private def nowPlusSeconds(offset: Int) = new DateTime().plusSeconds(offset)
 
 }

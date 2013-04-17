@@ -12,14 +12,13 @@ class EgitGitHubCommitsLoader(val commitService: CommitService, val commitInfoDa
   override def loadMissingCommits(repoOwner: String, repoName: String): List[CommitInfo] = {
     val repository = GitHubRepositoryIdProvider(repoOwner, repoName)
     val githubCommits = commitService.getCommits(repository)
-    val storedShas = commitInfoDao.findAll().map(_.sha)
+    val storedShas = commitInfoDao.findAllSha()
     githubCommits
       .filterNot(c => storedShas.contains(c.getSha))
       .map(commit => {
         val githubCommitDetails = commitService.getCommit(repository, commit.getSha)
         commitInfoConverter.convertToCommitInfo(githubCommitDetails)
-      })
-      .toList
+      }).toList
   }
 }
 

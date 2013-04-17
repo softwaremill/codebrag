@@ -24,8 +24,8 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
     CommitInfoRecord where (_.id eqs commitId) get()
   }
 
-  def findAll(): List[CommitInfo] = {
-    CommitInfoRecord.orderDesc(_.date).fetch()
+  def findAllSha(): Set[String] = {
+    CommitInfoRecord.select(_.sha).fetch().toSet
   }
 
   private object CommitInfoImplicits {

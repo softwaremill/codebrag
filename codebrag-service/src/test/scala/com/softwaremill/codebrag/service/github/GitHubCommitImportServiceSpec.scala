@@ -5,6 +5,7 @@ import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.dao.{CommitInfoBuilder, CommitInfoDAO}
 import org.scalatest.matchers.ShouldMatchers
 import org.mockito.Mockito._
+import com.softwaremill.codebrag.domain.CommitInfo
 
 class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
 
@@ -16,6 +17,8 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
   val repoOwner = "johndoe"
   val repoName = "project"
 
+  val EmptyCommitsList = List[CommitInfo]()
+
   before {
     commitsLoader = mock[GitHubCommitsLoader]
     commitInfoDao = mock[CommitInfoDAO]
@@ -24,7 +27,7 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
   }
 
   it should "not store anything when no new commits available" in {
-    when(commitsLoader.loadMissingCommits(repoOwner, repoName)).thenReturn(List())
+    when(commitsLoader.loadMissingCommits(repoOwner, repoName)).thenReturn(EmptyCommitsList)
 
     service.importRepoCommits(repoOwner, repoName)
 

@@ -9,12 +9,10 @@ import org.mockito.Matchers._
 import scala.collection.JavaConversions._
 import org.eclipse.egit.github.core.{CommitUser, Commit, RepositoryCommit}
 import com.softwaremill.codebrag.dao.CommitInfoDAO
-import com.softwaremill.codebrag.domain.CommitInfo
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.common.{FakeIdGenerator, IdGenerator}
 import org.mockito.stubbing.Answer
 import org.mockito.invocation.InvocationOnMock
-import com.softwaremill.codebrag.service.github.egit.{GitHubRepositoryIdProvider, EgitGitHubCommitsLoader}
 import com.softwaremill.codebrag.service.github.GitHubCommitInfoConverter
 
 class EgitGithubCommitsLoaderSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
@@ -28,15 +26,15 @@ class EgitGithubCommitsLoaderSpec extends FlatSpec with MockitoSugar with Before
   val RepoOwner = "johndoe"
   val RepoName = "project"
   val GithubRepo = GitHubRepositoryIdProvider(RepoOwner, RepoName)
-  val EmptyList = List()
+  val EmptyShaSet = Set[String]()
 
-  val GithubCommitsList = githubCommitsList(1, 2, 3, 4, 5)
-  val LocalCommits = localCommits(1, 2, 3)
-  val MissingLocalCommits = localCommits(4, 5)
+  val GithubCommitsWithSha = githubCommitsWithSha(001, 002, 003, 004, 005)
+  val LocalCommits = localCommitsSha(001, 002, 003)
+  val MissingLocalCommits = localCommitsSha(004, 005)
 
 
   it should "load github commits from correct repo and owner data" in {
-    when(commitInfoDao.findAll()).thenReturn(EmptyList)
+    when(commitInfoDao.findAllSha()).thenReturn(EmptyShaSet)
 
     loader.loadMissingCommits(RepoOwner, RepoName)
 
@@ -44,18 +42,18 @@ class EgitGithubCommitsLoaderSpec extends FlatSpec with MockitoSugar with Before
   }
 
   it should "return only commits that don't exist locally" in {
-    when(commitService.getCommits(GithubRepo)).thenReturn(GithubCommitsList)
+    when(commitService.getCommits(GithubRepo)).thenReturn(GithubCommitsWithSha)
     commitServiceRespondsWithCommitDetails
-    when(commitInfoDao.findAll()).thenReturn(LocalCommits)
+    when(commitInfoDao.findAllSha()).thenReturn(LocalCommits)
 
     val commitsLoaded = loader.loadMissingCommits(RepoOwner, RepoName)
 
-    commitsLoaded.map(_.sha) should equal(MissingLocalCommits.map(_.sha))
+    commitsLoaded.map(_.sha).toSet should equal(MissingLocalCommits)
   }
 
   it should "return no commits when all remote commits are available locally" in {
-    when(commitService.getCommits(GithubRepo)).thenReturn(GithubCommitsList)
-    when(commitInfoDao.findAll()).thenReturn(LocalCommits ::: MissingLocalCommits)
+    when(commitService.getCommits(GithubRepo)).thenReturn(GithubCommitsWithSha)
+    when(commitInfoDao.findAllSha()).thenReturn(LocalCommits ++ MissingLocalCommits)
 
     val commitsLoaded = loader.loadMissingCommits(RepoOwner, RepoName)
 
@@ -63,10 +61,10 @@ class EgitGithubCommitsLoaderSpec extends FlatSpec with MockitoSugar with Before
   }
 
 
-  def githubCommitsList(commits: Int*) = {
+  def githubCommitsWithSha(commits: Int*) = {
     commits.map(i => {
       val commit = new RepositoryCommit()
-      commit.setSha(s"000${i}")
+      commit.setSha(s"$i")
       commit
     }).toList
   }
@@ -91,13 +89,11 @@ class EgitGithubCommitsLoaderSpec extends FlatSpec with MockitoSugar with Before
     repoCommit
   }
 
-  def localCommits(commits: Int*) = {
-    commits.map(i => {
-      CommitInfo(s"000${i}", null, null, null, null, null, null)
-    }).toList
+  def localCommitsSha(commits: Int*) = {
+    commits.map{ i => s"$i" }.toSet
   }
 
-  def commitServiceRespondsWithCommitDetails {
+  def commitServiceRespondsWithCommitDetails = {
     when(commitService.getCommit(org.mockito.Matchers.eq(GithubRepo), any[String])).thenAnswer(new Answer[RepositoryCommit]() {
       def answer(invocation: InvocationOnMock): RepositoryCommit = {
         val args = invocation.getArguments
