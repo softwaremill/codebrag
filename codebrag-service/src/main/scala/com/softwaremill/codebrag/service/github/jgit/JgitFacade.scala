@@ -4,17 +4,19 @@ import org.eclipse.jgit.api._
 import java.nio.file.{Paths, Path}
 import org.eclipse.jgit.storage.file.FileRepository
 import org.eclipse.jgit.lib.{Constants, ObjectId}
+import org.eclipse.jgit.transport.CredentialsProvider
 
-class JgitFacade {
+class JgitFacade(credentials: CredentialsProvider) {
 
-  def clone(remote: String, localPath: Path): Git = new CloneCommand().setURI(remote).setDirectory(localPath.toFile).call()
+  def clone(remote: String, localPath: Path): Git =
+    new CloneCommand().setURI(remote).setCredentialsProvider(credentials).setDirectory(localPath.toFile).call()
 
   def pull(localPath: Path): Git = {
 
     val repository = getRepository(localPath)
     val git = new Git(repository)
 
-    val pullResult = git.pull().call()
+    val pullResult = git.pull().setCredentialsProvider(credentials).call()
     if (!pullResult.isSuccessful) throw new IllegalStateException(s"Git pull to $localPath failed. Cause: $pullResult")
     git
   }
