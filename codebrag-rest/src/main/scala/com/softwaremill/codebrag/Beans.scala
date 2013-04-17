@@ -31,8 +31,8 @@ trait Beans {
   lazy val diffService = new DiffService(commitInfoDao)
   lazy val githubClientProvider = new GitHubClientProvider(userDao)
   lazy val converter = new GitHubCommitInfoConverter()
-  lazy val commitToReviewDao = new MongoCommitReviewTaskDAO
-  lazy val reviewTaskGenerator = new CommitReviewTaskGenerator(userDao, commitToReviewDao)
+  lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
+  lazy val reviewTaskGenerator = new CommitReviewTaskGenerator(userDao, commitReviewTaskDao)
   lazy val importerFactory = new EgitGitHubCommitImportServiceFactory(githubClientProvider, converter, commitInfoDao, reviewTaskGenerator)
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
   lazy val followupFinder = new MongoFollowupFinder

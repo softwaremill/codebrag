@@ -13,6 +13,10 @@ class MongoCommitReviewTaskDAO extends CommitReviewTaskDAO {
     CommitReviewTaskRecord.upsert(ifExistsQuery, toRecord(reviewTask).asDBObject)
   }
 
+  def delete(task: CommitReviewTask) {
+    CommitReviewTaskRecord.where(_.commitId eqs task.commitId).and(_.userId eqs task.userId).findAndDeleteOne()
+  }
+
   private def toRecord(commitToReview: CommitReviewTask) = {
     CommitReviewTaskRecord.createRecord
       .commitId(commitToReview.commitId)

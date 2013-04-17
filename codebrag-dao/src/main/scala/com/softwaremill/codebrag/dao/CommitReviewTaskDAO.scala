@@ -6,4 +6,6 @@ trait CommitReviewTaskDAO {
 
   def save(toReview: CommitReviewTask)
 
+  def delete(task: CommitReviewTask)
+
 }

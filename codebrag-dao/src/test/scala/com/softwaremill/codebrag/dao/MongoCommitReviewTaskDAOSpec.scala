@@ -3,13 +3,16 @@ package com.softwaremill.codebrag.dao
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.CommitReviewTask
+import com.foursquare.rogue.LiftRogue._
+import org.bson.types.ObjectId
 
-class CommitToReviewDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
+class MongoCommitReviewTaskDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
   var commitToReviewDao: MongoCommitReviewTaskDAO = _
 
   val CommitId = ObjectIdTestUtils.oid(10)
   val UserId = ObjectIdTestUtils.oid(200)
+  val OtherUserId = ObjectIdTestUtils.oid(300)
 
   override def beforeEach() {
     CommitReviewTaskRecord.drop
@@ -30,7 +33,7 @@ class CommitToReviewDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wi
 
   it should "create only one commit to review record per commit and user pair" in {
     // given
-    commitToReviewAlreadyStoredForUser()
+    storeReviewTaskFor(UserId, CommitId)
 
     // when
     commitToReviewDao.save(CommitReviewTask(CommitId, UserId))
@@ -40,13 +43,39 @@ class CommitToReviewDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wi
     thereIsOneCommitToReviewStored(storedCommits)
   }
 
+  it should "delete review task for given commit and user" in {
+    // given
+    storeReviewTaskFor(UserId, CommitId)
+
+    // when
+    commitToReviewDao.delete(CommitReviewTask(CommitId, UserId))
+
+    // then
+    val resultList = CommitReviewTaskRecord.where(_.commitId eqs CommitId).and(_.userId eqs UserId).fetch()
+    resultList should be('empty)
+  }
+
+  it should "not delete anything when no matching review found" in {
+    // given
+    storeReviewTaskFor(OtherUserId, CommitId)
+
+    // when
+    commitToReviewDao.delete(CommitReviewTask(CommitId, UserId))
+
+    // then
+    val resultList = CommitReviewTaskRecord.findAll
+    resultList should have size(1)
+    resultList.head.commitId.get should be(CommitId)
+    resultList.head.userId.get should be(OtherUserId)
+  }
+
 
   def thereIsOneCommitToReviewStored(storedCommits: List[CommitReviewTaskRecord]) {
     storedCommits should have size (1)
   }
 
-  def commitToReviewAlreadyStoredForUser() {
-    commitToReviewDao.save(CommitReviewTask(CommitId, UserId))
+  def storeReviewTaskFor(userId: ObjectId, commitId: ObjectId) {
+    commitToReviewDao.save(CommitReviewTask(commitId, userId))
   }
 
   def storedCommitIsCorrect(storedCommit: CommitReviewTaskRecord) {
