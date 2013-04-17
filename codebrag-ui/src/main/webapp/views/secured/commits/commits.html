@@ -17,9 +17,20 @@
             <li ng-repeat="commit in commits" ng-controller="CommitsListItemCtrl">
                 <div class="row">
                     <div class="span4 well well-small" ng-click="openCommitDetails(commit)">
-                        <h5>{{commit.message}}</h5>
-                        <span>{{commit.date | relativeDate}} by {{commit.authorName}}</span>
-                        <small>{{commit.sha}}</small>
+                        <div class="row">
+                            <div class="span4">
+                                <h5>{{commit.message}}</h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="span3">
+                                <span>{{commit.date | relativeDate}} by {{commit.authorName}}</span>
+                                <small>{{commit.sha}}</small>
+                            </div>
+                            <div class="span1">
+                                <button class="btn btn-mini btn-success" ng-click="markAsReviewed(commit, $event)"><i class="icon-ok"></i></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </li>
