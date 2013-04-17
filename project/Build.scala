@@ -125,10 +125,10 @@ object Dependencies {
   val rogueCore = "com.foursquare" %% "rogue-core" % rogueVersion intransitive()
   val rogueLift = "com.foursquare" %% "rogue-lift" % rogueVersion intransitive()
   val liftMongoRecord = "net.liftweb" %% "lift-mongodb-record" % "2.5-RC4"
-
   val rogue = Seq(rogueCore, rogueField, rogueLift, liftMongoRecord)
 
   val egitGithubApi = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.3"
+  val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "2.3.1.201302201838-r"
 
   val dispatch = "net.databinder.dispatch" %% "dispatch-core" % "0.9.5"
 
@@ -168,7 +168,7 @@ object SmlCodebragBuild extends Build {
     "codebrag-service",
     file("codebrag-service"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator, smlCommonSqs, smlCommonConfig,
-      javaxMail, scalate, egitGithubApi, dispatch, json4s))
+      javaxMail, scalate, egitGithubApi, jGit, dispatch, json4s))
   ) dependsOn(domain, common, dao % "test->test;compile->compile")
 
   lazy val rest: Project = Project(
