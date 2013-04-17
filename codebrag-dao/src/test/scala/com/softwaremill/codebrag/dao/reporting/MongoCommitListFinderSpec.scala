@@ -6,57 +6,73 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.CommitInfo
 import org.joda.time.DateTime
 import ObjectIdTestUtils._
+import scala.collection.immutable.IndexedSeq
+import org.bson.types.ObjectId
 
 
 class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
-  val sampleCommit = CommitInfoBuilder.createRandomCommit(0)
-  var commitListFinder: MongoCommitListFinder = _
-  var commitInfoDAO: MongoCommitInfoDAO = _
-  val FixtureDateTime: DateTime = new DateTime()
-  val EmptyListOfParents = List.empty
-  val EmptyListOfComments = List.empty
-  val EmptyListOfFiles = List.empty
+  val commitListFinder = new MongoCommitListFinder
+  var commitReviewTaskDao = new  MongoCommitReviewTaskDAO
+  val commitInfoDao = new MongoCommitInfoDAO
+
+  val userId = ObjectIdTestUtils.oid(123)
 
   override def beforeEach() {
     CommitInfoRecord.drop // drop collection to start every test with fresh database
-    commitInfoDAO = new MongoCommitInfoDAO
-    commitListFinder = new MongoCommitListFinder
-    commitInfoDAO.storeCommit(sampleCommit)
   }
 
-  behavior of "MongoCommitListFinder"
-
-  it should "find all pending commits starting from newest" in {
+  it should "find all commits to review for given user only" in {
     // given
-    val olderCommit = sampleCommit
-
-    val newerCommitTime: DateTime = FixtureDateTime.plusSeconds(5)
-    val newestCommitTime: DateTime = FixtureDateTime.plusSeconds(10)
-    val newerCommit = CommitInfo(oid(1), "123123123", "this is newer commit", "mostr", "mostr", newerCommitTime, EmptyListOfParents, EmptyListOfFiles)
-    val newestCommit = CommitInfo(oid(2), "123123123", "this is newer commit2", "mostr", "mostr", newestCommitTime, EmptyListOfParents, EmptyListOfFiles)
-    commitInfoDAO.storeCommit(newestCommit)
-    commitInfoDAO.storeCommit(newerCommit)
+    val storedCommits = prepareAndStoreSomeCommits(howMany = 5)
+    storeCommitReviewTasksFor(userId, storedCommits(0), storedCommits(1))
 
     // when
-    val pendingCommitList = commitListFinder.findAllPendingCommits()
+    val commitsFound = commitListFinder.findCommitsToReviewForUser(userId)
+
+    // then
+    commitsFound.commits should have size(2)
+  }
+
+  it should "find commits starting from newest" in {
+    // given
+    val baseDate = DateTime.now()
+    val olderCommit = CommitInfoAssembler.randomCommit.withSha("111").withDate(baseDate).get
+    val newerCommit = CommitInfoAssembler.randomCommit.withSha("222").withDate(baseDate.plusSeconds(10)).get
+    commitInfoDao.storeCommit(newerCommit)
+    commitInfoDao.storeCommit(olderCommit)
+    storeCommitReviewTasksFor(userId, olderCommit, newerCommit)
+
+    // when
+    val pendingCommitList = commitListFinder.findCommitsToReviewForUser(userId)
 
     //then
-    pendingCommitList.commits.length should equal (3)
-    pendingCommitList.commits(0) should equal(CommitListItemDTO(oid(2).toString, "123123123", "this is newer commit2", "mostr", "mostr", newestCommitTime.toDate))
-    pendingCommitList.commits(1) should equal(CommitListItemDTO(oid(1).toString, "123123123", "this is newer commit", "mostr", "mostr", newerCommitTime.toDate))
-    pendingCommitList.commits(2) should equal(CommitListItemDTO(olderCommit.id.toString, olderCommit.sha, olderCommit.message,
-      olderCommit.authorName, olderCommit.committerName, olderCommit.date.toDate))
+    pendingCommitList.commits.length should equal (2)
+    pendingCommitList.commits(0).sha should equal(newerCommit.sha)
+    pendingCommitList.commits(1).sha should equal(olderCommit.sha)
   }
 
-  it should "find empty list if no commits in database" in {
+  it should "find empty list if there are no commits to review for user" in {
     // given
-    CommitInfoRecord.drop
+    prepareAndStoreSomeCommits(5)
 
     // when
-    val pendingCommitList = commitListFinder.findAllPendingCommits()
+    val pendingCommitList = commitListFinder.findCommitsToReviewForUser(userId)
 
     //then
     pendingCommitList.commits should be ('empty)
   }
+
+  def prepareAndStoreSomeCommits(howMany: Int) = {
+    val commitsPrepared = (1 to howMany).map{ i => CommitInfoAssembler.randomCommit.withSha(i.toString).get }
+    commitsPrepared.foreach{ commitInfoDao.storeCommit(_) }
+    commitsPrepared.toList
+  }
+
+  def storeCommitReviewTasksFor(userId: ObjectId, commits: CommitInfo*) {
+    commits.foreach{commit =>
+      commit.createReviewTasksFor(List(userId)).foreach{ commitReviewTaskDao.save(_)}
+    }
+  }
+
 }

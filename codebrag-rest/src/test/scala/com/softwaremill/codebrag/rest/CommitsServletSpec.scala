@@ -11,6 +11,7 @@ import java.util.Date
 import com.softwaremill.codebrag.service.diff.DiffService
 import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 import com.softwaremill.codebrag.activities.CommentActivity
+import org.bson.types.ObjectId
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
@@ -44,8 +45,10 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   "GET /commits?type=pending" should "should return commits pending review" in {
-    userIsAuthenticated
-    when(commitsListFinder.findAllPendingCommits()).thenReturn(SamplePendingCommits)
+    val userId = new ObjectId
+    val user = UserJson(userId.toString, "user", "user@email.com", "token")
+    userIsAuthenticatedAs(user)
+    when(commitsListFinder.findCommitsToReviewForUser(userId)).thenReturn(SamplePendingCommits)
     get("/?type=pending") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))

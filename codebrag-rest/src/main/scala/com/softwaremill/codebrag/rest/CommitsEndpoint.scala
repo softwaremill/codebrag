@@ -6,6 +6,7 @@ import org.scalatra.swagger.SwaggerSupport
 import com.softwaremill.codebrag.dao.reporting.{CommitListFinder, CommitListDTO}
 import com.softwaremill.codebrag.service.diff.{DiffService, FileWithDiff}
 import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
+import org.bson.types.ObjectId
 
 trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpointSwaggerDefinition {
 
@@ -44,7 +45,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
     }
   }
 
-  private def fetchPendingCommits() = commitListFinder.findAllPendingCommits()
+  private def fetchPendingCommits() = commitListFinder.findCommitsToReviewForUser(new ObjectId(user.id))
 }
 
 trait CommitsEndpointSwaggerDefinition extends SwaggerSupport {

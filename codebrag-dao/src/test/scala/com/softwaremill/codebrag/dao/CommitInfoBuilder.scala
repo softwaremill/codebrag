@@ -33,3 +33,23 @@ object CommitInfoBuilder {
   }
 
 }
+
+class CommitInfoAssembler(var commit: CommitInfo) {
+
+  def withSha(newSha: String) = {
+    commit = commit.copy(sha = newSha)
+    this
+  }
+
+  def withDate(newDate: DateTime) = {
+    commit = commit.copy(date = newDate)
+    this
+  }
+
+  def get = commit
+
+}
+
+object CommitInfoAssembler {
+  def randomCommit = new CommitInfoAssembler(CommitInfoBuilder.createRandomCommit())
+}
