@@ -16,16 +16,16 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
     findCommitWithComments(addedComment.commitId) match {
       case (None, _) => throwException(s"Commit ${addedComment.commitId} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")
       case (Some(commit), List()) => throwException(s"No stored comments for commit ${addedComment.commitId}. Cannot createOrUpdateExisting follow-ups for commit without comments")
-      case (Some(commit), currentComments) => generateFollowUps(commit, currentComments, addedComment)
+      case (Some(commit), existingComments) => generateFollowUps(commit, existingComments, addedComment)
     }
 
     def throwException(message: String) = throw new RuntimeException(message)
   }
 
 
-  def generateFollowUps(commit: CommitInfo, currentCommits: List[CommitComment], addedComment: AddComment) {
+  def generateFollowUps(commit: CommitInfo, existingComments: List[CommitComment], addedComment: AddComment) {
     val followUpCreationDate = clock.currentDateTimeUTC()
-    usersToGenerateFollowUpsFor(commit, currentCommits, addedComment).foreach(userId => {
+    usersToGenerateFollowUpsFor(commit, existingComments, addedComment).foreach(userId => {
       followupDao.createOrUpdateExisting(Followup(commit.id, userId, followUpCreationDate))
     })
   }
