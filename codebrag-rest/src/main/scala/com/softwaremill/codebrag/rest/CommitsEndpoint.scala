@@ -14,18 +14,9 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
   def diffService: DiffService
   def commitListFinder: CommitListFinder
 
-  get("/") {
-    // for all /commits/*
-    halt(404)
-  }
-
   get("/", operation(getCommitsOperation)) {
-    // for /commits?type=* only
     haltIfNotAuthenticated
-    params.get("type") match {
-      case Some("pending") => fetchPendingCommits()
-      case _ => pass()
-    }
+    fetchCommitsList()
   }
 
   post("/sync") {
@@ -34,7 +25,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
     implicit val idGenerator = new ObjectIdGenerator()
     val importer = importerFactory.createInstance(user.email)
     importer.importRepoCommits("softwaremill", "codebrag")
-    fetchPendingCommits()
+    fetchCommitsList()
   }
 
   get("/:id", operation(getFilesForCommit)) {
@@ -45,14 +36,13 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
     }
   }
 
-  private def fetchPendingCommits() = commitListFinder.findCommitsToReviewForUser(new ObjectId(user.id))
+  private def fetchCommitsList() = commitListFinder.findCommitsToReviewForUser(new ObjectId(user.id))
 }
 
 trait CommitsEndpointSwaggerDefinition extends SwaggerSupport {
 
   val getCommitsOperation = apiOperation[CommitListDTO]("get")
-    .parameter(queryParam[String]("type").description("Type of selection (can be 'pending')").required)
-    .summary("Gets all commits pending for review")
+    .summary("Gets all commits to review for current user ")
 
   val getFilesForCommit = apiOperation[List[FileWithDiff]]("get")
     .summary("Get a list of files with diffs")

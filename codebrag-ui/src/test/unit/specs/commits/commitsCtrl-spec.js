@@ -20,7 +20,7 @@ describe("Commits Controller", function () {
     it('should fetch pending commits from server', inject(function($controller) {
         // Given
         var scope = {};
-        $httpBackend.whenGET('rest/commits?type=pending').respond(commitsList);
+        $httpBackend.whenGET('rest/commits').respond(commitsList);
 
         // When
         $controller('CommitsCtrl', {$scope: scope});
