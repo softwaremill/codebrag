@@ -19,7 +19,7 @@
                     <div class="span4 well well-small" ng-click="openCommitDetails(commit)">
                         <div class="row">
                             <div class="span4">
-                                <h5>{{commit.message}}</h5>
+                                <h5 ng-bind-html-unsafe="commit.message">{{commit.message}}</h5>
                             </div>
                         </div>
                         <div class="row">
