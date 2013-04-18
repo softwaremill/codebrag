@@ -17,7 +17,7 @@ class MongoCommitListFinder extends CommitListFinder {
 
   override def findCommitInfoById(commitIdStr: String) = {
     val commitId = new ObjectId(commitIdStr)
-    val commitInfoOption = CommitInfoRecord.select(_.id, _.sha, _.message, _.authorName, _.committerName, _.date).where(_.id eqs commitId).get()
+    val commitInfoOption = projectionQuery.where(_.id eqs commitId).get()
     commitInfoOption match {
       case Some(record) => Right(recordToDto(record))
       case None => Left(s"No such commit $commitIdStr")
