@@ -7,7 +7,7 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 class JgitGitHubCommitImportServiceFactory(commitInfoDao: CommitInfoDAO, reviewTaskGenerator: CommitReviewTaskGenerator, userDao: UserDAO) extends GitHubCommitImportServiceFactory {
 
   def createInstance(email: String): GitHubCommitImportService = {
-    val importingUserToken = userDao.findByEmail(email).get.token
+    val importingUserToken = userDao.findByEmail(email).get.authentication.token
     val credentials = new UsernamePasswordCredentialsProvider(importingUserToken, "")
     return new GitHubCommitImportService(new JgitGitHubCommitsLoader(new JgitFacade(credentials), new InternalGitDirTree, new JgitLogConverter), commitInfoDao, reviewTaskGenerator)
   }
