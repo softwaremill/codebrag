@@ -1,15 +1,29 @@
 angular.module('codebrag.commits')
 
-    .factory('commitsListService', function($resource, $q) {
+    .factory('commitsListService', function($resource, $q, $http) {
 
     	var commits = [];
 		var commitsResource = $resource('rest/commits/:id', {id: "@id"});
 
     	function loadCommitsFromServer() {
             commitsResource.get(function(response) {
-                commits = response.commits;
-            });
+                commits.length = 0;
+                _rewriteCommits(commits, response.commits);
+           });
     	}
+
+        function _rewriteCommits(commits, loadedCommits) {
+            commits.length = 0;
+            _.forEach(loadedCommits, function(commit) {
+                commits.push(commit);
+            });
+        }
+
+        function syncCommits() {
+            $http({method: 'POST', url: 'rest/commits/sync'}).success(function(response) {
+                _rewriteCommits(commits, response.commits);
+            });
+        }
 
         function allCommits() {
             return commits;
@@ -23,12 +37,6 @@ angular.module('codebrag.commits')
             var currentCommitIndex = _findIndexById(commitId);
             return _removeFromServerAndLocally(commitId).then(function() {
                 return _locateNextCommit(currentCommitIndex);
-            });
-        }
-
-        function rere(commitId) {
-            commitsResource.remove({id: commitId}, function() {
-                commits.splice(currentCommitIndex, 1);
             });
         }
 
@@ -70,7 +78,8 @@ angular.module('codebrag.commits')
             allCommits: allCommits,
             removeCommitAndGetNext: removeCommitAndGetNext,
             removeCommit: removeCommit,
-            loadCommitById: loadCommitById
+            loadCommitById: loadCommitById,
+            syncCommits: syncCommits
 		};
 
     });

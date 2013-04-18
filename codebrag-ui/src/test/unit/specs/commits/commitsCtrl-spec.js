@@ -29,19 +29,18 @@ describe("Commits Controller", function () {
         $httpBackend.flush();
     }));
 
-    it('should expose loading commits as a scope function', inject(function($controller, commitsListService) {
+    it('should expose loading commits via scope', inject(function($controller, commitsListService) {
         // Given
         var scope = {};
         $httpBackend.whenGET('rest/commits').respond(commitsList);
-        spyOn(commitsListService, 'allCommits');
         $controller('CommitsCtrl', {$scope: scope});
 
         // When
-        scope.commits();
         $httpBackend.flush();
 
         //Then
-        expect(commitsListService.allCommits).toHaveBeenCalled();
+        var commit = scope.commits[0];
+        expect(commit.sha).toBe(commitsList.commits[0].sha);
     }));
 
 });
