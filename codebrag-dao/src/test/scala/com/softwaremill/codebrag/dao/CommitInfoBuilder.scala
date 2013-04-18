@@ -36,6 +36,17 @@ object CommitInfoBuilder {
 
 class CommitInfoAssembler(var commit: CommitInfo) {
 
+  def withId(newId: ObjectId) = {
+    commit = commit.copy(id = newId)
+    this
+  }
+
+  def withMessage(newMsg: String) = {
+    commit = commit.copy(message = newMsg)
+    this
+  }
+
+
   def withSha(newSha: String) = {
     commit = commit.copy(sha = newSha)
     this

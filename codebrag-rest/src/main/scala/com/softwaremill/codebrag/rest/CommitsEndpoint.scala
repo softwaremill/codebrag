@@ -31,10 +31,18 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
     fetchCommitsList()
   }
 
-  get("/:id", operation(getFilesForCommit)) {
+  get("/:id/files", operation(getFilesForCommit)) {
     val commitId = params("id")
     diffService.getFilesWithDiffs(commitId) match {
       case Right(files) => files
+      case Left(error) => NotFound(error)
+    }
+  }
+
+  get("/:id") {
+    val commitId = params("id")
+    commitListFinder.findCommitInfoById(commitId) match {
+      case Right(commit) => commit
       case Left(error) => NotFound(error)
     }
   }

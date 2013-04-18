@@ -45,7 +45,7 @@ describe("CommitDetailsController", function () {
     }));
 
     function commitDetailsFor(id) {
-        return 'rest/commits/' + id;
+        return 'rest/commits/' + id + '/files';
     }
 
 });

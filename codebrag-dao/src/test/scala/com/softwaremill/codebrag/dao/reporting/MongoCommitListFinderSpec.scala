@@ -63,8 +63,33 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     pendingCommitList.commits should be ('empty)
   }
 
+  it should "find commit info (without files) by given id" in {
+    // given
+    val commitId = ObjectIdTestUtils.oid(111)
+    val commit = CommitInfoAssembler.randomCommit.withId(commitId).withSha("111").withMessage("Commit message").get
+    commitInfoDao.storeCommit(commit)
+
+    // when
+    val Right(foundCommit) = commitListFinder.findCommitInfoById(commitId.toString)
+
+    //then
+    foundCommit.message should equal(commit.message)
+    foundCommit.sha should equal(commit.sha)
+  }
+
+  it should "result with error msg whem commit not found" in {
+    // given
+    val nonExistingCommitId = ObjectIdTestUtils.oid(111)
+
+    // when
+    val Left(errorMsg) = commitListFinder.findCommitInfoById(nonExistingCommitId.toString)
+
+    //then
+    errorMsg should be (s"No such commit $nonExistingCommitId")
+  }
+
   def prepareAndStoreSomeCommits(howMany: Int) = {
-    val commitsPrepared = (1 to howMany).map{ i => CommitInfoAssembler.randomCommit.withSha(i.toString).get }
+    val commitsPrepared = (1 to howMany).map{ i => CommitInfoAssembler.randomCommit.withSha(i.toString).withMessage(s"Commit message $i").get }
     commitsPrepared.foreach{ commitInfoDao.storeCommit(_) }
     commitsPrepared.toList
   }

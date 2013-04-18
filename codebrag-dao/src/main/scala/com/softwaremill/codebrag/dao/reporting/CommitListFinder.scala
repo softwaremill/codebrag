@@ -9,4 +9,6 @@ trait CommitListFinder {
 
   def findCommitsToReviewForUser(userId: ObjectId): CommitListDTO
 
+  def findCommitInfoById(commitId: String): Either[String, CommitListItemDTO]
+
 }
