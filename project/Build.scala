@@ -129,7 +129,7 @@ object Dependencies {
 
   val egitGithubApi = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.3"
   val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "2.3.1.201302201838-r"
-
+  val gitective = "org.gitective" % "gitective-core" % "0.9.9"
   val dispatch = "net.databinder.dispatch" %% "dispatch-core" % "0.9.5"
 
 }
@@ -168,7 +168,7 @@ object SmlCodebragBuild extends Build {
     "codebrag-service",
     file("codebrag-service"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator, smlCommonSqs, smlCommonConfig,
-      javaxMail, scalate, egitGithubApi, jGit, dispatch, json4s))
+      javaxMail, scalate, egitGithubApi, jGit, gitective, dispatch, json4s))
   ) dependsOn(domain, common, dao % "test->test;compile->compile")
 
   lazy val rest: Project = Project(

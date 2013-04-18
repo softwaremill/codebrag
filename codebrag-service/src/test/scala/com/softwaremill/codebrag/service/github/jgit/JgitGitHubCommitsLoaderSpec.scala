@@ -5,13 +5,15 @@ import org.scalatest.matchers.ShouldMatchers
 
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
+import org.mockito.Matchers._
 import org.mockito.BDDMockito._
 import java.nio.file.Paths
-import org.eclipse.jgit.lib.ObjectId
+import org.eclipse.jgit.lib.{Repository, ObjectId}
 import org.eclipse.jgit.api.{Git, LogCommand}
 import java.util
 import org.eclipse.jgit.revwalk.RevCommit
 import com.softwaremill.codebrag.dao.CommitInfoBuilder
+import org.mockito.Matchers
 
 class JgitGitHubCommitsLoaderSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter
 with JgitGitHubCommitsLoaderSpecFixture {
@@ -92,7 +94,7 @@ with JgitGitHubCommitsLoaderSpecFixture {
     given(gitMock.log()).willReturn(logCommandMock)
     given(logCommandMock.addRange(Sha1, Sha2)).willReturn(logCommandMock)
     given(logCommandMock.call()).willReturn(util.Arrays.asList[RevCommit](RevCommit1, RevCommit2))
-    given(converterMock.toCommitInfos(List(RevCommit1, RevCommit2)))
+    given(converterMock.toCommitInfos(Matchers.eq(List(RevCommit1, RevCommit2)), any[Repository]))
       .willReturn(List(CommitInfo1, CommitInfo2))
 
     // when

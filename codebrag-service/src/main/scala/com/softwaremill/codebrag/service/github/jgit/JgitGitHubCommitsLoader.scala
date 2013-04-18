@@ -21,7 +21,7 @@ class JgitGitHubCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalG
       val headAfterPull = jGitFacade.getHeadId(localPath)
       git.log.addRange(previousHead, headAfterPull)
     }
-    converter.toCommitInfos(logCommand.call().toList)
+    converter.toCommitInfos(logCommand.call().toList, logCommand.getRepository)
   }
 
 
