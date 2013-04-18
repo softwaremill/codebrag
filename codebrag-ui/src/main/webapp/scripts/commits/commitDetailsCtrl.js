@@ -1,16 +1,25 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitDetailsCtrl', function ($stateParams, $scope, Files) {
+    .controller('CommitDetailsCtrl', function ($stateParams, $state, $scope, commitFilesService, commitsListService) {
 
-        $scope.files = [];
+        var commitId = $stateParams.id;
 
-        $scope.commitId = $stateParams.id;
+        $scope.currentCommit = commitsListService.loadCommitById(commitId);
+        $scope.files = commitFilesService.loadFilesForCommit(commitId);
 
-        Files.query({id: $stateParams.id}, function (files) {
-            $scope.files = files;
-        }, function (error) {
-            console.error(error);
-        });
+        $scope.markCurrentCommitAsReviewed = function() {
+            commitsListService.removeCommitAndGetNext(commitId).then(function(nextCommit) {
+                goTo(nextCommit);
+            })
+        };
+
+        function goTo(nextCommit) {
+            if (_.isNull(nextCommit)) {
+                $state.transitionTo('commits.list');
+            } else {
+                $state.transitionTo('commits.details', {id: nextCommit.id});
+            }
+        }
 
     });
 

@@ -1,18 +1,13 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsListItemCtrl', function($state, $scope, PendingCommits) {
+    .controller('CommitsListItemCtrl', function($state, $scope, commitsListService) {
 
         $scope.openCommitDetails = function(commit) {
             $state.transitionTo('commits.details', {id: commit.id});
-        }
+        };
 
         $scope.markAsReviewed = function(commit, $event) {
-            $event.stopPropagation();
-            PendingCommits.delete({id: commit.id}, function() {
-                console.log('should be removed');
-                var itemIndex = $scope.commits.indexOf(commit);
-                $scope.commits.splice(itemIndex, 1);
-            })
+			commitsListService.removeCommit(commit.id);
         }
 
     });

@@ -1,10 +1,10 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, $http, PendingCommits) {
+    .controller('CommitsCtrl', function ($scope, $http, commitsListService) {
 
-        PendingCommits.get(function(responseData) {
-            $scope.commits = responseData.commits;
-        });
+        commitsListService.loadCommitsFromServer();
+
+        $scope.commits = commitsListService.allCommits;
 
         $scope.syncCommits = function() {
             $http({method: 'POST', url: 'rest/commits/sync'})

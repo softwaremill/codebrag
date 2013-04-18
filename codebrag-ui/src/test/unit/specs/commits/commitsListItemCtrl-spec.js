@@ -19,4 +19,16 @@ describe("CommitsListItemController", function () {
         expect($state.transitionTo).toHaveBeenCalledWith('commits.details', {id: selectedCommit.id})
     }));
 
+    it('should remove given commit when marked as reviewed', inject(function($controller, $state, commitsListService) {
+        // Given
+        var scope = {};
+        $controller('CommitsListItemCtrl', {$scope: scope});
+        spyOn(commitsListService, 'removeCommit');
+
+        // When
+        scope.markAsReviewed(selectedCommit);
+
+        // Then
+        expect(commitsListService.removeCommit).toHaveBeenCalledWith(selectedCommit.id);
+    }));
 });

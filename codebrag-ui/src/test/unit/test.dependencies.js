@@ -33,12 +33,12 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/profileCtrl.js");
 
 <!-- commits -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsCtrl.js");
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/pendingCommitsResource.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsListService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsListItemCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitDetailsCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/comments/commentCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/comments/commentsResource.js");
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/filesResource.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitFilesService.js");
 
 <!-- follow-ups -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "followups/followupsCtrl.js");

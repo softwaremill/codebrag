@@ -17,17 +17,31 @@ describe("Commits Controller", function () {
         $httpBackend = _$httpBackend_;
     }));
 
-    it('should fetch pending commits from server', inject(function($controller) {
+    it('should fetch commits when controller starts', inject(function($controller) {
         // Given
         var scope = {};
-        $httpBackend.whenGET('rest/commits').respond(commitsList);
+        $httpBackend.expectGET('rest/commits').respond();
 
         // When
         $controller('CommitsCtrl', {$scope: scope});
+
+        //Then
+        $httpBackend.flush();
+    }));
+
+    it('should expose loading commits as a scope function', inject(function($controller, commitsListService) {
+        // Given
+        var scope = {};
+        $httpBackend.whenGET('rest/commits').respond(commitsList);
+        spyOn(commitsListService, 'allCommits');
+        $controller('CommitsCtrl', {$scope: scope});
+
+        // When
+        scope.commits();
         $httpBackend.flush();
 
         //Then
-        expect(scope.commits).toEqual(commitsList.commits);
+        expect(commitsListService.allCommits).toHaveBeenCalled();
     }));
 
 });

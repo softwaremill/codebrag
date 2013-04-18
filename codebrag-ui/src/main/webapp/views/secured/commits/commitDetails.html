@@ -1,7 +1,15 @@
 <div ng-controller="CommitDetailsCtrl">
     <div class="row">
         <div class="span7">
-            <h3>Commit details</h3>
+            <h3 ng-bind-html-unsafe="currentCommit.message"></h3>
+            <p>{{currentCommit.sha}}</p>
+            <p>{{currentCommit.date | relativeDate}} by {{currentCommit.authorName}}</p>
+            <button class="btn btn-mini btn-success" ng-click="markCurrentCommitAsReviewed()"><i class="icon-ok"></i></button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span7">
+            <h4>Commit files</h4>
         </div>
     </div>
     <div class="row" ng-repeat="file in files">

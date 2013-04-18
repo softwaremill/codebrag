@@ -11,7 +11,7 @@
 
     <!--[if lte IE 8]>
         <script>
-            window.myCustomTags = ['loginForm']; // optional - add codebrag custom directives here
+            window.myCustomTags = ['loginForm', 'isolateClick']; // optional - add codebrag custom directives here
         </script>
         <script src="scripts/vendor/angular-ui-ieshiv.js"></script>
     <![endif]-->
@@ -49,12 +49,12 @@
 
     <!-- commits -->
     <script type="text/javascript" src="scripts/commits/commitsCtrl.js"></script>
-    <script type="text/javascript" src="scripts/commits/pendingCommitsResource.js"></script>
+    <script type="text/javascript" src="scripts/commits/commitsListService.js"></script>
     <script type="text/javascript" src="scripts/commits/commitsListItemCtrl.js"></script>
     <script type="text/javascript" src="scripts/commits/commitDetailsCtrl.js"></script>
     <script type="text/javascript" src="scripts/commits/comments/commentCtrl.js"></script>
     <script type="text/javascript" src="scripts/commits/comments/commentsResource.js"></script>
-    <script type="text/javascript" src="scripts/commits/filesResource.js"></script>
+    <script type="text/javascript" src="scripts/commits/commitFilesService.js"></script>
 
     <!-- follow-ups -->
     <script type="text/javascript" src="scripts/followups/followupsCtrl.js"></script>
@@ -65,6 +65,7 @@
     <script type="text/javascript" src="scripts/common/filters/dateFormatFilter.js"></script>
     <script type="text/javascript" src="scripts/common/directives/messagePopup.js"></script>
     <script type="text/javascript" src="scripts/common/directives/httpRequestTracker.js"></script>
+    <script type="text/javascript" src="scripts/common/directives/isolateClick.js"></script>
 
 </head>
 <body ng-app="codebrag">
