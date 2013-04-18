@@ -18,20 +18,15 @@ angular.module('codebrag.commits.comments')
             })
         }
 
-        $scope.addComment = {
-            commitId: currentCommitId(),
-            body: '',
-            reset: function() {
-                this.body = '';
-            }
-        };
-
-        $scope.submitComment = function () {
-            Comments.save($scope.addComment, function (commentResponse) {
-                $scope.addComment.reset();
+        $scope.submitComment = function (content) {
+            var comment = {
+                commitId: currentCommitId(),
+                body: content
+            };
+            Comments.save(comment, function (commentResponse) {
                 $scope.commentsList.push(commentResponse.comment);
+                $scope.$broadcast('codebrag:commentCreated');
             })
         }
 
-    })
-
+    });
