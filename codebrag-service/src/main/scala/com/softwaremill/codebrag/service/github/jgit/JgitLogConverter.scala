@@ -19,23 +19,20 @@ class JgitLogConverter {
 
     for (jGitCommit <- jGitCommits) yield {
 
-      var commitInfo: CommitInfo = null
+      var commitInfo: Option[CommitInfo] = None
       val objectId = jGitCommit.toObjectId
       val filter = new CommitDiffFilter() {
         override def include(commit: RevCommit, diffs: util.Collection[DiffEntry]): Boolean = {
           if (commit.toObjectId.equals(objectId)) {
             val files = diffs.toList.map(toCommitFileInfo(_, repository))
-            commitInfo = buildCommitInfo(commit, files)
+            commitInfo = Some(buildCommitInfo(commit, files))
             throw StopWalkException.INSTANCE
           }
           true
         }
       }
       new CommitFinder(repository).setFilter(filter).find()
-      if (commitInfo == null) {
-        throw new IllegalStateException(s"Commit not converted! $objectId")
-      }
-      commitInfo
+      commitInfo.getOrElse(throw new IllegalStateException(s"Commit not converted! $objectId"))
     }
   }
 
