@@ -10,12 +10,12 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
   var dirTree: InternalGitDirTree = _
 
   before {
-    deleteRootDirectoryRecursively
+    deleteRootDirectoryRecursively()
     dirTree = new InternalGitDirTree
   }
 
   after {
-    deleteRootDirectoryRecursively
+    deleteRootDirectoryRecursively()
   }
 
   behavior of "InternalGitDirTree"
@@ -28,14 +28,14 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
 
   it should "not contain a repository if root directory exists but there's no owner directory" in {
     // given
-    givenExistingRootDirectory
+    givenExistingRootDirectory()
     // when
     dirTree.containsRepo("someOwner", "someRepo") should be(false)
   }
 
   it should "not contain a repository if there's owner directory but no repository directory" in {
     // given
-    givenExistingRootDirectory
+    givenExistingRootDirectory()
     givenExistingRepository("softwaremill", "someOtherProject")
     // when
     dirTree.containsRepo("softwaremill", "codebrag") should be(false)
@@ -43,15 +43,19 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
 
   it should "contain a repository if its directory exists" in {
     // given
-    givenExistingRootDirectory
+    givenExistingRootDirectory()
     givenExistingRepository("softwaremill", "codebrag")
     // when
     dirTree.containsRepo("softwaremill", "codebrag") should be(true)
   }
 
-  def deleteRootDirectoryRecursively = FileUtils.delete(new File(InternalGitDirTree.Root), FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
+  def deleteRootDirectoryRecursively() {
+    FileUtils.delete(new File(InternalGitDirTree.Root), FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
+  }
 
-  def givenExistingRootDirectory = FileUtils.mkdirs(new File(InternalGitDirTree.Root))
+  def givenExistingRootDirectory() {
+    FileUtils.mkdirs(new File(InternalGitDirTree.Root))
+  }
 
   def givenExistingRepository(owner: String, repository: String) =
     FileUtils.mkdirs(new File(s"${InternalGitDirTree.Root}/$owner/$repository"))
