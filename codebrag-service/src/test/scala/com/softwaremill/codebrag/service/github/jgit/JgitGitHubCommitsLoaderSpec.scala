@@ -33,7 +33,7 @@ with JgitGitHubCommitsLoaderSpecFixture {
     internalGitDirTreeMock = mock[InternalGitDirTree]
     when(internalGitDirTreeMock.getPath("softwaremill", "codebrag")).thenReturn(InternalCodebragDir)
     converterMock = mock[JgitLogConverter]
-    loader = new JgitGitHubCommitsLoader(jGitFacadeMock, internalGitDirTreeMock, converterMock)
+    loader = new JgitGitHubCommitsLoader(jGitFacadeMock, internalGitDirTreeMock, converterMock, UriBuilder)
     logCommandMock = mock[LogCommand]
     gitMock = mock[Git]
   }
@@ -116,4 +116,5 @@ trait JgitGitHubCommitsLoaderSpecFixture extends MockitoSugar {
   val Sha2: ObjectId = mock[ObjectId]
   val CommitInfo1 = CommitInfoBuilder.createRandomCommit()
   val CommitInfo2 = CommitInfoBuilder.createRandomCommit()
+  val UriBuilder = (owner: String, name: String) => s"https://github.com/$owner/$name.git"
 }

@@ -9,6 +9,8 @@ class JgitGitHubCommitImportServiceFactory(commitInfoDao: CommitInfoDAO, reviewT
   def createInstance(email: String): GitHubCommitImportService = {
     val importingUserToken = userDao.findByEmail(email).get.authentication.token
     val credentials = new UsernamePasswordCredentialsProvider(importingUserToken, "")
-    return new GitHubCommitImportService(new JgitGitHubCommitsLoader(new JgitFacade(credentials), new InternalGitDirTree, new JgitLogConverter), commitInfoDao, reviewTaskGenerator)
+    val uriBuildFunction = (repoOwner: String, repoName: String) => s"https://github.com/$repoOwner/$repoName.git"
+    return new GitHubCommitImportService(new JgitGitHubCommitsLoader(new JgitFacade(credentials), new InternalGitDirTree, new JgitLogConverter, uriBuildFunction), commitInfoDao, reviewTaskGenerator)
   }
+
 }
