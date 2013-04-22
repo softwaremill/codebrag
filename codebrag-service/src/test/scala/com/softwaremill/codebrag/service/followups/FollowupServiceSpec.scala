@@ -36,7 +36,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(userDao.findByUserName(CommitAuthor.name)).willReturn(Some(CommitAuthor))
-    given(commitCommentDao.findAllForCommit(Commit.id)).willReturn(CommentsWithTwoDifferentCommenters)
+    given(commitCommentDao.findCommentsForEntireCommit(Commit.id)).willReturn(CommentsWithTwoDifferentCommenters)
 
     // When
     followupService.generateFollowupsForComment(AddCommentByUserOne)
@@ -51,7 +51,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(userDao.findByUserName(CommitAuthor.name)).willReturn(Some(CommitAuthor))
-    given(commitCommentDao.findAllForCommit(Commit.id)).willReturn(CommentsWithNonUniqueCommenters)
+    given(commitCommentDao.findCommentsForEntireCommit(Commit.id)).willReturn(CommentsWithNonUniqueCommenters)
 
     // When
     followupService.generateFollowupsForComment(AddCommentByUserOne)
@@ -65,7 +65,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   it should "throw exception and not generate follow-ups when commit not found" in {
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(None)
-    given(commitCommentDao.findAllForCommit(Commit.id)).willReturn(CommentsWithNonUniqueCommenters)
+    given(commitCommentDao.findCommentsForEntireCommit(Commit.id)).willReturn(CommentsWithNonUniqueCommenters)
 
     // When
     val thrown = intercept[RuntimeException] {
@@ -78,7 +78,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   it should "not generate follow-up for commit author if he does not exist in system" in {
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
-    given(commitCommentDao.findAllForCommit(Commit.id)).willReturn(CommentsWithTwoDifferentCommenters)
+    given(commitCommentDao.findCommentsForEntireCommit(Commit.id)).willReturn(CommentsWithTwoDifferentCommenters)
     given(userDao.findByUserName(CommitAuthor.name)).willReturn(None)
 
     // When
@@ -90,7 +90,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   it should "throw exception and not generate follow-ups for comments when no comments found" in {
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
-    given(commitCommentDao.findAllForCommit(Commit.id)).willReturn(List.empty)
+    given(commitCommentDao.findCommentsForEntireCommit(Commit.id)).willReturn(List.empty)
 
     // When
     val thrown = intercept[RuntimeException] {

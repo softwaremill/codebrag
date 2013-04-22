@@ -8,6 +8,7 @@ import com.softwaremill.codebrag.service.comments.command.AddComment
 import com.softwaremill.codebrag.domain.Followup
 import scala.Some
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.dao.reporting.GeneralComment
 
 class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, commitCommentDao: CommitCommentDAO, userDao: UserDAO)(implicit clock: Clock)
   extends Logging {
@@ -31,7 +32,7 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
   }
 
   private def findCommitWithComments(commitId: ObjectId): (Option[CommitInfo], List[CommitComment]) = {
-    (commitInfoDao.findByCommitId(commitId), commitCommentDao.findAllForCommit(commitId))
+    (commitInfoDao.findByCommitId(commitId), commitCommentDao.findCommentsForEntireCommit(commitId))
   }
 
   def usersToGenerateFollowUpsFor(commit: CommitInfo, comments: List[CommitComment], addedComment: AddComment): Set[ObjectId] = {
