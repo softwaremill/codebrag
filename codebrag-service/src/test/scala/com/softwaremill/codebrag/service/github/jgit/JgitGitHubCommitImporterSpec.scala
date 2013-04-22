@@ -5,6 +5,7 @@ import com.softwaremill.codebrag.service.github.{FlatSpecWithGit, CommitReviewTa
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.mockito.{ArgumentCaptor, ArgumentMatcher}
 import org.mockito.Mockito._
+import org.mockito.BDDMockito._
 import com.softwaremill.codebrag.domain.{CommitFileInfo, CommitInfo}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
@@ -69,8 +70,9 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
   it should "load only new commits on second call" in {
     // given
     givenCommit("file.txt", "file content", "commit1 msg")
-    givenCommit("file.txt", "file content update", "commit2 msg")
+    val lastCommit = givenCommit("file.txt", "file content update", "commit2 msg")
     givenAlreadyCalledImport()
+    given(commitInfoDaoMock.findLastSha()).willReturn(Some(lastCommit.getId.name))
     givenCommit("file.txt", "third update content", "third update message")
     givenCommit("file.txt", "fourth update content", "fourth update message")
 
@@ -79,6 +81,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
 
     // then
     val commitArgument = ArgumentCaptor.forClass(classOf[CommitInfo])
+    verify(commitInfoDaoMock).findLastSha()
     verify(commitInfoDaoMock, times(2)).storeCommit(commitArgument.capture())
     val capturedCommits = commitArgument.getAllValues
     capturedCommits(0).message should equal("fourth update message")
@@ -95,7 +98,8 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
       new JgitFacade(credentials),
       new InternalGitDirTree,
       new JgitLogConverter,
-      uriBuilder),
+      uriBuilder,
+      commitInfoDaoMock),
     commitInfoDaoMock,
     reviewTaskGeneratorMock)
 }

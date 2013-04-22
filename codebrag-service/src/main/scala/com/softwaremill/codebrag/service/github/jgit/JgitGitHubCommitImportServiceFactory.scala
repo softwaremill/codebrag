@@ -10,7 +10,7 @@ class JgitGitHubCommitImportServiceFactory(commitInfoDao: CommitInfoDAO, reviewT
     val importingUserToken = userDao.findByEmail(email).get.authentication.token
     val credentials = new UsernamePasswordCredentialsProvider(importingUserToken, "")
     val uriBuilder = new GitHubRemoteUriBuilder
-    return new GitHubCommitImportService(new JgitGitHubCommitsLoader(new JgitFacade(credentials), new InternalGitDirTree, new JgitLogConverter, uriBuilder), commitInfoDao, reviewTaskGenerator)
+    return new GitHubCommitImportService(new JgitGitHubCommitsLoader(new JgitFacade(credentials), new InternalGitDirTree, new JgitLogConverter, uriBuilder, commitInfoDao), commitInfoDao, reviewTaskGenerator)
   }
 
 }
