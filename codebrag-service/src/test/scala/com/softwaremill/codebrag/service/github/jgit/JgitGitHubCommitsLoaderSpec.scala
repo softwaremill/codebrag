@@ -103,7 +103,7 @@ with JgitGitHubCommitsLoaderSpecFixture {
     // then
     verify(jGitFacadeMock).pull(InternalCodebragDir)
     verify(logCommandMock).addRange(Sha1, Sha2)
-    result should equal (List(CommitInfo1, CommitInfo2))
+    result should equal(List(CommitInfo1, CommitInfo2))
   }
 }
 
@@ -116,5 +116,7 @@ trait JgitGitHubCommitsLoaderSpecFixture extends MockitoSugar {
   val Sha2: ObjectId = mock[ObjectId]
   val CommitInfo1 = CommitInfoBuilder.createRandomCommit()
   val CommitInfo2 = CommitInfoBuilder.createRandomCommit()
-  val UriBuilder = (owner: String, name: String) => s"https://github.com/$owner/$name.git"
+  val UriBuilder = new RemoteGitUriBuilder {
+    def build(ownerName: String, repoName: String): String = s"https://github.com/$ownerName/$repoName.git"
+  }
 }

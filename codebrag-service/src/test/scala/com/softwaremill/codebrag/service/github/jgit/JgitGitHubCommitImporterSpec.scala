@@ -89,7 +89,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
       new JgitFacade(credentials),
       new InternalGitDirTree,
       new JgitLogConverter,
-      uriBuildFunction),
+      uriBuilder),
     commitInfoDaoMock,
     reviewTaskGeneratorMock)
 }
