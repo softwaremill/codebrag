@@ -31,13 +31,13 @@ trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
   }
 
   def givenCommit(path: String, content: String, message: String): RevCommit = {
-    add(testRepo, path, content, message)
+    commitFile(testRepo, path, content, message)
   }
 
   val author = new PersonIdent("Sofokles", "sofokles@softwaremill.com")
   val committer = new PersonIdent("Bruce", "bruce@softwaremill.com")
 
-  def add(repo: File, path: String, content: String, message: String): RevCommit = {
+  def commitFile(repo: File, path: String, content: String, message: String): RevCommit = {
     val file = new File(repo.getParentFile, path)
     if (!file.getParentFile.exists())
       file.getParentFile.mkdirs() should be(true)
