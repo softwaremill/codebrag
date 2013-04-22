@@ -44,6 +44,7 @@ class JgitLogConverter {
       authorName = jGitCommit.getAuthorIdent.getName,
       committerName = jGitCommit.getCommitterIdent.getName,
       date = new DateTime(jGitCommit.getCommitTime * 1000l),
+      commitDate = new DateTime(jGitCommit.getAuthorIdent.getWhen),
       jGitCommit.getParents.map(_.toObjectId.name()).toList,
       files)
   }

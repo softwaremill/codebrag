@@ -31,8 +31,8 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
   private object CommitInfoImplicits {
 
     implicit def toCommitInfo(record: CommitInfoRecord): CommitInfo = {
-      CommitInfo(record.id.get, record.sha.get, record.message.get, record.authorName.get, record.committerName.get, new DateTime(record.date.get), record.parents.get,
-      record.files.get.toList)
+      CommitInfo(record.id.get, record.sha.get, record.message.get, record.authorName.get, record.committerName.get, new DateTime(record.date.get),
+        new DateTime(record.committerDate.get), record.parents.get, record.files.get.toList)
     }
 
 
@@ -48,6 +48,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
         .authorName(commit.authorName)
         .committerName(commit.committerName)
         .date(commit.date.toDate)
+        .committerDate(commit.commitDate.toDate)
         .parents(commit.parents)
         .files(commit.files)
     }
@@ -67,9 +68,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
     implicit def commitFilesToCommitFilesRecords(files: List[CommitFileInfo]):List[CommitFileInfoRecord]= {
       files.map(file => CommitFileInfoRecord.createRecord.filename(file.filename).status(file.status).patch(file.patch))
     }
-
   }
-
 }
 
 class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with ObjectIdPk[CommitInfoRecord] {
@@ -84,6 +83,8 @@ class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with ObjectIdPk[Com
   object committerName extends LongStringField(this)
 
   object date extends DateField(this)
+
+  object committerDate extends DateField(this)
 
   object parents extends MongoListField[CommitInfoRecord, String](this)
 

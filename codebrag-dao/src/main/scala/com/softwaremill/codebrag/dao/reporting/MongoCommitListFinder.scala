@@ -4,7 +4,6 @@ import com.softwaremill.codebrag.dao.{CommitReviewTaskRecord, CommitInfoRecord}
 import com.foursquare.rogue.LiftRogue._
 import java.util.Date
 import org.bson.types.ObjectId
-import com.foursquare.rogue.Query
 
 class MongoCommitListFinder extends CommitListFinder {
 
@@ -30,7 +29,7 @@ class MongoCommitListFinder extends CommitListFinder {
   }
 
   private def projectionQuery = {
-    CommitInfoRecord.select(_.id, _.sha, _.message, _.authorName, _.committerName, _.date)
+    CommitInfoRecord.select(_.id, _.sha, _.message, _.authorName, _.committerName, _.committerDate)
   }
 
 }

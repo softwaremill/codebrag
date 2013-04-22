@@ -25,7 +25,7 @@ object CommitInfoBuilder {
     val authorName = RichString.generateRandom(10)
     val committerName = RichString.generateRandom(10)
     val parent = RichString.generateRandom(10)
-    CommitInfo(id, sha, message, authorName, committerName, new DateTime(), List(parent), EmptyListOfFiles)
+    CommitInfo(id, sha, message, authorName, committerName, new DateTime(), new DateTime(), List(parent), EmptyListOfFiles)
   }
 
   def createRandomCommitWithFiles(files: List[CommitFileInfo]): CommitInfo = {

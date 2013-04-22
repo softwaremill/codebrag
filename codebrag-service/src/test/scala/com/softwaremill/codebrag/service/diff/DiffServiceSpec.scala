@@ -2,12 +2,11 @@ package com.softwaremill.codebrag.service.diff
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.CommitInfoDAO
+import com.softwaremill.codebrag.dao.{CommitInfoBuilder, CommitInfoDAO}
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.scalatest.mock.MockitoSugar
 import org.mockito.BDDMockito._
-import com.softwaremill.codebrag.domain.{CommitInfo, CommitFileInfo}
-import org.joda.time.DateTime
+import com.softwaremill.codebrag.domain.CommitFileInfo
 
 class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers with MockitoSugar {
 
@@ -104,8 +103,8 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
   it should "be right when finds commit" in {
     //given
-    val commit = Some(CommitInfo("s", "m", "a", "m", new DateTime, EmptyParentsList, EmptyFilesList))
-    given(dao.findByCommitId(FixtureCommitId)).willReturn(commit)
+    val commit = CommitInfoBuilder.createRandomCommit()
+    given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
 
     //when
     val filesEither = service.getFilesWithDiffs(FixtureCommitId.toString)
@@ -133,8 +132,8 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
                                                   |+        "joined":"1900-01-02"
                                                   | }
                                                   | ]""")
-    val commit = Some(CommitInfo("sha", "m", "a", "c", new DateTime, EmptyParentsList, List(file1, file2)))
-    given(dao.findByCommitId(FixtureCommitId)).willReturn(commit)
+    val commit = CommitInfoBuilder.createRandomCommitWithFiles(List(file1, file2))
+    given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
 
     //when
     val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
@@ -159,7 +158,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   it should "return file with no diffs when patch is not available" in {
     //given
     val file = CommitFileInfo("filename.txt", "", null)
-    val commit = CommitInfo("sha", "message", "author", "committer", new DateTime, EmptyParentsList, List(file))
+    val commit = CommitInfoBuilder.createRandomCommitWithFiles(List(file))
     given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
 
     //when
@@ -172,7 +171,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   it should "return file with no diffs when patch is empty" in {
     //given
     val file = CommitFileInfo("filename.txt", "", "")
-    val commit = CommitInfo("sha", "message", "author", "committer", new DateTime, EmptyParentsList, List(file))
+    val commit = CommitInfoBuilder.createRandomCommitWithFiles(List(file))
     given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
 
     //when
@@ -185,7 +184,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   it should "return status for the file" in {
     //given
     val file = CommitFileInfo("filename.txt", StatusAdded, "")
-    val commit = CommitInfo("sha", "message", "author", "committer", new DateTime, EmptyParentsList, List(file))
+    val commit = CommitInfoBuilder.createRandomCommitWithFiles(List(file))
     given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
 
     //when
