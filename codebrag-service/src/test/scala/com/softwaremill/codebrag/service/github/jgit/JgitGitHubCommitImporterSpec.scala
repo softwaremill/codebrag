@@ -3,12 +3,13 @@ package com.softwaremill.codebrag.service.github.jgit
 import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.service.github.{FlatSpecWithGit, CommitReviewTaskGenerator, GitHubCommitImportService}
 import com.softwaremill.codebrag.dao.CommitInfoDAO
-import org.mockito.ArgumentMatcher
+import org.mockito.{ArgumentCaptor, ArgumentMatcher}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.{CommitFileInfo, CommitInfo}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import org.mockito.Matchers._
+import scala.collection.JavaConversions._
 
 class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
 
@@ -75,8 +76,11 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
     service.importRepoCommits("codebragUser", "remoteRepoName")
 
     // then
-    verify(commitInfoDaoMock).storeCommit(argThat(IsCommitInfoWithMessage("fourth update message")))
-    verify(commitInfoDaoMock).storeCommit(argThat(IsCommitInfoWithMessage("third update message")))
+    val commitArgument = ArgumentCaptor.forClass(classOf[CommitInfo])
+    verify(commitInfoDaoMock, times(2)).storeCommit(commitArgument.capture())
+    val capturedCommits = commitArgument.getAllValues
+    capturedCommits(0).message should equal("fourth update message")
+    capturedCommits(1).message should equal("third update message")
     verifyNoMoreInteractions(commitInfoDaoMock)
   }
 
@@ -92,13 +96,6 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
       uriBuilder),
     commitInfoDaoMock,
     reviewTaskGeneratorMock)
-}
-
-case class IsCommitInfoWithMessage(message: String) extends ArgumentMatcher[CommitInfo] {
-  override def matches(obj: Object): Boolean = {
-    val commit = obj.asInstanceOf[CommitInfo]
-    commit.message equals message
-  }
 }
 
 case class IsCommitInfoIgnoringId(otherCommit: CommitInfo) extends ArgumentMatcher[CommitInfo] {
