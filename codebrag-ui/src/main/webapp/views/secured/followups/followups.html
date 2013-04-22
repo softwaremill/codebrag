@@ -7,7 +7,7 @@
 <div class="row">
     <div class="span4">
         <ul class="unstyled">
-            <li ng-repeat="followup in followups" ng-controller="FollowupListItemCtrl">
+            <li ng-repeat="followup in followups" ng-controller="FollowupListItemCtrl" mark-current="followup.commit.commitId">
                 <div class="row">
                     <div class="span4 well well-small">
                         <div class="row">
@@ -22,6 +22,7 @@
                             <div class="span4">
                                 <h5>{{followup.commit.message}}</h5>
                                 <span>by {{followup.commit.authorName}}</span>
+                                <span>by {{followup.commit.id}}</span>
                             </div>
                         </div>
                     </div>

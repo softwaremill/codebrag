@@ -14,7 +14,7 @@
 <div class="row">
     <div class="span4">
         <ul class="unstyled">
-            <li ng-repeat="commit in commits" ng-controller="CommitsListItemCtrl">
+            <li ng-repeat="commit in commits" ng-controller="CommitsListItemCtrl"  mark-current="commit.id">
                 <div class="row">
                     <div class="span4 well well-small" ng-click="openCommitDetails(commit)">
                         <div class="row">

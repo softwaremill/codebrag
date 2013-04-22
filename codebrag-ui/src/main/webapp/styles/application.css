@@ -118,3 +118,6 @@ html, body, .container, .content {
     padding-top: 100px;
 }
 
+.active-element .well{
+    background: #e5e0c6;
+}
