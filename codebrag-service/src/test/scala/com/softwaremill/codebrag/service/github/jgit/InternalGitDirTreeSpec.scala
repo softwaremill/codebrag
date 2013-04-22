@@ -10,7 +10,6 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
   var dirTree: InternalGitDirTree = _
 
   before {
-    deleteRootDirectoryRecursively()
     dirTree = new InternalGitDirTree
   }
 

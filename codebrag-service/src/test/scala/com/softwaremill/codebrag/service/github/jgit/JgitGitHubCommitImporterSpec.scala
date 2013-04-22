@@ -19,7 +19,6 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
   val commitInfoDaoSupplementaryStub = mock[CommitInfoDAO]
 
   before {
-    deleteRootDirectoryRecursively()
     testRepo = initRepo()
     commitInfoDaoMock = mock[CommitInfoDAO]
     reviewTaskGeneratorMock = mock[CommitReviewTaskGenerator]
@@ -44,7 +43,6 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
 
     // when
     service.importRepoCommits("codebragUser", "remoteRepoName")
-
     // then
     verify(commitInfoDaoMock).storeCommit(argThat(IsCommitInfoIgnoringId(expectedCommit)))
   }
