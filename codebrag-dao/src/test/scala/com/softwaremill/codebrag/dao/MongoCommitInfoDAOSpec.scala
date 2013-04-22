@@ -3,6 +3,7 @@ package com.softwaremill.codebrag.dao
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao.CommitInfoBuilder._
+import org.joda.time.DateTime
 
 class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
   var commitInfoDAO: MongoCommitInfoDAO = _
@@ -47,10 +48,30 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach w
     commitInfoDAO.findBySha(commit.sha) should be('defined)
   }
 
+  it should "retrieve commit with last author date" in {
+    // given
+    val date = new DateTime()
+    val expectedLastCommit = createRandomCommitWithDates(commitDate = date.minusDays(2), authorDate = date)
+    commitInfoDAO.storeCommit(createRandomCommitWithDates(commitDate = date.minusHours(2), authorDate = date.minusHours(3)))
+    commitInfoDAO.storeCommit(createRandomCommitWithDates(commitDate = date.minusHours(12), authorDate = date.minusHours(13)))
+    commitInfoDAO.storeCommit(expectedLastCommit)
+    commitInfoDAO.storeCommit(createRandomCommitWithDates(commitDate = date.minusHours(6), authorDate = date.minusHours(8)))
+    commitInfoDAO.storeCommit(createRandomCommitWithDates(commitDate = date.minusHours(10), authorDate = date.minusHours(11)))
+
+    // when
+    val lastSha = commitInfoDAO.findLastSha()
+
+    // then
+    lastSha should not be (null)
+    lastSha should equal (Some(expectedLastCommit.sha))
+  }
+
   it should "find all commits SHA" in {
     // given
     val commits = List(CommitInfoAssembler.randomCommit.withSha("111").get, CommitInfoAssembler.randomCommit.withSha("222").get)
-    commits.foreach{ commitInfoDAO.storeCommit(_) }
+    commits.foreach {
+      commitInfoDAO.storeCommit(_)
+    }
 
     // when
     val commitsSha = commitInfoDAO.findAllSha()
