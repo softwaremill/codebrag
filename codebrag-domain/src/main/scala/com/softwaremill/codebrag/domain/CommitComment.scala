@@ -5,3 +5,5 @@ import org.bson.types.ObjectId
 
 
 case class CommitComment(id: ObjectId,commitId: ObjectId, authorId: ObjectId, message: String, postingTime: DateTime)
+
+case class InlineComment(comment: CommitComment, fileName: String, lineNumber: Int)
