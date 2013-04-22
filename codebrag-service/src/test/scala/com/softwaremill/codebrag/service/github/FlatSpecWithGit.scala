@@ -9,6 +9,7 @@ import org.eclipse.jgit.lib.{PersonIdent, Constants}
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.util.FileUtils
 import com.softwaremill.codebrag.service.github.jgit.InternalGitDirTree
+import com.google.common.io.Files
 
 trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
 
@@ -21,10 +22,7 @@ trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
   def testRepoPath = testRepo.getCanonicalPath
 
   def initRepo(): File = {
-    val tmpDir = System.getProperty("java.io.tmpdir")
-    tmpDir should not be (null)
-    val dir = new File(tmpDir, "codebrag-test-case-" + System.nanoTime())
-    dir.mkdir() should be(true)
+    val dir = Files.createTempDir()
     Git.init().setDirectory(dir).setBare(false).call()
     val repo = new File(dir, Constants.DOT_GIT)
     repo.exists() should be(true)
