@@ -10,4 +10,7 @@ trait CommitCommentDAO {
   def findCommentsForEntireCommit(commitId: ObjectId): List[CommitComment]
 
   def findInlineCommentsForCommit(commitId: ObjectId): List[InlineComment]
+
+  def findCommentsRelatedTo(comment: CommentBase): List[CommentBase]
+
 }

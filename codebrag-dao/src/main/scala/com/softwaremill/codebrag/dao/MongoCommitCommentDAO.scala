@@ -6,39 +6,36 @@ import net.liftweb.mongodb.record.field.{ObjectIdField, DateField}
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
-import net.liftweb.record.field.IntField
+import net.liftweb.record.field.{EnumField, IntField}
 
 class MongoCommitCommentDAO extends CommitCommentDAO {
 
   override def save(comment: CommentBase) {
-    CommentRecordBuilder.buildFrom(comment).save
+    CommentToRecordBuilder.buildFrom(comment).save
   }
 
   override def findInlineCommentsForCommit(commitId: ObjectId) = {
-    val inlineCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.fileName exists true).and(_.lineNumber exists true)
-    inlineCommentsQuery.fetch().map(recordToInlineComment)
+    val inlineCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.commentType eqs CommentRecord.CommentType.Inline)
+    inlineCommentsQuery.fetch().map(RecordToCommentBuilder.buildFrom(_).asInstanceOf[InlineComment])
   }
 
   override def findCommentsForEntireCommit(commitId: ObjectId) = {
-    val commitCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.fileName exists false).and(_.lineNumber exists false)
-    commitCommentsQuery.fetch().map(recordToComment)
+    val commitCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.commentType eqs CommentRecord.CommentType.Commit)
+    commitCommentsQuery.fetch().map(RecordToCommentBuilder.buildFrom(_).asInstanceOf[CommitComment])
   }
 
-  private def recordToComment(record: CommentRecord) = {
-    CommitComment(
-      record.id.get,
-      record.commitId.get,
-      record.authorId.get,
-      record.message.get,
-      new DateTime(record.date.get)
-    )
+  def findCommentsRelatedTo(comment: CommentBase) = {
+    val source = CommentToRecordBuilder.buildFrom(comment)
+    val query = CommentRecord
+      .where(_.commitId eqs source.commitId.get)
+      .and(_.commentType eqs source.commentType.get)
+      .andOpt(source.fileName.valueBox)(_.fileName eqs _)
+      .andOpt(source.lineNumber.valueBox)(_.lineNumber eqs _)
+      .and(_.id neqs source.id.get)
+    query.fetch().map(RecordToCommentBuilder.buildFrom(_))
   }
 
-  private def recordToInlineComment(record: CommentRecord): InlineComment = {
-    InlineComment(recordToComment(record), record.fileName.valueBox.get, record.lineNumber.valueBox.get)
-  }
-
-  private object CommentRecordBuilder {
+  private object CommentToRecordBuilder {
 
     def buildFrom(comment: CommentBase) = {
       comment match {
@@ -54,12 +51,41 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
         .authorId(comment.authorId)
         .message(comment.message)
         .date(comment.postingTime.toDate)
+        .commentType(CommentRecord.CommentType.Commit)
     }
 
     private def inlineCommentToCommentRecord(inlineComment: InlineComment) = {
       commentToCommentRecord(inlineComment.commitComment)
         .fileName(inlineComment.fileName)
         .lineNumber(inlineComment.lineNumber)
+        .commentType(CommentRecord.CommentType.Inline)
+    }
+
+  }
+
+  private object RecordToCommentBuilder {
+
+    import CommentRecord.CommentType._
+
+    def buildFrom(comment: CommentRecord) = {
+      comment.commentType.get match {
+        case Inline => recordToInlineComment(comment)
+        case Commit => recordToComment(comment)
+      }
+    }
+
+    private def recordToComment(record: CommentRecord) = {
+      CommitComment(
+        record.id.get,
+        record.commitId.get,
+        record.authorId.get,
+        record.message.get,
+        new DateTime(record.date.get)
+      )
+    }
+
+    private def recordToInlineComment(record: CommentRecord): InlineComment = {
+      InlineComment(recordToComment(record), record.fileName.valueBox.get, record.lineNumber.valueBox.get)
     }
 
   }
@@ -84,8 +110,15 @@ class CommentRecord extends MongoRecord[CommentRecord] {
 
   object lineNumber extends IntField(this) { override def optional_? = true }
 
+  object commentType extends EnumField(this, CommentRecord.CommentType)
+
 }
 
 object CommentRecord extends CommentRecord with MongoMetaRecord[CommentRecord] {
   override def collectionName = "commit_comments"
+
+  object CommentType extends Enumeration {
+    type CommentType = Value
+    val Commit, Inline = Value
+  }
 }

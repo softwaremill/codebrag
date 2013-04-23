@@ -8,7 +8,7 @@ import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 
-class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
+class MongoCommitCommentDAOSpec extends FlatSpecWithRemoteMongo with BeforeAndAfterEach with ShouldMatchers {
 
   var commentDao: MongoCommitCommentDAO = _
 
@@ -48,8 +48,8 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
 
   it should "load only comments for commit id" in {
     // given
-    val fixtureCommentList = generateCommentsForCommitId(CommitId, 3)
-    val additionalComments = generateCommentsForCommitId(AnotherCommitId, 5)
+    val fixtureCommentList = createCommentsForCommitId(CommitId, 3)
+    val additionalComments = createCommentsForCommitId(AnotherCommitId, 5)
     fixtureCommentList.foreach(commentDao.save(_))
     additionalComments.foreach(commentDao.save(_))
 
@@ -90,11 +90,39 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     comments.head should equal(inlineComment)
   }
 
-  private def generateCommentsForCommitId(commitId: ObjectId, howMany: Int): Seq[CommitComment] = {
+  it should "find comments related to given one (general or for the same file and line)" in {
+    // given general comments
+    val commitComments = createCommentsForCommitId(CommitId, 3)
+    commitComments.foreach(commentDao.save)
+
+    // and some inline comments
+    val firstInlineComment = createInlineCommentForCommitId(CommitId, "file_1.txt", 10)
+    val secondInlineComment = createInlineCommentForCommitId(CommitId, "file_1.txt", 10)
+    val anotherInlineComment = createInlineCommentForCommitId(CommitId, "file_2.txt", 20)
+    commentDao.save(firstInlineComment)
+    commentDao.save(secondInlineComment)
+    commentDao.save(anotherInlineComment)
+
+    // when
+    val inlineCommentsRelated = commentDao.findCommentsRelatedTo(firstInlineComment)
+    val generalCommentsRelated = commentDao.findCommentsRelatedTo(commitComments.head)
+
+    // then
+    inlineCommentsRelated.length should be(1)
+    inlineCommentsRelated.head should equal(secondInlineComment)
+    generalCommentsRelated.length should be(commitComments.size - 1) // not fetching one in question
+  }
+
+  private def createCommentsForCommitId(commitId: ObjectId, howMany: Int): Seq[CommitComment] = {
     (1 to howMany).map {i => commentForCommit(commitId, i)}.toSeq
   }
 
-  def commentForCommit(commitId: ObjectId, i: Int = 0): CommitComment = {
+  private def createInlineCommentForCommitId(commitId: ObjectId, fileName: String, lineNumber: Int) = {
+      val comment = commentForCommit(commitId)
+      InlineComment(comment, fileName, lineNumber)
+  }
+
+  private def commentForCommit(commitId: ObjectId, i: Int = 0): CommitComment = {
     CommitComment(id = new ObjectId(), commitId, authorId = new ObjectId(), s"Comment $i for commit $commitId", new DateTime())
   }
 }
