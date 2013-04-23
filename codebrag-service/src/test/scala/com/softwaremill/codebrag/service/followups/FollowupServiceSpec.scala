@@ -35,7 +35,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(userDao.findByUserName(CommitAuthor.name)).willReturn(Some(CommitAuthor))
-    given(commitCommentDao.findCommentsRelatedTo(UserOneComment)).willReturn(CommentsWithTwoDifferentCommenters)
+    given(commitCommentDao.findAllCommentsInThreadWith(UserOneComment)).willReturn(CommentsWithTwoDifferentCommenters)
 
     // When
     followupService.generateFollowupsForComment(UserOneComment)
@@ -50,7 +50,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(userDao.findByUserName(CommitAuthor.name)).willReturn(Some(CommitAuthor))
-    given(commitCommentDao.findCommentsRelatedTo(UserOneComment)).willReturn(CommentsWithNonUniqueCommenters)
+    given(commitCommentDao.findAllCommentsInThreadWith(UserOneComment)).willReturn(CommentsWithNonUniqueCommenters)
 
     // When
     followupService.generateFollowupsForComment(UserOneComment)
@@ -77,7 +77,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   it should "not generate follow-up for commit author if he does not exist in system" in {
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
-    given(commitCommentDao.findCommentsRelatedTo(UserOneComment)).willReturn(CommentsWithTwoDifferentCommenters)
+    given(commitCommentDao.findAllCommentsInThreadWith(UserOneComment)).willReturn(CommentsWithTwoDifferentCommenters)
     given(userDao.findByUserName(CommitAuthor.name)).willReturn(None)
 
     // When
@@ -89,7 +89,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   it should "throw exception and not generate follow-ups for comments when no comments found" in {
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
-    given(commitCommentDao.findCommentsRelatedTo(UserOneComment)).willReturn(List.empty)
+    given(commitCommentDao.findAllCommentsInThreadWith(UserOneComment)).willReturn(List.empty)
 
     // When
     val thrown = intercept[RuntimeException] {

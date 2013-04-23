@@ -8,7 +8,7 @@ import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 
-class MongoCommitCommentDAOSpec extends FlatSpecWithRemoteMongo with BeforeAndAfterEach with ShouldMatchers {
+class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
   var commentDao: MongoCommitCommentDAO = _
 
@@ -90,7 +90,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithRemoteMongo with BeforeAndAf
     comments.head should equal(inlineComment)
   }
 
-  it should "find comments related to given one (general or for the same file and line)" in {
+  it should "find all comments in thread containing given comment (general or for the same file and line)" in {
     // given general comments
     val commitComments = createCommentsForCommitId(CommitId, 3)
     commitComments.foreach(commentDao.save)
@@ -104,13 +104,12 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithRemoteMongo with BeforeAndAf
     commentDao.save(anotherInlineComment)
 
     // when
-    val inlineCommentsRelated = commentDao.findCommentsRelatedTo(firstInlineComment)
-    val generalCommentsRelated = commentDao.findCommentsRelatedTo(commitComments.head)
+    val inlineCommentsRelated = commentDao.findAllCommentsInThreadWith(firstInlineComment)
+    val generalCommentsRelated = commentDao.findAllCommentsInThreadWith(commitComments.head)
 
     // then
-    inlineCommentsRelated.length should be(1)
-    inlineCommentsRelated.head should equal(secondInlineComment)
-    generalCommentsRelated.length should be(commitComments.size - 1) // not fetching one in question
+    inlineCommentsRelated.toSet should be(Set(firstInlineComment, secondInlineComment))
+    generalCommentsRelated.toSet should be(commitComments.toSet)
   }
 
   private def createCommentsForCommitId(commitId: ObjectId, howMany: Int): Seq[CommitComment] = {

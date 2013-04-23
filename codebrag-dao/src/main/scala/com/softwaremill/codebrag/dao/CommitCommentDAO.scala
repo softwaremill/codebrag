@@ -11,6 +11,6 @@ trait CommitCommentDAO {
 
   def findInlineCommentsForCommit(commitId: ObjectId): List[InlineComment]
 
-  def findCommentsRelatedTo(comment: CommentBase): List[CommentBase]
+  def findAllCommentsInThreadWith(comment: CommentBase): List[CommentBase]
 
 }
