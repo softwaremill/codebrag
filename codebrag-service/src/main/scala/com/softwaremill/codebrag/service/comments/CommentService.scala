@@ -8,12 +8,6 @@ import org.bson.types.ObjectId
 
 class CommentService(commentDao: CommitCommentDAO)(implicit clock: Clock) {
 
-  @deprecated("Will be removed in favor of method taking NewComment as param")
-  def addCommentToCommit(command: AddComment): CommitComment = {
-    val temp = NewWholeCommitComment(command.commitId, command.authorId, command.message)
-    addCommentToCommit(temp).asInstanceOf[CommitComment]
-  }
-
   def addCommentToCommit(command: NewComment): CommentBase = {
     val commentAsDomainObject = toDomainObject(command)
     commentDao.save(commentAsDomainObject)

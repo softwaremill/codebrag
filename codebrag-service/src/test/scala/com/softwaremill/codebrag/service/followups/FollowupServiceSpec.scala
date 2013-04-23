@@ -13,7 +13,6 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitComment
 import com.softwaremill.codebrag.domain.Followup
 import scala.Some
-import com.softwaremill.codebrag.service.comments.command.AddComment
 
 class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with FollowupServiceSpecFixture{
 
@@ -36,10 +35,10 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(userDao.findByUserName(CommitAuthor.name)).willReturn(Some(CommitAuthor))
-    given(commitCommentDao.findCommentsForEntireCommit(Commit.id)).willReturn(CommentsWithTwoDifferentCommenters)
+    given(commitCommentDao.findCommentsRelatedTo(UserOneComment)).willReturn(CommentsWithTwoDifferentCommenters)
 
     // When
-    followupService.generateFollowupsForComment(AddCommentByUserOne)
+    followupService.generateFollowupsForComment(UserOneComment)
 
     // Then
     verify(followupDao).createOrUpdateExisting(Followup(Commit.id, UserTwoId, FollowupCreationDateTime))
@@ -51,10 +50,10 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(userDao.findByUserName(CommitAuthor.name)).willReturn(Some(CommitAuthor))
-    given(commitCommentDao.findCommentsForEntireCommit(Commit.id)).willReturn(CommentsWithNonUniqueCommenters)
+    given(commitCommentDao.findCommentsRelatedTo(UserOneComment)).willReturn(CommentsWithNonUniqueCommenters)
 
     // When
-    followupService.generateFollowupsForComment(AddCommentByUserOne)
+    followupService.generateFollowupsForComment(UserOneComment)
 
     // Then
     verify(followupDao).createOrUpdateExisting(Followup(Commit.id, UserTwoId, FollowupCreationDateTime))
@@ -69,7 +68,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
     // When
     val thrown = intercept[RuntimeException] {
-      followupService.generateFollowupsForComment(AddCommentByUserOne)
+      followupService.generateFollowupsForComment(UserOneComment)
     }
     thrown.getMessage should be(s"Commit ${Commit.id} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")
     verifyZeroInteractions(followupDao)
@@ -78,11 +77,11 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   it should "not generate follow-up for commit author if he does not exist in system" in {
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
-    given(commitCommentDao.findCommentsForEntireCommit(Commit.id)).willReturn(CommentsWithTwoDifferentCommenters)
+    given(commitCommentDao.findCommentsRelatedTo(UserOneComment)).willReturn(CommentsWithTwoDifferentCommenters)
     given(userDao.findByUserName(CommitAuthor.name)).willReturn(None)
 
     // When
-    followupService.generateFollowupsForComment(AddCommentByUserOne)
+    followupService.generateFollowupsForComment(UserOneComment)
     verify(followupDao).createOrUpdateExisting(Followup(Commit.id, UserTwoId, FollowupCreationDateTime))
     verifyNoMoreInteractions(followupDao)
   }
@@ -90,11 +89,11 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   it should "throw exception and not generate follow-ups for comments when no comments found" in {
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
-    given(commitCommentDao.findCommentsForEntireCommit(Commit.id)).willReturn(List.empty)
+    given(commitCommentDao.findCommentsRelatedTo(UserOneComment)).willReturn(List.empty)
 
     // When
     val thrown = intercept[RuntimeException] {
-      followupService.generateFollowupsForComment(AddCommentByUserOne)
+      followupService.generateFollowupsForComment(UserOneComment)
     }
     thrown.getMessage should be(s"No stored comments for commit ${Commit.id}. Cannot createOrUpdateExisting follow-ups for commit without comments")
     verifyZeroInteractions(followupDao)
@@ -120,8 +119,6 @@ trait FollowupServiceSpecFixture {
   val UserOneComment = CommitComment(new ObjectId(), Commit.id, UserOneId, "user one comment", CommentDateTime)
   val UserTwoComment = CommitComment(new ObjectId(), Commit.id, UserTwoId, "user two comment", CommentDateTime)
   val UserTwoAnotherComment = CommitComment(new ObjectId(), Commit.id, UserTwoId, "user two another comment", CommentDateTime)
-
-  val AddCommentByUserOne = AddComment(Commit.id, UserOneId, UserOneComment.message)
 
   val CommentsWithTwoDifferentCommenters = List(UserOneComment, UserTwoComment)
   val CommentsWithNonUniqueCommenters = List(UserOneComment, UserTwoComment, UserTwoAnotherComment)
