@@ -25,7 +25,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithRemoteMongo with BeforeAndAf
 
     // when
     commentDao.save(newComment)
-    val comments = CommentRecord.where(_.id eqs newComment.id).and(_.commitId eqs newComment.commitId).fetch
+    val comments = CommentRecord.where(_.id eqs newComment.id).and(_.commitId eqs newComment.commitId).fetch()
 
     // then
     comments.size should be(1)
@@ -37,11 +37,13 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithRemoteMongo with BeforeAndAf
 
     // when
     commentDao.save(lineComment)
-    val comments = InlineCommentRecord.where(_.id eqs lineComment.comment.id).and(_.commitId eqs lineComment.comment.commitId).fetch
+    val comments = CommentRecord.where(_.id eqs lineComment.commitComment.id).and(_.commitId eqs lineComment.commitComment.commitId).fetch()
 
     // then
     comments.size should be(1)
-    comments.head.message.get should equal(lineComment.comment.message)
+    comments.head.message.get should equal(lineComment.commitComment.message)
+    comments.head.fileName.valueBox.get should equal(lineComment.fileName)
+    comments.head.lineNumber.valueBox.get should equal(lineComment.lineNumber)
   }
 
   it should "load only comments for commit id" in {

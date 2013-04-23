@@ -19,16 +19,16 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
   }
 
   override def findInlineCommentsForCommit(commitId: ObjectId) = {
-    val inlineCommentsQuery = InlineCommentRecord.where(_.commitId eqs commitId).and(_.fileName exists true)
-    inlineCommentsQuery.fetch().map(inlineCommentRecordToComment)
+    val inlineCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.fileName exists true).and(_.lineNumber exists true)
+    inlineCommentsQuery.fetch().map(recordToInlineComment)
   }
 
   override def findCommentsForEntireCommit(commitId: ObjectId) = {
-    val commitCommentsQuery = InlineCommentRecord.where(_.commitId eqs commitId).and(_.fileName exists false)
-    commitCommentsQuery.fetch().map(commentRecordToComment)
+    val commitCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.fileName exists false).and(_.lineNumber exists false)
+    commitCommentsQuery.fetch().map(recordToComment)
   }
 
-  private def commentRecordToComment[T <: BaseRecord[T]](record: BaseRecord[T]) = {
+  private def recordToComment(record: CommentRecord) = {
     CommitComment(
       record.id.get,
       record.commitId.get,
@@ -38,8 +38,8 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
     )
   }
 
-  private def inlineCommentRecordToComment(record: InlineCommentRecord): InlineComment = {
-    InlineComment(commentRecordToComment(record), record.fileName.get, record.lineNumber.get)
+  private def recordToInlineComment(record: CommentRecord): InlineComment = {
+    InlineComment(recordToComment(record), record.fileName.valueBox.get, record.lineNumber.valueBox.get)
   }
 
   private def commentToCommentRecord(comment: CommitComment) = {
@@ -52,21 +52,16 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
   }
 
   private def inlineCommentToCommentRecord(inlineComment: InlineComment) = {
-
-    // how to "reuse" everything that is defind in commentToCommentRecord() defined below?
-    InlineCommentRecord.createRecord
+    commentToCommentRecord(inlineComment.commitComment)
       .fileName(inlineComment.fileName)
       .lineNumber(inlineComment.lineNumber)
-      .id(inlineComment.comment.id)
-      .commitId(inlineComment.comment.commitId)
-      .authorId(inlineComment.comment.authorId)
-      .message(inlineComment.comment.message)
-      .date(inlineComment.comment.postingTime.toDate)
   }
 
 }
 
-trait BaseRecord[T <: BaseRecord[T]] extends MongoRecord[T] { self: T =>
+class CommentRecord extends MongoRecord[CommentRecord] {
+
+  def meta = CommentRecord
 
   object id extends ObjectIdField(this)
 
@@ -78,29 +73,12 @@ trait BaseRecord[T <: BaseRecord[T]] extends MongoRecord[T] { self: T =>
 
   object date extends DateField(this)
 
-}
+  object fileName extends LongStringField(this) { override def optional_? = true }
 
-
-class CommentRecord extends BaseRecord[CommentRecord] {
-
-  def meta = CommentRecord
-
-}
-
-class InlineCommentRecord extends BaseRecord[InlineCommentRecord] {
-
-  def meta = InlineCommentRecord
-
-  object fileName extends LongStringField(this)
-
-  object lineNumber extends IntField(this)
+  object lineNumber extends IntField(this) { override def optional_? = true }
 
 }
 
 object CommentRecord extends CommentRecord with MongoMetaRecord[CommentRecord] {
-  override def collectionName = "commit_comments"
-}
-
-object InlineCommentRecord extends InlineCommentRecord with MongoMetaRecord[InlineCommentRecord] {
   override def collectionName = "commit_comments"
 }
