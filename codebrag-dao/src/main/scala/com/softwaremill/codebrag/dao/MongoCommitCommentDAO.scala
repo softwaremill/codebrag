@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.dao
 
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
-import com.softwaremill.codebrag.domain.{InlineComment, CommitComment}
+import com.softwaremill.codebrag.domain.{CommentBase, InlineComment, CommitComment}
 import net.liftweb.mongodb.record.field.{ObjectIdField, DateField}
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
@@ -10,12 +10,8 @@ import net.liftweb.record.field.IntField
 
 class MongoCommitCommentDAO extends CommitCommentDAO {
 
-  override def save(comment: CommitComment) {
-    commentToCommentRecord(comment).save
-  }
-
-  override def save(inlineComment: InlineComment) {
-    inlineCommentToCommentRecord(inlineComment).save
+  override def save(comment: CommentBase) {
+    CommentRecordBuilder.buildFrom(comment).save
   }
 
   override def findInlineCommentsForCommit(commitId: ObjectId) = {
@@ -42,19 +38,30 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
     InlineComment(recordToComment(record), record.fileName.valueBox.get, record.lineNumber.valueBox.get)
   }
 
-  private def commentToCommentRecord(comment: CommitComment) = {
-    CommentRecord.createRecord
-      .id(comment.id)
-      .commitId(comment.commitId)
-      .authorId(comment.authorId)
-      .message(comment.message)
-      .date(comment.postingTime.toDate)
-  }
+  private object CommentRecordBuilder {
 
-  private def inlineCommentToCommentRecord(inlineComment: InlineComment) = {
-    commentToCommentRecord(inlineComment.commitComment)
-      .fileName(inlineComment.fileName)
-      .lineNumber(inlineComment.lineNumber)
+    def buildFrom(comment: CommentBase) = {
+      comment match {
+        case c: InlineComment => inlineCommentToCommentRecord(c)
+        case c: CommitComment => commentToCommentRecord(c)
+      }
+    }
+
+    private def commentToCommentRecord(comment: CommitComment) = {
+      CommentRecord.createRecord
+        .id(comment.id)
+        .commitId(comment.commitId)
+        .authorId(comment.authorId)
+        .message(comment.message)
+        .date(comment.postingTime.toDate)
+    }
+
+    private def inlineCommentToCommentRecord(inlineComment: InlineComment) = {
+      commentToCommentRecord(inlineComment.commitComment)
+        .fileName(inlineComment.fileName)
+        .lineNumber(inlineComment.lineNumber)
+    }
+
   }
 
 }

@@ -1,13 +1,11 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{InlineComment, CommitComment}
+import com.softwaremill.codebrag.domain.{CommentBase, InlineComment, CommitComment}
 import org.bson.types.ObjectId
 
 trait CommitCommentDAO {
 
-  def save(comment: CommitComment)
-
-  def save(inlineComment: InlineComment)
+  def save(comment: CommentBase)
 
   def findCommentsForEntireCommit(commitId: ObjectId): List[CommitComment]
 

@@ -8,7 +8,7 @@ import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 
-class MongoCommitCommentDAOSpec extends FlatSpecWithRemoteMongo with BeforeAndAfterEach with ShouldMatchers {
+class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
   var commentDao: MongoCommitCommentDAO = _
 
