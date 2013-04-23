@@ -5,55 +5,51 @@ import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.common.FakeIdGenerator
-import com.softwaremill.codebrag.dao.CommitCommentDAO
+import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, CommitCommentDAO}
 import pl.softwaremill.common.util.time.FixtureTimeClock
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain._
 import org.joda.time.{DateTimeZone, DateTime}
 import org.bson.types.ObjectId
+import org.mockito.ArgumentCaptor
 
 class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
-
-  behavior of "CommentService"
-  val FixtureCommentId = new ObjectId("507f191e810c19729de860ea")
-  val FixtureCommitId = new ObjectId("507f191e810c19729de860eb")
-  val FixtureGeneratedId = new ObjectId("507f1f77bcf86cd799439011")
-  val FixtureAuthorId = new ObjectId("507f1f77bcf86cd799439012")
-  implicit val IdGenerator = new FakeIdGenerator(FixtureGeneratedId.toString)
-  val FixtureTime = 123456789
-  implicit val Clock = new FixtureTimeClock(FixtureTime)
-  val authentication: Authentication = new Authentication("github", "fixture-user-login", "fixture-user-login", "token", "salt")
-  val FixtureUser = new User(FixtureAuthorId, authentication, "Bob", "bob@sml.com", "token")
-  val FixtureComment = new CommitComment(FixtureCommentId, FixtureCommitId, FixtureAuthorId, "commentMsg", currentTimeUTC)
-
-  val FixtureNewComment = AddComment(FixtureCommitId, FixtureAuthorId, "new comment message")
 
   var commentService: CommentService = _
   var commentDaoMock: CommitCommentDAO = _
 
+  val FixedClock = new FixtureTimeClock(System.currentTimeMillis())
+
+  val AuthorId = ObjectIdTestUtils.oid(100)
+  val CommitId = ObjectIdTestUtils.oid(200)
+  val NewComment = AddComment(CommitId, AuthorId, "new comment message")
+
   override def beforeEach() {
     commentDaoMock = mock[CommitCommentDAO]
-    commentService = new CommentService(commentDaoMock)
+    commentService = new CommentService(commentDaoMock)(FixedClock)
   }
 
   it should "create a new commit and call dao to persist it" in {
-    val comment = CommitComment(FixtureGeneratedId, FixtureCommitId, FixtureAuthorId, "new comment message", currentTimeUTC)
-
     // when
-    commentService.addCommentToCommit(FixtureNewComment)
+    commentService.addCommentToCommit(NewComment)
 
     // then
-    verify(commentDaoMock).save(comment)
+    val commentArgument = ArgumentCaptor.forClass(classOf[CommitComment])
+    verify(commentDaoMock).save(commentArgument.capture())
+    commentArgument.getValue.commitId should equal(NewComment.commitId)
+    commentArgument.getValue.authorId should equal(NewComment.authorId)
+    commentArgument.getValue.message should equal(NewComment.message)
   }
 
   it should "return new comment as a result" in {
-
     // when
-    val newCommentItem = commentService.addCommentToCommit(FixtureNewComment)
+    val savedComment = commentService.addCommentToCommit(NewComment)
 
     // then
-    newCommentItem should equal(CommitComment(FixtureGeneratedId, FixtureCommitId, FixtureAuthorId, "new comment message", currentTimeUTC))
+    savedComment.commitId should equal(NewComment.commitId)
+    savedComment.authorId should equal(NewComment.authorId)
+    savedComment.message should equal(NewComment.message)
+    savedComment.postingTime should equal(FixedClock.currentDateTimeUTC())
   }
 
-  val currentTimeUTC = new DateTime(FixtureTime, DateTimeZone.UTC)
 }
