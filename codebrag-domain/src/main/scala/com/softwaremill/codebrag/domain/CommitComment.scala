@@ -11,5 +11,5 @@ case class CommitComment(override val id: ObjectId, override val commitId: Objec
 case class InlineComment(commitComment: CommitComment, fileName: String, lineNumber: Int)
   extends CommentBase(commitComment.id, commitComment.commitId, commitComment.authorId, commitComment.message, commitComment.postingTime) {
 
-  require((fileName != null && lineNumber != null),  "Inline comments must have non-empty fileName and lineNumber fields")
+  require((fileName != null && lineNumber > 0),  "Inline comments must have non-empty fileName and >0 lineNumber fields")
 }
