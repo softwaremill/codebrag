@@ -1,16 +1,13 @@
 package com.softwaremill.codebrag.service.comments
 
-import com.softwaremill.codebrag.service.comments.command.{NewInlineComment, NewWholeCommitComment, AddComment}
+import com.softwaremill.codebrag.service.comments.command.{NewInlineComment, NewWholeCommitComment}
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.common.FakeIdGenerator
 import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, CommitCommentDAO}
 import pl.softwaremill.common.util.time.FixtureTimeClock
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain._
-import org.joda.time.{DateTimeZone, DateTime}
-import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 
 class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {

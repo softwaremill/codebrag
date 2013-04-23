@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag
 
-import activities.CommentActivity
+import activities.AddCommentActivity
 import common.{ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.dao.reporting.{MongoFollowupFinder, MongoCommentListFinder, MongoCommitListFinder}
 import dao._
@@ -36,5 +36,5 @@ trait Beans {
   lazy val importerFactory = new JgitGitHubCommitImportServiceFactory(commitInfoDao, reviewTaskGenerator, userDao)
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
   lazy val followupFinder = new MongoFollowupFinder
-  lazy val commentActivity = new CommentActivity(commentService, followupService)
+  lazy val commentActivity = new AddCommentActivity(commentService, followupService)
 }

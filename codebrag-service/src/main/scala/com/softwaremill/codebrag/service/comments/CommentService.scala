@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.comments
 
 import com.softwaremill.codebrag.dao.CommitCommentDAO
 import com.softwaremill.codebrag.domain.{InlineComment, CommentBase, CommitComment}
-import com.softwaremill.codebrag.service.comments.command.{NewInlineComment, NewWholeCommitComment, NewComment, AddComment}
+import com.softwaremill.codebrag.service.comments.command.{NewInlineComment, NewWholeCommitComment, NewComment}
 import pl.softwaremill.common.util.time.Clock
 import org.bson.types.ObjectId
 

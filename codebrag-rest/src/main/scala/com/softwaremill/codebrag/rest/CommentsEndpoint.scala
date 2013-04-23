@@ -4,12 +4,12 @@ import com.softwaremill.codebrag.service.comments.command.{NewInlineComment, New
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.{CommentListFinder, CommentListDTO, CommentListItemDTO}
 import org.scalatra.swagger.SwaggerSupport
-import com.softwaremill.codebrag.activities.CommentActivity
+import com.softwaremill.codebrag.activities.AddCommentActivity
 import com.softwaremill.codebrag.dao.UserDAO
 
 trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpointSwaggerDefinition {
 
-  def commentActivity: CommentActivity
+  def commentActivity: AddCommentActivity
   def userDao: UserDAO
   def commentListFinder: CommentListFinder
 

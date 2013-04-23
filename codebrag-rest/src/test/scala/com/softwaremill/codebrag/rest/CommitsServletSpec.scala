@@ -10,7 +10,7 @@ import com.softwaremill.codebrag.dao.reporting.{CommentListFinder, CommitListDTO
 import java.util.Date
 import com.softwaremill.codebrag.service.diff.DiffService
 import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
-import com.softwaremill.codebrag.activities.CommentActivity
+import com.softwaremill.codebrag.activities.AddCommentActivity
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitReviewTask
 
@@ -18,7 +18,7 @@ import com.softwaremill.codebrag.domain.CommitReviewTask
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
   val SamplePendingCommits = CommitListDTO(List(CommitListItemDTO("id", "abcd0123", "this is commit message", "mostr", "michal", new Date())))
-  var commentActivity = mock[CommentActivity]
+  var commentActivity = mock[AddCommentActivity]
   var commitsInfoDao = mock[CommitInfoDAO]
   var commitsListFinder = mock[CommitListFinder]
   var diffService = mock[DiffService]

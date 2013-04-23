@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.dao.UserDAO
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import com.softwaremill.codebrag.dao.reporting.{CommentListItemDTO, CommentListFinder}
-import com.softwaremill.codebrag.activities.CommentActivity
+import com.softwaremill.codebrag.activities.AddCommentActivity
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{InlineComment, CommitComment, Authentication, User}
 import org.scalatra.swagger.SwaggerEngine
@@ -20,7 +20,7 @@ import org.scalatest.BeforeAndAfterEach
 
 class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {
 
-  var commentActivity: CommentActivity = _
+  var commentActivity: AddCommentActivity = _
   var userDao: UserDAO = _
   var commentListFinder: CommentListFinder = _
 
@@ -28,7 +28,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
   val commitId = new ObjectId
 
   override def beforeEach() {
-    commentActivity = mock[CommentActivity]
+    commentActivity = mock[AddCommentActivity]
     userDao = mock[UserDAO]
     commentListFinder = mock[CommentListFinder]
   }
@@ -106,7 +106,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde")
   }
 
- class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[UserJson], val commentActivity: CommentActivity, val userDao: UserDAO, val commentListFinder: CommentListFinder) extends CommentsEndpoint {
+ class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[UserJson], val commentActivity: AddCommentActivity, val userDao: UserDAO, val commentListFinder: CommentListFinder) extends CommentsEndpoint {
 
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
 
