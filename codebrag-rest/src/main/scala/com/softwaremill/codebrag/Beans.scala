@@ -23,7 +23,7 @@ trait Beans {
   lazy val commitInfoDao = new MongoCommitInfoDAO
   lazy val followupDao = new MongoFollowupDAO
   lazy val commitListFinder = new MongoCommitListFinder
-  lazy val commentListFinder = new MongoCommentListFinder
+  lazy val commentListFinder = new MongoCommentListFinder(userDao)
   lazy val swagger = new CodebragSwagger
   lazy val ghService = new GitHubAuthService
   lazy val commentDao = new MongoCommitCommentDAO

@@ -2,10 +2,11 @@ package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.service.comments.command.{NewInlineCommitComment, NewEntireCommitComment}
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.{CommentListFinder, CommentListDTO, CommentListItemDTO}
+import com.softwaremill.codebrag.dao.reporting.{CommentsView, CommentListFinder, CommentListDTO, CommentListItemDTO}
 import org.scalatra.swagger.SwaggerSupport
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import com.softwaremill.codebrag.dao.UserDAO
+import scala.deprecated
 
 trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpointSwaggerDefinition {
 
@@ -27,6 +28,12 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpoi
     haltIfNotAuthenticated()
     val commitId = params("id")
     commentListFinder.findAllForCommit(new ObjectId(commitId))
+  }
+
+  get("/:id/comments/v2", operation(getCommentsOperationV2)) { // will replace the one above when frontend is finished
+    haltIfNotAuthenticated()
+    val commitId = params("id")
+    commentListFinder.commentsForCommit(new ObjectId(commitId))
   }
 
   def extractComment = {
@@ -54,7 +61,12 @@ trait CommentsEndpointSwaggerDefinition extends SwaggerSupport {
     .parameter(bodyParam[String]("fileName").description("File name for inline comment").optional)
     .parameter(bodyParam[Int]("lineNumber").description("Line number of file for inline comment").optional)
 
+  @deprecated("Will be removed on inline comments finish")
   val getCommentsOperation = apiOperation[CommentListDTO]("getList")
+    .summary("Get a lists of comments")
+    .parameter(pathParam[String]("id").description("Commit identifier").required)
+
+  val getCommentsOperationV2 = apiOperation[CommentsView]("getList")
     .summary("Get a lists of comments")
     .parameter(pathParam[String]("id").description("Commit identifier").required)
 
