@@ -1,8 +1,9 @@
 package com.softwaremill.codebrag.dao.reporting
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.{CommentRecord, UserRecord}
+import com.softwaremill.codebrag.dao.{MongoCommitCommentDAO, CommentRecord, UserRecord}
 import com.foursquare.rogue.LiftRogue._
+import com.softwaremill.codebrag.domain.CommitComment
 
 class MongoCommentListFinder extends CommentListFinder {
 
@@ -25,4 +26,15 @@ class MongoCommentListFinder extends CommentListFinder {
     val namesGroupedById = idNamesPairs.toMap
     comments.map(buildCommentItem(_, namesGroupedById))
   }
+
+  def commentsForCommit(commitId: ObjectId): CommentsView = {
+    val dao = new MongoCommitCommentDAO
+    val comments = dao.findCommentsForEntireCommit(commitId)
+    CommentsView(comments = comments.map(mapCommentToView), inlineComments = List())
+  }
+
+  def mapCommentToView(comment: CommitComment) = {
+    SingleCommentView(comment.id.toString, "???", comment.message, comment.postingTime.toDate)
+  }
+
 }

@@ -7,11 +7,13 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User, EntireCommitComment}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.builders.CommitCommentAssembler
 
 class MongoCommentListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
-  behavior of "MongoCommentListFinder"
+  val commentDao = new MongoCommitCommentDAO
   var commentListFinder: MongoCommentListFinder = _
+
   val reviewedCommitId = 2
   val otherCommitId = 3
   val comment1Id = 0
@@ -22,11 +24,46 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEa
   val userSofoklesId = 1
   val userRobertId = 2
 
-  override def beforeEach = {
+  override def beforeEach() {
     CommentRecord.drop
     UserRecord.drop
     commentListFinder = new MongoCommentListFinder
   }
+
+  it should "be empty if there are no comments for a commit" in {
+    // given
+    val commitWithNoCommentsId = 1
+
+    // when
+    val commentList = commentListFinder.commentsForCommit(oid(commitWithNoCommentsId))
+
+    // then
+    commentList.comments should be('empty)
+  }
+
+  it should "contain only comments for whole commit when no inline comments present for commit" in {
+    // given
+    val noInlineCommentsCommitId = oid(1)
+    val firstComment = CommitCommentAssembler.commentForCommitId(noInlineCommentsCommitId).get
+    val secondComment = CommitCommentAssembler.commentForCommitId(noInlineCommentsCommitId).get
+    commentDao.save(firstComment)
+    commentDao.save(secondComment)
+
+    // when
+    val commentsView = commentListFinder.commentsForCommit(noInlineCommentsCommitId)
+
+    // then
+    commentsView.inlineComments should be('empty)
+    commentsView.comments.size should be(2)
+    val firstCommentView = SingleCommentView(firstComment.id.toString, "???", firstComment.message, firstComment.postingTime.toDate)
+    val secondCommentView = SingleCommentView(secondComment.id.toString, "???", secondComment.message, secondComment.postingTime.toDate)
+    commentsView.comments.toSet should be(Set(firstCommentView, secondCommentView))
+  }
+
+
+
+
+
 
   it should "load empty list if there's no review for a commit" in {
     // given
