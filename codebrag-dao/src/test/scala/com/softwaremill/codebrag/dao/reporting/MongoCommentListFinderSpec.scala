@@ -4,7 +4,7 @@ import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import com.softwaremill.codebrag.dao._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{Authentication, User, CommitComment}
+import com.softwaremill.codebrag.domain.{Authentication, User, EntireCommitComment}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 
@@ -42,9 +42,9 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEa
   it should "load comments in descending order" in {
     // given
     val storedComments = List(
-      CommitComment(oid(comment1Id), oid(reviewedCommitId), oid(userSofoklesId), "nice!", comment1Time),
-      CommitComment(oid(comment2Id), oid(reviewedCommitId), oid(userRobertId), "indeed", comment2Time),
-      CommitComment(new ObjectId, oid(otherCommitId), oid(userRobertId), "wat!", new DateTime())
+      EntireCommitComment(oid(comment1Id), oid(reviewedCommitId), oid(userSofoklesId), "nice!", comment1Time),
+      EntireCommitComment(oid(comment2Id), oid(reviewedCommitId), oid(userRobertId), "indeed", comment2Time),
+      EntireCommitComment(new ObjectId, oid(otherCommitId), oid(userRobertId), "wat!", new DateTime())
     )
     storedComments.foreach(new MongoCommitCommentDAO().save(_))
     new MongoUserDAO().add(userWithLogin(userSofoklesId, "sofokles"))
@@ -61,7 +61,7 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEa
 
   it should "set unknown user name if he does not exist" in {
     // given
-    val comment = CommitComment(oid(comment1Id), oid(reviewedCommitId), oid(userRobertId), "good one", comment1Time)
+    val comment = EntireCommitComment(oid(comment1Id), oid(reviewedCommitId), oid(userRobertId), "good one", comment1Time)
     new MongoCommitCommentDAO().save(comment)
     // when
     val commentList = commentListFinder.findAllForCommit(oid(reviewedCommitId))

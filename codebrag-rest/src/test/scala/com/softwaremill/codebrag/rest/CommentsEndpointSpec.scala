@@ -10,10 +10,10 @@ import org.mockito.Matchers._
 import com.softwaremill.codebrag.dao.reporting.{CommentListItemDTO, CommentListFinder}
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.{InlineComment, CommitComment, Authentication, User}
+import com.softwaremill.codebrag.domain.{InlineCommitComment, EntireCommitComment, Authentication, User}
 import org.scalatra.swagger.SwaggerEngine
 import org.mockito.{Matchers, ArgumentCaptor, Mockito}
-import com.softwaremill.codebrag.service.comments.command.{NewInlineComment, NewWholeCommitComment}
+import com.softwaremill.codebrag.service.comments.command.{NewInlineCommitComment, NewEntireCommitComment}
 import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterEach
 
@@ -47,17 +47,17 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
   "POST /commits/:id/comments" should "create comment for commit" in {
     // given
     val body = "{\"body\": \"This is comment body\"}"
-    val dummyComment = CommitComment(new ObjectId, commitId, user.id, "This is comment body", DateTime.now)
+    val dummyComment = EntireCommitComment(new ObjectId, commitId, user.id, "This is comment body", DateTime.now)
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(commentActivity.putCommentOnCommit(any[NewWholeCommitComment])).thenReturn(dummyComment)
+    when(commentActivity.addCommentToCommit(any[NewEntireCommitComment])).thenReturn(dummyComment)
 
     // when
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {
       // then
       status should be(200)
-      val commentArgument = ArgumentCaptor.forClass(classOf[NewWholeCommitComment])
-      verify(commentActivity).putCommentOnCommit(commentArgument.capture())
+      val commentArgument = ArgumentCaptor.forClass(classOf[NewEntireCommitComment])
+      verify(commentActivity).addCommentToCommit(commentArgument.capture())
       commentArgument.getValue.authorId should equal(user.id)
       commentArgument.getValue.commitId should equal(commitId)
       commentArgument.getValue.message should equal("This is comment body")
@@ -67,17 +67,17 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
   "POST /commits/:id/comments" should "create inline comment for commit" in {
     // given
     val body = "{\"body\": \"This is comment body\", \"fileName\": \"test_file.txt\", \"lineNumber\": 20}"
-    val dummyComment = InlineComment(CommitComment(new ObjectId, commitId, user.id, "This is comment body", DateTime.now), "test_file.txt", 20)
+    val dummyComment = InlineCommitComment(EntireCommitComment(new ObjectId, commitId, user.id, "This is comment body", DateTime.now), "test_file.txt", 20)
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(commentActivity.putCommentOnCommit(any[NewInlineComment])).thenReturn(dummyComment)
+    when(commentActivity.addCommentToCommit(any[NewInlineCommitComment])).thenReturn(dummyComment)
 
     // when
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {
       // then
       status should be(200)
-      val commentArgument = ArgumentCaptor.forClass(classOf[NewInlineComment])
-      verify(commentActivity).putCommentOnCommit(commentArgument.capture())
+      val commentArgument = ArgumentCaptor.forClass(classOf[NewInlineCommitComment])
+      verify(commentActivity).addCommentToCommit(commentArgument.capture())
       commentArgument.getValue.authorId should equal(user.id)
       commentArgument.getValue.commitId should equal(commitId)
       commentArgument.getValue.message should equal("This is comment body")
@@ -89,10 +89,10 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
   "POST /commits/:id/comments" should "return created comment in response" in {
     // given
     val body = "{\"body\": \"This is comment body\"}"
-    val createdComment = CommitComment(new ObjectId, commitId, user.id, "This is comment body", DateTime.now)
+    val createdComment = EntireCommitComment(new ObjectId, commitId, user.id, "This is comment body", DateTime.now)
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(commentActivity.putCommentOnCommit(any[NewWholeCommitComment])).thenReturn(createdComment)
+    when(commentActivity.addCommentToCommit(any[NewEntireCommitComment])).thenReturn(createdComment)
 
     // when
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {

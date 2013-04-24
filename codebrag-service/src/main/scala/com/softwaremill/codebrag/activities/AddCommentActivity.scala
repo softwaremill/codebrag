@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.service.comments.command.NewComment
 
 class AddCommentActivity(commentService: CommentService, followupService: FollowupService) {
 
-  def putCommentOnCommit(newComment: NewComment) = {
+  def addCommentToCommit(newComment: NewComment) = {
     val addedComment = commentService.addCommentToCommit(newComment)
     followupService.generateFollowupsForComment(addedComment)
     addedComment

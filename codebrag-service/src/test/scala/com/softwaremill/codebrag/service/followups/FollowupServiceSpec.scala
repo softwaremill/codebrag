@@ -10,7 +10,7 @@ import pl.softwaremill.common.util.time.FixtureTimeClock
 import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.CommitComment
+import com.softwaremill.codebrag.domain.EntireCommitComment
 import com.softwaremill.codebrag.domain.Followup
 import scala.Some
 
@@ -116,9 +116,9 @@ trait FollowupServiceSpecFixture {
 
   val CommitAuthor = User(CommitAuthorId, Authentication.basic("user", "password"), Commit.authorName, "user@email.com", "123213")
 
-  val UserOneComment = CommitComment(new ObjectId(), Commit.id, UserOneId, "user one comment", CommentDateTime)
-  val UserTwoComment = CommitComment(new ObjectId(), Commit.id, UserTwoId, "user two comment", CommentDateTime)
-  val UserTwoAnotherComment = CommitComment(new ObjectId(), Commit.id, UserTwoId, "user two another comment", CommentDateTime)
+  val UserOneComment = EntireCommitComment(new ObjectId(), Commit.id, UserOneId, "user one comment", CommentDateTime)
+  val UserTwoComment = EntireCommitComment(new ObjectId(), Commit.id, UserTwoId, "user two comment", CommentDateTime)
+  val UserTwoAnotherComment = EntireCommitComment(new ObjectId(), Commit.id, UserTwoId, "user two another comment", CommentDateTime)
 
   val CommentsWithTwoDifferentCommenters = List(UserOneComment, UserTwoComment)
   val CommentsWithNonUniqueCommenters = List(UserOneComment, UserTwoComment, UserTwoAnotherComment)

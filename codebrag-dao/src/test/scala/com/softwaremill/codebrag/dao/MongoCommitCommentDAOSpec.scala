@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.dao
 
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{InlineComment, CommitComment}
+import com.softwaremill.codebrag.domain.{InlineCommitComment, EntireCommitComment}
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
@@ -33,7 +33,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   }
 
   it should "store new line comment for commit" in {
-    val lineComment = InlineComment(commentForCommit(CommitId), "myfile.txt", 20)
+    val lineComment = InlineCommitComment(commentForCommit(CommitId), "myfile.txt", 20)
 
     // when
     commentDao.save(lineComment)
@@ -63,7 +63,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   it should "find only comments for entire commit" in {
     // given
     val comment = commentForCommit(CommitId)
-    val inlineComment = InlineComment(comment, "test.txt", 10)
+    val inlineComment = InlineCommitComment(comment, "test.txt", 10)
 
     // when
     commentDao.save(comment)
@@ -78,7 +78,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   it should "find only inline comments for commit" in {
     // given
     val comment = commentForCommit(CommitId)
-    val inlineComment = InlineComment(comment, "test.txt", 10)
+    val inlineComment = InlineCommitComment(comment, "test.txt", 10)
 
     // when
     commentDao.save(comment)
@@ -112,16 +112,16 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     generalCommentsRelated.toSet should be(commitComments.toSet)
   }
 
-  private def createCommentsForCommitId(commitId: ObjectId, howMany: Int): Seq[CommitComment] = {
+  private def createCommentsForCommitId(commitId: ObjectId, howMany: Int): Seq[EntireCommitComment] = {
     (1 to howMany).map {i => commentForCommit(commitId, i)}.toSeq
   }
 
   private def createInlineCommentForCommitId(commitId: ObjectId, fileName: String, lineNumber: Int) = {
       val comment = commentForCommit(commitId)
-      InlineComment(comment, fileName, lineNumber)
+      InlineCommitComment(comment, fileName, lineNumber)
   }
 
-  private def commentForCommit(commitId: ObjectId, i: Int = 0): CommitComment = {
-    CommitComment(id = new ObjectId(), commitId, authorId = new ObjectId(), s"Comment $i for commit $commitId", new DateTime())
+  private def commentForCommit(commitId: ObjectId, i: Int = 0): EntireCommitComment = {
+    EntireCommitComment(id = new ObjectId(), commitId, authorId = new ObjectId(), s"Comment $i for commit $commitId", new DateTime())
   }
 }

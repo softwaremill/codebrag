@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.service.comments
 
-import com.softwaremill.codebrag.service.comments.command.{NewInlineComment, NewWholeCommitComment}
+import com.softwaremill.codebrag.service.comments.command.{NewInlineCommitComment, NewEntireCommitComment}
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
@@ -19,7 +19,7 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
 
   val AuthorId = ObjectIdTestUtils.oid(100)
   val CommitId = ObjectIdTestUtils.oid(200)
-  val CommentForCommit = NewWholeCommitComment(CommitId, AuthorId, "new comment message")
+  val CommentForCommit = NewEntireCommitComment(CommitId, AuthorId, "new comment message")
 
   override def beforeEach() {
     commentDaoMock = mock[CommitCommentDAO]
@@ -31,7 +31,7 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
     commentService.addCommentToCommit(CommentForCommit)
 
     // then
-    val commentArgument = ArgumentCaptor.forClass(classOf[CommitComment])
+    val commentArgument = ArgumentCaptor.forClass(classOf[EntireCommitComment])
     verify(commentDaoMock).save(commentArgument.capture())
     commentArgument.getValue.commitId should equal(CommentForCommit.commitId)
     commentArgument.getValue.authorId should equal(CommentForCommit.authorId)
@@ -51,10 +51,10 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
 
   it should "return created inline comment as a result" in {
     // given
-    val inlineComment = NewInlineComment(CommentForCommit, "test_1.txt", 20)
+    val inlineComment = NewInlineCommitComment(CommentForCommit, "test_1.txt", 20)
 
     // when
-    val savedComment = commentService.addCommentToCommit(inlineComment).asInstanceOf[InlineComment]
+    val savedComment = commentService.addCommentToCommit(inlineComment).asInstanceOf[InlineCommitComment]
 
     // then
     savedComment.lineNumber should equal(inlineComment.lineNumber)
