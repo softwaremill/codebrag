@@ -2,8 +2,8 @@ package com.softwaremill.codebrag.dao
 
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.CommitInfoBuilder._
 import org.joda.time.DateTime
+import CommitInfoAssembler._
 
 class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
   var commitInfoDAO: MongoCommitInfoDAO = _
@@ -15,7 +15,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach w
 
   it should "find a stored commit" in {
     // given
-    val commit = CommitInfoAssembler.randomCommit.get
+    val commit = randomCommit.get
     commitInfoDAO.storeCommit(commit)
 
     // when
@@ -27,7 +27,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach w
 
   it should "find stored commit by its id" in {
     // given
-    val commit = CommitInfoAssembler.randomCommit.get
+    val commit = randomCommit.get
     commitInfoDAO.storeCommit(commit)
 
     // when
@@ -39,7 +39,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach w
 
   it should "store a single commit" in {
     // given
-    val commit = createRandomCommit()
+    val commit = randomCommit.get
 
     // when
     commitInfoDAO.storeCommit(commit)
@@ -51,12 +51,12 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach w
   it should "retrieve commit with last author date" in {
     // given
     val date = new DateTime()
-    val expectedLastCommit = createRandomCommitWithDates(commitDate = date.minusDays(2), authorDate = date)
-    commitInfoDAO.storeCommit(createRandomCommitWithDates(commitDate = date.minusHours(2), authorDate = date.minusHours(3)))
-    commitInfoDAO.storeCommit(createRandomCommitWithDates(commitDate = date.minusHours(12), authorDate = date.minusHours(13)))
+    val expectedLastCommit = randomCommit.withCommitDate(date.minusDays(2)).withDate(date).get
+    commitInfoDAO.storeCommit(randomCommit.withCommitDate(date.minusHours(2)).withDate(date.minusHours(3)).get)
+    commitInfoDAO.storeCommit(randomCommit.withCommitDate(date.minusHours(12)).withDate(date.minusHours(13)).get)
     commitInfoDAO.storeCommit(expectedLastCommit)
-    commitInfoDAO.storeCommit(createRandomCommitWithDates(commitDate = date.minusHours(6), authorDate = date.minusHours(8)))
-    commitInfoDAO.storeCommit(createRandomCommitWithDates(commitDate = date.minusHours(10), authorDate = date.minusHours(11)))
+    commitInfoDAO.storeCommit(randomCommit.withCommitDate(date.minusHours(6)).withDate(date.minusHours(8)).get)
+    commitInfoDAO.storeCommit(randomCommit.withCommitDate(date.minusHours(10)).withDate(date.minusHours(11)).get)
 
     // when
     val lastSha = commitInfoDAO.findLastSha()

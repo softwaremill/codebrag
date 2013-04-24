@@ -32,10 +32,6 @@ object CommitInfoBuilder {
     createRandomCommit().copy(files = files)
   }
 
-  def createRandomCommitWithDates(commitDate: DateTime, authorDate: DateTime): CommitInfo = {
-    createRandomCommit().copy(date = authorDate, commitDate = commitDate)
-  }
-
 }
 
 class CommitInfoAssembler(var commit: CommitInfo) {
@@ -58,6 +54,11 @@ class CommitInfoAssembler(var commit: CommitInfo) {
 
   def withDate(newDate: DateTime) = {
     commit = commit.copy(date = newDate)
+    this
+  }
+
+  def withCommitDate(newDate: DateTime) = {
+    commit = commit.copy(commitDate = newDate)
     this
   }
 
