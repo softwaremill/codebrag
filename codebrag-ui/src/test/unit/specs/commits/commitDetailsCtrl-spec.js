@@ -23,6 +23,7 @@ describe("CommitDetailsController", function () {
         $stateParams.id = selectedCommitId;
         $httpBackend.expectGET(commitDetailsFor(selectedCommitId)).respond();
         $httpBackend.expectGET(commitFilesFor(selectedCommitId)).respond();
+        $httpBackend.expectGET(commitCommentsFor(selectedCommitId)).respond();
 
         // When
         $controller('CommitDetailsCtrl', {$scope:scope});
@@ -31,14 +32,14 @@ describe("CommitDetailsController", function () {
         $httpBackend.flush();
     }));
 
-    it('should load files and details for selected commit', inject(function ($controller, $stateParams) {
+    it('should load files and details for selected commit', inject(function ($controller, $stateParams, filesWithCommentsService) {
         // Given
         var scope = {};
         $stateParams.id = selectedCommitId;
         var expectedCommitDetails = {id: selectedCommitId, sha: '123'};
         var expectedCommitFiles = [{filename: 'file1.txt', lines: []}];
         $httpBackend.whenGET(commitDetailsFor(selectedCommitId)).respond(200, expectedCommitDetails);
-        $httpBackend.whenGET(commitFilesFor(selectedCommitId)).respond(200, expectedCommitFiles);
+        spyOn(filesWithCommentsService, 'loadAll').andReturn(expectedCommitFiles);
 
         // When
         $controller('CommitDetailsCtrl', {$scope:scope});
@@ -49,13 +50,22 @@ describe("CommitDetailsController", function () {
         expect(scope.currentCommit.id).toBe(expectedCommitDetails.id);
         expect(scope.currentCommit.sha).toBe(expectedCommitDetails.sha);
     }));
+    function show_props(obj, objName) {
+        var result = "";
 
+        for (var prop in obj) {
+            result += objName + "." + prop + " = " + obj[prop] + "\n";
+        }
+
+        return result;
+    }
     it('should call service to mark current commit as reviewed', inject(function($controller, $stateParams, commitsListService) {
         // Given
         var scope = {};
         $stateParams.id = selectedCommitId;
         $httpBackend.expectGET(commitDetailsFor(selectedCommitId)).respond();
         $httpBackend.expectGET(commitFilesFor(selectedCommitId)).respond();
+        $httpBackend.expectGET(commitCommentsFor(selectedCommitId)).respond();
         spyOn(commitsListService, 'removeCommitAndGetNext').andReturn(noopPromise);
 
         // When
@@ -65,7 +75,6 @@ describe("CommitDetailsController", function () {
 
         // Then
         expect(commitsListService.removeCommitAndGetNext).toHaveBeenCalled();
-
     }));
 
     it('should call service to mark current commit as reviewed', inject(function($controller, $stateParams, commitsListService) {
@@ -74,6 +83,7 @@ describe("CommitDetailsController", function () {
         $stateParams.id = selectedCommitId;
         $httpBackend.expectGET(commitDetailsFor(selectedCommitId)).respond();
         $httpBackend.expectGET(commitFilesFor(selectedCommitId)).respond();
+        $httpBackend.expectGET(commitCommentsFor(selectedCommitId)).respond();
         spyOn(commitsListService, 'removeCommitAndGetNext').andReturn(noopPromise);
 
         // When
@@ -88,6 +98,10 @@ describe("CommitDetailsController", function () {
 
     function commitDetailsFor(id) {
         return 'rest/commits/' + id;
+    }
+
+    function commitCommentsFor(id) {
+        return 'rest/commits/' + id + '/comments';
     }
 
     function commitFilesFor(id) {
