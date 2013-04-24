@@ -16,12 +16,12 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
 
   override def findInlineCommentsForCommit(commitId: ObjectId) = {
     val inlineCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.commentType eqs CommentRecord.CommentType.Inline)
-    inlineCommentsQuery.fetch().map(RecordToCommentBuilder.buildFrom(_).asInstanceOf[InlineCommitComment])
+    inlineCommentsQuery.orderAsc(_.date).fetch().map(RecordToCommentBuilder.buildFrom(_).asInstanceOf[InlineCommitComment])
   }
 
   override def findCommentsForEntireCommit(commitId: ObjectId) = {
     val commitCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.commentType eqs CommentRecord.CommentType.Commit)
-    commitCommentsQuery.fetch().map(RecordToCommentBuilder.buildFrom(_).asInstanceOf[EntireCommitComment])
+    commitCommentsQuery.orderAsc(_.date).fetch().map(RecordToCommentBuilder.buildFrom(_).asInstanceOf[EntireCommitComment])
   }
 
   def findAllCommentsInThreadWith(comment: CommentBase) = {

@@ -7,110 +7,127 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User, EntireCommitComment}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.builders.CommitCommentAssembler
+import com.softwaremill.codebrag.builders.CommentAssembler
+import org.scalatest.mock.MockitoSugar
 
-class MongoCommentListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
+class MongoCommentListFinderSpec extends FlatSpecWithRemoteMongo with BeforeAndAfterEach with ShouldMatchers with CommentListFinderVerifyHelpers {
 
+  val userDao = new MongoUserDAO
   val commentDao = new MongoCommitCommentDAO
   var commentListFinder: MongoCommentListFinder = _
 
-  val reviewedCommitId = 2
-  val otherCommitId = 3
-  val comment1Id = 0
-  val comment2Id = 1
+  val CommitId = oid(1)
 
-  val comment1Time = new DateTime().minusHours(2)
-  val comment2Time = new DateTime().minusHours(1)
-  val userSofoklesId = 1
-  val userRobertId = 2
+  val John = User(oid(2), Authentication.basic("john", "pass"), "John", "john@doe.com", "123abc")
+  val Mary = User(oid(3), Authentication.basic("mary", "pass"), "Mary", "mary@smith.com", "123abc")
+
+  val StoredCommitComments = List(
+    CommentAssembler.commitCommentFor(CommitId).withAuthorId(John.id).withMessage("Monster class").get,
+    CommentAssembler.commitCommentFor(CommitId).withAuthorId(Mary.id).withMessage("Fix it ASAP").get
+  )
+
+  val StoredInlineComments = List(
+    CommentAssembler.inlineCommentFor(CommitId).withFileNameAndLineNumber("Main.scala", 10).withMessage("Cool thing").withAuthorId(John.id).get,
+    CommentAssembler.inlineCommentFor(CommitId).withFileNameAndLineNumber("Main.scala", 10).withMessage("Indeed").withAuthorId(Mary.id).get,
+    CommentAssembler.inlineCommentFor(CommitId).withFileNameAndLineNumber("Database.scala", 12).withMessage("Possible NPE?").withAuthorId(Mary.id).get,
+    CommentAssembler.inlineCommentFor(CommitId).withFileNameAndLineNumber("Database.scala", 12).withMessage("Nope").withAuthorId(John.id).get,
+    CommentAssembler.inlineCommentFor(CommitId).withFileNameAndLineNumber("Database.scala", 20).withMessage("Refactor that").withAuthorId(John.id).get
+  )
 
   override def beforeEach() {
     CommentRecord.drop
     UserRecord.drop
-    commentListFinder = new MongoCommentListFinder
+    commentListFinder = new MongoCommentListFinder(userDao)
+
+    StoredCommitComments.foreach(commentDao.save)
+    StoredInlineComments.foreach(commentDao.save)
+    List(John, Mary).foreach(userDao.add)
+
   }
 
   it should "be empty if there are no comments for a commit" in {
     // given
-    val commitWithNoCommentsId = 1
+    val commitWithNoCommentsId = oid(20)
 
     // when
-    val commentList = commentListFinder.commentsForCommit(oid(commitWithNoCommentsId))
+    val commentList = commentListFinder.commentsForCommit(commitWithNoCommentsId)
 
     // then
     commentList.comments should be('empty)
   }
 
-  it should "contain only comments for whole commit when no inline comments present for commit" in {
+  it should "contain comments for whole commit" in {
     // given
-    val noInlineCommentsCommitId = oid(1)
-    val firstComment = CommitCommentAssembler.commentForCommitId(noInlineCommentsCommitId).get
-    val secondComment = CommitCommentAssembler.commentForCommitId(noInlineCommentsCommitId).get
-    commentDao.save(firstComment)
-    commentDao.save(secondComment)
+    val firstComment = StoredCommitComments(0)
+    val secondComment = StoredCommitComments(1)
 
     // when
-    val commentsView = commentListFinder.commentsForCommit(noInlineCommentsCommitId)
+    val commentsView = commentListFinder.commentsForCommit(CommitId)
 
     // then
-    commentsView.inlineComments should be('empty)
-    commentsView.comments.size should be(2)
-    val firstCommentView = SingleCommentView(firstComment.id.toString, "???", firstComment.message, firstComment.postingTime.toDate)
-    val secondCommentView = SingleCommentView(secondComment.id.toString, "???", secondComment.message, secondComment.postingTime.toDate)
-    commentsView.comments.toSet should be(Set(firstCommentView, secondCommentView))
+    commentMessagesWithAuthorsFor(commentsView.comments) should be(Set(("Monster class", "John"), ("Fix it ASAP", "Mary")))
   }
 
-
-
-
-
-
-  it should "load empty list if there's no review for a commit" in {
-    // given
-    val dummyCommitId = 1
-
+  it should "contain inline comments grouped by file and line" in {
     // when
-    val commentList = commentListFinder.findAllForCommit(oid(dummyCommitId))
+    val commentsView = commentListFinder.commentsForCommit(CommitId)
 
     // then
-    commentList.comments should be('empty)
+    val fileComments = commentsView.inlineComments
+
+    lineCommentsFor(fileComments, "Main.scala").size should be(1)
+    commentLineNumbersFor(fileComments, "Main.scala") should be(Set(10))
+    commentMessagesWithAuthorsFor(fileComments, "Main.scala", 10) should be(Set(("Cool thing", "John"), ("Indeed", "Mary")))
+
+    lineCommentsFor(fileComments, "Database.scala").size should be(2)
+    commentLineNumbersFor(fileComments, "Database.scala") should be(Set(12, 20))
+    commentMessagesWithAuthorsFor(fileComments, "Database.scala", 12) should be(Set(("Possible NPE?", "Mary"), ("Nope", "John")))
+    commentMessagesWithAuthorsFor(fileComments, "Database.scala", 20) should be(Set(("Refactor that", "John")))
   }
 
-  it should "load comments in descending order" in {
+  it should "have comments ordered by date starting from the oldest" in {
     // given
-    val storedComments = List(
-      EntireCommitComment(oid(comment1Id), oid(reviewedCommitId), oid(userSofoklesId), "nice!", comment1Time),
-      EntireCommitComment(oid(comment2Id), oid(reviewedCommitId), oid(userRobertId), "indeed", comment2Time),
-      EntireCommitComment(new ObjectId, oid(otherCommitId), oid(userRobertId), "wat!", new DateTime())
+    val baseDate = DateTime.now
+    val commentBase = CommentAssembler.inlineCommentFor(CommitId).withFileNameAndLineNumber("Exception.scala", 10)
+    val inlineComments = List(
+      commentBase.withMessage("You'd better refactor that").withAuthorId(John.id).postedAt(baseDate.plusHours(1)).get,
+      commentBase.withMessage("Man, it's Monday").withAuthorId(Mary.id).postedAt(baseDate.plusHours(2)).get
     )
-    storedComments.foreach(new MongoCommitCommentDAO().save(_))
-    new MongoUserDAO().add(userWithLogin(userSofoklesId, "sofokles"))
-    new MongoUserDAO().add(userWithLogin(userRobertId, "robert"))
+    inlineComments.foreach(commentDao.save)
 
     // when
-    val commentList = commentListFinder.findAllForCommit(oid(reviewedCommitId))
+    val commentsView = commentListFinder.commentsForCommit(CommitId)
 
     // then
-    commentList.comments.size should equal(2)
-    commentList.comments(0) should equal(CommentListItemDTO(oid(comment1Id).toString, "sofokles", "nice!", comment1Time.toDate))
-    commentList.comments(1) should equal(CommentListItemDTO(oid(comment2Id).toString, "robert", "indeed", comment2Time.toDate))
+    val fileComments = commentsView.inlineComments
+    orderedCommentMessagesFor(fileComments, "Exception.scala", 10) should be(List("You'd better refactor that", "Man, it's Monday"))
   }
 
-  it should "set unknown user name if he does not exist" in {
-    // given
-    val comment = EntireCommitComment(oid(comment1Id), oid(reviewedCommitId), oid(userRobertId), "good one", comment1Time)
-    new MongoCommitCommentDAO().save(comment)
-    // when
-    val commentList = commentListFinder.findAllForCommit(oid(reviewedCommitId))
+}
 
-    // then
-    commentList.comments.size should equal(1)
-    commentList.comments(0) should equal(CommentListItemDTO(oid(comment1Id).toString, "Unknown user", "good one", comment1Time.toDate))
+
+
+
+trait CommentListFinderVerifyHelpers {
+
+  def lineCommentsFor(fileComments: List[FileCommentsView], fileName: String) = {
+    fileComments.find(_.fileName == fileName).get.lineComments
   }
 
-
-  def userWithLogin(idDigit: Int, login: String) = {
-    val authentication: Authentication = Authentication("Basic", login, login, "token", "salt")
-    User(oid(idDigit), authentication, login, login + "@sml.com", "token")
+  def commentLineNumbersFor(fileComments: List[FileCommentsView], fileName: String) = {
+    lineCommentsFor(fileComments, fileName).map(_.lineNumber).toSet
   }
+
+  def commentMessagesWithAuthorsFor(fileComments: List[FileCommentsView], fileName: String, lineNumber: Int) = {
+    lineCommentsFor(fileComments, fileName).find(_.lineNumber == lineNumber).get.comments.map(comment => (comment.message, comment.authorName)).toSet
+  }
+
+  def commentMessagesWithAuthorsFor(comments: List[SingleCommentView]) = {
+    comments.map(comment => (comment.message, comment.authorName)).toSet
+  }
+
+  def orderedCommentMessagesFor(fileComments: List[FileCommentsView], fileName: String, lineNumber: Int) = {
+    lineCommentsFor(fileComments, fileName).find(_.lineNumber == lineNumber).get.comments.map(comment => comment.message)
+  }
+
 }
