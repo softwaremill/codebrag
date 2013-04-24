@@ -30,20 +30,22 @@ describe("Session Controller", function () {
         };
     }));
 
-    it('Should call login rest service when form is valid', function () {
+    it('Should call login rest service when form is valid', inject(function ($state) {
         // Given
         spyOn(authSrv, 'login').andReturn(q.when('anything'));
+        spyOn($state, 'transitionTo');
 
         // When
         scope.login();
 
         // Then
         expect(authSrv.login).toHaveBeenCalled();
-    });
+    }));
 
-    it('Should not call login rest service when form is invalid', function () {
+    it('Should not call login rest service when form is invalid', inject(function ($state) {
         // Given
         scope.loginForm.$invalid = true;
+        spyOn($state, 'transitionTo');
         spyOn(authSrv, 'login');
 
         // When
@@ -52,23 +54,41 @@ describe("Session Controller", function () {
         // Then
         expect(authSrv.login).not.toHaveBeenCalled()
 
-    });
+    }));
 
-    it('Should have user not logged', function () {
+    it('Should have user not logged', inject(function ($state) {
         // Given
+        spyOn($state, 'transitionTo');
         // no user interaction was done before
 
         // Then
         expect(scope.isLogged()).toBe(false);
-    });
+    }));
 
-    it('Should have user logged in', function () {
+    it('Should have user logged in', inject(function ($state) {
         // Given
+        spyOn($state, 'transitionTo');
         spyOn(authSrv, 'isAuthenticated').andReturn(true);
 
         // Then
         expect(scope.isLogged()).toBe(true);
-    });
+    }));
+
+    it ('Should clear password after receiving response from server', inject(function ($state, $q) {
+        // Given
+        var defer = $q.defer();
+        defer.reject({status: 401});
+        spyOn(authSrv, 'login').andReturn(defer.promise);
+        spyOn($state, 'transitionTo');
+
+        // When
+        scope.user.password = 'passwordValue';
+        scope.login();
+        scope.$apply();
+
+        // Then
+        expect(scope.user.password).toBe('');
+    }));
 
     it('Calling logout should log out from angular layer', inject(function ($state) {
         // Given
@@ -81,6 +101,5 @@ describe("Session Controller", function () {
 
         // Then
         expect(authSrv.logout).toHaveBeenCalled();
-        expect()
     }));
 });
