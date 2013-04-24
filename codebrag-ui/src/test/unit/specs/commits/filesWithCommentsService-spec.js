@@ -31,7 +31,7 @@ describe("filesWithCommentsService", function () {
         // Given
 
         var files = singleFileDiff("filename.txt");
-        var commentsForFile = randomCommentsForSingleFile("filename.txt", [1, 13, 11]);
+        var commentsForFile = randomCommentsForSingleFile("filename.txt", [2, 17, 11]);
 
         // When
         filesWithCommentsService.putInlineCommentsInFiles(files, commentsForFile.inlineComments);

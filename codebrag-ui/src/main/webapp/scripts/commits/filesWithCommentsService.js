@@ -21,21 +21,12 @@ angular.module('codebrag.commits')
 
                 _.forEach(file.lines, _putCommentsInLine);
 
-                function _putCommentsInLine(line) {
+                function _putCommentsInLine(line, index) {
                     line.commentCount = 0;
                     if (inlineCommentsForFile != undefined) {
-                        var commentLineNumber = undefined;
-                        if (line.lineType == "added") {
-                            commentLineNumber = line.lineNumberChanged;
-                        }
-                        else {
-                            commentLineNumber = line.lineNumberOriginal;
-                        }
-
                         var commentsForLine = _.find(inlineCommentsForFile.lineComments, function (commentList) {
-                            return commentList.lineNumber == commentLineNumber;
+                            return commentList.lineNumber == index;
                         });
-
                         if (commentsForLine != undefined) {
                             line.commentCount = commentsForLine.comments.length;
                             file.commentCount += line.commentCount;
