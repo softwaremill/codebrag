@@ -13,6 +13,15 @@ angular.module('codebrag.commits')
             })
         };
 
+        $scope.submitInlineComment = function(content, file, line, lineIndex) {
+            // TODO
+            var comment = {
+                commitId: commitId,
+                body: content
+            };
+            console.log("submitting comment for " + file.filename + "; line " + lineIndex)
+        };
+
         function goTo(nextCommit) {
             if (_.isNull(nextCommit)) {
                 $state.transitionTo('commits.list');

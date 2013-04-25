@@ -26,7 +26,8 @@
             </div>
             <div class="row diff-file-data">
                 <table>
-                    <tr ng-repeat="line in file.lines">
+                    <tbody ng-repeat="line in file.lines">
+                    <tr>
                         <td class="diff-table-line-number-cell" ng-switch on="line.lineType">
                             <span ng-switch-when="header">...</span>
                             <span ng-switch-when="added"></span>
@@ -39,6 +40,23 @@
                         </td>
                         <td class="diff-{{line.lineType}} diff-line" ng-bind-html-unsafe="line.line"></td>
                     </tr>
+                    <tr ng-show="line.hasComments">
+                        <td colspan="3">
+                            <div class="span7 inline-comments-container">
+                                <h5>Comments</h5>
+                                <div class="well span6" ng-repeat="comment in line.comments">
+                                    {{comment.time | relativeDate}} by <strong>{{comment.authorName}}</strong>:
+                                    <br/>
+                                    <br/>
+                                    <div>
+                                        <markdown-to-html content="comment.message"></markdown-to-html>
+                                    </div>
+                                </div>
+                                <markdown-comment-form submit="submitInlineComment(content, file, line, $index)"></markdown-comment-form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
