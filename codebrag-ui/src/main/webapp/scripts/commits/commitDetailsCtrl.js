@@ -14,12 +14,19 @@ angular.module('codebrag.commits')
         };
 
         $scope.submitInlineComment = function(content, file, line, lineIndex) {
-            // TODO
             var comment = {
                 commitId: commitId,
-                body: content
+                body: content,
+                fileName: file.filename,
+                lineNumber: lineIndex
             };
-            console.log("submitting comment for " + file.filename + "; line " + lineIndex)
+            Comments.save(comment, function (commentResponse) {
+                file.commentCount++;
+                var responseComment = commentResponse.comment;
+                line.commentCount++;
+                line.comments.push(responseComment);
+                $scope.$broadcast('codebrag:commentCreated');
+            });
         };
 
         function goTo(nextCommit) {
