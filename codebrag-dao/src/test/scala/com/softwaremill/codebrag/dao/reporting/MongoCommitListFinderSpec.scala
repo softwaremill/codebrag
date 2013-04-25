@@ -5,8 +5,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.CommitInfo
 import org.joda.time.DateTime
-import ObjectIdTestUtils._
-import scala.collection.immutable.IndexedSeq
 import org.bson.types.ObjectId
 
 

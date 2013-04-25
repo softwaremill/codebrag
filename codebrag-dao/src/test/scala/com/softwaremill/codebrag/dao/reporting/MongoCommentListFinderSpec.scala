@@ -4,11 +4,9 @@ import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import com.softwaremill.codebrag.dao._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{Authentication, User, EntireCommitComment}
+import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.joda.time.DateTime
-import org.bson.types.ObjectId
 import com.softwaremill.codebrag.builders.CommentAssembler
-import org.scalatest.mock.MockitoSugar
 
 class MongoCommentListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers with CommentListFinderVerifyHelpers {
 
