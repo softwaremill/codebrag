@@ -10,7 +10,7 @@ class MongoCommitListFinder extends CommitListFinder {
   override def findCommitsToReviewForUser(userId: ObjectId) = {
     val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
     val commitIds = userReviewTasks.map(_.commitId.get).toSet
-    val commits = projectionQuery.where(_.id in commitIds).orderDesc(_.authorDate).fetch()
+    val commits = projectionQuery.where(_.id in commitIds).orderDesc(_.committerDate).fetch()
     CommitListDTO(commits.map(recordToDto(_)))
   }
 
@@ -29,7 +29,7 @@ class MongoCommitListFinder extends CommitListFinder {
   }
 
   private def projectionQuery = {
-    CommitInfoRecord.select(_.id, _.sha, _.message, _.authorName, _.committerName, _.committerDate)
+    CommitInfoRecord.select(_.id, _.sha, _.message, _.authorName, _.committerName, _.authorDate)
   }
 
 }

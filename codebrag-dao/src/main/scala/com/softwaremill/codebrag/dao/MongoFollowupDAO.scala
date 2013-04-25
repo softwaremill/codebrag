@@ -32,7 +32,7 @@ class MongoFollowupDAO extends FollowupDAO {
       .id(followup.commitId)
       .message(commitRecord.message.get)
       .author(commitRecord.authorName.get)
-      .date(commitRecord.authorDate.get)
+      .date(commitRecord.committerDate.get)
 
     FollowupRecord.createRecord
       .commit(commitInfo)

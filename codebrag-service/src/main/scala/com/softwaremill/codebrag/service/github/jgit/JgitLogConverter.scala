@@ -43,8 +43,8 @@ class JgitLogConverter {
       message = jGitCommit.getFullMessage,
       authorName = jGitCommit.getAuthorIdent.getName,
       committerName = jGitCommit.getCommitterIdent.getName,
-      authorDate = new DateTime(jGitCommit.getCommitTime * 1000l),
-      commitDate = new DateTime(jGitCommit.getAuthorIdent.getWhen),
+      authorDate = new DateTime(jGitCommit.getAuthorIdent.getWhen),
+      commitDate = new DateTime(jGitCommit.getCommitTime * 1000l),
       jGitCommit.getParents.map(_.toObjectId.name()).toList,
       files)
   }
