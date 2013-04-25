@@ -36,12 +36,10 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpoi
     val messageBody = extractNotEmptyString("body")
     val fileNameOpt = (parsedBody \ "fileName").extractOpt[String]
     val lineNumberOpt = (parsedBody \ "lineNumber").extractOpt[Int]
+    val commitIdParam = params("id")
     (fileNameOpt, lineNumberOpt) match {
-      case (None, None) => NewEntireCommitComment(new ObjectId(params("id")), new ObjectId(user.id), messageBody)
-      case (Some(fileName), Some(lineNumber)) => {
-        val comment = NewEntireCommitComment(new ObjectId(params("id")), new ObjectId(user.id), messageBody)
-        NewInlineCommitComment(comment, fileName, lineNumber)
-      }
+      case (None, None) => NewEntireCommitComment(new ObjectId(commitIdParam), new ObjectId(user.id), messageBody)
+      case (Some(fileName), Some(lineNumber)) => NewInlineCommitComment(new ObjectId(commitIdParam), new ObjectId(user.id), messageBody, fileName, lineNumber)
       case _ => halt(400, "File name and line number must be present for inline comment")
     }
   }

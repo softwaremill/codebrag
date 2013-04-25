@@ -4,6 +4,14 @@ import org.bson.types.ObjectId
 
 abstract sealed class NewComment(val commitId: ObjectId, val authorId: ObjectId, val message: String)
 
-case class NewEntireCommitComment(override val commitId: ObjectId, override val authorId: ObjectId, override val message: String) extends  NewComment(commitId, authorId, message)
+case class NewEntireCommitComment(
+                                   override val commitId: ObjectId,
+                                   override val authorId: ObjectId,
+                                   override val message: String) extends  NewComment(commitId, authorId, message)
 
-case class NewInlineCommitComment(comment: NewEntireCommitComment, fileName: String, lineNumber: Int) extends NewComment(comment.commitId, comment.authorId, comment.message)
+case class NewInlineCommitComment(
+                                   override val commitId: ObjectId,
+                                   override val authorId: ObjectId,
+                                   override val message: String,
+                                   fileName: String,
+                                   lineNumber: Int) extends  NewComment(commitId, authorId, message)

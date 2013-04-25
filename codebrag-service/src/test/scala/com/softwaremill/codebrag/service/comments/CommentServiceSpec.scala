@@ -20,6 +20,7 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
   val AuthorId = ObjectIdTestUtils.oid(100)
   val CommitId = ObjectIdTestUtils.oid(200)
   val CommentForCommit = NewEntireCommitComment(CommitId, AuthorId, "new comment message")
+  val InlineCommentForCommit = NewInlineCommitComment(CommitId, AuthorId, "new inline comment message", "test_1.txt", 20)
 
   override def beforeEach() {
     commentDaoMock = mock[CommitCommentDAO]
@@ -51,14 +52,13 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
 
   it should "return created inline comment as a result" in {
     // given
-    val inlineComment = NewInlineCommitComment(CommentForCommit, "test_1.txt", 20)
 
     // when
-    val savedComment = commentService.addCommentToCommit(inlineComment).asInstanceOf[InlineCommitComment]
+    val savedComment = commentService.addCommentToCommit(InlineCommentForCommit).asInstanceOf[InlineCommitComment]
 
     // then
-    savedComment.lineNumber should equal(inlineComment.lineNumber)
-    savedComment.fileName should equal(inlineComment.fileName)
+    savedComment.lineNumber should equal(InlineCommentForCommit.lineNumber)
+    savedComment.fileName should equal(InlineCommentForCommit.fileName)
   }
 
 }
