@@ -10,7 +10,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.builders.CommentAssembler
 import org.scalatest.mock.MockitoSugar
 
-class MongoCommentListFinderSpec extends FlatSpecWithRemoteMongo with BeforeAndAfterEach with ShouldMatchers with CommentListFinderVerifyHelpers {
+class MongoCommentListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers with CommentListFinderVerifyHelpers {
 
   val userDao = new MongoUserDAO
   val commentDao = new MongoCommitCommentDAO
