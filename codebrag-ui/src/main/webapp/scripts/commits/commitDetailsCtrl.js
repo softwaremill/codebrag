@@ -13,6 +13,10 @@ angular.module('codebrag.commits')
             })
         };
 
+        $scope.toggleInlineCommentForm = function(line) {
+            line.showCommentForm = (line.commentCount == 0) && !line.showCommentForm;
+        };
+
         $scope.submitInlineComment = function(content, file, line, lineIndex) {
             var comment = {
                 commitId: commitId,
@@ -21,10 +25,10 @@ angular.module('codebrag.commits')
                 lineNumber: lineIndex
             };
             Comments.save(comment, function (commentResponse) {
+                line.showCommentForm = false;
                 file.commentCount++;
-                var responseComment = commentResponse.comment;
                 line.commentCount++;
-                line.comments.push(responseComment);
+                line.comments.push(commentResponse.comment);
                 $scope.$broadcast('codebrag:commentCreated');
             });
         };

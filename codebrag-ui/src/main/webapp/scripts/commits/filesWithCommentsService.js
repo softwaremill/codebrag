@@ -24,6 +24,7 @@ angular.module('codebrag.commits')
 
                 function _putCommentsInLine(line, index) {
                     line.commentCount = 0;
+                    line.comments = [];
                     if (inlineCommentsForFile != undefined) {
                         var commentsForLine = _.find(inlineCommentsForFile.lineComments, function (commentList) {
                             return commentList.lineNumber == index;
@@ -35,6 +36,7 @@ angular.module('codebrag.commits')
                         }
                     }
                     line.hasComments = line.commentCount > 0;
+                    line.showCommentForm = false;
                 }
 
                 function _isCommentListForFile(commentList) {

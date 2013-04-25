@@ -22,7 +22,7 @@ describe("filesWithCommentsService", function () {
         expect(files.data[0].commentCount).toBe(0);
         _.forEach(files.data[0].lines, function (line) {
             expect(line.commentCount).toBe(0);
-            expect(line.comments).toBeUndefined();
+            expect(line.comments.length).toBe(0);
         });
     }));
 
@@ -39,7 +39,7 @@ describe("filesWithCommentsService", function () {
         // Then
         expect(files.data[0].commentCount).toBe(3);
         expect(files.data[0].lines[0].commentCount).toBe(0);
-        expect(files.data[0].lines[0].comments).toBeUndefined();
+        expect(files.data[0].lines[0].comments.length).toBe(0);
 
     }));
 
