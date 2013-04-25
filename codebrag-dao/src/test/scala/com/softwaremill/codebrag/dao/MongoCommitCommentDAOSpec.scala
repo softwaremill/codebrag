@@ -2,11 +2,11 @@ package com.softwaremill.codebrag.dao
 
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{InlineCommitComment, EntireCommitComment}
+import com.softwaremill.codebrag.domain.EntireCommitComment
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
-import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
+import com.softwaremill.codebrag.builders.CommentAssembler._
 
 class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
@@ -21,7 +21,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   }
 
   it should "store new comment for entire commit" in {
-    val newComment = entireCommitCommentFor(CommitId)
+    val newComment = commitCommentFor(CommitId).get
 
     // when
     commentDao.save(newComment)
@@ -33,7 +33,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   }
 
   it should "store new line comment for commit" in {
-    val lineComment = inlineCommentFor(CommitId, "myfile.txt", 20)
+    val lineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("myfile.txt", 20).get
 
     // when
     commentDao.save(lineComment)
@@ -48,8 +48,8 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
 
   it should "load only comments for commit id" in {
     // given
-    val fixtureCommentList = createCommentsForCommitId(CommitId, 3)
-    val additionalComments = createCommentsForCommitId(AnotherCommitId, 5)
+    val fixtureCommentList = createFewCommentsFor(CommitId, 3)
+    val additionalComments = createFewCommentsFor(AnotherCommitId, 5)
     fixtureCommentList.foreach(commentDao.save(_))
     additionalComments.foreach(commentDao.save(_))
 
@@ -62,12 +62,12 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
 
   it should "find only comments for entire commit" in {
     // given
-    val comment = entireCommitCommentFor(CommitId)
-    val inlineComment = inlineCommentFor(CommitId, "text.txt", 10)
-
-    // when
+    val comment = commitCommentFor(CommitId).get
+    val inlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("text.txt", 10).get
     commentDao.save(comment)
     commentDao.save(inlineComment)
+
+    // when
     val comments = commentDao.findCommentsForEntireCommit(CommitId)
 
     // then
@@ -77,12 +77,12 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
 
   it should "find only inline comments for commit" in {
     // given
-    val comment = entireCommitCommentFor(CommitId)
-    val inlineComment = inlineCommentFor(CommitId, "text.txt", 10)
-
-    // when
+    val comment = commitCommentFor(CommitId).get
+    val inlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("text.txt", 10).get
     commentDao.save(comment)
     commentDao.save(inlineComment)
+
+    // when
     val comments = commentDao.findInlineCommentsForCommit(CommitId)
 
     // then
@@ -92,13 +92,13 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
 
   it should "find all comments in thread containing given comment (general or for the same file and line)" in {
     // given general comments
-    val commitComments = createCommentsForCommitId(CommitId, 3)
+    val commitComments = createFewCommentsFor(CommitId, 3)
     commitComments.foreach(commentDao.save)
 
     // and some inline comments
-    val firstInlineComment = inlineCommentFor(CommitId, "file_1.txt", 10)
-    val secondInlineComment = inlineCommentFor(CommitId, "file_1.txt", 10)
-    val anotherInlineComment = inlineCommentFor(CommitId, "file_2.txt", 20)
+    val firstInlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("file_1.txt", 10).get
+    val secondInlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("file_1.txt", 10).get
+    val anotherInlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("file_2.txt", 20).get
     commentDao.save(firstInlineComment)
     commentDao.save(secondInlineComment)
     commentDao.save(anotherInlineComment)
@@ -112,15 +112,9 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     generalCommentsRelated.toSet should be(commitComments.toSet)
   }
 
-  private def createCommentsForCommitId(commitId: ObjectId, howMany: Int): Seq[EntireCommitComment] = {
-    (1 to howMany).map {i => entireCommitCommentFor(commitId, i)}.toSeq
+
+  private def createFewCommentsFor(commitId: ObjectId, howMany: Int): Seq[EntireCommitComment] = {
+    (1 to howMany).map{i => commitCommentFor(commitId).get}.toSeq
   }
 
-  private def inlineCommentFor(commitId: ObjectId, fileName: String, lineNumber: Int) = {
-      InlineCommitComment(id = new ObjectId(), commitId, authorId = new ObjectId(), s"Inline comment for commit $commitId", new DateTime(), fileName, lineNumber)
-  }
-
-  private def entireCommitCommentFor(commitId: ObjectId, i: Int = 0): EntireCommitComment = {
-    EntireCommitComment(id = new ObjectId(), commitId, authorId = new ObjectId(), s"Comment $i for commit $commitId", new DateTime())
-  }
 }
