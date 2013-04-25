@@ -2,7 +2,7 @@ angular.module('codebrag.commits')
 
     .factory('commitsListService', function($resource, $q, $http) {
 
-        var service = new codebrag.AsyncCollection();
+        var commits = new codebrag.AsyncCollection();
 
         function _httpRequest(method, id) {
             var commitsUrl = 'rest/commits/' + (id || '');
@@ -13,32 +13,32 @@ angular.module('codebrag.commits')
             var requestPromise = _httpRequest('GET').then(function(response) {
                 return response.data.commits;
             });
-            service.loadElements(requestPromise);
+            commits.loadElements(requestPromise);
     	}
 
         function syncCommits() {
             _httpRequest('POST', 'sync').success(function(response) {
-                service.elements.length = 0;
+                commits.elements.length = 0;
                 _.forEach(response.commits, function(commit) {
-                    service.elements.push(commit);
+                    commits.elements.push(commit);
                 });
             });
         }
 
         function allCommits() {
-            return service.elements;
+            return commits.elements;
         }
 
         function removeCommit(commitId) {
             var requestPromise = _httpRequest('DELETE', commitId);
-            return service.removeElement(function(el) {
+            return commits.removeElement(function(el) {
                 return el.id === commitId;
             }, requestPromise);
         }
 
         function removeCommitAndGetNext(commitId) {
             var requestPromise = _httpRequest('DELETE', commitId);
-            return service.removeElementAndGetNext(function(el) {
+            return commits.removeElementAndGetNext(function(el) {
                 return el.id === commitId;
             }, requestPromise);
         }

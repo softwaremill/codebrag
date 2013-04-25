@@ -2,7 +2,7 @@ angular.module('codebrag.followups')
 
     .factory('followupsListService', function($resource, $q, $http) {
 
-        var collection = new codebrag.AsyncCollection();
+        var followups = new codebrag.AsyncCollection();
 
         function _httpRequest(method, id) {
             var followupsUrl = 'rest/followups/' + (id || '');
@@ -13,23 +13,23 @@ angular.module('codebrag.followups')
             var requestPromise = _httpRequest('GET').then(function(response) {
                 return response.data.followups;
             });
-            collection.loadElements(requestPromise);
+            followups.loadElements(requestPromise);
     	}
 
         function allFollowups() {
-            return collection.elements;
+            return followups.elements;
         }
 
         function removeFollowup(commitId) {
             var requestPromise = _httpRequest('DELETE', commitId);
-            return collection.removeElement(function(el) {
+            return followups.removeElement(function(el) {
                 return el.commit.commitId === commitId;
             }, requestPromise);
         }
 
         function removeFollowupAndGetNext(commitId) {
             var requestPromise = _httpRequest('DELETE', commitId);
-            return collection.removeElementAndGetNext(function(el) {
+            return followups.removeElementAndGetNext(function(el) {
                 return el.commit.commitId === commitId;
             }, requestPromise);
         }
