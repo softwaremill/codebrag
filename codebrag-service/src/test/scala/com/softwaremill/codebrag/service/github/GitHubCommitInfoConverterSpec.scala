@@ -40,7 +40,7 @@ class GitHubCommitInfoConverterSpec extends FunSpec with GivenWhenThen with Shou
       commitInfo.message should equal(message)
       commitInfo.authorName should equal(authorName)
       commitInfo.committerName should equal(committerName)
-      commitInfo.date should equal(authoredDate)
+      commitInfo.authorDate should equal(authoredDate)
       commitInfo.commitDate should equal(commitDate)
       commitInfo.parents should equal(parents)
     }

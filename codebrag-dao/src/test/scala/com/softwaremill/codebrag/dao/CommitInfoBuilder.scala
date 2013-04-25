@@ -53,7 +53,7 @@ class CommitInfoAssembler(var commit: CommitInfo) {
   }
 
   def withDate(newDate: DateTime) = {
-    commit = commit.copy(date = newDate)
+    commit = commit.copy(authorDate = newDate)
     this
   }
 

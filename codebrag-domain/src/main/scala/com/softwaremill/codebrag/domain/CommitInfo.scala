@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.domain
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 
-case class CommitInfo(id: ObjectId, sha: String, message: String, authorName: String, committerName: String, date: DateTime,
+case class CommitInfo(id: ObjectId, sha: String, message: String, authorName: String, committerName: String, authorDate: DateTime,
                       commitDate: DateTime, parents: List[String], files: List[CommitFileInfo]) {
 
   def createReviewTasksFor(users: List[ObjectId]): List[CommitReviewTask] = {
@@ -14,9 +14,9 @@ case class CommitInfo(id: ObjectId, sha: String, message: String, authorName: St
 }
 
 object CommitInfo {
-  def apply(sha: String, message: String, authorName: String, committerName: String, date: DateTime,
+  def apply(sha: String, message: String, authorName: String, committerName: String, authorDate: DateTime,
             commitDate: DateTime, parents: List[String], files: List[CommitFileInfo]) = {
-    new CommitInfo(new ObjectId(), sha, message, authorName, committerName, date, commitDate, parents, files)
+    new CommitInfo(new ObjectId(), sha, message, authorName, committerName, authorDate, commitDate, parents, files)
   }
 }
 

@@ -25,7 +25,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
   }
 
   def findLastSha(): Option[String] = {
-    CommitInfoRecord.orderDesc(_.date).get().map(_.sha.get)
+    CommitInfoRecord.orderDesc(_.authorDate).get().map(_.sha.get)
   }
 
   def findAllSha(): Set[String] = {
@@ -35,7 +35,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
   private object CommitInfoImplicits {
 
     implicit def toCommitInfo(record: CommitInfoRecord): CommitInfo = {
-      CommitInfo(record.id.get, record.sha.get, record.message.get, record.authorName.get, record.committerName.get, new DateTime(record.date.get),
+      CommitInfo(record.id.get, record.sha.get, record.message.get, record.authorName.get, record.committerName.get, new DateTime(record.authorDate.get),
         new DateTime(record.committerDate.get), record.parents.get, record.files.get.toList)
     }
 
@@ -51,7 +51,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
         .message(commit.message)
         .authorName(commit.authorName)
         .committerName(commit.committerName)
-        .date(commit.date.toDate)
+        .authorDate(commit.authorDate.toDate)
         .committerDate(commit.commitDate.toDate)
         .parents(commit.parents)
         .files(commit.files)
@@ -86,7 +86,7 @@ class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with ObjectIdPk[Com
 
   object committerName extends LongStringField(this)
 
-  object date extends DateField(this)
+  object authorDate extends DateField(this)
 
   object committerDate extends DateField(this)
 

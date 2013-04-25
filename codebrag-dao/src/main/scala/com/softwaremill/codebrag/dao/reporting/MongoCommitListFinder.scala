@@ -10,7 +10,7 @@ class MongoCommitListFinder extends CommitListFinder {
   override def findCommitsToReviewForUser(userId: ObjectId) = {
     val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
     val commitIds = userReviewTasks.map(_.commitId.get).toSet
-    val commits = projectionQuery.where(_.id in commitIds).orderDesc(_.date).fetch()
+    val commits = projectionQuery.where(_.id in commitIds).orderDesc(_.authorDate).fetch()
     CommitListDTO(commits.map(recordToDto(_)))
   }
 
