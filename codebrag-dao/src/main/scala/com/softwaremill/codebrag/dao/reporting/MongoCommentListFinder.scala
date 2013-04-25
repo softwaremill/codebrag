@@ -9,6 +9,7 @@ import com.softwaremill.codebrag.domain.{CommentBase, InlineCommitComment, Entir
 class MongoCommentListFinder(userDao: UserDAO = null) extends CommentListFinder {
 
 
+  @deprecated("Will be removed when inline comments are finished")
   override def findAllForCommit(commitId: ObjectId) = {
     val commentRecords = CommentRecord.where(_.commitId eqs commitId).fetch()
     CommentListDTO(buildCommentsFromRecord(commentRecords))
@@ -43,8 +44,8 @@ class MongoCommentListFinder(userDao: UserDAO = null) extends CommentListFinder 
     byFileAndLineNumber.map(forFile => {
       val lines = forFile._2.map(forLine => {
         LineCommentsView(forLine._1, forLine._2.map({ line =>
-          val authorName = findCommenterName(commentersCached, line.commitComment.authorId)
-          SingleCommentView(line.commitComment.id.toString, authorName, line.commitComment.message, line.commitComment.postingTime.toDate)
+          val authorName = findCommenterName(commentersCached, line.authorId)
+          SingleCommentView(line.id.toString, authorName, line.message, line.postingTime.toDate)
         }))
       }).toList
       FileCommentsView(forFile._1, lines)

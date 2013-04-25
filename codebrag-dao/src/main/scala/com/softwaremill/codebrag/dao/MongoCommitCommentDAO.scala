@@ -8,19 +8,22 @@ import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
 import net.liftweb.record.field.{EnumField, IntField}
 
+
 class MongoCommitCommentDAO extends CommitCommentDAO {
+
+  import CommentRecord.CommentType._
 
   override def save(comment: CommentBase) {
     CommentToRecordBuilder.buildFrom(comment).save
   }
 
   override def findInlineCommentsForCommit(commitId: ObjectId) = {
-    val inlineCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.commentType eqs CommentRecord.CommentType.Inline)
+    val inlineCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.commentType eqs Inline)
     inlineCommentsQuery.orderAsc(_.date).fetch().map(RecordToCommentBuilder.buildFrom(_).asInstanceOf[InlineCommitComment])
   }
 
   override def findCommentsForEntireCommit(commitId: ObjectId) = {
-    val commitCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.commentType eqs CommentRecord.CommentType.Commit)
+    val commitCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.commentType eqs Commit)
     commitCommentsQuery.orderAsc(_.date).fetch().map(RecordToCommentBuilder.buildFrom(_).asInstanceOf[EntireCommitComment])
   }
 
@@ -36,28 +39,33 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
 
   private object CommentToRecordBuilder {
 
+    import CommentRecord.CommentType._
+
     def buildFrom(comment: CommentBase) = {
       comment match {
-        case c: InlineCommitComment => inlineCommentToCommentRecord(c)
-        case c: EntireCommitComment => commentToCommentRecord(c)
+        case c: InlineCommitComment => inlineCommitCommentToRecord(c)
+        case c: EntireCommitComment => entireCommitCommentToRecord(c)
       }
     }
 
-    private def commentToCommentRecord(comment: EntireCommitComment) = {
+    private def commentBaseToRecord(comment: CommentBase) = {
       CommentRecord.createRecord
         .id(comment.id)
         .commitId(comment.commitId)
         .authorId(comment.authorId)
         .message(comment.message)
         .date(comment.postingTime.toDate)
-        .commentType(CommentRecord.CommentType.Commit)
     }
 
-    private def inlineCommentToCommentRecord(inlineComment: InlineCommitComment) = {
-      commentToCommentRecord(inlineComment.commitComment)
+    private def entireCommitCommentToRecord(comment: EntireCommitComment) = {
+        commentBaseToRecord(comment).commentType(Commit)
+    }
+
+    private def inlineCommitCommentToRecord(inlineComment: InlineCommitComment) = {
+      commentBaseToRecord(inlineComment)
         .fileName(inlineComment.fileName)
         .lineNumber(inlineComment.lineNumber)
-        .commentType(CommentRecord.CommentType.Inline)
+        .commentType(Inline)
     }
 
   }
@@ -84,7 +92,14 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
     }
 
     private def recordToInlineComment(record: CommentRecord): InlineCommitComment = {
-      InlineCommitComment(recordToComment(record), record.fileName.valueBox.get, record.lineNumber.valueBox.get)
+      InlineCommitComment(
+        record.id.get,
+        record.commitId.get,
+        record.authorId.get,
+        record.message.get,
+        new DateTime(record.date.get),
+        record.fileName.valueBox.get,
+        record.lineNumber.valueBox.get)
     }
 
   }

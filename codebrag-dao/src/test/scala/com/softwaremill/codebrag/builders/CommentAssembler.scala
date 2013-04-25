@@ -7,16 +7,16 @@ import com.softwaremill.codebrag.domain.{InlineCommitComment, EntireCommitCommen
 object CommentAssembler {
 
   private val entireCommitCommentBase = new EntireCommitComment(new ObjectId, new ObjectId, new ObjectId, "Comment message", DateTime.now)
-  private val inlineCommitCommentBase = InlineCommitComment(entireCommitCommentBase, "file_1.txt", 1)
+  private val inlineCommitCommentBase = InlineCommitComment(new ObjectId, new ObjectId, new ObjectId, "Inline comment message", DateTime.now, "file_1.txt", 1)
 
   def commitCommentFor(commitId: ObjectId) = {
     new EntireCommitCommentAssembler(entireCommitCommentBase.copy(commitId = commitId))
   }
 
   def inlineCommentFor(commitId: ObjectId) = {
-    val base = entireCommitCommentBase.copy(commitId = commitId)
-    new InlineCommitCommentAssembler(inlineCommitCommentBase.copy(commitComment = base))
+    new InlineCommitCommentAssembler(inlineCommitCommentBase.copy(commitId = commitId))
   }
+
 
   class EntireCommitCommentAssembler(var base: EntireCommitComment) {
 
@@ -24,7 +24,6 @@ object CommentAssembler {
       base = base.copy(message = newMessage)
       this
     }
-
 
     def withId(newId: ObjectId) = {
       base = base.copy(id = newId)
@@ -63,17 +62,32 @@ object CommentAssembler {
     }
 
     def withMessage(newMessage: String) = {
-      base = base.copy(commitComment = base.commitComment.copy(message = newMessage))
+      base = base.copy(message = newMessage)
+      this
+    }
+
+    def withId(newId: ObjectId) = {
+      base = base.copy(id = newId)
+      this
+    }
+
+    def withCommitId(newId: ObjectId) = {
+      base = base.copy(id = newId)
+      this
+    }
+
+    def withDate(newDate: DateTime) = {
+      base = base.copy(postingTime = newDate)
       this
     }
 
     def withAuthorId(newAuthorId: ObjectId) = {
-      base = base.copy(commitComment = base.commitComment.copy(authorId = newAuthorId))
+      base = base.copy(authorId = newAuthorId)
       this
     }
 
     def postedAt(newDate: DateTime) = {
-      base = base.copy(commitComment = base.commitComment.copy(postingTime = newDate))
+      base = base.copy(postingTime = newDate)
       this
     }
 

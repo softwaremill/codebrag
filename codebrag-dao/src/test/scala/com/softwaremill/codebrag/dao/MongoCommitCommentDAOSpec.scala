@@ -21,7 +21,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   }
 
   it should "store new comment for entire commit" in {
-    val newComment = commentForCommit(CommitId)
+    val newComment = entireCommitCommentFor(CommitId)
 
     // when
     commentDao.save(newComment)
@@ -33,15 +33,15 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   }
 
   it should "store new line comment for commit" in {
-    val lineComment = InlineCommitComment(commentForCommit(CommitId), "myfile.txt", 20)
+    val lineComment = inlineCommentFor(CommitId, "myfile.txt", 20)
 
     // when
     commentDao.save(lineComment)
-    val comments = CommentRecord.where(_.id eqs lineComment.commitComment.id).and(_.commitId eqs lineComment.commitComment.commitId).fetch()
+    val comments = CommentRecord.where(_.id eqs lineComment.id).and(_.commitId eqs lineComment.commitId).fetch()
 
     // then
     comments.size should be(1)
-    comments.head.message.get should equal(lineComment.commitComment.message)
+    comments.head.message.get should equal(lineComment.message)
     comments.head.fileName.valueBox.get should equal(lineComment.fileName)
     comments.head.lineNumber.valueBox.get should equal(lineComment.lineNumber)
   }
@@ -62,8 +62,8 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
 
   it should "find only comments for entire commit" in {
     // given
-    val comment = commentForCommit(CommitId)
-    val inlineComment = InlineCommitComment(comment, "test.txt", 10)
+    val comment = entireCommitCommentFor(CommitId)
+    val inlineComment = inlineCommentFor(CommitId, "text.txt", 10)
 
     // when
     commentDao.save(comment)
@@ -77,8 +77,8 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
 
   it should "find only inline comments for commit" in {
     // given
-    val comment = commentForCommit(CommitId)
-    val inlineComment = InlineCommitComment(comment, "test.txt", 10)
+    val comment = entireCommitCommentFor(CommitId)
+    val inlineComment = inlineCommentFor(CommitId, "text.txt", 10)
 
     // when
     commentDao.save(comment)
@@ -96,9 +96,9 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     commitComments.foreach(commentDao.save)
 
     // and some inline comments
-    val firstInlineComment = createInlineCommentForCommitId(CommitId, "file_1.txt", 10)
-    val secondInlineComment = createInlineCommentForCommitId(CommitId, "file_1.txt", 10)
-    val anotherInlineComment = createInlineCommentForCommitId(CommitId, "file_2.txt", 20)
+    val firstInlineComment = inlineCommentFor(CommitId, "file_1.txt", 10)
+    val secondInlineComment = inlineCommentFor(CommitId, "file_1.txt", 10)
+    val anotherInlineComment = inlineCommentFor(CommitId, "file_2.txt", 20)
     commentDao.save(firstInlineComment)
     commentDao.save(secondInlineComment)
     commentDao.save(anotherInlineComment)
@@ -113,15 +113,14 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   }
 
   private def createCommentsForCommitId(commitId: ObjectId, howMany: Int): Seq[EntireCommitComment] = {
-    (1 to howMany).map {i => commentForCommit(commitId, i)}.toSeq
+    (1 to howMany).map {i => entireCommitCommentFor(commitId, i)}.toSeq
   }
 
-  private def createInlineCommentForCommitId(commitId: ObjectId, fileName: String, lineNumber: Int) = {
-      val comment = commentForCommit(commitId)
-      InlineCommitComment(comment, fileName, lineNumber)
+  private def inlineCommentFor(commitId: ObjectId, fileName: String, lineNumber: Int) = {
+      InlineCommitComment(id = new ObjectId(), commitId, authorId = new ObjectId(), s"Inline comment for commit $commitId", new DateTime(), fileName, lineNumber)
   }
 
-  private def commentForCommit(commitId: ObjectId, i: Int = 0): EntireCommitComment = {
+  private def entireCommitCommentFor(commitId: ObjectId, i: Int = 0): EntireCommitComment = {
     EntireCommitComment(id = new ObjectId(), commitId, authorId = new ObjectId(), s"Comment $i for commit $commitId", new DateTime())
   }
 }

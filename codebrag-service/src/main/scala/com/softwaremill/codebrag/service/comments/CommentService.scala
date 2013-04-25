@@ -17,7 +17,7 @@ class CommentService(commentDao: CommitCommentDAO)(implicit clock: Clock) {
   private def toDomainObject(newComment: NewComment): CommentBase = {
     newComment match {
       case c: NewEntireCommitComment => EntireCommitComment(new ObjectId, c.commitId, c.authorId, c.message, clock.currentDateTimeUTC())
-      case c: NewInlineCommitComment => InlineCommitComment(toDomainObject(c.comment).asInstanceOf[EntireCommitComment], c.fileName, c.lineNumber)
+      case c: NewInlineCommitComment => InlineCommitComment(new ObjectId, c.commitId, c.authorId, c.message, clock.currentDateTimeUTC(), c.fileName, c.lineNumber)
     }
   }
 }

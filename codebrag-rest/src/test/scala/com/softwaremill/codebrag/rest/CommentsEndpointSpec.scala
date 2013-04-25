@@ -67,7 +67,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
   "POST /commits/:id/comments" should "create inline comment for commit" in {
     // given
     val body = "{\"body\": \"This is comment body\", \"fileName\": \"test_file.txt\", \"lineNumber\": 20}"
-    val dummyComment = InlineCommitComment(EntireCommitComment(new ObjectId, commitId, user.id, "This is comment body", DateTime.now), "test_file.txt", 20)
+    val dummyComment = InlineCommitComment(new ObjectId, commitId, user.id, "This is comment body", DateTime.now, "test_file.txt", 20)
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
     when(commentActivity.addCommentToCommit(any[NewInlineCommitComment])).thenReturn(dummyComment)
