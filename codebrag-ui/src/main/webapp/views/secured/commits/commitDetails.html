@@ -1,81 +1,86 @@
 <div ng-controller="CommitDetailsCtrl">
-    <div class="row">
-        <div class="span7">
-            <h3 ng-bind-html-unsafe="currentCommit.message"></h3>
-            <p>{{currentCommit.sha}}</p>
-            <p>{{currentCommit.date | relativeDate}} by {{currentCommit.authorName}}</p>
-            <button class="btn btn-mini btn-success" ng-click="markCurrentCommitAsReviewed()"><i class="icon-ok"></i></button>
+    <div>
+        <div class="row">
+            <div class="span7">
+                <h3 ng-bind-html-unsafe="currentCommit.message"></h3>
+                <p>{{currentCommit.sha}}</p>
+                <p>{{currentCommit.date | relativeDate}} by {{currentCommit.authorName}}</p>
+                <button class="btn btn-mini btn-success" ng-click="markCurrentCommitAsReviewed()"><i class="icon-ok"></i></button>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="span7">
-            <h4>Commit files</h4>
+        <div class="row">
+            <div class="span7">
+                <h4>Commit files</h4>
+            </div>
         </div>
-    </div>
-    <div class="row" ng-repeat="file in files">
-        <div class="span7">
-            <div class="row">
-                <div class="well">
+        <div class="row" ng-repeat="file in files">
+            <div class="span7">
+                <div class="row">
+                    <div class="well">
                     <span ng-switch on="file.status">
                         <span ng-switch-when="added">+</span>
                         <span ng-switch-when="removed">-</span>
                         <span ng-switch-default></span>
                     </span>
-                    <span>{{file.filename}}</span>
+                        <span>{{file.filename}}</span>
+                    </div>
                 </div>
-            </div>
-            <div class="row diff-file-data">
-                <table>
-                    <tbody ng-repeat="line in file.lines">
-                    <tr>
-                        <td class="diff-table-line-number-cell" ng-switch on="line.lineType">
-                            <span ng-switch-when="header">...</span>
-                            <span ng-switch-when="added"></span>
-                            <span ng-switch-default>{{line.lineNumberOriginal}}</span>
-                        </td>
-                        <td class="diff-table-line-number-cell" ng-switch on="line.lineType">
-                            <span ng-switch-when="header">...</span>
-                            <span ng-switch-when="removed"></span>
-                            <span ng-switch-default>{{line.lineNumberChanged}}</span>
-                        </td>
-                        <td class="diff-{{line.lineType}} diff-line" ng-bind-html-unsafe="line.line"></td>
-                    </tr>
-                    <tr ng-show="line.hasComments">
-                        <td colspan="3">
-                            <div class="span7 inline-comments-container">
-                                <h5>Comments</h5>
-                                <div class="well span6" ng-repeat="comment in line.comments">
-                                    {{comment.time | relativeDate}} by <strong>{{comment.authorName}}</strong>:
-                                    <br/>
-                                    <br/>
-                                    <div>
-                                        <markdown-to-html content="comment.message"></markdown-to-html>
-                                    </div>
-                                </div>
-                                <markdown-comment-form submit="submitInlineComment(content, file, line, $index)"></markdown-comment-form>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="row">&nbsp;</div>
-    </div>
-    <div ng-controller="CommentCtrl">
-    <div class="row">
-        <div class="span7">
-            <div class="well" ng-repeat="comment in commentsList" style="width:90%">
-                {{comment.time | relativeDate}} by <strong>{{comment.authorName}}</strong>:
-                <br/>
-                <br/>
-                <div>
-                    <markdown-to-html content="comment.message"></markdown-to-html>
-                </div>
-            </div>
-            <markdown-comment-form submit="submitComment(content)"></markdown-comment-form>
-        </div>
-    </div>
+                <div class="row diff-file-data">
+                    <table>
+                        <tbody ng-repeat="line in file.lines">
+                        <tr>
+                            <td class="diff-table-line-number-cell" ng-switch on="line.lineType">
+                                <span ng-switch-when="header">...</span>
+                                <span ng-switch-when="added"></span>
+                                <span ng-switch-default>{{line.lineNumberOriginal}}</span>
+                            </td>
+                            <td class="diff-table-line-number-cell" ng-switch on="line.lineType">
+                                <span ng-switch-when="header">...</span>
+                                <span ng-switch-when="removed"></span>
+                                <span ng-switch-default>{{line.lineNumberChanged}}</span>
+                            </td>
+                            <td class="diff-{{line.lineType}} diff-line" ng-bind-html-unsafe="line.line"></td>
+                        </tr>
+                        <tr ng-show="line.hasComments">
+                            <td colspan="3">
+                                <div class="span7 inline-comments-container">
+                                    <h5>Comments</h5>
 
+                                    <div class="well span6" ng-repeat="comment in line.comments">
+                                        {{comment.time | relativeDate}} by <strong>{{comment.authorName}}</strong>:
+                                        <br/>
+                                        <br/>
+
+                                        <div>
+                                            <markdown-to-html content="comment.message"></markdown-to-html>
+                                        </div>
+                                    </div>
+                                    <markdown-comment-form submit="submitInlineComment(content, file, line, $index)"></markdown-comment-form>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+        </div>
+        <div>
+            <div class="row">
+                <div class="span7">
+                    <div class="well" ng-repeat="comment in generalComments" style="width:90%">
+                        {{comment.time | relativeDate}} by <strong>{{comment.authorName}}</strong>:
+                        <br/>
+                        <br/>
+
+                        <div>
+                            <markdown-to-html content="comment.message"></markdown-to-html>
+                        </div>
+                    </div>
+                    <markdown-comment-form submit="submitComment(content)"></markdown-comment-form>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>

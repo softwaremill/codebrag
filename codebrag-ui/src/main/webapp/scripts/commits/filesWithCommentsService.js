@@ -2,9 +2,10 @@ angular.module('codebrag.commits')
 
     .factory('filesWithCommentsService', function (commitFilesService, Comments) {
 
-        function loadAll(commitId) {
+        function loadAll(commitId, generalComments) {
             return commitFilesService.loadFilesForCommit(commitId).$then(function (files) {
                 Comments.query({id: commitId}, function (comments) {
+                    _.forEach(comments.comments, function(comment) {generalComments.push(comment)});
                     putInlineCommentsInFiles(files, comments.inlineComments);
                 });
                 return files.data;
