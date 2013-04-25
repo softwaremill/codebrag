@@ -25,7 +25,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
   }
 
   def findLastSha(): Option[String] = {
-    CommitInfoRecord.orderDesc(_.authorDate).get().map(_.sha.get)
+    CommitInfoRecord.orderDesc(_.committerDate).get().map(_.sha.get)
   }
 
   def findAllSha(): Set[String] = {

@@ -32,11 +32,15 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     commitsFound.commits should have size(2)
   }
 
-  it should "find commits starting from newest" in {
+  it should "find commits starting from newest commit date" in {
     // given
     val baseDate = DateTime.now()
-    val olderCommit = CommitInfoAssembler.randomCommit.withSha("111").withDate(baseDate).get
-    val newerCommit = CommitInfoAssembler.randomCommit.withSha("222").withDate(baseDate.plusSeconds(10)).get
+    val olderCommit = CommitInfoAssembler.randomCommit.withSha("111").
+      withCommitDate(baseDate).
+      withAuthorDate(baseDate.plusSeconds(11)).get
+    val newerCommit = CommitInfoAssembler.randomCommit.withSha("222").
+      withCommitDate(baseDate.plusSeconds(10)).
+      withAuthorDate(baseDate.plusSeconds(10)).get
     commitInfoDao.storeCommit(newerCommit)
     commitInfoDao.storeCommit(olderCommit)
     storeCommitReviewTasksFor(userId, olderCommit, newerCommit)

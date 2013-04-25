@@ -48,15 +48,15 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach w
     commitInfoDAO.findBySha(commit.sha) should be('defined)
   }
 
-  it should "retrieve commit with last author date" in {
+  it should "retrieve commit sha with last commit date" in {
     // given
     val date = new DateTime()
-    val expectedLastCommit = randomCommit.withCommitDate(date.minusDays(2)).withDate(date).get
-    commitInfoDAO.storeCommit(randomCommit.withCommitDate(date.minusHours(2)).withDate(date.minusHours(3)).get)
-    commitInfoDAO.storeCommit(randomCommit.withCommitDate(date.minusHours(12)).withDate(date.minusHours(13)).get)
+    val expectedLastCommit = randomCommit.withAuthorDate(date.minusDays(2)).withCommitDate(date).get
+    commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusHours(2)).withCommitDate(date.minusHours(3)).get)
+    commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusHours(12)).withCommitDate(date.minusHours(13)).get)
     commitInfoDAO.storeCommit(expectedLastCommit)
-    commitInfoDAO.storeCommit(randomCommit.withCommitDate(date.minusHours(6)).withDate(date.minusHours(8)).get)
-    commitInfoDAO.storeCommit(randomCommit.withCommitDate(date.minusHours(10)).withDate(date.minusHours(11)).get)
+    commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusHours(6)).withCommitDate(date.minusHours(8)).get)
+    commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusHours(10)).withCommitDate(date.minusHours(11)).get)
 
     // when
     val lastSha = commitInfoDAO.findLastSha()
