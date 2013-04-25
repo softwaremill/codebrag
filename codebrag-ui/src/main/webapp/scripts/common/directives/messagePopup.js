@@ -14,7 +14,7 @@ angular.module('codebrag.common.directives')
         return {
             restrict: "A",
             link: function (scope, element) {
-                var events = ['codebrag:httpError', 'codebrag:httpAuthError'];
+                var events = ['codebrag:httpError', 'codebrag:authError'];
                 _.forEach(events, function(event) {
                     scope.$on(event, function(event, data) {
                         displayPopupHandler(scope, element, data);

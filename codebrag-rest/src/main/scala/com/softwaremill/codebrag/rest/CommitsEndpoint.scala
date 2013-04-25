@@ -17,14 +17,17 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
   def commitListFinder: CommitListFinder
   def commitReviewTaksDao: CommitReviewTaskDAO
 
-  get("/", operation(getCommitsOperation)) {
+  before() {
     haltIfNotAuthenticated
+  }
+
+
+  get("/", operation(getCommitsOperation)) {
     fetchCommitsList()
   }
 
   post("/sync") {
     // synchronizes commits
-    haltIfNotAuthenticated
     implicit val idGenerator = new ObjectIdGenerator()
     val importer = importerFactory.createInstance(user.email)
     importer.importRepoCommits("softwaremill", "codebrag")

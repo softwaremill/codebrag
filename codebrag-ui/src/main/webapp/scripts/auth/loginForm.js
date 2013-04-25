@@ -10,6 +10,9 @@ angular.module("codebrag.auth")
                 scope.$watch(ifLoginRequired, function(newValue) {
                     scope.shouldDisplayLogin = newValue;
                 });
+                scope.$on('codebrag:loginRequired', function() {
+                    scope.shouldDisplayLogin = true;
+                });
                 function ifLoginRequired() {
                     return authService.isNotAuthenticated();
                 }
