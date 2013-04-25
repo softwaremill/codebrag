@@ -32,18 +32,17 @@ describe("CommitDetailsController", function () {
         $httpBackend.flush();
     }));
 
-    it('should load files and details for selected commit', inject(function ($controller, $stateParams, filesWithCommentsService) {
+    it('should load files and details for selected commit', inject(function ($controller, $stateParams, filesWithCommentsService, commitsListService) {
         // Given
         var scope = {};
         $stateParams.id = selectedCommitId;
         var expectedCommitDetails = {id: selectedCommitId, sha: '123'};
         var expectedCommitFiles = [{filename: 'file1.txt', lines: []}];
-        $httpBackend.whenGET(commitDetailsFor(selectedCommitId)).respond(200, expectedCommitDetails);
+        spyOn(commitsListService, 'loadCommitById').andReturn(expectedCommitDetails);
         spyOn(filesWithCommentsService, 'loadAll').andReturn(expectedCommitFiles);
 
         // When
         $controller('CommitDetailsCtrl', {$scope:scope});
-        $httpBackend.flush();
 
         //then
         expect(scope.files.length).toBe(expectedCommitFiles.length);

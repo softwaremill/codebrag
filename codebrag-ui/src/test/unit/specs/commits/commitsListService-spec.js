@@ -1,9 +1,9 @@
 'use strict';
 
-describe("CommitDetailsController", function () {
+describe("CommitsListService", function () {
 
     var $httpBackend;
-    var commitsListUrl = 'rest/commits';
+    var commitsListUrl = 'rest/commits/';
     var rootScope;
 
     beforeEach(module('codebrag.commits'));
@@ -32,11 +32,6 @@ describe("CommitDetailsController", function () {
 
         // Then
         expect(commitsListService.allCommits().length).toBe(loadedCommits.length - 1);
-    }));
-
-    xit('remove commit and return next from list', inject(function (commitsListService, $rootScope) {
-        // TODO: test chained promises
-        throw 'To be implemented';
     }));
 
     function commitUrl(id) {

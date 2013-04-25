@@ -20,7 +20,7 @@ describe("Commits Controller", function () {
     it('should fetch commits when controller starts', inject(function($controller) {
         // Given
         var scope = {};
-        $httpBackend.expectGET('rest/commits').respond();
+        $httpBackend.expectGET('rest/commits/').respond({commits: []});
 
         // When
         $controller('CommitsCtrl', {$scope: scope});
@@ -32,7 +32,7 @@ describe("Commits Controller", function () {
     it('should expose loading commits via scope', inject(function($controller, commitsListService) {
         // Given
         var scope = {};
-        $httpBackend.whenGET('rest/commits').respond(commitsList);
+        $httpBackend.whenGET('rest/commits/').respond(commitsList);
         $controller('CommitsCtrl', {$scope: scope});
 
         // When

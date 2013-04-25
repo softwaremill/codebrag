@@ -2,75 +2,51 @@ angular.module('codebrag.commits')
 
     .factory('commitsListService', function($resource, $q, $http) {
 
-    	var commits = [];
-		var commitsResource = $resource('rest/commits/:id', {id: "@id"});
+        var service = new codebrag.AsyncCollection();
 
-    	function loadCommitsFromServer() {
-            commitsResource.get(function(response) {
-                commits.length = 0;
-                _rewriteCommits(commits, response.commits);
-           });
-    	}
-
-        function _rewriteCommits(commits, loadedCommits) {
-            commits.length = 0;
-            _.forEach(loadedCommits, function(commit) {
-                commits.push(commit);
-            });
+        function _httpRequest(method, id) {
+            var commitsUrl = 'rest/commits/' + (id || '');
+            return $http({method: method, url: commitsUrl});
         }
 
+    	function loadCommitsFromServer() {
+            var requestPromise = _httpRequest('GET').then(function(response) {
+                return response.data.commits;
+            });
+            service.loadElements(requestPromise);
+    	}
+
         function syncCommits() {
-            $http({method: 'POST', url: 'rest/commits/sync'}).success(function(response) {
-                _rewriteCommits(commits, response.commits);
+            _httpRequest('POST').success(function(response) {
+                service.elements.length = 0;
+                _.forEach(response.commits, function(commit) {
+                    service.elements.push(commit);
+                });
             });
         }
 
         function allCommits() {
-            return commits;
+            return service.elements;
         }
 
         function removeCommit(commitId) {
-            return _removeFromServerAndLocally(commitId);
+            var requestPromise = _httpRequest('DELETE', commitId);
+            return service.removeElement(function(el) {
+                return el.id === commitId;
+            }, requestPromise);
         }
 
         function removeCommitAndGetNext(commitId) {
-            var currentCommitIndex = _findIndexById(commitId);
-            return _removeFromServerAndLocally(commitId).then(function() {
-                return _locateNextCommit(currentCommitIndex);
-            });
+            var requestPromise = _httpRequest('DELETE', commitId);
+            return service.removeElementAndGetNext(function(el) {
+                return el.id === commitId;
+            }, requestPromise);
         }
 
         function loadCommitById(commitId) {
-            return commitsResource.get({id: commitId});
-        }
-
-        function _removeFromServerAndLocally(commitId) {
-            var currentCommitIndex = _findIndexById(commitId);
-            var deferred = $q.defer();
-            commitsResource.remove({id: commitId}, function() {
-                commits.splice(currentCommitIndex, 1);
-                deferred.resolve();
-            }, function(err){
-                deferred.reject(err);
+            return _httpRequest('GET', commitId).then(function(response) {
+                return response.data;
             });
-            return deferred.promise;
-        }
-
-        function _findIndexById(commitId) {
-            var foundCommit = _.find(commits, function(element) {
-                return element.id === commitId;
-            });
-            return commits.indexOf(foundCommit);
-        }
-
-        function _locateNextCommit(currentCommitIndex) {
-            if(_.isEmpty(commits)) {
-                return null;
-            }
-            if(currentCommitIndex === 0) {
-                return commits[0];
-            }
-            return commits[currentCommitIndex - 1];
         }
 
         return {

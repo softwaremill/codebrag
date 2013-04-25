@@ -48,3 +48,5 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "followups/followupsResource.js");
 <!--commons -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/filters/dateFormatFilter.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/directives/messagePopup.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/AsyncCollection.js");
+
