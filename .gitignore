@@ -4,5 +4,6 @@
 .idea/
 target/
 *.log
+repos
 .DS_Store
 application.conf
