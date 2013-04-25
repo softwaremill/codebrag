@@ -7,12 +7,12 @@ import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.dao.UserDAO
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import com.softwaremill.codebrag.dao.reporting.{CommentListItemDTO, CommentListFinder}
+import com.softwaremill.codebrag.dao.reporting.{SingleCommentView, CommentListFinder}
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{InlineCommitComment, EntireCommitComment, Authentication, User}
 import org.scalatra.swagger.SwaggerEngine
-import org.mockito.{Matchers, ArgumentCaptor, Mockito}
+import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.service.comments.command.{NewInlineCommitComment, NewEntireCommitComment}
 import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterEach
@@ -98,7 +98,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {
       // then
       status should be(200)
-      asJson(AddCommentResponse(CommentListItemDTO(createdComment.id.toString, user.name, createdComment.message, createdComment.postingTime.toDate)))
+      asJson(AddCommentResponse(SingleCommentView(createdComment.id.toString, user.name, createdComment.message, createdComment.postingTime.toDate)))
     }
   }
 

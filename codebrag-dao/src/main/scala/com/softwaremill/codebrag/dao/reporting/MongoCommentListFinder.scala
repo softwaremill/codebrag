@@ -9,26 +9,6 @@ import com.softwaremill.codebrag.domain.{CommentBase, InlineCommitComment, Entir
 class MongoCommentListFinder(userDao: UserDAO = null) extends CommentListFinder {
 
 
-  @deprecated("Will be removed when inline comments are finished")
-  override def findAllForCommit(commitId: ObjectId) = {
-    val commentRecords = CommentRecord.where(_.commitId eqs commitId).fetch()
-    CommentListDTO(buildCommentsFromRecord(commentRecords))
-  }
-
-  private def buildCommentsFromRecord(records: List[CommentRecord]): List[CommentListItemDTO] = {
-
-    def buildCommentItem(record: CommentRecord, namesGroupedById: Map[ObjectId, String]): CommentListItemDTO = {
-      val userName = namesGroupedById.getOrElse(record.authorId.get, "Unknown user")
-      CommentListItemDTO(record.id.get.toString, userName, record.message.get, record.date.get)
-    }
-
-    val comments = records.sortBy(_.date.get)
-    val authorIdSet = comments.map(_.authorId.get).toSet
-    val idNamesPairs = UserRecord.select(_.id, _.name).where(_.id in authorIdSet).fetch()
-    val namesGroupedById = idNamesPairs.toMap
-    comments.map(buildCommentItem(_, namesGroupedById))
-  }
-
   def commentsForCommit(commitId: ObjectId): CommentsView = {
     val dao = new MongoCommitCommentDAO
     val comments = dao.findCommentsForEntireCommit(commitId)

@@ -1,12 +1,14 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.service.comments.command.{NewInlineCommitComment, NewEntireCommitComment}
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.{CommentsView, CommentListFinder, CommentListDTO, CommentListItemDTO}
+import com.softwaremill.codebrag.dao.reporting._
 import org.scalatra.swagger.SwaggerSupport
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import com.softwaremill.codebrag.dao.UserDAO
-import scala.deprecated
+import com.softwaremill.codebrag.dao.reporting.CommentsView
+import com.softwaremill.codebrag.service.comments.command.NewInlineCommitComment
+import scala.Some
+import com.softwaremill.codebrag.service.comments.command.NewEntireCommitComment
 
 trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpointSwaggerDefinition {
 
@@ -19,18 +21,12 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpoi
     haltIfNotAuthenticated()
     val savedComment = commentActivity.addCommentToCommit(extractComment)
     userDao.findById(savedComment.authorId) match {
-      case Some(user) => AddCommentResponse(CommentListItemDTO(savedComment.id.toString, user.name, savedComment.message, savedComment.postingTime.toDate))
+      case Some(user) => AddCommentResponse(SingleCommentView(savedComment.id.toString, user.name, savedComment.message, savedComment.postingTime.toDate))
       case None => halt(400, s"Invalid user id $savedComment.authorId")
     }
   }
 
   get("/:id/comments", operation(getCommentsOperation)) {
-    haltIfNotAuthenticated()
-    val commitId = params("id")
-    commentListFinder.findAllForCommit(new ObjectId(commitId))
-  }
-
-  get("/:id/comments/v2", operation(getCommentsOperationV2)) { // will replace the one above when frontend is finished
     haltIfNotAuthenticated()
     val commitId = params("id")
     commentListFinder.commentsForCommit(new ObjectId(commitId))
@@ -49,7 +45,6 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpoi
       case _ => halt(400, "File name and line number must be present for inline comment")
     }
   }
-
 }
 
 trait CommentsEndpointSwaggerDefinition extends SwaggerSupport {
@@ -61,16 +56,10 @@ trait CommentsEndpointSwaggerDefinition extends SwaggerSupport {
     .parameter(bodyParam[String]("fileName").description("File name for inline comment").optional)
     .parameter(bodyParam[Int]("lineNumber").description("Line number of file for inline comment").optional)
 
-  @deprecated("Will be removed on inline comments finish")
-  val getCommentsOperation = apiOperation[CommentListDTO]("getList")
-    .summary("Get a lists of comments")
-    .parameter(pathParam[String]("id").description("Commit identifier").required)
-
-  val getCommentsOperationV2 = apiOperation[CommentsView]("getList")
+  val getCommentsOperation = apiOperation[CommentsView]("getList")
     .summary("Get a lists of comments")
     .parameter(pathParam[String]("id").description("Commit identifier").required)
 
 }
 
-
-case class AddCommentResponse(comment: CommentListItemDTO)
+case class AddCommentResponse(comment: SingleCommentView)
