@@ -17,7 +17,7 @@ angular.module('codebrag.commits')
     	}
 
         function syncCommits() {
-            _httpRequest('POST').success(function(response) {
+            _httpRequest('POST', 'sync').success(function(response) {
                 service.elements.length = 0;
                 _.forEach(response.commits, function(commit) {
                     service.elements.push(commit);

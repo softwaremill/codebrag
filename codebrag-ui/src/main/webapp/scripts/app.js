@@ -81,7 +81,7 @@ angular.module('codebrag.followups')
             })
             .state('followups.details', {
                 url: '/{id}',
-                templateUrl: 'views/secured/commits/commitDetails.html'
+                templateUrl: 'views/secured/followups/followupDetails.html'
             })
     });
 

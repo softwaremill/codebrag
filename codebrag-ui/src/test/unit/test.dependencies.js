@@ -43,7 +43,7 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitFilesService.js");
 <!-- follow-ups -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "followups/followupsCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "followups/followupListItemCtrl.js");
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "followups/followupsResource.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "followups/followupsListService.js");
 
 <!--commons -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/filters/dateFormatFilter.js");

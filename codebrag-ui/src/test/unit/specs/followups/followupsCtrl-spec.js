@@ -33,7 +33,7 @@ describe("Follow-ups Controller", function () {
     it('should fetch follow-ups from server', inject(function ($controller) {
         // Given
         var scope = {};
-        $httpBackend.whenGET('rest/followups').respond(followupList);
+        $httpBackend.whenGET('rest/followups/').respond(followupList);
 
         // When
         $controller('FollowupsCtrl', {$scope: scope});
