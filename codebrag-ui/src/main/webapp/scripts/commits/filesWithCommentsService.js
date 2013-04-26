@@ -25,11 +25,11 @@ angular.module('codebrag.commits')
                 function _putCommentsInLine(line, index) {
                     line.commentCount = 0;
                     line.comments = [];
-                    if (inlineCommentsForFile != undefined) {
+                    if (!_.isUndefined(inlineCommentsForFile)) {
                         var commentsForLine = _.find(inlineCommentsForFile.lineComments, function (commentList) {
                             return commentList.lineNumber == index;
                         });
-                        if (commentsForLine != undefined) {
+                        if (!_.isUndefined(commentsForLine)) {
                             line.commentCount = commentsForLine.comments.length;
                             file.commentCount += line.commentCount;
                             line.comments = commentsForLine.comments;
