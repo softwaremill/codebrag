@@ -43,6 +43,66 @@ describe("filesWithCommentsService", function () {
 
     }));
 
+    it('should add comment data to line', inject(function (filesWithCommentsService) {
+        // Given
+
+        var files = singleFileDiff("filename.txt");
+        var commentsForFile = randomCommentsForSingleFile("filename.txt", [2, 17]);
+
+        // When
+        filesWithCommentsService.putInlineCommentsInFiles(files, commentsForFile.inlineComments);
+
+        // Then
+        expect(files.data[0].lines[2].comments[0].message).toBe("message of comment in file filename.txt line 2");
+        expect(files.data[0].lines[2].comments[0].authorName).toBe("author of comment in file filename.txt line 2");
+        expect(files.data[0].lines[2].comments[0].id).toBe("id of comment in file filename.txt line 2");
+        expect(files.data[0].lines[2].comments[0].time).toBe("time of comment in file filename.txt line 2");
+    }));
+
+    it('should add comments to proper files', inject(function (filesWithCommentsService) {
+        // Given
+
+        var files = singleFileDiff("filename.txt");
+        var commentsForFile = randomCommentsForSingleFile("filename.txt", [2, 17]);
+        var commentsForAnotherFile = randomCommentsForSingleFile("filename2.txt", [1, 3]);
+        joinComments(commentsForFile, commentsForAnotherFile);
+
+        // When
+        filesWithCommentsService.putInlineCommentsInFiles(files, commentsForFile.inlineComments);
+
+        // Then
+        expect(files.data[0].lines[2].comments.length).toBe(1);
+        expect(files.data[0].lines[17].comments.length).toBe(1);
+        expect(files.data[0].lines[1].comments.length).toBe(0);
+        expect(files.data[0].lines[3].comments.length).toBe(0);
+    }));
+
+    it('should add multiple comments to a single line', inject(function (filesWithCommentsService) {
+        // Given
+        var files = singleFileDiff("Beans.scala");
+        var commentsForFile = randomCommentsForSingleFile("Beans.scala", [5]);
+        commentsForFile.inlineComments[0].lineComments[0].comments.push(
+            {
+                authorName: "additional comment author",
+                message: "additional comment message",
+                id: "additional comment id",
+                time: "additional comment time"
+            }
+        );
+
+        // When
+        filesWithCommentsService.putInlineCommentsInFiles(files, commentsForFile.inlineComments);
+
+        // Then
+        expect(files.data[0].lines[5].comments.length).toBe(2);
+        expect(files.data[0].lines[5].comments[0].authorName).toBe("author of comment in file Beans.scala line 5");
+        expect(files.data[0].lines[5].comments[1].authorName).toBe("additional comment author");
+    }));
+
+    function joinComments(commentList1, commentList2) {
+        commentList1.inlineComments = commentList1.inlineComments.concat(commentList2.inlineComments)
+    }
+
     function singleFileDiff(filename) {
         return {
             data: [
@@ -84,13 +144,14 @@ describe("filesWithCommentsService", function () {
         ] };
 
         _.forEach(linenumbers, function (number) {
+            var suffix =  " of comment in file " + filename + " line " + number;
             var newCommentList = {
                 comments: [
                     {
-                        authorName: "Sofokles",
-                        message: "comment message",
-                        id: "comment id",
-                        time: "2013-04-01T06:39:12Z"
+                        authorName: "author" + suffix,
+                        message: "message" + suffix,
+                        id: "id" + suffix,
+                        time: "time" + suffix
                     }
                 ],
                 lineNumber: number
