@@ -49,15 +49,7 @@ describe("CommitDetailsController", function () {
         expect(scope.currentCommit.id).toBe(expectedCommitDetails.id);
         expect(scope.currentCommit.sha).toBe(expectedCommitDetails.sha);
     }));
-    function show_props(obj, objName) {
-        var result = "";
 
-        for (var prop in obj) {
-            result += objName + "." + prop + " = " + obj[prop] + "\n";
-        }
-
-        return result;
-    }
     it('should call service to mark current commit as reviewed', inject(function($controller, $stateParams, commitsListService) {
         // Given
         var scope = {};
