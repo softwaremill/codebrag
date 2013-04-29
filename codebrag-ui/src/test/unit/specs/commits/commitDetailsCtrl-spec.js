@@ -103,7 +103,7 @@ describe("CommitDetailsController", function () {
         expect(scope.generalComments[1]).toEqual(serverResponseComment);
     }));
 
-    it('should fire event when comment added', inject(function
+    it('should return promise when comment is added', inject(function
         ($controller, $stateParams, commitsListService, filesWithCommentsService) {
         // Given
         $stateParams.id = selectedCommitId;
@@ -112,15 +112,14 @@ describe("CommitDetailsController", function () {
         var serverResponseComment = {"id": "1", "authorName": "author", "message": addComment.body, "time": "2013-03-29T15:14:10Z"};
         spyOn(commitsListService, 'loadCommitById');
         $httpBackend.expectPOST(commentsEndpointAddress, addComment).respond({comment: serverResponseComment});
-        spyOn(scope, '$broadcast');
 
         // When
         $controller('CommitDetailsCtrl', {$scope: scope});
-        scope.submitComment(addComment.body);
+        var promise = scope.submitComment(addComment.body);
         $httpBackend.flush();
 
         // Then
-        expect(scope.$broadcast).toHaveBeenCalledWith('codebrag:commentCreated');
+        expect(typeof promise.then).toBe("function");
     }));
 
     it('should add a new inline comment after posting to server', inject(function

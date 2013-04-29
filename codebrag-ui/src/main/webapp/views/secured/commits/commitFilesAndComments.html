@@ -18,33 +18,26 @@
         </div>
         <div class="row diff-file-data">
             <table>
-                <tbody ng-repeat="line in file.lines">
+                <tbody ng-repeat="line in file.lines" commentable>
                 <tr>
-                    <td class="diff-table-line-number-cell" ng-switch on="line.lineType" ng-click="toggleInlineCommentForm(line)">
+                    <td class="diff-table-line-number-cell" ng-switch on="line.lineType">
                         <span ng-switch-when="header">...</span>
                         <span ng-switch-when="added"></span>
                         <span ng-switch-default>{{line.lineNumberOriginal}}</span>
                     </td>
-                    <td class="diff-table-line-number-cell" ng-switch on="line.lineType" ng-click="toggleInlineCommentForm(line)">
+                    <td class="diff-table-line-number-cell" ng-switch on="line.lineType">
                         <span ng-switch-when="header">...</span>
                         <span ng-switch-when="removed"></span>
                         <span ng-switch-default>{{line.lineNumberChanged}}</span>
                     </td>
                     <td class="diff-{{line.lineType}} diff-line" ng-bind-html-unsafe="line.line"></td>
                 </tr>
-                <tr ng-show="line.showCommentForm">
-                    <td colspan="3">
-                        <div class="span7 inline-comments-container">
-                        <markdown-comment-form submit="submitInlineComment(content, file, line, $index)"></markdown-comment-form>
-                        </div>
-                    </td>
-                </tr>
-                <tr ng-show="line.commentCount > 0">
-                    <td colspan="3">
-                        <div class="span7 inline-comments-container">
-                            <h5>Comments</h5>
-
-                            <div class="well span6" ng-repeat="comment in line.comments">
+                <tr class="comments" ng-show="line.commentCount > 0">
+                    <td class="diff-table-line-number-cell"></td>
+                    <td class="diff-table-line-number-cell"></td>
+                    <td>
+                        <div class="inline-comments-container">
+                            <div ng-repeat="comment in line.comments" style="padding:10px">
                                 {{comment.time | relativeDate}} by <strong>{{comment.authorName}}</strong>:
                                 <br/>
                                 <br/>
@@ -53,7 +46,6 @@
                                     <markdown-to-html content="comment.message"></markdown-to-html>
                                 </div>
                             </div>
-                            <markdown-comment-form submit="submitInlineComment(content, file, line, $index)"></markdown-comment-form>
                         </div>
                     </td>
                 </tr>
@@ -75,7 +67,7 @@
                     <markdown-to-html content="comment.message"></markdown-to-html>
                 </div>
             </div>
-            <markdown-comment-form submit="submitComment(content)"></markdown-comment-form>
+            <markdown-comment-form action="submitComment"></markdown-comment-form>
         </div>
     </div>
 </div>

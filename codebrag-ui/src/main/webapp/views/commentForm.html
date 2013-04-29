@@ -1,9 +1,9 @@
 <form name="newCommentForm">
     <fieldset>
         <label>Your comment</label>
-        <textarea ng-hide="previewModeOn" rows="5" style="width: 90%; resize: vertical" ng-model="body" required placeholder="Type your comment here"></textarea>
+        <textarea ng-hide="previewModeOn" rows="5" style="width: 90%; resize: vertical" ng-model="content" required placeholder="Type your comment here"></textarea>
         <div class="well" ng-show="previewModeOn" ng-bind-html-unsafe="preview"></div>
-        <button class="btn" ng-disabled="newCommentForm.$invalid" ng-click="submit({content: body})">Submit</button>
+        <button class="btn" ng-disabled="newCommentForm.$invalid" ng-click="submitComment(content)">Submit</button>
         <button class="btn btn-success" ng-disabled="newCommentForm.$invalid" ng-click="togglePreviewMode()">{{ previewModeOn && 'Back to writing' || 'See preview' }}</button>
     </fieldset>
 </form>

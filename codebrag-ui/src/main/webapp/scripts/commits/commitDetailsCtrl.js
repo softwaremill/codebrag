@@ -24,12 +24,11 @@ angular.module('codebrag.commits')
                 fileName: file.filename,
                 lineNumber: lineIndex
             };
-            Comments.save(comment, function (commentResponse) {
+            return Comments.save(comment).$then(function (commentResponse) {
                 line.showCommentForm = false;
                 file.commentCount++;
                 line.commentCount++;
-                line.comments.push(commentResponse.comment);
-                $scope.$broadcast('codebrag:commentCreated');
+                line.comments.push(commentResponse.data.comment);
             });
         };
 
@@ -46,10 +45,9 @@ angular.module('codebrag.commits')
                 commitId: commitId,
                 body: content
             };
-            Comments.save(comment, function (commentResponse) {
-                $scope.generalComments.push(commentResponse.comment);
-                $scope.$broadcast('codebrag:commentCreated');
-            })
+            return Comments.save(comment).$then(function (commentResponse) {
+                $scope.generalComments.push(commentResponse.data.comment);
+            });
         }
 
     });

@@ -67,13 +67,10 @@ html, body, .container, .content {
 }
 .inline-comments-container {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    line-height: 20px;
-    border: 1px solid #CCCCCC;
-    margin-left: 5px;
-    padding-left: 10px;
+    font-size: 13px;
     color: #333333;
-    background-color: #ffffff;
+    width:630px;
+    background: #ededed
 }
 
 .diff-file-data {
@@ -85,8 +82,11 @@ html, body, .container, .content {
     table-layout: fixed;
 }
 
+.diff-file-data tbody tr:first-child {
+    cursor: pointer
+}
+
 .diff-table-line-number-cell {
-    cursor: pointer;
     width: 25px;
     padding: 0 4px;
     border-right: 1px solid #CCCCCC;
