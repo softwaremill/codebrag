@@ -13,10 +13,6 @@ angular.module('codebrag.commits')
             })
         };
 
-        $scope.toggleInlineCommentForm = function(line) {
-            line.showCommentForm = (line.commentCount == 0) && !line.showCommentForm;
-        };
-
         $scope.submitInlineComment = function(content, file, line, lineIndex) {
             var comment = {
                 commitId: commitId,
