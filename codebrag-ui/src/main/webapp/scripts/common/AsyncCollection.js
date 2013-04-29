@@ -1,4 +1,4 @@
-var codebrag = {} || codebrag;
+var codebrag = codebrag || {};
 
 /**
  *
