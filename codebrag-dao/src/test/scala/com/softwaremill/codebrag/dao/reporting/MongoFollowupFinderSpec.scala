@@ -5,6 +5,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.Followup
 import org.joda.time.DateTime
+import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 
 class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers with MongoFollowupFinderSpecFixture {
 
@@ -74,7 +75,7 @@ trait MongoFollowupFinderSpecFixture {
   val First = 0
   val Second = 1
 
-  val FixtureCommit1 = CommitInfoBuilder.createRandomCommit()
-  val FixtureCommit2 = CommitInfoBuilder.createRandomCommit()
-  val FixtureCommit3 = CommitInfoBuilder.createRandomCommit()
+  val FixtureCommit1 = CommitInfoAssembler.randomCommit.get
+  val FixtureCommit2 = CommitInfoAssembler.randomCommit.get
+  val FixtureCommit3 = CommitInfoAssembler.randomCommit.get
 }

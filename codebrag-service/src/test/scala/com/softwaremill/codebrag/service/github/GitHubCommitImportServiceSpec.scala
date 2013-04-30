@@ -2,10 +2,12 @@ package com.softwaremill.codebrag.service.github
 
 import org.scalatest.{FlatSpec, BeforeAndAfter}
 import org.scalatest.mock.MockitoSugar
-import com.softwaremill.codebrag.dao.{CommitInfoBuilder, CommitInfoDAO}
+import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.scalatest.matchers.ShouldMatchers
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.CommitInfo
+import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import org.bson.types.ObjectId
 
 class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
 
@@ -48,8 +50,8 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
   }
 
   def newGithubCommits(commitsNumber: Int) = {
-    (1 to commitsNumber).map({
-      CommitInfoBuilder.createRandomCommit(_)
+    (1 to commitsNumber).map( num => {
+      CommitInfoAssembler.randomCommit.withId(ObjectId.massageToObjectId(num)).get
     }).toList
   }
 

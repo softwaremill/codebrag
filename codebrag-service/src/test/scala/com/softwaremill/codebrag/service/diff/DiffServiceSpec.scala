@@ -2,11 +2,12 @@ package com.softwaremill.codebrag.service.diff
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.{CommitInfoBuilder, CommitInfoDAO}
+import com.softwaremill.codebrag.dao.CommitInfoDAO
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.scalatest.mock.MockitoSugar
 import org.mockito.BDDMockito._
 import com.softwaremill.codebrag.domain.CommitFileInfo
+import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 
 class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers with MockitoSugar {
 
@@ -103,7 +104,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
   it should "be right when finds commit" in {
     //given
-    val commit = CommitInfoBuilder.createRandomCommit()
+    val commit = CommitInfoAssembler.randomCommit.get
     given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
 
     //when
@@ -132,7 +133,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
                                                   |+        "joined":"1900-01-02"
                                                   | }
                                                   | ]""")
-    val commit = CommitInfoBuilder.createRandomCommitWithFiles(List(file1, file2))
+    val commit = CommitInfoAssembler.randomCommit.withFiles(List(file1, file2)).get
     given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
 
     //when
@@ -158,7 +159,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   it should "return file with no diffs when patch is not available" in {
     //given
     val file = CommitFileInfo("filename.txt", "", null)
-    val commit = CommitInfoBuilder.createRandomCommitWithFiles(List(file))
+    val commit = CommitInfoAssembler.randomCommit.withFiles(List(file)).get
     given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
 
     //when
@@ -171,7 +172,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   it should "return file with no diffs when patch is empty" in {
     //given
     val file = CommitFileInfo("filename.txt", "", "")
-    val commit = CommitInfoBuilder.createRandomCommitWithFiles(List(file))
+    val commit = CommitInfoAssembler.randomCommit.withFiles(List(file)).get
     given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
 
     //when
@@ -184,7 +185,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   it should "return status for the file" in {
     //given
     val file = CommitFileInfo("filename.txt", StatusAdded, "")
-    val commit = CommitInfoBuilder.createRandomCommitWithFiles(List(file))
+    val commit = CommitInfoAssembler.randomCommit.withFiles(List(file)).get
     given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
 
     //when

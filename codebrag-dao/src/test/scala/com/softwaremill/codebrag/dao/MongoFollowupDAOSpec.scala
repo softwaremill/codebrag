@@ -6,13 +6,14 @@ import com.softwaremill.codebrag.domain.Followup
 import org.joda.time.DateTime
 import pl.softwaremill.common.util.time.FixtureTimeClock
 import ObjectIdTestUtils._
+import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 
 class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
   var followupDao: MongoFollowupDAO = _
   var commitInfoDao: CommitInfoDAO = _
 
-  val Commit = CommitInfoBuilder.createRandomCommit()
+  val Commit = CommitInfoAssembler.randomCommit.get
   val FollowupTargetUserId = oid(12)
   val DifferentUserId1 = oid(15)
   val DifferentUserId2 = oid(14)

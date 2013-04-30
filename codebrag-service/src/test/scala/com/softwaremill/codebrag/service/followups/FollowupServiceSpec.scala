@@ -13,6 +13,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.EntireCommitComment
 import com.softwaremill.codebrag.domain.Followup
 import scala.Some
+import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 
 class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with FollowupServiceSpecFixture{
 
@@ -112,7 +113,7 @@ trait FollowupServiceSpecFixture {
   val UserOneId = ObjectIdTestUtils.oid(456)
   val UserTwoId = ObjectIdTestUtils.oid(789)
 
-  val Commit = CommitInfoBuilder.createRandomCommit()
+  val Commit = CommitInfoAssembler.randomCommit.get
 
   val CommitAuthor = User(CommitAuthorId, Authentication.basic("user", "password"), Commit.authorName, "user@email.com", "123213")
 

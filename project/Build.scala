@@ -162,7 +162,7 @@ object SmlCodebragBuild extends Build {
     "codebrag-dao",
     file("codebrag-dao"),
     settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(smlCommonUtil))
-  ) dependsOn(domain, common)
+  ) dependsOn(domain % "test->test;compile->compile", common)
 
   lazy val service: Project = Project(
     "codebrag-service",

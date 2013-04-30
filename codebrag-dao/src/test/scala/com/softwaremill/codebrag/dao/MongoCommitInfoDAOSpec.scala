@@ -3,6 +3,7 @@ package com.softwaremill.codebrag.dao
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import org.joda.time.DateTime
+import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import CommitInfoAssembler._
 
 class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {

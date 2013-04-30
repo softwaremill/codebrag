@@ -6,6 +6,7 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.CommitInfo
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 
 
 class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
