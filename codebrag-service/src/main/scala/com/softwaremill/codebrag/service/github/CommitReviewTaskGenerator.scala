@@ -10,9 +10,7 @@ class CommitReviewTaskGenerator(userDao: UserDAO, commitToReviewDao: CommitRevie
   }
 
   def repositoryUsers() = {
-    // currently all users are repository users
-    // change it as soon as access control and multiple repositories will be introduced
-    userDao.findAll().map(_.id)
+    userDao.findAll()
   }
 
 }

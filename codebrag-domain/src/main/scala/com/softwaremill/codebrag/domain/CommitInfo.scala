@@ -6,9 +6,8 @@ import org.bson.types.ObjectId
 case class CommitInfo(id: ObjectId, sha: String, message: String, authorName: String, committerName: String, authorDate: DateTime,
                       commitDate: DateTime, parents: List[String], files: List[CommitFileInfo]) {
 
-  def createReviewTasksFor(users: List[ObjectId]): List[CommitReviewTask] = {
-    // TODO: exclude commit author from review task generation as soon as we have consistent mapping between codebrag and repo users
-    users.map(CommitReviewTask(id, _))
+  def createReviewTasksFor(users: List[User]): List[CommitReviewTask] = {
+    users.filterNot(_.name == authorName).map(user => CommitReviewTask(id, user.id))
   }
 
 }

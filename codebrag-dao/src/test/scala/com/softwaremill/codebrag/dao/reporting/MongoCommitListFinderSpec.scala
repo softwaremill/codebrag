@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.reporting
 import com.softwaremill.codebrag.dao._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.CommitInfo
+import com.softwaremill.codebrag.domain.{Authentication, User, CommitInfo}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
@@ -16,6 +16,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   val commitInfoDao = new MongoCommitInfoDAO
 
   val userId = ObjectIdTestUtils.oid(123)
+  val user = User(userId, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "123")
 
   override def beforeEach() {
     CommitInfoRecord.drop // drop collection to start every test with fresh database
@@ -99,7 +100,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
 
   def storeCommitReviewTasksFor(userId: ObjectId, commits: CommitInfo*) {
     commits.foreach{commit =>
-      commit.createReviewTasksFor(List(userId)).foreach{ commitReviewTaskDao.save(_)}
+      commit.createReviewTasksFor(List(user)).foreach{ commitReviewTaskDao.save(_)}
     }
   }
 

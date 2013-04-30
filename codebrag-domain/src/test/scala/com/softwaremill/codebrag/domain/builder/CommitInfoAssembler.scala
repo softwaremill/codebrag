@@ -39,6 +39,11 @@ class CommitInfoAssembler(var commit: CommitInfo) {
     this
   }
 
+  def withAuthorName(newName: String) = {
+    commit = commit.copy(authorName = newName)
+    this
+  }
+
   def get = commit
 
 }
