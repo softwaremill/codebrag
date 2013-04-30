@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.dao.reporting.{MongoFollowupFinder, MongoCommen
 import dao._
 import rest.CodebragSwagger
 import service.comments.CommentService
-import service.diff.DiffService
+import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
 import service.followups.FollowupService
 import service.github._
 import service.user.Authenticator
@@ -28,7 +28,6 @@ trait Beans {
   lazy val ghService = new GitHubAuthService
   lazy val commentDao = new MongoCommitCommentDAO
   lazy val commentService = new CommentService(commentDao)
-  lazy val diffService = new DiffService(commitInfoDao)
   lazy val githubClientProvider = new GitHubClientProvider(userDao)
   lazy val converter = new GitHubCommitInfoConverter()
   lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
@@ -37,4 +36,6 @@ trait Beans {
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
   lazy val followupFinder = new MongoFollowupFinder
   lazy val commentActivity = new AddCommentActivity(commentService, followupService)
+
+  lazy val diffWithCommentsService = new DiffWithCommentsService(commitListFinder, commentListFinder, new DiffService(commitInfoDao))
 }

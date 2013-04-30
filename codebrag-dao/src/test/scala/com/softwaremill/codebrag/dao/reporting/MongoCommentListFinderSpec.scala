@@ -113,11 +113,12 @@ trait CommentListFinderVerifyHelpers {
   }
 
   def commentLineNumbersFor(fileComments: List[FileCommentsView], fileName: String) = {
-    lineCommentsFor(fileComments, fileName).map(_.lineNumber).toSet
+    lineCommentsFor(fileComments, fileName).map(_._1).toSet
   }
 
   def commentMessagesWithAuthorsFor(fileComments: List[FileCommentsView], fileName: String, lineNumber: Int) = {
-    lineCommentsFor(fileComments, fileName).find(_.lineNumber == lineNumber).get.comments.map(comment => (comment.message, comment.authorName)).toSet
+//    lineCommentsFor(fileComments, fileName).find(_._1 == lineNumber).get.comments.map(comment => (comment.message, comment.authorName)).toSet
+    lineCommentsFor(fileComments, fileName).find(_._1 == lineNumber).get._2.map(comment => (comment.message, comment.authorName)).toSet
   }
 
   def commentMessagesWithAuthorsFor(comments: List[SingleCommentView]) = {
@@ -125,7 +126,7 @@ trait CommentListFinderVerifyHelpers {
   }
 
   def orderedCommentMessagesFor(fileComments: List[FileCommentsView], fileName: String, lineNumber: Int) = {
-    lineCommentsFor(fileComments, fileName).find(_.lineNumber == lineNumber).get.comments.map(comment => comment.message)
+    lineCommentsFor(fileComments, fileName).find(_._1 == lineNumber).get._2.map(comment => comment.message)
   }
 
 }

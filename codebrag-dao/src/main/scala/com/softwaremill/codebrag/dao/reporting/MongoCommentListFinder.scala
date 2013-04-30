@@ -1,12 +1,11 @@
 package com.softwaremill.codebrag.dao.reporting
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.{UserDAO, MongoCommitCommentDAO, CommentRecord, UserRecord}
+import com.softwaremill.codebrag.dao.{UserDAO, MongoCommitCommentDAO, UserRecord}
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.domain.{CommentBase, InlineCommitComment, EntireCommitComment}
 
-// null - for step-by-step refactoring, will remove soon
-class MongoCommentListFinder(userDao: UserDAO = null) extends CommentListFinder {
+class MongoCommentListFinder(userDao: UserDAO) extends CommentListFinder {
 
 
   def commentsForCommit(commitId: ObjectId): CommentsView = {
@@ -22,13 +21,14 @@ class MongoCommentListFinder(userDao: UserDAO = null) extends CommentListFinder 
     val byFileAndLineNumber = byFiles.map(file => (file._1, file._2.groupBy(_.lineNumber)))
 
     byFileAndLineNumber.map(forFile => {
-      val lines = forFile._2.map(forLine => {
-        LineCommentsView(forLine._1, forLine._2.map({ line =>
+      val linesMap = scala.collection.mutable.Map[Int, List[SingleCommentView]]()
+      forFile._2.map(forLine => {
+        linesMap(forLine._1) = forLine._2.map({ line =>
           val authorName = findCommenterName(commentersCached, line.authorId)
           SingleCommentView(line.id.toString, authorName, line.message, line.postingTime.toDate)
-        }))
+        })
       }).toList
-      FileCommentsView(forFile._1, lines)
+      FileCommentsView(forFile._1, linesMap.toMap)
     }).toList
   }
 

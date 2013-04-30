@@ -26,7 +26,7 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpoi
     }
   }
 
-  get("/:id/comments", operation(getCommentsOperation)) {
+  get("/:id/comments") {
     haltIfNotAuthenticated()
     val commitId = params("id")
     commentListFinder.commentsForCommit(new ObjectId(commitId))
@@ -54,9 +54,11 @@ trait CommentsEndpointSwaggerDefinition extends SwaggerSupport {
     .parameter(bodyParam[String]("fileName").description("File name for inline comment").optional)
     .parameter(bodyParam[Int]("lineNumber").description("Line number of file for inline comment").optional)
 
+/*
   val getCommentsOperation = apiOperation[CommentsView]("getList")
     .summary("Get a lists of comments")
     .parameter(pathParam[String]("id").description("Commit identifier").required)
+*/
 
 }
 

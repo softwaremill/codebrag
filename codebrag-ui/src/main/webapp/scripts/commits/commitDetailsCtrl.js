@@ -1,11 +1,12 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitDetailsCtrl', function ($stateParams, $state, $scope, filesWithCommentsService, commitsListService, Comments) {
+    .controller('CommitDetailsCtrl', function ($stateParams, $state, $scope, commitsListService, Comments) {
 
         var commitId = $stateParams.id;
-        $scope.generalComments = [];
-        $scope.currentCommit = commitsListService.loadCommitById(commitId);
-        $scope.files = filesWithCommentsService.loadAll(commitId, $scope.generalComments);
+
+        commitsListService.loadCommitById(commitId).then(function(data) {
+            $scope.currentCommit = data;
+        });
 
         $scope.markCurrentCommitAsReviewed = function() {
             commitsListService.removeCommitAndGetNext(commitId).then(function(nextCommit) {
@@ -21,9 +22,6 @@ angular.module('codebrag.commits')
                 lineNumber: lineIndex
             };
             return Comments.save(comment).$then(function (commentResponse) {
-                line.showCommentForm = false;
-                file.commentCount++;
-                line.commentCount++;
                 line.comments.push(commentResponse.data.comment);
             });
         };
@@ -42,7 +40,7 @@ angular.module('codebrag.commits')
                 body: content
             };
             return Comments.save(comment).$then(function (commentResponse) {
-                $scope.generalComments.push(commentResponse.data.comment);
+                $scope.currentCommit.comments.push(commentResponse.data.comment);
             });
         }
 

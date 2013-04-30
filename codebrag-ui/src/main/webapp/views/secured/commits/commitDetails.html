@@ -2,9 +2,9 @@
     <div>
         <div class="row">
             <div class="span7">
-                <h4 ng-bind-html-unsafe="currentCommit.message"></h4>
-                <p>{{currentCommit.sha}}</p>
-                <p>{{currentCommit.date | relativeDate}} by {{currentCommit.authorName}}</p>
+                <h4 ng-bind-html-unsafe="currentCommit.commit.message"></h4>
+                <p>{{currentCommit.commit.sha}}</p>
+                <p>{{currentCommit.commit.date | relativeDate}} by {{currentCommit.commit.authorName}}</p>
                 <button class="btn btn-success" ng-click="markCurrentCommitAsReviewed()"><i class="icon-ok"></i> Mark this commit as reviewed</button>
             </div>
         </div>

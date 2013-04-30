@@ -3,7 +3,7 @@
         <h4>Commit files</h4>
     </div>
 </div>
-<div class="row" ng-repeat="file in files">
+<div class="row" ng-repeat="file in currentCommit.files">
     <div class="span7">
         <div class="row">
             <div class="well">
@@ -13,7 +13,6 @@
                 <span ng-switch-default></span>
             </span>
                 <span>{{file.filename}}</span>
-                <strong ng-show="file.commentCount > 0">({{file.commentCount}} comments)</strong>
             </div>
         </div>
         <div class="row diff-file-data">
@@ -32,7 +31,7 @@
                     </td>
                     <td class="diff-{{line.lineType}} diff-line" ng-bind-html-unsafe="line.line"></td>
                 </tr>
-                <tr class="comments" ng-show="line.commentCount > 0">
+                <tr class="comments" ng-show="line.comments.length > 0">
                     <td class="diff-table-line-number-cell"></td>
                     <td class="diff-table-line-number-cell"></td>
                     <td>
@@ -58,7 +57,7 @@
 <div>
     <div class="row">
         <div class="span7">
-            <div class="well" ng-repeat="comment in generalComments" style="width:90%">
+            <div class="well" ng-repeat="comment in currentCommit.comments" style="width:90%">
                 {{comment.time | relativeDate}} by <strong>{{comment.authorName}}</strong>:
                 <br/>
                 <br/>

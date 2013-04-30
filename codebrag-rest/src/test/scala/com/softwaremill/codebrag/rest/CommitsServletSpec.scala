@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO, UserDAO, CommitInfoDA
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.reporting.{CommentListFinder, CommitListDTO, CommitListFinder, CommitListItemDTO}
 import java.util.Date
-import com.softwaremill.codebrag.service.diff.DiffService
+import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
 import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import org.bson.types.ObjectId
@@ -21,7 +21,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var commentActivity = mock[AddCommentActivity]
   var commitsInfoDao = mock[CommitInfoDAO]
   var commitsListFinder = mock[CommitListFinder]
-  var diffService = mock[DiffService]
+  var diffService = mock[DiffWithCommentsService]
   var commentListFinder = mock[CommentListFinder]
   var userDao = mock[UserDAO]
   var commitReviewTaskDao = mock[CommitReviewTaskDAO]

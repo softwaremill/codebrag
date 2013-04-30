@@ -3,6 +3,8 @@ package com.softwaremill.codebrag.service.diff
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import annotation.tailrec
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.dao.reporting.SingleCommentView
+import com.softwaremill.codebrag.domain.{DiffLine, CommitFileDiff, CommentBase}
 
 class DiffService(commitInfoDao: CommitInfoDAO) {
 
@@ -42,14 +44,10 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
     convertToDiffLines(diffLines, 0, 0, List())
   }
 
-  def getFilesWithDiffs(commitId: String): Either[String, List[FileWithDiff]] = {
+  def getFilesWithDiffs(commitId: String): Either[String, List[CommitFileDiff]] = {
     commitInfoDao.findByCommitId(new ObjectId(commitId)) match {
-      case Some(commit) => Right(commit.files.map(file => FileWithDiff(file.filename, file.status, parseDiff(file.patch))))
+      case Some(commit) => Right(commit.files.map(file => CommitFileDiff(file.filename, file.status, parseDiff(file.patch))))
       case None => Left("No such commit")
     }
   }
 }
-
-case class DiffLine(line: String, lineNumberOriginal: Int, lineNumberChanged: Int, lineType: String)
-
-case class FileWithDiff(filename: String, status: String, lines: List[DiffLine])

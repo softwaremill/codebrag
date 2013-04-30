@@ -3,6 +3,7 @@
 describe("CommitDetailsController", function () {
 
     var $httpBackend;
+    var q;
     var selectedCommitId = 123;
     var noopPromise = {then: function(){}};
     var selectedCommit, scope;
@@ -10,10 +11,11 @@ describe("CommitDetailsController", function () {
     beforeEach(module('codebrag.commits'));
     var singleStoredComment = {id: '123', authorName: "mostr", message: "this is comment", time: "2013-03-29T15:14:10Z"};
 
-    beforeEach(inject(function (_$httpBackend_, $rootScope) {
+    beforeEach(inject(function (_$httpBackend_, $rootScope, $q) {
         $httpBackend = _$httpBackend_;
         scope = $rootScope.$new();
         selectedCommit = {id: 1};
+        q = $q;
     }));
 
     afterEach(inject(function (_$httpBackend_) {
@@ -22,12 +24,12 @@ describe("CommitDetailsController", function () {
     }));
 
     it('should use commit ID provided in $stateParams to load commit data', inject(
-        function ($controller, $stateParams, commitsListService, filesWithCommentsService) {
+        function ($controller, $stateParams, commitsListService) {
 
         // Given
         $stateParams.id = selectedCommitId;
-        spyOn(filesWithCommentsService, "loadAll");
-        spyOn(commitsListService, "loadCommitById");
+
+        spyOn(commitsListService, "loadCommitById").andReturn(noopPromise);
 
         // When
         $controller('CommitDetailsCtrl', {$scope:scope});
@@ -36,29 +38,29 @@ describe("CommitDetailsController", function () {
         expect(commitsListService.loadCommitById).toHaveBeenCalledWith(selectedCommitId);
     }));
 
-    it('should load files and details for selected commit', inject(function ($controller, $stateParams, filesWithCommentsService, commitsListService) {
+    it('should load files and details for selected commit', inject(function ($controller, $stateParams, commitsListService) {
         // Given
         $stateParams.id = selectedCommitId;
-        var expectedCommitDetails = {id: selectedCommitId, sha: '123'};
-        var expectedCommitFiles = [{filename: 'file1.txt', lines: []}];
-        spyOn(commitsListService, 'loadCommitById').andReturn(expectedCommitDetails);
-        spyOn(filesWithCommentsService, 'loadAll').andReturn(expectedCommitFiles);
+        var expectedCommitDetails = {commit: {sha: '123'}, comments: [], files: []};
+        var deferred = q.defer();
+        deferred.resolve(expectedCommitDetails);
+        spyOn(commitsListService, 'loadCommitById').andReturn(deferred.promise);
 
         // When
         $controller('CommitDetailsCtrl', {$scope:scope});
+        scope.$apply();
 
         //then
-        expect(scope.files.length).toBe(expectedCommitFiles.length);
-        expect(scope.currentCommit.id).toBe(expectedCommitDetails.id);
-        expect(scope.currentCommit.sha).toBe(expectedCommitDetails.sha);
+        expect(scope.currentCommit.commit).toBe(expectedCommitDetails.commit);
+        expect(scope.currentCommit.comments).toBe(expectedCommitDetails.comments);
+        expect(scope.currentCommit.files).toBe(expectedCommitDetails.files);
     }));
 //
     it('should call service to mark current commit as reviewed', inject( function
-        ($controller, $stateParams, commitsListService, filesWithCommentsService) {
+        ($controller, $stateParams, commitsListService) {
         // Given
         $stateParams.id = selectedCommitId;
-        spyOn(commitsListService, 'loadCommitById');
-        spyOn(filesWithCommentsService, 'loadAll');
+        spyOn(commitsListService, 'loadCommitById').andReturn(noopPromise);
         spyOn(commitsListService, 'removeCommitAndGetNext').andReturn(noopPromise);
 
         // When
@@ -69,29 +71,15 @@ describe("CommitDetailsController", function () {
         expect(commitsListService.removeCommitAndGetNext).toHaveBeenCalledWith(selectedCommitId);
     }));
 
-    it('should load all files and comments for selected commit on start', inject(function
-        ($controller, $stateParams, commitsListService, filesWithCommentsService) {
-        // Given
-        $stateParams.id = selectedCommitId;
-        spyOn(commitsListService, 'loadCommitById');
-        givenStoredSingleComment(filesWithCommentsService);
-
-        // When
-        $controller('CommitDetailsCtrl', {$scope: scope});
-
-        // Then
-        expect(scope.generalComments[0]).toEqual(singleStoredComment);
-    }));
-
-    it('should add general comment after posting to server', inject(function
-        ($controller, $stateParams, commitsListService, filesWithCommentsService) {
+    it('should add comment to list after posting to server', inject(function
+        ($controller, $stateParams, commitsListService) {
         // Given
         $stateParams.id = selectedCommitId;
         var addComment = {commitId: selectedCommitId, body: "added comment"};
         var serverResponseComment = {"id": "1", "authorName": "author", "message": addComment.body, "time": "2013-03-29T15:14:10Z"};
-        spyOn(commitsListService, 'loadCommitById');
-        givenStoredSingleComment(filesWithCommentsService);
+        spyOn(commitsListService, 'loadCommitById').andReturn(noopPromise);
         $httpBackend.expectPOST(commentsEndpointAddress, addComment).respond({comment: serverResponseComment});
+        scope.currentCommit = {commit: {sha: '123'}, comments: []};
 
         // When
         $controller('CommitDetailsCtrl', {$scope: scope});
@@ -99,78 +87,7 @@ describe("CommitDetailsController", function () {
         $httpBackend.flush();
 
         // Then
-        expect(scope.generalComments[0]).toEqual(singleStoredComment);
-        expect(scope.generalComments[1]).toEqual(serverResponseComment);
+        expect(scope.currentCommit.comments.length).toBe(1);
     }));
-
-    it('should return promise when comment is added', inject(function
-        ($controller, $stateParams, commitsListService, filesWithCommentsService) {
-        // Given
-        $stateParams.id = selectedCommitId;
-        givenStoredSingleComment(filesWithCommentsService);
-        var addComment = {commitId: selectedCommitId, body: "ok"};
-        var serverResponseComment = {"id": "1", "authorName": "author", "message": addComment.body, "time": "2013-03-29T15:14:10Z"};
-        spyOn(commitsListService, 'loadCommitById');
-        $httpBackend.expectPOST(commentsEndpointAddress, addComment).respond({comment: serverResponseComment});
-
-        // When
-        $controller('CommitDetailsCtrl', {$scope: scope});
-        var promise = scope.submitComment(addComment.body);
-        $httpBackend.flush();
-
-        // Then
-        expect(typeof promise.then).toBe("function");
-    }));
-
-    it('should add a new inline comment after posting to server', inject(function
-        ($controller, $stateParams, commitsListService, filesWithCommentsService) {
-        // Given
-        $stateParams.id = selectedCommitId;
-        var addComment = {commitId: selectedCommitId, body: "new inline comment body", lineNumber: 5};
-        var serverResponseComment = {"id": "1", "authorName": "author", "message": addComment.body, "time": "2013-03-29T15:14:10Z"};
-        spyOn(commitsListService, 'loadCommitById');
-        givenStoredSingleComment(filesWithCommentsService);
-        $httpBackend.expectPOST(commentsEndpointAddress, addComment).respond({comment: serverResponseComment});
-        var file = {
-            commentCount: 0
-        };
-
-        var line = {
-            showCommentForm: true,
-            commentCount: 0,
-            comments: []
-        };
-
-        // When
-        $controller('CommitDetailsCtrl', {$scope: scope});
-        scope.submitInlineComment(addComment.body, file, line, 5);
-        $httpBackend.flush();
-
-        // Then
-        expect(file.commentCount).toEqual(1);
-        expect(line.commentCount).toEqual(1);
-        expect(line.showCommentForm).toBeFalsy();
-        expect(line.comments[0]).toEqual(serverResponseComment);
-    }));
-
-    function givenStoredSingleComment(filesWithCommentsService) {
-        spyOn(filesWithCommentsService, "loadAll").andCallFake(
-            function () {
-                scope.generalComments.push(singleStoredComment)
-            }
-        );
-    }
-
-    function commitDetailsFor(id) {
-        return 'rest/commits/' + id;
-    }
-
-    function commitCommentsFor(id) {
-        return 'rest/commits/' + id + '/comments';
-    }
-
-    function commitFilesFor(id) {
-        return 'rest/commits/' + id + '/files';
-    }
 
 });
