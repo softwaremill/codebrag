@@ -4,9 +4,7 @@ import org.bson.types.ObjectId
 import org.joda.time.DateTime
 
 
-case class Followup(commitId: ObjectId, userId: ObjectId, date: DateTime)
-
-case class ThreadAwareFollowup(id: Option[ObjectId], commitId: ObjectId, userId: ObjectId, date: DateTime, threadId: CommentThreadId) {
+case class Followup(id: Option[ObjectId], commitId: ObjectId, userId: ObjectId, date: DateTime, threadId: ThreadDetails) {
 
   def isOwner(userId: ObjectId) = {
     this.userId == this.userId
@@ -14,14 +12,14 @@ case class ThreadAwareFollowup(id: Option[ObjectId], commitId: ObjectId, userId:
 
 }
 
-object ThreadAwareFollowup {
+object Followup {
 
-  def apply(commitId: ObjectId, userId: ObjectId, date: DateTime, threadId: CommentThreadId) = {
-    new ThreadAwareFollowup(None, commitId: ObjectId, userId: ObjectId, date: DateTime, threadId: CommentThreadId)
+  def apply(commitId: ObjectId, userId: ObjectId, date: DateTime, threadId: ThreadDetails) = {
+    new Followup(None, commitId: ObjectId, userId: ObjectId, date: DateTime, threadId: ThreadDetails)
   }
 
-  def apply(followupId: ObjectId, commitId: ObjectId, userId: ObjectId, date: DateTime, threadId: CommentThreadId) = {
-    new ThreadAwareFollowup(Some(followupId), commitId: ObjectId, userId: ObjectId, date: DateTime, threadId: CommentThreadId)
+  def apply(followupId: ObjectId, commitId: ObjectId, userId: ObjectId, date: DateTime, threadId: ThreadDetails) = {
+    new Followup(Some(followupId), commitId: ObjectId, userId: ObjectId, date: DateTime, threadId: ThreadDetails)
   }
 
 }

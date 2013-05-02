@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.reporting
 import com.softwaremill.codebrag.dao._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{CommentThreadId, ThreadAwareFollowup}
+import com.softwaremill.codebrag.domain.{ThreadDetails, Followup}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 
@@ -48,13 +48,13 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach 
 
   def storeUserFollowups {
     List(
-      ThreadAwareFollowup(FixtureCommit1.id, TargetUserId, date, CommentThreadId(FixtureCommit1.id)),
-      ThreadAwareFollowup(FixtureCommit2.id, TargetUserId, laterDate, CommentThreadId(FixtureCommit2.id)))
+      Followup(FixtureCommit1.id, TargetUserId, date, ThreadDetails(FixtureCommit1.id)),
+      Followup(FixtureCommit2.id, TargetUserId, laterDate, ThreadDetails(FixtureCommit2.id)))
     .foreach(followupDao.createOrUpdateExisting(_))
   }
 
   def storeAnotherUserFollowup {
-    followupDao.createOrUpdateExisting(ThreadAwareFollowup(FixtureCommit3.id, OtherUserId, latestDate, CommentThreadId(FixtureCommit3.id)))
+    followupDao.createOrUpdateExisting(Followup(FixtureCommit3.id, OtherUserId, latestDate, ThreadDetails(FixtureCommit3.id)))
   }
 
   def storeAllCommits {

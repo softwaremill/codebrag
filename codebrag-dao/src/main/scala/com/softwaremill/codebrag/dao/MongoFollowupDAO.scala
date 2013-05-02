@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{CommentThreadId, ThreadAwareFollowup, Followup}
+import com.softwaremill.codebrag.domain.{ThreadDetails, Followup}
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field._
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
-import net.liftweb.record.field.{OptionalIntField, OptionalStringField, IntField}
+import net.liftweb.record.field.{OptionalIntField, OptionalStringField}
 import org.joda.time.DateTime
 import scala.None
 import net.liftweb.common.Box
@@ -13,14 +13,14 @@ import net.liftweb.common.Box
 class MongoFollowupDAO extends FollowupDAO {
 
 
-  def findById(followupId: ObjectId): Option[ThreadAwareFollowup] = {
+  def findById(followupId: ObjectId): Option[Followup] = {
     FollowupRecord.where(_.followupId eqs followupId).get() match {
       case Some(record) => Some(toFollowup(record))
       case None => None
     }
   }
 
-  def createOrUpdateExisting(followup: ThreadAwareFollowup) {
+  def createOrUpdateExisting(followup: Followup) {
     val query = FollowupRecord
       .where(_.user_id eqs followup.userId)
       .and(_.threadId.subselect(_.commitId) eqs followup.commitId)
@@ -39,18 +39,18 @@ class MongoFollowupDAO extends FollowupDAO {
     FollowupRecord.where(_.followupId eqs followupId).findAndDeleteOne()
   }
 
-  private def followupToRecord(followup: ThreadAwareFollowup, commitRecord: CommitInfoRecord) = {
+  private def followupToRecord(followup: Followup, commitRecord: CommitInfoRecord) = {
     val record = toRecord(followup, commitRecord).asDBObject
     record.removeField("_id") // remove _id field, otherwise Mongo screams it cannot modify _id when updating record
     record
   }
 
   private def toFollowup(record: FollowupRecord) = {
-    val threadId = CommentThreadId(record.threadId.get.commitId.get, record.threadId.get.lineNumber.get, record.threadId.get.fileName.get)
-    ThreadAwareFollowup(record.followupId.get, record.commit.get.id.get, new DateTime(record.date), threadId)
+    val threadId = ThreadDetails(record.threadId.get.commitId.get, record.threadId.get.lineNumber.get, record.threadId.get.fileName.get)
+    Followup(record.followupId.get, record.commit.get.id.get, new DateTime(record.date), threadId)
   }
 
-  private def toRecord(followup: ThreadAwareFollowup, commitRecord: CommitInfoRecord): FollowupRecord = {
+  private def toRecord(followup: Followup, commitRecord: CommitInfoRecord): FollowupRecord = {
 
     val commitInfo = FollowupCommitInfoRecord.createRecord
       .id(followup.commitId)
