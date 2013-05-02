@@ -34,10 +34,10 @@ codebrag.AsyncCollection.prototype = {
         })
     },
 
-    removeElement: function(identityFn, promise) {
+    removeElement: function(matchFn, promise) {
         var self = this;
         var found = _.find(self.elements, function(current) {
-            return identityFn(current);
+            return matchFn(current);
         });
         var indexToRemove = self.elements.indexOf(found);
         return promise.then(function() {
@@ -46,9 +46,9 @@ codebrag.AsyncCollection.prototype = {
         });
     },
 
-    removeElementAndGetNext: function(identityFn, promise) {
+    removeElementAndGetNext: function(matchFn, promise) {
         var self = this;
-        return self.removeElement(identityFn, promise).then(function(indexRemoved) {
+        return self.removeElement(matchFn, promise).then(function(indexRemoved) {
             if(_.isEmpty(self.elements)) {
                 return null;
             }
