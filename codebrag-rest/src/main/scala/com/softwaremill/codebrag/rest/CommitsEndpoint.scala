@@ -10,6 +10,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.CommitReviewTaskDAO
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import com.softwaremill.codebrag.dao.reporting.views.{CommitListView, CommitDetailsWithCommentsView}
+import org.scalatra.swagger.SwaggerSupportSyntax.ParameterBuilder
 
 trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpointSwaggerDefinition {
 
@@ -24,7 +25,11 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
 
 
   get("/", operation(getCommitsOperation)) {
-    fetchCommitsList()
+    val reviewedOpt = params.get("reviewed")
+    reviewedOpt match {
+      case Some("true") => fetchAllCommits()
+      case _ => fetchCommitsPendingReview()
+    }
   }
 
   post("/sync") {
@@ -32,7 +37,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
     implicit val idGenerator = new ObjectIdGenerator()
     val importer = importerFactory.createInstance(user.email)
     importer.importRepoCommits("softwaremill", "codebrag")
-    fetchCommitsList()
+    fetchCommitsPendingReview()
   }
 
   get("/:id") {
@@ -50,13 +55,16 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
     commitReviewTaksDao.delete(reviewTask)
   }
 
-  private def fetchCommitsList() = commitListFinder.findCommitsToReviewForUser(new ObjectId(user.id))
+  private def fetchCommitsPendingReview() = commitListFinder.findCommitsToReviewForUser(new ObjectId(user.id))
+  private def fetchAllCommits() = commitListFinder.findAllByOthers(new ObjectId(user.id))
 }
 
 trait CommitsEndpointSwaggerDefinition extends SwaggerSupport {
 
   val getCommitsOperation = apiOperation[CommitListView]("get")
     .summary("Gets all commits to review for current user ")
+    .parameter(queryParam[Boolean]("reviewed").description("Whether result should include already reviewed commits")
+      .defaultValue(false).optional)
 
   val markCommitAsReviewed = apiOperation[Unit]("delete")
     .summary("Removes given commit from user list of commits remaining to review")

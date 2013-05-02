@@ -33,4 +33,7 @@ class MongoCommitFinder extends CommitFinder {
     CommitInfoRecord.select(_.id, _.sha, _.message, _.authorName, _.committerName, _.authorDate)
   }
 
+  override def findAllByOthers(userId: ObjectId) = {
+    findCommitsToReviewForUser(userId) // TODO
+  }
 }

@@ -6,6 +6,7 @@ import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO, UserDAO, CommitInfoDAO}
 import org.mockito.Mockito._
+import org.mockito.Matchers._
 import com.softwaremill.codebrag.dao.reporting.{CommentFinder, CommitFinder}
 import java.util.Date
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
@@ -48,6 +49,29 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     get("/") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
+    }
+  }
+
+  "GET /commits?reviewed=false" should "should return commits pending review" in {
+    val userId = new ObjectId
+    val user = UserJson(userId.toString, "user", "user@email.com", "token")
+    userIsAuthenticatedAs(user)
+    when(commitsListFinder.findCommitsToReviewForUser(userId)).thenReturn(SamplePendingCommits)
+    get("/?reviewed=false") {
+      status should be(200)
+      body should equal(asJson(SamplePendingCommits))
+    }
+  }
+
+  "GET /commits?reviewed=true" should "should return all commits by others" in {
+    val userId = new ObjectId
+    val user = UserJson(userId.toString, "user", "user@email.com", "token")
+    userIsAuthenticatedAs(user)
+    when(commitsListFinder.findAllByOthers(userId)).thenReturn(SamplePendingCommits)
+    get("/?reviewed=true") {
+      status should be(200)
+      body should equal(asJson(SamplePendingCommits))
+      verify(commitsListFinder, never()).findCommitInfoById(anyString())
     }
   }
 
