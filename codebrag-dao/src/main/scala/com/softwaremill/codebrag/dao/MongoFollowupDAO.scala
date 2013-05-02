@@ -5,6 +5,7 @@ import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, 
 import net.liftweb.mongodb.record.field._
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
+import net.liftweb.record.field.IntField
 
 class MongoFollowupDAO extends FollowupDAO {
 
@@ -21,12 +22,12 @@ class MongoFollowupDAO extends FollowupDAO {
   }
 
   def followupToRecord(followup: Followup, commitRecord: CommitInfoRecord) = {
-    val record = toFollowupRecord(followup, commitRecord).asDBObject
+    val record = toRecord(followup, commitRecord).asDBObject
     record.removeField("_id") // remove _id field, otherwise Mongo screams it cannot modify _id when updating record
     record
   }
 
-  private def toFollowupRecord(followup: Followup, commitRecord: CommitInfoRecord): FollowupRecord = {
+  private def toRecord(followup: Followup, commitRecord: CommitInfoRecord): FollowupRecord = {
 
     val commitInfo = FollowupCommitInfoRecord.createRecord
       .id(followup.commitId)
@@ -34,10 +35,14 @@ class MongoFollowupDAO extends FollowupDAO {
       .author(commitRecord.authorName.get)
       .date(commitRecord.committerDate.get)
 
+    val threadId = ThreadIdRecord.createRecord
+      .commitId(followup.commitId)
+
     FollowupRecord.createRecord
       .commit(commitInfo)
       .user_id(followup.userId)
       .date(followup.date.toDate)
+      .threadId(threadId)
   }
 
 
@@ -49,6 +54,8 @@ class FollowupRecord extends MongoRecord[FollowupRecord] with ObjectIdPk[Followu
   object user_id extends ObjectIdField(this)
 
   object commit extends BsonRecordField(this, FollowupCommitInfoRecord)
+
+  object threadId extends BsonRecordField(this, ThreadIdRecord)
 
   object date extends DateField(this)
 
@@ -72,3 +79,17 @@ class FollowupCommitInfoRecord extends BsonRecord[FollowupCommitInfoRecord] {
 }
 
 object FollowupCommitInfoRecord extends FollowupCommitInfoRecord with BsonMetaRecord[FollowupCommitInfoRecord]
+
+
+class ThreadIdRecord extends BsonRecord[ThreadIdRecord] {
+  def meta = ThreadIdRecord
+
+  object commitId extends ObjectIdField(this)
+
+  object fileName extends LongStringField(this) { override def optional_? = true }
+
+  object lineNumber extends IntField(this) { override def optional_? = true }
+
+}
+
+object ThreadIdRecord extends ThreadIdRecord with BsonMetaRecord[ThreadIdRecord]
