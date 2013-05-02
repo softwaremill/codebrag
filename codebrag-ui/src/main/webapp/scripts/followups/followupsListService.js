@@ -13,7 +13,7 @@ angular.module('codebrag.followups')
             var requestPromise = _httpRequest('GET').then(function(response) {
                 return response.data.followups;
             });
-            followups.loadElements(requestPromise);
+            return followups.loadElements(requestPromise)
     	}
 
         function allFollowups() {

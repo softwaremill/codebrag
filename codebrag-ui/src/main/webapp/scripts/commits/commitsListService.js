@@ -9,7 +9,7 @@ angular.module('codebrag.commits')
             var responsePromise = Commits.get({reviewed: reviewed}).$then(function(response) {
                 return response.data.commits;
             });
-            commits.loadElements(responsePromise);
+            return commits.loadElements(responsePromise);
     	}
 
         function syncCommits() {

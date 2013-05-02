@@ -20,8 +20,9 @@ codebrag.AsyncCollection.prototype = {
 
     loadElements: function (promise) {
         var self = this;
-        promise.then(function(receivedCollection) {
+        return promise.then(function(receivedCollection) {
             self._replaceElementsWith(receivedCollection);
+            return self.elements;
         })
     },
 
