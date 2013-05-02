@@ -11,7 +11,7 @@ import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 
 class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
 
-  val commitListFinder = new MongoCommitListFinder
+  val commitListFinder = new MongoCommitFinder
   var commitReviewTaskDao = new  MongoCommitReviewTaskDAO
   val commitInfoDao = new MongoCommitInfoDAO
 

@@ -4,10 +4,16 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{FlatSpec, BeforeAndAfterEach}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.{DiffLine, CommitFileDiff}
+import com.softwaremill.codebrag.dao.reporting.views._
+import com.softwaremill.codebrag.dao.reporting.views.FileCommentsView
+import com.softwaremill.codebrag.domain.DiffLine
+import com.softwaremill.codebrag.dao.reporting.views.CommentsView
+import com.softwaremill.codebrag.domain.CommitFileDiff
+import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
 
 class CommitDetailsWithCommentsSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with CommentListFinderVerifyHelpers {
 
-  val Commit = CommitListItemDTO("123", "123abc", "This is commit message", "John Doe", "John Doe", DateTime.now.toDate)
+  val Commit = CommitView("123", "123abc", "This is commit message", "John Doe", "John Doe", DateTime.now.toDate)
   val Lines = List(DiffLine("line one", 1, 2, "added"), DiffLine("line two", 2, 2, "added"))
   val Diffs = List(CommitFileDiff("test.txt", "added", Lines))
 
@@ -16,7 +22,7 @@ class CommitDetailsWithCommentsSpec extends FlatSpec with BeforeAndAfterEach wit
     val comments = CommentsView(comments = Nil, inlineComments = Nil)
 
     // when
-    val commitWithComments = CommitDetailsWithComments.buildFrom(Commit, comments, Diffs)
+    val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
 
     // then
     commitWithComments.comments should be('empty)
@@ -30,7 +36,7 @@ class CommitDetailsWithCommentsSpec extends FlatSpec with BeforeAndAfterEach wit
     val comments = CommentsView(comments = List(generalComment), inlineComments = Nil)
 
     // when
-    val commitWithComments = CommitDetailsWithComments.buildFrom(Commit, comments, Diffs)
+    val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
 
     // then
     commitWithComments.comments.head should be(generalComment)
@@ -44,7 +50,7 @@ class CommitDetailsWithCommentsSpec extends FlatSpec with BeforeAndAfterEach wit
     val comments = CommentsView(comments = Nil, inlineComments = List(fileComments))
 
     // when
-    val commitWithComments = CommitDetailsWithComments.buildFrom(Commit, comments, Diffs)
+    val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
 
     // then
     val fileLines = commitWithComments.files.find(_.filename == "test.txt").get.lines

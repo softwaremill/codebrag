@@ -13,8 +13,8 @@ import com.softwaremill.codebrag.activities.AddCommentActivity
 import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO, UserDAO}
 
 class CommitsServlet(val authenticator: Authenticator,
-                     val commitListFinder: CommitListFinder,
-                     val commentListFinder: CommentListFinder,
+                     val commitListFinder: CommitFinder,
+                     val commentListFinder: CommentFinder,
                      val commentActivity: AddCommentActivity,
                      val commitReviewTaksDao: CommitReviewTaskDAO,
                      val userDao: UserDAO, val swagger: Swagger,

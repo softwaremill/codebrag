@@ -7,12 +7,13 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.builders.CommentAssembler
+import com.softwaremill.codebrag.dao.reporting.views.{SingleCommentView, FileCommentsView}
 
 class MongoCommentListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers with CommentListFinderVerifyHelpers {
 
   val userDao = new MongoUserDAO
   val commentDao = new MongoCommitCommentDAO
-  var commentListFinder: MongoCommentListFinder = _
+  var commentListFinder: MongoCommentFinder = _
 
   val CommitId = oid(1)
 
@@ -35,7 +36,7 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEa
   override def beforeEach() {
     CommentRecord.drop
     UserRecord.drop
-    commentListFinder = new MongoCommentListFinder(userDao)
+    commentListFinder = new MongoCommentFinder(userDao)
 
     StoredCommitComments.foreach(commentDao.save)
     StoredInlineComments.foreach(commentDao.save)

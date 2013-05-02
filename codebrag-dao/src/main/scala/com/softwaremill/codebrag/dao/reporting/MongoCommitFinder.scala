@@ -4,14 +4,15 @@ import com.softwaremill.codebrag.dao.{CommitReviewTaskRecord, CommitInfoRecord}
 import com.foursquare.rogue.LiftRogue._
 import java.util.Date
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
 
-class MongoCommitListFinder extends CommitListFinder {
+class MongoCommitFinder extends CommitFinder {
 
   override def findCommitsToReviewForUser(userId: ObjectId) = {
     val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
     val commitIds = userReviewTasks.map(_.commitId.get).toSet
     val commits = projectionQuery.where(_.id in commitIds).orderDesc(_.committerDate).fetch()
-    CommitListDTO(commits.map(recordToDto(_)))
+    CommitListView(commits.map(recordToDto(_)))
   }
 
   override def findCommitInfoById(commitIdStr: String) = {
@@ -23,8 +24,8 @@ class MongoCommitListFinder extends CommitListFinder {
     }
   }
 
-  private def recordToDto(recordData: (ObjectId, String, String, String, String, Date)): CommitListItemDTO = {
-    CommitListItemDTO(recordData._1.toString, recordData._2, recordData._3,
+  private def recordToDto(recordData: (ObjectId, String, String, String, String, Date)): CommitView = {
+    CommitView(recordData._1.toString, recordData._2, recordData._3,
       recordData._4, recordData._5, recordData._6)
   }
 

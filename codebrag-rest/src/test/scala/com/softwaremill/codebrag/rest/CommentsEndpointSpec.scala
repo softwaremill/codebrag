@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.dao.UserDAO
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import com.softwaremill.codebrag.dao.reporting.{SingleCommentView, CommentListFinder}
+import com.softwaremill.codebrag.dao.reporting.{CommentFinder}
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{InlineCommitComment, EntireCommitComment, Authentication, User}
@@ -16,13 +16,14 @@ import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.service.comments.command.{NewInlineCommitComment, NewEntireCommitComment}
 import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterEach
+import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
 
 
 class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {
 
   var commentActivity: AddCommentActivity = _
   var userDao: UserDAO = _
-  var commentListFinder: CommentListFinder = _
+  var commentListFinder: CommentFinder = _
 
   val user = currentUser(new ObjectId)
   val commitId = new ObjectId
@@ -30,7 +31,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
   override def beforeEach() {
     commentActivity = mock[AddCommentActivity]
     userDao = mock[UserDAO]
-    commentListFinder = mock[CommentListFinder]
+    commentListFinder = mock[CommentFinder]
   }
 
   def bindServlet {
@@ -106,7 +107,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde")
   }
 
- class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[UserJson], val commentActivity: AddCommentActivity, val userDao: UserDAO, val commentListFinder: CommentListFinder) extends CommentsEndpoint {
+ class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[UserJson], val commentActivity: AddCommentActivity, val userDao: UserDAO, val commentListFinder: CommentFinder) extends CommentsEndpoint {
 
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
 

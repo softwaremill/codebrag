@@ -4,8 +4,9 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.{UserDAO, MongoCommitCommentDAO, UserRecord}
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.domain.{CommentBase, InlineCommitComment, EntireCommitComment}
+import com.softwaremill.codebrag.dao.reporting.views.{SingleCommentView, FileCommentsView, CommentsView}
 
-class MongoCommentListFinder(userDao: UserDAO) extends CommentListFinder {
+class MongoCommentFinder(userDao: UserDAO) extends CommentFinder {
 
 
   def commentsForCommit(commitId: ObjectId): CommentsView = {

@@ -3,8 +3,8 @@ package com.softwaremill.codebrag.service.diff
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import annotation.tailrec
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.SingleCommentView
 import com.softwaremill.codebrag.domain.{DiffLine, CommitFileDiff, CommentBase}
+import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
 
 class DiffService(commitInfoDao: CommitInfoDAO) {
 

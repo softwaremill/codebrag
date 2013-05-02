@@ -8,12 +8,13 @@ import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.service.comments.command.NewInlineCommitComment
 import scala.Some
 import com.softwaremill.codebrag.service.comments.command.NewEntireCommitComment
+import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
 
 trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpointSwaggerDefinition {
 
   def commentActivity: AddCommentActivity
   def userDao: UserDAO
-  def commentListFinder: CommentListFinder
+  def commentListFinder: CommentFinder
 
   post("/:id/comments", operation(addCommentOperation)) {
 

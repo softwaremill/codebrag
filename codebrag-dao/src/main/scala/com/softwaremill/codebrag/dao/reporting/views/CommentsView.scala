@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao.reporting
+package com.softwaremill.codebrag.dao.reporting.views
 
 import java.util.Date
 

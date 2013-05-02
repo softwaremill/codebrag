@@ -9,13 +9,13 @@ import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.CommitReviewTaskDAO
 import com.softwaremill.codebrag.domain.CommitReviewTask
-import com.softwaremill.codebrag.dao.reporting.CommitListDTO
+import com.softwaremill.codebrag.dao.reporting.views.{CommitListView, CommitDetailsWithCommentsView}
 
 trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpointSwaggerDefinition {
 
   def importerFactory: GitHubCommitImportServiceFactory
   def diffService: DiffWithCommentsService
-  def commitListFinder: CommitListFinder
+  def commitListFinder: CommitFinder
   def commitReviewTaksDao: CommitReviewTaskDAO
 
   before() {
@@ -55,7 +55,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
 
 trait CommitsEndpointSwaggerDefinition extends SwaggerSupport {
 
-  val getCommitsOperation = apiOperation[CommitListDTO]("get")
+  val getCommitsOperation = apiOperation[CommitListView]("get")
     .summary("Gets all commits to review for current user ")
 
   val markCommitAsReviewed = apiOperation[Unit]("delete")
@@ -63,7 +63,7 @@ trait CommitsEndpointSwaggerDefinition extends SwaggerSupport {
     .parameter(pathParam[String]("id").description("Identifier of the commit").required)
 
 
-  val getFilesForCommit = apiOperation[List[CommitDetailsWithComments]]("get")
+  val getFilesForCommit = apiOperation[List[CommitDetailsWithCommentsView]]("get")
     .summary("Get a list of files with diffs")
     .parameter(pathParam[String]("id").description("Identifier of the commit").required)
 }
