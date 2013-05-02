@@ -1,19 +1,32 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.ThreadAwareFollowup
+import com.softwaremill.codebrag.domain.{CommentThreadId, ThreadAwareFollowup, Followup}
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field._
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
-import net.liftweb.record.field.IntField
+import net.liftweb.record.field.{OptionalIntField, OptionalStringField, IntField}
+import org.joda.time.DateTime
+import scala.None
+import net.liftweb.common.Box
 
 class MongoFollowupDAO extends FollowupDAO {
+
+
+  def findById(followupId: ObjectId): Option[ThreadAwareFollowup] = {
+    FollowupRecord.where(_.followupId eqs followupId).get() match {
+      case Some(record) => Some(toFollowup(record))
+      case None => None
+    }
+  }
 
   def createOrUpdateExisting(followup: ThreadAwareFollowup) {
     val query = FollowupRecord
       .where(_.user_id eqs followup.userId)
       .and(_.threadId.subselect(_.commitId) eqs followup.commitId)
+      .and(_.threadId.subselect(_.fileName) exists(followup.threadId.fileName.isDefined))
       .andOpt(followup.threadId.fileName)(_.threadId.subselect(_.fileName) eqs _)
+      .and(_.threadId.subselect(_.lineNumber) exists(followup.threadId.lineNumber.isDefined))
       .andOpt(followup.threadId.lineNumber)(_.threadId.subselect(_.lineNumber) eqs _)
       .asDBObject
     val commitRecord = CommitInfoRecord.where(_.id eqs followup.commitId).get().getOrElse(
@@ -22,14 +35,19 @@ class MongoFollowupDAO extends FollowupDAO {
     FollowupRecord.upsert(query, followupToRecord(followup, commitRecord))
   }
 
-  override def delete(commitId: ObjectId, userId: ObjectId) {
-    FollowupRecord.where(_.commit.subselect(_.id) eqs commitId).and(_.user_id eqs userId).findAndDeleteOne()
+  override def delete(followupId: ObjectId) {
+    FollowupRecord.where(_.followupId eqs followupId).findAndDeleteOne()
   }
 
-  def followupToRecord(followup: ThreadAwareFollowup, commitRecord: CommitInfoRecord) = {
+  private def followupToRecord(followup: ThreadAwareFollowup, commitRecord: CommitInfoRecord) = {
     val record = toRecord(followup, commitRecord).asDBObject
     record.removeField("_id") // remove _id field, otherwise Mongo screams it cannot modify _id when updating record
     record
+  }
+
+  private def toFollowup(record: FollowupRecord) = {
+    val threadId = CommentThreadId(record.threadId.get.commitId.get, record.threadId.get.lineNumber.get, record.threadId.get.fileName.get)
+    ThreadAwareFollowup(record.followupId.get, record.commit.get.id.get, new DateTime(record.date), threadId)
   }
 
   private def toRecord(followup: ThreadAwareFollowup, commitRecord: CommitInfoRecord): FollowupRecord = {
@@ -46,17 +64,19 @@ class MongoFollowupDAO extends FollowupDAO {
     }
 
     FollowupRecord.createRecord
+      .followupId(followup.id.getOrElse(new ObjectId))
       .commit(commitInfo)
       .user_id(followup.userId)
       .date(followup.date.toDate)
       .threadId(threadId)
   }
 
-
 }
 
 class FollowupRecord extends MongoRecord[FollowupRecord] with ObjectIdPk[FollowupRecord] {
   def meta = FollowupRecord
+
+  object followupId extends ObjectIdField(this)
 
   object user_id extends ObjectIdField(this)
 
@@ -93,9 +113,9 @@ class ThreadIdRecord extends BsonRecord[ThreadIdRecord] {
 
   object commitId extends ObjectIdField(this)
 
-  object fileName extends LongStringField(this) { override def optional_? = true }
+  object fileName extends OptionalStringField(this, Box(None))
 
-  object lineNumber extends IntField(this) { override def optional_? = true }
+  object lineNumber extends OptionalIntField(this, Box(None))
 
 }
 

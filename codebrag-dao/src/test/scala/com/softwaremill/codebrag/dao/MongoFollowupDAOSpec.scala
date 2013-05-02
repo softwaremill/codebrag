@@ -75,7 +75,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
     followups.head.date.get should equal(newDate.toDate)
   }
 
-  it should "create new follow up for thread" in {
+  it should "create new follow up for inline comments thread" in {
     val baseDate = DateTime.now
     followupDao.createOrUpdateExisting(ThreadAwareFollowup(Commit.id, FollowupTargetUserId, baseDate, CommentThreadId(Commit.id)))
     followupDao.createOrUpdateExisting(ThreadAwareFollowup(Commit.id, FollowupTargetUserId, baseDate, CommentThreadId(Commit.id, Some(20), Some("file.txt"))))
@@ -90,27 +90,40 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
     followups.size should be(1)
   }
 
-
-  // TODO: removing followups for given threadId only
-  ignore should "delete a single follow-up from storage" in {
-    followupDao.createOrUpdateExisting(ThreadAwareFollowup(Commit.id, FollowupTargetUserId, DateTime.now, CommentThreadId(Commit.id)))
-    followupDao.createOrUpdateExisting(ThreadAwareFollowup(Commit.id, FollowupTargetUserId, DateTime.now, CommentThreadId(Commit.id, Some(20), Some("file.txt"))))
+  it should "create new follow up for entire commit comments thread" in {
+    val baseDate = DateTime.now
+    followupDao.createOrUpdateExisting(ThreadAwareFollowup(Commit.id, FollowupTargetUserId, baseDate, CommentThreadId(Commit.id, Some(20), Some("file.txt"))))
 
     // when
-    followupDao.delete(Commit.id, FollowupTargetUserId)
+    val updatedFollowup = ThreadAwareFollowup(Commit.id, FollowupTargetUserId, baseDate, CommentThreadId(Commit.id))
+    followupDao.createOrUpdateExisting(updatedFollowup)
 
     // then
-    FollowupRecord.count should be(1)
+    FollowupRecord.count should be(2)
   }
 
+  it should "delete follow-up for single thread" in {
+    followupDao.createOrUpdateExisting(ThreadAwareFollowup(Commit.id, FollowupTargetUserId, DateTime.now, CommentThreadId(Commit.id, Some(20), Some("file.txt"))))
+    val followupToRemove = ThreadAwareFollowup(oid(123), Commit.id, FollowupTargetUserId, DateTime.now, CommentThreadId(Commit.id))
+    followupDao.createOrUpdateExisting(followupToRemove)
+    followupDao.createOrUpdateExisting(ThreadAwareFollowup(Commit.id, FollowupTargetUserId, DateTime.now, CommentThreadId(Commit.id, Some(23), Some("test.txt"))))
+
+    // when
+    followupDao.delete(followupToRemove.id.get)
+
+    // then
+    val followupsLeft = FollowupRecord.select(_.threadId.subselect(_.fileName)).fetch()
+    followupsLeft.toSet should equal(Set(Some("file.txt"), Some("test.txt")))
+  }
 
   it should "not delete follow-ups of other users" in {
     followupDao.createOrUpdateExisting(ThreadAwareFollowup(Commit.id, DifferentUserId1, DateTime.now, CommentThreadId(Commit.id)))
-    followupDao.createOrUpdateExisting(ThreadAwareFollowup(Commit.id, FollowupTargetUserId, DateTime.now, CommentThreadId(Commit.id)))
+    val followupToRemove = ThreadAwareFollowup(oid(123), Commit.id, FollowupTargetUserId, DateTime.now, CommentThreadId(Commit.id))
+    followupDao.createOrUpdateExisting(followupToRemove)
     followupDao.createOrUpdateExisting(ThreadAwareFollowup(Commit.id, DifferentUserId2, DateTime.now, CommentThreadId(Commit.id)))
 
     // when
-    followupDao.delete(Commit.id, FollowupTargetUserId)
+    followupDao.delete(followupToRemove.id.get)
 
     // then
     val storedUserIds = FollowupRecord.findAll.map(_.user_id.get)

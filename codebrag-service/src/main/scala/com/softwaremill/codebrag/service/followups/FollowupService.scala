@@ -10,6 +10,19 @@ import com.typesafe.scalalogging.slf4j.Logging
 class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, commitCommentDao: CommitCommentDAO, userDao: UserDAO)(implicit clock: Clock)
   extends Logging {
 
+  def deleteUsersFollowup(userId: ObjectId, followupId: ObjectId): Either[String, Unit] = {
+    followupDao.findById(followupId) match {
+      case Some(followup) => {
+        if(followup.isOwner(userId)) {
+          Right(followupDao.delete(followupId))
+        } else {
+          Left("User not allowed to delete followup")
+        }
+      }
+      case None => Left("No such followup for user to remove")
+    }
+  }
+
   def generateFollowupsForComment(currentComment: CommentBase) {
     findCommitWithCommentsRelatedTo(currentComment) match {
       case (None, _) => throwException(s"Commit ${currentComment.commitId} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")

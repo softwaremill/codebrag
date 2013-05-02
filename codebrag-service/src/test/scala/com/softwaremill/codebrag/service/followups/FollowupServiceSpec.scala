@@ -13,6 +13,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.EntireCommitComment
 import scala.Some
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import org.mockito.ArgumentCaptor
 
 class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with FollowupServiceSpecFixture{
 

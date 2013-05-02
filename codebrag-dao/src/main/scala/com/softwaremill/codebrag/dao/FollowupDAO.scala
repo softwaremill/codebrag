@@ -5,8 +5,10 @@ import org.bson.types.ObjectId
 
 trait FollowupDAO {
 
+  def findById(followupId: ObjectId): Option[ThreadAwareFollowup]
+
   def createOrUpdateExisting(followup: ThreadAwareFollowup)
 
-  def delete(commitId: ObjectId, userId: ObjectId)
+  def delete(followupId: ObjectId)
 
 }
