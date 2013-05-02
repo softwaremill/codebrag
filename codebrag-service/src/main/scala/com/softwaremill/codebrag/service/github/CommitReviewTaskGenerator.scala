@@ -9,6 +9,7 @@ class CommitReviewTaskGenerator(userDao: UserDAO, commitToReviewDao: CommitRevie
     commit.createReviewTasksFor(repositoryUsers()).foreach(reviewTask => commitToReviewDao.save(reviewTask))
   }
 
+  // TODO: return only repository users instead of all users as soon as permissions model is implemented
   def repositoryUsers() = {
     userDao.findAll()
   }

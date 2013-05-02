@@ -7,6 +7,7 @@ case class CommitInfo(id: ObjectId, sha: String, message: String, authorName: St
                       commitDate: DateTime, parents: List[String], files: List[CommitFileInfo]) {
 
   def createReviewTasksFor(users: List[User]): List[CommitReviewTask] = {
+    // TODO: exclude commit author from review task generation as soon as we have consistent mapping between codebrag and repo users
     users.filterNot(_.name == authorName).map(user => CommitReviewTask(id, user.id))
   }
 
