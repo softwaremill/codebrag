@@ -5,7 +5,6 @@ import com.softwaremill.codebrag.dao.reporting._
 import org.scalatra.swagger.SwaggerSupport
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import com.softwaremill.codebrag.dao.UserDAO
-import com.softwaremill.codebrag.dao.reporting.CommentsView
 import com.softwaremill.codebrag.service.comments.command.NewInlineCommitComment
 import scala.Some
 import com.softwaremill.codebrag.service.comments.command.NewEntireCommitComment
@@ -24,12 +23,6 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpoi
       case Some(user) => AddCommentResponse(SingleCommentView(savedComment.id.toString, user.name, savedComment.message, savedComment.postingTime.toDate))
       case None => halt(400, s"Invalid user id $savedComment.authorId")
     }
-  }
-
-  get("/:id/comments") {
-    haltIfNotAuthenticated()
-    val commitId = params("id")
-    commentListFinder.commentsForCommit(new ObjectId(commitId))
   }
 
   def extractComment = {
@@ -53,12 +46,6 @@ trait CommentsEndpointSwaggerDefinition extends SwaggerSupport {
     .parameter(bodyParam[String]("body").description("Message body").required)
     .parameter(bodyParam[String]("fileName").description("File name for inline comment").optional)
     .parameter(bodyParam[Int]("lineNumber").description("Line number of file for inline comment").optional)
-
-/*
-  val getCommentsOperation = apiOperation[CommentsView]("getList")
-    .summary("Get a lists of comments")
-    .parameter(pathParam[String]("id").description("Commit identifier").required)
-*/
 
 }
 
