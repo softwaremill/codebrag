@@ -5,10 +5,10 @@ import org.bson.types.ObjectId
 
 abstract sealed class CommentBase(val id: ObjectId, val commitId: ObjectId, val authorId: ObjectId, val message: String, val postingTime: DateTime) {
 
-  def thread: CommentsThreadId
+  def threadId: CommentThreadId
 }
 
-case class CommentsThreadId(commitId: ObjectId, lineNumber: Option[Int] = None, fileName: Option[String] = None)
+case class CommentThreadId(commitId: ObjectId, lineNumber: Option[Int] = None, fileName: Option[String] = None)
 
 case class EntireCommitComment(
                                 override val id: ObjectId,
@@ -17,7 +17,7 @@ case class EntireCommitComment(
                                 override val message: String,
                                 override val postingTime: DateTime) extends CommentBase(id, commitId, authorId, message, postingTime) {
 
-  def thread = CommentsThreadId(commitId)
+  def threadId = CommentThreadId(commitId)
 
 }
 
@@ -30,6 +30,6 @@ case class InlineCommitComment(
                                 fileName: String,
                                 lineNumber: Int) extends CommentBase(id, commitId, authorId, message, postingTime) {
 
-  def thread = CommentsThreadId(commitId, Some(lineNumber), Some(fileName))
+  def threadId = CommentThreadId(commitId, Some(lineNumber), Some(fileName))
 
 }

@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.Followup
+import com.softwaremill.codebrag.domain.ThreadAwareFollowup
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field._
 import com.foursquare.rogue.LiftRogue._
@@ -9,8 +9,13 @@ import net.liftweb.record.field.IntField
 
 class MongoFollowupDAO extends FollowupDAO {
 
-  def createOrUpdateExisting(followup: Followup) {
-    val query = FollowupRecord.where(_.user_id eqs followup.userId).and(_.commit.subselect(_.id) eqs followup.commitId).asDBObject
+  def createOrUpdateExisting(followup: ThreadAwareFollowup) {
+    val query = FollowupRecord
+      .where(_.user_id eqs followup.userId)
+      .and(_.threadId.subselect(_.commitId) eqs followup.commitId)
+      .andOpt(followup.threadId.fileName)(_.threadId.subselect(_.fileName) eqs _)
+      .andOpt(followup.threadId.lineNumber)(_.threadId.subselect(_.lineNumber) eqs _)
+      .asDBObject
     val commitRecord = CommitInfoRecord.where(_.id eqs followup.commitId).get().getOrElse(
       throw new IllegalStateException(s"Cannot find commit ${followup.commitId}")
     )
@@ -21,13 +26,13 @@ class MongoFollowupDAO extends FollowupDAO {
     FollowupRecord.where(_.commit.subselect(_.id) eqs commitId).and(_.user_id eqs userId).findAndDeleteOne()
   }
 
-  def followupToRecord(followup: Followup, commitRecord: CommitInfoRecord) = {
+  def followupToRecord(followup: ThreadAwareFollowup, commitRecord: CommitInfoRecord) = {
     val record = toRecord(followup, commitRecord).asDBObject
     record.removeField("_id") // remove _id field, otherwise Mongo screams it cannot modify _id when updating record
     record
   }
 
-  private def toRecord(followup: Followup, commitRecord: CommitInfoRecord): FollowupRecord = {
+  private def toRecord(followup: ThreadAwareFollowup, commitRecord: CommitInfoRecord): FollowupRecord = {
 
     val commitInfo = FollowupCommitInfoRecord.createRecord
       .id(followup.commitId)
@@ -35,8 +40,10 @@ class MongoFollowupDAO extends FollowupDAO {
       .author(commitRecord.authorName.get)
       .date(commitRecord.committerDate.get)
 
-    val threadId = ThreadIdRecord.createRecord
-      .commitId(followup.commitId)
+    val threadId = (followup.threadId.fileName, followup.threadId.lineNumber) match {
+      case (Some(fileName), Some(lineNumber)) => ThreadIdRecord.createRecord.commitId(followup.commitId).fileName(fileName).lineNumber(lineNumber)
+      case _ => ThreadIdRecord.createRecord.commitId(followup.commitId)
+    }
 
     FollowupRecord.createRecord
       .commit(commitInfo)

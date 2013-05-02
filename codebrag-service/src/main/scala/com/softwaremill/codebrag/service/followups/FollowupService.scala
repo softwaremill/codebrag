@@ -4,7 +4,6 @@ import com.softwaremill.codebrag.dao._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain._
 import pl.softwaremill.common.util.time.Clock
-import com.softwaremill.codebrag.domain.Followup
 import scala.Some
 import com.typesafe.scalalogging.slf4j.Logging
 
@@ -25,7 +24,7 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
   def generateFollowUps(commit: CommitInfo, existingComments: List[CommentBase], currentComment: CommentBase) {
     val followUpCreationDate = clock.currentDateTimeUTC()
     usersToGenerateFollowUpsFor(commit, existingComments, currentComment).foreach(userId => {
-      followupDao.createOrUpdateExisting(Followup(commit.id, userId, followUpCreationDate))
+      followupDao.createOrUpdateExisting(ThreadAwareFollowup(commit.id, userId, followUpCreationDate, currentComment.threadId))
     })
   }
 
