@@ -23,10 +23,10 @@ object CommitDetailsWithCommentsView {
   }
 
   private def joinCommentsWithLine(file: CommitFileDiff, comments: List[FileCommentsView]) = {
-    file.lines.view.zipWithIndex.map(line => {
-      val commentsForLine = findCommentsForLine(file.filename, line._2, comments)
-      DiffLineWithCommentsView(line._1.line, line._1.lineNumberOriginal, line._1.lineNumberChanged, line._1.lineType, commentsForLine)
-    }).toList
+    file.lines.view.zipWithIndex.map({case (lineValue, lineNumber) => {
+      val commentsForLine = findCommentsForLine(file.filename, lineNumber, comments)
+      DiffLineWithCommentsView(lineValue.line, lineValue.lineNumberOriginal, lineValue.lineNumberChanged, lineValue.lineType, commentsForLine)
+    }}).toList
   }
 
   private def findCommentsForLine(fileName: String, lineNumber: Int, comments: List[FileCommentsView]) = {
