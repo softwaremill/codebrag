@@ -34,6 +34,18 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     commitsFound.commits should have size(2)
   }
 
+  it should "find all commits for all users" in {
+    // given
+    val storedCommits = prepareAndStoreSomeCommits(howMany = 5)
+    storeCommitReviewTasksFor(userId, storedCommits(0), storedCommits(1))
+
+    // when
+    val commitsFound = commitListFinder.findAll()
+
+    // then
+    commitsFound.commits should have size(5)
+  }
+
   it should "find commits starting from newest commit date" in {
     // given
     val baseDate = DateTime.now()

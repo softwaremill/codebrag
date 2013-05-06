@@ -33,7 +33,8 @@ class MongoCommitFinder extends CommitFinder {
     CommitInfoRecord.select(_.id, _.sha, _.message, _.authorName, _.committerName, _.authorDate)
   }
 
-  override def findAllByOthers(userId: ObjectId) = {
-    findCommitsToReviewForUser(userId) // TODO
+  override def findAll() = {
+    val commits = projectionQuery.orderDesc(_.committerDate).fetch()
+    CommitListView(commits.map(recordToDto(_)))
   }
 }

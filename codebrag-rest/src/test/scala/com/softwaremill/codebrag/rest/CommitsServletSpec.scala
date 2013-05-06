@@ -67,7 +67,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val userId = new ObjectId
     val user = UserJson(userId.toString, "user", "user@email.com", "token")
     userIsAuthenticatedAs(user)
-    when(commitsListFinder.findAllByOthers(userId)).thenReturn(SamplePendingCommits)
+    when(commitsListFinder.findAll(userId)).thenReturn(SamplePendingCommits)
     get("/?reviewed=true") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))

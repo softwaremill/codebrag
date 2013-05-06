@@ -56,7 +56,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
   }
 
   private def fetchCommitsPendingReview() = commitListFinder.findCommitsToReviewForUser(new ObjectId(user.id))
-  private def fetchAllCommits() = commitListFinder.findAllByOthers(new ObjectId(user.id))
+  private def fetchAllCommits() = commitListFinder.findAll()
 }
 
 trait CommitsEndpointSwaggerDefinition extends SwaggerSupport {
