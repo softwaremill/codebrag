@@ -4,19 +4,19 @@ angular.module('codebrag.followups')
 
     .controller('FollowupListItemCtrl', function ($scope, $state, $stateParams, followupsListService) {
 
-        $scope.openCommitDetails = function (commit) {
-            $state.transitionTo('followups.details', {id: commit.commitId})
+        $scope.openFollowupDetails = function (followup) {
+            $state.transitionTo('followups.details', {id: followup.followupId})
         };
 
         $scope.dismiss = function (followup) {
-            var id = followup.commit.commitId;
+            var id = followup.followupId;
             followupsListService.removeFollowup(id).then(function() {
-                _getOutOfCommitDetailsIfCurrentRemoved(id)
+                _getOutOfFollowupDetailsIfCurrentRemoved(id)
             })
         };
 
-        function _getOutOfCommitDetailsIfCurrentRemoved(commitId) {
-            if (commitId === $stateParams.id) {
+        function _getOutOfFollowupDetailsIfCurrentRemoved(followupId) {
+            if (followupId === $stateParams.id) {
                 $state.transitionTo('followups.list');
             }
         }
