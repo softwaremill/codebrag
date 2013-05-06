@@ -20,25 +20,32 @@ angular.module('codebrag.followups')
             return followups.elements;
         }
 
-        function removeFollowup(commitId) {
-            var requestPromise = _httpRequest('DELETE', commitId);
+        function removeFollowup(followupId) {
+            var requestPromise = _httpRequest('DELETE', followupId);
             return followups.removeElement(function(el) {
-                return el.commit.commitId === commitId;
+                return el.followupId === followupId;
             }, requestPromise);
         }
 
-        function removeFollowupAndGetNext(commitId) {
-            var requestPromise = _httpRequest('DELETE', commitId);
+        function removeFollowupAndGetNext(followupId) {
+            var requestPromise = _httpRequest('DELETE', followupId);
             return followups.removeElementAndGetNext(function(el) {
-                return el.commit.commitId === commitId;
+                return el.followupId === followupId;
             }, requestPromise);
+        }
+
+        function loadFollowupById(followupId) {
+            return _httpRequest('GET', followupId).then(function(response) {
+                return response.data;
+            });
         }
 
         return {
 			loadFollowupsFromServer: loadFollowupsFromServer,
             allFollowups: allFollowups,
             removeFollowupAndGetNext: removeFollowupAndGetNext,
-            removeFollowup: removeFollowup
+            removeFollowup: removeFollowup,
+            loadFollowupById: loadFollowupById
 		};
 
     });

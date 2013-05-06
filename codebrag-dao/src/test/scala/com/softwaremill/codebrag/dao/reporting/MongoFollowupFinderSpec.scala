@@ -24,37 +24,58 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach 
 
   it should "find all follow-ups only for given user" in {
     // given
-    storeUserFollowups
-    storeAnotherUserFollowup
+    storeFollowupsForJohn
+    storeFollowupForBob
 
     // when
-    val userFollowups = followupFinder.findAllFollowupsForUser(TargetUserId)
+    val userFollowups = followupFinder.findAllFollowupsForUser(JohnId)
 
     // then
     userFollowups.followups should have size(2)
   }
 
+  it should "find followup by id for given user" in {
+    // given
+    val followupsStored = storeFollowupsForJohn
+    val Some(followupIdToFind) = followupsStored.head.id
+
+    // when & then
+    val Right(followupFound) = followupFinder.findFollowupForUser(JohnId, followupIdToFind)
+  }
+
+  it should "not find followup by id for another user" in {
+    // given
+    val followupsStored = storeFollowupsForJohn
+    val Some(followupIdToFind) = followupsStored.head.id
+
+    // when & then
+    val Left(msg) = followupFinder.findFollowupForUser(BobId, followupIdToFind)
+  }
+
   it should "return user follow-ups with newest first order" in {
     // given
-    storeUserFollowups
+    storeFollowupsForJohn
 
     // when
-    val userFollowups = followupFinder.findAllFollowupsForUser(TargetUserId).followups
+    val userFollowups = followupFinder.findAllFollowupsForUser(JohnId).followups
 
     // then
     userFollowups(First).date should equal(laterDate.toDate)
     userFollowups(Second).date should equal(date.toDate)
   }
 
-  def storeUserFollowups {
-    List(
-      Followup(FixtureCommit1.id, TargetUserId, date, ThreadDetails(FixtureCommit1.id)),
-      Followup(FixtureCommit2.id, TargetUserId, laterDate, ThreadDetails(FixtureCommit2.id)))
-    .foreach(followupDao.createOrUpdateExisting(_))
+  def storeFollowupsForJohn = {
+    val followups = List(
+      Followup(ObjectIdTestUtils.oid(100), FixtureCommit1.id, JohnId, date, ThreadDetails(FixtureCommit1.id)),
+      Followup(ObjectIdTestUtils.oid(200), FixtureCommit2.id, JohnId, laterDate, ThreadDetails(FixtureCommit2.id)))
+    followups.foreach(followupDao.createOrUpdateExisting(_))
+    followups
   }
 
-  def storeAnotherUserFollowup {
-    followupDao.createOrUpdateExisting(Followup(FixtureCommit3.id, OtherUserId, latestDate, ThreadDetails(FixtureCommit3.id)))
+  def storeFollowupForBob = {
+    val followup = Followup(ObjectIdTestUtils.oid(300), FixtureCommit3.id, BobId, latestDate, ThreadDetails(FixtureCommit3.id))
+    followupDao.createOrUpdateExisting(followup)
+    followup
   }
 
   def storeAllCommits {
@@ -65,8 +86,8 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach 
 
 trait MongoFollowupFinderSpecFixture {
 
-  val TargetUserId = ObjectIdTestUtils.oid(12)
-  val OtherUserId = ObjectIdTestUtils.oid(25)
+  val JohnId = ObjectIdTestUtils.oid(12)
+  val BobId = ObjectIdTestUtils.oid(25)
 
   val date = DateTime.now()
   val laterDate = date.plusMinutes(1)

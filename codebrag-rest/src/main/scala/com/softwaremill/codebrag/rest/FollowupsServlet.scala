@@ -6,8 +6,9 @@ import org.scalatra.json.JacksonJsonSupport
 import com.softwaremill.codebrag.dao.reporting._
 import scala.Some
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.views.FollowupListView
+import com.softwaremill.codebrag.dao.reporting.views.{FollowupView, FollowupListView}
 import com.softwaremill.codebrag.service.followups.FollowupService
+import org.scalatra.NotFound
 
 class FollowupsServlet(val authenticator: Authenticator,
                        val swagger: Swagger,
@@ -18,6 +19,15 @@ class FollowupsServlet(val authenticator: Authenticator,
   get("/", operation(getOperation)) {
     haltIfNotAuthenticated
     followupFinder.findAllFollowupsForUser(new ObjectId(user.id))
+  }
+
+  get("/:id", operation(getSingleOperation)) {
+    haltIfNotAuthenticated
+    val followupId = params("id")
+    followupFinder.findFollowupForUser(new ObjectId(user.id), new ObjectId(followupId)) match {
+      case Right(followup) => followup
+      case Left(msg) => NotFound(msg)
+    }
   }
 
   delete("/:id", operation(dismissOperation)) {
@@ -33,6 +43,7 @@ trait FollowupsServletSwaggerDefinition extends SwaggerSupport {
   protected val applicationDescription: String = "Follow-ups endpoint"
 
   val getOperation = apiOperation[FollowupListView]("get")
+  val getSingleOperation = apiOperation[FollowupView]("get")
   val dismissOperation = apiOperation[Unit]("dismiss")
     .summary("Deletes selected follow-up for current user")
     .parameter(pathParam[String]("id").description("Commit identifier").required)

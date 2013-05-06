@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.reporting
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.FollowupRecord
 import com.foursquare.rogue.LiftRogue._
-import com.softwaremill.codebrag.dao.reporting.views.{SingleFollowupView, FollowupCommitView, FollowupListView}
+import com.softwaremill.codebrag.dao.reporting.views.{FollowupView, FollowupCommitView, FollowupListView}
 
 class MongoFollowupFinder extends FollowupFinder {
 
@@ -12,9 +12,17 @@ class MongoFollowupFinder extends FollowupFinder {
     FollowupListView(followupRecords.map(toFollowupInfo(_)))
   }
 
+  def findFollowupForUser(userId: ObjectId, followupId: ObjectId) = {
+    val recordOpt = FollowupRecord.where(_.user_id eqs userId).and(_.followupId eqs followupId).get()
+    recordOpt match {
+      case Some(record) => Right(toFollowupInfo(record))
+      case None => Left("No such followup")
+    }
+  }
+
   def toFollowupInfo(record: FollowupRecord) = {
     val commitInfo: FollowupCommitView = extractCommitInfoFromRecord(record)
-    SingleFollowupView(record.followupId.get.toString, record.user_id.get.toString, record.date.get, commitInfo)
+    FollowupView(record.followupId.get.toString, record.user_id.get.toString, record.date.get, commitInfo)
   }
 
   def extractCommitInfoFromRecord(record: FollowupRecord) = {
