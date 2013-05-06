@@ -46,15 +46,20 @@ describe("CommitsListService", function () {
         expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
     }));
 
-    it('should call server to sync commits', inject(function (commitsListService) {
+    it('should call server to sync commits and add new ones to model', inject(function (commitsListService) {
         // Given
-        $httpBackend.expectPOST('rest/commits/sync').respond();
+        var loadedCommits = [commit(222)];
+        $httpBackend.whenGET('rest/commits?reviewed=true').respond({commits:loadedCommits});
+        var newCommits = [commit(222), commit(555)];
+        $httpBackend.expectPOST('rest/commits/sync').respond({commits: newCommits});
 
         // When
+        commitsListService.loadCommitsFromServer(LOAD_MODE.WITH_REVIEWED);
         commitsListService.syncCommits();
         $httpBackend.flush();
 
-        // Then server should be called
+        // Then
+        expect(commitsListService.allCommits()).toEqual(newCommits);
     }));
 
     it('should load reviewed commits from server', inject(function (commitsListService) {

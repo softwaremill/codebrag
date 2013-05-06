@@ -13,7 +13,12 @@ angular.module('codebrag.commits')
     	}
 
         function syncCommits() {
-            Commits.save({id: 'sync'},{})
+            $http({method: 'POST', url: 'rest/commits/sync'}).success(function(response) {
+                commits.elements.length = 0;
+                _.forEach(response.commits, function(commit) {
+                    commits.elements.push(commit);
+                });
+            });
         }
 
         function allCommits() {
