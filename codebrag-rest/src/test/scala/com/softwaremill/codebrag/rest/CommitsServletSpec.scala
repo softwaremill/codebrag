@@ -63,11 +63,11 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     }
   }
 
-  "GET /commits?reviewed=true" should "should return all commits by others" in {
+  "GET /commits?reviewed=true" should "should return all commits" in {
     val userId = new ObjectId
     val user = UserJson(userId.toString, "user", "user@email.com", "token")
     userIsAuthenticatedAs(user)
-    when(commitsListFinder.findAll(userId)).thenReturn(SamplePendingCommits)
+    when(commitsListFinder.findAll()).thenReturn(SamplePendingCommits)
     get("/?reviewed=true") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
