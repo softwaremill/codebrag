@@ -35,7 +35,7 @@
                                 <span>{{commit.date | relativeDate}} by {{commit.authorName}}</span>
                                 <small>{{commit.sha}}</small>
                             </div>
-                            <div class="span1">
+                            <div class="span1" ng-show="commit.pendingReview">
                                 <button class="btn btn-mini btn-success" ng-click="markAsReviewed(commit)" isolate-click><i class="icon-ok"></i></button>
                             </div>
                         </div>

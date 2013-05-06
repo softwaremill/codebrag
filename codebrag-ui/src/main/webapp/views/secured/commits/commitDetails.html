@@ -5,12 +5,16 @@
                 <h4 ng-bind-html-unsafe="currentCommit.commit.message"></h4>
                 <p>{{currentCommit.commit.sha}}</p>
                 <p>{{currentCommit.commit.date | relativeDate}} by {{currentCommit.commit.authorName}}</p>
-                <button class="btn btn-success" ng-click="markCurrentCommitAsReviewed()"><i class="icon-ok"></i> Mark this commit as reviewed</button>
+                <button class="btn btn-success" ng-click="markCurrentCommitAsReviewed()" ng-show="currentCommit.commit.pendingReview">
+                    <i class="icon-ok"></i> Mark this commit as reviewed
+                </button>
             </div>
         </div>
         <ng-include src="'views/secured/commits/commitFilesAndComments.html'"/>
     </div>
-    <button class="btn btn-success" ng-click="markCurrentCommitAsReviewed()"><i class="icon-ok"></i> Mark this commit as reviewed</button>
+    <button class="btn btn-success" ng-click="markCurrentCommitAsReviewed()" ng-show="currentCommit.commit.pendingReview">
+        <i class="icon-ok"></i> Mark this commit as reviewed
+    </button>
 </div>
 
 <script type="text/ng-template" id="inlineCommentForm">
