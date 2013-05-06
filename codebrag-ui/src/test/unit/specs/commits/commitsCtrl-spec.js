@@ -17,6 +17,26 @@ describe("Commits Controller", function () {
         $httpBackend = _$httpBackend_;
     }));
 
+    it('should fetch commits according to selected load mode', inject(function($controller, commitsListService) {
+        // Given
+        var scope = {};
+        var commitsReturnedByService = [];
+        spyOn(commitsListService, 'loadCommitsFromServer');
+        spyOn(commitsListService, 'allCommits').andReturn(commitsReturnedByService);
+
+        // When
+        $controller('CommitsCtrl', {$scope: scope});
+        expect(commitsListService.loadCommitsFromServer).toHaveBeenCalledWith(LOAD_MODE.ONLY_PENDING);
+        scope.loadMode = {
+            value: true
+        };
+        scope.loadCommits();
+
+        //Then
+        expect(commitsListService.loadCommitsFromServer).toHaveBeenCalledWith(LOAD_MODE.WITH_REVIEWED);
+        expect(scope.commits).toBe(commitsReturnedByService)
+    }));
+
     it('should fetch commits pending review when controller starts', inject(function($controller, commitsListService) {
         // Given
         var scope = {};

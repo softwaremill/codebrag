@@ -19,12 +19,7 @@ angular.module('codebrag.commits')
         $scope.loadCommits = function() {
             commitsListService.loadCommitsFromServer($scope.loadMode.value);
             $scope.commits = commitsListService.allCommits();
-        }
-
+        };
 
         $scope.loadCommits();
-
-
-
-
     });
