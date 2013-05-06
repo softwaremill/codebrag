@@ -15,11 +15,15 @@ class MongoCommitFinder extends CommitFinder {
     CommitListView(commits.map(recordToDto(_)))
   }
 
-  override def findCommitInfoById(commitIdStr: String) = {
+  override def findCommitInfoById(commitIdStr: String, userId: ObjectId) = {
     val commitId = new ObjectId(commitIdStr)
     val commitInfoOption = projectionQuery.where(_.id eqs commitId).get()
     commitInfoOption match {
-      case Some(record) => Right(recordToDto(record))
+      case Some(record) => {
+        val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
+        val commitIds = userReviewTasks.map(_.commitId.get).toSet
+        Right(markNotPendingReview(recordToDto(record), commitIds))
+      }
       case None => Left(s"No such commit $commitIdStr")
     }
   }
@@ -33,8 +37,17 @@ class MongoCommitFinder extends CommitFinder {
     CommitInfoRecord.select(_.id, _.sha, _.message, _.authorName, _.committerName, _.authorDate)
   }
 
-  override def findAll() = {
+  override def findAll(userId: ObjectId) = {
     val commits = projectionQuery.orderDesc(_.committerDate).fetch()
-    CommitListView(commits.map(recordToDto(_)))
+    val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
+    val commitIds = userReviewTasks.map(_.commitId.get).toSet
+    CommitListView(commits.map(recordToDto(_)).map(markNotPendingReview(_, commitIds)))
+  }
+
+  private def markNotPendingReview(commitView: CommitView, commitIdsPendingReview: Set[ObjectId]): CommitView = {
+    if (commitIdsPendingReview.contains(new ObjectId(commitView.id)))
+      commitView
+    else
+      commitView.copy(pendingReview = false)
   }
 }

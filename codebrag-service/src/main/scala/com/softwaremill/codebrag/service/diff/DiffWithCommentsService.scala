@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitDetailsW
 
 class DiffWithCommentsService(commitListFinder: CommitFinder, commentsFinder: CommentFinder, diffService: DiffService) {
 
-  def diffWithCommentsFor(commitId: ObjectId): Either[String, CommitDetailsWithCommentsView] = {
+  def diffWithCommentsFor(commitId: ObjectId, userId: ObjectId): Either[String, CommitDetailsWithCommentsView] = {
 
     def buildDiffWithComments(commit: CommitView) = {
       val commitComments = commentsFinder.commentsForCommit(commitId)
@@ -14,7 +14,7 @@ class DiffWithCommentsService(commitListFinder: CommitFinder, commentsFinder: Co
       CommitDetailsWithCommentsView.buildFrom(commit, commitComments, diff)
     }
 
-    commitListFinder.findCommitInfoById(commitId.toString) match {
+    commitListFinder.findCommitInfoById(commitId.toString, userId) match {
       case Right(commit) => Right(buildDiffWithComments(commit))
       case Left(msg) => Left(msg)
     }

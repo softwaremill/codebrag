@@ -15,6 +15,7 @@ import com.softwaremill.codebrag.activities.AddCommentActivity
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
+import org.mockito.Matchers
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
@@ -67,11 +68,11 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val userId = new ObjectId
     val user = UserJson(userId.toString, "user", "user@email.com", "token")
     userIsAuthenticatedAs(user)
-    when(commitsListFinder.findAll()).thenReturn(SamplePendingCommits)
+    when(commitsListFinder.findAll(userId)).thenReturn(SamplePendingCommits)
     get("/?reviewed=true") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
-      verify(commitsListFinder, never()).findCommitInfoById(anyString())
+      verify(commitsListFinder, never()).findCommitInfoById(anyString(), Matchers.eq(userId))
     }
   }
 

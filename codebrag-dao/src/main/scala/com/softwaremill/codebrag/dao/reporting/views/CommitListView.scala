@@ -4,4 +4,4 @@ import java.util.Date
 
 case class CommitListView(commits: List[CommitView])
 
-case class CommitView(id: String, sha: String, message: String, authorName: String, committerName: String, date: Date)
+case class CommitView(id: String, sha: String, message: String, authorName: String, committerName: String, date: Date, pendingReview: Boolean = true)

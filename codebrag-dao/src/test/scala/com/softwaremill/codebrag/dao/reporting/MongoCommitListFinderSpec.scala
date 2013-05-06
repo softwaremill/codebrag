@@ -7,6 +7,7 @@ import com.softwaremill.codebrag.domain.{Authentication, User, CommitInfo}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
 
 
 class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
@@ -40,10 +41,25 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     storeCommitReviewTasksFor(userId, storedCommits(0), storedCommits(1))
 
     // when
-    val commitsFound = commitListFinder.findAll()
+    val commitsFound = commitListFinder.findAll(userId)
 
     // then
     commitsFound.commits should have size(5)
+  }
+
+  it should "mark commits that are not pending review" in {
+    // given
+    val storedCommits = prepareAndStoreSomeCommits(howMany = 3)
+    storeCommitReviewTasksFor(userId, storedCommits(0), storedCommits(1))
+
+    // when
+    val commitsFound = commitListFinder.findAll(userId)
+
+    // then
+    commitsFound.commits should have size(3)
+    foundCommitView(commitsFound, storedCommits, 0).pendingReview should be (true)
+    foundCommitView(commitsFound, storedCommits, 1).pendingReview should be (true)
+    foundCommitView(commitsFound, storedCommits, 2).pendingReview should be (false)
   }
 
   it should "find commits starting from newest commit date" in {
@@ -86,11 +102,25 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     commitInfoDao.storeCommit(commit)
 
     // when
-    val Right(foundCommit) = commitListFinder.findCommitInfoById(commitId.toString)
+    val Right(foundCommit) = commitListFinder.findCommitInfoById(commitId.toString, userId)
 
     //then
     foundCommit.message should equal(commit.message)
     foundCommit.sha should equal(commit.sha)
+    foundCommit.pendingReview should be (false)
+  }
+
+  it should "mark commit view as pending review if task exists" in {
+    // given
+    val commitId = ObjectIdTestUtils.oid(111)
+    val commit = CommitInfoAssembler.randomCommit.withId(commitId).withSha("111").withMessage("Commit message").get
+    commitInfoDao.storeCommit(commit)
+    storeCommitReviewTasksFor(userId, commit)
+    // when
+    val Right(foundCommit) = commitListFinder.findCommitInfoById(commitId.toString, userId)
+
+    //then
+    foundCommit.pendingReview should be (true)
   }
 
   it should "result with error msg whem commit not found" in {
@@ -98,7 +128,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     val nonExistingCommitId = ObjectIdTestUtils.oid(111)
 
     // when
-    val Left(errorMsg) = commitListFinder.findCommitInfoById(nonExistingCommitId.toString)
+    val Left(errorMsg) = commitListFinder.findCommitInfoById(nonExistingCommitId.toString, userId)
 
     //then
     errorMsg should be (s"No such commit $nonExistingCommitId")
@@ -116,4 +146,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     }
   }
 
+  def foundCommitView(commitsFound: CommitListView, storedCommits: List[CommitInfo], index: Int): CommitView = {
+    commitsFound.commits.find(commitView => commitView.id == storedCommits(index).id.toString).get
+  }
 }

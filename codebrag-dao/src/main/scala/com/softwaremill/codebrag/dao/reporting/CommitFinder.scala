@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView
 trait CommitFinder {
 
   def findCommitsToReviewForUser(userId: ObjectId): CommitListView
-  def findAll(): CommitListView
-  def findCommitInfoById(commitId: String): Either[String, CommitView]
+  def findAll(userId: ObjectId): CommitListView
+  def findCommitInfoById(commitIdStr: String, userId: ObjectId): Either[String, CommitView]
 
 }

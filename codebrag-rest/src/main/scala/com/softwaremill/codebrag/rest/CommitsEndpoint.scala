@@ -42,7 +42,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
 
   get("/:id") {
     val commitId = params("id")
-    diffService.diffWithCommentsFor(new ObjectId(commitId)) match {
+    diffService.diffWithCommentsFor(new ObjectId(commitId), new ObjectId(user.id)) match {
       case Right(commitWithComments) => commitWithComments
       case Left(error) => NotFound(error)
     }
@@ -56,7 +56,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
   }
 
   private def fetchCommitsPendingReview() = commitListFinder.findCommitsToReviewForUser(new ObjectId(user.id))
-  private def fetchAllCommits() = commitListFinder.findAll()
+  private def fetchAllCommits() = commitListFinder.findAll(new ObjectId(user.id))
 }
 
 trait CommitsEndpointSwaggerDefinition extends SwaggerSupport {
