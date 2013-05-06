@@ -42,8 +42,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(JohnComment)
 
     // Then
-    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, MaryId, FollowupCreationDateTime, ThreadDetails(Commit.id)))
-    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, BettyCommitAuthorId, FollowupCreationDateTime, ThreadDetails(Commit.id)))
+    verifyFollowupsCreatedFor(Commit.id, List(MaryId, BettyCommitAuthorId))
     verifyNoMoreInteractions(followupDao)
   }
 
@@ -57,12 +56,11 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(JohnComment)
 
     // Then
-    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, MaryId, FollowupCreationDateTime, ThreadDetails(Commit.id)))
-    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, BettyCommitAuthorId, FollowupCreationDateTime, ThreadDetails(Commit.id)))
+    verifyFollowupsCreatedFor(Commit.id, List(MaryId, BettyCommitAuthorId))
     verifyNoMoreInteractions(followupDao)
   }
 
-  it should "generate followups for each thread user is involved in" in {
+  it should "generate followups for all user in thread" in {
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(userDao.findByUserName(BettyCommitAuthor.name)).willReturn(Some(BettyCommitAuthor))
@@ -74,12 +72,8 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(JohnInlineComment)  // should generate for bob betty and mary
 
     // Then
-    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, BettyCommitAuthorId, FollowupCreationDateTime, ThreadDetails(Commit.id)))
-    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, MaryId, FollowupCreationDateTime, ThreadDetails(Commit.id)))
-
-    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, BobId, FollowupCreationDateTime, ThreadDetails(Commit.id, Some(InlineCommentLine), Some(InlineCommentFile))))
-    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, BettyCommitAuthorId, FollowupCreationDateTime, ThreadDetails(Commit.id, Some(InlineCommentLine), Some(InlineCommentFile))))
-    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, MaryId, FollowupCreationDateTime, ThreadDetails(Commit.id, Some(InlineCommentLine), Some(InlineCommentFile))))
+    verifyFollowupsCreatedFor(Commit.id, List(BettyCommitAuthorId, MaryId))
+    verifyFollowupsCreatedFor(Commit.id, InlineCommentFile, InlineCommentLine, List(BobId, BettyCommitAuthorId, MaryId))
     verifyNoMoreInteractions(followupDao)
   }
 
@@ -121,6 +115,19 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     verifyZeroInteractions(followupDao)
   }
 
+  private def verifyFollowupsCreatedFor(commitId: ObjectId, users: List[ObjectId]) {
+    users.foreach { userId =>
+      val followup = Followup(commitId, userId, FollowupCreationDateTime, ThreadDetails(Commit.id))
+      verify(followupDao).createOrUpdateExisting(followup)
+    }
+  }
+
+  private def verifyFollowupsCreatedFor(commitId: ObjectId, fileName: String, lineNumber: Int, users: List[ObjectId]) {
+    users.foreach { userId =>
+      val followup = Followup(commitId, userId, FollowupCreationDateTime, ThreadDetails(commitId, Some(lineNumber), Some(fileName)))
+      verify(followupDao).createOrUpdateExisting(followup)
+    }
+  }
 }
 
 trait FollowupServiceSpecFixture {

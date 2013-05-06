@@ -81,8 +81,8 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
     followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, baseDate, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
 
     // when
-    val updatedFollowup = Followup(Commit.id, FollowupTargetUserId, baseDate, ThreadDetails(Commit.id, Some(30), Some("file.txt")))
-    followupDao.createOrUpdateExisting(updatedFollowup)
+    val newFollowup = Followup(Commit.id, FollowupTargetUserId, baseDate, ThreadDetails(Commit.id, Some(30), Some("file.txt")))
+    followupDao.createOrUpdateExisting(newFollowup)
 
     // then
     FollowupRecord.count should be(3)
@@ -95,8 +95,8 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
     followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, baseDate, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
 
     // when
-    val updatedFollowup = Followup(Commit.id, FollowupTargetUserId, baseDate, ThreadDetails(Commit.id))
-    followupDao.createOrUpdateExisting(updatedFollowup)
+    val newFollowup = Followup(Commit.id, FollowupTargetUserId, baseDate, ThreadDetails(Commit.id))
+    followupDao.createOrUpdateExisting(newFollowup)
 
     // then
     FollowupRecord.count should be(2)
