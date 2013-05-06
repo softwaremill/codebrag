@@ -2,7 +2,7 @@
 
 describe("Commits Controller", function () {
 
-    var commitsList = {commits: [{message: 'sample msg', sha: '123abc'}]};
+    var commitsList = [{message: 'sample msg', sha: '123abc'}];
     var $httpBackend;
 
     beforeEach(module('codebrag.commits'));
@@ -17,30 +17,37 @@ describe("Commits Controller", function () {
         $httpBackend = _$httpBackend_;
     }));
 
-    it('should fetch commits when controller starts', inject(function($controller) {
+    it('should fetch commits pending review when controller starts', inject(function($controller, commitsListService) {
         // Given
         var scope = {};
-        $httpBackend.expectGET('rest/commits/').respond({commits: []});
+        var commitsReturnedByService = [];
+        spyOn(commitsListService, 'loadCommitsFromServer');
+        spyOn(commitsListService, 'allCommits').andReturn(commitsReturnedByService);
 
         // When
         $controller('CommitsCtrl', {$scope: scope});
 
         //Then
-        $httpBackend.flush();
+        expect(commitsListService.loadCommitsFromServer).toHaveBeenCalledWith(LOAD_MODE.ONLY_PENDING);
+        expect(scope.commits).toBe(commitsReturnedByService)
     }));
 
     it('should expose loading commits via scope', inject(function($controller, commitsListService) {
         // Given
         var scope = {};
-        $httpBackend.whenGET('rest/commits/').respond(commitsList);
-        $controller('CommitsCtrl', {$scope: scope});
+        spyOn(commitsListService, 'loadCommitsFromServer');
+        spyOn(commitsListService, 'allCommits').andReturn(commitsList);
 
         // When
-        $httpBackend.flush();
+        $controller('CommitsCtrl', {$scope: scope});
 
         //Then
         var commit = scope.commits[0];
-        expect(commit.sha).toBe(commitsList.commits[0].sha);
+        expect(commit.sha).toBe(commitsList[0].sha);
     }));
 
+    var LOAD_MODE = {
+        WITH_REVIEWED: true,
+        ONLY_PENDING: false
+    }
 });
