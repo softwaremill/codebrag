@@ -23,7 +23,7 @@ class FollowupsServlet(val authenticator: Authenticator,
   delete("/:id", operation(dismissOperation)) {
     haltIfNotAuthenticated
     val followupId = params("id")
-    followupService.deleteUsersFollowup(new ObjectId(user.id), new ObjectId(followupId))
+    followupService.deleteUserFollowup(new ObjectId(user.id), new ObjectId(followupId))
   }
 }
 

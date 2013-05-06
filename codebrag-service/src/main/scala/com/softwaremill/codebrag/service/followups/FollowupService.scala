@@ -10,7 +10,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, commitCommentDao: CommitCommentDAO, userDao: UserDAO)(implicit clock: Clock)
   extends Logging {
 
-  def deleteUsersFollowup(userId: ObjectId, followupId: ObjectId): Either[String, Unit] = {
+  def deleteUserFollowup(userId: ObjectId, followupId: ObjectId): Either[String, Unit] = {
     followupDao.findById(followupId) match {
       case Some(followup) => {
         if(followup.isOwner(userId)) {
