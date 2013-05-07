@@ -5,8 +5,8 @@ angular.module('codebrag.commits')
         var commits = new codebrag.AsyncCollection();
 
 
-    	function loadCommitsFromServer(reviewed) {
-            var responsePromise = Commits.get({reviewed: reviewed}).$then(function(response) {
+    	function loadCommitsFromServer(filter) {
+            var responsePromise = Commits.get({filter: filter}).$then(function(response) {
                 return response.data.commits;
             });
             return commits.loadElements(responsePromise);

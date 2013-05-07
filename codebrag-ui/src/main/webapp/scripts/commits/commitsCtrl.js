@@ -5,11 +5,11 @@ angular.module('codebrag.commits')
         $scope.AVAILABLE_MODES = {
             ALL: {
                 name: "All",
-                value: true
+                value: "all"
             },
             PENDING_REVIEW: {
                 name: "Pending review",
-                value: false
+                value: "pending"
             }
         };
 

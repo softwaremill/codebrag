@@ -28,7 +28,7 @@ describe("Commits Controller", function () {
         $controller('CommitsCtrl', {$scope: scope});
         expect(commitsListService.loadCommitsFromServer).toHaveBeenCalledWith(LOAD_MODE.ONLY_PENDING);
         scope.loadMode = {
-            value: true
+            value: 'all'
         };
         scope.loadCommits();
 
@@ -67,7 +67,7 @@ describe("Commits Controller", function () {
     }));
 
     var LOAD_MODE = {
-        WITH_REVIEWED: true,
-        ONLY_PENDING: false
+        WITH_REVIEWED: 'all',
+        ONLY_PENDING: 'pending'
     }
 });

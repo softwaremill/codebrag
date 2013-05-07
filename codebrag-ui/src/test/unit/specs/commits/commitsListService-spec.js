@@ -21,7 +21,7 @@ describe("CommitsListService", function () {
         // Given
         var loadedCommits = [commit(111), commit(222), commit(333)];
         var commitIdToRemove = 222;
-        $httpBackend.whenGET('rest/commits?reviewed=false').respond({commits:loadedCommits});
+        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
         $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
         commitsListService.loadCommitsFromServer(LOAD_MODE.ONLY_PENDING);
 
@@ -33,10 +33,10 @@ describe("CommitsListService", function () {
         expect(commitsListService.allCommits().length).toBe(loadedCommits.length - 1);
     }));
 
-    it('should load non-reviewed commits from server', inject(function (commitsListService) {
+    it('should load non-reviewable commits from server', inject(function (commitsListService) {
         // Given
         var loadedCommits = [commit(111), commit(222), commit(333)];
-        $httpBackend.whenGET('rest/commits?reviewed=false').respond({commits:loadedCommits});
+        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
 
         // When
         commitsListService.loadCommitsFromServer(LOAD_MODE.ONLY_PENDING);
@@ -49,7 +49,7 @@ describe("CommitsListService", function () {
     it('should call server to sync commits and add new ones to model', inject(function (commitsListService) {
         // Given
         var loadedCommits = [commit(222)];
-        $httpBackend.whenGET('rest/commits?reviewed=true').respond({commits:loadedCommits});
+        $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
         var newCommits = [commit(222), commit(555)];
         $httpBackend.expectPOST('rest/commits/sync').respond({commits: newCommits});
 
@@ -65,7 +65,7 @@ describe("CommitsListService", function () {
     it('should load reviewed commits from server', inject(function (commitsListService) {
         // Given
         var loadedCommits = [commit(111), commit(222), commit(333)];
-        $httpBackend.whenGET('rest/commits?reviewed=true').respond({commits:loadedCommits});
+        $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
 
         // When
         commitsListService.loadCommitsFromServer(LOAD_MODE.WITH_REVIEWED);
@@ -103,8 +103,8 @@ describe("CommitsListService", function () {
     }
 
     var LOAD_MODE = {
-        WITH_REVIEWED: true,
-        ONLY_PENDING: false
+        WITH_REVIEWED: 'all',
+        ONLY_PENDING: 'pending'
     }
 
 });

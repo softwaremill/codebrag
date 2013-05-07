@@ -58,7 +58,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val user = UserJson(userId.toString, "user", "user@email.com", "token")
     userIsAuthenticatedAs(user)
     when(commitsListFinder.findCommitsToReviewForUser(userId)).thenReturn(SamplePendingCommits)
-    get("/?reviewed=false") {
+    get("/?filter=pending") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
     }
@@ -69,7 +69,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val user = UserJson(userId.toString, "user", "user@email.com", "token")
     userIsAuthenticatedAs(user)
     when(commitsListFinder.findAll(userId)).thenReturn(SamplePendingCommits)
-    get("/?reviewed=true") {
+    get("/?filter=all") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
       verify(commitsListFinder, never()).findCommitInfoById(anyString(), Matchers.eq(userId))

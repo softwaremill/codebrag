@@ -25,9 +25,9 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
 
 
   get("/", operation(getCommitsOperation)) {
-    val reviewedOpt = params.get("reviewed")
-    reviewedOpt match {
-      case Some("true") => fetchAllCommits()
+    val filterOpt = params.get("filter")
+    filterOpt match {
+      case Some("all") => fetchAllCommits()
       case _ => fetchCommitsPendingReview()
     }
   }
@@ -63,8 +63,9 @@ trait CommitsEndpointSwaggerDefinition extends SwaggerSupport {
 
   val getCommitsOperation = apiOperation[CommitListView]("get")
     .summary("Gets all commits to review for current user ")
-    .parameter(queryParam[Boolean]("reviewed").description("Whether result should include already reviewed commits")
-      .defaultValue(false).optional)
+    .parameter(queryParam[String]("filter").description("What kind of commits should be fetched")
+    .allowableValues("all", "pending")
+    .defaultValue("pending").optional)
 
   val markCommitAsReviewed = apiOperation[Unit]("delete")
     .summary("Removes given commit from user list of commits remaining to review")
