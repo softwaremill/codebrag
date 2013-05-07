@@ -17,13 +17,13 @@ describe("CommitsListService", function () {
         _$httpBackend_.verifyNoOutstandingRequest();
     }));
 
-    it('remove commit locally and from server', inject(function (commitsListService) {
+    it('remove commit locally and from server', inject(function (commitsListService, commitLoadFilter) {
         // Given
         var loadedCommits = [commit(111), commit(222), commit(333)];
         var commitIdToRemove = 222;
         $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
         $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
-        commitsListService.loadCommitsFromServer(LOAD_MODE.ONLY_PENDING);
+        commitsListService.loadCommitsFromServer(commitLoadFilter.modes.pending);
 
         // When
         commitsListService.removeCommit(commitIdToRemove);
@@ -33,20 +33,20 @@ describe("CommitsListService", function () {
         expect(commitsListService.allCommits().length).toBe(loadedCommits.length - 1);
     }));
 
-    it('should load non-reviewable commits from server', inject(function (commitsListService) {
+    it('should load non-reviewable commits from server', inject(function (commitsListService, commitLoadFilter) {
         // Given
         var loadedCommits = [commit(111), commit(222), commit(333)];
         $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
 
         // When
-        commitsListService.loadCommitsFromServer(LOAD_MODE.ONLY_PENDING);
+        commitsListService.loadCommitsFromServer(commitLoadFilter.modes.pending);
         $httpBackend.flush();
 
         // Then
         expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
     }));
 
-    it('should call server to sync commits and add new ones to model', inject(function (commitsListService) {
+    it('should call server to sync commits and add new ones to model', inject(function (commitsListService, commitLoadFilter) {
         // Given
         var loadedCommits = [commit(222)];
         $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
@@ -54,7 +54,7 @@ describe("CommitsListService", function () {
         $httpBackend.expectPOST('rest/commits/sync').respond({commits: newCommits});
 
         // When
-        commitsListService.loadCommitsFromServer(LOAD_MODE.WITH_REVIEWED);
+        commitsListService.loadCommitsFromServer(commitLoadFilter.modes.all);
         commitsListService.syncCommits();
         $httpBackend.flush();
 
@@ -62,13 +62,13 @@ describe("CommitsListService", function () {
         expect(commitsListService.allCommits()).toEqual(newCommits);
     }));
 
-    it('should load reviewed commits from server', inject(function (commitsListService) {
+    it('should load reviewed commits from server', inject(function (commitsListService, commitLoadFilter) {
         // Given
         var loadedCommits = [commit(111), commit(222), commit(333)];
         $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
 
         // When
-        commitsListService.loadCommitsFromServer(LOAD_MODE.WITH_REVIEWED);
+        commitsListService.loadCommitsFromServer(commitLoadFilter.modes.all);
         $httpBackend.flush();
 
         // Then
@@ -100,11 +100,6 @@ describe("CommitsListService", function () {
     function commit(id) {
         var idStr = id.toString();
         return {id: idStr, sha: 'sha' + idStr, msg: 'message' + idStr}
-    }
-
-    var LOAD_MODE = {
-        WITH_REVIEWED: 'all',
-        ONLY_PENDING: 'pending'
     }
 
 });

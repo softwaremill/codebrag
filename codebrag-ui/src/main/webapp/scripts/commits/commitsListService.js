@@ -6,7 +6,7 @@ angular.module('codebrag.commits')
 
 
     	function loadCommitsFromServer(filter) {
-            var responsePromise = Commits.get({filter: filter}).$then(function(response) {
+            var responsePromise = Commits.get({filter: filter.value}).$then(function(response) {
                 return response.data.commits;
             });
             return commits.loadElements(responsePromise);

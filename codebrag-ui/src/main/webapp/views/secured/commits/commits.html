@@ -12,8 +12,8 @@
         </form>
         show:
         <select
-                ng-model="loadMode"
-                ng-options="mode.name for (key,mode) in AVAILABLE_MODES"
+                ng-model="filter.current"
+                ng-options="mode.name for (key,mode) in filter.modes"
                 ng-change="loadCommits()">
         </select>
 

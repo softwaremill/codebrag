@@ -17,7 +17,7 @@ describe("Commits Controller", function () {
         $httpBackend = _$httpBackend_;
     }));
 
-    it('should fetch commits according to selected load mode', inject(function($controller, commitsListService) {
+    it('should fetch commits according to selected load mode', inject(function($controller, commitsListService, commitLoadFilter) {
         // Given
         var scope = {};
         var commitsReturnedByService = [];
@@ -26,18 +26,16 @@ describe("Commits Controller", function () {
 
         // When
         $controller('CommitsCtrl', {$scope: scope});
-        expect(commitsListService.loadCommitsFromServer).toHaveBeenCalledWith(LOAD_MODE.ONLY_PENDING);
-        scope.loadMode = {
-            value: 'all'
-        };
+        expect(commitsListService.loadCommitsFromServer).toHaveBeenCalledWith(commitLoadFilter.modes.pending);
+        commitLoadFilter.current = commitLoadFilter.modes.all;
         scope.loadCommits();
 
         //Then
-        expect(commitsListService.loadCommitsFromServer).toHaveBeenCalledWith(LOAD_MODE.WITH_REVIEWED);
+        expect(commitsListService.loadCommitsFromServer).toHaveBeenCalledWith(commitLoadFilter.modes.all);
         expect(scope.commits).toBe(commitsReturnedByService)
     }));
 
-    it('should fetch commits pending review when controller starts', inject(function($controller, commitsListService) {
+    it('should fetch commits pending review when controller starts', inject(function($controller, commitsListService, commitLoadFilter) {
         // Given
         var scope = {};
         var commitsReturnedByService = [];
@@ -48,7 +46,7 @@ describe("Commits Controller", function () {
         $controller('CommitsCtrl', {$scope: scope});
 
         //Then
-        expect(commitsListService.loadCommitsFromServer).toHaveBeenCalledWith(LOAD_MODE.ONLY_PENDING);
+        expect(commitsListService.loadCommitsFromServer).toHaveBeenCalledWith(commitLoadFilter.modes.pending);
         expect(scope.commits).toBe(commitsReturnedByService)
     }));
 
@@ -66,8 +64,4 @@ describe("Commits Controller", function () {
         expect(commit.sha).toBe(commitsList[0].sha);
     }));
 
-    var LOAD_MODE = {
-        WITH_REVIEWED: 'all',
-        ONLY_PENDING: 'pending'
-    }
 });

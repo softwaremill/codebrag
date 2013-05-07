@@ -1,23 +1,14 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, $http, commitsListService) {
+    .controller('CommitsCtrl', function ($scope, $http, commitsListService, commitLoadFilter) {
 
-        $scope.AVAILABLE_MODES = {
-            ALL: {
-                name: "All",
-                value: "all"
-            },
-            PENDING_REVIEW: {
-                name: "Pending review",
-                value: "pending"
-            }
-        };
+        commitLoadFilter.current = commitLoadFilter.modes.pending;
 
-        $scope.loadMode = $scope.AVAILABLE_MODES.PENDING_REVIEW;
+        $scope.filter = commitLoadFilter;
         $scope.syncCommits = commitsListService.syncCommits;
 
         $scope.loadCommits = function() {
-            commitsListService.loadCommitsFromServer($scope.loadMode.value);
+            commitsListService.loadCommitsFromServer($scope.filter.current);
             $scope.commits = commitsListService.allCommits();
         };
 
