@@ -21,13 +21,21 @@ describe("CommitDetailsController", function () {
         _$httpBackend_.verifyNoOutstandingRequest();
     }));
 
+    function promiseResolvedWith(value) {
+        return {
+            then: function(successHandler) {
+                successHandler(value);
+            }
+        }
+    }
+
     it('should use commit ID provided in $stateParams to load commit data', inject(
         function ($controller, $stateParams, commitsListService) {
 
         // Given
         $stateParams.id = selectedCommitId;
 
-        spyOn(commitsListService, "loadCommitById")
+        spyOn(commitsListService, "loadCommitById").andReturn(noopPromise);
 
         // When
         $controller('CommitDetailsCtrl', {$scope:scope});
@@ -36,11 +44,11 @@ describe("CommitDetailsController", function () {
         expect(commitsListService.loadCommitById).toHaveBeenCalledWith(selectedCommitId);
     }));
 
-    it('should load files and details for selected commit', inject(function ($controller, $stateParams, commitsListService) {
+    it('should load diff for selected commit', inject(function ($controller, $stateParams, commitsListService, $q) {
         // Given
         $stateParams.id = selectedCommitId;
         var expectedCommitDetails = {commit: {sha: '123'}, comments: [], files: []};
-        spyOn(commitsListService, 'loadCommitById').andReturn(expectedCommitDetails);
+        spyOn(commitsListService, 'loadCommitById').andReturn(promiseResolvedWith(expectedCommitDetails));
 
         // When
         $controller('CommitDetailsCtrl', {$scope:scope});
@@ -64,25 +72,6 @@ describe("CommitDetailsController", function () {
 
         // Then
         expect(commitsListService.removeCommitAndGetNext).toHaveBeenCalledWith(selectedCommitId);
-    }));
-
-    it('should add comment to list after posting to server', inject(function
-        ($controller, $stateParams, commitsListService) {
-        // Given
-        $stateParams.id = selectedCommitId;
-        var addComment = {commitId: selectedCommitId, body: "added comment"};
-        var serverResponseComment = {"id": "1", "authorName": "author", "message": addComment.body, "time": "2013-03-29T15:14:10Z"};
-        var currentCommit = {commit: {sha: '123'}, comments: []};
-        spyOn(commitsListService, 'loadCommitById').andReturn(currentCommit);
-        $httpBackend.expectPOST(commentsEndpointAddress, addComment).respond({comment: serverResponseComment});
-
-        // When
-        $controller('CommitDetailsCtrl', {$scope: scope});
-        scope.submitComment(addComment.body);
-        $httpBackend.flush();
-
-        // Then
-        expect(scope.currentCommit.comments.length).toBe(1);
     }));
 
 });

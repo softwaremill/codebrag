@@ -1,20 +1,18 @@
 <div ng-controller="FollowupDetailsCtrl">
-
-    <div ng-controller="CommitDetailsCtrl">
+    <div>
         <div class="row">
             <div class="span7">
-                Followup for:
-                <h4 ng-bind-html-unsafe="currentCommit.message"></h4>
-                <p>{{currentCommit.sha}}</p>
-                <p>{{currentCommit.date | relativeDate}} by {{currentCommit.authorName}}</p>
-                <button class="btn btn-success" ng-click="markCurrentFollowupAsDone()"><i class="icon-ok"></i> Dissmiss this followup</button>
+                <h4 ng-bind-html-unsafe="currentCommit.commit.message"></h4>
+                <p>{{currentCommit.commit.sha}}</p>
+                <p>{{currentCommit.commit.date | relativeDate}} by {{currentCommit.commit.authorName}}</p>
+                <button class="btn btn-success" ng-click="markCurrentFollowupAsDone()">
+                    <i class="icon-ok"></i> Dismiss this followup
+                </button>
             </div>
         </div>
-        <br/><br/><br/>
         <ng-include src="'views/secured/commits/commitFilesAndComments.html'"/>
     </div>
-    <div>
-        <button class="btn btn-success" ng-click="markCurrentFollowupAsDone()"><i class="icon-ok"></i> Dissmiss this followup</button>
-    </div>
-    <br/><br/>
+    <button class="btn btn-success" ng-click="markCurrentFollowupAsDone()">
+        <i class="icon-ok"></i> Dismiss this followup
+    </button>
 </div>
