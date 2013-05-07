@@ -3,8 +3,7 @@ package com.softwaremill.codebrag.service.diff
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import annotation.tailrec
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.{DiffLine, CommitFileDiff, CommentBase}
-import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
+import com.softwaremill.codebrag.domain.{DiffLine, CommitFileDiff}
 
 class DiffService(commitInfoDao: CommitInfoDAO) {
 
@@ -13,8 +12,8 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
   val LineTypeRemoved = "removed"
   val LineTypeAdded = "added"
   val LineTypeNotChanged = "not-changed"
-
   val Info = """@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)""".r
+  val PatchPattern =  """(?s)(.*)(@@ .*)""".r
 
   def parseDiff(diff: String): List[DiffLine] = {
     @tailrec
@@ -44,9 +43,20 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
     convertToDiffLines(diffLines, 0, 0, List())
   }
 
+  private def cutGitHeaders(patch: String) = {
+    patch match {
+      case PatchPattern(header, rest) => rest
+      case _ => patch
+    }
+  }
+
   def getFilesWithDiffs(commitId: String): Either[String, List[CommitFileDiff]] = {
     commitInfoDao.findByCommitId(new ObjectId(commitId)) match {
-      case Some(commit) => Right(commit.files.map(file => CommitFileDiff(file.filename, file.status, parseDiff(file.patch))))
+      case Some(commit) =>
+        Right(commit.files.map(file => {
+          val patch = cutGitHeaders(file.patch)
+          CommitFileDiff(file.filename, file.status, parseDiff(patch))
+        }))
       case None => Left("No such commit")
     }
   }
