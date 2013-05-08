@@ -9,6 +9,17 @@
     <link href="styles/application.css" rel="stylesheet">
     <link rel="shortcut icon" href="img/favicon.gif" type="image/x-icon">
 
+    <script type="text/ng-template" id="inlineCommentForm">
+        <tr class="comment-form">
+            <td class="diff-table-line-number-cell"></td>
+            <td class="diff-table-line-number-cell"></td>
+            <td style="background: #ededed">
+                <div style="width:680px">
+                    <markdown-comment-form action="submitInlineComment" extra-args="file,line,$index"></markdown-comment-form>
+                </div>
+            </td>
+        </tr>
+    </script>
     <!--[if lte IE 8]>
         <script>
             window.myCustomTags = ['loginForm', 'isolateClick']; // optional - add codebrag custom directives here
