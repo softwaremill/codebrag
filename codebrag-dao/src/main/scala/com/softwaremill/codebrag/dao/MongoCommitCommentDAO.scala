@@ -11,7 +11,7 @@ import net.liftweb.record.field.{EnumField, IntField}
 
 class MongoCommitCommentDAO extends CommitCommentDAO {
 
-  import CommentRecord.CommentType._
+  import CommentRecord.CommentTypeEnum._
 
   override def save(comment: CommentBase) {
     CommentToRecordBuilder.buildFrom(comment).save
@@ -39,7 +39,7 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
 
   private object CommentToRecordBuilder {
 
-    import CommentRecord.CommentType._
+    import CommentRecord.CommentTypeEnum._
 
     def buildFrom(comment: CommentBase) = {
       comment match {
@@ -72,7 +72,7 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
 
   private object RecordToCommentBuilder {
 
-    import CommentRecord.CommentType._
+    import CommentRecord.CommentTypeEnum._
 
     def buildFrom(comment: CommentRecord) = {
       comment.commentType.get match {
@@ -124,15 +124,15 @@ class CommentRecord extends MongoRecord[CommentRecord] {
 
   object lineNumber extends IntField(this) { override def optional_? = true }
 
-  object commentType extends EnumField(this, CommentRecord.CommentType)
+  object commentType extends EnumField(this, CommentRecord.CommentTypeEnum)
 
 }
 
 object CommentRecord extends CommentRecord with MongoMetaRecord[CommentRecord] {
   override def collectionName = "commit_comments"
 
-  object CommentType extends Enumeration {
-    type CommentType = Value
+  object CommentTypeEnum extends Enumeration {
+    type CommentTypeEnum = Value
     val Commit, Inline = Value
   }
 }
