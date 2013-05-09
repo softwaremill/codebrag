@@ -64,15 +64,16 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach 
     userFollowups(Second).date should equal(date.toDate)
   }
 
-  it should "return followup with last commenter name included" in {
+  it should "return followup with last commenter name and comment id included" in {
     // given
-    storeFollowupForBob
+    val stored = storeFollowupForBob
 
     // when
     val followup = followupFinder.findAllFollowupsForUser(BobId).followups.head
 
     // then
-    followup.lastCommentAuthorName should be(LastCommenterName)
+    followup.comment.commenterName should be(LastCommenterName)
+    followup.comment.commentId should be(followup.comment.commentId)
   }
 
   def storeFollowupsForJohn = {

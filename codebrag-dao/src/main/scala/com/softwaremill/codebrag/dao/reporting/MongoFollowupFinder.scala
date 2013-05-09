@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.reporting
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.FollowupRecord
 import com.foursquare.rogue.LiftRogue._
-import com.softwaremill.codebrag.dao.reporting.views.{FollowupView, FollowupCommitView, FollowupListView}
+import com.softwaremill.codebrag.dao.reporting.views.{FollowupCommentView, FollowupView, FollowupCommitView, FollowupListView}
 
 class MongoFollowupFinder extends FollowupFinder {
 
@@ -20,9 +20,14 @@ class MongoFollowupFinder extends FollowupFinder {
     }
   }
 
+  def extractCommentInfoFromRecord(record: FollowupRecord) = {
+    FollowupCommentView(record.commentId.get.toString, record.lastCommenterName.get)
+  }
+
   def toFollowupInfo(record: FollowupRecord) = {
-    val commitInfo: FollowupCommitView = extractCommitInfoFromRecord(record)
-    FollowupView(record.followupId.get.toString, record.user_id.get.toString, record.date.get, commitInfo, record.lastCommenterName.get)
+    val commitInfo = extractCommitInfoFromRecord(record)
+    val commentInfo = extractCommentInfoFromRecord(record)
+    FollowupView(record.followupId.get.toString, record.user_id.get.toString, record.date.get, commitInfo, commentInfo)
   }
 
   def extractCommitInfoFromRecord(record: FollowupRecord) = {
