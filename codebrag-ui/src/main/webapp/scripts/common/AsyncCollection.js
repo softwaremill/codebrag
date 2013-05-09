@@ -36,10 +36,7 @@ codebrag.AsyncCollection.prototype = {
 
     removeElement: function(matchFn, promise) {
         var self = this;
-        var found = _.find(self.elements, function(current) {
-            return matchFn(current);
-        });
-        var indexToRemove = self.elements.indexOf(found);
+        var indexToRemove = self._indexOf(matchFn);
         return promise.then(function() {
             self.elements.splice(indexToRemove, 1);
             return indexToRemove;
@@ -48,14 +45,25 @@ codebrag.AsyncCollection.prototype = {
 
     removeElementAndGetNext: function(matchFn, promise) {
         var self = this;
-        return self.removeElement(matchFn, promise).then(function(indexRemoved) {
-            if(_.isEmpty(self.elements)) {
-                return null;
-            }
-            if(indexRemoved === 0) {
-                return self.elements[0];
-            }
-            return self.elements[indexRemoved - 1];
+        return self.removeElement(matchFn, promise).then(self._getNext.bind(self));
+    },
+
+    _indexOf: function(matchFn) {
+        var self = this;
+        var found = _.find(self.elements, function(current) {
+            return matchFn(current);
         });
+        return self.elements.indexOf(found);
+    },
+
+    _getNext: function (index) {
+        var self = this;
+        if (_.isEmpty(self.elements)) {
+            return null;
+        }
+        if (index === 0) {
+            return self.elements[0];
+        }
+        return self.elements[index - 1];
     }
 };
