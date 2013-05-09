@@ -12,8 +12,9 @@ import org.gitective.core.CommitFinder
 import org.eclipse.jgit.lib.Repository
 import scala.collection.JavaConversions._
 import org.joda.time.DateTime
+import com.typesafe.scalalogging.slf4j.Logging
 
-class JgitLogConverter {
+class JgitLogConverter extends Logging {
 
   def toCommitInfos(jGitCommits: List[RevCommit], repository: Repository): List[CommitInfo] = {
 
@@ -24,8 +25,13 @@ class JgitLogConverter {
       val filter = new CommitDiffFilter() {
         override def include(commit: RevCommit, diffs: util.Collection[DiffEntry]): Boolean = {
           if (commit.toObjectId.equals(objectId)) {
+            try {
             val files = diffs.toList.map(toCommitFileInfo(_, repository))
             commitInfo = Some(buildCommitInfo(commit, files))
+            }
+            catch {
+              case exception: Exception => throw new IllegalStateException(s"Exception while parsing commit ${objectId.getName}", exception)
+            }
             throw StopWalkException.INSTANCE
           }
           true
