@@ -23,14 +23,14 @@ class MongoFollowupDAO extends FollowupDAO {
   def createOrUpdateExisting(followup: Followup) {
     val query = FollowupRecord
       .where(_.user_id eqs followup.userId)
-      .and(_.threadId.subselect(_.commitId) eqs followup.commitId)
+      .and(_.threadId.subselect(_.commitId) eqs followup.threadId.commitId)
       .and(_.threadId.subselect(_.fileName) exists(followup.threadId.fileName.isDefined))
       .andOpt(followup.threadId.fileName)(_.threadId.subselect(_.fileName) eqs _)
       .and(_.threadId.subselect(_.lineNumber) exists(followup.threadId.lineNumber.isDefined))
       .andOpt(followup.threadId.lineNumber)(_.threadId.subselect(_.lineNumber) eqs _)
       .asDBObject
-    val commitRecord = CommitInfoRecord.where(_.id eqs followup.commitId).get().getOrElse(
-      throw new IllegalStateException(s"Cannot find commit ${followup.commitId}")
+    val commitRecord = CommitInfoRecord.where(_.id eqs followup.threadId.commitId).get().getOrElse(
+      throw new IllegalStateException(s"Cannot find commit ${followup.threadId.commitId}")
     )
     FollowupRecord.upsert(query, followupToRecord(followup, commitRecord))
   }
@@ -47,24 +47,25 @@ class MongoFollowupDAO extends FollowupDAO {
 
   private def toFollowup(record: FollowupRecord) = {
     val threadId = ThreadDetails(record.threadId.get.commitId.get, record.threadId.get.lineNumber.get, record.threadId.get.fileName.get)
-    Followup(record.followupId.get, record.commit.get.id.get, new DateTime(record.date.get), record.lastCommenterName.get, threadId)
+    Followup(record.followupId.get, record.commentId.get, new DateTime(record.date.get), record.lastCommenterName.get, threadId)
   }
 
   private def toRecord(followup: Followup, commitRecord: CommitInfoRecord): FollowupRecord = {
 
     val commitInfo = FollowupCommitInfoRecord.createRecord
-      .id(followup.commitId)
+      .id(followup.threadId.commitId)
       .message(commitRecord.message.get)
       .author(commitRecord.authorName.get)
       .date(commitRecord.committerDate.get)
 
     val threadId = (followup.threadId.fileName, followup.threadId.lineNumber) match {
-      case (Some(fileName), Some(lineNumber)) => ThreadIdRecord.createRecord.commitId(followup.commitId).fileName(fileName).lineNumber(lineNumber)
-      case _ => ThreadIdRecord.createRecord.commitId(followup.commitId)
+      case (Some(fileName), Some(lineNumber)) => ThreadIdRecord.createRecord.commitId(followup.threadId.commitId).fileName(fileName).lineNumber(lineNumber)
+      case _ => ThreadIdRecord.createRecord.commitId(followup.threadId.commitId)
     }
 
     FollowupRecord.createRecord
       .followupId(followup.id.getOrElse(new ObjectId))
+      .commentId(followup.commentId)
       .commit(commitInfo)
       .user_id(followup.userId)
       .date(followup.date.toDate)
@@ -86,6 +87,8 @@ class FollowupRecord extends MongoRecord[FollowupRecord] with ObjectIdPk[Followu
   object threadId extends BsonRecordField(this, ThreadIdRecord)
 
   object date extends DateField(this)
+
+  object commentId extends ObjectIdField(this)
 
   object lastCommenterName extends LongStringField(this)
 
