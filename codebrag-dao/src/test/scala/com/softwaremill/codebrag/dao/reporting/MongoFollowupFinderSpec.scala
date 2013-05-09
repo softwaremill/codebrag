@@ -64,16 +64,27 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach 
     userFollowups(Second).date should equal(date.toDate)
   }
 
+  it should "return followup with last commenter name included" in {
+    // given
+    storeFollowupForBob
+
+    // when
+    val followup = followupFinder.findAllFollowupsForUser(BobId).followups.head
+
+    // then
+    followup.lastCommentAuthorName should be(LastCommenterName)
+  }
+
   def storeFollowupsForJohn = {
     val followups = List(
-      Followup(ObjectIdTestUtils.oid(100), FixtureCommit1.id, JohnId, date, ThreadDetails(FixtureCommit1.id)),
-      Followup(ObjectIdTestUtils.oid(200), FixtureCommit2.id, JohnId, laterDate, ThreadDetails(FixtureCommit2.id)))
+      Followup(ObjectIdTestUtils.oid(100), FixtureCommit1.id, JohnId, date, LastCommenterName, ThreadDetails(FixtureCommit1.id)),
+      Followup(ObjectIdTestUtils.oid(200), FixtureCommit2.id, JohnId, laterDate, LastCommenterName, ThreadDetails(FixtureCommit2.id)))
     followups.foreach(followupDao.createOrUpdateExisting(_))
     followups
   }
 
   def storeFollowupForBob = {
-    val followup = Followup(ObjectIdTestUtils.oid(300), FixtureCommit3.id, BobId, latestDate, ThreadDetails(FixtureCommit3.id))
+    val followup = Followup(ObjectIdTestUtils.oid(300), FixtureCommit3.id, BobId, latestDate, LastCommenterName, ThreadDetails(FixtureCommit3.id))
     followupDao.createOrUpdateExisting(followup)
     followup
   }
@@ -92,6 +103,8 @@ trait MongoFollowupFinderSpecFixture {
   val date = DateTime.now()
   val laterDate = date.plusMinutes(1)
   val latestDate = date.plusMinutes(10)
+
+  val LastCommenterName = "Mary"
 
   val First = 0
   val Second = 1

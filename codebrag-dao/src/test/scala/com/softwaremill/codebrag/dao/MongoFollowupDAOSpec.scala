@@ -18,6 +18,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
   val FollowupTargetUserId = oid(12)
   val DifferentUserId1 = oid(15)
   val DifferentUserId2 = oid(14)
+  val CommenterName = "John"
 
   override def beforeEach() {
     followupDao = new MongoFollowupDAO
@@ -30,7 +31,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
   it should "create new follow up for user and thread if one doesn't exist" in {
     // given
     val now = DateTime.now()
-    val followup = Followup(Commit.id, FollowupTargetUserId, now, ThreadDetails(Commit.id))
+    val followup = Followup(Commit.id, FollowupTargetUserId, now, CommenterName, ThreadDetails(Commit.id))
 
     // when
     followupDao.createOrUpdateExisting(followup)
@@ -45,11 +46,11 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
   }
 
   it should "update existing follow up creation date when one exists for user and thread" in {
-    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, DateTime.now, ThreadDetails(Commit.id)))
+    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
 
     // when
     val newDate = new FixtureTimeClock(23213213).currentDateTime()
-    val updatedFollowup = Followup(Commit.id, FollowupTargetUserId, newDate, ThreadDetails(Commit.id))
+    val updatedFollowup = Followup(Commit.id, FollowupTargetUserId, newDate, CommenterName, ThreadDetails(Commit.id))
     followupDao.createOrUpdateExisting(updatedFollowup)
 
 
@@ -60,12 +61,12 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
 
   it should "update follow up only for current thread" in {
     val baseDate = DateTime.now
-    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, baseDate, ThreadDetails(Commit.id)))
-    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, baseDate, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
+    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id)))
+    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
 
     // when
     val newDate = new FixtureTimeClock(23213213).currentDateTime()
-    val updatedFollowup = Followup(Commit.id, FollowupTargetUserId, newDate, ThreadDetails(Commit.id, Some(20), Some("file.txt")))
+    val updatedFollowup = Followup(Commit.id, FollowupTargetUserId, newDate, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt")))
     followupDao.createOrUpdateExisting(updatedFollowup)
 
 
@@ -77,11 +78,11 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
 
   it should "create new follow up for inline comments thread" in {
     val baseDate = DateTime.now
-    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, baseDate, ThreadDetails(Commit.id)))
-    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, baseDate, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
+    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id)))
+    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
 
     // when
-    val newFollowup = Followup(Commit.id, FollowupTargetUserId, baseDate, ThreadDetails(Commit.id, Some(30), Some("file.txt")))
+    val newFollowup = Followup(Commit.id, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id, Some(30), Some("file.txt")))
     followupDao.createOrUpdateExisting(newFollowup)
 
     // then
@@ -92,10 +93,10 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
 
   it should "create new follow up for entire commit comments thread" in {
     val baseDate = DateTime.now
-    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, baseDate, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
+    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
 
     // when
-    val newFollowup = Followup(Commit.id, FollowupTargetUserId, baseDate, ThreadDetails(Commit.id))
+    val newFollowup = Followup(Commit.id, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id))
     followupDao.createOrUpdateExisting(newFollowup)
 
     // then
@@ -103,10 +104,10 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
   }
 
   it should "delete follow-up for single thread" in {
-    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, DateTime.now, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
-    val followupToRemove = Followup(oid(123), Commit.id, FollowupTargetUserId, DateTime.now, ThreadDetails(Commit.id))
+    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
+    val followupToRemove = Followup(oid(123), Commit.id, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id))
     followupDao.createOrUpdateExisting(followupToRemove)
-    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, DateTime.now, ThreadDetails(Commit.id, Some(23), Some("test.txt"))))
+    followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id, Some(23), Some("test.txt"))))
 
     // when
     followupDao.delete(followupToRemove.id.get)
@@ -117,10 +118,10 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
   }
 
   it should "not delete follow-ups of other users" in {
-    followupDao.createOrUpdateExisting(Followup(Commit.id, DifferentUserId1, DateTime.now, ThreadDetails(Commit.id)))
-    val followupToRemove = Followup(oid(123), Commit.id, FollowupTargetUserId, DateTime.now, ThreadDetails(Commit.id))
+    followupDao.createOrUpdateExisting(Followup(Commit.id, DifferentUserId1, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
+    val followupToRemove = Followup(oid(123), Commit.id, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id))
     followupDao.createOrUpdateExisting(followupToRemove)
-    followupDao.createOrUpdateExisting(Followup(Commit.id, DifferentUserId2, DateTime.now, ThreadDetails(Commit.id)))
+    followupDao.createOrUpdateExisting(Followup(Commit.id, DifferentUserId2, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
 
     // when
     followupDao.delete(followupToRemove.id.get)

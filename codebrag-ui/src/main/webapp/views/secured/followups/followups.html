@@ -20,9 +20,11 @@
                         </div>
                         <div class="row" ng-click="openFollowupDetails(followup)">
                             <div class="span4">
-                                <h5>{{followup.commit.message}}</h5>
-                                <span>by {{followup.commit.authorName}}</span>
-                                <span>by {{followup.commit.id}}</span>
+                                <p>
+                                    {{followup.lastCommentAuthorName}} commented on commit
+                                    <br/>
+                                    <strong>{{followup.commit.message}}</strong>
+                                </p>
                             </div>
                         </div>
                     </div>

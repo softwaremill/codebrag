@@ -47,7 +47,7 @@ class MongoFollowupDAO extends FollowupDAO {
 
   private def toFollowup(record: FollowupRecord) = {
     val threadId = ThreadDetails(record.threadId.get.commitId.get, record.threadId.get.lineNumber.get, record.threadId.get.fileName.get)
-    Followup(record.followupId.get, record.commit.get.id.get, new DateTime(record.date.get), threadId)
+    Followup(record.followupId.get, record.commit.get.id.get, new DateTime(record.date.get), record.lastCommenterName.get, threadId)
   }
 
   private def toRecord(followup: Followup, commitRecord: CommitInfoRecord): FollowupRecord = {
@@ -69,6 +69,7 @@ class MongoFollowupDAO extends FollowupDAO {
       .user_id(followup.userId)
       .date(followup.date.toDate)
       .threadId(threadId)
+      .lastCommenterName(followup.lastCommenterName)
   }
 
 }
@@ -85,6 +86,8 @@ class FollowupRecord extends MongoRecord[FollowupRecord] with ObjectIdPk[Followu
   object threadId extends BsonRecordField(this, ThreadIdRecord)
 
   object date extends DateField(this)
+
+  object lastCommenterName extends LongStringField(this)
 
 }
 

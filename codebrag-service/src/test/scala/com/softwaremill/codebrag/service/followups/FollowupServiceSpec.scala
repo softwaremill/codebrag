@@ -13,7 +13,6 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.EntireCommitComment
 import scala.Some
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
-import org.mockito.ArgumentCaptor
 
 class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with FollowupServiceSpecFixture{
 
@@ -30,40 +29,38 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     commitCommentDao = mock[CommitCommentDAO]
     userDao = mock[UserDAO]
     followupService = new FollowupService(followupDao, commitInfoDao, commitCommentDao, userDao)(TestClock)
+
+    given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
+    given(userDao.findByUserName(BettyCommitAuthor.name)).willReturn(Some(BettyCommitAuthor))
+    given(userDao.findById(JohnId)).willReturn(Some(JohnCommenter))
   }
 
   it should "generate follow-ups for commit for commit author and all commenters except of current commenter" in {
     // Given
-    given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
-    given(userDao.findByUserName(BettyCommitAuthor.name)).willReturn(Some(BettyCommitAuthor))
     given(commitCommentDao.findAllCommentsInThreadWith(JohnComment)).willReturn(JohnAndMaryComments)
 
     // When
     followupService.generateFollowupsForComment(JohnComment)
 
     // Then
-    verifyFollowupsCreatedFor(Commit.id, List(MaryId, BettyCommitAuthorId))
+    verifyFollowupsCreatedFor(Commit.id, JohnCommenter.name, List(MaryId, BettyCommitAuthorId))
     verifyNoMoreInteractions(followupDao)
   }
 
   it should "generate follow-ups for each user only once" in {
     // Given
-    given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
-    given(userDao.findByUserName(BettyCommitAuthor.name)).willReturn(Some(BettyCommitAuthor))
     given(commitCommentDao.findAllCommentsInThreadWith(JohnComment)).willReturn(JohnAndTwoMaryComments)
 
     // When
     followupService.generateFollowupsForComment(JohnComment)
 
     // Then
-    verifyFollowupsCreatedFor(Commit.id, List(MaryId, BettyCommitAuthorId))
+    verifyFollowupsCreatedFor(Commit.id, JohnCommenter.name, List(MaryId, BettyCommitAuthorId))
     verifyNoMoreInteractions(followupDao)
   }
 
   it should "generate followups for all user in thread" in {
     // Given
-    given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
-    given(userDao.findByUserName(BettyCommitAuthor.name)).willReturn(Some(BettyCommitAuthor))
     given(commitCommentDao.findAllCommentsInThreadWith(JohnComment)).willReturn(JohnAndTwoMaryComments)
     given(commitCommentDao.findAllCommentsInThreadWith(JohnInlineComment)).willReturn(JohnMaryAndBobInlineComments)
 
@@ -72,8 +69,8 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(JohnInlineComment)  // should generate for bob betty and mary
 
     // Then
-    verifyFollowupsCreatedFor(Commit.id, List(BettyCommitAuthorId, MaryId))
-    verifyFollowupsCreatedFor(Commit.id, InlineCommentFile, InlineCommentLine, List(BobId, BettyCommitAuthorId, MaryId))
+    verifyFollowupsCreatedFor(Commit.id, JohnCommenter.name, List(BettyCommitAuthorId, MaryId))
+    verifyFollowupsCreatedFor(Commit.id, JohnCommenter.name, InlineCommentFile, InlineCommentLine, List(BobId, BettyCommitAuthorId, MaryId))
     verifyNoMoreInteractions(followupDao)
   }
 
@@ -92,19 +89,17 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
   it should "not generate follow-up for commit author if he does not exist in system" in {
     // Given
-    given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(commitCommentDao.findAllCommentsInThreadWith(JohnComment)).willReturn(JohnAndMaryComments)
     given(userDao.findByUserName(BettyCommitAuthor.name)).willReturn(None)
 
     // When
     followupService.generateFollowupsForComment(JohnComment)
-    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, MaryId, FollowupCreationDateTime, ThreadDetails(Commit.id)))
+    verify(followupDao).createOrUpdateExisting(Followup(Commit.id, MaryId, FollowupCreationDateTime, "John", ThreadDetails(Commit.id)))
     verifyNoMoreInteractions(followupDao)
   }
 
   it should "throw exception and not generate follow-ups for comments when no comments found" in {
     // Given
-    given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(commitCommentDao.findAllCommentsInThreadWith(JohnComment)).willReturn(List.empty)
 
     // When
@@ -115,16 +110,16 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     verifyZeroInteractions(followupDao)
   }
 
-  private def verifyFollowupsCreatedFor(commitId: ObjectId, users: List[ObjectId]) {
+  private def verifyFollowupsCreatedFor(commitId: ObjectId, commentAuthorName: String, users: List[ObjectId]) {
     users.foreach { userId =>
-      val followup = Followup(commitId, userId, FollowupCreationDateTime, ThreadDetails(Commit.id))
+      val followup = Followup(commitId, userId, FollowupCreationDateTime, commentAuthorName, ThreadDetails(Commit.id))
       verify(followupDao).createOrUpdateExisting(followup)
     }
   }
 
-  private def verifyFollowupsCreatedFor(commitId: ObjectId, fileName: String, lineNumber: Int, users: List[ObjectId]) {
+  private def verifyFollowupsCreatedFor(commitId: ObjectId, commentAuthorName: String, fileName: String, lineNumber: Int, users: List[ObjectId]) {
     users.foreach { userId =>
-      val followup = Followup(commitId, userId, FollowupCreationDateTime, ThreadDetails(commitId, Some(lineNumber), Some(fileName)))
+      val followup = Followup(commitId, userId, FollowupCreationDateTime, commentAuthorName, ThreadDetails(commitId, Some(lineNumber), Some(fileName)))
       verify(followupDao).createOrUpdateExisting(followup)
     }
   }
@@ -145,6 +140,7 @@ trait FollowupServiceSpecFixture {
   val Commit = CommitInfoAssembler.randomCommit.get
 
   val BettyCommitAuthor = User(BettyCommitAuthorId, Authentication.basic("user", "password"), Commit.authorName, "user@email.com", "123213")
+  val JohnCommenter = User(JohnId, Authentication.basic("john", "doe"), "John", "john@doe.com", "456456")
 
   val JohnComment = EntireCommitComment(new ObjectId(), Commit.id, JohnId, "user one comment", CommentDateTime)
   val MaryComment = EntireCommitComment(new ObjectId(), Commit.id, MaryId, "user two comment", CommentDateTime)

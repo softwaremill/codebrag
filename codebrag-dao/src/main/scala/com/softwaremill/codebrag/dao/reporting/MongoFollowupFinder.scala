@@ -22,7 +22,7 @@ class MongoFollowupFinder extends FollowupFinder {
 
   def toFollowupInfo(record: FollowupRecord) = {
     val commitInfo: FollowupCommitView = extractCommitInfoFromRecord(record)
-    FollowupView(record.followupId.get.toString, record.user_id.get.toString, record.date.get, commitInfo)
+    FollowupView(record.followupId.get.toString, record.user_id.get.toString, record.date.get, commitInfo, record.lastCommenterName.get)
   }
 
   def extractCommitInfoFromRecord(record: FollowupRecord) = {
