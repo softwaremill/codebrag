@@ -18,6 +18,11 @@ codebrag.AsyncCollection = function() {
 
 codebrag.AsyncCollection.prototype = {
 
+    /**
+     * Fills collection with elements returned by a promise.
+     * @param promise a promise which should return an array of elements.
+     * @returns a promise of array of elements loaded into this collection.
+     */
     loadElements: function (promise) {
         var self = this;
         return promise.then(function(receivedCollection) {
@@ -34,6 +39,13 @@ codebrag.AsyncCollection.prototype = {
         })
     },
 
+    /**
+     * Removes element matching gives criteria in matchFn. Removal operation will be performed
+     * asynchronously and chained to given promise (for example a server response promise).
+     * @param matchFn matching function taking single element and returning true or false if it matches criteria.
+     * @param promise of call which should be succeeded by removing element.
+     * @returns a promise of removing matching element and returning index of that element.
+     */
     removeElement: function(matchFn, promise) {
         var self = this;
         var indexToRemove = self._indexOf(matchFn);
@@ -43,6 +55,14 @@ codebrag.AsyncCollection.prototype = {
         });
     },
 
+    /**
+     * Removes element matching gives criteria in matchFn. Removal operation will be performed
+     * asynchronously and chained to given promise (for example a server response promise).
+     * @param matchFn matching function taking single element and returning true or false if it matches criteria.
+     * @param promise of call which should be succeeded by removing element.
+     * @returns a promise of removing matching element and returning next element in the collection (previous
+     * element in the array) or null if removed first element.
+     */
     removeElementAndGetNext: function(matchFn, promise) {
         var self = this;
         return self.removeElement(matchFn, promise).then(self._getNext.bind(self));
@@ -56,6 +76,12 @@ codebrag.AsyncCollection.prototype = {
         return self.elements.indexOf(found);
     },
 
+    /**
+     * Returns a promise of element 'next' after element matching given criteria, technically the previous element in array.
+     * @param matchFn function to match element whose successor should be returned.
+     * @param promise a promise which, when fulfilled, should be followed by returning the element.
+     * @returns a promise of element matching criteria.
+     */
     getNextAfter: function (matchFn, promise) {
         var self = this;
         return promise.then(function() {
