@@ -17,7 +17,7 @@ describe("CommitsListService", function () {
         _$httpBackend_.verifyNoOutstandingRequest();
     }));
 
-    it('remove commit locally and from server', inject(function (commitsListService, commitLoadFilter) {
+    it('should remove commit locally and from server', inject(function (commitsListService, commitLoadFilter) {
         // Given
         var loadedCommits = [commit(111), commit(222), commit(333)];
         var commitIdToRemove = 222;
@@ -31,6 +31,52 @@ describe("CommitsListService", function () {
 
         // Then
         expect(commitsListService.allCommits().length).toBe(loadedCommits.length - 1);
+    }));
+
+    it('should not remove commit locally if filter is set to all', inject(function (commitsListService, commitLoadFilter) {
+        // Given
+        var loadedCommits = [commit(111), commit(222), commit(333)];
+        var commitIdToRemove = 222;
+        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
+        commitsListService.loadCommitsFromServer(commitLoadFilter.modes.pending);
+        $httpBackend.flush();
+
+        // When
+        commitLoadFilter.current = commitLoadFilter.modes.all;
+        $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
+        commitsListService.removeCommit(commitIdToRemove);
+        $httpBackend.flush();
+
+        // Then
+        expect(commitsListService.allCommits()).toEqual(loadedCommits);
+        expect(commitsListService.allCommits()[1].pendingReview).toBe(false);
+        expect(commitsListService.allCommits()[0].pendingReview).toBe(true);
+    }));
+
+    it('should mark local commit as not pending review and get next one', inject(function (commitsListService, commitLoadFilter) {
+        // Given
+        var nextCommit = {};
+        var loadedCommits = [commit(111), commit(222), commit(333)];
+        var commitIdToRemove = 222;
+        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
+        commitsListService.loadCommitsFromServer(commitLoadFilter.modes.pending);
+        $httpBackend.flush();
+
+        // When
+        commitLoadFilter.current = commitLoadFilter.modes.all;
+        $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
+        commitsListService.removeCommitAndGetNext(commitIdToRemove).then(
+            function(returnedNext) {
+                nextCommit = returnedNext
+            }
+        );
+        $httpBackend.flush();
+
+        // Then
+        expect(commitsListService.allCommits()).toEqual(loadedCommits);
+        expect(commitsListService.allCommits()[1].pendingReview).toBe(false);
+        expect(commitsListService.allCommits()[0].pendingReview).toBe(true);
+        expect(nextCommit.id).toBe('111');
     }));
 
     it('should load non-reviewable commits from server', inject(function (commitsListService, commitLoadFilter) {
@@ -99,7 +145,7 @@ describe("CommitsListService", function () {
 
     function commit(id) {
         var idStr = id.toString();
-        return {id: idStr, sha: 'sha' + idStr, msg: 'message' + idStr}
+        return {id: idStr, sha: 'sha' + idStr, msg: 'message' + idStr, pendingReview: true}
     }
 
 });

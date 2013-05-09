@@ -56,6 +56,13 @@ codebrag.AsyncCollection.prototype = {
         return self.elements.indexOf(found);
     },
 
+    getNextAfter: function (matchFn, promise) {
+        var self = this;
+        return promise.then(function() {
+            return self._getNext(self._indexOf(matchFn));
+        });
+    },
+
     _getNext: function (index) {
         var self = this;
         if (_.isEmpty(self.elements)) {

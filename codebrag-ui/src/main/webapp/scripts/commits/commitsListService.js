@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .factory('commitsListService', function($resource, $q, $http, Commits) {
+    .factory('commitsListService', function($resource, $q, $http, Commits, commitLoadFilter) {
 
         var commits = new codebrag.AsyncCollection();
 
@@ -25,18 +25,45 @@ angular.module('codebrag.commits')
             return commits.elements;
         }
 
+        function markAsNotReviewable(commitId) {
+            commits.elements.some(function (commit) {
+                if (commit.id == commitId) {
+                    commit.pendingReview = false;
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        /**
+         * Removes commit with given identifier.
+         * @param commitId identifier of commit to remove.
+         * @returns a promise
+         */
         function removeCommit(commitId) {
             var responsePromise = Commits.remove({id: commitId}).$then();
-            return commits.removeElement(function(el) {
-                return el.id === commitId;
-            }, responsePromise);
+            if (commitLoadFilter.isAll()) {
+                markAsNotReviewable(commitId);
+                return responsePromise;
+            }
+            else
+                return commits.removeElement(_matchingId(commitId), responsePromise);
+        }
+
+        function _matchingId(id) {
+            return function(element) {
+                return element.id == id;
+            }
         }
 
         function removeCommitAndGetNext(commitId) {
             var responsePromise = Commits.remove({id: commitId}).$then();
-            return commits.removeElementAndGetNext(function(el) {
-                return el.id === commitId;
-            }, responsePromise);
+                if (commitLoadFilter.isAll()) {
+                    markAsNotReviewable(commitId);
+                    return commits.getNextAfter(_matchingId(commitId), responsePromise);
+                }
+                else
+                    return commits.removeElementAndGetNext(_matchingId(commitId), responsePromise);
         }
 
         function loadCommitById(commitId) {

@@ -14,6 +14,10 @@ angular.module('codebrag.commits').
 
         current: {
             value: 'pending'
+        },
+
+        isAll: function () {
+            return this.current == this.modes.all;
         }
     }
 );
