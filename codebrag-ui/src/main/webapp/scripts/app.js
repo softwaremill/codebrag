@@ -80,7 +80,7 @@ angular.module('codebrag.followups')
                 templateUrl: 'views/secured/empty.html'
             })
             .state('followups.details', {
-                url: '/{id}',
+                url: '/{followupId}/comments/{commentId}',
                 templateUrl: 'views/secured/followups/followupDetails.html'
             })
     });

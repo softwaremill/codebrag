@@ -2,7 +2,9 @@ angular.module('codebrag.followups')
 
     .controller('FollowupDetailsCtrl', function ($stateParams, $state, $scope, followupsListService, commitsListService) {
 
-        var followupId = $stateParams.id;
+        var followupId = $stateParams.followupId;
+
+        $scope.scrollTo = $stateParams.commentId;
 
         followupsListService.loadFollowupById(followupId).then(function(followup) {
             $scope.currentFollowup = followup;
@@ -21,7 +23,7 @@ angular.module('codebrag.followups')
             if (_.isNull(nextFollowup)) {
                 $state.transitionTo('followups.list');
             } else {
-                $state.transitionTo('followups.details', {id: nextFollowup.followupId});
+                $state.transitionTo('followups.details', {followupId: nextFollowup.followupId, commentId: nextFollowup.comment.commentId});
             }
         }
 

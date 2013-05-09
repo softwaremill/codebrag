@@ -132,3 +132,16 @@ html, body, .container, .content {
 .active-element .well{
     background: #e5e0c6;
 }
+
+.scrolled-to {
+    background: #e5e0c6;
+}
+
+.scroll-to {
+    background: #efefef;
+    -webkit-transition: background 1s linear;
+    -moz-transition: background 1s linear;
+    -ms-transition: background 1s linear;
+    -o-transition: background 1s linear;
+    transition: background 1s linear;
+}

@@ -5,7 +5,7 @@ angular.module('codebrag.followups')
     .controller('FollowupListItemCtrl', function ($scope, $state, $stateParams, followupsListService) {
 
         $scope.openFollowupDetails = function (followup) {
-            $state.transitionTo('followups.details', {id: followup.followupId})
+            $state.transitionTo('followups.details', {followupId: followup.followupId, commentId: followup.comment.commentId})
         };
 
         $scope.dismiss = function (followup) {
@@ -16,7 +16,7 @@ angular.module('codebrag.followups')
         };
 
         function _getOutOfFollowupDetailsIfCurrentRemoved(followupId) {
-            if (followupId === $stateParams.id) {
+            if (followupId === $stateParams.followupId) {
                 $state.transitionTo('followups.list');
             }
         }

@@ -1,4 +1,4 @@
-<div ng-controller="DiffCtrl">
+<div ng-controller="DiffCtrl" scrollable="scrollTo">
     <div class="row">
         <div class="span7">
             <h4>Commit files</h4>
@@ -55,11 +55,12 @@
         </div>
         <div class="row">&nbsp;</div>
     </div>
-    <div>
+    <div id="comment-anchor">
         <div class="row">
             <div class="span7">
                 <div class="well" ng-repeat="comment in currentCommit.comments" style="width:90%">
-                    {{comment.time | relativeDate}} by <strong>{{comment.authorName}}</strong>:
+
+                    <span  id="{{comment.id}}">{{comment.time | relativeDate}} by <strong>{{comment.authorName}}</strong>:</span>
                     <br/>
                     <br/>
 
