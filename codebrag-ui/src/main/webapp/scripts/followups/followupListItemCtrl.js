@@ -2,10 +2,14 @@
 
 angular.module('codebrag.followups')
 
-    .controller('FollowupListItemCtrl', function ($scope, $state, $stateParams, followupsListService) {
+    .controller('FollowupListItemCtrl', function ($scope, $state, $stateParams, followupsListService, $rootScope) {
 
         $scope.openFollowupDetails = function (followup) {
-            $state.transitionTo('followups.details', {followupId: followup.followupId, commentId: followup.comment.commentId})
+            if(_thisFollowupOpened(followup)) {
+                $rootScope.$broadcast('codebrag:scrollOnly');
+            } else {
+                $state.transitionTo('followups.details', {followupId: followup.followupId, commentId: followup.comment.commentId})
+            }
         };
 
         $scope.dismiss = function (followup) {
@@ -19,6 +23,10 @@ angular.module('codebrag.followups')
             if (followupId === $stateParams.followupId) {
                 $state.transitionTo('followups.list');
             }
+        }
+
+        function _thisFollowupOpened(followup) {
+            return $state.current.name === 'followups.details' && $state.params.followupId === followup.followupId;
         }
 
 

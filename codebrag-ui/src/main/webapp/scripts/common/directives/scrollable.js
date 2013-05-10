@@ -25,6 +25,9 @@ angular.module('codebrag.common.directives')
                     }
                 }
                 setTimeout(scrollIfElementPresent, pollingInterval);
+                scope.$on('codebrag:scrollOnly', function() {
+                    scrollIfElementPresent();
+                });
             }
         }
     });
