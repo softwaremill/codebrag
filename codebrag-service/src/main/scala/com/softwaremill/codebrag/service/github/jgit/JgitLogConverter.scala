@@ -23,11 +23,19 @@ class JgitLogConverter extends Logging {
       var commitInfo: Option[CommitInfo] = None
       val objectId = jGitCommit.toObjectId
       val filter = new CommitDiffFilter() {
+
+        def logIfContainsNotParseableDiff(commit: RevCommit, diffs: util.Collection[DiffEntry]) {
+          if (diffs.exists(_.getOldId == null)) {
+             logger.warn(s"Diff impossible to parse in commit ${commit.getId.name}")
+          }
+        }
+
         override def include(commit: RevCommit, diffs: util.Collection[DiffEntry]): Boolean = {
           if (commit.toObjectId.equals(objectId)) {
             try {
-            val files = diffs.toList.map(toCommitFileInfo(_, repository))
-            commitInfo = Some(buildCommitInfo(commit, files))
+              logIfContainsNotParseableDiff(commit, diffs)
+              val files = diffs.toList.map(toCommitFileInfo(_, repository))
+              commitInfo = Some(buildCommitInfo(commit, files))
             }
             catch {
               case exception: Exception => throw new IllegalStateException(s"Exception while parsing commit ${objectId.getName}", exception)
@@ -60,12 +68,24 @@ class JgitLogConverter extends Logging {
       case ChangeType.ADD => diff.getNewPath
       case _ => diff.getOldPath
     }
+
     val status = changeTypeToStatus(diff.getChangeType)
-    val baos = new ByteArrayOutputStream()
-    val formatter = new DiffFormatter(baos)
-    formatter.setRepository(repository)
-    formatter.format(diff)
-    CommitFileInfo(filename, status, baos.toString())
+    val patchString = if (diff.getOldId == null) {
+      "+ patch unavailable due to JGit bug 407743"
+    }
+    else {
+      val baos = new ByteArrayOutputStream()
+      val formatter = new DiffFormatter(baos)
+      try {
+        formatter.setRepository(repository)
+        formatter.format(diff)
+        baos.toString()
+      }
+      finally {
+        formatter.release()
+      }
+    }
+    CommitFileInfo(filename, status, patchString)
   }
 
   private def changeTypeToStatus(change: ChangeType): String = {
