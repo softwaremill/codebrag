@@ -1,6 +1,5 @@
-import com.mongodb.Mongo
+import com.softwaremill.codebrag.dao.MongoInit
 import com.softwaremill.codebrag.rest._
-import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB}
 import com.softwaremill.codebrag.Beans
 import org.scalatra._
 import javax.servlet.ServletContext
@@ -14,8 +13,7 @@ class ScalatraBootstrap extends LifeCycle with Beans {
   val Prefix = "/rest/"
 
   override def init(context: ServletContext) {
-    MongoDB.defineDb(DefaultMongoIdentifier, new Mongo, "codebrag")
-
+    MongoInit.initialize()
     context.mount(new UptimeServlet, Prefix + "uptime")
     context.mount(new UsersServlet(authenticator, swagger), Prefix + "users")
     context.mount(new CommitsServlet(authenticator, commitListFinder, commentListFinder, commentActivity, commitReviewTaskDao, userDao, swagger, diffWithCommentsService, importerFactory), Prefix + CommitsServlet.MAPPING_PATH)
