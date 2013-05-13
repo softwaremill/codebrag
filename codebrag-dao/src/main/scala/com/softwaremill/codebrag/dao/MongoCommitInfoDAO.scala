@@ -7,6 +7,8 @@ import net.liftweb.mongodb.record.field.{BsonRecordListField, MongoListField, Da
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
+import net.liftweb.json.JsonDSL._
+
 
 class MongoCommitInfoDAO extends CommitInfoDAO {
 
@@ -98,6 +100,10 @@ class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with ObjectIdPk[Com
 
 object CommitInfoRecord extends CommitInfoRecord with MongoMetaRecord[CommitInfoRecord] {
   override def collectionName = "commit_infos"
+
+  def ensureIndexes() {
+    this.ensureIndex((committerDate.name -> 1))
+  }
 }
 
 class CommitFileInfoRecord extends BsonRecord[CommitFileInfoRecord] {
