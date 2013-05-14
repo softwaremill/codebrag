@@ -31,6 +31,10 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/loginForm.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/sessionCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/profileCtrl.js");
 
+<!-- notifications -->
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "notifications/notificationCountersService.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "notifications/notificationCountersCtrl.js");
+
 <!-- commits -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitLoadFilter.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsCtrl.js");

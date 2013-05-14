@@ -8,23 +8,25 @@ angular.module('codebrag.common', ['codebrag.common.services', 'codebrag.common.
 angular.module('codebrag.auth', []);
 
 angular.module('codebrag.session', ['ui.compat', 'codebrag.auth']);
+angular.module('codebrag.notifications', []);
 
 angular.module('codebrag.commits.comments', ['ui.compat']);
-angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments']);
+angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments', 'codebrag.notifications']);
 
-angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth']);
+angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.notifications']);
 
 angular.module('codebrag', [
     'codebrag.auth',
     'codebrag.common',
     'codebrag.session',
     'codebrag.commits',
-    'codebrag.followups']);
+    'codebrag.followups',
+    'codebrag.notifications']);
 
 angular.module('codebrag')
     .run(function(authService) {
         authService.requestCurrentUser();
-    })
+    });
 
 angular.module('codebrag.auth')
     .config(function($httpProvider) {
