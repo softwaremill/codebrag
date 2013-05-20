@@ -204,7 +204,7 @@ describe("CommitsListService", function () {
 
     function commitArrayOfSize(size) {
         var array = [];
-        for (var i = 1; i < size; i++) {
+        for (var i = 1; i < size + 1; i++) {
             array.push(commit(i))
         }
         return array;
