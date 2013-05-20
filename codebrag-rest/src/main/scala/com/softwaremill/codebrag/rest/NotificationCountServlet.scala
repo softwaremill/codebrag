@@ -3,12 +3,15 @@ package com.softwaremill.codebrag.rest
 import org.scalatra.json.JacksonJsonSupport
 import org.scalatra.swagger.{Swagger, SwaggerSupport}
 import com.softwaremill.codebrag.service.user.Authenticator
+import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
+import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
+import org.bson.types.ObjectId
 
-class NotificationCountServlet(val authenticator: Authenticator, val swagger: Swagger) extends JsonServletWithAuthentication with NotificationCountServletSwaggerDefinition with JacksonJsonSupport {
+class NotificationCountServlet(val authenticator: Authenticator, val swagger: Swagger, finder: NotificationCountFinder) extends JsonServletWithAuthentication with NotificationCountServletSwaggerDefinition with JacksonJsonSupport {
 
   get("/", operation(getOperation)) {
     haltIfNotAuthenticated()
-    NotificationCountersView(0, 0) // TODO
+    finder.getCounters(new ObjectId(user.id))
   }
 }
 
@@ -20,8 +23,6 @@ trait NotificationCountServletSwaggerDefinition extends SwaggerSupport {
   val getOperation = apiOperation[NotificationCountersView]("get")
     .summary("Gets counters for notifications about pending commits or follow-ups")
 }
-
-case class NotificationCountersView(pendingCommitCount: Int, followupCount: Int)
 
 object NotificationCountServlet {
   val MappingPath = "notificationCounts"

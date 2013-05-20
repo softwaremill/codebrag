@@ -2,7 +2,7 @@ package com.softwaremill.codebrag
 
 import activities.AddCommentActivity
 import common.{ObjectIdGenerator, IdGenerator}
-import com.softwaremill.codebrag.dao.reporting.{MongoFollowupFinder, MongoCommentFinder, MongoCommitFinder}
+import com.softwaremill.codebrag.dao.reporting.{MongoNotificationCountFinder, MongoFollowupFinder, MongoCommentFinder, MongoCommitFinder}
 import dao._
 import rest.CodebragSwagger
 import service.comments.CommentService
@@ -29,6 +29,7 @@ trait Beans {
   lazy val commentDao = new MongoCommitCommentDAO
   lazy val commentService = new CommentService(commentDao)
   lazy val githubClientProvider = new GitHubClientProvider(userDao)
+  lazy val notificationCountFinder = new MongoNotificationCountFinder
   lazy val converter = new GitHubCommitInfoConverter()
   lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
   lazy val reviewTaskGenerator = new CommitReviewTaskGenerator(userDao, commitReviewTaskDao)
