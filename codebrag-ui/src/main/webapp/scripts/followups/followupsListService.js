@@ -1,6 +1,6 @@
 angular.module('codebrag.followups')
 
-    .factory('followupsListService', function($resource, $q, $http) {
+    .factory('followupsListService', function($resource, $q, $http, notificationCountersService) {
 
         var followups = new codebrag.AsyncCollection();
 
@@ -11,6 +11,7 @@ angular.module('codebrag.followups')
 
     	function loadFollowupsFromServer() {
             var requestPromise = _httpRequest('GET').then(function(response) {
+                notificationCountersService.updateFollowups(response.data.followups.length);
                 return response.data.followups;
             });
             return followups.loadElements(requestPromise)
@@ -21,17 +22,19 @@ angular.module('codebrag.followups')
         }
 
         function removeFollowup(followupId) {
-            var requestPromise = _httpRequest('DELETE', followupId);
-            return followups.removeElement(function(el) {
-                return el.followupId === followupId;
-            }, requestPromise);
+            return _removeFollowupUsingFunction(followups.removeElement.bind(followups), followupId)
         }
 
         function removeFollowupAndGetNext(followupId) {
-            var requestPromise = _httpRequest('DELETE', followupId);
-            return followups.removeElementAndGetNext(function(el) {
+            return _removeFollowupUsingFunction(followups.removeElementAndGetNext.bind(followups), followupId)
+        }
+
+        function _removeFollowupUsingFunction(removingFunction, followupId) {
+            var responsePromise = _httpRequest('DELETE', followupId);
+            return removingFunction(function(el) {
+                notificationCountersService.decreaseFollowups();
                 return el.followupId === followupId;
-            }, requestPromise);
+            }, responsePromise);
         }
 
         function loadFollowupById(followupId) {
