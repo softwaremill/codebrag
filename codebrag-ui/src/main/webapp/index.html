@@ -61,6 +61,10 @@
     <script type="text/javascript" src="scripts/session/sessionCtrl.js"></script>
     <script type="text/javascript" src="scripts/session/profileCtrl.js"></script>
 
+    <!-- notifications -->
+    <script type="text/javascript" src="scripts/notifications/notificationCountersCtrl.js"></script>
+    <script type="text/javascript" src="scripts/notifications/notificationCountersService.js"></script>
+
     <!-- commits -->
     <script type="text/javascript" src="scripts/commits/commitLoadFilter.js"></script>
     <script type="text/javascript" src="scripts/commits/diffCtrl.js"></script>
@@ -99,12 +103,14 @@
             <div class="container">
                 <a class="brand" href="#">Codebrag</a>
                 <div class="nav-collapse collapse" ng-controller="SessionCtrl">
-                    <ul class="nav pull-right" ng-show="isLogged()">
-                        <li><a id="profileLink" href="#/profile">Signed in as {{getLoggedUserName()}}</a></li>
-                        <li><a id="commitsLink" href="#/commits">Commits</a></li>
-                        <li><a id="followupsLink" href="#/followups">Follow-ups</a></li>
-                        <li><a id="logoutLink" href ng-click="logout()">Sign out</a></li>
-                    </ul>
+                    <div ng-controller="NotificationCountersCtrl">
+                        <ul class="nav pull-right" ng-show="isLogged()">
+                            <li><a id="profileLink" href="#/profile">Signed in as {{getLoggedUserName()}}</a></li>
+                            <li><a id="commitsLink" href="#/commits">Commits ({{counters.commits}})</a></li>
+                            <li><a id="followupsLink" href="#/followups">Follow-ups ({{counters.followups}})</a></li>
+                            <li><a id="logoutLink" href ng-click="logout()">Sign out</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

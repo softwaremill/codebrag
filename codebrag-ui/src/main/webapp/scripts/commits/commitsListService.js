@@ -1,12 +1,13 @@
 angular.module('codebrag.commits')
 
-    .factory('commitsListService', function($resource, $q, $http, Commits, commitLoadFilter) {
+    .factory('commitsListService', function($resource, $q, $http, Commits, commitLoadFilter, notificationCountersService) {
 
         var commits = new codebrag.AsyncCollection();
 
 
     	function loadCommitsFromServer(filter) {
             var responsePromise = Commits.get({filter: filter.value}).$then(function(response) {
+                notificationCountersService.updateCommits(_reviewableCount(response.data.commits));
                 return response.data.commits;
             });
             return commits.loadElements(responsePromise);
@@ -15,6 +16,7 @@ angular.module('codebrag.commits')
         function syncCommits() {
             $http({method: 'POST', url: 'rest/commits/sync'}).success(function(response) {
                 commits.elements.length = 0;
+                notificationCountersService.updateCommits(_reviewableCount(response.commits));
                 _.forEach(response.commits, function(commit) {
                     commits.elements.push(commit);
                 });
@@ -41,6 +43,7 @@ angular.module('codebrag.commits')
          * @returns a promise
          */
         function removeCommit(commitId) {
+            notificationCountersService.decreaseCommits();
             var responsePromise = Commits.remove({id: commitId}).$then();
             if (commitLoadFilter.isAll()) {
                 markAsNotReviewable(commitId);
@@ -57,6 +60,7 @@ angular.module('codebrag.commits')
         }
 
         function removeCommitAndGetNext(commitId) {
+            notificationCountersService.decreaseCommits();
             var responsePromise = Commits.remove({id: commitId}).$then();
                 if (commitLoadFilter.isAll()) {
                     markAsNotReviewable(commitId);
@@ -70,6 +74,12 @@ angular.module('codebrag.commits')
             return Commits.get({id: commitId}).$then(function(response) {
                 return response.data;
             });
+        }
+
+        function _reviewableCount(commits) {
+            return _.countBy(commits,function (commit) {
+                return commit.pendingReview
+            }).true
         }
 
         return {
