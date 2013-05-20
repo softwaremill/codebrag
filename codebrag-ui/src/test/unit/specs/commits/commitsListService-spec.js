@@ -108,6 +108,21 @@ describe("CommitsListService", function () {
         expect(notificationCountersService.updateCommits).toHaveBeenCalledWith(2)
     }));
 
+    it('should update notification count to zero if no commits returned from server', inject(function (commitsListService,
+                                                                                              commitLoadFilter, notificationCountersService) {
+        // Given
+        var loadedCommits = [];
+        $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
+        spyOn(notificationCountersService, "updateCommits");
+
+        // When
+        commitsListService.loadCommitsFromServer(commitLoadFilter.modes.all);
+        $httpBackend.flush();
+
+        // Then
+        expect(notificationCountersService.updateCommits).toHaveBeenCalledWith(0)
+    }));
+
     it('should decrease commit notification count when deleting commit', inject(function (commitsListService,
                                                                                               commitLoadFilter, notificationCountersService) {
         // Given

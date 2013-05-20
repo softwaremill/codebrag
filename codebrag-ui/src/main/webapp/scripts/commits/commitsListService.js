@@ -77,9 +77,9 @@ angular.module('codebrag.commits')
         }
 
         function _reviewableCount(commits) {
-            return _.countBy(commits,function (commit) {
+            return _.filter(commits, function (commit) {
                 return commit.pendingReview
-            }).true
+            }).length
         }
 
         return {
