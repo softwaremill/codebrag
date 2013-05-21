@@ -44,7 +44,8 @@ describe("Follow-ups list service", function () {
         $httpBackend.flush();
 
         // Then
-        expect(notificationCountersService.decreaseFollowups).toHaveBeenCalled()
+        expect(notificationCountersService.decreaseFollowups).toHaveBeenCalled();
+        expect(notificationCountersService.decreaseFollowups.callCount).toBe(1)
     }));
 
     it('should decrease the number of follow-ups when removing and getting next', inject(function (followupsListService, notificationCountersService) {
@@ -61,7 +62,8 @@ describe("Follow-ups list service", function () {
         $httpBackend.flush();
 
         // Then
-        expect(notificationCountersService.decreaseFollowups).toHaveBeenCalled()
+        expect(notificationCountersService.decreaseFollowups).toHaveBeenCalled();
+        expect(notificationCountersService.decreaseFollowups.callCount).toBe(1)
     }));
 
     function followup(id) {

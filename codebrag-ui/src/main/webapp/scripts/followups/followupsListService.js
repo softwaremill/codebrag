@@ -32,9 +32,10 @@ angular.module('codebrag.followups')
         function _removeFollowupUsingFunction(removingFunction, followupId) {
             var responsePromise = _httpRequest('DELETE', followupId);
             return removingFunction(function(el) {
-                notificationCountersService.decreaseFollowups();
                 return el.followupId === followupId;
-            }, responsePromise);
+            }, responsePromise).then(function() {
+                    notificationCountersService.decreaseFollowups();
+                });
         }
 
         function loadFollowupById(followupId) {
