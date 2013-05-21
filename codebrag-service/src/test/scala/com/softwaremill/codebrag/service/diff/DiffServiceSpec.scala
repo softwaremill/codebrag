@@ -24,8 +24,11 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
       |--- a/codebrag-ui/src/main/webapp/index.html
       |+++ b/codebrag-ui/src/main/webapp/index.html
       |@@ -47,6 +47,6 @@
-      |some content in diff
-      |second content line""".stripMargin)
+      |some content
+      |@@ -147,6 +147,6 @@
+      |another content
+      |@@ -247,6 +247,6 @@
+      |yet another content""".stripMargin)
 
   val SampleDiff =
     """@@ -2,7 +2,7 @@
@@ -165,10 +168,13 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
 
     // then
-    files(0).lines.length should equal(3)
+    files(0).lines.length should equal(6)
     files(0).lines(0).line should equal("@@ -47,6 +47,6 @@")
-    files(0).lines(1).line should equal("some content in diff")
-    files(0).lines(2).line should equal("second content line")
+    files(0).lines(1).line should equal("some content")
+    files(0).lines(2).line should equal("@@ -147,6 +147,6 @@")
+    files(0).lines(3).line should equal("another content")
+    files(0).lines(4).line should equal("@@ -247,6 +247,6 @@")
+    files(0).lines(5).line should equal("yet another content")
   }
 
   it should "return information when commit is missing" in {

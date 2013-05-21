@@ -13,7 +13,7 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
   val LineTypeAdded = "added"
   val LineTypeNotChanged = "not-changed"
   val Info = """@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)""".r
-  val PatchPattern =  """(?s)(.*)(@@ .*)""".r
+  val PatchPattern =  """(?s)([^@]*)(@@ .*)""".r
 
   def parseDiff(diff: String): List[DiffLine] = {
     @tailrec
