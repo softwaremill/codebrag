@@ -17,14 +17,14 @@ describe("Notification counters service", function () {
         _$httpBackend_.verifyNoOutstandingRequest();
     }));
 
-    it('should call server only on first load', inject(function (notificationCountersService) {
+    it('should load data from server on logon event', inject(function (notificationCountersService) {
         // Given
         $httpBackend.expectGET('rest/notificationCounts').respond({pendingCommitCount: 0, followupCount: 0});
+        rootScope.$broadcast("codebrag:loggedIn");
 
         // When
         notificationCountersService.counters();
         $httpBackend.flush();
-        notificationCountersService.counters();
 
         // Then expected server url called only once
     }));
@@ -37,6 +37,7 @@ describe("Notification counters service", function () {
                 pendingCommitCount: expectedCommitCount,
                 followupCount: expectedFollowupCount
             });
+        rootScope.$broadcast("codebrag:loggedIn");
 
         // When
         var counters = notificationCountersService.counters();
@@ -50,12 +51,7 @@ describe("Notification counters service", function () {
     it('should correctly update counter values on commit counter change event', inject(function (notificationCountersService) {
         // Given
         var expectedCommitCount = 15;
-        $httpBackend.expectGET('rest/notificationCounts').respond({
-            pendingCommitCount: 1,
-            followupCount: 2
-        });
         var counters = notificationCountersService.counters();
-        $httpBackend.flush();
 
         // When
         rootScope.$broadcast('codebrag:commitCountChanged', {commitCount: expectedCommitCount});
@@ -67,12 +63,7 @@ describe("Notification counters service", function () {
     it('should correctly update counter values on follow-up counter change event', inject(function (notificationCountersService) {
         // Given
         var expectedFollowupCount = 15;
-        $httpBackend.expectGET('rest/notificationCounts').respond({
-            pendingCommitCount: 1,
-            followupCount: 2
-        });
         var counters = notificationCountersService.counters();
-        $httpBackend.flush();
 
         // When
         rootScope.$broadcast('codebrag:followupCountChanged', {followupCount: expectedFollowupCount});

@@ -1,6 +1,6 @@
 angular.module('codebrag.auth')
 
-    .factory('authService', function($http, httpRequestsBuffer, $q) {
+    .factory('authService', function($http, httpRequestsBuffer, $q, $rootScope) {
 
         var authService = {
 
@@ -10,6 +10,7 @@ angular.module('codebrag.auth')
                 var loginRequest = $http.post('rest/users', user, {bypassQueue: true});
                 return loginRequest.then(function(response) {
                     authService.loggedInUser = response.data;
+                    $rootScope.$broadcast("codebrag:loggedIn");
                     httpRequestsBuffer.retryAllRequest();
                 });
             },

@@ -10,16 +10,16 @@ angular.module('codebrag.notifications')
             _updateFollowups(data.followupCount)
         });
 
+        $rootScope.$on('codebrag:loggedIn', function() {
+            _loadCountersFromServer()
+        });
+
         var counterValues = {
-            loaded: false,
             commits: 0,
             followups: 0
         };
 
         function counters() {
-            if (!counterValues.loaded) {
-                _loadCountersFromServer()
-            }
             return counterValues;
         }
 
@@ -35,7 +35,6 @@ angular.module('codebrag.notifications')
             $http.get('rest/notificationCounts').then(function(response) {
                 counterValues.commits = response.data.pendingCommitCount;
                 counterValues.followups = response.data.followupCount;
-                counterValues.loaded = true;
             });
         }
 
