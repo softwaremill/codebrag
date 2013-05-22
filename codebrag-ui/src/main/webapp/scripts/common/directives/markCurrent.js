@@ -6,7 +6,7 @@ angular.module('codebrag.common.directives')
             restrict: 'A',
             link: function (scope, element, attributes) {
 
-                var options = {activeClass: 'active-element', currentAtrrName: 'markCurrent'};
+                var options = {activeClass: 'active', currentAtrrName: 'markCurrent'};
 
                 markActive();
                 hookOnEvent();
