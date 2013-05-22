@@ -36,13 +36,15 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
 
   it should "call persistence to save expected commit data" in {
     // given
+    val parentId = givenInitialCommit()
     val revCommit = givenCommit("file.txt", "file1 content", "commit1 msg")
     val sha = revCommit.toObjectId.name
     val commitTime = new DateTime(revCommit.getCommitTime * 1000l)
     val authorTime = new DateTime(revCommit.getAuthorIdent.getWhen)
     val expectedPatch = "diff --git a/file.txt b/file.txt\nnew file mode 100644\nindex 0000000..2e80f50\n--- /dev/null\n+++ b/file.txt\n@@ -0,0 +1 @@\n+file1 content\n\\ No newline at end of file\n"
+
     val expectedCommit = CommitInfo(sha, "commit1 msg", author.getName, committer.getName,
-      commitTime, authorTime, List(), List(CommitFileInfo("file.txt", "added", expectedPatch)))
+      commitTime, authorTime, List(parentId), List(CommitFileInfo("file.txt", "added", expectedPatch)))
 
     // when
     service.importRepoCommits("codebragUser", "remoteRepoName")
@@ -52,13 +54,14 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
 
   it should "call persistence to save empty file" in {
     // given
+    val parentId = givenInitialCommit()
     val revCommit = givenCommit("file.txt", "", "commit1 msg")
     val sha = revCommit.toObjectId.name
     val commitTime = new DateTime(revCommit.getCommitTime * 1000l)
     val authorTime = new DateTime(revCommit.getAuthorIdent.getWhen)
     val expectedPatch = "diff --git a/file.txt b/file.txt\nnew file mode 100644\nindex 0000000..e69de29\n--- /dev/null\n+++ b/file.txt\n"
     val expectedCommit = CommitInfo(sha, "commit1 msg", author.getName, committer.getName,
-      commitTime, authorTime, List(), List(CommitFileInfo("file.txt", "added", expectedPatch)))
+      commitTime, authorTime, List(parentId), List(CommitFileInfo("file.txt", "added", expectedPatch)))
 
     // when
     service.importRepoCommits("codebragUser", "remoteRepoName")
@@ -69,7 +72,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
 
   it should "load only new commits on second call" in {
     // given
-    givenCommit("file.txt", "file content", "commit1 msg")
+    givenInitialCommit()
     val lastCommit = givenCommit("file.txt", "file content update", "commit2 msg")
     givenAlreadyCalledImport()
     given(commitInfoDaoMock.findLastSha()).willReturn(Some(lastCommit.getId.name))
@@ -89,11 +92,13 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
     verifyNoMoreInteractions(commitInfoDaoMock)
   }
 
-  def givenAlreadyCalledImport() {
+  private def givenInitialCommit() = givenCommit("some-file", "content", "Initial commit").getId.name()
+
+  private def givenAlreadyCalledImport() {
     supplementaryService.importRepoCommits("codebragUser", "remoteRepoName")
   }
 
-  def createService(commitInfoDaoMock: CommitInfoDAO) = new GitHubCommitImportService(
+  private def createService(commitInfoDaoMock: CommitInfoDAO) = new GitHubCommitImportService(
     new JgitGitHubCommitsLoader(
       new JgitFacade(credentials),
       new InternalGitDirTree,
