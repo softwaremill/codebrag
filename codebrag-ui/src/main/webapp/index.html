@@ -88,15 +88,16 @@
 <body ng-app="codebrag">
     <login-form></login-form>
 
-    <header class="main-header"><a href="#" class="logo"><img src="v2/images/logo.png"></a>
-        <nav class="main-nav" ng-controller="SessionCtrl">
+    <header class="main-header" ng-controller="SessionCtrl">
+        <a href="#" class="logo"><img src="v2/images/logo.png"></a>
+        <nav class="main-nav">
             <ul class="button-group" ng-controller="NotificationCountersCtrl" ng-show="isLogged()">
                 <li><a id="commits-btn" href="#/commits" class="button active"><span class="number">{{counters.commits}} </span>commits</a></li>
                 <li><a id="followups-btn" href="#/followups" class="button"><span class="number">{{counters.followups}} </span>follow-ups</a></li>
-                <li><a id="signed-in-as-btn" href="#/profile" class="button"><span class="number">&nbsp;</span>Signed in as {{getLoggedUserName()}}</a></li>
-                <li><a id="logout-btn" ng-click="logout()" class="button"><span class="number">&nbsp;</span>Logout</a></li>
             </ul>
         </nav>
+        <div class="user-info" ng-show="isLogged()"><span class="username"><a  ng-click="logout()">Logout</a></span></div>
+        <div class="user-info" ng-show="isLogged()"><span class="username"><a href="#/profile">Signed in as {{getLoggedUserName()}}</a></span><img src="images/avatar.png"></div>
     </header>
 
     <section ui-view></section>

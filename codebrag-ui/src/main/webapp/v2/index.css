@@ -21,11 +21,14 @@
   background: transparent;
   color: #a27d69;
   text-transform: none;
+  transition: color 250ms;
 }
 .button.link:hover {
   background: transparent;
   color: #f3720b;
-  text-decoration: underline;
+}
+.button.link:active {
+  background: #ece7d9;
 }
 .button.big {
   padding: 1.15em 2.3em;
@@ -39,6 +42,9 @@
 .button.big.reviewed:hover {
   background: #5abfa3;
 }
+.button:active {
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
+}
 .button-group li:last-child a {
   margin-right: 0;
 }
@@ -47,15 +53,25 @@ table tr:nth-of-type(even) {
 }
 table tr th,
 table tr td {
-  font-size: 0.8em;
+  font-size: 1em;
   color: #2f0200;
+  padding: 0.23em 0.77em;
+}
+html,
+body {
+  height: 100%;
+}
+html::selection,
+body::selection {
+  background-color: #f3720b;
 }
 body {
-  background: #f7f5ef;
+  background: #f7f5ef url("images/start-bg.png") no-repeat;
   font-family: 'PT Sans', Tahoma, sans-serif;
 }
 i {
   font-family: 'FontAwesome';
+  cursor: pointer;
 }
 .clearfix:after {
   content: ".";
@@ -91,6 +107,69 @@ i {
   font-family: 'PT Sans', Tahoma, sans-serif;
   padding: 1.15em 1.15em 0;
 }
+.comments-container .comment {
+  margin-bottom: 1.15em;
+}
+.comments-container .comment .authored-box {
+  margin-bottom: 0;
+}
+.comments-container .comment .authored-box .author-box img {
+  width: 2.3em;
+}
+.comments-container .comment .authored-box .info-line {
+  margin-bottom: 0.35em;
+}
+.comments-container .comment .authored-box .comment-body {
+  background: #fff;
+  border: 1px solid #d1cbb9;
+  padding: 1.15em;
+}
+.comments-container .comment.write .icon-info-sign {
+  color: #d4c195;
+  font-size: 1.08em;
+  position: absolute;
+  right: 0;
+  top: 0;
+  visibility: hidden;
+}
+.comments-container .comment.write .comment-body {
+  padding: 0;
+}
+.comments-container .comment.write .comment-body textarea.comment-text {
+  border: none;
+  box-shadow: none;
+  color: #2f0200;
+  cursor: text;
+  font-size: 1em;
+  height: auto;
+  margin: 0;
+  overflow: auto;
+  padding: 1.15em;
+  resize: vertical;
+  transition: min-height 500ms;
+}
+.comments-container .comment.write .comment-action-btns {
+  display: none;
+  float: right;
+}
+.comments-container .comment.write.active {
+  overflow-y: hidden;
+  position: relative;
+}
+.comments-container .comment.write.active .icon-info-sign {
+  visibility: visible;
+}
+.comments-container .comment.write.active .comment-body {
+  border: 1px solid #f3720b;
+  margin-bottom: 0.77em;
+}
+.comments-container .comment.write.active .comment-body textarea.comment-text {
+  min-height: 100px;
+  visibility: visible;
+}
+.comments-container .comment.write.active .comment-action-btns {
+  display: block;
+}
 .main-header {
   background: #300300;
   color: #ad8245;
@@ -99,6 +178,24 @@ i {
   display: inline-block;
   vertical-align: top;
   margin: 1em 5em 0;
+}
+.main-header .user-info {
+  float: right;
+  margin: 1.54em 1.54em 0 0;
+  vertical-align: top;
+}
+.main-header .user-info .username {
+  display: inline-block;
+  margin-top: 0.77em;
+  vertical-align: middle;
+}
+.main-header .user-info .username:hover {
+  color: #f3720b;
+}
+.main-header .user-info img {
+  float: right;
+  margin-left: 0.38em;
+  width: 2.3em;
 }
 .main-nav {
   display: inline-block;
@@ -111,6 +208,9 @@ i {
   padding: 1.15em 0;
   text-transform: uppercase;
   width: 11.15em;
+}
+.main-nav .button:hover {
+  color: #f3720b;
 }
 .main-nav .button .number {
   display: block;
@@ -127,6 +227,11 @@ i {
   padding-bottom: 3.3em;
   position: relative;
 }
+.commits.fixed {
+  position: fixed;
+  width: 25%;
+  top: 0;
+}
 .commits-sorting {
   padding: 1.15em 0 1.15em 2.7em;
   text-align: center;
@@ -135,12 +240,8 @@ i {
   color: #2f0200;
   text-transform: uppercase;
 }
-.commits-sorting .button.link:hover {
-  color: #f3720b;
-  text-decoration: none;
-}
 .commits-container {
-  overflow-y: hidden;
+  overflow: hidden;
   position: relative;
 }
 .commits-container:hover {
@@ -150,6 +251,9 @@ i {
   border-top: 1px solid #d9d2c1;
   padding: 1.15em 2.3em 1.15em 0.77em;
   position: relative;
+}
+.commit-container:hover {
+  background: #fff;
 }
 .commit-container i {
   color: #c1b28b;
@@ -208,6 +312,13 @@ i {
 .diff {
   padding: 0.77em;
 }
+.diff.opened {
+  position: absolute;
+  right: 0;
+  width: 100%;
+  z-index: 10;
+  transition: width 1000ms;
+}
 .diff-container {
   background: #fff;
   border: 1px solid #e4d9b8;
@@ -227,78 +338,30 @@ i {
   line-height: 1.3;
   margin-bottom: 0.4em;
 }
-.diff-container .comments-container {
-  background: #f7f5ef;
-}
-.diff-container .comments-container .diff-comment {
-  margin-bottom: 1.15em;
-}
-.diff-container .comments-container .diff-comment .icon-info-sign {
-  visibility: hidden;
-}
-.diff-container .comments-container .diff-comment .authored-box {
-  margin-bottom: 0;
-}
-.diff-container .comments-container .diff-comment .authored-box .author-box img {
-  width: 2.3em;
-}
-.diff-container .comments-container .diff-comment .authored-box .info-line {
-  margin-bottom: 0.35em;
-}
-.diff-container .comments-container .diff-comment .authored-box .diff-comment-body {
-  background: #fff;
-  border: 1px solid #d1cbb9;
-  padding: 1.15em;
-}
-.diff-container .comments-container .diff-comment .authored-box .diff-comment-body textarea.diff-comment-text {
-  visibility: hidden;
-  cursor: text;
-}
-.diff-container .comments-container .diff-comment .diff-comment-action-btns {
-  display: none;
-}
-.diff-container .comments-container .diff-comment.active {
-  overflow-y: hidden;
-  position: relative;
-}
-.diff-container .comments-container .diff-comment.active .icon-info-sign {
-  color: #d4c195;
-  visibility: visible;
-  font-size: 1.08em;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-.diff-container .comments-container .diff-comment.active .diff-comment-body {
-  border: 1px solid #f3720b;
-  margin-bottom: 0.77em;
-  padding: 0;
-}
-.diff-container .comments-container .diff-comment.active .diff-comment-body textarea.diff-comment-text {
-  border: none;
-  box-shadow: none;
-  margin-bottom: 0;
-  padding: 1.15em;
-  visibility: visible;
-}
-.diff-container .comments-container .diff-comment.active .diff-comment-action-btns {
-  display: block;
-  float: right;
-}
 .toggle-diff-container-btn {
   background: #fff;
   border: 1px solid #e4d9b8;
   border-right: none;
-  bottom: 0.77em;
+  box-sizing: content-box;
+  cursor: pointer;
+  height: 100%;
   left: 0;
   opacity: 0;
   position: absolute;
-  top: 0.77em;
-  width: 3em;
+  top: -1px;
+  width: 2.2em;
   z-index: 5;
+  transition: opacity 250ms, width 500ms, left 500ms;
 }
 .toggle-diff-container-btn:hover {
+  left: -0.77em;
   opacity: 1;
+  width: 3em;
+}
+.toggle-diff-container-btn i {
+  color: #f3720b;
+  margin-left: 5px;
+  top: 45%;
 }
 .diff-statistics {
   clear: left;
@@ -318,8 +381,8 @@ i {
 .diff-file-container thead th {
   padding: 0.77em 1.15em;
 }
-.diff-file-container tbody {
-//  border: 1px solid #d1cbb9;
+.diff-file-container tbody .diff-line-code {
+    white-space: pre;
 }
 .diff-file-container tbody .diff-line-num {
   color: #aaa;
@@ -329,13 +392,14 @@ i {
   width: 1%;
 }
 .diff-file-container tbody .diff-line-num .button {
-  display: none;
   height: 100%;
   left: 0;
-  padding: 0.6em 0 0;
+  opacity: 0;
+  padding: 0.25em 0 0;
   position: absolute;
   top: 0;
   width: 100%;
+  transition: opacity 150ms;
 }
 .diff-file-container tbody .diff-line-num .button.comment {
   background: #87d3bf;
@@ -351,14 +415,6 @@ i {
   border-color: #e9aeae;
   color: #bd8f8f;
 }
-.diff-file-container tbody tr.header {
-    background: #efefef;
-}
-.diff-file-container tbody tr.header td.diff-line-num {
-    background: #dedede;
-    border-color: #cbcbcb;
-    color: #95a88d;
-}
 .diff-file-container tbody tr.added {
   background: #d4f7c1;
 }
@@ -367,6 +423,14 @@ i {
   border-color: #b0cfa3;
   color: #95a88d;
 }
+.diff-file-container tbody tr.header {
+    background: #efefef;
+}
+.diff-file-container tbody tr.header td.diff-line-num {
+    background: #ededed;
+    border-color: #cdcdcd;
+    color: #ababab;
+}
 .diff-file-container tbody tr.comments-container {
   background: #f7f5ef;
 }
@@ -374,7 +438,7 @@ i {
   padding: 1.15em 1.15em 0;
 }
 .diff-file-container tr:hover .button {
-  display: block;
+  opacity: 1;
 }
 .like-commit {
   background: #f3f0e8;
@@ -396,9 +460,15 @@ i {
   html {
     font-size: 13px;
   }
+  body {
+    background-position: 65% center;
+  }
 }
 @media all and (min-width: 1280px) {
   html {
     font-size: 16px;
+  }
+  body {
+    background-position: 65% center;
   }
 }
