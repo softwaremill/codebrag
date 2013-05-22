@@ -5,6 +5,7 @@ angular.module('codebrag.commits.comments')
         var additionalArgsName = 'extraArgs';
         return {
             restrict: 'E',
+            replace: true,
             scope: true,
             templateUrl: 'views/commentForm.html',
             link: function(scope, element, attrs) {
@@ -16,14 +17,14 @@ angular.module('codebrag.commits.comments')
                     }
                 };
 
-                scope.submitComment = function(content) {
+                scope._submitComment = function(content) {
                     var submitArguments = [content];
                     if(_.isString(attrs[additionalArgsName])) {
                         _.forEach(attrs[additionalArgsName].split(","), function(el) {
                             submitArguments.push(scope[el]);
                         });
                     }
-                    $q.when(scope.$parent[attrs.action].apply(this, submitArguments)).then(function() {
+                    $q.when(scope[attrs.action].apply(this, submitArguments)).then(function() {
                         scope.content = '';
                         scope.previewModeOn = false;
                     });

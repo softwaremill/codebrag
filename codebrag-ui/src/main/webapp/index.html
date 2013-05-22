@@ -76,13 +76,9 @@
     <script type="text/javascript" src="scripts/common/AsyncCollection.js"></script>
 
     <script type="text/ng-template" id="inlineCommentForm">
-        <tr class="comment-form">
-            <td class="diff-table-line-number-cell"></td>
-            <td class="diff-table-line-number-cell"></td>
-            <td style="background: #ededed">
-                <div style="width:680px">
-                    <markdown-comment-form action="submitInlineComment" extra-args="file,line,$index"></markdown-comment-form>
-                </div>
+        <tr class="comments-container comment-form">
+            <td colspan="3">
+                <markdown-comment-form action="submitInlineComment" extra-args="file,line,$index"></markdown-comment-form>
             </td>
         </tr>
     </script>

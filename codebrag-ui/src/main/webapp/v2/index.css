@@ -351,6 +351,14 @@ i {
   border-color: #e9aeae;
   color: #bd8f8f;
 }
+.diff-file-container tbody tr.header {
+    background: #efefef;
+}
+.diff-file-container tbody tr.header td.diff-line-num {
+    background: #dedede;
+    border-color: #cbcbcb;
+    color: #95a88d;
+}
 .diff-file-container tbody tr.added {
   background: #d4f7c1;
 }

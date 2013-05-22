@@ -6,12 +6,13 @@ angular.module('codebrag.commits.comments')
             restrict: 'A',
             link: function(scope, element, attrs) {
                 var alreadyOpened = false;
-                var codeLine = $('tr:first-child', element);
+                var codeLine = $('a.comment', element);
                 codeLine.bind('click', function() {
                     if(alreadyOpened) {
                         return;
                     }
                     element.append(template);
+                    console.log(element.html());
                     $compile($('tr.comment-form', element).contents())(scope);
                     alreadyOpened = true;
                     scope.$digest();

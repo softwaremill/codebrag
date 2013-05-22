@@ -1,9 +1,17 @@
-<form name="newCommentForm">
-    <fieldset>
-        <label>Your comment</label>
-        <textarea ng-hide="previewModeOn" rows="5" style="width: 90%; resize: vertical" ng-model="content" required placeholder="Type your comment here"></textarea>
-        <div class="well" ng-show="previewModeOn" ng-bind-html-unsafe="preview"></div>
-        <button class="btn" ng-disabled="newCommentForm.$invalid" ng-click="submitComment(content)">Submit</button>
-        <button class="btn btn-success" ng-disabled="newCommentForm.$invalid" ng-click="togglePreviewMode()">{{ previewModeOn && 'Back to writing' || 'See preview' }}</button>
-    </fieldset>
-</form>
+<div class="diff-comment write active"><i class="icon-info-sign"></i>
+    <div class="authored-box">
+        <div class="author-box"><img src="images/avatar.png"></div>
+        <div class="info-box">
+            <div class="diff-comment-body" ng-hide="previewModeOn">
+                <form name="newCommentForm">
+                    <textarea ng-hide="previewModeOn" ng-model="content" required class="diff-comment-text" placeholder="Type your comment here"></textarea>
+                </form>
+            </div>
+            <div ng-show="previewModeOn" ng-bind-html-unsafe="preview"></div>
+        </div>
+    </div>
+    <ul class="diff-comment-action-btns button-group">
+        <li><a class="button secondary" ng-disabled="newCommentForm.$invalid" ng-click="togglePreviewMode()">{{ previewModeOn && 'Back to writing' || 'Preview' }}</a></li>
+        <li><a class="button" ng-disabled="newCommentForm.$invalid" ng-click="_submitComment(content)">Send</a></li>
+    </ul>
+</div>
