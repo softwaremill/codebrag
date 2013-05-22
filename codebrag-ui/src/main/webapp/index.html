@@ -103,60 +103,7 @@
         </nav>
     </header>
 
-
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="navbar-inner">
-            <div class="container">
-                <a class="brand" href="#">Codebrag</a>
-                <div class="nav-collapse collapse" ng-controller="SessionCtrl">
-                    <div ng-controller="NotificationCountersCtrl">
-                        <ul class="nav pull-right" >
-                            <li><a id="profileLink" href="#/profile">Signed in as {{getLoggedUserName()}}</a></li>
-                            <li><a id="commitsLink" href="#/commits">Commits ()</a></li>
-                            <li><a id="followupsLink" href="#/followups">Follow-ups ({{counters.followups}})</a></li>
-                            <li><a id="logoutLink" href ng-click="logout()">Sign out</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="content">
-            <div class="wrapper">
-                <div class="proper-content">
-                    <div  http-request-tracker class="row-fluid feedback-container">
-                        <div class="span1 offset11">
-                            <span class="label label-info">Loading...</span>
-                        </div>
-                    </div>
-                    <div message-popup class="row-fluid feedback-container hide">
-                        <div class="alert alert-error span4 offset8">
-                            <strong>{{errorMsg.status}}</strong> - {{errorMsg.text}}
-                        </div>
-                    </div>
-                    <div class="row-fluid"><!-- spacer for feedback block above -->
-                        <div class="span12"></div>
-                    </div>
-                    <div ui-view>
-                    </div>
-                </div>
-                <div class="push"></div>
-            </div>
-            <div class="footer-wrapper">
-                <footer>
-                    <div class="span7 offset2 well">
-                        <div style="text-align: center">
-                            <p>Share your feedback on <a href="http://codebrag.uservoice.com">UserVoice</a></p>
-                            <p>Demo application by <a href="http://SoftwareMill.com">SoftwareMill</a></p>
-                        </div>
-                    </div>
-                </footer>
-            </div>
-
-        </div>
-    </div>
+    <section ui-view></section>
 
 </body>
 </html>
