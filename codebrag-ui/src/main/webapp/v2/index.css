@@ -47,7 +47,7 @@ table tr:nth-of-type(even) {
 }
 table tr th,
 table tr td {
-  font-size: 1em;
+  font-size: 0.8em;
   color: #2f0200;
 }
 body {
@@ -319,7 +319,7 @@ i {
   padding: 0.77em 1.15em;
 }
 .diff-file-container tbody {
-  border: 1px solid #d1cbb9;
+//  border: 1px solid #d1cbb9;
 }
 .diff-file-container tbody .diff-line-num {
   color: #aaa;
@@ -343,18 +343,18 @@ i {
 .diff-file-container tbody .diff-line-num .button.comment:hover {
   background: #5abfa3;
 }
-.diff-file-container tbody tr.gd {
+.diff-file-container tbody tr.removed {
   background: #fdd;
 }
-.diff-file-container tbody tr.gd td.diff-line-num {
+.diff-file-container tbody tr.removed td.diff-line-num {
   background: #f7c8c8;
   border-color: #e9aeae;
   color: #bd8f8f;
 }
-.diff-file-container tbody tr.gi {
+.diff-file-container tbody tr.added {
   background: #d4f7c1;
 }
-.diff-file-container tbody tr.gi td.diff-line-num {
+.diff-file-container tbody tr.added td.diff-line-num {
   background: #bce7a5;
   border-color: #b0cfa3;
   color: #95a88d;

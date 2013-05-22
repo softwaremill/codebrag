@@ -1,75 +1,37 @@
-<div ng-controller="DiffCtrl" scrollable="scrollTo">
-    <div class="row">
-        <div class="span7">
-            <h4>Commit files</h4>
-        </div>
-    </div>
-    <div class="row" ng-repeat="file in currentCommit.files">
-        <div class="span7">
-            <div class="row">
-                <div class="well">
-                <span ng-switch on="file.status">
-                    <span ng-switch-when="added">+</span>
-                    <span ng-switch-when="removed">-</span>
-                    <span ng-switch-default></span>
-                </span>
-                    <span>{{file.filename}}</span>
+<div>
+    <div class="diff-statistics">Showing 6 changes</div>
+
+    <table class="diff-file-container" ng-repeat="file in currentCommit.files">
+        <thead class="diff-file-name">
+        <tr>
+            <th colspan="3">{{file.filename}}</th>
+        </tr>
+        </thead>
+        <tbody ng-repeat="line in file.lines">
+        <!--line of code start-->
+        <tr ng-class="line.lineType">
+            <td class="diff-line-num">
+                <div ng-switch on="line.lineType">
+                    <span ng-switch-when="header">...</span>
+                    <span ng-switch-when="added"></span>
+                    <span ng-switch-default>{{line.lineNumberOriginal}}</span>
                 </div>
-            </div>
-            <div class="row diff-file-data">
-                <table>
-                    <tbody ng-repeat="line in file.lines" commentable>
-                    <tr>
-                        <td class="diff-table-line-number-cell" ng-switch on="line.lineType">
-                            <span ng-switch-when="header">...</span>
-                            <span ng-switch-when="added"></span>
-                            <span ng-switch-default>{{line.lineNumberOriginal}}</span>
-                        </td>
-                        <td class="diff-table-line-number-cell" ng-switch on="line.lineType">
-                            <span ng-switch-when="header">...</span>
-                            <span ng-switch-when="removed"></span>
-                            <span ng-switch-default>{{line.lineNumberChanged}}</span>
-                        </td>
-                        <td class="diff-{{line.lineType}} diff-line" ng-bind-html-unsafe="line.line"></td>
-                    </tr>
-                    <tr class="comments" ng-show="line.comments.length > 0">
-                        <td class="diff-table-line-number-cell"></td>
-                        <td class="diff-table-line-number-cell"></td>
-                        <td>
-                            <div class="inline-comments-container">
-                                <div ng-repeat="comment in line.comments" style="padding:10px">
-                                    <span id="{{comment.id}}">{{comment.time | relativeDate}} by <strong>{{comment.authorName}}</strong>:</span>
-                                    <br/>
-                                    <br/>
-
-                                    <div>
-                                        <markdown-to-html content="comment.message"></markdown-to-html>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="row">&nbsp;</div>
-    </div>
-    <div id="comment-anchor">
-        <div class="row">
-            <div class="span7">
-                <div class="well" ng-repeat="comment in currentCommit.comments" style="width:90%">
-
-                    <span  id="{{comment.id}}">{{comment.time | relativeDate}} by <strong>{{comment.authorName}}</strong>:</span>
-                    <br/>
-                    <br/>
-
-                    <div>
-                        <markdown-to-html content="comment.message"></markdown-to-html>
-                    </div>
+                <a class="like button">
+                    <i class="icon-heart"></i>
+                </a>
+            </td>
+            <td class="diff-line-num">
+                <div ng-switch on="line.lineType">
+                    <span ng-switch-when="header">...</span>
+                    <span ng-switch-when="removed"></span>
+                    <span ng-switch-default>{{line.lineNumberChanged}}</span>
                 </div>
-                <markdown-comment-form action="submitComment"></markdown-comment-form>
-            </div>
-        </div>
-    </div>
+                <a class="comment button">
+                    <i class="icon-pencil"></i>
+                </a>
+            </td>
+            <td class="diff-line-code" ng-bind-html-unsafe="line.line"></td>
+        </tr>
+        </tbody>
+    </table>
 </div>
