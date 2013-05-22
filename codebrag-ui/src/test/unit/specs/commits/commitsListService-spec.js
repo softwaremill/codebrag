@@ -2,7 +2,7 @@
 
 describe("CommitsListService", function () {
 
-        var $httpBackend;
+    var $httpBackend;
     var rootScope;
 
     beforeEach(module('codebrag.commits'));
@@ -93,66 +93,72 @@ describe("CommitsListService", function () {
         expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
     }));
 
-    it('should update notification count with number of reviewable commits', inject(function (commitsListService,
-        commitLoadFilter, notificationCountersService) {
+    it('should broadcast new number of reviewable commits after loading data data', inject(function (commitsListService,
+                                                                                                     commitLoadFilter) {
         // Given
         var loadedCommits = [commit(1), commit(2), notReviewable(commit(3))];
         $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
-        spyOn(notificationCountersService, "updateCommits");
+        var listener = jasmine.createSpy('listener');
+        rootScope.$on('codebrag:commitCountChanged', listener);
 
         // When
         commitsListService.loadCommitsFromServer(commitLoadFilter.modes.all);
         $httpBackend.flush();
 
         // Then
-        expect(notificationCountersService.updateCommits).toHaveBeenCalledWith(2)
+        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 2});
     }));
 
-    it('should update notification count to zero if no commits returned from server', inject(function (commitsListService,
-                                                                                              commitLoadFilter, notificationCountersService) {
+    it('should broadcast event with count zero if no commits returned from server', inject(function (commitsListService,
+                                                                                                     commitLoadFilter) {
         // Given
         var loadedCommits = [];
         $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
-        spyOn(notificationCountersService, "updateCommits");
+        var listener = jasmine.createSpy('listener');
+        rootScope.$on('codebrag:commitCountChanged', listener);
 
         // When
         commitsListService.loadCommitsFromServer(commitLoadFilter.modes.all);
         $httpBackend.flush();
 
         // Then
-        expect(notificationCountersService.updateCommits).toHaveBeenCalledWith(0)
+        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 0});
+        expect(listener.callCount).toBe(1)
     }));
 
-    it('should decrease commit notification count when deleting commit', inject(function (commitsListService,
-                                                                                              commitLoadFilter, notificationCountersService) {
+    it('should broadcast new commit count when deleting commit', inject(function (commitsListService,
+        commitLoadFilter) {
         // Given
         var loadedCommits = commitArrayOfSize(3);
         givenServerReturns(commitsListService, loadedCommits, commitLoadFilter);
-        spyOn(notificationCountersService, "decreaseCommits");
         $httpBackend.expectDELETE('rest/commits/2').respond();
+        var listener = jasmine.createSpy('listener');
+        rootScope.$on('codebrag:commitCountChanged', listener);
 
         // When
         commitsListService.removeCommit(2);
         $httpBackend.flush();
 
         // Then
-        expect(notificationCountersService.decreaseCommits).toHaveBeenCalled()
+        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 2});
     }));
 
-    it('should decrease commit notification count when deleting commit and getting next', inject(function (commitsListService,
-                                                                                                         commitLoadFilter, notificationCountersService) {
+    it('should broadcast new commit count when deleting commit and getting next', inject(function (commitsListService,
+        commitLoadFilter) {
         // Given
         var loadedCommits = commitArrayOfSize(3);
         givenServerReturns(commitsListService, loadedCommits, commitLoadFilter);
-        spyOn(notificationCountersService, "decreaseCommits");
         $httpBackend.expectDELETE('rest/commits/2').respond();
+        var listener = jasmine.createSpy('listener');
+        rootScope.$on('codebrag:commitCountChanged', listener);
 
         // When
         commitsListService.removeCommitAndGetNext(2);
         $httpBackend.flush();
 
         // Then
-        expect(notificationCountersService.decreaseCommits).toHaveBeenCalled()
+        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 2});
+        //expect(listener.callCount).toBe(1)
     }));
 
     it('should call server to sync commits and add new ones to model', inject(function (commitsListService, commitLoadFilter) {

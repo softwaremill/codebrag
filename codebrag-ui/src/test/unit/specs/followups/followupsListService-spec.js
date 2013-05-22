@@ -16,54 +16,58 @@ describe("Follow-ups list service", function () {
     }));
 
 
-    it('should update notification count with number of pending follow-ups', inject(function (followupsListService, notificationCountersService) {
+    it('should broadcast update event after loading follow-ups', inject(function (followupsListService) {
         // Given
         var loadedFollowups = followupArrayOfSize(3);
         $httpBackend.whenGET('rest/followups/').respond({followups:loadedFollowups});
-        spyOn(notificationCountersService, "updateFollowups");
+        var listener = jasmine.createSpy('listener');
+        rootScope.$on('codebrag:followupCountChanged', listener);
 
         // When
         followupsListService.loadFollowupsFromServer();
         $httpBackend.flush();
 
         // Then
-        expect(notificationCountersService.updateFollowups).toHaveBeenCalledWith(3)
+        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {followupCount: 3});
+        expect(listener.callCount).toBe(1)
     }));
 
-    it('should decrease the number of follow-ups when removing', inject(function (followupsListService, notificationCountersService) {
+    it('should broadcast new number of follow-ups when removing', inject(function (followupsListService) {
         // Given
         var loadedFollowups = followupArrayOfSize(3);
         $httpBackend.whenGET('rest/followups/').respond({followups:loadedFollowups});
         followupsListService.loadFollowupsFromServer();
         $httpBackend.flush();
         $httpBackend.expectDELETE('rest/followups/1').respond();
-        spyOn(notificationCountersService, "decreaseFollowups");
+        var listener = jasmine.createSpy('listener');
+        rootScope.$on('codebrag:followupCountChanged', listener);
 
         // When
         followupsListService.removeFollowup(1);
         $httpBackend.flush();
 
         // Then
-        expect(notificationCountersService.decreaseFollowups).toHaveBeenCalled();
-        expect(notificationCountersService.decreaseFollowups.callCount).toBe(1)
+        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {followupCount: 2});
+        expect(listener.callCount).toBe(1)
     }));
 
-    it('should decrease the number of follow-ups when removing and getting next', inject(function (followupsListService, notificationCountersService) {
+    it('should broadcast new number of follow-ups when removing and getting next', inject(function (followupsListService) {
         // Given
         var loadedFollowups = followupArrayOfSize(3);
         $httpBackend.whenGET('rest/followups/').respond({followups:loadedFollowups});
         followupsListService.loadFollowupsFromServer();
         $httpBackend.flush();
         $httpBackend.expectDELETE('rest/followups/1').respond();
-        spyOn(notificationCountersService, "decreaseFollowups");
+        var listener = jasmine.createSpy('listener');
+        rootScope.$on('codebrag:followupCountChanged', listener);
 
         // When
         followupsListService.removeFollowup(1);
         $httpBackend.flush();
 
         // Then
-        expect(notificationCountersService.decreaseFollowups).toHaveBeenCalled();
-        expect(notificationCountersService.decreaseFollowups.callCount).toBe(1)
+        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {followupCount: 2});
+        expect(listener.callCount).toBe(1)
     }));
 
     function followup(id) {

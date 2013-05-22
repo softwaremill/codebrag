@@ -1,6 +1,6 @@
 angular.module('codebrag.followups')
 
-    .factory('followupsListService', function($resource, $q, $http, notificationCountersService) {
+    .factory('followupsListService', function($resource, $q, $http, $rootScope) {
 
         var followups = new codebrag.AsyncCollection();
 
@@ -10,8 +10,8 @@ angular.module('codebrag.followups')
         }
 
     	function loadFollowupsFromServer() {
-            var requestPromise = _httpRequest('GET').then(function(response) {
-                notificationCountersService.updateFollowups(response.data.followups.length);
+            var requestPromise = _httpRequest('GET').then(function (response) {
+                _broadcastNewFollowupCountEvent(response.data.followups.length);
                 return response.data.followups;
             });
             return followups.loadElements(requestPromise)
@@ -31,10 +31,10 @@ angular.module('codebrag.followups')
 
         function _removeFollowupUsingFunction(removingFunction, followupId) {
             var responsePromise = _httpRequest('DELETE', followupId);
-            return removingFunction(function(el) {
+            return removingFunction(function (el) {
                 return el.followupId === followupId;
-            }, responsePromise).then(function() {
-                    notificationCountersService.decreaseFollowups();
+            }, responsePromise).then(function () {
+                    _broadcastNewFollowupCountEvent(followups.elements.length);
                 });
         }
 
@@ -42,6 +42,10 @@ angular.module('codebrag.followups')
             return _httpRequest('GET', followupId).then(function(response) {
                 return response.data;
             });
+        }
+
+        function _broadcastNewFollowupCountEvent(newFollowupCount) {
+            $rootScope.$broadcast("codebrag:followupCountChanged", {followupCount: newFollowupCount})
         }
 
         return {

@@ -1,6 +1,6 @@
 'use strict';
 
-describe("CommitsListService", function () {
+describe("Notification counters service", function () {
 
     var $httpBackend;
     var rootScope;
@@ -47,10 +47,9 @@ describe("CommitsListService", function () {
         expect(counters.followups).toEqual(expectedFollowupCount);
     }));
 
-    it('should correctly update counter values', inject(function (notificationCountersService) {
+    it('should correctly update counter values on commit counter change event', inject(function (notificationCountersService) {
         // Given
         var expectedCommitCount = 15;
-        var expectedFollowupCount = 121;
         $httpBackend.expectGET('rest/notificationCounts').respond({
             pendingCommitCount: 1,
             followupCount: 2
@@ -59,31 +58,27 @@ describe("CommitsListService", function () {
         $httpBackend.flush();
 
         // When
-        notificationCountersService.updateCommits(expectedCommitCount);
-        notificationCountersService.updateFollowups(expectedFollowupCount);
+        rootScope.$broadcast('codebrag:commitCountChanged', {commitCount: expectedCommitCount});
 
         // Then
         expect(counters.commits).toEqual(expectedCommitCount);
-        expect(counters.followups).toEqual(expectedFollowupCount);
     }));
 
-    it('should correctly decrease counter values', inject(function (notificationCountersService) {
+    it('should correctly update counter values on follow-up counter change event', inject(function (notificationCountersService) {
         // Given
-        var initialCommitCount = 15;
-        var initialFollowupCount = 121;
+        var expectedFollowupCount = 15;
         $httpBackend.expectGET('rest/notificationCounts').respond({
-            pendingCommitCount: initialCommitCount,
-            followupCount: initialFollowupCount
+            pendingCommitCount: 1,
+            followupCount: 2
         });
         var counters = notificationCountersService.counters();
         $httpBackend.flush();
 
         // When
-        notificationCountersService.decreaseCommits();
-        notificationCountersService.decreaseFollowups();
+        rootScope.$broadcast('codebrag:followupCountChanged', {followupCount: expectedFollowupCount});
 
         // Then
-        expect(counters.commits).toEqual(initialCommitCount - 1);
-        expect(counters.followups).toEqual(initialFollowupCount - 1);
+        expect(counters.followups).toEqual(expectedFollowupCount);
     }));
+
 });

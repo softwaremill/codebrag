@@ -11,9 +11,9 @@ angular.module('codebrag.session', ['ui.compat', 'codebrag.auth']);
 angular.module('codebrag.notifications', []);
 
 angular.module('codebrag.commits.comments', ['ui.compat']);
-angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments', 'codebrag.notifications']);
+angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments']);
 
-angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.notifications']);
+angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth']);
 
 angular.module('codebrag', [
     'codebrag.auth',

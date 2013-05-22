@@ -1,6 +1,14 @@
 angular.module('codebrag.notifications')
 
-    .service('notificationCountersService', function ($http) {
+    .service('notificationCountersService', function ($http, $rootScope) {
+
+        $rootScope.$on('codebrag:commitCountChanged', function(event, data) {
+            _updateCommits(data.commitCount)
+        });
+
+        $rootScope.$on('codebrag:followupCountChanged', function(event, data) {
+            _updateFollowups(data.followupCount)
+        });
 
         var counterValues = {
             loaded: false,
@@ -15,20 +23,12 @@ angular.module('codebrag.notifications')
             return counterValues;
         }
 
-        function updateFollowups(newCount) {
+        function _updateFollowups(newCount) {
             counterValues.followups = newCount;
         }
 
-        function updateCommits(newCount) {
+        function _updateCommits(newCount) {
             counterValues.commits = newCount;
-        }
-
-        function decreaseCommits() {
-            counterValues.commits--;
-        }
-
-        function decreateFollowups() {
-            counterValues.followups--;
         }
 
         function _loadCountersFromServer() {
@@ -40,10 +40,6 @@ angular.module('codebrag.notifications')
         }
 
         return {
-            counters: counters,
-            updateFollowups: updateFollowups,
-            decreaseCommits: decreaseCommits,
-            decreaseFollowups: decreateFollowups,
-            updateCommits: updateCommits
+            counters: counters
         }
     });
