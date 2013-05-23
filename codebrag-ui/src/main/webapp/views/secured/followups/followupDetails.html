@@ -1,18 +1,20 @@
-<div ng-controller="FollowupDetailsCtrl">
-    <div>
-        <div class="row">
-            <div class="span7">
-                <h4 ng-bind-html-unsafe="currentCommit.commit.message"></h4>
-                <p>{{currentCommit.commit.sha}}</p>
-                <p>{{currentCommit.commit.date | relativeDate}} by {{currentCommit.commit.authorName}}</p>
-                <button class="btn btn-success" ng-click="markCurrentFollowupAsDone()">
-                    <i class="icon-ok"></i> Dismiss this followup
-                </button>
+<div class="diff-container clearfix" ng-controller="FollowupDetailsCtrl">
+    <div class="toggle-diff-container-btn"><i class="icon-chevron-left"></i></div>
+    <div class="authored-box">
+        <div class="author-box"><img src="images/avatar.png"></div>
+        <div class="info-box">
+            <div class="commit-name" ng-bind-html-unsafe="currentCommit.commit.message"></div>
+            <div class="info-line"><span class="username">{{currentCommit.commit.authorName}}</span><span class="time">{{currentCommit.commit.date | relativeDate}}</span>
             </div>
         </div>
-        <ng-include src="'views/secured/commits/commitFilesAndComments.html'"/>
+        <button class="btn btn-success" ng-click="markCurrentFollowupAsDone()">
+            <i class="icon-ok"></i> Dismiss this follow-up
+        </button>
     </div>
-    <button class="btn btn-success" ng-click="markCurrentFollowupAsDone()">
-        <i class="icon-ok"></i> Dismiss this followup
-    </button>
+    <ng-include src="'views/secured/commits/commitFilesAndComments.html'"></ng-include>
+    <div>
+        <button class="btn btn-success" ng-click="markCurrentFollowupAsDone()">
+            <i class="icon-ok"></i> Dismiss this follow-up
+        </button>
+    </div>
 </div>
