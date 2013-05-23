@@ -10,7 +10,6 @@ angular.module('codebrag.auth')
                 var loginRequest = $http.post('rest/users', user, {bypassQueue: true});
                 return loginRequest.then(function(response) {
                     authService.loggedInUser = response.data;
-                    $rootScope.$broadcast("codebrag:loggedIn");
                     httpRequestsBuffer.retryAllRequest();
                 });
             },
@@ -36,6 +35,7 @@ angular.module('codebrag.auth')
                 }
                 return $http.get('rest/users').then(function(response) {
                     authService.loggedInUser = response.data;
+                    $rootScope.$broadcast("codebrag:loggedIn");
                     return $q.when(authService.loggedInUser);
                 });
             }
