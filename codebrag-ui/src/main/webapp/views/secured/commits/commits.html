@@ -7,7 +7,8 @@
         </ul>
         <div class="commits-container">
             <!--commit info start-->
-            <div class="commit-container" ng-repeat="commit in commits" ng-controller="CommitsListItemCtrl"  mark-current="commit.id" ng-click="openCommitDetails(commit)">
+            <div class="commit-container" ng-repeat="commit in commits" ng-controller="CommitsListItemCtrl"  mark-current="commit.id"
+                 state-param-name="id" ng-click="openCommitDetails(commit)">
                 <div class="authored-box">
                     <div class="author-box"><img src="images/avatar.png"></div>
                     <div class="info-box">
