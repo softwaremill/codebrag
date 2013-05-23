@@ -459,6 +459,18 @@ i {
   text-transform: uppercase;
   vertical-align: top;
 }
+.scrolled-to {
+    background: #f58022;
+}
+
+.scroll-to {
+    background: #f7f5ef;
+    -webkit-transition: background 1s linear;
+    -moz-transition: background 1s linear;
+    -ms-transition: background 1s linear;
+    -o-transition: background 1s linear;
+    transition: background 1s linear;
+}
 @media all and (max-width: 1279px) {
   html {
     font-size: 13px;

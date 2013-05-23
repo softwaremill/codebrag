@@ -1,4 +1,4 @@
-<div ng-controller="DiffCtrl">
+<div ng-controller="DiffCtrl" scrollable="scrollTo">
 
     <table class="diff-file-container" ng-repeat="file in currentCommit.files">
         <thead class="diff-file-name">
@@ -39,7 +39,7 @@
                         <div class="author-box"><img src="images/avatar.png"></div>
                         <div class="info-box">
                             <div class="info-line"><span class="username">{{comment.authorName}}</span><span class="time">{{comment.time | relativeDate}}</span></div>
-                            <div class="comment-body">
+                            <div class="comment-body" id="{{comment.id}}">
                                 <markdown-to-html content="comment.message"></markdown-to-html>
                             </div>
                         </div>
