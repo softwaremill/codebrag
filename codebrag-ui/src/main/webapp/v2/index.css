@@ -264,6 +264,9 @@ i {
   right: 0.6em;
   top: 50%;
 }
+.commit-container:hover i {
+    display: inherit;
+}
 .commit-container .author-box img {
   height: 2.3em;
   margin-right: 0.77em;
