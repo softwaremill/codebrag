@@ -69,6 +69,8 @@
     <script type="text/javascript" src="scripts/common/directives/messagePopup.js"></script>
     <script type="text/javascript" src="scripts/common/directives/httpRequestTracker.js"></script>
     <script type="text/javascript" src="scripts/common/directives/isolateClick.js"></script>
+    <script type="text/javascript" src="scripts/common/directives/activeForStates.js"></script>
+
     <script type="text/javascript" src="scripts/common/directives/markdownToHtml.js"></script>
     <script type="text/javascript" src="scripts/common/directives/markCurrent.js"></script>
     <script type="text/javascript" src="scripts/common/directives/scrollable.js"></script>
@@ -92,8 +94,8 @@
         <a href="#" class="logo"><img src="v2/images/logo.png"></a>
         <nav class="main-nav">
             <ul class="button-group" ng-controller="NotificationCountersCtrl" ng-show="isLogged()">
-                <li><a id="commits-btn" href="#/commits" class="button active"><span class="number">{{counters.commits}} </span>commits</a></li>
-                <li><a id="followups-btn" href="#/followups" class="button"><span class="number">{{counters.followups}} </span>follow-ups</a></li>
+                <li><a id="commits-btn" href="#/commits" class="button" active-for-states="commits,commits.list,commits.details"><span class="number">{{counters.commits}} </span>commits</a></li>
+                <li><a id="followups-btn" href="#/followups" class="button" active-for-states="followups,followups.list,followups.details"><span class="number">{{counters.followups}} </span>follow-ups</a></li>
             </ul>
         </nav>
         <div class="user-info" ng-show="isLogged()"><span class="username"><a  ng-click="logout()">Logout</a></span></div>
