@@ -1,37 +1,24 @@
-<div ng-controller="FollowupsCtrl">
-    <div class="row">
-        <div class="span12">
-            <h3>Follow-ups</h3>
-        </div>
-    </div>
-<div class="row">
-    <div class="span4">
-        <ul class="unstyled">
-            <li ng-repeat="followup in followups" ng-controller="FollowupListItemCtrl" mark-current="followup.followupId">
-                <div class="row">
-                    <div class="span4 well well-small">
-                        <div class="row">
-                            <div class="span2 offset1">
-                                <p class="text-right">{{followup.date | relativeDate}}</p>
-                            </div>
-                            <div class="span1">
-                                <button class="btn btn-mini btn-success" ng-click="dismiss(followup)"><i class="icon-ok"></i></button>
-                            </div>
-                        </div>
-                        <div class="row" ng-click="openFollowupDetails(followup)">
-                            <div class="span4">
-                                <p>
-                                    {{followup.comment.commenterName}} commented on commit
-                                    <br/>
-                                    <strong>{{followup.commit.message}}</strong>
-                                </p>
-                            </div>
-                        </div>
+<div id="commits-tab-content" class="row" ng-controller="FollowupsCtrl">
+    <div id="sticky"></div>
+    <div class="commits large-3 columns">
+        <div class="commits-container">
+            <!--commit info start-->
+            <div class="commit-container" ng-repeat="followup in followups" ng-controller="FollowupListItemCtrl"
+                 mark-current="followup.followupId" ng-click="openFollowupDetails(followup)">
+                <div class="authored-box">
+                    <div class="author-box"><img src="images/avatar.png"></div>
+                    <div class="info-box">
+                        <div class="commit-name" ng-bind-html-unsafe="followup.commit.message"></div>
+                        <div class="info-line"><span class="username">{{followup.comment.commenterName}}</span><span
+                                class="time">{{followup.date | relativeDate}}</span></div>
                     </div>
                 </div>
-            </li>
-        </ul>
+                <i class="icon-ok-circle" ng-click="dismiss(followup)" isolate-click></i>
+            </div>
+            <!--commit info end-->
+        </div>
+        <div class="commits-count">6 more</div>
     </div>
-    <div class="span7 offset1" ui-view></div>
-</div>
+    <div class="diff large-9 columns" ui-view>
+    </div>
 </div>
