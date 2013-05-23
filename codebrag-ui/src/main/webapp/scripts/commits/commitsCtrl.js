@@ -1,67 +1,29 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, $http, commitsListService, commitLoadFilter) {
-
-        $scope.filter = {
-
-        };
-
-        $scope.filter = {
-            current: {
-                value: 'pending'
-            },
-
-            setPendingMode: function() {
-                this.current.value = 'pending';
-            },
-
-            setAllMode: function() {
-                this.current.value = 'all';
-            },
-
-            isInPendingMode: function() {
-                return this.current.value === 'pending';
-            },
-
-            isInAllMode: function() {
-                return this.current.value === 'all';
-            }
-        };
+    .controller('CommitsCtrl', function ($scope, $http, commitsListService) {
 
         $scope.syncCommits = commitsListService.syncCommits;
 
-        function loadCommits() {
-            commitsListService.loadCommitsFromServer($scope.filter.current);
-            $scope.commits = commitsListService.allCommits();
-        }
-
-        $scope.filterList = function(value) {
-            if(filter.is)
-            $scope.filter.setPendingMode();
-            loadCommits();
+        $scope.loadAllCommits = function() {
+            $scope.commits = commitsListService.loadAllCommits();
         };
 
-        $scope.showAll = function() {
-            $scope.filter.setAllMode();
-            loadCommits();
+        $scope.loadPendingCommits = function() {
+            $scope.commits = commitsListService.loadCommitsPendingReview();
         };
 
-        loadCommits();
+
+        $scope.loadPendingCommits();
 
     })
 
-    .directive('styleAsSelectedWhen', function() {
-
+    .directive('activateSingle', function() {
+        var addClassAttribute = "toggleClass";
         return {
             restrict: 'A',
             link: function(scope, el, attrs) {
-
-                scope.$watch(attrs.styleAsSelectedWhen, function(selected) {
-                    if(selected) {
-                        el.removeClass('link');
-                    } else {
-                        el.addClass('link');
-                    }
+                el.on('click', attrs.activateSingle, function(event) {
+                    el.find(attrs.activateSingle).toggleClass(attrs[addClassAttribute]);
                 });
             }
         }

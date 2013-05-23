@@ -1,17 +1,46 @@
 angular.module('codebrag.commits')
 
-    .factory('commitsListService', function($resource, $q, $http, Commits, commitLoadFilter, $rootScope) {
+    .factory('commitsListService', function($resource, $q, $http, Commits, $rootScope) {
 
         var commits = new codebrag.AsyncCollection();
 
-    	function loadCommitsFromServer(filter) {
-            var responsePromise = Commits.get({filter: filter.value}).$then(function(response) {
+        var commitsFilter = {
+            ALL_COMMITS: 'all',
+            PENDING_COMMITS: 'pending',
+            current: this.PENDING_COMMITS,
+
+            isEnabled: function() {
+                return this.current === this.PENDING_COMMITS;
+            },
+
+            disableFilter: function() {
+                this.current = this.ALL_COMMITS;
+            },
+
+            enableFilter: function() {
+                this.current = this.PENDING_COMMITS;
+            }
+
+        };
+
+        function loadCommitsPendingReview() {
+            commitsFilter.enableFilter();
+            return _loadCommits();
+        }
+
+        function loadAllCommits() {
+            commitsFilter.disableFilter();
+            return _loadCommits();
+        }
+
+        function _loadCommits() {
+            var responsePromise = Commits.get({filter: commitsFilter.current}).$then(function(response) {
                 var newCommitCount = _reviewableCount(response.data.commits);
                 _broadcastNewCommitCountEvent(newCommitCount);
                 return response.data.commits;
             });
             return commits.loadElements(responsePromise);
-    	}
+        }
 
         function syncCommits() {
             $http({method: 'POST', url: 'rest/commits/sync'}).success(function(response) {
@@ -46,12 +75,12 @@ angular.module('codebrag.commits')
         function removeCommit(commitId) {
             var responsePromise = Commits.remove({id: commitId}).$then();
             var resultPromise = undefined;
-            if (commitLoadFilter.isAll()) {
+            if (!commitsFilter.isEnabled()) {
                 markAsNotReviewable(commitId);
                 resultPromise = responsePromise;
-            }
-            else
+            } else {
                 resultPromise = commits.removeElement(_matchingId(commitId), responsePromise);
+            }
             return resultPromise.then(function (next) {
                 _broadcastNewCommitCountEvent(commits.elements.length - 1);
                 return next;
@@ -67,12 +96,12 @@ angular.module('codebrag.commits')
         function removeCommitAndGetNext(commitId) {
             var responsePromise = Commits.remove({id: commitId}).$then();
             var resultPromise = undefined;
-            if (commitLoadFilter.isAll()) {
+            if (!commitsFilter.isEnabled()) {
                 markAsNotReviewable(commitId);
                 resultPromise = commits.getNextAfter(_matchingId(commitId), responsePromise);
-            }
-            else
+            } else {
                 resultPromise = commits.removeElementAndGetNext(_matchingId(commitId), responsePromise);
+            }
             return resultPromise.then(function (next) {
                 _broadcastNewCommitCountEvent(commits.elements.length - 1);
                 return next;
@@ -96,7 +125,8 @@ angular.module('codebrag.commits')
         }
 
         return {
-            loadCommitsFromServer: loadCommitsFromServer,
+            loadCommitsPendingReview: loadCommitsPendingReview,
+            loadAllCommits: loadAllCommits,
             allCommits: allCommits,
             removeCommitAndGetNext: removeCommitAndGetNext,
             removeCommit: removeCommit,

@@ -1,9 +1,9 @@
 <div id="commits-tab-content" class="row" ng-controller="CommitsCtrl">
     <div id="sticky"></div>
     <div class="commits large-3 columns">
-        <ul class="commits-sorting button-group">
-            <li><a ng-click="filterList('pending')" class="button" style-as-selected-when="filter.isInPendingMode()">To review</a></li>
-            <li><a ng-click="filterList('all')" class="button" style-as-selected-when="filter.isInAllMode()">All</a></li>
+        <ul class="commits-sorting button-group" activate-single="a" toggle-class="link">
+            <li><a ng-click="loadPendingCommits()" class="button">To review</a></li>
+            <li><a ng-click="loadAllCommits()" class="button link">All</a></li>
         </ul>
         <div class="commits-container">
             <!--commit info start-->

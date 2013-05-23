@@ -2,66 +2,60 @@
 
 describe("Commits Controller", function () {
 
-    var commitsList = [{message: 'sample msg', sha: '123abc'}];
-    var $httpBackend;
+    var allCommits = '[all commits here]';
+    var pendingCommits = '[pending commits here]';
+
+    var scope;
 
     beforeEach(module('codebrag.commits'));
 
-    afterEach(inject(function(_$httpBackend_) {
-        _$httpBackend_.verifyNoOutstandingExpectation();
-        _$httpBackend_.verifyNoOutstandingRequest();
-    }));
+    beforeEach(function() {
+        scope = {};
+    });
 
-
-    beforeEach(inject(function (_$httpBackend_) {
-        $httpBackend = _$httpBackend_;
-    }));
-
-    it('should fetch commits according to selected load mode', inject(function($controller, commitsListService, commitLoadFilter) {
+    it('should fetch pending commits', inject(function($controller, commitsListService) {
         // Given
-        var scope = {};
-        var commitsReturnedByService = [];
-        spyOn(commitsListService, 'loadCommitsFromServer');
-        spyOn(commitsListService, 'allCommits').andReturn(commitsReturnedByService);
+        var spy = spyOn(commitsListService, 'loadCommitsPendingReview');
+        $controller('CommitsCtrl', {$scope: scope});
+
+        // When
+        scope.loadPendingCommits();
+
+        expect(spy.callCount).toBe(2);
+    }));
+
+    it('should fetch all commits', inject(function($controller, commitsListService) {
+        // Given
+        spyOn(commitsListService, 'loadCommitsPendingReview');    // called on controller start
+        spyOn(commitsListService, 'loadAllCommits').andReturn(allCommits);
 
         // When
         $controller('CommitsCtrl', {$scope: scope});
-        expect(commitsListService.loadCommitsFromServer).toHaveBeenCalledWith(commitLoadFilter.modes.pending);
-        commitLoadFilter.current = commitLoadFilter.modes.all;
-        scope.loadCommits();
+        scope.loadAllCommits();
 
-        //Then
-        expect(commitsListService.loadCommitsFromServer).toHaveBeenCalledWith(commitLoadFilter.modes.all);
-        expect(scope.commits).toBe(commitsReturnedByService)
+        expect(commitsListService.loadAllCommits).toHaveBeenCalled();
     }));
 
-    it('should fetch commits pending review when controller starts', inject(function($controller, commitsListService, commitLoadFilter) {
+    it('should fetch commits pending review when controller starts', inject(function($controller, commitsListService) {
         // Given
-        var scope = {};
-        var commitsReturnedByService = [];
-        spyOn(commitsListService, 'loadCommitsFromServer');
-        spyOn(commitsListService, 'allCommits').andReturn(commitsReturnedByService);
+        spyOn(commitsListService, 'loadCommitsPendingReview');
 
         // When
         $controller('CommitsCtrl', {$scope: scope});
 
         //Then
-        expect(commitsListService.loadCommitsFromServer).toHaveBeenCalledWith(commitLoadFilter.modes.pending);
-        expect(scope.commits).toBe(commitsReturnedByService)
+        expect(commitsListService.loadCommitsPendingReview).toHaveBeenCalled();
     }));
 
     it('should expose loading commits via scope', inject(function($controller, commitsListService) {
         // Given
-        var scope = {};
-        spyOn(commitsListService, 'loadCommitsFromServer');
-        spyOn(commitsListService, 'allCommits').andReturn(commitsList);
+        spyOn(commitsListService, 'loadCommitsPendingReview').andReturn(pendingCommits);
 
         // When
         $controller('CommitsCtrl', {$scope: scope});
 
         //Then
-        var commit = scope.commits[0];
-        expect(commit.sha).toBe(commitsList[0].sha);
+        expect(scope.commits).toBe(pendingCommits);
     }));
 
 });

@@ -33,7 +33,8 @@ angular.module('codebrag.auth')
                 if (authService.isAuthenticated()) {
                     return $q.when(authService.loggedInUser);
                 }
-                return $http.get('rest/users').then(function(response) {
+                var promise = $http.get('rest/users');
+                return promise.then(function(response) {
                     authService.loggedInUser = response.data;
                     $rootScope.$broadcast("codebrag:loggedIn");
                     return $q.when(authService.loggedInUser);
