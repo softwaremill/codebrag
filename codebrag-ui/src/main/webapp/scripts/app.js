@@ -23,11 +23,6 @@ angular.module('codebrag', [
     'codebrag.followups',
     'codebrag.notifications']);
 
-angular.module('codebrag')
-    .run(function(authService) {
-        authService.requestCurrentUser();
-    });
-
 angular.module('codebrag.auth')
     .config(function($httpProvider) {
         $httpProvider.responseInterceptors.push('httpAuthInterceptor');
