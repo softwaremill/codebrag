@@ -1,16 +1,16 @@
 package com.softwaremill.codebrag.dao.reporting
 
 import com.softwaremill.codebrag.dao._
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User, CommitInfo}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
+import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 
 
-class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
+class MongoCommitListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 
   val commitListFinder = new MongoCommitFinder
   var commitReviewTaskDao = new  MongoCommitReviewTaskDAO
@@ -19,11 +19,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   val userId = ObjectIdTestUtils.oid(123)
   val user = User(userId, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "123")
 
-  override def beforeEach() {
-    CommitInfoRecord.drop // drop collection to start every test with fresh database
-  }
-
-  it should "find all commits to review for given user only" in {
+  it should "find all commits to review for given user only" taggedAs(RequiresDb) in {
     // given
     val storedCommits = prepareAndStoreSomeCommits(howMany = 5)
     storeCommitReviewTasksFor(userId, storedCommits(0), storedCommits(1))
@@ -35,7 +31,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     commitsFound.commits should have size(2)
   }
 
-  it should "find all commits for all users" in {
+  it should "find all commits for all users" taggedAs(RequiresDb) in {
     // given
     val storedCommits = prepareAndStoreSomeCommits(howMany = 5)
     storeCommitReviewTasksFor(userId, storedCommits(0), storedCommits(1))
@@ -47,7 +43,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     commitsFound.commits should have size(5)
   }
 
-  it should "mark commits that are not pending review" in {
+  it should "mark commits that are not pending review" taggedAs(RequiresDb) in {
     // given
     val storedCommits = prepareAndStoreSomeCommits(howMany = 3)
     storeCommitReviewTasksFor(userId, storedCommits(0), storedCommits(1))
@@ -62,7 +58,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     foundCommitView(commitsFound, storedCommits, 2).pendingReview should be (false)
   }
 
-  it should "find commits starting from newest commit date" in {
+  it should "find commits starting from newest commit date" taggedAs(RequiresDb) in {
     // given
     val baseDate = DateTime.now()
     val olderCommit = CommitInfoAssembler.randomCommit.withSha("111").
@@ -84,7 +80,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     pendingCommitList.commits(1).sha should equal(olderCommit.sha)
   }
 
-  it should "find empty list if there are no commits to review for user" in {
+  it should "find empty list if there are no commits to review for user" taggedAs(RequiresDb) in {
     // given
     prepareAndStoreSomeCommits(5)
 
@@ -95,7 +91,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     pendingCommitList.commits should be ('empty)
   }
 
-  it should "find commit info (without files) by given id" in {
+  it should "find commit info (without files) by given id" taggedAs(RequiresDb) in {
     // given
     val commitId = ObjectIdTestUtils.oid(111)
     val commit = CommitInfoAssembler.randomCommit.withId(commitId).withSha("111").withMessage("Commit message").get
@@ -110,7 +106,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     foundCommit.pendingReview should be (false)
   }
 
-  it should "mark commit view as pending review if task exists" in {
+  it should "mark commit view as pending review if task exists" taggedAs(RequiresDb) in {
     // given
     val commitId = ObjectIdTestUtils.oid(111)
     val commit = CommitInfoAssembler.randomCommit.withId(commitId).withSha("111").withMessage("Commit message").get
@@ -123,7 +119,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     foundCommit.pendingReview should be (true)
   }
 
-  it should "result with error msg whem commit not found" in {
+  it should "result with error msg whem commit not found" taggedAs(RequiresDb) in {
     // given
     val nonExistingCommitId = ObjectIdTestUtils.oid(111)
 

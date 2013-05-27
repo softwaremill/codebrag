@@ -1,20 +1,19 @@
 package com.softwaremill.codebrag.dao
 
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import CommitInfoAssembler._
+import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 
-class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
+class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
   var commitInfoDAO: MongoCommitInfoDAO = _
 
   override def beforeEach() {
-    CommitInfoRecord.drop // drop collection to start every test with fresh database
     commitInfoDAO = new MongoCommitInfoDAO
   }
 
-  it should "find a stored commit" in {
+  it should "find a stored commit" taggedAs(RequiresDb) in {
     // given
     val commit = randomCommit.get
     commitInfoDAO.storeCommit(commit)
@@ -26,7 +25,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach w
     foundCommit should be(Some(commit.copy()))
   }
 
-  it should "find stored commit by its id" in {
+  it should "find stored commit by its id" taggedAs(RequiresDb) in {
     // given
     val commit = randomCommit.get
     commitInfoDAO.storeCommit(commit)
@@ -38,7 +37,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach w
     foundCommit should be(Some(commit.copy()))
   }
 
-  it should "store a single commit" in {
+  it should "store a single commit" taggedAs(RequiresDb) in {
     // given
     val commit = randomCommit.get
 
@@ -49,7 +48,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach w
     commitInfoDAO.findBySha(commit.sha) should be('defined)
   }
 
-  it should "retrieve commit sha with last commit date" in {
+  it should "retrieve commit sha with last commit date" taggedAs(RequiresDb) in {
     // given
     val date = new DateTime()
     val expectedLastCommit = randomCommit.withAuthorDate(date.minusDays(2)).withCommitDate(date).get
@@ -67,7 +66,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach w
     lastSha should equal (Some(expectedLastCommit.sha))
   }
 
-  it should "find all commits SHA" in {
+  it should "find all commits SHA" taggedAs(RequiresDb) in {
     // given
     val commits = List(CommitInfoAssembler.randomCommit.withSha("111").get, CommitInfoAssembler.randomCommit.withSha("222").get)
     commits.foreach {

@@ -20,7 +20,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     commentDao = new MongoCommitCommentDAO
   }
 
-  it should "store new comment for entire commit" in {
+  it should "store new comment for entire commit" taggedAs(RequiresDb) in {
     val newComment = commitCommentFor(CommitId).get
 
     // when
@@ -32,7 +32,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     comments.head.message.get should be(newComment.message)
   }
 
-  it should "store new line comment for commit" in {
+  it should "store new line comment for commit" taggedAs(RequiresDb) in {
     val lineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("myfile.txt", 20).get
 
     // when
@@ -46,7 +46,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     comments.head.lineNumber.valueBox.get should equal(lineComment.lineNumber)
   }
 
-  it should "load only comments for commit id" in {
+  it should "load only comments for commit id" taggedAs(RequiresDb) in {
     // given
     val fixtureCommentList = createFewCommentsFor(CommitId, 3)
     val additionalComments = createFewCommentsFor(AnotherCommitId, 5)
@@ -60,7 +60,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     comments should equal(fixtureCommentList)
   }
 
-  it should "find only comments for entire commit" in {
+  it should "find only comments for entire commit" taggedAs(RequiresDb) in {
     // given
     val comment = commitCommentFor(CommitId).get
     val inlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("text.txt", 10).get
@@ -75,7 +75,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     comments.head should equal(comment)
   }
 
-  it should "find only inline comments for commit" in {
+  it should "find only inline comments for commit" taggedAs(RequiresDb) in {
     // given
     val comment = commitCommentFor(CommitId).get
     val inlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("text.txt", 10).get
@@ -90,7 +90,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
     comments.head should equal(inlineComment)
   }
 
-  it should "find all comments in thread containing given comment (general or for the same file and line)" in {
+  it should "find all comments in thread containing given comment (general or for the same file and line)" taggedAs(RequiresDb) in {
     // given general comments
     val commitComments = createFewCommentsFor(CommitId, 3)
     commitComments.foreach(commentDao.save)

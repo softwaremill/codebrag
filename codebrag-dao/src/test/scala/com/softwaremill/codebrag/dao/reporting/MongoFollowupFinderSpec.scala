@@ -1,28 +1,29 @@
 package com.softwaremill.codebrag.dao.reporting
 
 import com.softwaremill.codebrag.dao._
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{ThreadDetails, Followup}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.domain.ThreadDetails
+import scala.Some
+import com.softwaremill.codebrag.dao._
 
-class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers with MongoFollowupFinderSpecFixture {
+class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with MongoFollowupFinderSpecFixture {
 
   var followupDao: FollowupDAO = _
   var commitInfoDao: CommitInfoDAO = _
   var followupFinder: FollowupFinder = _
 
   override def beforeEach() {
-    FollowupRecord.drop
-    CommitInfoRecord.drop
     followupDao = new MongoFollowupDAO
     followupFinder = new MongoFollowupFinder
     commitInfoDao = new MongoCommitInfoDAO
     storeAllCommits
   }
 
-  it should "find all follow-ups only for given user" in {
+  it should "find all follow-ups only for given user" taggedAs(RequiresDb) in {
     // given
     storeFollowupsForJohn
     storeFollowupForBob
@@ -34,7 +35,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach 
     userFollowups.followups should have size(2)
   }
 
-  it should "find followup by id for given user" in {
+  it should "find followup by id for given user" taggedAs(RequiresDb) in {
     // given
     val followupsStored = storeFollowupsForJohn
     val Some(followupIdToFind) = followupsStored.head.id
@@ -43,7 +44,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach 
     val Right(followupFound) = followupFinder.findFollowupForUser(JohnId, followupIdToFind)
   }
 
-  it should "not find followup by id for another user" in {
+  it should "not find followup by id for another user" taggedAs(RequiresDb) in {
     // given
     val followupsStored = storeFollowupsForJohn
     val Some(followupIdToFind) = followupsStored.head.id
@@ -52,7 +53,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach 
     val Left(msg) = followupFinder.findFollowupForUser(BobId, followupIdToFind)
   }
 
-  it should "return user follow-ups with newest first order" in {
+  it should "return user follow-ups with newest first order" taggedAs(RequiresDb) in {
     // given
     storeFollowupsForJohn
 
@@ -64,7 +65,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach 
     userFollowups(Second).date should equal(date.toDate)
   }
 
-  it should "return followup with last commenter name and comment id included" in {
+  it should "return followup with last commenter name and comment id included" taggedAs(RequiresDb) in {
     // given
     val stored = storeFollowupForBob
 

@@ -1,6 +1,5 @@
 package com.softwaremill.codebrag.dao
 
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{ThreadDetails, Followup}
 import org.joda.time.DateTime
@@ -8,8 +7,9 @@ import pl.softwaremill.common.util.time.FixtureTimeClock
 import ObjectIdTestUtils._
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 
-class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
+class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 
   var followupDao: MongoFollowupDAO = _
   var commitInfoDao: CommitInfoDAO = _
@@ -26,12 +26,10 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
   override def beforeEach() {
     followupDao = new MongoFollowupDAO
     commitInfoDao = new MongoCommitInfoDAO
-    CommitInfoRecord.drop
-    FollowupRecord.drop
     commitInfoDao.storeCommit(Commit)
   }
 
-  it should "create new follow up for user and thread if one doesn't exist" in {
+  it should "create new follow up for user and thread if one doesn't exist" taggedAs(RequiresDb) in {
     // given
     val now = DateTime.now()
     val followup = Followup(CommentId, FollowupTargetUserId, now, CommenterName, ThreadDetails(Commit.id))
@@ -49,7 +47,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
     followupFound.date.get should equal(now.toDate)
   }
 
-  it should "update existing follow up creation date and last comment data when followup for thread and user exists" in {
+  it should "update existing follow up creation date and last comment data when followup for thread and user exists" taggedAs(RequiresDb) in {
     followupDao.createOrUpdateExisting(Followup(CommentId, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
 
     // when
@@ -67,7 +65,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
     followup.lastCommenterName.get should equal(newCommentAuthorName)
   }
 
-  it should "update follow up only for current thread" in {
+  it should "update follow up only for current thread" taggedAs(RequiresDb) in {
     val baseDate = DateTime.now
     followupDao.createOrUpdateExisting(Followup(CommentId, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id)))
     followupDao.createOrUpdateExisting(Followup(OtherCommentId, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
@@ -87,7 +85,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
     followups.head.threadId.get.fileName.get should equal(Some("file.txt"))
   }
 
-  it should "create new follow up for new inline comments thread" in {
+  it should "create new follow up for new inline comments thread" taggedAs(RequiresDb) in {
     val baseDate = DateTime.now
     followupDao.createOrUpdateExisting(Followup(CommentId, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id)))
     followupDao.createOrUpdateExisting(Followup(OtherCommentId, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
@@ -103,7 +101,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
     followups.size should be(1)
   }
 
-  it should "create new follow up for entire commit comments thread if one doesn't exist" in {
+  it should "create new follow up for entire commit comments thread if one doesn't exist" taggedAs(RequiresDb) in {
     val baseDate = DateTime.now
     followupDao.createOrUpdateExisting(Followup(CommentId, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
 
@@ -116,7 +114,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
     FollowupRecord.count should be(2)
   }
 
-  it should "delete follow-up for single thread" in {
+  it should "delete follow-up for single thread" taggedAs(RequiresDb) in {
     followupDao.createOrUpdateExisting(Followup(Commit.id, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
     val followupToRemove = Followup(oid(123), Commit.id, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id))
     followupDao.createOrUpdateExisting(followupToRemove)
@@ -130,7 +128,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach wit
     followupsLeft.toSet should equal(Set(Some("file.txt"), Some("test.txt")))
   }
 
-  it should "not delete follow-ups of other users" in {
+  it should "not delete follow-ups of other users" taggedAs(RequiresDb) in {
     followupDao.createOrUpdateExisting(Followup(Commit.id, DifferentUserId1, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
     val followupToRemove = Followup(oid(123), Commit.id, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id))
     followupDao.createOrUpdateExisting(followupToRemove)

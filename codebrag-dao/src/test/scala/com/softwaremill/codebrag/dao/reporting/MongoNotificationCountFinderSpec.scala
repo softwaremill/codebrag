@@ -10,8 +10,9 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.ThreadDetails
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import scala.util.Random
+import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 
-class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers with MongoNotificationCountFinderSpecFixture {
+class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with MongoNotificationCountFinderSpecFixture {
 
   val followupDao = new MongoFollowupDAO
   val commitInfoDao = new MongoCommitInfoDAO
@@ -19,13 +20,10 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with BeforeAndA
   var notificationCountFinder: NotificationCountFinder = _
 
   override def beforeEach() {
-    FollowupRecord.drop
-    CommitInfoRecord.drop
-    CommitReviewTaskRecord.drop
     notificationCountFinder = new MongoNotificationCountFinder
   }
 
-  it should "return empty counters if no data found" in {
+  it should "return empty counters if no data found" taggedAs(RequiresDb) in {
     // given no data for Bruce
     givenReviewTasksFor(UserSofoklesId, 2)
     givenFollowupsFor(UserSofoklesId, 8)
@@ -37,7 +35,7 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with BeforeAndA
     resultCounters should equal(NotificationCountersView(0, 0))
   }
 
-    it should "build counters only for given user" in {
+    it should "build counters only for given user" taggedAs(RequiresDb) in {
     // given
     givenReviewTasksFor(UserBruceId, BruceCommitCount)
     givenFollowupsFor(UserBruceId, BruceFollowupCount)

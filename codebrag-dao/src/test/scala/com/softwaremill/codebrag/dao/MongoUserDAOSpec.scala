@@ -5,8 +5,9 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.BeforeAndAfterAll
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 
-class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with BeforeAndAfterAll with Logging {
+class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearDataAfterTest with Logging {
 
   val userIdPrefix = "507f1f77bcf86cd79943901"
   var userDAO: UserDAO = _
@@ -27,7 +28,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     }
   }
 
-  it should "add user with existing login" in {
+  it should "add user with existing login" taggedAs(RequiresDb) in {
     // Given
     val login = "user1"
     val email = "anotherEmaill@sml.com"
@@ -42,7 +43,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     assert(userDAO.findByLoginOrEmail(login).isDefined)
   }
 
-  it should "add user with existing email" in {
+  it should "add user with existing email" taggedAs(RequiresDb) in {
     // Given
     val login = "anotherUser"
     val email = "1email@sml.com"
@@ -57,7 +58,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     assert(userDAO.findByLoginOrEmail(email).isDefined)
   }
 
-  it should "find by email" in {
+  it should "find by email" taggedAs(RequiresDb) in {
     // Given
     val email: String = "1email@sml.com"
 
@@ -71,7 +72,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     }
   }
 
-  it should "not find non-existing user by email" in {
+  it should "not find non-existing user by email" taggedAs(RequiresDb) in {
     // Given
     val email: String = "anyEmail@sml.com"
 
@@ -85,7 +86,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     }
   }
 
-  it should "find non-existing user by login" in {
+  it should "find non-existing user by login" taggedAs(RequiresDb) in {
     // Given
     val login: String = "non_existing_login"
 
@@ -99,7 +100,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     }
   }
 
-  it should "find non-existing user by login or email" in {
+  it should "find non-existing user by login or email" taggedAs(RequiresDb) in {
     // Given
     val login: String = "non_existing_login"
 
@@ -113,7 +114,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     }
   }
 
-  it should "find by uppercased email" in {
+  it should "find by uppercased email" taggedAs(RequiresDb) in {
     // Given
     val email: String = "1email@sml.com".toUpperCase
 
@@ -127,7 +128,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     }
   }
 
-  it should "find by login" in {
+  it should "find by login" taggedAs(RequiresDb) in {
     // Given
     val login: String = "user1"
 
@@ -142,7 +143,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
   }
 
 
-  it should "find by uppercased login" in {
+  it should "find by uppercased login" taggedAs(RequiresDb) in {
     // Given
     val login: String = "user1".toUpperCase
 
@@ -156,7 +157,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     }
   }
 
-  it should "find using login with findByLoginOrEmail" in {
+  it should "find using login with findByLoginOrEmail" taggedAs(RequiresDb) in {
     // Given
     val login: String = "user1"
 
@@ -170,7 +171,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     }
   }
 
-  it should "find using uppercased login with findByLoginOrEmail" in {
+  it should "find using uppercased login with findByLoginOrEmail" taggedAs(RequiresDb) in {
     // Given
     val login: String = "user1".toUpperCase
 
@@ -184,7 +185,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     }
   }
 
-  it should "find using email with findByLoginOrEmail" in {
+  it should "find using email with findByLoginOrEmail" taggedAs(RequiresDb) in {
     // Given
     val email: String = "1email@sml.com"
 
@@ -198,7 +199,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     }
   }
 
-  it should "find using uppercased email with findByLoginOrEmail" in {
+  it should "find using uppercased email with findByLoginOrEmail" taggedAs(RequiresDb) in {
     // Given
     val email: String = "1email@sml.com".toUpperCase
 
@@ -212,7 +213,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     }
   }
 
-  it should "find by token" in {
+  it should "find by token" taggedAs(RequiresDb) in {
     // Given
     val token = "token1"
 
@@ -226,7 +227,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
     }
   }
 
-  it should "replace existing authentication" in {
+  it should "replace existing authentication" taggedAs(RequiresDb) in {
     val auth = Authentication.github("u", "at")
 
     userDAO.changeAuthentication(1, auth)
@@ -238,7 +239,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with Before
 
   }
 
-  it should "find user by its Id" in {
+  it should "find user by its Id" taggedAs(RequiresDb) in {
     // given
     val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde")
     userDAO.add(user)
