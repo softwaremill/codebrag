@@ -5,26 +5,18 @@ angular.module('codebrag.commits')
         $scope.syncCommits = commitsListService.syncCommits;
 
         $scope.loadAllCommits = function() {
+            console.log('load all');
             $scope.commits = commitsListService.loadAllCommits();
+            console.log('load all done');
         };
 
         $scope.loadPendingCommits = function() {
+            console.log('load pending');
             $scope.commits = commitsListService.loadCommitsPendingReview();
+            console.log('load pending done');
         };
 
 
         $scope.loadPendingCommits();
 
-    })
-
-    .directive('activateSingle', function() {
-        var addClassAttribute = "toggleClass";
-        return {
-            restrict: 'A',
-            link: function(scope, el, attrs) {
-                el.on('click', attrs.activateSingle, function(event) {
-                    el.find(attrs.activateSingle).toggleClass(attrs[addClassAttribute]);
-                });
-            }
-        }
     });

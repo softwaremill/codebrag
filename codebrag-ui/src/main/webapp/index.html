@@ -69,7 +69,7 @@
     <script type="text/javascript" src="scripts/common/directives/messagePopup.js"></script>
     <script type="text/javascript" src="scripts/common/directives/httpRequestTracker.js"></script>
     <script type="text/javascript" src="scripts/common/directives/isolateClick.js"></script>
-    <script type="text/javascript" src="scripts/common/directives/activeForStates.js"></script>
+    <script type="text/javascript" src="scripts/common/directives/activateSingleOnClick.js"></script>
 
     <script type="text/javascript" src="scripts/common/directives/markdownToHtml.js"></script>
     <script type="text/javascript" src="scripts/common/directives/markCurrent.js"></script>
@@ -80,7 +80,7 @@
     <script type="text/ng-template" id="inlineCommentForm">
         <tr class="comments-container comment-form">
             <td colspan="3">
-                <markdown-comment-form action="submitInlineComment" extra-args="file,line,$index"></markdown-comment-form>
+                <markdown-comment-form action="submitInlineComment" extra-args="file,line,$index" closeable="true"></markdown-comment-form>
             </td>
         </tr>
     </script>

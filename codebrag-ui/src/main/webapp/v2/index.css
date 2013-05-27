@@ -53,7 +53,7 @@ table tr:nth-of-type(even) {
 }
 table tr th,
 table tr td {
-  font-size: 1em;
+  font-size: 0.8em;
   color: #2f0200;
   padding: 0.23em 0.77em;
 }

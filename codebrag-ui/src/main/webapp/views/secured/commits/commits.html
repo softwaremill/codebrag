@@ -1,10 +1,10 @@
 <div id="commits-tab-content" class="row" ng-controller="CommitsCtrl">
     <div id="sticky"></div>
     <div class="commits large-3 columns">
-        <ul class="commits-sorting button-group" activate-single="a" toggle-class="link">
+        <ul class="commits-sorting button-group" activate-single-on-click="a.button" toggle-class="link">
             <li><a ng-click="loadPendingCommits()" class="button">To review</a></li>
             <li><a ng-click="loadAllCommits()" class="button link">All</a></li>
-            <li><span ng-click="syncCommits()" class="button link">Sync commits</span></li>
+            <li><span ng-click="syncCommits()" class="button link">Sync</span></li>
         </ul>
         <div class="commits-container">
             <!--commit info start-->

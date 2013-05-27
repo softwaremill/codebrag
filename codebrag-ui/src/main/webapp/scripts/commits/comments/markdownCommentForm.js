@@ -3,6 +3,7 @@ angular.module('codebrag.commits.comments')
     .directive('markdownCommentForm', function($q) {
         var mdConverter = Markdown.getSanitizingConverter();
         var additionalArgsName = 'extraArgs';
+        var closeableName = 'closeable';
         return {
             restrict: 'E',
             replace: true,
@@ -27,8 +28,20 @@ angular.module('codebrag.commits.comments')
                     $q.when(scope[attrs.action].apply(this, submitArguments)).then(function() {
                         scope.content = '';
                         scope.previewModeOn = false;
+                        scope.closeForm();
                     });
-                }
+                };
+
+                scope.isCloseable = function() {
+                    return !!attrs[closeableName];
+                };
+
+                scope.closeForm = function() {
+                    if(!!attrs[closeableName]) {
+                        scope.$emit('codebrag:closeForm');
+                    }
+                };
+
             }
         }
     });
