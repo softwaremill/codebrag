@@ -1,10 +1,10 @@
 package com.softwaremill.codebrag.dao
 
-import org.scalatest.{BeforeAndAfterAll, FlatSpec}
+import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, FlatSpec}
 import net.liftweb.mongodb.{MongoDB, DefaultMongoIdentifier}
 import com.mongodb.Mongo
 
-trait FlatSpecWithMongo extends FlatSpec with BeforeAndAfterAll {
+trait FlatSpecWithMongo extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
   val mongoPort = 24567
 
@@ -13,6 +13,16 @@ trait FlatSpecWithMongo extends FlatSpec with BeforeAndAfterAll {
   override protected def beforeAll() {
     super.beforeAll()
     startMongo()
+  }
+
+  def clearData() {
+    import scala.collection.JavaConverters._
+    val mongo = new Mongo(mongoRunner.serverAddress())
+    val dbNames = mongo.getDatabaseNames.asScala
+    for (dbName <- dbNames) {
+      mongo.getDB(dbName).dropDatabase()
+    }
+    mongo.close()
   }
 
   override protected def afterAll() {
