@@ -2,7 +2,6 @@ package com.softwaremill.codebrag.dao
 
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.BeforeAndAfterAll
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
@@ -14,8 +13,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
 
   implicit def intSuffixToObjectId(suffix: Int): ObjectId = new ObjectId(userIdPrefix + suffix)
 
-  override def beforeAll() {
-    super.beforeAll()
+  override def beforeEach() {
     userDAO = new MongoUserDAO
 
     for (i <- 1 to 3) {
@@ -28,7 +26,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
-  it should "add user with existing login" taggedAs(RequiresDb) in {
+  it should "add user with existing login" taggedAs (RequiresDb) in {
     // Given
     val login = "user1"
     val email = "anotherEmaill@sml.com"
@@ -43,7 +41,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     assert(userDAO.findByLoginOrEmail(login).isDefined)
   }
 
-  it should "add user with existing email" taggedAs(RequiresDb) in {
+  it should "add user with existing email" taggedAs (RequiresDb) in {
     // Given
     val login = "anotherUser"
     val email = "1email@sml.com"
@@ -58,12 +56,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     assert(userDAO.findByLoginOrEmail(email).isDefined)
   }
 
-  it should "find by email" taggedAs(RequiresDb) in {
+  it should "find by email" taggedAs (RequiresDb) in {
     // Given
-    val email: String = "1email@sml.com"
+    val email = "user1@sml.com"
 
     // When
-    val userOpt: Option[User] = userDAO.findByEmail(email)
+    val userOpt = userDAO.findByEmail(email)
 
     // Then
     userOpt match {
@@ -72,12 +70,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
-  it should "not find non-existing user by email" taggedAs(RequiresDb) in {
+  it should "not find non-existing user by email" taggedAs (RequiresDb) in {
     // Given
     val email: String = "anyEmail@sml.com"
 
     // When
-    val userOpt: Option[User] = userDAO.findByEmail(email)
+    val userOpt = userDAO.findByEmail(email)
 
     // Then
     userOpt match {
@@ -86,12 +84,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
-  it should "find non-existing user by login" taggedAs(RequiresDb) in {
+  it should "find non-existing user by login" taggedAs (RequiresDb) in {
     // Given
-    val login: String = "non_existing_login"
+    val login = "non_existing_login"
 
     // When
-    val userOpt: Option[User] = userDAO.findByLowerCasedLogin(login)
+    val userOpt = userDAO.findByLowerCasedLogin(login)
 
     // Then
     userOpt match {
@@ -100,12 +98,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
-  it should "find non-existing user by login or email" taggedAs(RequiresDb) in {
+  it should "find non-existing user by login or email" taggedAs (RequiresDb) in {
     // Given
-    val login: String = "non_existing_login"
+    val login = "non_existing_login"
 
     // When
-    val userOpt: Option[User] = userDAO.findByLoginOrEmail(login)
+    val userOpt = userDAO.findByLoginOrEmail(login)
 
     // Then
     userOpt match {
@@ -114,12 +112,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
-  it should "find by uppercased email" taggedAs(RequiresDb) in {
+  it should "find by uppercased email" taggedAs (RequiresDb) in {
     // Given
-    val email: String = "1email@sml.com".toUpperCase
+    val email = "user1@sml.com".toUpperCase
 
     // When
-    val userOpt: Option[User] = userDAO.findByEmail(email)
+    val userOpt = userDAO.findByEmail(email)
 
     // Then
     userOpt match {
@@ -128,12 +126,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
-  it should "find by login" taggedAs(RequiresDb) in {
+  it should "find by login" taggedAs (RequiresDb) in {
     // Given
-    val login: String = "user1"
+    val login = "user1"
 
     // When
-    val userOpt: Option[User] = userDAO.findByLowerCasedLogin(login)
+    val userOpt = userDAO.findByLowerCasedLogin(login)
 
     // Then
     userOpt match {
@@ -143,12 +141,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
   }
 
 
-  it should "find by uppercased login" taggedAs(RequiresDb) in {
+  it should "find by uppercased login" taggedAs (RequiresDb) in {
     // Given
-    val login: String = "user1".toUpperCase
+    val login = "user1".toUpperCase
 
     // When
-    val userOpt: Option[User] = userDAO.findByLowerCasedLogin(login)
+    val userOpt = userDAO.findByLowerCasedLogin(login)
 
     // Then
     userOpt match {
@@ -157,12 +155,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
-  it should "find using login with findByLoginOrEmail" taggedAs(RequiresDb) in {
+  it should "find using login with findByLoginOrEmail" taggedAs (RequiresDb) in {
     // Given
-    val login: String = "user1"
+    val login = "user1"
 
     // When
-    val userOpt: Option[User] = userDAO.findByLoginOrEmail(login)
+    val userOpt = userDAO.findByLoginOrEmail(login)
 
     // Then
     userOpt match {
@@ -171,12 +169,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
-  it should "find using uppercased login with findByLoginOrEmail" taggedAs(RequiresDb) in {
+  it should "find using uppercased login with findByLoginOrEmail" taggedAs (RequiresDb) in {
     // Given
-    val login: String = "user1".toUpperCase
+    val login = "user1".toUpperCase
 
     // When
-    val userOpt: Option[User] = userDAO.findByLoginOrEmail(login)
+    val userOpt = userDAO.findByLoginOrEmail(login)
 
     // Then
     userOpt match {
@@ -185,12 +183,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
-  it should "find using email with findByLoginOrEmail" taggedAs(RequiresDb) in {
+  it should "find using email with findByLoginOrEmail" taggedAs (RequiresDb) in {
     // Given
-    val email: String = "1email@sml.com"
+    val email = "user1@sml.com"
 
     // When
-    val userOpt: Option[User] = userDAO.findByLoginOrEmail(email)
+    val userOpt = userDAO.findByLoginOrEmail(email)
 
     // Then
     userOpt match {
@@ -199,12 +197,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
-  it should "find using uppercased email with findByLoginOrEmail" taggedAs(RequiresDb) in {
+  it should "find using uppercased email with findByLoginOrEmail" taggedAs (RequiresDb) in {
     // Given
-    val email: String = "1email@sml.com".toUpperCase
+    val email = "user1@sml.com".toUpperCase
 
     // When
-    val userOpt: Option[User] = userDAO.findByLoginOrEmail(email)
+    val userOpt = userDAO.findByLoginOrEmail(email)
 
     // Then
     userOpt match {
@@ -213,12 +211,12 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
-  it should "find by token" taggedAs(RequiresDb) in {
+  it should "find by token" taggedAs (RequiresDb) in {
     // Given
     val token = "token1"
 
     // When
-    val userOpt: Option[User] = userDAO.findByToken(token)
+    val userOpt = userDAO.findByToken(token)
 
     // Then
     userOpt match {
@@ -227,7 +225,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
-  it should "replace existing authentication" taggedAs(RequiresDb) in {
+  it should "replace existing authentication" taggedAs (RequiresDb) in {
     val auth = Authentication.github("u", "at")
 
     userDAO.changeAuthentication(1, auth)
@@ -239,7 +237,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
 
   }
 
-  it should "find user by its Id" taggedAs(RequiresDb) in {
+  it should "find user by its Id" taggedAs (RequiresDb) in {
     // given
     val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde")
     userDAO.add(user)
