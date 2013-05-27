@@ -31,11 +31,12 @@ angular.module('codebrag.followups')
 
         function _removeFollowupUsingFunction(removingFunction, followupId) {
             var responsePromise = _httpRequest('DELETE', followupId);
+            responsePromise.then(function () {
+                _broadcastNewFollowupCountEvent(followups.elements.length - 1);
+            });
             return removingFunction(function (el) {
                 return el.followupId === followupId;
-            }, responsePromise).then(function () {
-                    _broadcastNewFollowupCountEvent(followups.elements.length);
-                });
+            }, responsePromise)
         }
 
         function loadFollowupById(followupId) {

@@ -68,23 +68,22 @@ angular.module('codebrag.commits')
         }
 
         /**
-         * Removes commit with given identifier.
+         * Removes commit with given identifier. Broadcasts a global event with new commit count.
          * @param commitId identifier of commit to remove.
-         * @returns a promise
+         * @returns a promise of successful commit removal with no parameters in callback.
          */
         function removeCommit(commitId) {
             var responsePromise = Commits.remove({id: commitId}).$then();
-            var resultPromise = undefined;
-            if (!commitsFilter.isEnabled()) {
-                markAsNotReviewable(commitId);
-                resultPromise = responsePromise;
-            } else {
-                resultPromise = commits.removeElement(_matchingId(commitId), responsePromise);
-            }
-            return resultPromise.then(function (next) {
+            responsePromise.then(function (next) {
                 _broadcastNewCommitCountEvent(commits.elements.length - 1);
                 return next;
-            })
+            });
+            if (!commitsFilter.isEnabled()) {
+                markAsNotReviewable(commitId);
+            } else {
+                commits.removeElement(_matchingId(commitId), responsePromise);
+            }
+            return responsePromise
         }
 
         function _matchingId(id) {
@@ -93,19 +92,27 @@ angular.module('codebrag.commits')
             }
         }
 
+        /**
+         * Removes commit with given identifier and returns promise of next element.
+         * Broadcasts a global event with new commit count.
+         * @param commitId identifier of commit to remove.
+         * @returns a promise of successful commit removal. Callback function passes next available commit for review or
+         * null if removed commit was last.
+         */
         function removeCommitAndGetNext(commitId) {
             var responsePromise = Commits.remove({id: commitId}).$then();
-            var resultPromise = undefined;
-            if (!commitsFilter.isEnabled()) {
-                markAsNotReviewable(commitId);
-                resultPromise = commits.getNextAfter(_matchingId(commitId), responsePromise);
-            } else {
-                resultPromise = commits.removeElementAndGetNext(_matchingId(commitId), responsePromise);
-            }
-            return resultPromise.then(function (next) {
+            responsePromise.then(function (next) {
                 _broadcastNewCommitCountEvent(commits.elements.length - 1);
                 return next;
-            })
+            });
+            var getNextPromise;
+            if (!commitsFilter.isEnabled()) {
+                markAsNotReviewable(commitId);
+                getNextPromise = commits.getNextAfter(_matchingId(commitId), responsePromise);
+            } else {
+                getNextPromise = commits.removeElementAndGetNext(_matchingId(commitId), responsePromise);
+            }
+            return getNextPromise
         }
 
         function loadCommitById(commitId) {
