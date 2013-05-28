@@ -2,7 +2,6 @@ package com.softwaremill.codebrag.dao.reporting
 
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import com.softwaremill.codebrag.dao._
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.joda.time.DateTime
@@ -18,8 +17,8 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTe
 
   val CommitId = oid(1)
 
-  val John = User(oid(2), Authentication.basic("john", "pass"), "John", "john@doe.com", "123abc")
-  val Mary = User(oid(3), Authentication.basic("mary", "pass"), "Mary", "mary@smith.com", "123abc")
+  val John = User(oid(2), Authentication.basic("john", "pass"), "John", "john@doe.com", "123abc", "avatarUrl")
+  val Mary = User(oid(3), Authentication.basic("mary", "pass"), "Mary", "mary@smith.com", "123abc", "avatarUrl")
 
   val StoredCommitComments = List(
     CommentAssembler.commitCommentFor(CommitId).withAuthorId(John.id).withMessage("Monster class").get,
@@ -43,7 +42,7 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTe
     List(John, Mary).foreach(userDao.add)
   }
 
-  it should "be empty if there are no comments for a commit" taggedAs(RequiresDb) in {
+  it should "be empty if there are no comments for a commit" taggedAs (RequiresDb) in {
     // given
     val commitWithNoCommentsId = oid(20)
 
@@ -54,7 +53,7 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTe
     commentList.comments should be('empty)
   }
 
-  it should "contain comments for whole commit" taggedAs(RequiresDb) in {
+  it should "contain comments for whole commit" taggedAs (RequiresDb) in {
     // given
     val firstComment = StoredCommitComments(0)
     val secondComment = StoredCommitComments(1)
@@ -66,7 +65,7 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTe
     commentMessagesWithAuthorsFor(commentsView.comments) should be(Set(("Monster class", "John"), ("Fix it ASAP", "Mary")))
   }
 
-  it should "contain inline comments grouped by file and line" taggedAs(RequiresDb) in {
+  it should "contain inline comments grouped by file and line" taggedAs (RequiresDb) in {
     // when
     val commentsView = commentListFinder.commentsForCommit(CommitId)
 
@@ -83,7 +82,7 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTe
     commentMessagesWithAuthorsFor(fileComments, "Database.scala", 20) should be(Set(("Refactor that", "John")))
   }
 
-  it should "have comments ordered by date starting from the oldest" taggedAs(RequiresDb) in {
+  it should "have comments ordered by date starting from the oldest" taggedAs (RequiresDb) in {
     // given
     val baseDate = DateTime.now
     val commentBase = CommentAssembler.inlineCommentFor(CommitId).withFileNameAndLineNumber("Exception.scala", 10)
@@ -102,8 +101,6 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTe
   }
 
 }
-
-
 
 
 trait CommentListFinderVerifyHelpers {

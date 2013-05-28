@@ -39,7 +39,7 @@ class NotificationCountServletSpec extends AuthenticatableServletSpec with Befor
   }
 
   def currentUser(id: ObjectId) = {
-    User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde")
+    User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde", "avatarUrl")
   }
 
   class TestableNotificationCountServlet(finder: NotificationCountFinder) extends NotificationCountServlet(fakeAuthenticator, new CodebragSwagger, finder) {

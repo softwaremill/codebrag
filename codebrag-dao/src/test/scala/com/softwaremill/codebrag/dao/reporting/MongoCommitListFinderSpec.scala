@@ -17,7 +17,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTes
   val commitInfoDao = new MongoCommitInfoDAO
 
   val userId = ObjectIdTestUtils.oid(123)
-  val user = User(userId, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "123")
+  val user = User(userId, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "123", "avatarUrl")
 
   it should "find all commits to review for given user only" taggedAs(RequiresDb) in {
     // given

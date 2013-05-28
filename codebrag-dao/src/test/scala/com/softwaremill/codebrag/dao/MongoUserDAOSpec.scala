@@ -23,7 +23,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
       val salt = "salt" + i
       val token = "token" + i
       val name = s"User Name $i"
-      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token))
+      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token, "avatarUrl"))
     }
   }
 
@@ -34,9 +34,10 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     val authentication = Authentication.basic(login, login)
     val name = "User Name"
     val token = "token"
+    val avatarUrl = "avatarUrl"
 
     // When
-    userDAO.add(User(authentication, name, email, token))
+    userDAO.add(User(authentication, name, email, token, avatarUrl))
 
     // then
     assert(userDAO.findByLoginOrEmail(login).isDefined)
@@ -49,9 +50,10 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     val authentication = Authentication.basic(login, login)
     val name = "User Name"
     val token = "token"
+    val avatarUrl = "avatarUrl"
 
     // When
-    userDAO.add(User(authentication, name, email, token))
+    userDAO.add(User(authentication, name, email, token, avatarUrl))
 
     // then
     assert(userDAO.findByLoginOrEmail(email).isDefined)
@@ -227,7 +229,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
   }
 
   it should "replace existing authentication" taggedAs (RequiresDb) in {
-    val auth = Authentication.github("u", "at")
+    val auth = Authentication.github("u", "at","avatarUrl")
 
     userDAO.changeAuthentication(1, auth)
 
@@ -240,7 +242,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
 
   it should "find user by its Id" taggedAs (RequiresDb) in {
     // given
-    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde")
+    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde","avatarUrl")
     userDAO.add(user)
 
     // when

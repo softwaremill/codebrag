@@ -3,12 +3,13 @@ package com.softwaremill.codebrag.dao
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import java.util.UUID
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.common.Utils
 
 trait UserDAO {
 
   protected def createAndSaveDummyUser(login: String): User = {
     val token = UUID.randomUUID().toString
-    val user = User(Authentication.basic(login, login), login, s"$login@sml.com", token)
+    val user = User(Authentication.basic(login, login), login,  s"$login@sml.com", token, Utils.defaultAvatarUrl(login))
     add(user)
     findByLoginOrEmail(login).get
   }
@@ -29,6 +30,6 @@ trait UserDAO {
 
   def findByUserName(userName: String): Option[User]
 
-  def changeAuthentication(id:ObjectId, authentication:Authentication)
+  def changeAuthentication(id: ObjectId, authentication: Authentication)
 
 }

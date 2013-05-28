@@ -18,7 +18,7 @@ class AuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar w
   val fixtureLogin: String = "someLogin"
   val fixturePassword: String = "somePassword"
   val fixtureUserId: ObjectId = ObjectIdTestUtils.oid(123)
-  val fixtureUser = User(fixtureUserId, Authentication.basic(fixtureLogin, fixturePassword), "name", "someLogin@sml.com", "token")
+  val fixtureUser = User(fixtureUserId, Authentication.basic(fixtureLogin, fixturePassword), "name", "someLogin@sml.com", "token", "avatarUrl")
 
   before {
     userDAOMock = mock[UserDAO]

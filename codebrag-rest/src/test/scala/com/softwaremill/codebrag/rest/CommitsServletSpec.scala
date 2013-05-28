@@ -9,7 +9,7 @@ import org.mockito.Mockito._
 import org.mockito.Matchers._
 import com.softwaremill.codebrag.dao.reporting.{CommentFinder, CommitFinder}
 import java.util.Date
-import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
+import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import org.bson.types.ObjectId
@@ -44,7 +44,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET /commits" should "should return commits pending review" in {
     val userId = new ObjectId
-    val user = UserJson(userId.toString, "user", "user@email.com", "token")
+    val user = UserJson(userId.toString, "user", "user@email.com", "token", "avatarUrl")
     userIsAuthenticatedAs(user)
     when(commitsListFinder.findCommitsToReviewForUser(userId)).thenReturn(SamplePendingCommits)
     get("/") {
@@ -55,7 +55,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET /commits?reviewed=false" should "should return commits pending review" in {
     val userId = new ObjectId
-    val user = UserJson(userId.toString, "user", "user@email.com", "token")
+    val user = UserJson(userId.toString, "user", "user@email.com", "token", "avatarUrl")
     userIsAuthenticatedAs(user)
     when(commitsListFinder.findCommitsToReviewForUser(userId)).thenReturn(SamplePendingCommits)
     get("/?filter=pending") {
@@ -66,7 +66,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET /commits?reviewed=true" should "should return all commits" in {
     val userId = new ObjectId
-    val user = UserJson(userId.toString, "user", "user@email.com", "token")
+    val user = UserJson(userId.toString, "user", "user@email.com", "token", "avatarUrl")
     userIsAuthenticatedAs(user)
     when(commitsListFinder.findAll(userId)).thenReturn(SamplePendingCommits)
     get("/?filter=all") {
@@ -79,7 +79,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   "DELETE /commits/:id" should "should remove commits from review list" in {
     val userId = new ObjectId
     val commitId = new ObjectId
-    val user = UserJson(userId.toString, "user", "user@email.com", "token")
+    val user = UserJson(userId.toString, "user", "user@email.com", "token", "avatarUrl")
     userIsAuthenticatedAs(user)
     delete(s"/$commitId") {
       verify(commitReviewTaskDao).delete(CommitReviewTask(commitId, userId))

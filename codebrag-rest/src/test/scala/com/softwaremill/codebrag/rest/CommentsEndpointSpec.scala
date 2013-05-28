@@ -104,7 +104,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
   }
 
   def currentUser(id: ObjectId) = {
-    User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde")
+    User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde", "avatarUrl")
   }
 
  class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[UserJson], val commentActivity: AddCommentActivity, val userDao: UserDAO, val commentListFinder: CommentFinder) extends CommentsEndpoint {

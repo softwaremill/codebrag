@@ -57,7 +57,7 @@ class MongoUserDAO extends UserDAO {
 
   private object UserImplicits {
     implicit def fromRecord(user: UserRecord): User = {
-      User(user.id.get, user.authentication.get, user.name.get, user.email.get, user.token.get)
+      User(user.id.get, user.authentication.get, user.name.get, user.email.get, user.token.get, user.avatarUrl.get)
     }
 
     implicit def fromRecords(users: List[UserRecord]): List[User] = {
@@ -74,6 +74,7 @@ class MongoUserDAO extends UserDAO {
         .token(user.token)
         .email(user.email)
         .authentication(user.authentication)
+        .avatarUrl(user.avatarUrl)
     }
 
     implicit def toRecord(authentication: Authentication): AuthenticationRecord = {
@@ -83,10 +84,11 @@ class MongoUserDAO extends UserDAO {
         .usernameLowerCase(authentication.usernameLowerCase)
         .token(authentication.token)
         .salt(authentication.salt)
+        .avatarUrl(authentication.avatarUrl)
     }
 
     implicit def fromRecord(record: AuthenticationRecord): Authentication = {
-      Authentication(record.provider.get, record.username.get, record.usernameLowerCase.get, record.token.get, record.salt.get)
+      Authentication(record.provider.get, record.username.get, record.usernameLowerCase.get, record.token.get, record.salt.get,record.avatarUrl.get)
     }
   }
 
@@ -102,6 +104,8 @@ private class UserRecord extends MongoRecord[UserRecord] with ObjectIdPk[UserRec
   object email extends LongStringField(this)
 
   object token extends LongStringField(this)
+
+  object avatarUrl extends LongStringField(this)
 
 }
 
@@ -121,6 +125,8 @@ private class AuthenticationRecord extends BsonRecord[AuthenticationRecord] {
   object token extends LongStringField(this)
 
   object salt extends LongStringField(this)
+
+  object avatarUrl extends LongStringField(this)
 
 }
 

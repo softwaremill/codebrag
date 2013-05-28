@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.common
 
 import org.joda.time.DateTime
-import org.joda.time.format.{ DateTimeFormatter, DateTimeFormat }
+import org.joda.time.format.DateTimeFormat
 
 object Utils {
 
@@ -40,4 +40,7 @@ object Utils {
     DateFormat.print(dateTime)
   }
 
+  def defaultAvatarUrl(email: String): String = {
+    s"http://www.gravatar.com/avatar/${md5(email)}.png"
+  }
 }

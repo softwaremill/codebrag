@@ -31,7 +31,7 @@ class GitHubAuthService {
     val client = new GitHubClient().setOAuth2Token(accessToken.access_token)
     val userService = new UserService(client)
     val user = userService.getUser
-    GitHubUser(user.getLogin, user.getName, readEmail(user, userService))
+    GitHubUser(user.getLogin, user.getName, readEmail(user, userService), user.getAvatarUrl)
   }
 
   def readEmail(user: User, service: UserService) = {
@@ -45,4 +45,4 @@ class GitHubAuthService {
 
 case class AccessToken(access_token: String, token_type: String)
 
-case class GitHubUser(login: String, name: String, email: String)
+case class GitHubUser(login: String, name: String, email: String, avatarUrl: String)

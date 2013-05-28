@@ -9,8 +9,8 @@ class CommitInfoSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatcher
 
   it should "create review tasks for all users except commit author" in {
     // given
-    val commitAuthor = User(new ObjectId, Authentication.basic("user", "pass"), "John Doe", "john@doe.com", "123")
-    val otherUser = User(new ObjectId, Authentication.basic("user2", "pass2"), "Mary Smith", "mary@smith.com", "456")
+    val commitAuthor = User(new ObjectId, Authentication.basic("user", "pass"), "John Doe", "john@doe.com", "123", "avatarUrl")
+    val otherUser = User(new ObjectId, Authentication.basic("user2", "pass2"), "Mary Smith", "mary@smith.com", "456", "avatarUrl")
     val commit = CommitInfoAssembler.randomCommit.withAuthorName(commitAuthor.name).get
 
     // when

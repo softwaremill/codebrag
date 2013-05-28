@@ -139,8 +139,8 @@ trait FollowupServiceSpecFixture {
 
   val Commit = CommitInfoAssembler.randomCommit.get
 
-  val BettyCommitAuthor = User(BettyCommitAuthorId, Authentication.basic("user", "password"), Commit.authorName, "user@email.com", "123213")
-  val JohnCommenter = User(JohnId, Authentication.basic("john", "doe"), "John", "john@doe.com", "456456")
+  val BettyCommitAuthor = User(BettyCommitAuthorId, Authentication.basic("user", "password"), Commit.authorName, "user@email.com", "123213", "avatarUrl")
+  val JohnCommenter = User(JohnId, Authentication.basic("john", "doe"), "John", "john@doe.com", "456456", "avatarUrl")
 
   val JohnComment = EntireCommitComment(new ObjectId(), Commit.id, JohnId, "user one comment", CommentDateTime)
   val MaryComment = EntireCommitComment(new ObjectId(), Commit.id, MaryId, "user two comment", CommentDateTime)

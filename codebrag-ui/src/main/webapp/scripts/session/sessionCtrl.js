@@ -23,8 +23,13 @@ angular.module('codebrag.session')
         };
 
         $scope.getLoggedUserName = function () {
-            if(authService.isAuthenticated()) {
+            if (authService.isAuthenticated()) {
                 return authService.loggedInUser.login;
+            }
+        };
+        $scope.getLoggedUserAvatar = function () {
+            if (authService.isAuthenticated()) {
+                return authService.loggedInUser.avatarUrl;
             }
         };
 

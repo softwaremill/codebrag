@@ -12,7 +12,7 @@ import com.softwaremill.codebrag.service.followups.FollowupService
 
 class FollowupsServletSpec extends AuthenticatableServletSpec {
 
-  val currentUser = UserJson(new ObjectId().toString, "user", "user@email.com", "123abc")
+  val currentUser = UserJson(new ObjectId().toString, "user", "user@email.com", "123abc", "avatarUrl")
   var followupFinder = mock[FollowupFinder]
   var followupService = mock[FollowupService]
 

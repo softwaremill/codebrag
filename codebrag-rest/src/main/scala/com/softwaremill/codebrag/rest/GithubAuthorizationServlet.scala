@@ -9,6 +9,7 @@ import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.auth.AuthenticationSupport
 import com.softwaremill.codebrag.service.config.CodebragConfiguration
+import com.softwaremill.codebrag.common.Utils
 
 
 class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService: GitHubAuthService, userDao: UserDAO)
@@ -28,7 +29,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
     val accessToken = ghAuthService.getAccessToken(code)
     logger.debug(s"Retrieved access token $accessToken")
     val user = ghAuthService.loadUserData(accessToken)
-    val auth: Authentication = Authentication.github(user.login, accessToken.access_token)
+    val auth: Authentication = Authentication.github(user.login, accessToken.access_token, user.avatarUrl)
     userDao.findByEmail(user.email) match {
       case Some(u) => {
         logger.debug(s"Changing Authentication for user $u.id")
@@ -36,7 +37,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
       }
       case None => {
         logger.debug("Creating new user")
-        userDao.add(User(auth, user.name, user.email, UUID.randomUUID().toString))
+        userDao.add(User(auth, user.name, user.email, UUID.randomUUID().toString,Utils.defaultAvatarUrl(user.email)))
       }
     }
     request.setAttribute(TempUserLogin, user.login)
