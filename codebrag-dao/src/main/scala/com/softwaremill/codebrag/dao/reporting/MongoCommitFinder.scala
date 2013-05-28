@@ -11,7 +11,7 @@ class MongoCommitFinder extends CommitFinder {
   override def findCommitsToReviewForUser(userId: ObjectId) = {
     val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
     val commitIds = userReviewTasks.map(_.commitId.get).toSet
-    val commits = projectionQuery.where(_.id in commitIds).orderDesc(_.committerDate).fetch()
+    val commits = projectionQuery.where(_.id in commitIds).orderAsc(_.committerDate).fetch()
     CommitListView(commits.map(recordToDto(_)))
   }
 
@@ -38,7 +38,7 @@ class MongoCommitFinder extends CommitFinder {
   }
 
   override def findAll(userId: ObjectId) = {
-    val commits = projectionQuery.orderDesc(_.committerDate).fetch()
+    val commits = projectionQuery.orderAsc(_.committerDate).fetch()
     val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
     val commitIds = userReviewTasks.map(_.commitId.get).toSet
     CommitListView(commits.map(recordToDto(_)).map(markNotPendingReview(_, commitIds)))

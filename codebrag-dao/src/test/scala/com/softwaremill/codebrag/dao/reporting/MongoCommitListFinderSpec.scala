@@ -58,7 +58,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTes
     foundCommitView(commitsFound, storedCommits, 2).pendingReview should be (false)
   }
 
-  it should "find commits starting from newest commit date" taggedAs(RequiresDb) in {
+  it should "find reviewable commits starting from oldest commit date" taggedAs(RequiresDb) in {
     // given
     val baseDate = DateTime.now()
     val olderCommit = CommitInfoAssembler.randomCommit.withSha("111").
@@ -76,8 +76,29 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTes
 
     //then
     pendingCommitList.commits.length should equal (2)
-    pendingCommitList.commits(0).sha should equal(newerCommit.sha)
-    pendingCommitList.commits(1).sha should equal(olderCommit.sha)
+    pendingCommitList.commits(0).sha should equal(olderCommit.sha)
+    pendingCommitList.commits(1).sha should equal(newerCommit.sha)
+  }
+
+  it should "find non-reviewable commits starting from oldest commit date" taggedAs(RequiresDb) in {
+    // given
+    val baseDate = DateTime.now()
+    val olderCommit = CommitInfoAssembler.randomCommit.withSha("111").
+      withCommitDate(baseDate).
+      withAuthorDate(baseDate.plusSeconds(11)).get
+    val newerCommit = CommitInfoAssembler.randomCommit.withSha("222").
+      withCommitDate(baseDate.plusSeconds(10)).
+      withAuthorDate(baseDate.plusSeconds(10)).get
+    commitInfoDao.storeCommit(newerCommit)
+    commitInfoDao.storeCommit(olderCommit)
+
+    // when
+    val pendingCommitList = commitListFinder.findAll(userId)
+
+    //then
+    pendingCommitList.commits.length should equal (2)
+    pendingCommitList.commits(0).sha should equal(olderCommit.sha)
+    pendingCommitList.commits(1).sha should equal(newerCommit.sha)
   }
 
   it should "find empty list if there are no commits to review for user" taggedAs(RequiresDb) in {
@@ -135,6 +156,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTes
     commitsPrepared.foreach{ commitInfoDao.storeCommit(_) }
     commitsPrepared.toList
   }
+
 
   def storeCommitReviewTasksFor(userId: ObjectId, commits: CommitInfo*) {
     commits.foreach{commit =>
