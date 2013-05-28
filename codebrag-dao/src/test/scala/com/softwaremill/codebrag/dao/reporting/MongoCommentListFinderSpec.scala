@@ -35,6 +35,7 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTe
   )
 
   override def beforeEach() {
+    super.beforeEach()
     commentListFinder = new MongoCommentFinder(userDao)
 
     StoredCommitComments.foreach(commentDao.save)

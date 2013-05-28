@@ -10,6 +10,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
   var commitInfoDAO: MongoCommitInfoDAO = _
 
   override def beforeEach() {
+    super.beforeEach()
     commitInfoDAO = new MongoCommitInfoDAO
   }
 

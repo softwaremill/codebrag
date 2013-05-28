@@ -24,6 +24,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
   val OtherCommentId = oid(30)
 
   override def beforeEach() {
+    super.beforeEach()
     followupDao = new MongoFollowupDAO
     commitInfoDao = new MongoCommitInfoDAO
     commitInfoDao.storeCommit(Commit)

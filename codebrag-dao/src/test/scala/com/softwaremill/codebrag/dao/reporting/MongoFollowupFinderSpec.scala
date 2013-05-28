@@ -1,8 +1,7 @@
 package com.softwaremill.codebrag.dao.reporting
 
-import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{ThreadDetails, Followup}
+import com.softwaremill.codebrag.domain.Followup
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
@@ -17,6 +16,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
   var followupFinder: FollowupFinder = _
 
   override def beforeEach() {
+    super.beforeEach()
     followupDao = new MongoFollowupDAO
     followupFinder = new MongoFollowupFinder
     commitInfoDao = new MongoCommitInfoDAO

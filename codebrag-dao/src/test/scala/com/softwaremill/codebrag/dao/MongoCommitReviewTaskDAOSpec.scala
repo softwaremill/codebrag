@@ -15,6 +15,7 @@ class MongoCommitReviewTaskDAOSpec extends FlatSpecWithMongo with ClearDataAfter
   val OtherUserId = ObjectIdTestUtils.oid(300)
 
   override def beforeEach() {
+    super.beforeEach()
     commitToReviewDao = new MongoCommitReviewTaskDAO
   }
 

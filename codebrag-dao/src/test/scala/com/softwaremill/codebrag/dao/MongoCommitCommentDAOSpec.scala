@@ -7,8 +7,9 @@ import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.builders.CommentAssembler._
+import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 
-class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEach with ShouldMatchers {
+class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 
   var commentDao: MongoCommitCommentDAO = _
 
@@ -16,7 +17,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with BeforeAndAfterEac
   val AnotherCommitId: ObjectId = oid(123)
 
   override def beforeEach() {
-    CommentRecord.drop
+    super.beforeEach()
     commentDao = new MongoCommitCommentDAO
   }
 

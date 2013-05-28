@@ -20,6 +20,7 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearDataA
   var notificationCountFinder: NotificationCountFinder = _
 
   override def beforeEach() {
+    super.beforeEach()
     notificationCountFinder = new MongoNotificationCountFinder
   }
 

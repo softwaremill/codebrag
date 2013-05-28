@@ -14,6 +14,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
   implicit def intSuffixToObjectId(suffix: Int): ObjectId = new ObjectId(userIdPrefix + suffix)
 
   override def beforeEach() {
+    super.beforeEach()
     userDAO = new MongoUserDAO
 
     for (i <- 1 to 3) {
