@@ -1,3 +1,3 @@
 #!/bin/sh
 
-java -Xms512m -Xmx512m -jar sbt-launch.jar container:start "~ compile"
+java -Xms512m -Xmx1024m -jar sbt-launch.jar container:start "~ compile"
