@@ -16,6 +16,8 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
 import org.mockito.Matchers
+import scala.util.Random
+import com.softwaremill.codebrag.common.PagingCriteria
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
@@ -43,32 +45,72 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   "GET /commits" should "should return commits pending review" in {
-    val userId = new ObjectId
-    val user = UserJson(userId.toString, "user", "user@email.com", "token", "avatarUrl")
-    userIsAuthenticatedAs(user)
-    when(commitsListFinder.findCommitsToReviewForUser(userId)).thenReturn(SamplePendingCommits)
+    val userId = givenStandardAuthenticatedUser()
+    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(0, 10))).thenReturn(SamplePendingCommits)
     get("/") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
     }
   }
 
-  "GET /commits?reviewed=false" should "should return commits pending review" in {
-    val userId = new ObjectId
-    val user = UserJson(userId.toString, "user", "user@email.com", "token", "avatarUrl")
-    userIsAuthenticatedAs(user)
-    when(commitsListFinder.findCommitsToReviewForUser(userId)).thenReturn(SamplePendingCommits)
+  "GET /commits?skip=-1" should "should return error status with message" in {
+    givenStandardAuthenticatedUser()
+    // when
+    get("/?skip=-1") {
+      status should be(400)
+      body should equal("skip value must be non-negative")
+    }
+  }
+
+  "GET /commits?limit=0" should "should return error status with message" in {
+    givenStandardAuthenticatedUser()
+    // when
+    get("/?limit=0") {
+      status should be(400)
+      body should equal("limit value must be positive")
+    }
+  }
+
+    "GET /commits?skip=5" should "should query for commits with proper skip value" in {
+    val userId = givenStandardAuthenticatedUser()
+    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(5, 10))).thenReturn(SamplePendingCommits)
+    get("/?skip=5") {
+      status should be(200)
+      body should equal(asJson(SamplePendingCommits))
+    }
+  }
+
+  "GET /commits?limit=22" should "should query for commits with proper limit value" in {
+    val userId = givenStandardAuthenticatedUser()
+    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(0, 22))).thenReturn(SamplePendingCommits)
+    get("/?limit=22") {
+      status should be(200)
+      body should equal(asJson(SamplePendingCommits))
+    }
+  }
+
+  "GET /commits?limit=22&skip=21" should "should query for commits with proper limit and skip values" in {
+    val userId = givenStandardAuthenticatedUser()
+    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(21, 22))).thenReturn(SamplePendingCommits)
+    get("/?limit=22&skip=21") {
+      status should be(200)
+      body should equal(asJson(SamplePendingCommits))
+    }
+  }
+
+  "GET /commits?filter=pending" should "should return commits pending review" in {
+    val userId = givenStandardAuthenticatedUser()
+    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(0, 10))).thenReturn(SamplePendingCommits)
+
     get("/?filter=pending") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
     }
   }
 
-  "GET /commits?reviewed=true" should "should return all commits" in {
-    val userId = new ObjectId
-    val user = UserJson(userId.toString, "user", "user@email.com", "token", "avatarUrl")
-    userIsAuthenticatedAs(user)
-    when(commitsListFinder.findAll(userId)).thenReturn(SamplePendingCommits)
+  "GET /commits?filter=all" should "should return all commits" in {
+    val userId = givenStandardAuthenticatedUser()
+    when(commitsListFinder.findAll(userId, PagingCriteria(0, 10))).thenReturn(SamplePendingCommits)
     get("/?filter=all") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
@@ -77,14 +119,19 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   "DELETE /commits/:id" should "should remove commits from review list" in {
-    val userId = new ObjectId
+    val userId = givenStandardAuthenticatedUser()
     val commitId = new ObjectId
-    val user = UserJson(userId.toString, "user", "user@email.com", "token", "avatarUrl")
-    userIsAuthenticatedAs(user)
     delete(s"/$commitId") {
       verify(commitReviewTaskDao).delete(CommitReviewTask(commitId, userId))
       status should be(200)
     }
+  }
+
+  private def givenStandardAuthenticatedUser(): ObjectId = {
+    val userId = new ObjectId
+    val user = UserJson(userId.toString, "user", "user@email.com", "token", "avatarUrl")
+    userIsAuthenticatedAs(user)
+    userId
   }
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])

@@ -38,6 +38,14 @@ class JsonServlet extends ScalatraServlet with JacksonJsonSupport with JValueRes
     }
   }
 
+  def extractPathIntOrHalt(key: String, default: Int, errorMsg: String, constraints: Int => Boolean): Int = {
+    val value = params.getAsOrElse(key, default)
+    if (!constraints(value)) {
+      halt(400, errorMsg)
+    }
+    else value
+  }
+
   def extractNotEmptyString(key: String) = {
     val value = (parsedBody \ key).extractOrElse[String](haltWithMissingKey(key))
     if (value.trim.isEmpty) haltWithMissingKey(key)

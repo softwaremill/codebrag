@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.common.ObjectIdGenerator
+import com.softwaremill.codebrag.common.{PagingCriteria, ObjectIdGenerator}
 import org.scalatra.NotFound
 import org.scalatra.swagger.SwaggerSupport
 import com.softwaremill.codebrag.dao.reporting._
@@ -23,12 +23,14 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
     haltIfNotAuthenticated
   }
 
-
   get("/", operation(getCommitsOperation)) {
     val filterOpt = params.get("filter")
+    val skip = extractPathIntOrHalt("skip", DefaultPaging.skip, "skip value must be non-negative", (_ >= 0))
+    val limit = extractPathIntOrHalt("limit", DefaultPaging.limit, "limit value must be positive", (_ > 0))
+
     filterOpt match {
-      case Some("all") => fetchAllCommits()
-      case _ => fetchCommitsPendingReview()
+      case Some("all") => fetchAllCommits(PagingCriteria(skip, limit))
+      case _ => fetchCommitsPendingReview(PagingCriteria(skip, limit))
     }
   }
 
@@ -37,7 +39,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
     implicit val idGenerator = new ObjectIdGenerator()
     val importer = importerFactory.createInstance(user.email)
     importer.importRepoCommits("softwaremill", "codebrag")
-    fetchCommitsPendingReview()
+    fetchCommitsPendingReview(DefaultPaging)
   }
 
   get("/:id") {
@@ -55,17 +57,22 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
     commitReviewTaksDao.delete(reviewTask)
   }
 
-  private def fetchCommitsPendingReview() = commitListFinder.findCommitsToReviewForUser(new ObjectId(user.id))
-  private def fetchAllCommits() = commitListFinder.findAll(new ObjectId(user.id))
+  private def fetchCommitsPendingReview(paging: PagingCriteria) = commitListFinder.findCommitsToReviewForUser(new ObjectId(user.id), paging)
+  private def fetchAllCommits(paging: PagingCriteria) = commitListFinder.findAll(new ObjectId(user.id), paging)
 }
 
 trait CommitsEndpointSwaggerDefinition extends SwaggerSupport {
+  val DefaultPaging = PagingCriteria(0, 10)
 
   val getCommitsOperation = apiOperation[CommitListView]("get")
     .summary("Gets all commits to review for current user ")
     .parameter(queryParam[String]("filter").description("What kind of commits should be fetched")
     .allowableValues("all", "pending")
     .defaultValue("pending").optional)
+    .parameter(queryParam[Int]("skip").description("Numbers of elements to skip")
+    .defaultValue(DefaultPaging.skip).optional)
+    .parameter(queryParam[Int]("limit").description("Maximum number of elements to return")
+    .defaultValue(DefaultPaging.limit).optional)
 
   val markCommitAsReviewed = apiOperation[Unit]("delete")
     .summary("Removes given commit from user list of commits remaining to review")

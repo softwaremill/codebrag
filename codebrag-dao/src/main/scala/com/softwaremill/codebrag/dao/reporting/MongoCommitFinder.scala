@@ -5,10 +5,11 @@ import com.foursquare.rogue.LiftRogue._
 import java.util.Date
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
+import com.softwaremill.codebrag.common.PagingCriteria
 
 class MongoCommitFinder extends CommitFinder {
 
-  override def findCommitsToReviewForUser(userId: ObjectId) = {
+  override def findCommitsToReviewForUser(userId: ObjectId, paging: PagingCriteria) = {
     val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
     val commitIds = userReviewTasks.map(_.commitId.get).toSet
     val commits = projectionQuery.where(_.id in commitIds).orderAsc(_.committerDate).fetch()
@@ -37,7 +38,7 @@ class MongoCommitFinder extends CommitFinder {
     CommitInfoRecord.select(_.id, _.sha, _.message, _.authorName, _.committerName, _.authorDate)
   }
 
-  override def findAll(userId: ObjectId) = {
+  override def findAll(userId: ObjectId, paging: PagingCriteria) = {
     val commits = projectionQuery.orderAsc(_.committerDate).fetch()
     val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
     val commitIds = userReviewTasks.map(_.commitId.get).toSet
