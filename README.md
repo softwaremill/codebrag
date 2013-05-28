@@ -19,3 +19,7 @@ Then fire `http://localhost:8000/#/commits?nobackend` in your browser. This ***?
 
 Files under `src/main/webapp/` can be now modified and results should be instantly visible in browser.
 
+Skipping slow tests
+---
+If you want to execute tests from sbt and skip slow cases requiring database, you can execute following command:
+`test-only * -- -l requiresDb`
