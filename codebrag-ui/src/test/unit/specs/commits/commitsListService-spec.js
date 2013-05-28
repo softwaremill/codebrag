@@ -96,12 +96,12 @@ describe("CommitsListService", function () {
         expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
     }));
 
-    it('should broadcast new number of reviewable commits after loading data data', inject(function(commitsListService) {
+    it('should broadcast new number of reviewable commits after loading data data', inject(function(commitsListService, events) {
         // Given
         var loadedCommits = [commit(1), commit(2), notReviewable(commit(3))];
         $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
         var listener = jasmine.createSpy('listener');
-        rootScope.$on('codebrag:commitCountChanged', listener);
+        rootScope.$on(events.commitCountChanged, listener);
 
         // When
         commitsListService.loadAllCommits();
@@ -111,12 +111,12 @@ describe("CommitsListService", function () {
         expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 2});
     }));
 
-    it('should broadcast event with count zero if no commits returned from server', inject(function (commitsListService) {
+    it('should broadcast event with count zero if no commits returned from server', inject(function (commitsListService, events) {
         // Given
         var loadedCommits = [];
         $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
         var listener = jasmine.createSpy('listener');
-        rootScope.$on('codebrag:commitCountChanged', listener);
+        rootScope.$on(events.commitCountChanged, listener);
 
         // When
         commitsListService.loadAllCommits();
@@ -127,13 +127,13 @@ describe("CommitsListService", function () {
         expect(listener.callCount).toBe(1)
     }));
 
-    it('should broadcast new commit count when deleting commit and getting next', inject(function (commitsListService) {
+    it('should broadcast new commit count when deleting commit and getting next', inject(function (commitsListService, events) {
         // Given
         var loadedCommits = commitArrayOfSize(3);
         givenServerReturnsAllCommits(commitsListService, loadedCommits);
         $httpBackend.expectDELETE('rest/commits/2').respond();
         var listener = jasmine.createSpy('listener');
-        rootScope.$on('codebrag:commitCountChanged', listener);
+        rootScope.$on(events.commitCountChanged, listener);
 
         // When
         commitsListService.removeCommitAndGetNext(2);
@@ -144,13 +144,13 @@ describe("CommitsListService", function () {
         //expect(listener.callCount).toBe(1)
     }));
 
-    it('should broadcast new commit count when deleting commit', inject(function (commitsListService) {
+    it('should broadcast new commit count when deleting commit', inject(function (commitsListService, events) {
         // Given
         var loadedCommits = commitArrayOfSize(3);
         givenServerReturnsAllCommits(commitsListService, loadedCommits);
         $httpBackend.expectDELETE('rest/commits/2').respond();
         var listener = jasmine.createSpy('listener');
-        rootScope.$on('codebrag:commitCountChanged', listener);
+        rootScope.$on(events.commitCountChanged, listener);
 
         // When
         commitsListService.removeCommit(2);

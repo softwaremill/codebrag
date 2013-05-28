@@ -1,19 +1,20 @@
 "use strict";
+angular.module('codebrag.events', []);
 
 angular.module('codebrag.common.services', []);
 angular.module('codebrag.common.filters', []);
-angular.module('codebrag.common.directives', ['codebrag.common.services']);
+angular.module('codebrag.common.directives', ['codebrag.common.services', 'codebrag.events']);
 angular.module('codebrag.common', ['codebrag.common.services', 'codebrag.common.directives', 'codebrag.common.filters']);
 
-angular.module('codebrag.auth', []);
+angular.module('codebrag.auth', ['codebrag.events']);
 
-angular.module('codebrag.session', ['ui.compat', 'codebrag.auth']);
-angular.module('codebrag.notifications', []);
+angular.module('codebrag.session', ['ui.compat', 'codebrag.auth', 'codebrag.events']);
+angular.module('codebrag.notifications', ['codebrag.events']);
 
-angular.module('codebrag.commits.comments', ['ui.compat']);
-angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments']);
+angular.module('codebrag.commits.comments', ['ui.compat', 'codebrag.events']);
+angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments', 'codebrag.events']);
 
-angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth']);
+angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events']);
 
 angular.module('codebrag', [
     'codebrag.auth',

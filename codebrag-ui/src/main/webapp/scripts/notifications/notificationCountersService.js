@@ -1,16 +1,16 @@
 angular.module('codebrag.notifications')
 
-    .service('notificationCountersService', function ($http, $rootScope) {
+    .service('notificationCountersService', function ($http, $rootScope, events) {
 
-        $rootScope.$on('codebrag:commitCountChanged', function(event, data) {
+        $rootScope.$on(events.commitCountChanged, function(event, data) {
             _updateCommits(data.commitCount)
         });
 
-        $rootScope.$on('codebrag:followupCountChanged', function(event, data) {
+        $rootScope.$on(events.followupCountChanged, function(event, data) {
             _updateFollowups(data.followupCount)
         });
 
-        $rootScope.$on('codebrag:loggedIn', function() {
+        $rootScope.$on(events.loggedIn, function() {
             _loadCountersFromServer()
         });
 

@@ -16,12 +16,12 @@ describe("Follow-ups list service", function () {
     }));
 
 
-    it('should broadcast update event after loading follow-ups', inject(function (followupsListService) {
+    it('should broadcast update event after loading follow-ups', inject(function (followupsListService, events) {
         // Given
         var loadedFollowups = followupArrayOfSize(3);
         $httpBackend.whenGET('rest/followups/').respond({followups:loadedFollowups});
         var listener = jasmine.createSpy('listener');
-        rootScope.$on('codebrag:followupCountChanged', listener);
+        rootScope.$on(events.followupCountChanged, listener);
 
         // When
         followupsListService.loadFollowupsFromServer();
@@ -32,7 +32,7 @@ describe("Follow-ups list service", function () {
         expect(listener.callCount).toBe(1)
     }));
 
-    it('should broadcast new number of follow-ups when removing', inject(function (followupsListService) {
+    it('should broadcast new number of follow-ups when removing', inject(function (followupsListService, events) {
         // Given
         var loadedFollowups = followupArrayOfSize(3);
         $httpBackend.whenGET('rest/followups/').respond({followups:loadedFollowups});
@@ -40,7 +40,7 @@ describe("Follow-ups list service", function () {
         $httpBackend.flush();
         $httpBackend.expectDELETE('rest/followups/1').respond();
         var listener = jasmine.createSpy('listener');
-        rootScope.$on('codebrag:followupCountChanged', listener);
+        rootScope.$on(events.followupCountChanged, listener);
 
         // When
         followupsListService.removeFollowup(1);
@@ -51,7 +51,7 @@ describe("Follow-ups list service", function () {
         expect(listener.callCount).toBe(1)
     }));
 
-    it('should broadcast new number of follow-ups when removing and getting next', inject(function (followupsListService) {
+    it('should broadcast new number of follow-ups when removing and getting next', inject(function (followupsListService, events) {
         // Given
         var loadedFollowups = followupArrayOfSize(3);
         $httpBackend.whenGET('rest/followups/').respond({followups:loadedFollowups});
@@ -59,7 +59,7 @@ describe("Follow-ups list service", function () {
         $httpBackend.flush();
         $httpBackend.expectDELETE('rest/followups/1').respond();
         var listener = jasmine.createSpy('listener');
-        rootScope.$on('codebrag:followupCountChanged', listener);
+        rootScope.$on(events.followupCountChanged, listener);
 
         // When
         followupsListService.removeFollowup(1);

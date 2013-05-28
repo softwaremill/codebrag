@@ -1,6 +1,6 @@
 angular.module('codebrag.commits.comments')
 
-    .directive('markdownCommentForm', function($q) {
+    .directive('markdownCommentForm', function($q, events) {
         var mdConverter = Markdown.getSanitizingConverter();
         var additionalArgsName = 'extraArgs';
         var closeableName = 'closeable';
@@ -38,7 +38,7 @@ angular.module('codebrag.commits.comments')
 
                 scope.closeForm = function() {
                     if(!!attrs[closeableName]) {
-                        scope.$emit('codebrag:closeForm');
+                        scope.$emit(events.closeForm);
                     }
                 };
 

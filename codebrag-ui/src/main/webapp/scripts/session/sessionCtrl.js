@@ -1,6 +1,6 @@
 angular.module('codebrag.session')
 
-    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, $state) {
+    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, $state, events) {
 
         $scope.user = {
             login: '',
@@ -50,7 +50,7 @@ angular.module('codebrag.session')
             authService.login($scope.user).then(null, function (response) {
                 clearPasswordField();
                 if (response.status === 401) {
-                    $rootScope.$broadcast('codebrag:httpAuthError', {status: 401, text: 'Invalid credentials'})
+                    $rootScope.$broadcast(events.httpAuthError, {status: 401, text: 'Invalid credentials'})
                 }
             });
         }

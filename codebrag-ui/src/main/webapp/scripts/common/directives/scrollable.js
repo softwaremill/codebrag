@@ -3,7 +3,7 @@ angular.module('codebrag.common.directives')
     // quick and dirty implementation of scrolling to id
     // with element highlight - will probably be changed together with new UI
 
-    .directive('scrollable', function() {
+    .directive('scrollable', function(events) {
         var pollingInterval = 10;
         var scrollDuration = 500;
         return {
@@ -25,7 +25,7 @@ angular.module('codebrag.common.directives')
                     }
                 }
                 setTimeout(scrollIfElementPresent, pollingInterval);
-                scope.$on('codebrag:scrollOnly', function() {
+                scope.$on(events.scrollOnly, function() {
                     scrollIfElementPresent();
                 });
             }

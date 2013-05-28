@@ -2,11 +2,11 @@
 
 angular.module('codebrag.followups')
 
-    .controller('FollowupListItemCtrl', function ($scope, $state, $stateParams, followupsListService, $rootScope) {
+    .controller('FollowupListItemCtrl', function ($scope, $state, $stateParams, followupsListService, $rootScope, events) {
 
         $scope.openFollowupDetails = function (followup) {
             if(_thisFollowupOpened(followup)) {
-                $rootScope.$broadcast('codebrag:scrollOnly');
+                $rootScope.$broadcast(events.scrollOnly);
             } else {
                 $state.transitionTo('followups.details', {followupId: followup.followupId, commentId: followup.comment.commentId})
             }

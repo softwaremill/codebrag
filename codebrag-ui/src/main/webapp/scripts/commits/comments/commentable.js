@@ -1,6 +1,6 @@
 angular.module('codebrag.commits.comments')
 
-    .directive('commentable', function($compile) {
+    .directive('commentable', function($compile, events) {
         var template = $('#inlineCommentForm').html();
         return {
             restrict: 'A',
@@ -18,7 +18,7 @@ angular.module('codebrag.commits.comments')
                     scope.$digest();
                 });
 
-                scope.$on('codebrag:closeForm', function(event) {
+                scope.$on(events.closeForm, function(event) {
                     event.stopPropagation();
                     _locateCommentFormRow().hide();
                 });

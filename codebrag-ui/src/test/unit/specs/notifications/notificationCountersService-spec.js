@@ -17,10 +17,10 @@ describe("Notification counters service", function () {
         _$httpBackend_.verifyNoOutstandingRequest();
     }));
 
-    it('should load data from server on logon event', inject(function (notificationCountersService) {
+    it('should load data from server on logon event', inject(function (notificationCountersService, events) {
         // Given
         $httpBackend.expectGET('rest/notificationCounts').respond({pendingCommitCount: 0, followupCount: 0});
-        rootScope.$broadcast("codebrag:loggedIn");
+        rootScope.$broadcast(events.loggedIn);
 
         // When
         notificationCountersService.counters();
@@ -29,7 +29,7 @@ describe("Notification counters service", function () {
         // Then expected server url called only once
     }));
 
-    it('should load counter values returned from server', inject(function (notificationCountersService) {
+    it('should load counter values returned from server', inject(function (notificationCountersService, events) {
         // Given
         var expectedCommitCount = 15;
         var expectedFollowupCount = 121;
@@ -37,7 +37,7 @@ describe("Notification counters service", function () {
                 pendingCommitCount: expectedCommitCount,
                 followupCount: expectedFollowupCount
             });
-        rootScope.$broadcast("codebrag:loggedIn");
+        rootScope.$broadcast(events.loggedIn);
 
         // When
         var counters = notificationCountersService.counters();
@@ -48,25 +48,25 @@ describe("Notification counters service", function () {
         expect(counters.followups).toEqual(expectedFollowupCount);
     }));
 
-    it('should correctly update counter values on commit counter change event', inject(function (notificationCountersService) {
+    it('should correctly update counter values on commit counter change event', inject(function (notificationCountersService, events) {
         // Given
         var expectedCommitCount = 15;
         var counters = notificationCountersService.counters();
 
         // When
-        rootScope.$broadcast('codebrag:commitCountChanged', {commitCount: expectedCommitCount});
+        rootScope.$broadcast(events.commitCountChanged, {commitCount: expectedCommitCount});
 
         // Then
         expect(counters.commits).toEqual(expectedCommitCount);
     }));
 
-    it('should correctly update counter values on follow-up counter change event', inject(function (notificationCountersService) {
+    it('should correctly update counter values on follow-up counter change event', inject(function (notificationCountersService, events) {
         // Given
         var expectedFollowupCount = 15;
         var counters = notificationCountersService.counters();
 
         // When
-        rootScope.$broadcast('codebrag:followupCountChanged', {followupCount: expectedFollowupCount});
+        rootScope.$broadcast(events.followupCountChanged, {followupCount: expectedFollowupCount});
 
         // Then
         expect(counters.followups).toEqual(expectedFollowupCount);

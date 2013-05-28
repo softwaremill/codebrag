@@ -1,6 +1,6 @@
 angular.module("codebrag.auth")
 
-    .directive("loginForm", function (authService) {
+    .directive("loginForm", function (authService, events) {
 
         return {
             restrict: "E",
@@ -10,7 +10,7 @@ angular.module("codebrag.auth")
                 scope.$watch(ifLoginRequired, function(newValue) {
                     scope.shouldDisplayLogin = newValue;
                 });
-                scope.$on('codebrag:loginRequired', function() {
+                scope.$on(events.loginRequired, function() {
                     scope.shouldDisplayLogin = true;
                 });
                 function ifLoginRequired() {
