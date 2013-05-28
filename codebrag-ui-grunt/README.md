@@ -9,15 +9,15 @@ Grunt has 3 commands:
 ```
 	grunt watch
 ```
-Watch changes in .styl files and compile into index.css. Run this command, when you start working with .styl file, to see the changes in browser immediately.
+Watch changes in .styl file and compile into index.css. Run this command, when you start working with .styl file, to see the changes in browser immediately.
 
 ```
 	grunt build
 ```
-Same as grunt watch, but compile index.css file once. Run this command, if you need to update index.css just once.
+Same as grunt watch, but compile index.css file just once. Run this command, if you need to update index.css just once.
 
 ```
 	grunt connect
 ```
-Run server. Go to http://localhost:8080/#/commits?nobackend to work with frontend.
+Run server. Go to [http://localhost:8080/#/commits?nobackend](http://localhost:8080/#/commits?nobackend) to work with frontend.
 Hint: run 'grunt watch' in the other terminal window to see all your updates immediately without compiling index.css by yourself. 
