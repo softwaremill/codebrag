@@ -1,0 +1,510 @@
+@import "normalize.min.css"
+@import "foundation.min.css"
+@import "nib"
+
+
+// COLORS:
+// #a27d69 second body-color used in info-lines
+// #f3720b orange color
+// #a18953 font color in header
+// #f7f5ef body bg color
+// #70493e commit-name color
+// #a27d69 username and time color
+
+
+
+// rewriting foundaton styles
+.row
+  max-width: 100%;
+
+.button
+  border: none;
+  box-shadow: none;
+  font-weight: normal;
+  margin: 0 1.15em 0 0;
+  padding: 0.77em 1.15em;
+  text-transform: uppercase;
+  &.secondary
+    color: white;
+    &:hover
+      color: white;
+  &.link
+    background: transparent;
+    color: #a27d69;
+    text-transform: none;
+    transition: color 250ms;
+    &:hover
+      background: transparent;
+      color: #f3720b;
+    &:active
+      background: #ece7d9;
+  &.big
+    padding: 1.15em 2.3em;
+    &.reviewed
+      background: #87d3bf;
+      float: right;
+      margin-right: 0;
+      margin-top: 1.15em;
+      &:hover
+        background: #5abfa3;
+  &:active
+    box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
+
+.button-group li:last-child a
+  margin-right: 0;
+
+table tr:nth-of-type(even)
+  background: white;
+
+table tr th, table tr td
+  font-size: 1em;
+  color: #2f0200;
+  padding: 0.23em 0.77em;
+
+
+
+// general styles
+html, body
+  height: 100%;
+  &::selection
+    background-color: #f3720b;
+
+body
+  background: #f7f5ef url('images/start-bg.png') no-repeat;
+  background-position: 65% center;
+  font-family: 'PT Sans', Tahoma, sans-serif;
+
+i
+  font-family: 'FontAwesome';
+  cursor: pointer;
+
+.clearfix:after
+  content: "."; 
+  visibility: hidden; 
+  display: block; 
+  height: 0; 
+  clear: right;
+
+
+
+// constructions
+.authored-box
+  overflow: hidden;
+  & .author-box
+    float: left;
+    vertical-align: top;
+  & .info-box
+    overflow-y: hidden;
+
+.authored-box .info-line
+  color: #a27d69;
+  font-size: 0.85em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  & .time
+    text-transform: uppercase;
+    margin-left: 0.4em;
+
+.comments-container
+  background: #f7f5ef;
+  border: 1px solid #d1cbb9;
+  font-family: 'PT Sans', Tahoma, sans-serif;
+  padding: 1.15em 1.15em 0;
+  & .comment
+    margin-bottom: 1.15em;
+    & .authored-box
+      margin-bottom: 0;
+      & .author-box img
+        width: 2.3em;
+      & .info-line
+        margin-bottom: 0.35em;
+      & .comment-body
+        background: white;
+        border: 1px solid #d1cbb9;
+        padding: 1.15em;
+    // .comment.write block
+    &.write
+      & .icon-info-sign
+        color: #d4c195;
+        font-size: 1.08em;
+        position: absolute;
+        right: 0;
+        top: 0;
+        visibility: hidden;
+      & .comment-body
+        padding: 0;
+        & textarea.comment-text
+          border: none;
+          box-shadow: none;
+          color: #2f0200;
+          cursor: text;
+          font-size: 1em;
+          height: auto;
+          margin: 0;
+          overflow: auto;
+          padding: 1.15em;
+          resize: vertical;
+          transition: min-height 500ms;
+      & .comment-action-btns
+        display: none;
+        float: right;
+      &.active
+        overflow-y: hidden;
+        position: relative;
+        & .icon-info-sign
+          visibility: visible;
+        & .comment-body
+          border: 1px solid #f3720b;
+          margin-bottom: 0.77em;
+          & textarea.comment-text
+            min-height: 100px;
+            visibility: visible;
+        & .comment-action-btns
+          display: block;
+
+
+
+// header styles
+.main-header
+  background: #300300;
+  color: #ad8245;
+  height: 5.38em;
+  & .logo
+    display: inline-block;
+    vertical-align: top;
+    margin: 1em 5em 0;
+    width: 127px;
+  & .user-info
+    float: right;
+    margin: 1.54em 1.54em 0 0;
+    vertical-align: top;
+    & .username
+      display: inline-block;
+      margin-top: 0.77em;
+      vertical-align: middle;
+      &:hover
+        color: #f3720b;
+    & img
+      float: right;
+      margin-left: 0.38em;
+      width: 2.3em;
+
+.main-nav
+  display: inline-block;
+  margin-bottom: -1px;
+  & .button
+    background: transparent;
+    color: #a18953;
+    font-weight: bold;
+    margin-bottom: -1px;
+    padding: 1.15em 0;
+    text-transform: uppercase;
+    width: 11.15em;
+    &:hover
+      color: #f3720b;
+    & .number
+      display: block;
+      font-size: 2.3em;
+      font-weight: normal;
+    &.active
+      background: #f7f5ef;
+      border-top: 0.39em solid #f3720b;
+      color: #75171b;
+      padding-top: 0.77em;
+
+
+
+// commits
+.commits
+  padding-bottom: 3.3em;
+  position: relative;
+  &.fixed
+    position: fixed;
+    width: 25%;
+    top: 0;
+
+.commits-sorting
+  padding: 1.15em 0 1.15em 2.7em;
+  text-align: center;
+  & .button.link
+    color: #2f0200;
+    text-transform: uppercase;
+    // &:hover
+    //   color: #f3720b;
+    //   text-decoration: none;
+
+.commits-container
+  position: relative;
+  &.scroll
+    overflow: hidden;
+    &:hover
+      overflow-y: scroll;
+
+.commit-container
+  border-top: 1px solid #d9d2c1;
+  padding: 1.15em 2.3em 1.15em 0.77em;
+  position: relative;
+  &:hover
+    background: white;
+    & i
+      display: inherit;
+  & i
+    color: #c1b28b;
+    display: none;
+    font-size: 1.2em;
+    margin-top: -0.5em;
+    position: absolute;
+    right: 0.6em;
+    top: 50%;
+  & .author-box img
+    height: 2.3em;
+    margin-right: 0.77em;
+    width: 2.3em;
+  & .commit-name
+    color: #70493e;
+    margin-bottom: 0.4em;
+    overflow: hidden;
+    text-transform: uppercase;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  &.reviewed .author-box
+    opacity: 0.4;
+  &.reviewed .info-box
+    opacity: 0.4;
+  &.active
+    background: white;
+    &:before
+      background: #f3720b;
+      content: "";
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0px;
+      width: .38em;
+      z-index: 1;
+    // &:after
+    //   background: green;
+    //   content: "";
+    //   height: 100%;
+    //   right: -2.8em;
+    //   position: absolute;
+    //   top: 0px;
+    //   width: 3.8em;
+    //   z-index: 1;
+    & i
+      display: block;
+
+.commits-count
+  // changed 5-23-2013 start
+  background: #f7f5ef;
+  // changed 5-23-2013 end
+  border-top: 1px solid #d9d2c1;
+  bottom: 0;
+  color: #a27d69;
+  padding: 1.15em 0;
+  text-align: center;
+  text-transform: uppercase;
+  // changed 5-23-2013 start
+  position: fixed;
+  width: 25%;
+  // changed 5-23-2013 end
+  // changed 5-27-2013 start
+  & span
+    margin-right: 3px;
+  // changed 5-27-2013 end
+
+
+
+// diff
+.diff
+  padding: 0.77em;
+  // changed 5-22-2013 start
+  z-index: 100;
+  // changed 5-22-2013 end
+  &.opened
+    position: absolute;
+    right: 0;
+    width: 100%;
+    transition: width 1000ms;
+
+.diff-container
+  background: white;
+  border: 1px solid #e4d9b8;
+  box-shadow: 0px 0px 7px 0px rgba(211, 196, 160, 0.7);
+  padding: 2.3em 1.15em 1.15em 2.3em;
+  position: relative;
+  & .authored-box 
+    margin-bottom: 2.3em;
+    & img
+      margin-right: 1.15em;
+      width: 3.85em;
+    & .commit-name
+      font-weight: bold;
+      line-height: 1.3;
+      margin-bottom: 0.4em;
+
+.toggle-diff-container-btn
+  background: white;
+  border: 1px solid #e4d9b8;
+  border-right: none;
+  box-sizing: content-box;
+  cursor: pointer;
+  height: 100%;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  top: -1px;
+  width: 2.2em;
+  z-index: 5;
+  transition: opacity 250ms, width 500ms, left 500ms;
+  &:hover
+    left: -0.77em;
+    opacity: 1;
+    width: 2.9em;
+  & i
+    color: #f3720b;
+    margin-left: 5px;
+    top: 45%;
+
+.diff-statistics
+  clear: left;
+  color: #f3720b;
+  margin-bottom: 1.15em;
+  text-transform: uppercase;
+
+// changed 5-24-2013 start
+.diff-table-wrapper
+  border: 1px solid #d1cbb9;
+  margin-bottom: 2.3em;
+  overflow-x: auto;
+  overflow-y: hidden;
+// changed 5-24-2013 end
+
+.diff-file-container
+  // changed 5-24-2013 start
+  border: none;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+  margin: 0;
+  // changed 5-24-2013 end
+  width: 100%;
+  & thead
+    background: #f3f0e8;
+    // changed 5-24-2013 start
+    border-bottom: 1px solid #d1cbb9;
+    // changed 5-24-2013 end
+    & th
+      padding: 0.77em 1.15em;
+  & tbody .diff-line-code
+    white-space: pre;
+  & .diff-line-num
+    border-right: 1px solid #e5e5e5;
+    line-height: 1.125em
+    padding: 0;
+    text-align: right;
+    width: 1%;
+    & .button
+      background: transparent;
+      border: none;
+      line-height: inherit;
+      margin: 0;
+      padding: 0.23em 0;
+      position: relative;
+      &.comment
+        background: transparent;
+      & .diff-line-num-content
+        color: #aaaaaa;
+        margin: 0 0.77em;
+        vertical-align: middle;
+      & i
+        opacity: 0;
+        position: absolute;
+        left: 50%;
+        margin-left: -0.5em;
+        top: 50%;
+        margin-top: -0.5em;
+  & tr.removed
+    background: #ffdddd;
+    & td.diff-line-num
+      background: #f7c8c8;
+      border-color: #e9aeae;
+      & .diff-line-num-content
+        color: #bd8f8f;
+  & tr.added
+    background: #d4f7c1;
+    & td.diff-line-num
+      background: #bce7a5;
+      border-color: #b0cfa3;
+      & .diff-line-num-content
+        color: #95a88d;
+  & tr.header
+    background: #efefef;
+    & td.diff-line-num
+      background: #ededed;
+      border-color: #cdcdcd;
+      color: #ababab;
+  & tr.comments-container
+    background: #f7f5ef;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    & td
+      padding: 1.15em 1.15em 0;
+    
+tbody tr.comments-container:last-child
+  border-bottom: 1px solid #d1cbb9;
+
+tbody tr.comments-container:nth-child(3)
+  border-top: none;
+
+.diff-file-container tr:hover .diff-line-num .button
+  background: #f58022;
+  &:hover
+    background: #da670a;
+  &.comment
+    background: #87d3bf;
+    &:hover
+      background: #5abfa3;
+  & .diff-line-num-content
+    opacity: 0;
+  & i
+    opacity: 1;
+
+
+.like-commit
+  background: #f3f0e8;
+  color: #a27d69;
+  display: inline-block;
+  margin-bottom: 0.38em;
+  padding-right: 1.15em;
+  & .like.button
+    padding: .4em 1.15em 0.25em;
+  & span
+    display: inline-block;
+    margin-top: .3em;
+    text-transform: uppercase;
+    vertical-align: top;
+
+// What are these for? start
+.scrolled-to
+  background: #f58022;
+  
+.scroll-to
+  background: #f7f5ef;
+  transition: background 1s linear; 
+// What are these for? start
+
+
+// for medium screens
+@media all and (max-width: 1279px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+// for super-big screens
+@media all and (min-width: 1280px) {
+  html {
+    font-size: 16px;
+  }
+}
