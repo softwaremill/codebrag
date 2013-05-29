@@ -99,15 +99,14 @@ i {
 }
 .authored-box .info-line {
   color: #a27d69;
-  font-size: 0.85em;
+  font-size: 0.86em;
   overflow: hidden;
   -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .authored-box .info-line .time {
-  text-transform: uppercase;
-  margin-left: 0.4em;
+  margin-left: 0.3em;
 }
 .comments-container {
   background: #f7f5ef;
@@ -128,9 +127,10 @@ i {
   margin-bottom: 0.35em;
 }
 .comments-container .comment .authored-box .comment-body {
-  background: #fff;
-  border: 1px solid #d1cbb9;
-  padding: 1.15em;
+  padding: 0.77em;
+}
+.comments-container .comment .authored-box .comment-body p:last-child {
+  margin-bottom: 0;
 }
 .comments-container .comment.write .icon-info-sign {
   color: #d4c195;
@@ -153,7 +153,7 @@ i {
   height: auto;
   margin: 0;
   overflow: auto;
-  padding: 1.15em;
+  padding: 0.77em;
   resize: vertical;
   -webkit-transition: min-height 500ms;
   -moz-transition: min-height 500ms;
@@ -177,7 +177,7 @@ i {
   margin-bottom: 0.77em;
 }
 .comments-container .comment.write.active .comment-body textarea.comment-text {
-  min-height: 100px;
+  min-height: 70px;
   visibility: visible;
 }
 .comments-container .comment.write.active .comment-action-btns {
@@ -256,6 +256,10 @@ i {
   color: #2f0200;
   text-transform: uppercase;
 }
+.commits-sorting .button.link:hover {
+  color: #f3720b;
+  text-decoration: none;
+}
 .commits-container {
   position: relative;
 }
@@ -293,9 +297,9 @@ i {
 }
 .commit-container .commit-name {
   color: #70493e;
+  font-weight: bold;
   margin-bottom: 0.4em;
   overflow: hidden;
-  text-transform: uppercase;
   -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -98,13 +98,12 @@ i
 
 .authored-box .info-line
   color: #a27d69;
-  font-size: 0.85em;
+  font-size: 0.86em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   & .time
-    text-transform: uppercase;
-    margin-left: 0.4em;
+    margin-left: 0.3em;
 
 .comments-container
   background: #f7f5ef;
@@ -120,9 +119,11 @@ i
       & .info-line
         margin-bottom: 0.35em;
       & .comment-body
-        background: white;
-        border: 1px solid #d1cbb9;
-        padding: 1.15em;
+        // background: white;
+        // border: 1px solid #d1cbb9;
+        padding: 0.77em;
+        & p:last-child
+          margin-bottom: 0;
     // .comment.write block
     &.write
       & .icon-info-sign
@@ -143,7 +144,7 @@ i
           height: auto;
           margin: 0;
           overflow: auto;
-          padding: 1.15em;
+          padding: 0.77em;
           resize: vertical;
           transition: min-height 500ms;
       & .comment-action-btns
@@ -158,7 +159,7 @@ i
           border: 1px solid #f3720b;
           margin-bottom: 0.77em;
           & textarea.comment-text
-            min-height: 100px;
+            min-height: 70px;
             visibility: visible;
         & .comment-action-btns
           display: block;
@@ -230,9 +231,9 @@ i
   & .button.link
     color: #2f0200;
     text-transform: uppercase;
-    // &:hover
-    //   color: #f3720b;
-    //   text-decoration: none;
+    &:hover
+      color: #f3720b;
+      text-decoration: none;
 
 .commits-container
   position: relative;
@@ -264,9 +265,9 @@ i
     width: 2.3em;
   & .commit-name
     color: #70493e;
+    font-weight: bold;
     margin-bottom: 0.4em;
     overflow: hidden;
-    text-transform: uppercase;
     text-overflow: ellipsis;
     white-space: nowrap;
   &.reviewed .author-box
@@ -284,45 +285,28 @@ i
       top: 0px;
       width: .38em;
       z-index: 1;
-    // &:after
-    //   background: green;
-    //   content: "";
-    //   height: 100%;
-    //   right: -2.8em;
-    //   position: absolute;
-    //   top: 0px;
-    //   width: 3.8em;
-    //   z-index: 1;
     & i
       display: block;
 
 .commits-count
-  // changed 5-23-2013 start
   background: #f7f5ef;
-  // changed 5-23-2013 end
   border-top: 1px solid #d9d2c1;
   bottom: 0;
   color: #a27d69;
   padding: 1.15em 0;
   text-align: center;
   text-transform: uppercase;
-  // changed 5-23-2013 start
   position: fixed;
   width: 25%;
-  // changed 5-23-2013 end
-  // changed 5-27-2013 start
   & span
     margin-right: 3px;
-  // changed 5-27-2013 end
 
 
 
 // diff
 .diff
   padding: 0.77em;
-  // changed 5-22-2013 start
   z-index: 100;
-  // changed 5-22-2013 end
   &.opened
     position: absolute;
     right: 0;
@@ -374,26 +358,20 @@ i
   margin-bottom: 1.15em;
   text-transform: uppercase;
 
-// changed 5-24-2013 start
 .diff-table-wrapper
   border: 1px solid #d1cbb9;
   margin-bottom: 2.3em;
   overflow-x: auto;
   overflow-y: hidden;
-// changed 5-24-2013 end
 
 .diff-file-container
-  // changed 5-24-2013 start
   border: none;
   font-family: Consolas, "Liberation Mono", Courier, monospace;
   margin: 0;
-  // changed 5-24-2013 end
   width: 100%;
   & thead
     background: #f3f0e8;
-    // changed 5-24-2013 start
     border-bottom: 1px solid #d1cbb9;
-    // changed 5-24-2013 end
     & th
       color: #2f0200;
       font-size: 1em;
@@ -494,6 +472,7 @@ tbody tr.comments-container:nth-child(3)
     margin-top: .3em;
     text-transform: uppercase;
     vertical-align: top;
+
 
 // What are these for? start
 .scrolled-to
