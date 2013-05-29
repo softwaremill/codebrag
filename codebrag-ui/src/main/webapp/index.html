@@ -107,7 +107,7 @@
             </ul>
         </nav>
         <div class="user-info" ng-show="isLogged()"><span class="username"><a  ng-click="logout()">Logout</a></span></div>
-        <div class="user-info" ng-show="isLogged()"><span class="username"><a href="#/profile">Signed in as {{getLoggedUserName()}}</a></span><img src="{{getLoggedUserAvatar()}}"></div>
+        <div class="user-info" ng-show="isLogged()"><span class="username"><a href="#/profile">Signed in as {{(loggedInUser()).login}}</a></span><img src="{{(loggedInUser()).avatarUrl}}"></div>
     </header>
     <login-form></login-form>
     <section ui-view></section>
