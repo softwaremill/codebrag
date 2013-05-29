@@ -5,8 +5,8 @@
     <title>Codebrag</title>
 
     <link href="http://fonts.googleapis.com/css?family=PT+Sans:400,700|PT+Sans+Caption&amp;subset=cyrillic,latin-ext,latin" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="v2/fonts/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="v2/index.css">
+    <link rel="stylesheet" href="/fonts/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/styles/index.css">
 
     <!-- TODO: enable IE workarounds later -->
 
@@ -99,7 +99,7 @@
 
 <body ng-app="codebrag">
     <header class="main-header" ng-controller="SessionCtrl">
-        <a href="#" class="logo"><img src="v2/images/logo.png"></a>
+        <a href="#" class="logo"><img src="/images/logo.png"></a>
         <nav class="main-nav">
             <ul class="button-group" ng-controller="NotificationCountersCtrl" ng-show="isLogged()">
                 <li><a id="commits-btn" href="#/commits" class="button" active-for-states="commits,commits.list,commits.details"><span class="number">{{counters.commits}} </span>commits</a></li>

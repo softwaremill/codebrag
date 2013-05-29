@@ -13,7 +13,7 @@ module.exports = function(grunt) {
           compress: false
         },
         files: {
-          '../codebrag-ui/src/main/webapp/v2/index.css': 'styl/index.styl' // 1:1 compile
+          '../codebrag-ui/src/main/webapp/styles/index.css': 'styl/index.styl' // 1:1 compile
         }
       }
     },

@@ -72,7 +72,7 @@ body::selection {
   background-color: #f3720b;
 }
 body {
-  background: #f7f5ef url("images/start-bg.png") no-repeat;
+  background: #f7f5ef url("/images/start-bg.png") no-repeat;
   background-position: 65% center;
   font-family: 'PT Sans', Tahoma, sans-serif;
 }
