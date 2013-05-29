@@ -14,7 +14,7 @@
                 <a class="like button">
                     <span class="diff-line-num-content" ng-switch on="line.lineType">
                         <span ng-switch-when="header">...</span>
-                        <span ng-switch-when="added"></span>
+                        <span ng-switch-when="added">&nbsp;</span>
                         <span ng-switch-default>{{line.lineNumberOriginal}}</span>
                     </span>
                     <i class="icon-heart"></i>
@@ -24,7 +24,7 @@
                 <a class="comment button">
                     <span class="diff-line-num-content" ng-switch on="line.lineType">
                         <span ng-switch-when="header">...</span>
-                        <span ng-switch-when="removed"></span>
+                        <span ng-switch-when="removed">&nbsp;</span>
                         <span ng-switch-default>{{line.lineNumberChanged}}</span>
                     </span>
                     <i class="icon-pencil"></i>
