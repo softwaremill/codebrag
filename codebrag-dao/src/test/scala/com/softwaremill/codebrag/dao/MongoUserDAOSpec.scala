@@ -229,7 +229,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
   }
 
   it should "replace existing authentication" taggedAs (RequiresDb) in {
-    val auth = Authentication.github("u", "at","avatarUrl")
+    val auth = Authentication.github("u", "at")
 
     userDAO.changeAuthentication(1, auth)
 

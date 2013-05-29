@@ -84,11 +84,10 @@ class MongoUserDAO extends UserDAO {
         .usernameLowerCase(authentication.usernameLowerCase)
         .token(authentication.token)
         .salt(authentication.salt)
-        .avatarUrl(authentication.avatarUrl)
     }
 
     implicit def fromRecord(record: AuthenticationRecord): Authentication = {
-      Authentication(record.provider.get, record.username.get, record.usernameLowerCase.get, record.token.get, record.salt.get,record.avatarUrl.get)
+      Authentication(record.provider.get, record.username.get, record.usernameLowerCase.get, record.token.get, record.salt.get)
     }
   }
 
@@ -125,9 +124,6 @@ private class AuthenticationRecord extends BsonRecord[AuthenticationRecord] {
   object token extends LongStringField(this)
 
   object salt extends LongStringField(this)
-
-  object avatarUrl extends LongStringField(this)
-
 }
 
 private object AuthenticationRecord extends AuthenticationRecord with BsonMetaRecord[AuthenticationRecord]

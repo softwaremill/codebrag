@@ -29,7 +29,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
     val accessToken = ghAuthService.getAccessToken(code)
     logger.debug(s"Retrieved access token $accessToken")
     val user = ghAuthService.loadUserData(accessToken)
-    val auth: Authentication = Authentication.github(user.login, accessToken.access_token, user.avatarUrl)
+    val auth: Authentication = Authentication.github(user.login, accessToken.access_token)
     userDao.findByEmail(user.email) match {
       case Some(u) => {
         logger.debug(s"Changing Authentication for user $u.id")
@@ -37,7 +37,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
       }
       case None => {
         logger.debug("Creating new user")
-        userDao.add(User(auth, user.name, user.email, UUID.randomUUID().toString,Utils.defaultAvatarUrl(user.email)))
+        userDao.add(User(auth, user.name, user.email, UUID.randomUUID().toString,user.avatarUrl))
       }
     }
     request.setAttribute(TempUserLogin, user.login)

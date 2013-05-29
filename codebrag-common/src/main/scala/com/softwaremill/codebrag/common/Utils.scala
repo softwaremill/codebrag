@@ -39,8 +39,4 @@ object Utils {
   def format(dateTime: DateTime): String = {
     DateFormat.print(dateTime)
   }
-
-  def defaultAvatarUrl(email: String): String = {
-    s"http://www.gravatar.com/avatar/${md5(email)}.png"
-  }
 }

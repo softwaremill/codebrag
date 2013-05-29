@@ -10,18 +10,21 @@ object User {
   def apply(authentication: Authentication, name: String, email: String, token: String, avatarUrl: String) = {
     new User(null, authentication, name, email, token, avatarUrl)
   }
+  def defaultAvatarUrl(email: String): String = {
+    s"http://www.gravatar.com/avatar/${Utils.md5(email)}.png"
+  }
 }
 
-case class Authentication(provider: String, username: String, usernameLowerCase: String, token: String, salt: String, avatarUrl: String)
+case class Authentication(provider: String, username: String, usernameLowerCase: String, token: String, salt: String)
 
 object Authentication {
-  def github(username: String, accessToken: String, avatarUrl: String) = {
-    Authentication("GitHub", username, username.toLowerCase, accessToken, "", avatarUrl)
+  def github(username: String, accessToken: String) = {
+    Authentication("GitHub", username, username.toLowerCase, accessToken, "")
   }
 
   def basic(username: String, password: String) = {
     val salt = RichString.generateRandom(16)
-    Authentication("Basic", username, username.toLowerCase, encryptPassword(password, salt), salt, Utils.defaultAvatarUrl(username))
+    Authentication("Basic", username, username.toLowerCase, encryptPassword(password, salt), salt)
   }
 
   def encryptPassword(password: String, salt: String): String = {
@@ -31,5 +34,6 @@ object Authentication {
   def passwordsMatch(plainPassword: String, authentication: Authentication): Boolean = {
     authentication.token.equals(encryptPassword(plainPassword, authentication.salt))
   }
+
 }
 

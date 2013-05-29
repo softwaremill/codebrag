@@ -38,10 +38,4 @@ class UtilsSpec extends FlatSpec with ShouldMatchers {
   it should "generate string of length 64" in {
     sha256("admin", "secret") should have length (64)
   }
-
-  behavior of "avatarUrl"
-
-  it should "generate proper avatar url given an email address" in {
-    defaultAvatarUrl("krzysztof.grajek@googlemail.com") should be ("http://www.gravatar.com/avatar/902bcec23881c4d32f6b7a1f9797a061.png")
-  }
 }

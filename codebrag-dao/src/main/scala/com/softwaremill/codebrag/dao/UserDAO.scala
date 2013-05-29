@@ -9,7 +9,7 @@ trait UserDAO {
 
   protected def createAndSaveDummyUser(login: String): User = {
     val token = UUID.randomUUID().toString
-    val user = User(Authentication.basic(login, login), login,  s"$login@sml.com", token, Utils.defaultAvatarUrl(login))
+    val user = User(Authentication.basic(login, login), login,  s"$login@sml.com", token, User.defaultAvatarUrl(login))
     add(user)
     findByLoginOrEmail(login).get
   }
