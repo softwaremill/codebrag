@@ -247,6 +247,7 @@ i
   position: relative;
   &:hover
     background: white;
+    cursor: pointer;
     & i
       display: inherit;
   & i
@@ -394,27 +395,36 @@ i
     border-bottom: 1px solid #d1cbb9;
     // changed 5-24-2013 end
     & th
+      color: #2f0200;
+      font-size: 1em;
+      font-weight: normal;
       padding: 0.77em 1.15em;
-  & tbody .diff-line-code
+  & tbody
+    font-size: 13px;
+  & .diff-line-code
     white-space: pre;
   & .diff-line-num
-    border-right: 1px solid #e5e5e5;
+    border-right: 1px solid #d6d6d6;
     line-height: 1.125em
+    margin: 0;
     padding: 0;
     text-align: right;
     width: 1%;
     & .button
       background: transparent;
       border: none;
+      height: 100%;
       line-height: inherit;
       margin: 0;
-      padding: 0.23em 0;
+      padding: 0;
       position: relative;
+      width: 100%;
       &.comment
         background: transparent;
       & .diff-line-num-content
         color: #aaaaaa;
-        margin: 0 0.77em;
+        display: inline-block;
+        margin: 0.38em 0.77em;
         vertical-align: middle;
       & i
         opacity: 0;
@@ -450,7 +460,7 @@ i
     border-bottom: none;
     & td
       padding: 1.15em 1.15em 0;
-    
+
 tbody tr.comments-container:last-child
   border-bottom: 1px solid #d1cbb9;
 
@@ -492,7 +502,22 @@ tbody tr.comments-container:nth-child(3)
 .scroll-to
   background: #f7f5ef;
   transition: background 1s linear; 
-// What are these for? start
+
+#loginform
+  max-width: 500px;
+  margin: 0 auto;
+  margin-top: 70px;
+
+.text-error
+  color: #b94a48;
+
+.login-error
+  float: left;
+  text-align: right;
+  width: 100%;
+  font-size: 80%;
+  padding-bottom: 10px;
+// What are these for? end
 
 
 // for medium screens
@@ -500,11 +525,17 @@ tbody tr.comments-container:nth-child(3)
   html {
     font-size: 13px;
   }
+  .diff-file-container tr.comments-container {
+    font-size: 13px;
+  }
 }
 
 // for super-big screens
 @media all and (min-width: 1280px) {
   html {
+    font-size: 16px;
+  }
+  .diff-file-container tr.comments-container {
     font-size: 16px;
   }
 }
