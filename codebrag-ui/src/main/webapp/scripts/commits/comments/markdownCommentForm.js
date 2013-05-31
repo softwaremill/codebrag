@@ -1,6 +1,6 @@
 angular.module('codebrag.commits.comments')
 
-    .directive('markdownCommentForm', function($q, events) {
+    .directive('markdownCommentForm', function($q, events, authService) {
         var mdConverter = Markdown.getSanitizingConverter();
         var additionalArgsName = 'extraArgs';
         var closeableName = 'closeable';
@@ -17,6 +17,9 @@ angular.module('codebrag.commits.comments')
                         scope.preview = mdConverter.makeHtml(scope.content || 'Nothing to preview');
                     }
                 };
+                scope.username = authService.loggedInUser.login;
+
+                scope.avatarUrl = authService.loggedInUser.avatarUrl;
 
                 scope._submitComment = function(content) {
                     var submitArguments = [content];

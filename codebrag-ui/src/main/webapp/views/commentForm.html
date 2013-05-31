@@ -1,8 +1,8 @@
 <div class="comment write active"><i class="icon-info-sign"></i>
     <div class="authored-box">
-        <div class="author-box"><img src="images/avatar.png"></div>
+        <div class="author-box"><img src="{{avatarUrl}}"></div>
         <div class="info-box">
-            <div class="info-line"><span class="username">Your comment</span></div>
+            <div class="info-line"><span class="username">{{username}}:</span></div>
             <form name="newCommentForm">
                 <div class="comment-body" ng-hide="previewModeOn">
                         <textarea ng-hide="previewModeOn" ng-model="content" required class="comment-text" placeholder="Write a comment..."></textarea>
