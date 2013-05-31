@@ -19,7 +19,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTes
 
   val userId = ObjectIdTestUtils.oid(123)
   val user = User(userId, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "123", "avatarUrl")
-  val Paging = PagingCriteria(0, 100)
+  val DefaultFixturePaging = PagingCriteria(0, 5)
 
   it should "find all commits to review for given user only" taggedAs(RequiresDb) in {
     // given
@@ -27,10 +27,48 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTes
     storeCommitReviewTasksFor(userId, storedCommits(0), storedCommits(1))
 
     // when
-    val commitsFound = commitListFinder.findCommitsToReviewForUser(userId, Paging)
+    val commitsFound = commitListFinder.findCommitsToReviewForUser(userId, DefaultFixturePaging)
 
     // then
     commitsFound.commits should have size(2)
+  }
+
+  it should "find a page of reviewable commits and count their total number" taggedAs(RequiresDb) in {
+    // given
+    val storedCommits = prepareAndStoreSomeCommits(howMany = 15)
+    storeCommitReviewTasksFor(userId, storedCommits.take(14) : _*)
+
+    // when
+    val commitsFound = commitListFinder.findCommitsToReviewForUser(userId, DefaultFixturePaging)
+
+    // then
+    commitsFound.totalCount should equal(14)
+  }
+
+  it should "return correct items for skip 3, limit 2" taggedAs(RequiresDb) in {
+    // given
+    val storedCommits = prepareAndStoreSomeCommits(howMany = 15)
+    storeCommitReviewTasksFor(userId, storedCommits.take(14) : _*)
+
+    // when
+    val commitsFound = commitListFinder.findCommitsToReviewForUser(userId, PagingCriteria(3, 2))
+
+    // then
+    commitsFound.commits.size should equal(2)
+    commitsFound.commits(0).id should equal(storedCommits(3).id.toString)
+    commitsFound.commits(1).id should equal(storedCommits(4).id.toString)
+  }
+
+  it should "return no items for paging criteria beyond actual collection bounds" taggedAs(RequiresDb) in {
+    // given
+    val storedCommits = prepareAndStoreSomeCommits(howMany = 15)
+    storeCommitReviewTasksFor(userId, storedCommits.take(14) : _*)
+
+    // when
+    val commitsFound = commitListFinder.findCommitsToReviewForUser(userId, PagingCriteria(113, 2))
+
+    // then
+    commitsFound.commits should be('empty)
   }
 
   it should "find all commits for all users" taggedAs(RequiresDb) in {
@@ -39,10 +77,23 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTes
     storeCommitReviewTasksFor(userId, storedCommits(0), storedCommits(1))
 
     // when
-    val commitsFound = commitListFinder.findAll(userId, Paging)
+    val commitsFound = commitListFinder.findAll(userId)
 
     // then
     commitsFound.commits should have size(5)
+  }
+
+  it should "return correct total number of reviewable commits when fetching all" taggedAs(RequiresDb) in {
+    // given
+    val storedCommits = prepareAndStoreSomeCommits(howMany = 5)
+    val commitsToReview = storedCommits.take(2)
+    storeCommitReviewTasksFor(userId, commitsToReview : _*)
+
+    // when
+    val commitsFound = commitListFinder.findAll(userId)
+
+    // then
+    commitsFound.totalCount should equal(commitsToReview.size)
   }
 
   it should "mark commits that are not pending review" taggedAs(RequiresDb) in {
@@ -51,7 +102,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTes
     storeCommitReviewTasksFor(userId, storedCommits(0), storedCommits(1))
 
     // when
-    val commitsFound = commitListFinder.findAll(userId, Paging)
+    val commitsFound = commitListFinder.findAll(userId)
 
     // then
     commitsFound.commits should have size(3)
@@ -74,7 +125,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTes
     storeCommitReviewTasksFor(userId, olderCommit, newerCommit)
 
     // when
-    val pendingCommitList = commitListFinder.findCommitsToReviewForUser(userId, Paging)
+    val pendingCommitList = commitListFinder.findCommitsToReviewForUser(userId, DefaultFixturePaging)
 
     //then
     pendingCommitList.commits.length should equal (2)
@@ -95,7 +146,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTes
     commitInfoDao.storeCommit(olderCommit)
 
     // when
-    val pendingCommitList = commitListFinder.findAll(userId, Paging)
+    val pendingCommitList = commitListFinder.findAll(userId)
 
     //then
     pendingCommitList.commits.length should equal (2)
@@ -108,7 +159,7 @@ class MongoCommitListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTes
     prepareAndStoreSomeCommits(5)
 
     // when
-    val pendingCommitList = commitListFinder.findCommitsToReviewForUser(userId, Paging)
+    val pendingCommitList = commitListFinder.findCommitsToReviewForUser(userId, DefaultFixturePaging)
 
     //then
     pendingCommitList.commits should be ('empty)

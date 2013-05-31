@@ -16,13 +16,12 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
 import org.mockito.Matchers
-import scala.util.Random
 import com.softwaremill.codebrag.common.PagingCriteria
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
-  val SamplePendingCommits = CommitListView(List(CommitView("id", "abcd0123", "this is commit message", "mostr", "michal", new Date())))
+  val SamplePendingCommits = CommitListView(List(CommitView("id", "abcd0123", "this is commit message", "mostr", "michal", new Date())), 1)
   var commentActivity = mock[AddCommentActivity]
   var commitsInfoDao = mock[CommitInfoDAO]
   var commitsListFinder = mock[CommitFinder]
@@ -46,7 +45,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET /commits" should "should return commits pending review" in {
     val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(0, 10))).thenReturn(SamplePendingCommits)
+    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(0, 7))).thenReturn(SamplePendingCommits)
     get("/") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
@@ -73,7 +72,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
     "GET /commits?skip=5" should "should query for commits with proper skip value" in {
     val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(5, 10))).thenReturn(SamplePendingCommits)
+    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(5, 7))).thenReturn(SamplePendingCommits)
     get("/?skip=5") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
@@ -100,7 +99,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET /commits?filter=pending" should "should return commits pending review" in {
     val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(0, 10))).thenReturn(SamplePendingCommits)
+    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(0, 7))).thenReturn(SamplePendingCommits)
 
     get("/?filter=pending") {
       status should be(200)
@@ -110,7 +109,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET /commits?filter=all" should "should return all commits" in {
     val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findAll(userId, PagingCriteria(0, 10))).thenReturn(SamplePendingCommits)
+    when(commitsListFinder.findAll(userId)).thenReturn(SamplePendingCommits)
     get("/?filter=all") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))

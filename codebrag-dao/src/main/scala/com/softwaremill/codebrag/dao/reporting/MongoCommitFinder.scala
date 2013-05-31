@@ -6,14 +6,27 @@ import java.util.Date
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
 import com.softwaremill.codebrag.common.PagingCriteria
+import com.foursquare.rogue._
+import com.softwaremill.codebrag.dao.reporting.views.CommitListView
+import com.softwaremill.codebrag.dao.reporting.views.CommitView
+import scala.Some
+import com.foursquare.rogue.Query
+import com.softwaremill.codebrag.common.PagingCriteria
 
 class MongoCommitFinder extends CommitFinder {
 
+  private def totalReviewTaskCount(userId: ObjectId): Int = {
+    CommitReviewTaskRecord.where(_.userId eqs userId).count().toInt
+  }
+
   override def findCommitsToReviewForUser(userId: ObjectId, paging: PagingCriteria) = {
-    val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
+    val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).skip(paging.skip).limit(paging.limit).fetch()
     val commitIds = userReviewTasks.map(_.commitId.get).toSet
-    val commits = projectionQuery.where(_.id in commitIds).orderAsc(_.committerDate).fetch()
-    CommitListView(commits.map(recordToDto(_)))
+    val query = projectionQuery.where(_.id in commitIds).orderAsc(_.committerDate)
+    val commits = query.fetch()
+    val count = if (userReviewTasks.isEmpty) 0
+    else totalReviewTaskCount(userId)
+    CommitListView(commits.map(recordToDto(_)), count.toInt)
   }
 
   override def findCommitInfoById(commitIdStr: String, userId: ObjectId) = {
@@ -38,11 +51,13 @@ class MongoCommitFinder extends CommitFinder {
     CommitInfoRecord.select(_.id, _.sha, _.message, _.authorName, _.committerName, _.authorDate)
   }
 
-  override def findAll(userId: ObjectId, paging: PagingCriteria) = {
-    val commits = projectionQuery.orderAsc(_.committerDate).fetch()
+  override def findAll(userId: ObjectId) = {
     val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
+    val commits = projectionQuery.orderAsc(_.committerDate).fetch()
     val commitIds = userReviewTasks.map(_.commitId.get).toSet
-    CommitListView(commits.map(recordToDto(_)).map(markNotPendingReview(_, commitIds)))
+    val count = if (userReviewTasks.isEmpty) 0
+    else totalReviewTaskCount(userId)
+    CommitListView(commits.map(recordToDto(_)).map(markNotPendingReview(_, commitIds)), count)
   }
 
   private def markNotPendingReview(commitView: CommitView, commitIdsPendingReview: Set[ObjectId]): CommitView = {

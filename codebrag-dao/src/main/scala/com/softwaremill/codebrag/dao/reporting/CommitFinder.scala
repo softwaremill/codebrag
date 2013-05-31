@@ -10,7 +10,7 @@ import com.softwaremill.codebrag.common.PagingCriteria
 trait CommitFinder {
 
   def findCommitsToReviewForUser(userId: ObjectId, paging: PagingCriteria): CommitListView
-  def findAll(userId: ObjectId, paging: PagingCriteria): CommitListView
+  def findAll(userId: ObjectId): CommitListView
   def findCommitInfoById(commitIdStr: String, userId: ObjectId): Either[String, CommitView]
 
 }
