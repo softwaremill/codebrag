@@ -13,6 +13,8 @@
     <script type="text/javascript" src="scripts/vendor/jquery-1.8.2-min.js"></script>
     <script type="text/javascript" src="scripts/vendor/lodash.js"></script>
 
+    <script type="text/javascript" src="scripts/vendor/handlebars.js"></script>
+
     <script type="text/javascript" src="scripts/vendor/bootstrap.js"></script>
     <script type="text/javascript" src="scripts/vendor/moment.js"></script>
 
@@ -64,6 +66,7 @@
     <script type="text/javascript" src="scripts/commits/comments/commentsResource.js"></script>
     <script type="text/javascript" src="scripts/commits/comments/markdownCommentForm.js"></script>
     <script type="text/javascript" src="scripts/commits/comments/commentable.js"></script>
+    <script type="text/javascript" src="scripts/commits/commitDiff.js"></script>
 
 
     <!-- follow-ups -->
@@ -90,7 +93,7 @@
     <script type="text/ng-template" id="inlineCommentForm">
         <tr class="comments-container comment-form">
             <td colspan="3">
-                <markdown-comment-form action="submitInlineComment" extra-args="file,line,$index" closeable="true"></markdown-comment-form>
+                <markdown-comment-form action="submitInlineComment" extra-args="commentData" closeable="true"></markdown-comment-form>
             </td>
         </tr>
     </script>

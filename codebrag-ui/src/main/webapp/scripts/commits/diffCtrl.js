@@ -2,16 +2,17 @@ angular.module('codebrag.commits')
 
     .controller('DiffCtrl', function ($scope, Comments) {
 
-        $scope.submitInlineComment = function(content, file, line, lineIndex) {
+        $scope.submitInlineComment = function(content, commentData) {
             var comment = {
                 commitId: $scope.currentCommit.commit.id,
                 body: content,
-                fileName: file.filename,
-                lineNumber: lineIndex
+                fileName: commentData.fileName,
+                lineNumber: commentData.lineNumber
             };
-            return Comments.save(comment).$then(function (commentResponse) {
-                line.comments.push(commentResponse.data.comment);
-            });
+            console.log(comment);
+//            return Comments.save(comment).$then(function (commentResponse) {
+//                line.comments.push(commentResponse.data.comment);
+//            });
         };
 
         $scope.submitComment = function (content) {

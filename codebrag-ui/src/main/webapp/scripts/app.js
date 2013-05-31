@@ -65,7 +65,7 @@ angular.module('codebrag.commits')
             })
             .state('commits.details', {
                 url: '/{id}',
-                templateUrl: 'views/secured/commits/commitDetails.html'
+                templateUrl: 'views/secured/commits/commitDetailsOpt.html'
             })
     });
 
