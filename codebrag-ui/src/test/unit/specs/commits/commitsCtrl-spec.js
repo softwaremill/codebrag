@@ -24,6 +24,19 @@ describe("Commits Controller", function () {
         expect(spy.callCount).toBe(2);
     }));
 
+    it('should fetch additional commits', inject(function($controller, commitsListService) {
+        // Given
+        var loadPendingSpy = spyOn(commitsListService, 'loadCommitsPendingReview');
+        var loadMoreSpy = spyOn(commitsListService, 'loadMoreCommits');
+        $controller('CommitsCtrl', {$scope: scope});
+
+        // When
+        scope.loadMoreCommits();
+
+        expect(loadPendingSpy.callCount).toBe(1);
+        expect(loadMoreSpy.callCount).toBe(1);
+    }));
+
     it('should fetch all commits', inject(function($controller, commitsListService) {
         // Given
         spyOn(commitsListService, 'loadCommitsPendingReview');    // called on controller start

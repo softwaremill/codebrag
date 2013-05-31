@@ -33,11 +33,6 @@ describe("CommitsListService", function () {
         expect(commitsListService.allCommits().length).toBe(loadedCommits.length - 1);
     }));
 
-    function givenServerReturnsPendingCommits(commitsListService, loadedCommits) {
-        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
-        commitsListService.loadCommitsPendingReview();
-    }
-
     function givenServerReturnsAllCommits(commitsListService, loadedCommits) {
         $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
         commitsListService.loadAllCommits();
@@ -96,68 +91,119 @@ describe("CommitsListService", function () {
         expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
     }));
 
-    it('should broadcast new number of reviewable commits after loading data data', inject(function(commitsListService, events) {
-        // Given
-        var loadedCommits = [commit(1), commit(2), notReviewable(commit(3))];
-        $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
-        var listener = jasmine.createSpy('listener');
-        rootScope.$on(events.commitCountChanged, listener);
-
-        // When
-        commitsListService.loadAllCommits();
-        $httpBackend.flush();
-
-        // Then
-        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 2});
-    }));
-
-    it('should broadcast event with count zero if no commits returned from server', inject(function (commitsListService, events) {
-        // Given
-        var loadedCommits = [];
-        $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
-        var listener = jasmine.createSpy('listener');
-        rootScope.$on(events.commitCountChanged, listener);
-
-        // When
-        commitsListService.loadAllCommits();
-        $httpBackend.flush();
-
-        // Then
-        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 0});
-        expect(listener.callCount).toBe(1)
-    }));
-
-    it('should broadcast new commit count when deleting commit and getting next', inject(function (commitsListService, events) {
+    it('should broadcast an event when deleting commit and getting next', inject(function (commitsListService, events) {
         // Given
         var loadedCommits = commitArrayOfSize(3);
         givenServerReturnsAllCommits(commitsListService, loadedCommits);
         $httpBackend.expectDELETE('rest/commits/2').respond();
         var listener = jasmine.createSpy('listener');
-        rootScope.$on(events.commitCountChanged, listener);
+        rootScope.$on(events.commitReviewed, listener);
 
         // When
         commitsListService.removeCommitAndGetNext(2);
         $httpBackend.flush();
 
         // Then
-        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 2});
-        //expect(listener.callCount).toBe(1)
+        expect(listener).toHaveBeenCalled();
     }));
 
-    it('should broadcast new commit count when deleting commit', inject(function (commitsListService, events) {
+    it('should broadcast an event when deleting commit', inject(function (commitsListService, events) {
         // Given
         var loadedCommits = commitArrayOfSize(3);
         givenServerReturnsAllCommits(commitsListService, loadedCommits);
         $httpBackend.expectDELETE('rest/commits/2').respond();
         var listener = jasmine.createSpy('listener');
-        rootScope.$on(events.commitCountChanged, listener);
+        rootScope.$on(events.commitReviewed, listener);
 
         // When
         commitsListService.removeCommit(2);
         $httpBackend.flush();
 
         // Then
-        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 2});
+        expect(listener).toHaveBeenCalled();
+    }));
+
+    it('should load additional commits from server', inject(function (commitsListService) {
+        // Given
+        var loadedCommits = commitArrayOfSize(3);
+        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
+        commitsListService.loadCommitsPendingReview();
+        var additionalCommits = commitArrayOfSize(2);
+        $httpBackend.flush();
+        $httpBackend.whenGET('rest/commits?filter=pending&limit=7&skip=3').respond({commits:additionalCommits});
+
+        // When
+        commitsListService.loadMoreCommits();
+        $httpBackend.flush();
+
+        // Then
+        expect(commitsListService.allCommits().length).toBe(loadedCommits.length + additionalCommits.length);
+    }));
+
+    it('should broadcast an event after loading pending commits', inject(function (commitsListService, events) {
+        // Given
+        var loadedCommits = commitArrayOfSize(3);
+        $httpBackend.whenGET('rest/commits?filter=pending').respond({totalCount: 3, commits:loadedCommits});
+        var listener = jasmine.createSpy('listener');
+        rootScope.$on(events.commitCountChanged, listener);
+
+        // When
+        commitsListService.loadCommitsPendingReview();
+        $httpBackend.flush();
+
+        // Then
+        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 3})
+    }));
+
+    it('should broadcast an event after loading all commits', inject(function (commitsListService, events) {
+        // Given
+        var loadedCommits = commitArrayOfSize(3);
+        $httpBackend.whenGET('rest/commits?filter=all').respond({totalCount: 13, commits:loadedCommits});
+        var listener = jasmine.createSpy('listener');
+        rootScope.$on(events.commitCountChanged, listener);
+
+        // When
+        commitsListService.loadAllCommits();
+        $httpBackend.flush();
+
+        // Then
+        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 13});
+    }));
+
+    it('should broadcast an event after loading additional commits', inject(function (commitsListService, events) {
+        // Given
+        var loadedCommits = commitArrayOfSize(3);
+        $httpBackend.whenGET('rest/commits?filter=pending').respond({totalCount: 13, commits:loadedCommits});
+        commitsListService.loadCommitsPendingReview();
+        $httpBackend.flush();
+        var moreCommits = commitArrayOfSize(4);
+        $httpBackend.whenGET('rest/commits?filter=pending&limit=7&skip=3').respond({totalCount: 9, commits:moreCommits});
+        var listener = jasmine.createSpy('listener');
+        rootScope.$on(events.commitCountChanged, listener);
+
+        // When
+        commitsListService.loadMoreCommits();
+        $httpBackend.flush();
+
+        // Then
+        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 9});
+    }));
+
+    it('should not change current commits when no additional commits are returned', inject(function (commitsListService) {
+        // Given
+        var loadedCommits = commitArrayOfSize(3);
+        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
+        commitsListService.loadCommitsPendingReview();
+        var additionalCommits = [];
+        $httpBackend.flush();
+        $httpBackend.whenGET('rest/commits?filter=pending&limit=7&skip=3').respond({commits:additionalCommits});
+
+        // When
+        commitsListService.loadMoreCommits();
+        $httpBackend.flush();
+
+        // Then
+        expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
     }));
 
     it('should call server to sync commits and add new ones to model', inject(function (commitsListService) {

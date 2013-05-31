@@ -4,19 +4,11 @@ angular.module('codebrag.commits')
 
         {
             modes: {
-                all: {
-                    name: "All",
-                    value: 'all'
-                },
-                pending: {
-                    name: "Pending review",
-                    value: 'pending'
-                }
+                all: 'all',
+                pending: 'pending'
             },
+            current: 'pending',
 
-            current: {
-                value: 'pending'
-            },
 
             setPendingMode: function() {
                 this.current = this.modes.pending;

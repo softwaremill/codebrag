@@ -18,6 +18,14 @@ codebrag.AsyncCollection = function() {
 
 codebrag.AsyncCollection.prototype = {
 
+    addElements: function(promise) {
+        var self = this;
+        return promise.then(function(receivedCollection) {
+            self.elements = self.elements.concat(receivedCollection);
+            return self.elements;
+        });
+    },
+
     /**
      * Fills collection with elements returned by a promise.
      * @param promise a promise which should return an array of elements.

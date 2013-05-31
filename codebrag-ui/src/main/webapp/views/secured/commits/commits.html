@@ -20,7 +20,7 @@
             </div>
             <!--commit info end-->
         </div>
-        <div class="commits-count">6 more</div>
+        <div class="commits-count" ng-show="canLoadMore()" ng-click="loadMoreCommits()">load more</div>
     </div>
     <div class="diff large-9 columns" ui-view>
     </div>

@@ -1,42 +1,37 @@
 angular.module('codebrag.commits')
 
-    .factory('commitsListService', function($resource, $q, $http, Commits, $rootScope) {
+    .factory('commitsListService', function($resource, $q, $http, Commits, $rootScope, commitLoadFilter, events) {
+
+        var MAX_LOAD_COMMIT_COUNT = 7;
 
         var commits = new codebrag.AsyncCollection();
 
-        var commitsFilter = {
-            ALL_COMMITS: 'all',
-            PENDING_COMMITS: 'pending',
-            current: this.PENDING_COMMITS,
-
-            isEnabled: function() {
-                return this.current === this.PENDING_COMMITS;
-            },
-
-            disableFilter: function() {
-                this.current = this.ALL_COMMITS;
-            },
-
-            enableFilter: function() {
-                this.current = this.PENDING_COMMITS;
-            }
-
-        };
-
         function loadCommitsPendingReview() {
-            commitsFilter.enableFilter();
+            commitLoadFilter.setPendingMode();
             return _loadCommits();
         }
 
         function loadAllCommits() {
-            commitsFilter.disableFilter();
+            commitLoadFilter.setAllMode();
             return _loadCommits();
         }
 
+        function loadMoreCommits() {
+            var request = {
+                filter: commitLoadFilter.current,
+                skip: commits.elements.length,
+                limit: MAX_LOAD_COMMIT_COUNT
+            };
+            var responsePromise = Commits.get(request).$then(function(response) {
+                _broadcastNewCommitCountEvent(response.data.totalCount);
+                return response.data.commits;
+            });
+            return commits.addElements(responsePromise);
+        }
+
         function _loadCommits() {
-            var responsePromise = Commits.get({filter: commitsFilter.current}).$then(function(response) {
-                var newCommitCount = _reviewableCount(response.data.commits);
-                _broadcastNewCommitCountEvent(newCommitCount);
+            var responsePromise = Commits.get({filter: commitLoadFilter.current}).$then(function (response) {
+                _broadcastNewCommitCountEvent(response.data.totalCount);
                 return response.data.commits;
             });
             return commits.loadElements(responsePromise);
@@ -45,8 +40,7 @@ angular.module('codebrag.commits')
         function syncCommits() {
             $http({method: 'POST', url: 'rest/commits/sync'}).success(function(response) {
                 commits.elements.length = 0;
-                var newCommitCount = _reviewableCount(response.commits);
-                _broadcastNewCommitCountEvent(newCommitCount);
+                _broadcastNewCommitCountEvent(response.totalCount);
                 _.forEach(response.commits, function(commit) {
                     commits.elements.push(commit);
                 });
@@ -75,10 +69,10 @@ angular.module('codebrag.commits')
         function removeCommit(commitId) {
             var responsePromise = Commits.remove({id: commitId}).$then();
             responsePromise.then(function (next) {
-                _broadcastNewCommitCountEvent(commits.elements.length - 1);
+                _broadcastCommitReviewedEvent();
                 return next;
             });
-            if (!commitsFilter.isEnabled()) {
+            if (commitLoadFilter.isAll()) {
                 markAsNotReviewable(commitId);
             } else {
                 commits.removeElement(_matchingId(commitId), responsePromise);
@@ -102,11 +96,11 @@ angular.module('codebrag.commits')
         function removeCommitAndGetNext(commitId) {
             var responsePromise = Commits.remove({id: commitId}).$then();
             responsePromise.then(function (next) {
-                _broadcastNewCommitCountEvent(commits.elements.length - 1);
+                _broadcastCommitReviewedEvent();
                 return next;
             });
             var getNextPromise;
-            if (!commitsFilter.isEnabled()) {
+            if (commitLoadFilter.isAll()) {
                 markAsNotReviewable(commitId);
                 getNextPromise = commits.getNextAfter(_matchingId(commitId), responsePromise);
             } else {
@@ -121,18 +115,17 @@ angular.module('codebrag.commits')
             });
         }
 
-        function _broadcastNewCommitCountEvent(newCommitCount) {
-            $rootScope.$broadcast("codebrag:commitCountChanged", {commitCount: newCommitCount})
+        function _broadcastNewCommitCountEvent(totalCount) {
+            $rootScope.$broadcast(events.commitCountChanged, {commitCount: totalCount})
         }
 
-        function _reviewableCount(commits) {
-            return _.filter(commits, function (commit) {
-                return commit.pendingReview
-            }).length
+        function _broadcastCommitReviewedEvent() {
+            $rootScope.$broadcast(events.commitReviewed)
         }
 
         return {
             loadCommitsPendingReview: loadCommitsPendingReview,
+            loadMoreCommits: loadMoreCommits,
             loadAllCommits: loadAllCommits,
             allCommits: allCommits,
             removeCommitAndGetNext: removeCommitAndGetNext,
