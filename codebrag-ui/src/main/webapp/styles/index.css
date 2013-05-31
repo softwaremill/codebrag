@@ -475,7 +475,13 @@ i {
   color: #aaa;
   display: inline-block;
   margin: 0.38em 0.77em;
+  height: 14px;
+  min-width: 1em;
   vertical-align: middle;
+}
+.diff-file-container .diff-line-num .button .diff-line-num-content span {
+  display: inline-block;
+  min-height: 14px;
 }
 .diff-file-container .diff-line-num .button i {
   opacity: 0;
