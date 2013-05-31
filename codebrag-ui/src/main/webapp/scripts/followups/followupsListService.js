@@ -1,6 +1,6 @@
 angular.module('codebrag.followups')
 
-    .factory('followupsListService', function($resource, $q, $http, $rootScope) {
+    .factory('followupsListService', function($resource, $q, $http, $rootScope, events) {
 
         var followups = new codebrag.AsyncCollection();
 
@@ -46,7 +46,7 @@ angular.module('codebrag.followups')
         }
 
         function _broadcastNewFollowupCountEvent(newFollowupCount) {
-            $rootScope.$broadcast("codebrag:followupCountChanged", {followupCount: newFollowupCount})
+            $rootScope.$broadcast(events.followupCountChanged, {followupCount: newFollowupCount})
         }
 
         return {

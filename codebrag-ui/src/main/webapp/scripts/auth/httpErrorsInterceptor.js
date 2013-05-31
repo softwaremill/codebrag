@@ -1,6 +1,6 @@
 angular.module("codebrag.auth")
 
-    .factory('httpErrorsInterceptor', function ($q, $location, $rootScope) {
+    .factory('httpErrorsInterceptor', function ($q, $location, $rootScope, events) {
 
         function success(response) {
             return response;
@@ -13,7 +13,7 @@ angular.module("codebrag.auth")
             }
             if (response.status !== 401) {
                 console.log("Got this response:", response);
-                $rootScope.$broadcast("codebrag:httpError", errorMessage);
+                $rootScope.$broadcast(events.httpError, errorMessage);
             }
             return $q.reject(response);
         }

@@ -1,6 +1,6 @@
 angular.module('codebrag.auth')
 
-    .factory('authService', function($http, httpRequestsBuffer, $q, $rootScope) {
+    .factory('authService', function($http, httpRequestsBuffer, $q, $rootScope, events) {
 
         var authService = {
 
@@ -36,7 +36,7 @@ angular.module('codebrag.auth')
                 var promise = $http.get('rest/users');
                 return promise.then(function(response) {
                     authService.loggedInUser = response.data;
-                    $rootScope.$broadcast("codebrag:loggedIn");
+                    $rootScope.$broadcast(events.loggedIn);
                     return $q.when(authService.loggedInUser);
                 });
             }
