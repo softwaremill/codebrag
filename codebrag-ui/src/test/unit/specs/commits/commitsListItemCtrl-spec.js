@@ -12,7 +12,7 @@ describe("CommitsListItemController", function () {
         // Given
         var scope = {};
         $controller('CommitsListItemCtrl', {$scope: scope});
-        spyOn($state, "transitionTo")
+        spyOn($state, "transitionTo");
 
         // When
         scope.openCommitDetails(selectedCommit);

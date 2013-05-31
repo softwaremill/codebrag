@@ -13,6 +13,30 @@ describe("Commits Controller", function () {
         scope = {};
     });
 
+    it('should transition to commit list state after switching to "all" mode', inject(function($controller, commitsListService, $state) {
+        // Given
+        spyOn($state, "transitionTo");
+        $controller('CommitsCtrl', {$scope: scope});
+
+        // When
+        scope.switchToAll();
+
+        //Then
+        expect($state.transitionTo).toHaveBeenCalledWith('commits.list');
+    }));
+
+    it('should transition to commit list state after switching to "pending" mode', inject(function($controller, commitsListService, $state) {
+        // Given
+        spyOn($state, "transitionTo");
+        $controller('CommitsCtrl', {$scope: scope});
+
+        // When
+        scope.switchToPending();
+
+        //Then
+        expect($state.transitionTo).toHaveBeenCalledWith('commits.list');
+    }));
+
     it('should fetch pending commits', inject(function($controller, commitsListService) {
         // Given
         var spy = spyOn(commitsListService, 'loadCommitsPendingReview');

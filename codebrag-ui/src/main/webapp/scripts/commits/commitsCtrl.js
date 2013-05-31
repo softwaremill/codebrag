@@ -4,21 +4,33 @@ angular.module('codebrag.commits')
 
         $scope.syncCommits = commitsListService.syncCommits;
 
-        $scope.loadAllCommits = function() {
+        $scope.switchToAll = function () {
+            $scope.loadAllCommits();
+            _switchStateToCommitList();
+        };
+
+        $scope.switchToPending = function () {
+            $scope.loadPendingCommits();
+            _switchStateToCommitList();
+        };
+
+        function _switchStateToCommitList() {
+            $state.transitionTo('commits.list');
+        }
+
+        $scope.loadAllCommits = function () {
             $scope.commits = commitsListService.loadAllCommits();
-            $state.transitionTo('commits.list');
         };
 
-        $scope.loadPendingCommits = function() {
+        $scope.loadPendingCommits = function () {
             $scope.commits = commitsListService.loadCommitsPendingReview();
-            $state.transitionTo('commits.list');
         };
 
-        $scope.canLoadMore = function() {
+        $scope.canLoadMore = function () {
             return !commitLoadFilter.isAll();
         };
 
-        $scope.loadMoreCommits = function() {
+        $scope.loadMoreCommits = function () {
             $scope.commits = commitsListService.loadMoreCommits();
         };
 
