@@ -10,6 +10,7 @@ angular.module('codebrag.auth')
                 var loginRequest = $http.post('rest/users', user, {bypassQueue: true});
                 return loginRequest.then(function(response) {
                     authService.loggedInUser = response.data;
+                    $rootScope.$broadcast(events.loggedIn);
                     httpRequestsBuffer.retryAllRequest();
                 });
             },
