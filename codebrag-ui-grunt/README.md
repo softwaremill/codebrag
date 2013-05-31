@@ -5,6 +5,11 @@ In terminal go to folder, where Grunt file is located and
 npm will run, if there is node.js installed on your machine.
 To install node.js go to [nodejs.org](http://nodejs.org/).
 
+Next, in order to install grunt-cli, use following command (verified on OS X):
+```
+	sudo npm install -g grunt-cli
+```
+
 Grunt has 3 commands:
 ```
 	grunt watch
