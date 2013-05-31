@@ -1,6 +1,7 @@
 package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.service.user.Authenticator
+import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import com.softwaremill.codebrag.AuthenticatableServletSpec
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
@@ -29,7 +30,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var commentListFinder = mock[CommentFinder]
   var userDao = mock[UserDAO]
   var commitReviewTaskDao = mock[CommitReviewTaskDAO]
-
+  val UserJson = someUser()
   val importerFactory = mock[GitHubCommitImportServiceFactory]
 
   def bindServlet {
@@ -127,10 +128,9 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   private def givenStandardAuthenticatedUser(): ObjectId = {
-    val userId = new ObjectId
-    val user = UserJson(userId.toString, "user", "user@email.com", "token", "avatarUrl")
+    val user = UserJson
     userIsAuthenticatedAs(user)
-    userId
+    new ObjectId(user.id)
   }
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])

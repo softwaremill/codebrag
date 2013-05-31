@@ -2,11 +2,10 @@ package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.AuthenticatableServletSpec
 import com.softwaremill.codebrag.service.user.Authenticator
+import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
-import org.bson.types.ObjectId
-
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
@@ -30,7 +29,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   }
 
   "GET /" should "return user information" in {
-    val currentUser = UserJson(new ObjectId().toString, "user", "user@email.com", "123abc","avatarUrl")
+    val currentUser = someUser()
     userIsAuthenticatedAs(currentUser)
     get("/") {
       status should be (200)

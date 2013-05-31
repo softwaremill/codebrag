@@ -175,7 +175,7 @@ object SmlCodebragBuild extends Build {
     "codebrag-rest",
     file("codebrag-rest"),
     settings = buildSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, smlCommonConfig))
-  ) dependsOn(service, domain, common)
+  ) dependsOn(service % "test->test;compile->compile", domain, common)
 
 
   val lintCustomSettings = lintSettingsFor(Test) ++ inConfig(Test)(Seq(
