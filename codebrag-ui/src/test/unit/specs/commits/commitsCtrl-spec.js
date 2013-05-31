@@ -71,4 +71,28 @@ describe("Commits Controller", function () {
         expect(scope.commits).toBe(pendingCommits);
     }));
 
+    it('should allow loading more commits in "pending" mode', inject(function($controller, commitsListService, commitLoadFilter) {
+        // Given
+        spyOn(commitLoadFilter, 'isAll').andReturn(false);
+        $controller('CommitsCtrl', {$scope: scope});
+
+        // When
+        var canLoad = scope.canLoadMore();
+
+        // Then
+        expect(canLoad).toBeTruthy();
+    }));
+
+    it('should not allow loading more commits in "all" mode', inject(function($controller, commitsListService, commitLoadFilter) {
+        // Given
+        spyOn(commitLoadFilter, 'isAll').andReturn(true);
+        $controller('CommitsCtrl', {$scope: scope});
+
+        // When
+        var canLoad = scope.canLoadMore();
+
+        // Then
+        expect(canLoad).toBeFalsy();
+    }));
+
 });
