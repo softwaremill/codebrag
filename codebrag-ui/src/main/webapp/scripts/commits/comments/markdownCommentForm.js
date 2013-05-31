@@ -17,7 +17,7 @@ angular.module('codebrag.commits.comments')
                         scope.preview = mdConverter.makeHtml(scope.content || 'Nothing to preview');
                     }
                 };
-                scope.username = authService.loggedInUser.login;
+                scope.username = authService.loggedInUser.fullName;
 
                 scope.avatarUrl = authService.loggedInUser.avatarUrl;
 
