@@ -1,41 +1,40 @@
 package com.softwaremill.codebrag.dao.reporting.views
 
-import com.softwaremill.codebrag.domain.CommitFileDiff
+import com.softwaremill.codebrag.domain.{DiffLine, CommitFileDiff}
 
 
-case class DiffLineWithCommentsView(line: String, lineNumberOriginal: Int, lineNumberChanged: Int, lineType: String, comments: List[SingleCommentView])
-case class CommitFileDiffWithCommentsView(filename: String, status: String, lines: List[DiffLineWithCommentsView])
+case class CommitDetailsWithCommentsView(commit: CommitView, diff: List[FileDiffView], comments: List[SingleCommentView], inlineComments: Map[String, Map[Int, List[SingleCommentView]]])
+case class FileDiffView(filename: String, status: String, lines: List[DiffLineView])
+case class DiffLineView(line: String, lineNumberOriginal: String, lineNumberChanged: String, lineType: String)
 
-case class CommitDetailsWithCommentsView(commit: CommitView, comments: List[SingleCommentView], files: List[CommitFileDiffWithCommentsView])
+
+object DiffLineView {
+  def fromDiffLine(diffLine: DiffLine) = {
+    DiffLineView(diffLine.line, diffLine.lineNumberOriginal, diffLine.lineNumberChanged, diffLine.lineType)
+  }
+
+  def apply(line: String, lineNumberOriginal: Int, lineNumberChanged: Int, lineType: String) = {
+    val lines = (lineNumberOriginal, lineNumberChanged) match {
+      case (-1, num) => ("", num.toString)
+      case (num, -1) => (num.toString, "")
+      case (orig, changed) => (orig.toString, changed.toString)
+    }
+    new DiffLineView(line, lines._1, lines._2, lineType)
+  }
+}
+
 
 object CommitDetailsWithCommentsView {
 
   def buildFrom(commit: CommitView, comments: CommentsView, diffs: List[CommitFileDiff]) = {
-    val filesWithComments = joinFilesWithComments(diffs, comments)
-    new CommitDetailsWithCommentsView(commit, comments.comments, filesWithComments)
+    CommitDetailsWithCommentsView(commit, buildDiffView(diffs), comments.comments, comments.inlineComments)
   }
 
-  private def joinFilesWithComments(diffs: List[CommitFileDiff], comments: CommentsView): List[CommitFileDiffWithCommentsView] = {
-    diffs.map(diff => {
-      val linesWithComments = joinCommentsWithLine(diff, comments.inlineComments)
-      CommitFileDiffWithCommentsView(diff.filename, diff.status, linesWithComments)
-    }).toList
-  }
-
-  private def joinCommentsWithLine(file: CommitFileDiff, comments: List[FileCommentsView]) = {
-    file.lines.view.zipWithIndex.map({case (lineValue, lineNumber) => {
-      val commentsForLine = findCommentsForLine(file.filename, lineNumber, comments)
-      DiffLineWithCommentsView(lineValue.line, lineValue.lineNumberOriginal, lineValue.lineNumberChanged, lineValue.lineType, commentsForLine)
-    }}).toList
-  }
-
-  private def findCommentsForLine(fileName: String, lineNumber: Int, comments: List[FileCommentsView]) = {
-    comments.find(_.fileName == fileName) match {
-      case Some(fileComments) => {
-        fileComments.lineComments.get(lineNumber).getOrElse(List[SingleCommentView]())
-      }
-      case None => List[SingleCommentView]()
-    }
+  def buildDiffView(diffs: List[CommitFileDiff]) = {
+    diffs.map({fileDiff =>
+      val lineViews  =fileDiff.lines.map(DiffLineView.fromDiffLine(_))
+      FileDiffView(fileDiff.filename, fileDiff.status, lineViews)
+    })
   }
 
 }

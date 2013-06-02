@@ -3,15 +3,13 @@ package com.softwaremill.codebrag.dao.reporting
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{FlatSpec, BeforeAndAfterEach}
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.domain.{DiffLine, CommitFileDiff}
 import com.softwaremill.codebrag.dao.reporting.views._
-import com.softwaremill.codebrag.dao.reporting.views.FileCommentsView
 import com.softwaremill.codebrag.domain.DiffLine
 import com.softwaremill.codebrag.dao.reporting.views.CommentsView
 import com.softwaremill.codebrag.domain.CommitFileDiff
 import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
 
-class CommitDetailsWithCommentsSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with CommentListFinderVerifyHelpers {
+class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with CommentListFinderVerifyHelpers {
 
   val Commit = CommitView("123", "123abc", "This is commit message", "John Doe", "John Doe", DateTime.now.toDate)
   val Lines = List(DiffLine("line one", 1, 2, "added"), DiffLine("line two", 2, 2, "added"))
@@ -19,21 +17,20 @@ class CommitDetailsWithCommentsSpec extends FlatSpec with BeforeAndAfterEach wit
 
   it should "have empty comments list when commit has no comments" in {
     // given
-    val comments = CommentsView(comments = Nil, inlineComments = Nil)
+    val comments = CommentsView(comments = Nil, inlineComments = Map())
 
     // when
     val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
 
     // then
     commitWithComments.comments should be('empty)
-    val lineComments = commitWithComments.files.head.lines.map(_.comments)
-    lineComments.foreach(_ should be('empty))
+    val lineComments = commitWithComments.inlineComments should be('empty)
   }
 
   it should "have comments when commit has some general comments" in {
     // given
     val generalComment = SingleCommentView("123", "Mary Smith", "Comment for commit", DateTime.now.toDate)
-    val comments = CommentsView(comments = List(generalComment), inlineComments = Nil)
+    val comments = CommentsView(comments = List(generalComment), inlineComments = Map())
 
     // when
     val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
@@ -46,16 +43,16 @@ class CommitDetailsWithCommentsSpec extends FlatSpec with BeforeAndAfterEach wit
     // given
     val lineCommentOne = SingleCommentView("123", "John Doe", "Line comment one", DateTime.now.toDate)
     val lineCommentTwo = SingleCommentView("456", "Mary Smith", "Line comment two", DateTime.now.toDate)
-    val fileComments = FileCommentsView("test.txt", Map(0 -> List(lineCommentOne), 1 -> List(lineCommentTwo)))
-    val comments = CommentsView(comments = Nil, inlineComments = List(fileComments))
+    val fileComments = Map("test.txt" -> Map(0 -> List(lineCommentOne), 1 -> List(lineCommentTwo)))
+    val comments = CommentsView(comments = Nil, inlineComments = fileComments)
 
     // when
     val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
 
     // then
-    val fileLines = commitWithComments.files.find(_.filename == "test.txt").get.lines
-    fileLines.find(_.line == "line one").get.comments should equal(List(lineCommentOne))
-    fileLines.find(_.line == "line two").get.comments should equal(List(lineCommentTwo))
+    val fileLines = commitWithComments.inlineComments("test.txt")
+    fileLines(0) should equal(List(lineCommentOne))
+    fileLines(1) should equal(List(lineCommentTwo))
   }
 
 }

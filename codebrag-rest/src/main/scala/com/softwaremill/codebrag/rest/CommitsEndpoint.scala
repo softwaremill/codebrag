@@ -10,7 +10,6 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.CommitReviewTaskDAO
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import com.softwaremill.codebrag.dao.reporting.views.{CommitListView, CommitDetailsWithCommentsView}
-import org.scalatra.swagger.SwaggerSupportSyntax.ParameterBuilder
 
 trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpointSwaggerDefinition {
 
@@ -76,10 +75,5 @@ trait CommitsEndpointSwaggerDefinition extends SwaggerSupport {
 
   val markCommitAsReviewed = apiOperation[Unit]("delete")
     .summary("Removes given commit from user list of commits remaining to review")
-    .parameter(pathParam[String]("id").description("Identifier of the commit").required)
-
-
-  val getFilesForCommit = apiOperation[List[CommitDetailsWithCommentsView]]("get")
-    .summary("Get a list of files with diffs")
     .parameter(pathParam[String]("id").description("Identifier of the commit").required)
 }

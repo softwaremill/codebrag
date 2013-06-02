@@ -6,10 +6,10 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.builders.CommentAssembler
-import com.softwaremill.codebrag.dao.reporting.views.{SingleCommentView, FileCommentsView}
+import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 
-class MongoCommentListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with CommentListFinderVerifyHelpers {
+class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with CommentListFinderVerifyHelpers {
 
   val userDao = new MongoUserDAO
   val commentDao = new MongoCommitCommentDAO
@@ -80,6 +80,7 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTe
     commentLineNumbersFor(fileComments, "Database.scala") should be(Set(12, 20))
     commentMessagesWithAuthorsFor(fileComments, "Database.scala", 12) should be(Set(("Possible NPE?", "Mary"), ("Nope", "John")))
     commentMessagesWithAuthorsFor(fileComments, "Database.scala", 20) should be(Set(("Refactor that", "John")))
+
   }
 
   it should "have comments ordered by date starting from the oldest" taggedAs (RequiresDb) in {
@@ -97,6 +98,7 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTe
 
     // then
     val fileComments = commentsView.inlineComments
+    val fileComments2 = commentsView.inlineComments
     orderedCommentMessagesFor(fileComments, "Exception.scala", 10) should be(List("You'd better refactor that", "Man, it's Monday"))
   }
 
@@ -105,24 +107,25 @@ class MongoCommentListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTe
 
 trait CommentListFinderVerifyHelpers {
 
-  def lineCommentsFor(fileComments: List[FileCommentsView], fileName: String) = {
-    fileComments.find(_.fileName == fileName).get.lineComments
+  def lineCommentsFor(fileComments: Map[String, Map[Int, List[SingleCommentView]]], fileName: String) = {
+    fileComments(fileName)
   }
 
-  def commentLineNumbersFor(fileComments: List[FileCommentsView], fileName: String) = {
+  def commentLineNumbersFor(fileComments: Map[String, Map[Int, List[SingleCommentView]]], fileName: String) = {
     lineCommentsFor(fileComments, fileName).map(_._1).toSet
   }
 
-  def commentMessagesWithAuthorsFor(fileComments: List[FileCommentsView], fileName: String, lineNumber: Int) = {
-    lineCommentsFor(fileComments, fileName).find(_._1 == lineNumber).get._2.map(comment => (comment.message, comment.authorName)).toSet
+  def commentMessagesWithAuthorsFor(fileComments: Map[String, Map[Int, List[SingleCommentView]]], fileName: String, lineNumber: Int) = {
+    lineCommentsFor(fileComments, fileName)(lineNumber).map(comment => (comment.message, comment.authorName)).toSet
   }
 
   def commentMessagesWithAuthorsFor(comments: List[SingleCommentView]) = {
     comments.map(comment => (comment.message, comment.authorName)).toSet
   }
 
-  def orderedCommentMessagesFor(fileComments: List[FileCommentsView], fileName: String, lineNumber: Int) = {
-    lineCommentsFor(fileComments, fileName).find(_._1 == lineNumber).get._2.map(comment => comment.message)
+  def orderedCommentMessagesFor(fileComments: Map[String, Map[Int, List[SingleCommentView]]], fileName: String, lineNumber: Int) = {
+    lineCommentsFor(fileComments, fileName)(lineNumber).map(comment => comment.message)
   }
 
 }
+

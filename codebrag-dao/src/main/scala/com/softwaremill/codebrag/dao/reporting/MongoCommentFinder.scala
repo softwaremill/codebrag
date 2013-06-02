@@ -4,7 +4,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.{UserDAO, MongoCommitCommentDAO, UserRecord}
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.domain.{CommentBase, InlineCommitComment, EntireCommitComment}
-import com.softwaremill.codebrag.dao.reporting.views.{SingleCommentView, FileCommentsView, CommentsView}
+import com.softwaremill.codebrag.dao.reporting.views.{SingleCommentView, CommentsView}
 
 class MongoCommentFinder(userDao: UserDAO) extends CommentFinder {
 
@@ -13,10 +13,10 @@ class MongoCommentFinder(userDao: UserDAO) extends CommentFinder {
     val dao = new MongoCommitCommentDAO
     val comments = dao.findCommentsForEntireCommit(commitId)
     val inlineComments = dao.findInlineCommentsForCommit(commitId)
-    CommentsView(comments = mapCommitCommentsToView(comments), inlineComments = mapInlineCommitCommentsToView(inlineComments))
+    CommentsView(comments = mapCommitCommentsToView(comments), inlineComments =  mapInlineCommitCommentsToView(inlineComments))
   }
 
-  private def mapInlineCommitCommentsToView(comments: List[InlineCommitComment]): List[FileCommentsView] = {
+  private def mapInlineCommitCommentsToView(comments: List[InlineCommitComment]): Map[String, Map[Int, List[SingleCommentView]]] = {
     val commentersCached = findAllCommentersFor(comments)
     val byFiles = comments.groupBy(_.fileName)
     val byFileAndLineNumber = byFiles.map(file => (file._1, file._2.groupBy(_.lineNumber)))
@@ -29,8 +29,8 @@ class MongoCommentFinder(userDao: UserDAO) extends CommentFinder {
           SingleCommentView(line.id.toString, authorName, line.message, line.postingTime.toDate)
         })
       }).toList
-      FileCommentsView(forFile._1, linesMap.toMap)
-    }).toList
+      (forFile._1, linesMap.toMap)
+    })
   }
 
   private def findAllCommentersFor(comments: List[CommentBase]): List[(ObjectId, String)] = {
