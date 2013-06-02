@@ -122,6 +122,10 @@ body {
   background-position: 65% center;
   font-family: 'PT Sans', Tahoma, sans-serif;
 }
+::selection {
+  background-color: #fcd01a;
+  color: #2f0200;
+}
 i {
   font-family: 'FontAwesome';
   cursor: pointer;
@@ -145,7 +149,7 @@ i {
 }
 .authored-box .info-line {
   color: #a27d69;
-  font-size: 0.86em;
+  font-size: 0.82em;
   overflow: hidden;
   -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
@@ -267,7 +271,7 @@ form .form-group span.text-error {
   background: #f0552f;
   bottom: 0.1em;
   color: #ffd8cf;
-  font-size: 0.85em;
+  font-size: 0.82em;
   padding: 0.2em;
   position: absolute;
   right: 0;
@@ -635,9 +639,6 @@ form .form-group span.text-error:after {
 tbody tr.comments-container:last-child {
   border-bottom: 1px solid #d1cbb9;
 }
-tbody tr.comments-container:nth-child(3) {
-  border-top: none;
-}
 .diff-file-container tr:hover .diff-line-num .button {
   background: #f58022;
 }
@@ -724,6 +725,22 @@ tbody tr.comments-container:nth-child(3) {
 .text-error {
   color: #e53b21;
 }
+.spinner {
+  display: none;
+  height: 24px;
+  margin-bottom: 1.15em;
+  position: relative;
+  width: 55px;
+  -webkit-animation: spinner 6600ms steps(30) infinite both;
+  -moz-animation: spinner 6600ms steps(30) infinite both;
+  -o-animation: spinner 6600ms steps(30) infinite both;
+  -ms-animation: spinner 6600ms steps(30) infinite both;
+  animation: spinner 6600ms steps(30) infinite both;
+}
+.spinner img {
+  position: absolute;
+  right: 0;
+}
 @media all and (max-width: 1279px) {
   html {
     font-size: 13px;
@@ -745,5 +762,50 @@ tbody tr.comments-container:nth-child(3) {
   }
   .diff-file-container tr.comments-container {
     font-size: 14px;
+  }
+}
+@-moz-keyframes spinner {
+  0% {
+    width: 55px;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+@-webkit-keyframes spinner {
+  0% {
+    width: 55px;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+@-o-keyframes spinner {
+  0% {
+    width: 55px;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+@-ms-keyframes spinner {
+  0% {
+    width: 55px;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+@keyframes spinner {
+  0% {
+    width: 55px;
+  }
+
+  100% {
+    width: 100%;
   }
 }
