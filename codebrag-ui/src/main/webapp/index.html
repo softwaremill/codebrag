@@ -93,7 +93,27 @@
     <script type="text/ng-template" id="inlineCommentForm">
         <tr class="comments-container comment-form">
             <td colspan="3">
-                <markdown-comment-form action="submitInlineComment" extra-args="commentData" closeable="true"></markdown-comment-form>
+                <markdown-comment-form action="submitInlineComment" extra-args="commentParams" closeable="true"></markdown-comment-form>
+            </td>
+        </tr>
+    </script>
+
+    <script type="text/ng-template" id="inlineComment">
+        <tr class="comments-container inline-comments-container">
+            <td colspan="3">
+                <!--inline comment start-->
+                <div class="comment" ng-repeat="comment in lineComments">
+                    <div class="authored-box">
+                        <div class="author-box"><img src="images/avatar.png"></div>
+                        <div class="info-box">
+                            <div class="info-line"><span class="username">{{comment.authorName}}</span><span class="time">{{comment.time | relativeDate}}</span></div>
+                            <div class="comment-body" id="{{comment.id}}">
+                                <markdown-to-html content="comment.message"></markdown-to-html>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--inline comment end-->
             </td>
         </tr>
     </script>

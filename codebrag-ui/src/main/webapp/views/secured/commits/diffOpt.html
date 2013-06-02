@@ -4,7 +4,7 @@
         {{#each currentCommit.files}}
         <div class="diff-table-wrapper">
             <table class="diff-file-container" data-file-name="{{filename}}">
-                <thead class="diff-file-name" inline-commentable>
+                <thead class="diff-file-name" inline-commentable live-comments="userComments['{{filename}}']">
                 <tr>
                     <th colspan="3">{{filename}}</th>
                 </tr>
