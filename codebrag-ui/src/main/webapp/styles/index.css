@@ -3,7 +3,9 @@
 .row {
   max-width: 100%;
 }
-.button {
+.button,
+.button[disabled],
+button {
   border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -12,13 +14,19 @@
   padding: 0.77em 1.15em;
   text-transform: uppercase;
 }
-.button.secondary {
+.button.secondary,
+.button[disabled].secondary,
+button.secondary {
   color: #fff;
 }
-.button.secondary:hover {
+.button.secondary:hover,
+.button[disabled].secondary:hover,
+button.secondary:hover {
   color: #fff;
 }
-.button.link {
+.button.link,
+.button[disabled].link,
+button.link {
   background: transparent;
   color: #a27d69;
   text-transform: none;
@@ -28,26 +36,38 @@
   -ms-transition: color 250ms;
   transition: color 250ms;
 }
-.button.link:hover {
+.button.link:hover,
+.button[disabled].link:hover,
+button.link:hover {
   background: transparent;
   color: #f3720b;
 }
-.button.link:active {
+.button.link:active,
+.button[disabled].link:active,
+button.link:active {
   background: #ece7d9;
 }
-.button.big {
+.button.big,
+.button[disabled].big,
+button.big {
   padding: 1.15em 2.3em;
 }
-.button.big.reviewed {
+.button.big.reviewed,
+.button[disabled].big.reviewed,
+button.big.reviewed {
   background: #87d3bf;
   float: right;
   margin-right: 0;
   margin-top: 1.15em;
 }
-.button.big.reviewed:hover {
+.button.big.reviewed:hover,
+.button[disabled].big.reviewed:hover,
+button.big.reviewed:hover {
   background: #5abfa3;
 }
-.button:active {
+.button:active,
+.button[disabled]:active,
+button:active {
   -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
   box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
 }
@@ -63,6 +83,31 @@ table tr td {
   font-size: 1em;
   color: #2f0200;
   padding: 0.23em 0.77em;
+}
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="time"],
+input[type="url"],
+label,
+textarea,
+select {
+  font-size: 1em;
+  margin-bottom: 1.15em;
+}
+input[type="checkbox"] {
+  margin-bottom: 0;
+}
+label {
+  color: #a27d69;
 }
 html,
 body {
@@ -183,6 +228,63 @@ i {
 }
 .comments-container .comment.write.active .comment-action-btns {
   display: block;
+}
+form {
+  margin: 0;
+  padding: 0;
+  font-size: 1em;
+}
+form .form-header {
+  background: #300300;
+  color: #ad8245;
+  height: 5.38em;
+  text-align: center;
+}
+form .form-header img.logo {
+  margin-top: 0.77em;
+}
+form fieldset {
+  border: none;
+  margin: 0;
+  padding: 1.15em;
+}
+form fieldset .prefix {
+  background: #99ab01;
+  border: none;
+  color: #fff;
+  display: inline-block;
+  float: left;
+  font-size: 1em;
+  width: 2.3125em;
+}
+form .form-group {
+  position: relative;
+}
+form .form-group.inline {
+  display: inline-block;
+}
+form .form-group span.text-error {
+  background: #f0552f;
+  bottom: 0.1em;
+  color: #ffd8cf;
+  font-size: 0.85em;
+  padding: 0.2em;
+  position: absolute;
+  right: 0;
+}
+form .form-group span.text-error i {
+  color: #f0552f;
+  position: absolute;
+  right: 0.6em;
+  top: -1.68em;
+}
+form .form-group span.text-error:after {
+  border: 4px solid transparent;
+  border-bottom-color: #f0552f;
+  content: "";
+  position: absolute;
+  right: 0.6em;
+  top: -8px;
 }
 .main-header {
   background: #300300;
@@ -586,19 +688,41 @@ tbody tr.comments-container:nth-child(3) {
   transition: background 1s linear;
 }
 #loginform {
-  max-width: 500px;
-  margin: 0 auto;
-  margin-top: 70px;
+  margin-left: -11.61em;
+  margin-top: -10.42em;
+  left: 50%;
+  position: absolute;
+  top: 45%;
+}
+#loginform form {
+  background: #fff;
+  border: 1px solid #e4d9b8;
+  -webkit-box-shadow: 0px 0px 7px 0px rgba(211,196,160,0.7);
+  box-shadow: 0px 0px 7px 0px rgba(211,196,160,0.7);
+}
+#loginform form fieldset {
+  padding: 2em;
+}
+#loginform form fieldset button:last-child {
+  margin-right: 0;
+}
+#loginform form fieldset button:last-child span {
+  text-transform: lowercase;
+}
+#loginform input[type="password"],
+#loginform input[type="text"] {
+  background: #f2ecd5;
+  border: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  display: inline-block;
+  width: 16.8em;
+}
+#loginform .checkbox {
+  margin-bottom: 2.3em;
 }
 .text-error {
-  color: #b94a48;
-}
-.login-error {
-  float: left;
-  text-align: right;
-  width: 100%;
-  font-size: 80%;
-  padding-bottom: 10px;
+  color: #e53b21;
 }
 @media all and (max-width: 1279px) {
   html {
@@ -611,6 +735,13 @@ tbody tr.comments-container:nth-child(3) {
 @media all and (min-width: 1280px) {
   html {
     font-size: 14px;
+  }
+  #loginform fieldset {
+    padding: 2.3em;
+  }
+  #loginform input[type="text"],
+  #loginform input[type="password"] {
+    width: 17.4em;
   }
   .diff-file-container tr.comments-container {
     font-size: 14px;
