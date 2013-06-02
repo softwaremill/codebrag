@@ -15,9 +15,10 @@ object DiffLineView {
 
   def apply(line: String, lineNumberOriginal: Int, lineNumberChanged: Int, lineType: String) = {
     val lines = (lineNumberOriginal, lineNumberChanged) match {
-      case (-1, num) => ("", num.toString)
-      case (num, -1) => (num.toString, "")
-      case (orig, changed) => (orig.toString, changed.toString)
+      case (-1, -1) => ("...", "...")   //header line
+      case (-1, num) => ("", num.toString)    // line added
+      case (num, -1) => (num.toString, "")    // line removed
+      case (orig, changed) => (orig.toString, changed.toString)   // line not changed
     }
     new DiffLineView(line, lines._1, lines._2, lineType)
   }
