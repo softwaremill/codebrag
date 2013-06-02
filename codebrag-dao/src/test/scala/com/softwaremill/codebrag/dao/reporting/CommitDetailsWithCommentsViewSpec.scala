@@ -51,8 +51,9 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
 
     // then
     val fileLines = commitWithComments.inlineComments("test.txt")
-    fileLines(0) should equal(List(lineCommentOne))
-    fileLines(1) should equal(List(lineCommentTwo))
+    // keys need to be strings in order to serialize to JSON
+    fileLines("0") should equal(List(lineCommentOne))
+    fileLines("1") should equal(List(lineCommentTwo))
   }
 
 }

@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.reporting.views
 import com.softwaremill.codebrag.domain.{DiffLine, CommitFileDiff}
 
 
-case class CommitDetailsWithCommentsView(commit: CommitView, diff: List[FileDiffView], comments: List[SingleCommentView], inlineComments: Map[String, Map[Int, List[SingleCommentView]]])
+case class CommitDetailsWithCommentsView(commit: CommitView, diff: List[FileDiffView], comments: List[SingleCommentView], inlineComments: Map[String, Map[String, List[SingleCommentView]]])
 case class FileDiffView(filename: String, status: String, lines: List[DiffLineView])
 case class DiffLineView(line: String, lineNumberOriginal: String, lineNumberChanged: String, lineType: String)
 
@@ -27,7 +27,13 @@ object DiffLineView {
 object CommitDetailsWithCommentsView {
 
   def buildFrom(commit: CommitView, comments: CommentsView, diffs: List[CommitFileDiff]) = {
-    CommitDetailsWithCommentsView(commit, buildDiffView(diffs), comments.comments, comments.inlineComments)
+    val stringified = comments.inlineComments.map({ fileComments =>
+      val withLineNumbersAsStrings = fileComments._2.map({ lineComments =>
+        (lineComments._1.toString, lineComments._2)
+      })
+      (fileComments._1, withLineNumbersAsStrings)
+    })
+    CommitDetailsWithCommentsView(commit, buildDiffView(diffs), comments.comments, stringified)
   }
 
   def buildDiffView(diffs: List[CommitFileDiff]) = {
