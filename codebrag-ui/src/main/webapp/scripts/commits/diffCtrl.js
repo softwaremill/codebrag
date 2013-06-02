@@ -2,17 +2,6 @@ angular.module('codebrag.commits')
 
     .controller('DiffCtrl', function ($scope, Comments) {
 
-        $scope.userComments = {
-            'codebrag-ui-grunt/README.md': {
-                4: [
-                    {id: '123', authorName: 'Stefan', message: 'test msg'}
-                ],
-                10: [
-                    {id: '123', authorName: 'Stefan', message: 'test msg for 10th line'}
-                ]
-            }
-        };
-
         $scope.submitInlineComment = function(content, commentData) {
             var newComment = {
                 commitId: $scope.currentCommit.commit.id,
@@ -23,16 +12,19 @@ angular.module('codebrag.commits')
 
             return Comments.save(newComment).$then(function (commentResponse) {
                 var comment = commentResponse.data.comment;
-
-                comment.fileName = newComment.fileName;
-                comment.lineNumber = newComment.lineNumber;
-
-                if(_.isUndefined($scope.userComments[comment.fileName][comment.lineNumber])) {
-                    $scope.userComments[comment.fileName][comment.lineNumber] = [];
-                }
-                $scope.userComments[comment.fileName][comment.lineNumber].push(comment);
-                $scope.$broadcast('commentAdded', comment);
+                addCommentToCommentsCollection(comment, newComment.fileName, newComment.lineNumber);
             });
+
+            function addCommentToCommentsCollection(comment, fileName, lineNumber) {
+                var comments = $scope.currentCommit.inlineComments;
+                if(_.isUndefined(comments[fileName])) {
+                    comments[fileName] = {};
+                }
+                if(_.isUndefined(comments[fileName][lineNumber])) {
+                    comments[fileName][lineNumber] = [];
+                }
+                comments[fileName][lineNumber].push(comment);
+            }
         };
 
         $scope.submitComment = function (content) {
