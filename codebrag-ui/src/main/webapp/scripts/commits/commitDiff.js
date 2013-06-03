@@ -70,22 +70,22 @@ angular.module('codebrag.commits')
         function linkFn(scope, el, attrs) {
             var fileDiffRoot = el.parent(fileDiffRootSelector);
             fileDiffRoot.on('click', clickableSelector, function(event) {
-                var commentFormScope = scope.$new();
                 var elementClicked = $(event.currentTarget);
                 var commentForm = new InlineCommentForm(elementClicked, fileDiffRoot);
                 if(commentForm.isAlreadyPresent()) {
                     return;
                 }
                 commentForm.insert(function bindScope(createdElement) {
+                    var commentFormScope = scope.$new();
                     commentFormScope.commentParams = commentForm.commentParams();
                     $compile(createdElement)(commentFormScope);
                     commentFormScope.$apply();
-                });
-                commentFormScope.$on(events.closeForm, function() {
-                    commentForm.destroy(function destroyScope() {
-                        commentFormScope.$destroy();
+                    commentFormScope.$on(events.closeForm, function() {
+                        commentForm.destroy(function destroyScope() {
+                            commentFormScope.$destroy();
+                        });
                     });
-                })
+                });
             });
         }
 
