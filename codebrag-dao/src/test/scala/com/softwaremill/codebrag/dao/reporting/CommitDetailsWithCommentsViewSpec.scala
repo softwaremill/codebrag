@@ -13,7 +13,7 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
 
   val Commit = CommitView("123", "123abc", "This is commit message", "John Doe", "John Doe", DateTime.now.toDate)
   val Lines = List(DiffLine("line one", 1, 2, "added"), DiffLine("line two", 2, 2, "added"))
-  val Diffs = List(CommitFileDiff("test.txt", "added", Lines))
+  val Diffs = List(CommitFileDiff("test.txt", "added", Lines, Map("added" -> 2, "removed" -> 0)))
 
   it should "have empty comments list when commit has no comments" in {
     // given
@@ -54,6 +54,18 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
     // keys need to be strings in order to serialize to JSON
     fileLines("0") should equal(List(lineCommentOne))
     fileLines("1") should equal(List(lineCommentTwo))
+  }
+
+  it should "have diff stats for file" in {
+    // given
+    val comments = CommentsView(comments = Nil, inlineComments = Map())
+
+    // when
+    val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
+
+    // then
+    commitWithComments.diff(0).diffStats("added") should be(2)
+    commitWithComments.diff(0).diffStats("removed") should be(0)
   }
 
 }

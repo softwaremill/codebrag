@@ -4,7 +4,7 @@ import com.softwaremill.codebrag.domain.{DiffLine, CommitFileDiff}
 
 
 case class CommitDetailsWithCommentsView(commit: CommitView, diff: List[FileDiffView], comments: List[SingleCommentView], inlineComments: Map[String, Map[String, List[SingleCommentView]]])
-case class FileDiffView(filename: String, status: String, lines: List[DiffLineView])
+case class FileDiffView(filename: String, status: String, lines: List[DiffLineView], diffStats: Map[String, Int])
 case class DiffLineView(line: String, lineNumberOriginal: String, lineNumberChanged: String, lineType: String)
 
 
@@ -40,7 +40,7 @@ object CommitDetailsWithCommentsView {
   def buildDiffView(diffs: List[CommitFileDiff]) = {
     diffs.map({fileDiff =>
       val lineViews  =fileDiff.lines.map(DiffLineView.fromDiffLine(_))
-      FileDiffView(fileDiff.filename, fileDiff.status, lineViews)
+      FileDiffView(fileDiff.filename, fileDiff.status, lineViews, fileDiff.diffStats)
     })
   }
 
