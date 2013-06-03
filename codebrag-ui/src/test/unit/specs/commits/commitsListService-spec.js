@@ -22,8 +22,10 @@ describe("CommitsListService", function () {
         var loadedCommits = commitArrayOfSize(3);
         var commitIdToRemove = 2;
         $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
-        $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
         commitsListService.loadCommitsPendingReview();
+        $httpBackend.flush();
+        $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
+        $httpBackend.whenGET('rest/commits?filter=pending&limit=1&skip=2').respond({commits:[]});
 
         // When
         commitsListService.removeCommit(commitIdToRemove);
@@ -31,6 +33,50 @@ describe("CommitsListService", function () {
 
         // Then
         expect(commitsListService.allCommits().length).toBe(loadedCommits.length - 1);
+        expect(commitsListService.allCommits()[0].id).toBe('1');
+        expect(commitsListService.allCommits()[1].id).toBe('3');
+    }));
+
+    it('should load one new commit after deleting', inject(function (commitsListService) {
+        // Given
+        var loadedCommits = commitArrayOfSize(3);
+        var commitIdToRemove = 2;
+        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
+        commitsListService.loadCommitsPendingReview();
+        $httpBackend.flush();
+        $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
+        $httpBackend.whenGET('rest/commits?filter=pending&limit=1&skip=2').respond({commits: [commit(4)]});
+
+        // When
+        commitsListService.removeCommit(commitIdToRemove);
+        $httpBackend.flush();
+
+        // Then
+        expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
+        expect(commitsListService.allCommits()[0].id).toBe('1');
+        expect(commitsListService.allCommits()[1].id).toBe('3');
+        expect(commitsListService.allCommits()[2].id).toBe('4');
+    }));
+
+    it('should load one new commit before deleting and getting next', inject(function (commitsListService) {
+        // Given
+        var loadedCommits = commitArrayOfSize(3);
+        var commitIdToRemove = 2;
+        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
+        commitsListService.loadCommitsPendingReview();
+        $httpBackend.flush();
+        $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
+        $httpBackend.whenGET('rest/commits?filter=pending&limit=1&skip=3').respond({commits: [commit(4)]});
+
+        // When
+        commitsListService.removeCommitAndGetNext(commitIdToRemove);
+        $httpBackend.flush();
+
+        // Then
+        expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
+        expect(commitsListService.allCommits()[0].id).toBe('1');
+        expect(commitsListService.allCommits()[1].id).toBe('3');
+        expect(commitsListService.allCommits()[2].id).toBe('4');
     }));
 
     function givenServerReturnsAllCommits(commitsListService, loadedCommits) {
@@ -89,38 +135,6 @@ describe("CommitsListService", function () {
 
         // Then
         expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
-    }));
-
-    it('should broadcast an event when deleting commit and getting next', inject(function (commitsListService, events) {
-        // Given
-        var loadedCommits = commitArrayOfSize(3);
-        givenServerReturnsAllCommits(commitsListService, loadedCommits);
-        $httpBackend.expectDELETE('rest/commits/2').respond();
-        var listener = jasmine.createSpy('listener');
-        rootScope.$on(events.commitReviewed, listener);
-
-        // When
-        commitsListService.removeCommitAndGetNext(2);
-        $httpBackend.flush();
-
-        // Then
-        expect(listener).toHaveBeenCalled();
-    }));
-
-    it('should broadcast an event when deleting commit', inject(function (commitsListService, events) {
-        // Given
-        var loadedCommits = commitArrayOfSize(3);
-        givenServerReturnsAllCommits(commitsListService, loadedCommits);
-        $httpBackend.expectDELETE('rest/commits/2').respond();
-        var listener = jasmine.createSpy('listener');
-        rootScope.$on(events.commitReviewed, listener);
-
-        // When
-        commitsListService.removeCommit(2);
-        $httpBackend.flush();
-
-        // Then
-        expect(listener).toHaveBeenCalled();
     }));
 
     it('should load additional commits from server', inject(function (commitsListService) {

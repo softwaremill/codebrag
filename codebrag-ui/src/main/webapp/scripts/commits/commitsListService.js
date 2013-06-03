@@ -16,17 +16,25 @@ angular.module('codebrag.commits')
             return _loadCommits();
         }
 
-        function loadMoreCommits() {
+        function loadOneMore() {
+            return loadMore(1)
+        }
+
+        function loadMore(limit) {
             var request = {
                 filter: commitLoadFilter.current,
                 skip: commits.elements.length,
-                limit: MAX_LOAD_COMMIT_COUNT
+                limit: limit
             };
             var responsePromise = Commits.get(request).$then(function(response) {
                 _broadcastNewCommitCountEvent(response.data.totalCount);
                 return response.data.commits;
             });
             return commits.addElements(responsePromise);
+        }
+
+        function loadMoreCommits() {
+            return loadMore(MAX_LOAD_COMMIT_COUNT);
         }
 
         function _loadCommits() {
@@ -68,16 +76,12 @@ angular.module('codebrag.commits')
          */
         function removeCommit(commitId) {
             var responsePromise = Commits.remove({id: commitId}).$then();
-            responsePromise.then(function (next) {
-                _broadcastCommitReviewedEvent();
-                return next;
-            });
             if (commitLoadFilter.isAll()) {
                 markAsNotReviewable(commitId);
             } else {
-                commits.removeElement(_matchingId(commitId), responsePromise);
+                commits.removeElement(_matchingId(commitId), responsePromise).then(loadOneMore);
             }
-            return responsePromise
+            return responsePromise;
         }
 
         function _matchingId(id) {
@@ -95,16 +99,12 @@ angular.module('codebrag.commits')
          */
         function removeCommitAndGetNext(commitId) {
             var responsePromise = Commits.remove({id: commitId}).$then();
-            responsePromise.then(function (next) {
-                _broadcastCommitReviewedEvent();
-                return next;
-            });
             var getNextPromise;
             if (commitLoadFilter.isAll()) {
                 markAsNotReviewable(commitId);
                 getNextPromise = commits.getNextAfter(_matchingId(commitId), responsePromise);
             } else {
-                getNextPromise = commits.removeElementAndGetNext(_matchingId(commitId), responsePromise);
+                getNextPromise = commits.removeElementAndGetNext(_matchingId(commitId), responsePromise.then(loadOneMore));
             }
             return getNextPromise
         }
@@ -117,10 +117,6 @@ angular.module('codebrag.commits')
 
         function _broadcastNewCommitCountEvent(totalCount) {
             $rootScope.$broadcast(events.commitCountChanged, {commitCount: totalCount})
-        }
-
-        function _broadcastCommitReviewedEvent() {
-            $rootScope.$broadcast(events.commitReviewed)
         }
 
         return {

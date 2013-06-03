@@ -21,7 +21,7 @@ codebrag.AsyncCollection.prototype = {
     addElements: function(promise) {
         var self = this;
         return promise.then(function(receivedCollection) {
-            self.elements = self.elements.concat(receivedCollection);
+            _.forEach(receivedCollection, function(element) {self.elements.push(element)});
             return self.elements;
         });
     },

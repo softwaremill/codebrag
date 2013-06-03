@@ -6,10 +6,6 @@ angular.module('codebrag.notifications')
             _updateCommits(data.commitCount)
         });
 
-        $rootScope.$on(events.commitReviewed, function() {
-            counterValues.commits--
-        });
-
         $rootScope.$on(events.followupCountChanged, function(event, data) {
             _updateFollowups(data.followupCount)
         });

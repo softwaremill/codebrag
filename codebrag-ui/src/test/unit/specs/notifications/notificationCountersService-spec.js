@@ -60,19 +60,6 @@ describe("Notification counters service", function () {
         expect(counters.commits).toEqual(expectedCommitCount);
     }));
 
-    it('should correctly update counter values on commit reviewed event', inject(function (notificationCountersService, events) {
-        // Given
-        var initialCommitCount = 15;
-        var counters = notificationCountersService.counters();
-        rootScope.$broadcast(events.commitCountChanged, {commitCount: initialCommitCount});
-
-        // When
-        rootScope.$broadcast(events.commitReviewed);
-
-        // Then
-        expect(counters.commits).toEqual(initialCommitCount - 1);
-    }));
-
     it('should correctly update counter values on follow-up counter change event', inject(function (notificationCountersService, events) {
         // Given
         var expectedFollowupCount = 15;
