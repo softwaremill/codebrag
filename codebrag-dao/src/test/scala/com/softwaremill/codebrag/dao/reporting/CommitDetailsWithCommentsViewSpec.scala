@@ -13,10 +13,11 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
   val Commit = CommitView("123", "123abc", "This is commit message", "John Doe", "John Doe", DateTime.now.toDate)
   val Lines = List(DiffLine("line one", 1, 2, "added"), DiffLine("line two", 2, 2, "added"))
   val Diffs = List(CommitFileDiff("test.txt", "added", Lines, FileDiffStats(2, 0)))
+  val EmptyComments = CommentsView(comments = Nil, inlineComments = Map())
 
   it should "have empty comments list when commit has no comments" in {
     // given
-    val comments = CommentsView(comments = Nil, inlineComments = Map())
+    val comments = EmptyComments
 
     // when
     val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
@@ -56,15 +57,41 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
   }
 
   it should "have diff stats for file" in {
-    // given
-    val comments = CommentsView(comments = Nil, inlineComments = Map())
-
     // when
-    val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
+    val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, EmptyComments, Diffs)
 
     // then
     commitWithComments.diff(0).diffStats.added should be(2)
     commitWithComments.diff(0).diffStats.removed should be(0)
+  }
+
+  it should "supress diffs for large files" in {
+    val largeFileSize = CommitDetailsWithCommentsView.MaxAcceptableDiffLinesNumber + 100; // diff size exceeding max acceptable size
+    val diffLines = buildDummyDiffWithLinesNumber(largeFileSize)
+    val largeFileDiff = CommitFileDiff("largefile.txt", "added", diffLines, FileDiffStats(largeFileSize, 0))
+
+    val viewWithSupressedDiff = CommitDetailsWithCommentsView.buildFrom(Commit, EmptyComments, List(largeFileDiff))
+
+    viewWithSupressedDiff.diff should be('empty)
+    viewWithSupressedDiff.supressedFiles.size should be(1)
+  }
+
+
+  it should "keep regular diff for small files" in {
+    val smallFileSize = CommitDetailsWithCommentsView.MaxAcceptableDiffLinesNumber - 100; // diff size smaller than max acceptable size
+    val diffLines = buildDummyDiffWithLinesNumber(smallFileSize)
+    val smallFileDiff = CommitFileDiff("largefile.txt", "added", diffLines, FileDiffStats(smallFileSize, 0))
+
+    val viewWithRegularDiff = CommitDetailsWithCommentsView.buildFrom(Commit, EmptyComments, List(smallFileDiff))
+
+    viewWithRegularDiff.diff.size should be(1)
+    viewWithRegularDiff.supressedFiles should be('empty)
+  }
+
+  private def buildDummyDiffWithLinesNumber(largeFileSize: Int): List[DiffLine] = {
+    (1 to largeFileSize).map(i => {
+      DiffLine(s"line content${i}", i, i, "added")
+    }).toList
   }
 
 }

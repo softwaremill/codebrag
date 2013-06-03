@@ -3,8 +3,15 @@ package com.softwaremill.codebrag.dao.reporting.views
 import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff}
 
 
-case class CommitDetailsWithCommentsView(commit: CommitView, diff: List[FileDiffView], comments: List[SingleCommentView], inlineComments: Map[String, Map[String, List[SingleCommentView]]])
+case class CommitDetailsWithCommentsView(
+                                          commit: CommitView,
+                                          diff: List[FileDiffView],
+                                          supressedFiles: List[SupressedFileView],
+                                          comments: List[SingleCommentView],
+                                          inlineComments: Map[String, Map[String, List[SingleCommentView]]])
+
 case class FileDiffView(filename: String, status: String, lines: List[DiffLineView], diffStats: FileDiffStatsView)
+case class SupressedFileView(filename: String, status: String, diffStats: FileDiffStatsView)
 case class FileDiffStatsView(added: Int, removed: Int)
 case class DiffLineView(line: String, lineNumberOriginal: String, lineNumberChanged: String, lineType: String)
 
@@ -28,20 +35,37 @@ object DiffLineView {
 
 object CommitDetailsWithCommentsView {
 
+  val MaxAcceptableDiffLinesNumber = 600
+
   def buildFrom(commit: CommitView, comments: CommentsView, diffs: List[CommitFileDiff]) = {
-    val stringified = comments.inlineComments.map({ fileComments =>
-      val withLineNumbersAsStrings = fileComments._2.map({ lineComments =>
-        (lineComments._1.toString, lineComments._2)
-      })
-      (fileComments._1, withLineNumbersAsStrings)
-    })
-    CommitDetailsWithCommentsView(commit, buildDiffView(diffs), comments.comments, stringified)
+    val stringifiedCommentsMap = mapKeysToString(comments)
+    val (smallerDiffs, largerDiffs) = diffs.partition(_.lines.size < MaxAcceptableDiffLinesNumber)
+    CommitDetailsWithCommentsView(commit, buildDiffView(smallerDiffs), buildSupressedDiffView(largerDiffs), comments.comments, stringifiedCommentsMap)
   }
 
-  def buildDiffView(diffs: List[CommitFileDiff]) = {
+
+  private def mapKeysToString(comments: CommentsView): Map[String, Map[String, List[SingleCommentView]]] = {
+    val stringified = comments.inlineComments.map({
+      fileComments =>
+        val withLineNumbersAsStrings = fileComments._2.map({
+          lineComments =>
+            (lineComments._1.toString, lineComments._2)
+        })
+        (fileComments._1, withLineNumbersAsStrings)
+    })
+    stringified
+  }
+
+  private def buildDiffView(diffs: List[CommitFileDiff]) = {
     diffs.map({fileDiff =>
-      val lineViews  =fileDiff.lines.map(DiffLineView.fromDiffLine(_))
+      val lineViews = fileDiff.lines.map(DiffLineView.fromDiffLine(_))
       FileDiffView(fileDiff.filename, fileDiff.status, lineViews, FileDiffStatsView(fileDiff.diffStats))
+    })
+  }
+
+  private def buildSupressedDiffView(diffs: List[CommitFileDiff]) = {
+    diffs.map({fileDiff =>
+      SupressedFileView(fileDiff.filename, fileDiff.status, FileDiffStatsView(fileDiff.diffStats))
     })
   }
 
