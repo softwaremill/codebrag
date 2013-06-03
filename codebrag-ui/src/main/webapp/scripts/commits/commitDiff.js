@@ -31,6 +31,7 @@ angular.module('codebrag.commits')
         var fileDiffRootSelector = 'table';
         var fileDiffLineSelector = 'tbody';
         var clickableSelector = '[data-commentable]';
+        var addNoteRowSelector = '[data-add-note-row]';
         var inlineCommentFormRootSelector = 'tr.comment-form';
 
         var fileNameDataAttr = 'file-name';
@@ -43,11 +44,13 @@ angular.module('codebrag.commits')
             this.insert = function(afterFormInsertCallback) {
                 fileDiffLine.append(inlineCommentFormTemplate);
                 var insertedElement = fileDiffLine.find(inlineCommentFormRootSelector);
+                fileDiffLine.find(addNoteRowSelector).toggle();
                 afterFormInsertCallback(insertedElement);
             };
 
             this.destroy = function(afterFormDestroyCallback) {
                 fileDiffLine.find(inlineCommentFormRootSelector).remove();
+                fileDiffLine.find(addNoteRowSelector).toggle();
                 afterFormDestroyCallback();
             };
 
