@@ -1,10 +1,11 @@
 package com.softwaremill.codebrag.dao.reporting.views
 
-import com.softwaremill.codebrag.domain.{DiffLine, CommitFileDiff}
+import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff}
 
 
 case class CommitDetailsWithCommentsView(commit: CommitView, diff: List[FileDiffView], comments: List[SingleCommentView], inlineComments: Map[String, Map[String, List[SingleCommentView]]])
-case class FileDiffView(filename: String, status: String, lines: List[DiffLineView], diffStats: Map[String, Int])
+case class FileDiffView(filename: String, status: String, lines: List[DiffLineView], diffStats: FileDiffStatsView)
+case class FileDiffStatsView(added: Int, removed: Int)
 case class DiffLineView(line: String, lineNumberOriginal: String, lineNumberChanged: String, lineType: String)
 
 
@@ -40,8 +41,16 @@ object CommitDetailsWithCommentsView {
   def buildDiffView(diffs: List[CommitFileDiff]) = {
     diffs.map({fileDiff =>
       val lineViews  =fileDiff.lines.map(DiffLineView.fromDiffLine(_))
-      FileDiffView(fileDiff.filename, fileDiff.status, lineViews, fileDiff.diffStats)
+      FileDiffView(fileDiff.filename, fileDiff.status, lineViews, FileDiffStatsView(fileDiff.diffStats))
     })
+  }
+
+}
+
+object FileDiffStatsView {
+
+  def apply(diffStats: FileDiffStats) = {
+      new FileDiffStatsView(diffStats.added, diffStats.removed)
   }
 
 }

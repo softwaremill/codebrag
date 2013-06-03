@@ -173,8 +173,8 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
 
     //then
-    files(0).diffStats("added") should equal(3)
-    files(0).diffStats("removed") should equal(1)
+    files(0).diffStats.added should equal(3)
+    files(0).diffStats.removed should equal(1)
   }
 
   it should "cut git headers" in {

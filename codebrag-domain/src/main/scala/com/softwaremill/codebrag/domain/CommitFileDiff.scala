@@ -2,5 +2,7 @@ package com.softwaremill.codebrag.domain
 
 case class DiffLine(line: String, lineNumberOriginal: Int, lineNumberChanged: Int, lineType: String)
 
-case class CommitFileDiff(filename: String, status: String, lines: List[DiffLine], diffStats: Map[String, Int])
+case class CommitFileDiff(filename: String, status: String, lines: List[DiffLine], diffStats: FileDiffStats)
+
+case class FileDiffStats(added: Int, removed: Int)
 

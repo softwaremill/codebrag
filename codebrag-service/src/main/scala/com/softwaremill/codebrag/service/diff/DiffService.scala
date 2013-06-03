@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.service.diff
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import annotation.tailrec
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.{DiffLine, CommitFileDiff}
+import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff}
 
 class DiffService(commitInfoDao: CommitInfoDAO) {
 
@@ -59,7 +59,7 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
           val patch = cutGitHeaders(file.patch)
           val diffLines = parseDiff(patch)
           val lineTypeCounts = diffLines.groupBy(_.lineType).map(group => (group._1, group._2.size))
-          CommitFileDiff(file.filename, file.status, diffLines, lineTypeCounts)
+          CommitFileDiff(file.filename, file.status, diffLines, FileDiffStats(lineTypeCounts.getOrElse(LineTypeAdded, 0), lineTypeCounts.getOrElse(LineTypeRemoved, 0)))
         }))
       case None => Left("No such commit")
     }

@@ -4,16 +4,15 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{FlatSpec, BeforeAndAfterEach}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.dao.reporting.views._
-import com.softwaremill.codebrag.domain.DiffLine
+import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff}
 import com.softwaremill.codebrag.dao.reporting.views.CommentsView
-import com.softwaremill.codebrag.domain.CommitFileDiff
 import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
 
 class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with CommentListFinderVerifyHelpers {
 
   val Commit = CommitView("123", "123abc", "This is commit message", "John Doe", "John Doe", DateTime.now.toDate)
   val Lines = List(DiffLine("line one", 1, 2, "added"), DiffLine("line two", 2, 2, "added"))
-  val Diffs = List(CommitFileDiff("test.txt", "added", Lines, Map("added" -> 2, "removed" -> 0)))
+  val Diffs = List(CommitFileDiff("test.txt", "added", Lines, FileDiffStats(2, 0)))
 
   it should "have empty comments list when commit has no comments" in {
     // given
@@ -64,8 +63,8 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
     val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
 
     // then
-    commitWithComments.diff(0).diffStats("added") should be(2)
-    commitWithComments.diff(0).diffStats("removed") should be(0)
+    commitWithComments.diff(0).diffStats.added should be(2)
+    commitWithComments.diff(0).diffStats.removed should be(0)
   }
 
 }
