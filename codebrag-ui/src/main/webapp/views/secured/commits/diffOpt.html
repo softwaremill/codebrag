@@ -31,6 +31,23 @@
             </table>
         </div>
         {{/each}}
+
+        {{#if currentCommit.supressedFiles}}
+        <div class="diff-table-wrapper">
+            <table class="diff-file-container" data-file-name="{{filename}}">
+                <thead class="diff-file-name">
+                <tr>
+                    <th colspan="3">Not displayed:</th>
+                </tr>
+                <!-- {{#each currentCommit.supressedFiles}} -->
+                    <tr>
+                        <th colspan="3">{{filename}}: {{diffStats.added}} lines added, {{diffStats.removed}} lines removed</th>
+                    </tr>
+                <!-- {{/each}} -->
+                </thead>
+            </table>
+        </div>
+        {{/if}}
     </commit-diff>
 
     <div class="like-commit"><a class="like button"><i class="icon-heart"></i></a><span>Be the first to like this commit</span></div>
