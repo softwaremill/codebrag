@@ -36,7 +36,9 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
     }
 
     val diffLines = Option(diff) match {
-      case Some(d) => if (d.isEmpty) List() else d.split("\n").toList
+      case Some(d) => {
+        if (d.isEmpty) List() else d.split("\n").toList
+      }
       case None => List.empty
     }
 
@@ -55,7 +57,9 @@ class DiffService(commitInfoDao: CommitInfoDAO) {
       case Some(commit) =>
         Right(commit.files.map(file => {
           val patch = cutGitHeaders(file.patch)
-          CommitFileDiff(file.filename, file.status, parseDiff(patch))
+          val diffLines = parseDiff(patch)
+          val lineTypeCounts = diffLines.groupBy(_.lineType).map(group => (group._1, group._2.size))
+          CommitFileDiff(file.filename, file.status, diffLines, lineTypeCounts)
         }))
       case None => Left("No such commit")
     }

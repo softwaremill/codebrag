@@ -159,6 +159,24 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     files(1).filename should be("file2.txt")
   }
 
+  it should "contain diff stats for file" in {
+    val file = CommitFileInfo("file1.txt", "", """@@ -2,7 +2,7 @@
+                                                 |-               "login":"foo",
+                                                 |+               "login":"foobar",
+                                                 |+               "pass": "123",
+                                                 |+               "age": 32,
+                                                 |                "id":1""".stripMargin)
+    val commit = CommitInfoAssembler.randomCommit.withFiles(List(file)).get
+    given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
+
+    //when
+    val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
+
+    //then
+    files(0).diffStats("added") should equal(3)
+    files(0).diffStats("removed") should equal(1)
+  }
+
   it should "cut git headers" in {
     // given
     val commit = CommitInfoAssembler.randomCommit.withFiles(List(FileWithPatchHeaders)).get
