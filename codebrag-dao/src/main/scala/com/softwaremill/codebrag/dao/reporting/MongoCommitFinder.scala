@@ -24,8 +24,7 @@ class MongoCommitFinder extends CommitFinder {
     val commitIds = userReviewTasks.map(_.commitId.get).toSet
     val query = projectionQuery.where(_.id in commitIds).orderAsc(_.committerDate)
     val commits = query.fetch()
-    val count = if (userReviewTasks.isEmpty) 0
-    else totalReviewTaskCount(userId)
+    val count = totalReviewTaskCount(userId)
     CommitListView(commits.map(recordToDto(_)), count.toInt)
   }
 
