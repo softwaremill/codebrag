@@ -17,8 +17,10 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
 
   private val TempUserLogin = "tmpLogin"
   private val TempUserPass = "tmpPassword"
+  private val RedirectToUrlParam = "redirectTo"
 
   get("/authenticate") {
+    request.getSession().put(RedirectToUrlParam, params.getOrElse(RedirectToUrlParam, "/commits"))
     val clientId = Option(CodebragConfiguration.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
     SeeOther(s"https://github.com/login/oauth/authorize?client_id=$clientId&scope=user,repo")
   }
@@ -46,8 +48,10 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
     authenticate() match {
       case Some(u) => {
         logger.debug("Authentication done")
-        val redirectPath: String = s"$contextPath/#/commits"
+        val redirectTo = request.getSession().getOrElse(RedirectToUrlParam, "")
+        val redirectPath: String = s"$contextPath/#$redirectTo"
         logger.debug(s"Redirect path: $redirectPath")
+        request.getSession().removeAttribute(RedirectToUrlParam)
         SeeOther(redirectPath)
       }
       case None => Forbidden

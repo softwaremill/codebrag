@@ -1,6 +1,6 @@
 angular.module('codebrag.session')
 
-    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, $state, events) {
+    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, $state, events, $window, $location) {
 
         $scope.user = {
             login: '',
@@ -12,6 +12,11 @@ angular.module('codebrag.session')
             if (loginFormValid()) {
                 logInUser();
             }
+        };
+
+        $scope.githubLogin = function () {
+            var githubLoginUrl = '/rest/github/authenticate';
+            $window.location.href = githubLoginUrl + '?redirectTo=' + $location.url();
         };
 
         $scope.isLogged = function () {
