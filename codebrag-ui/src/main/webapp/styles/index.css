@@ -667,6 +667,17 @@ tbody tr.comments-container:last-child {
   -ms-filter: none;
   filter: none;
 }
+.diff-not-displayed h6 {
+  color: #f3720b;
+  text-transform: uppercase;
+}
+.diff-not-displayed-file-name {
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+  list-style: none;
+}
+.diff-not-displayed-stat {
+  font-family: 'PT Sans', Tahoma, sans-serif;
+}
 .like-commit {
   background: #f3f0e8;
   color: #a27d69;
