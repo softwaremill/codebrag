@@ -13,23 +13,26 @@ class MongoCommentFinder(userDao: UserDAO) extends CommentFinder {
     val dao = new MongoCommitCommentDAO
     val comments = dao.findCommentsForEntireCommit(commitId)
     val inlineComments = dao.findInlineCommentsForCommit(commitId)
-    CommentsView(comments = mapCommitCommentsToView(comments), inlineComments =  mapInlineCommitCommentsToView(inlineComments))
+    CommentsView(comments = mapCommitCommentsToView(comments), inlineComments = mapInlineCommitCommentsToView(inlineComments))
   }
 
-  private def mapInlineCommitCommentsToView(comments: List[InlineCommitComment]): Map[String, Map[Int, List[SingleCommentView]]] = {
+  private def mapInlineCommitCommentsToView(comments: List[InlineCommitComment]): Map[String, CommentsView.LineToCommentListMap] = {
     val commentersCached = findAllCommentersFor(comments)
     val byFiles = comments.groupBy(_.fileName)
-    val byFileAndLineNumber = byFiles.map(file => (file._1, file._2.groupBy(_.lineNumber)))
+    val byFileAndLineNumber = byFiles.map({
+      case (fileName, fileComments) => (fileName, fileComments.groupBy(_.lineNumber))
+    })
 
-    byFileAndLineNumber.map(forFile => {
-      val linesMap = scala.collection.mutable.Map[Int, List[SingleCommentView]]()
-      forFile._2.map(forLine => {
-        linesMap(forLine._1) = forLine._2.map({ line =>
-          val authorName = findCommenterName(commentersCached, line.authorId)
-          SingleCommentView(line.id.toString, authorName, line.message, line.postingTime.toDate)
-        })
-      }).toList
-      (forFile._1, linesMap.toMap)
+    byFileAndLineNumber.map({
+      case (fileName, commentsForFile) =>
+        (fileName, commentsForFile.map({
+          case (lineNumber, lineComments) => (lineNumber,
+            lineComments.map({
+              line =>
+                val authorName = findCommenterName(commentersCached, line.authorId)
+                SingleCommentView(line.id.toString, authorName, line.message, line.postingTime.toDate)
+            }))
+        }))
     })
   }
 

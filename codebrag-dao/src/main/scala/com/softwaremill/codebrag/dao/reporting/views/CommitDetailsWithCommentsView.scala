@@ -1,14 +1,14 @@
 package com.softwaremill.codebrag.dao.reporting.views
 
 import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff}
-
+import CommentsView._
 
 case class CommitDetailsWithCommentsView(
                                           commit: CommitView,
                                           diff: List[FileDiffView],
                                           supressedFiles: List[SupressedFileView],
                                           comments: List[SingleCommentView],
-                                          inlineComments: Map[String, Map[String, List[SingleCommentView]]])
+                                          inlineComments: Map[String, CommitDetailsWithCommentsView.StrLineToCommentListMap])
 
 case class FileDiffView(filename: String, status: String, lines: List[DiffLineView], diffStats: FileDiffStatsView)
 case class SupressedFileView(filename: String, status: String, diffStats: FileDiffStatsView)
@@ -17,16 +17,24 @@ case class DiffLineView(line: String, lineNumberOriginal: String, lineNumberChan
 
 
 object DiffLineView {
+
+  val HeaderLine = ("...", "...")
+
   def fromDiffLine(diffLine: DiffLine) = {
     DiffLineView(diffLine.line, diffLine.lineNumberOriginal, diffLine.lineNumberChanged, diffLine.lineType)
   }
 
   def apply(line: String, lineNumberOriginal: Int, lineNumberChanged: Int, lineType: String) = {
+
+    def lineAdded(num: Int) = ("", num.toString)
+    def lineRemoved(num: Int) = (num.toString, "")
+    def lineNotChanged(orig: Int, changed: Int) = (orig.toString, changed.toString)
+
     val lines = (lineNumberOriginal, lineNumberChanged) match {
-      case (-1, -1) => ("...", "...")   //header line
-      case (-1, num) => ("", num.toString)    // line added
-      case (num, -1) => (num.toString, "")    // line removed
-      case (orig, changed) => (orig.toString, changed.toString)   // line not changed
+      case (-1, -1) =>  HeaderLine
+      case (-1, num) => lineAdded(num)
+      case (num, -1) => lineRemoved(num)
+      case (orig, changed) => lineNotChanged(orig, changed)
     }
     new DiffLineView(line, lines._1, lines._2, lineType)
   }
@@ -36,6 +44,7 @@ object DiffLineView {
 object CommitDetailsWithCommentsView {
 
   val MaxAcceptableDiffLinesNumber = 600
+  type StrLineToCommentListMap = Map[String, List[SingleCommentView]]
 
   def buildFrom(commit: CommitView, comments: CommentsView, diffs: List[CommitFileDiff]) = {
     val stringifiedCommentsMap = mapKeysToString(comments)
@@ -43,15 +52,14 @@ object CommitDetailsWithCommentsView {
     CommitDetailsWithCommentsView(commit, buildDiffView(smallerDiffs), buildSupressedDiffView(largerDiffs), comments.comments, stringifiedCommentsMap)
   }
 
-
-  private def mapKeysToString(comments: CommentsView): Map[String, Map[String, List[SingleCommentView]]] = {
+  private def mapKeysToString(comments: CommentsView): Map[String, StrLineToCommentListMap] = {
     val stringified = comments.inlineComments.map({
-      fileComments =>
-        val withLineNumbersAsStrings = fileComments._2.map({
-          lineComments =>
-            (lineComments._1.toString, lineComments._2)
+      case (fileName, fileComments) =>
+        val withLineNumbersAsStrings = fileComments.map({
+          case (lineNumber, lineComments) =>
+            (lineNumber.toString, lineComments)
         })
-        (fileComments._1, withLineNumbersAsStrings)
+        (fileName, withLineNumbersAsStrings)
     })
     stringified
   }
