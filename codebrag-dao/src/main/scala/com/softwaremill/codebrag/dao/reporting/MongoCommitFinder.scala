@@ -20,9 +20,9 @@ class MongoCommitFinder extends CommitFinder {
   }
 
   override def findCommitsToReviewForUser(userId: ObjectId, paging: PagingCriteria) = {
-    val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).skip(paging.skip).limit(paging.limit).fetch()
+    val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
     val commitIds = userReviewTasks.map(_.commitId.get).toSet
-    val query = projectionQuery.where(_.id in commitIds).orderAsc(_.committerDate)
+    val query = projectionQuery.where(_.id in commitIds).skip(paging.skip).limit(paging.limit).orderAsc(_.committerDate)
     val commits = query.fetch()
     val count = totalReviewTaskCount(userId)
     CommitListView(commits.map(recordToDto(_)), count.toInt)
