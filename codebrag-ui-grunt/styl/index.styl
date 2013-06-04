@@ -102,6 +102,9 @@ body
   background-position: 65% center;
   font-family: 'PT Sans', Tahoma, sans-serif;
 
+h1, h2, h3, h4, h5, h6
+  font-family: 'PT Sans', Tahoma, sans-serif;
+
 ::selection
   background-color: #fcd01a;
   color: #2f0200;
@@ -134,7 +137,8 @@ i
 
 .authored-box .info-line
   color: #a27d69;
-  font-size: 0.814em;
+  font-size: 11px;
+  // font-size: 0.7em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -545,8 +549,12 @@ tbody tr.comments-container:last-child
   & i
     opacity: 1;
 
+.diff-not-displayed
+  margin-bottom: 2.3em;
+
 .diff-not-displayed h6
   color: #f3720b;
+  font-weight: normal;
   text-transform: uppercase;
 
 .diff-not-displayed-file-name
@@ -554,7 +562,9 @@ tbody tr.comments-container:last-child
   list-style: none;
 
 .diff-not-displayed-stat
+  color: #a27d69;
   font-family: 'PT Sans', Tahoma, sans-serif;
+  font-size: 0.814em;
 
 .like-commit
   background: #f3f0e8;
