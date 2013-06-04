@@ -18,6 +18,11 @@ codebrag.AsyncCollection = function() {
 
 codebrag.AsyncCollection.prototype = {
 
+    /**
+     * Adds elements from array returned by a promise callback.
+     * @param promise a promise of returning an array.
+     * @returns a promise of filling this collection with elements from array.
+     */
     addElements: function(promise) {
         var self = this;
         return promise.then(function(receivedCollection) {
@@ -56,8 +61,8 @@ codebrag.AsyncCollection.prototype = {
      */
     removeElement: function(matchFn, promise) {
         var self = this;
-        var indexToRemove = self._indexOf(matchFn);
         return promise.then(function() {
+            var indexToRemove = self._indexOf(matchFn);
             self.elements.splice(indexToRemove, 1);
             return indexToRemove;
         });
@@ -68,12 +73,11 @@ codebrag.AsyncCollection.prototype = {
      * asynchronously and chained to given promise (for example a server response promise).
      * @param matchFn matching function taking single element and returning true or false if it matches criteria.
      * @param promise of call which should be succeeded by removing element.
-     * @returns a promise of removing matching element and returning next element in the collection (previous
-     * element in the array) or null if removed first element.
+     * @returns a promise of removing matching element and returning element on same index after removing.
      */
     removeElementAndGetNext: function(matchFn, promise) {
         var self = this;
-        return self.removeElement(matchFn, promise).then(self._getNext.bind(self));
+        return self.removeElement(matchFn, promise).then(self._getElementOrNull.bind(self));
     },
 
     _indexOf: function(matchFn) {
@@ -85,7 +89,7 @@ codebrag.AsyncCollection.prototype = {
     },
 
     /**
-     * Returns a promise of element 'next' after element matching given criteria, technically the previous element in array.
+     * Returns a promise of element next after element matching given criteria.
      * @param matchFn function to match element whose successor should be returned.
      * @param promise a promise which, when fulfilled, should be followed by returning the element.
      * @returns a promise of element matching criteria.
@@ -97,14 +101,24 @@ codebrag.AsyncCollection.prototype = {
         });
     },
 
-    _getNext: function (index) {
+    _getElementOrNull: function(index) {
         var self = this;
-        if (_.isEmpty(self.elements)) {
+        var elements = self.elements;
+        if (_.isEmpty(elements) || elements.length < index) {
             return null;
         }
-        if (index === 0) {
-            return self.elements[0];
+        return elements[index];
+    },
+
+    _getNext: function (index) {
+        var self = this;
+        var elements = self.elements;
+        if (_.isEmpty(elements)) {
+            return null;
         }
-        return self.elements[index - 1];
+        if (index === elements.length - 1) {
+            return elements[elements.length - 1];
+        }
+        return elements[index + 1];
     }
 };

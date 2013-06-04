@@ -79,16 +79,11 @@ describe("CommitsListService", function () {
         expect(commitsListService.allCommits()[2].id).toBe('4');
     }));
 
-    function givenServerReturnsAllCommits(commitsListService, loadedCommits) {
-        $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
-        commitsListService.loadAllCommits();
-    }
-
     it('should not remove commit locally if filter is set to all', inject(function (commitsListService) {
         // Given
         var loadedCommits = commitArrayOfSize(3);
         var commitIdToRemove = 2;
-        givenServerReturnsAllCommits(commitsListService, loadedCommits);
+        _givenServerReturnsAllCommits(commitsListService, loadedCommits);
         $httpBackend.flush();
 
         // When
@@ -101,12 +96,34 @@ describe("CommitsListService", function () {
         expect(commitsListService.allCommits()[0].pendingReview).toBe(true);
     }));
 
-    it('should mark local commit as not pending review and get next one', inject(function (commitsListService) {
+    it('should keep current commit index as next after removing in pending mode', inject(function (commitsListService) {
+        // Given
+        var nextCommit = {};
+        var loadedCommits = commitArrayOfSize(4);
+        var commitIdToRemove = 2;
+        _givenServerReturnsPendingCommits(commitsListService, loadedCommits);
+        $httpBackend.flush();
+        $httpBackend.whenGET('rest/commits?filter=pending&limit=1&skip=4').respond({commits: []});
+
+        // When
+        $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
+        commitsListService.removeCommitAndGetNext(commitIdToRemove).then(
+            function(returnedNext) {
+                nextCommit = returnedNext
+            }
+        );
+        $httpBackend.flush();
+
+        // Then
+        expect(nextCommit.id).toBe('3');
+    }));
+
+    it('should mark local commit as not pending', inject(function (commitsListService) {
         // Given
         var nextCommit = {};
         var loadedCommits = commitArrayOfSize(3);
         var commitIdToRemove = 2;
-        givenServerReturnsAllCommits(commitsListService, loadedCommits);
+        _givenServerReturnsAllCommits(commitsListService, loadedCommits);
         $httpBackend.flush();
 
         // When
@@ -121,7 +138,6 @@ describe("CommitsListService", function () {
         // Then
         expect(commitsListService.allCommits()[1].pendingReview).toBe(false);
         expect(commitsListService.allCommits()[0].pendingReview).toBe(true);
-        expect(nextCommit.id).toBe('1');
     }));
 
     it('should load reviewable commits from server', inject(function (commitsListService) {
@@ -288,6 +304,16 @@ describe("CommitsListService", function () {
             array.push(commit(i))
         }
         return array;
+    }
+
+    function _givenServerReturnsAllCommits(commitsListService, loadedCommits) {
+        $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
+        commitsListService.loadAllCommits();
+    }
+
+    function _givenServerReturnsPendingCommits(commitsListService, loadedCommits) {
+        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
+        commitsListService.loadCommitsPendingReview();
     }
 
 });
