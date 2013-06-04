@@ -11,7 +11,7 @@ import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import com.softwaremill.codebrag.common.PagingCriteria
 
 
-class MongoCommitListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
+class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 
   val commitListFinder = new MongoCommitFinder
   var commitReviewTaskDao = new  MongoCommitReviewTaskDAO
