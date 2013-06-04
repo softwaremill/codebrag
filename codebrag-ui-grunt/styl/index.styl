@@ -59,7 +59,8 @@ li:last-child .button
 table tr:nth-of-type(even)
   background: white;
 
-table tr th, table tr td
+table tr th,
+table tr td
   font-size: 1em;
   color: #2f0200;
   padding: 0.23em 0.77em;
@@ -92,12 +93,12 @@ label
 
 
 // general styles
-html, body
+html,
+body
   height: 100%;
 
 body
-  background: #f7f5ef no-repeat;
-  background-position: 65% center;
+  background: #f7f5ef;
   font-family: 'PT Sans', Tahoma, sans-serif;
 
 h1, 
@@ -140,14 +141,13 @@ i
     vertical-align: top;
   & .info-box
     overflow-y: hidden;
-
-.authored-box .info-line
-  color: #a27d69;
-  font-size: 11px;
-  // font-size: 0.7em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  & .info-line
+    color: #a27d69;
+    font-size: 11px;
+    // font-size: 0.7em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   & .time
     margin-left: 0.3em;
 
@@ -161,6 +161,7 @@ i
     & .authored-box
       margin-bottom: 0;
       & .author-box img
+        height: 2.3em;
         width: 2.3em;
       & .info-line
         line-height: 1;
@@ -238,7 +239,7 @@ form
       background: #f0552f;
       bottom: 0.1em;
       color: #ffd8cf;
-      font-size: 0.82em;
+      font-size: 0.814em;
       padding: 0.2em;
       position: absolute;
       right: 0;
@@ -280,6 +281,9 @@ form
       float: right;
       margin-left: 0.38em;
       width: 2.3em;
+  & a
+    color: inherit;
+    text-decoration: none;
 
 .main-nav
   display: inline-block;
@@ -491,40 +495,40 @@ form
       width: 100%;
       &.comment
         background: transparent;
-      & .diff-line-num-content
-        color: #aaaaaa;
+    & .diff-line-num-content
+      color: #aaaaaa;
+      display: inline-block;
+      margin: 0.38em 0.77em;
+      height: 14px;
+      min-width: 1em;
+      vertical-align: middle;
+      & span
         display: inline-block;
-        margin: 0.38em 0.77em;
-        height: 14px;
-        min-width: 1em;
-        vertical-align: middle;
-        & span
-          display: inline-block;
-          min-height: 14px;
-      & i
-        opacity: 0;
-        position: absolute;
-        left: 50%;
-        margin-left: -0.5em;
-        top: 50%;
-        margin-top: -0.5em;
+        min-height: 14px;
+    & i
+      opacity: 0;
+      position: absolute;
+      left: 50%;
+      margin-left: -0.5em;
+      top: 50%;
+      margin-top: -0.5em;
   & tr.removed
     background: #ffdddd;
-    & td.diff-line-num
+    & .diff-line-num
       background: #f7c8c8;
       border-color: #e9aeae;
-      & .diff-line-num-content
-        color: #bd8f8f;
+    & .diff-line-num-content
+      color: #bd8f8f;
   & tr.added
     background: #d4f7c1;
-    & td.diff-line-num
+    & .diff-line-num
       background: #bce7a5;
       border-color: #b0cfa3;
-      & .diff-line-num-content
-        color: #95a88d;
+    & .diff-line-num-content
+      color: #95a88d;
   & tr.header
     background: #efefef;
-    & td.diff-line-num
+    & .diff-line-num
       background: #ededed;
       border-color: #cdcdcd;
       color: #ababab;
@@ -539,7 +543,7 @@ form
 tbody tr.comments-container:last-child
   border-bottom: 1px solid #d1cbb9;
 
-.diff-file-container tr:hover .diff-line-num .button
+tr:hover .diff-line-num .button
   background: #f58022;
   &:hover
     background: #da670a;
@@ -634,6 +638,8 @@ tbody tr.comments-container:last-child
   & img
     position: absolute;
     right: 0;
+    height: 24px;
+    width: 55px
 
 
 // for medium screens
