@@ -33,19 +33,14 @@
         {{/each}}
 
         {{#if currentCommit.supressedFiles}}
-        <div class="diff-table-wrapper">
-            <table class="diff-file-container" data-file-name="{{filename}}">
-                <thead class="diff-file-name">
-                <tr>
-                    <th colspan="3">Not displayed:</th>
-                </tr>
+        <div class="diff-not-displayed">
+            <h6>Not displayed:</h6>
+            <ul>
                 <!-- {{#each currentCommit.supressedFiles}} -->
-                    <tr>
-                        <th colspan="3">{{filename}}: {{diffStats.added}} lines added, {{diffStats.removed}} lines removed</th>
-                    </tr>
+                    <li class="diff-not-displayed-file-name">{{filename}} <span class="diff-not-displayed-stat">{{diffStats.added}} lines added, {{diffStats.removed}} lines removed</span></li>
+                </tr>
                 <!-- {{/each}} -->
-                </thead>
-            </table>
+            </ul>
         </div>
         {{/if}}
     </commit-diff>
