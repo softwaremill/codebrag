@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao.reporting
 
-import com.softwaremill.codebrag.dao.{CommitReviewTaskRecord, CommitInfoRecord}
+import com.softwaremill.codebrag.dao.{UserRecord, CommitReviewTaskRecord, CommitInfoRecord}
 import com.foursquare.rogue.LiftRogue._
 import java.util.Date
 import org.bson.types.ObjectId
@@ -18,14 +18,13 @@ class MongoCommitFinder extends CommitFinder {
   }
 
   override def findCommitsToReviewForUser(userId: ObjectId, paging: PagingCriteria) = {
-    val commits = commitsToReviewFor(userId, paging)
+    val commits = findCommitsToReview(userId, paging)
     val count = totalReviewTaskCount(userId)
-    CommitListView(commits.map(toDto(_)), count.toInt)
+    CommitListView(toCommitViews(commits), count.toInt)
   }
 
-  private def commitsToReviewFor(userId: ObjectId, paging: PagingCriteria) = {
-    val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
-    val commitIds = userReviewTasks.map(_.commitId.get).toSet
+  private def findCommitsToReview(userId: ObjectId, paging: PagingCriteria) = {
+    val commitIds = findPendingCommitsIds(userId)
     val commitsFromDB = projectionQuery.where(_.id in commitIds).skip(paging.skip).limit(paging.limit).orderAsc(_.committerDate).fetch()
     commitsFromDB.map(commit => (PartialCommitDetails.apply _).tupled(commit))
   }
@@ -36,16 +35,15 @@ class MongoCommitFinder extends CommitFinder {
     commitInfoOption match {
       case Some(record) => {
         val commit = (PartialCommitDetails.apply _).tupled(record)
-        val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
-        val commitIds = userReviewTasks.map(_.commitId.get).toSet
-        Right(markNotPendingReview(toDto(commit), commitIds))
+        Right(markNotPendingReview(toCommitView(commit), findPendingCommitsIds(userId)))
       }
       case None => Left(s"No such commit $commitIdStr")
     }
   }
 
-  private def toDto(record: PartialCommitDetails): CommitView = {
-    CommitView(record.id.toString, record.sha, record.message, record.authorName, record.date)
+  private def findPendingCommitsIds(userId: ObjectId) = {
+    val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
+    userReviewTasks.map(_.commitId.get).toSet
   }
 
   private def projectionQuery = {
@@ -53,13 +51,11 @@ class MongoCommitFinder extends CommitFinder {
   }
 
   override def findAll(userId: ObjectId) = {
-    val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
     val commitsFromDB = projectionQuery.orderAsc(_.committerDate).fetch()
     val commits = commitsFromDB.map(commit => (PartialCommitDetails.apply _).tupled(commit))
-    val commitIds = userReviewTasks.map(_.commitId.get).toSet
-    val count = if (userReviewTasks.isEmpty) 0
-    else totalReviewTaskCount(userId)
-    CommitListView(commits.map(toDto(_)).map(markNotPendingReview(_, commitIds)), count)
+    val pendingCommitsIds = findPendingCommitsIds(userId)
+    val count = if (pendingCommitsIds.isEmpty) 0 else totalReviewTaskCount(userId)
+    CommitListView(toCommitViews(commits).map(markNotPendingReview(_, pendingCommitsIds)), count)
   }
 
   private def markNotPendingReview(commitView: CommitView, commitIdsPendingReview: Set[ObjectId]): CommitView = {
@@ -68,4 +64,76 @@ class MongoCommitFinder extends CommitFinder {
     else
       commitView.copy(pendingReview = false)
   }
+
+  private def toCommitViews(commits: List[PartialCommitDetails]) = {
+    commits.map(toCommitView(_))
+  }
+
+  private def toCommitView(commit: PartialCommitDetails) = {
+    CommitView(commit.id.toString, commit.sha, commit.message, commit.authorName, commit.date)
+  }
+
+}
+
+
+
+class MongoCommitWithAuthorDetailsFinder(baseCommitFinder: CommitFinder) extends CommitFinder {
+
+  private case class PartialUserDetails(name: String, avatarUrl: String)
+
+  def findCommitsToReviewForUser(userId: ObjectId, paging: PagingCriteria): CommitListView = {
+    val commitsViews = baseCommitFinder.findCommitsToReviewForUser(userId, paging)
+    val commitsAuthors = findCommitsAuthors(commitsViews)
+    buildCommitsViewList(commitsViews, commitsAuthors)
+  }
+
+  def findAll(userId: ObjectId): CommitListView = {
+    val commitsViews = baseCommitFinder.findAll(userId)
+    val commitsAuthors = findCommitsAuthors(commitsViews)
+    buildCommitsViewList(commitsViews, commitsAuthors)
+  }
+
+  def findCommitInfoById(commitIdStr: String, userId: ObjectId): Either[String, CommitView] = {
+    baseCommitFinder.findCommitInfoById(commitIdStr, userId) match {
+      case Right(commitView) => {
+        val commitAuthor = findCommitAuthor(commitView)
+        Right(buildCommitView(commitView, commitAuthor))
+      }
+      case Left(msg) => Left(msg)
+    }
+  }
+
+  private def findCommitAuthor(commit: CommitView) = {
+    UserRecord.select(_.name, _.avatarUrl).where(_.name eqs commit.authorName).get() match {
+      case Some(author) => Some((PartialUserDetails.apply _).tupled(author))
+      case None => None
+    }
+  }
+
+  private def buildCommitView(commit: CommitView, authorOpt: Option[PartialUserDetails]) = {
+    val commitAuthorAvatarUrl = authorAvatar(authorOpt)
+    commit.copy(authorAvatarUrl = commitAuthorAvatarUrl)
+  }
+
+  private def findCommitsAuthors(commitsList: CommitListView) = {
+    val userNames = commitsList.commits.map(_.authorName)
+    val usersFromDB = UserRecord.select(_.name, _.avatarUrl).where(_.name in userNames).fetch()
+    usersFromDB.map(user => (PartialUserDetails.apply _).tupled(user))
+  }
+
+  private def buildCommitsViewList(commitsList: CommitListView, authors: List[PartialUserDetails]) = {
+    val commitsWithAvatars = commitsList.commits.map(commit => {
+      val commitAuthorAvatarUrl = authorAvatar(authors.find(_.name == commit.authorName))
+      commit.copy(authorAvatarUrl = commitAuthorAvatarUrl)
+    })
+    commitsList.copy(commits = commitsWithAvatars)
+  }
+
+  private def authorAvatar(authorOpt: Option[PartialUserDetails]): String = {
+    authorOpt match {
+      case Some(author) => author.avatarUrl
+      case None => "" // no avatar if unknown user? handle that on frontend
+    }
+  }
+
 }
