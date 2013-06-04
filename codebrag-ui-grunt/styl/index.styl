@@ -105,6 +105,9 @@ body
 h1, h2, h3, h4, h5, h6
   font-family: 'PT Sans', Tahoma, sans-serif;
 
+p
+  line-height: 1.4;
+
 ::selection
   background-color: #fcd01a;
   color: #2f0200;
@@ -157,13 +160,10 @@ i
       & .author-box img
         width: 2.3em;
       & .info-line
-        margin-bottom: 0.35em;
-      & .comment-body
-        // background: white;
-        // border: 1px solid #d1cbb9;
-        padding: 0.77em;
-        & p:last-child
-          margin-bottom: 0;
+        line-height: 1;
+        margin-bottom: 0.2em;
+      & p:last-child
+        margin-bottom: 0;
     // .comment.write block
     &.write
       & .icon-info-sign
@@ -171,7 +171,7 @@ i
         font-size: 1.08em;
         position: absolute;
         right: 0;
-        top: 0;
+        top: -1px;
         visibility: hidden;
       & .comment-body
         padding: 0;
@@ -199,7 +199,7 @@ i
           border: 1px solid #f3720b;
           margin-bottom: 0.77em;
           & textarea.comment-text
-            min-height: 70px;
+            min-height: 57px;
             visibility: visible;
         & .comment-action-btns
           display: block;

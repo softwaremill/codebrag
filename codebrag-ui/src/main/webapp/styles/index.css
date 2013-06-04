@@ -130,6 +130,9 @@ h5,
 h6 {
   font-family: 'PT Sans', Tahoma, sans-serif;
 }
+p {
+  line-height: 1.4;
+}
 ::selection {
   background-color: #fcd01a;
   color: #2f0200;
@@ -188,12 +191,10 @@ i {
   width: 2.3em;
 }
 .comments-container .comment .authored-box .info-line {
-  margin-bottom: 0.35em;
+  line-height: 1;
+  margin-bottom: 0.2em;
 }
-.comments-container .comment .authored-box .comment-body {
-  padding: 0.77em;
-}
-.comments-container .comment .authored-box .comment-body p:last-child {
+.comments-container .comment .authored-box p:last-child {
   margin-bottom: 0;
 }
 .comments-container .comment.write .icon-info-sign {
@@ -201,7 +202,7 @@ i {
   font-size: 1.08em;
   position: absolute;
   right: 0;
-  top: 0;
+  top: -1px;
   visibility: hidden;
 }
 .comments-container .comment.write .comment-body {
@@ -241,7 +242,7 @@ i {
   margin-bottom: 0.77em;
 }
 .comments-container .comment.write.active .comment-body textarea.comment-text {
-  min-height: 70px;
+  min-height: 57px;
   visibility: visible;
 }
 .comments-container .comment.write.active .comment-action-btns {
