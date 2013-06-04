@@ -28,7 +28,7 @@ module.exports = function(grunt) {
     connect: {
       server: {
         options: {
-          port: 8080,
+          port: 9090,
           base: '../codebrag-ui/src/main/webapp/',
           keepalive: true
         }
