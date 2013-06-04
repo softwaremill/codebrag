@@ -28,13 +28,14 @@ angular.module('codebrag.session')
         };
 
         $scope.loggedInUser = function () {
-            if (authService.isAuthenticated()) {
-                return authService.loggedInUser;
+            if (!authService.isAuthenticated()) {
+                throw new Error("Cannot access current user, not authenticated");
             }
+            return authService.loggedInUser;
         };
 
         $scope.logout = function () {
-            authService.logout().then(function (data) {
+            authService.logout().then(function () {
                 $state.transitionTo('home');
             });
         };
@@ -42,6 +43,11 @@ angular.module('codebrag.session')
         function clearPasswordField() {
             $scope.loginForm.password.$dirty = false;
             $scope.user.password = '';
+        }
+
+        function clearLoginField() {
+            $scope.loginForm.login.$dirty = false;
+            $scope.user.login = '';
         }
 
         function loginFormValid() {
@@ -52,9 +58,12 @@ angular.module('codebrag.session')
         }
 
         function logInUser() {
-            authService.login($scope.user).then(null, function (response) {
+            authService.login($scope.user).then(function() {
+                clearLoginField();
                 clearPasswordField();
-                if (response.status === 401) {
+            }, function (errorResponse) {
+                clearPasswordField();
+                if (errorResponse.status === 401) {
                     $rootScope.$broadcast(events.httpAuthError, {status: 401, text: 'Invalid credentials'})
                 }
             });
