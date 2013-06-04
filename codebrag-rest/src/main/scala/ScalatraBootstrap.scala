@@ -1,6 +1,7 @@
 import com.softwaremill.codebrag.dao.MongoInit
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.Beans
+import java.util.Locale
 import org.scalatra._
 import javax.servlet.ServletContext
 
@@ -13,6 +14,7 @@ class ScalatraBootstrap extends LifeCycle with Beans {
   val Prefix = "/rest/"
 
   override def init(context: ServletContext) {
+    Locale.setDefault(Locale.US) // set default locale to prevent Scalatra from sending cookie expiration date in polish format :)
     MongoInit.initialize()
     context.mount(new UptimeServlet, Prefix + "uptime")
     context.mount(new UsersServlet(authenticator, swagger), Prefix + "users")
