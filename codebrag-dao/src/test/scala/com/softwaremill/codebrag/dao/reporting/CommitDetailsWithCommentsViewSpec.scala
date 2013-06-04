@@ -10,7 +10,7 @@ import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
 
 class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with CommentListFinderVerifyHelpers {
 
-  val Commit = CommitView("123", "123abc", "This is commit message", "John Doe", "John Doe", DateTime.now.toDate)
+  val Commit = CommitView("123", "123abc", "This is commit message", "John Doe", DateTime.now.toDate)
   val Lines = List(DiffLine("line one", 1, 2, "added"), DiffLine("line two", 2, 2, "added"))
   val Diffs = List(CommitFileDiff("test.txt", "added", Lines, FileDiffStats(2, 0)))
   val EmptyComments = CommentsView(comments = Nil, inlineComments = Map())
