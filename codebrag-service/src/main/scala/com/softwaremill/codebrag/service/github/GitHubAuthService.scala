@@ -8,6 +8,7 @@ import org.eclipse.egit.github.core.service.UserService
 import org.eclipse.egit.github.core.User
 import scala.collection.JavaConversions._
 import com.softwaremill.codebrag.service.config.CodebragConfiguration
+import org.eclipse.jgit.util.StringUtils
 
 class GitHubAuthService {
   implicit val formats = DefaultFormats
@@ -31,7 +32,14 @@ class GitHubAuthService {
     val client = new GitHubClient().setOAuth2Token(accessToken.access_token)
     val userService = new UserService(client)
     val user = userService.getUser
-    GitHubUser(user.getLogin, user.getName, readEmail(user, userService), user.getAvatarUrl)
+    GitHubUser(user.getLogin, fullNameOrLogin(user), readEmail(user, userService), user.getAvatarUrl)
+  }
+
+  private def fullNameOrLogin(user: User) = {
+    if (StringUtils.isEmptyOrNull(user.getName)) {
+      user.getLogin
+    }
+    else user.getName
   }
 
   def readEmail(user: User, service: UserService) = {
