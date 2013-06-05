@@ -4,17 +4,35 @@ angular.module('codebrag.common.directives')
         return {
             template: '<img src="{{avatarUrl}}"></img>',
             restrict: 'E',
-            scope: {
-                url: '='
-            },
+            scope: true,
             link: function(scope, el, attrs) {
-                scope.$watch('url', function(val) {
-                    if(!scope.url || !scope.url.length) {
+                scope.$watch(attrs.url, function(val, old) {
+                    if(!val || !val.length) {
                         scope.avatarUrl = '/images/avatar.png';
                     } else {
-                        scope.avatarUrl = scope.url;
+                        scope.avatarUrl = val;
                     }
                 });
+            }
+        }
+    })
+
+    .directive('loggedInUserAvatar', function(authService, events) {
+
+        return {
+            template: '<img src="{{avatarUrl}}"></img>',
+            restrict: 'E',
+            scope: {},
+            link: function(scope, el, attrs) {
+                scope.$on(events.loggedIn, function() {
+                    authService.requestCurrentUser().then(function(user) {
+                        if(!user.avatarUrl || !user.avatarUrl.length) {
+                            scope.avatarUrl = '/images/avatar.png';
+                        } else {
+                            scope.avatarUrl = user.avatarUrl;
+                        }
+                    });
+                })
             }
         }
     });

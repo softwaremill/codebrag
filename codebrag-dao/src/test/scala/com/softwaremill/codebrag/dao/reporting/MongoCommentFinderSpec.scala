@@ -17,8 +17,8 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
 
   val CommitId = oid(1)
 
-  val John = User(oid(2), Authentication.basic("john", "pass"), "John", "john@doe.com", "123abc", "avatarUrl")
-  val Mary = User(oid(3), Authentication.basic("mary", "pass"), "Mary", "mary@smith.com", "123abc", "avatarUrl")
+  val John = User(oid(2), Authentication.basic("john", "pass"), "John", "john@doe.com", "123abc", "http://john.doe.com/avatar")
+  val Mary = User(oid(3), Authentication.basic("mary", "pass"), "Mary", "mary@smith.com", "123abc", "http://mary.com/avatar")
 
   val StoredCommitComments = List(
     CommentAssembler.commitCommentFor(CommitId).withAuthorId(John.id).withMessage("Monster class").get,
@@ -100,6 +100,31 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     val fileComments = commentsView.inlineComments
     val fileComments2 = commentsView.inlineComments
     orderedCommentMessagesFor(fileComments, "Exception.scala", 10) should be(List("You'd better refactor that", "Man, it's Monday"))
+  }
+
+  it should "return author avatar in comment" in {
+    // given
+    val johnComment = StoredCommitComments(0)
+
+    // when
+    val commentsView = commentListFinder.commentsForCommit(CommitId)
+
+    // then
+    commentsView.comments(0).authorAvatarUrl should equal(John.avatarUrl)
+  }
+
+  it should "return empty string as author avatar if author not registered in codebrag" in {
+    // given
+    val emptyAvatarUrl = ""
+    val dummyCommitId = ObjectIdTestUtils.oid(123123)
+    val commentFromNonexistingUser = CommentAssembler.commitCommentFor(dummyCommitId).withAuthorId(ObjectIdTestUtils.oid(1111111)).get
+    commentDao.save(commentFromNonexistingUser)
+
+    // when
+    val commentsView = commentListFinder.commentsForCommit(dummyCommitId)
+
+    // then
+    commentsView.comments(0).authorAvatarUrl should equal(emptyAvatarUrl)
   }
 
 }

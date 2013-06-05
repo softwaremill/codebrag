@@ -21,7 +21,7 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpoi
     haltIfNotAuthenticated()
     val savedComment = commentActivity.addCommentToCommit(extractComment)
     userDao.findById(savedComment.authorId) match {
-      case Some(user) => AddCommentResponse(SingleCommentView(savedComment.id.toString, user.name, savedComment.message, savedComment.postingTime.toDate))
+      case Some(user) => AddCommentResponse(SingleCommentView(savedComment.id.toString, user.name, savedComment.message, savedComment.postingTime.toDate, user.avatarUrl))
       case None => halt(400, s"Invalid user id $savedComment.authorId")
     }
   }

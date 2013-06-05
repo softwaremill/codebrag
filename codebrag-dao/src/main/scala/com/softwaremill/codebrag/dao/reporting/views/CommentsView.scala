@@ -7,5 +7,5 @@ object CommentsView {
 }
 
 case class CommentsView(comments: List[SingleCommentView], inlineComments: Map[String, CommentsView.LineToCommentListMap])
-case class SingleCommentView(id: String, authorName: String, message: String, time: Date)
+case class SingleCommentView(id: String, authorName: String, message: String, time: Date, authorAvatarUrl: String = "")
 

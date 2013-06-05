@@ -107,7 +107,7 @@
                 <!--inline comment start-->
                 <div class="comment" ng-repeat="comment in lineComments">
                     <div class="authored-box">
-                        <div class="author-box"><img src="images/avatar.png"></div>
+                        <div class="author-box"><user-avatar url="comment.authorAvatarUrl"></user-avatar></div>
                         <div class="info-box">
                             <div class="info-line"><span class="username">{{comment.authorName}}</span><span class="time">{{comment.time | relativeDate}}</span></div>
                             <div class="comment-body" id="{{comment.id}}">
@@ -142,7 +142,7 @@
             </ul>
         </nav>
         <div class="user-info" ng-show="isLogged()"><span class="username"><a  ng-click="logout()">Logout</a></span></div>
-        <div class="user-info" ng-show="isLogged()"><span class="username"><a href="#/profile">Signed in as {{(loggedInUser()).fullName}}</a></span><img ng-src="{{(loggedInUser()).avatarUrl}}"></div>
+        <div class="user-info" ng-show="isLogged()"><span class="username"><a href="#/profile">Signed in as {{loggedInUser().fullName}}</a></span><logged-in-user-avatar></logged-in-user-avatar></div>
     </header>
     <login-form></login-form>
     <section ui-view></section>

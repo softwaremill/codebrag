@@ -49,7 +49,7 @@
     <div class="comments-container">
         <div class="comment" ng-repeat="comment in currentCommit.comments">
             <div class="authored-box">
-                <div class="author-box"><img src="images/avatar.png"></div>
+                <div class="author-box"><user-avatar url="comment.authorAvatarUrl"></user-avatar></div>
                 <div class="info-box">
                     <div class="info-line"><span class="username">{{comment.authorName}}</span><span class="time">{{comment.time | relativeDate}}</span></div>
                     <div id="{{comment.id}}" class="comment-body">

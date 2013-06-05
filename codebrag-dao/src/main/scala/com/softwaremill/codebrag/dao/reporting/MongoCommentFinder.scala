@@ -29,29 +29,29 @@ class MongoCommentFinder(userDao: UserDAO) extends CommentFinder {
           case (lineNumber, lineComments) => (lineNumber,
             lineComments.map({
               line =>
-                val authorName = findCommenterName(commentersCached, line.authorId)
-                SingleCommentView(line.id.toString, authorName, line.message, line.postingTime.toDate)
+                val (authorName, avatarUrl) = findCommenterDetails(commentersCached, line.authorId)
+                SingleCommentView(line.id.toString, authorName, line.message, line.postingTime.toDate, avatarUrl)
             }))
         }))
     })
   }
 
-  private def findAllCommentersFor(comments: List[CommentBase]): List[(ObjectId, String)] = {
-    UserRecord.select(_.id, _.name).where(_.id in comments.map(_.authorId)).fetch()
+  private def findAllCommentersFor(comments: List[CommentBase]): List[(ObjectId, String, String)] = {
+    UserRecord.select(_.id, _.name, _.avatarUrl).where(_.id in comments.map(_.authorId)).fetch()
   }
 
-  private def findCommenterName(commenters: List[(ObjectId, String)], commenterId: ObjectId) = {
+  private def findCommenterDetails(commenters: List[(ObjectId, String, String)], commenterId: ObjectId) = {
     commenters.find(_._1 == commenterId) match {
-      case Some(author) => author._2
-      case None => "Unknown author"
+      case Some(author) => (author._2, author._3)
+      case None => ("Unknown author", "")
     }
   }
 
   private def mapCommitCommentsToView(comments: List[EntireCommitComment]) = {
     val commentersCached = findAllCommentersFor(comments)
     comments.map(comment => {
-      val authorName = findCommenterName(commentersCached, comment.authorId)
-      SingleCommentView(comment.id.toString, authorName, comment.message, comment.postingTime.toDate)
+      val (authorName, avatarUrl) = findCommenterDetails(commentersCached, comment.authorId)
+      SingleCommentView(comment.id.toString, authorName, comment.message, comment.postingTime.toDate, avatarUrl)
     })
   }
 
