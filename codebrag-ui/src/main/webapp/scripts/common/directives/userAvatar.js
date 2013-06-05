@@ -2,7 +2,7 @@ angular.module('codebrag.common.directives')
 
     .directive('userAvatar', function() {
         return {
-            template: '<img src="{{avatarUrl}}"></img>',
+            template: '<img ng-src="{{avatarUrl}}"></img>',
             restrict: 'E',
             scope: true,
             link: function(scope, el, attrs) {
@@ -20,7 +20,7 @@ angular.module('codebrag.common.directives')
     .directive('loggedInUserAvatar', function(authService, events) {
 
         return {
-            template: '<img src="{{avatarUrl}}"></img>',
+            template: '<img ng-src="{{avatarUrl}}"></img>',
             restrict: 'E',
             scope: {},
             link: function(scope, el, attrs) {
