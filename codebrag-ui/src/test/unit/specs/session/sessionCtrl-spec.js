@@ -70,13 +70,16 @@ describe("Session Controller", function () {
         expect(loggedInUser).toBe(expectedUser);
     }));
 
-    it('Should throw exception when trying to get current user if not authenticated', inject(function ($state, authService) {
+    it('Should return an empty object when trying to get current user if not authenticated', inject(function ($state, authService) {
         // Given
         spyOn($state, 'transitionTo');
         spyOn(authService, 'isAuthenticated').andReturn(false);
 
+        // When
+        var currentUser = scope.loggedInUser();
+
         // Then
-        expect(scope.loggedInUser.bind(scope)).toThrow(new Error("Cannot access current user, not authenticated"));
+        expect(currentUser).toEqual({});
     }));
 
     it('Should have user not logged', inject(function ($state) {

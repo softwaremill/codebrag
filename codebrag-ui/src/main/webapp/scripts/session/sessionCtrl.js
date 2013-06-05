@@ -29,7 +29,7 @@ angular.module('codebrag.session')
 
         $scope.loggedInUser = function () {
             if (!authService.isAuthenticated()) {
-                throw new Error("Cannot access current user, not authenticated");
+                return {};
             }
             return authService.loggedInUser;
         };
