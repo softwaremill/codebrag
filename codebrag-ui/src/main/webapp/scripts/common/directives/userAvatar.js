@@ -8,11 +8,13 @@ angular.module('codebrag.common.directives')
                 url: '='
             },
             link: function(scope, el, attrs) {
-                if(!scope.url || !scope.url.length) {
-                    scope.avatarUrl = '/images/avatar.png';
-                } else {
-                    scope.avatarUrl = scope.url;
-                }
+                scope.$watch('url', function(val) {
+                    if(!scope.url || !scope.url.length) {
+                        scope.avatarUrl = '/images/avatar.png';
+                    } else {
+                        scope.avatarUrl = scope.url;
+                    }
+                });
             }
         }
     });
