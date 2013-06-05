@@ -54,7 +54,10 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
         request.getSession().removeAttribute(RedirectToUrlParam)
         SeeOther(redirectPath)
       }
-      case None => Forbidden
+      case None => {
+        request.getSession().invalidate()
+        Forbidden
+      }
     }
   }
 
