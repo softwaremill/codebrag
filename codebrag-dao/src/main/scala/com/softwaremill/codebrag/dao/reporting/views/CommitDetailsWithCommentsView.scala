@@ -43,12 +43,12 @@ object DiffLineView {
 
 object CommitDetailsWithCommentsView {
 
-  val MaxAcceptableDiffLinesNumber = 600
+  val MaxAcceptableDiffLinesCount = 600
   type StrLineToCommentListMap = Map[String, List[SingleCommentView]]
 
   def buildFrom(commit: CommitView, comments: CommentsView, diffs: List[CommitFileDiff]) = {
     val stringifiedCommentsMap = mapKeysToString(comments)
-    val (smallerDiffs, largerDiffs) = diffs.partition(_.lines.size < MaxAcceptableDiffLinesNumber)
+    val (smallerDiffs, largerDiffs) = diffs.partition(_.lines.size < MaxAcceptableDiffLinesCount)
     CommitDetailsWithCommentsView(commit, buildDiffView(smallerDiffs), buildSupressedDiffView(largerDiffs), comments.comments, stringifiedCommentsMap)
   }
 

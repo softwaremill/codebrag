@@ -66,7 +66,7 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
   }
 
   it should "supress diffs for large files" in {
-    val largeFileSize = CommitDetailsWithCommentsView.MaxAcceptableDiffLinesNumber + 100; // diff size exceeding max acceptable size
+    val largeFileSize = CommitDetailsWithCommentsView.MaxAcceptableDiffLinesCount + 100; // diff size exceeding max acceptable size
     val diffLines = buildDummyDiffWithLinesNumber(largeFileSize)
     val largeFileDiff = CommitFileDiff("largefile.txt", "added", diffLines, FileDiffStats(largeFileSize, 0))
 
@@ -78,7 +78,7 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
 
 
   it should "keep regular diff for small files" in {
-    val smallFileSize = CommitDetailsWithCommentsView.MaxAcceptableDiffLinesNumber - 100; // diff size smaller than max acceptable size
+    val smallFileSize = CommitDetailsWithCommentsView.MaxAcceptableDiffLinesCount - 100; // diff size smaller than max acceptable size
     val diffLines = buildDummyDiffWithLinesNumber(smallFileSize)
     val smallFileDiff = CommitFileDiff("largefile.txt", "added", diffLines, FileDiffStats(smallFileSize, 0))
 
