@@ -76,8 +76,7 @@ codebrag.AsyncCollection.prototype = {
      * @returns a promise of removing matching element and returning element on same index after removing.
      */
     removeElementAndGetNext: function(matchFn, promise) {
-        var self = this;
-        return self.removeElement(matchFn, promise).then(self._getElementOrNull.bind(self));
+        return this.removeElement(matchFn, promise).then(this._getElementOrNull.bind(this));
     },
 
     _indexOf: function(matchFn) {
