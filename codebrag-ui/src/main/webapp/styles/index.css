@@ -193,6 +193,9 @@ i {
 .comments-container .comment .authored-box p:last-child {
   margin-bottom: 0;
 }
+.comments-container .comment .authored-box p:first-child {
+  margin-top: 0;
+}
 .comments-container .comment.write .icon-info-sign {
   color: #d4c195;
   font-size: 1.08em;
@@ -578,7 +581,7 @@ form .form-group span.text-error:after {
   margin: 0;
   padding: 0;
   text-align: right;
-  width: 1%;
+  width: 50px;
 }
 .diff-file-container .diff-line-num .button {
   background: transparent;
