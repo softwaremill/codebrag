@@ -762,18 +762,7 @@ tr:hover .diff-line-num .button i {
   height: 24px;
   margin-bottom: 1.15em;
   position: relative;
-  width: 55px;
-  -webkit-animation: spinner 6600ms steps(30) infinite both;
-  -moz-animation: spinner 6600ms steps(30) infinite both;
-  -o-animation: spinner 6600ms steps(30) infinite both;
-  -ms-animation: spinner 6600ms steps(30) infinite both;
-  animation: spinner 6600ms steps(30) infinite both;
-}
-.spinner img {
-  position: absolute;
-  right: 0;
-  height: 24px;
-  width: 55px;
+  text-align: center;
 }
 @media all and (max-width: 1279px) {
   html {
