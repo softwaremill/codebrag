@@ -561,14 +561,22 @@ tr:hover .diff-line-num .button
 
 .diff-not-displayed
   margin-bottom: 2.3em;
+  & ul
+    margin: 0;
+    padding: 0;
+  & li
+    list-style: none;
 
 .diff-not-displayed h6
   color: #f3720b;
+  font-size: 1em;
   font-weight: normal;
+  margin: 0 0 0.38em 0;
   text-transform: uppercase;
 
 .diff-not-displayed-file-name
   font-family: Consolas, "Liberation Mono", Courier, monospace;
+  line-height: 1.4;
   list-style: none;
 
 .diff-not-displayed-stat

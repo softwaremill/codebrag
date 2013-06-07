@@ -683,13 +683,23 @@ tr:hover .diff-line-num .button i {
 .diff-not-displayed {
   margin-bottom: 2.3em;
 }
+.diff-not-displayed ul {
+  margin: 0;
+  padding: 0;
+}
+.diff-not-displayed li {
+  list-style: none;
+}
 .diff-not-displayed h6 {
   color: #f3720b;
+  font-size: 1em;
   font-weight: normal;
+  margin: 0 0 0.38em 0;
   text-transform: uppercase;
 }
 .diff-not-displayed-file-name {
   font-family: Consolas, "Liberation Mono", Courier, monospace;
+  line-height: 1.4;
   list-style: none;
 }
 .diff-not-displayed-stat {
