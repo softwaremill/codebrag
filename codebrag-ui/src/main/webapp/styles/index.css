@@ -563,6 +563,7 @@ form .form-group span.text-error:after {
   font-size: 1em;
   font-weight: normal;
   padding: 0.77em 1.15em;
+  text-align: left;
 }
 .diff-file-container tbody {
   font-size: 13px;
