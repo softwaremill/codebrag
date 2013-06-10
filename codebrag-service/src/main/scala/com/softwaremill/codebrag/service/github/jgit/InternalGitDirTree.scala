@@ -1,6 +1,7 @@
 package com.softwaremill.codebrag.service.github.jgit
 
 import java.nio.file.{Paths, Path}
+import com.softwaremill.codebrag.service.config.CodebragConfiguration
 
 class InternalGitDirTree {
 
@@ -12,5 +13,9 @@ class InternalGitDirTree {
 }
 
 object InternalGitDirTree {
-  val Root = "./repos"
+
+  val Root = (
+    if (!CodebragConfiguration.localGitPath.equals(""))
+      CodebragConfiguration.localGitPath
+    else ".") + "/repos"
 }

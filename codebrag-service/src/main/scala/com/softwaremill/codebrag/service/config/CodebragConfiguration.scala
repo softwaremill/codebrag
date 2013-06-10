@@ -23,5 +23,5 @@ object CodebragConfiguration {
   val resetLinkPattern    = config.get("resetLinkPattern")
   val githubClientId      = config.get("GitHubClientId")
   val githubClientSecret  = config.get("GitHubClientSecret")
-
+  val localGitPath        = config.get("localGitPath")
 }
