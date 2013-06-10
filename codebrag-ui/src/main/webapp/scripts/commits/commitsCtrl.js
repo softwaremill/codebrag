@@ -1,8 +1,9 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, $http, commitsListService, commitLoadFilter, $state) {
+    .controller('CommitsCtrl', function ($scope, $http, commitsListService, commitLoadFilter, $state, events) {
 
         $scope.syncCommits = commitsListService.syncCommits;
+        $scope.toReviewCount = 0;
 
         $scope.switchToAll = function () {
             $scope.loadAllCommits();
@@ -27,7 +28,7 @@ angular.module('codebrag.commits')
         };
 
         $scope.canLoadMore = function () {
-            return !commitLoadFilter.isAll();
+            return !commitLoadFilter.isAll() && $scope.toReviewCount > commitLoadFilter.maxCommitsOnList();
         };
 
         $scope.loadMoreCommits = function () {
@@ -35,5 +36,10 @@ angular.module('codebrag.commits')
         };
 
         $scope.loadPendingCommits();
+
+        $scope.$on(events.commitCountChanged, function(event, data) {
+            $scope.toReviewCount = data.commitCount;
+        });
+
 
     });
