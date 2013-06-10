@@ -101,6 +101,10 @@
         </tr>
     </script>
 
+    <script type="text/ng-template" id="errorPopup">
+        <div class="popup-error"><i class="icon-warning-sign"></i>Communication error occured...</div>
+    </script>
+
     <script type="text/ng-template" id="inlineComment">
         <tr class="comments-container inline-comments-container">
             <td colspan="3">
@@ -146,6 +150,7 @@
     </header>
     <login-form></login-form>
     <section ui-view></section>
+    <div message-popup></div>
 
 </body>
 </html>
