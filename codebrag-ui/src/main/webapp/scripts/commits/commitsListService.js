@@ -2,8 +2,6 @@ angular.module('codebrag.commits')
 
     .factory('commitsListService', function($resource, $q, $http, Commits, $rootScope, commitLoadFilter, events) {
 
-        var MAX_LOAD_COMMIT_COUNT = 7;
-
         var commits = new codebrag.AsyncCollection();
 
         function loadCommitsPendingReview() {
@@ -34,7 +32,7 @@ angular.module('codebrag.commits')
         }
 
         function loadMoreCommits() {
-            return loadMore(MAX_LOAD_COMMIT_COUNT);
+            return loadMore(commitLoadFilter.maxCommitsOnList());
         }
 
         function _loadCommits() {

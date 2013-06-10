@@ -153,8 +153,9 @@ describe("CommitsListService", function () {
         expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
     }));
 
-    it('should load additional commits from server', inject(function (commitsListService) {
+    it('should load additional commits from server', inject(function (commitsListService, commitLoadFilter) {
         // Given
+        spyOn(commitLoadFilter, 'maxCommitsOnList').andReturn(7);
         var loadedCommits = commitArrayOfSize(3);
         $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
         commitsListService.loadCommitsPendingReview();
@@ -200,8 +201,9 @@ describe("CommitsListService", function () {
         expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 13});
     }));
 
-    it('should broadcast an event after loading additional commits', inject(function (commitsListService, events) {
+    it('should broadcast an event after loading additional commits', inject(function (commitsListService, events, commitLoadFilter) {
         // Given
+        spyOn(commitLoadFilter, 'maxCommitsOnList').andReturn(7);
         var loadedCommits = commitArrayOfSize(3);
         $httpBackend.whenGET('rest/commits?filter=pending').respond({totalCount: 13, commits:loadedCommits});
         commitsListService.loadCommitsPendingReview();
@@ -219,8 +221,9 @@ describe("CommitsListService", function () {
         expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 9});
     }));
 
-    it('should not change current commits when no additional commits are returned', inject(function (commitsListService) {
+    it('should not change current commits when no additional commits are returned', inject(function (commitsListService, commitLoadFilter) {
         // Given
+        spyOn(commitLoadFilter, 'maxCommitsOnList').andReturn(7);
         var loadedCommits = commitArrayOfSize(3);
         $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
         commitsListService.loadCommitsPendingReview();
