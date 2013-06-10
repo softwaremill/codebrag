@@ -464,8 +464,6 @@ form .form-group span.text-error:after {
   text-align: center;
   text-transform: uppercase;
   cursor: pointer;
-  position: fixed;
-  width: 25%;
 }
 .commits-count span {
   margin-right: 3px;
