@@ -4,6 +4,7 @@ angular.module('codebrag.commits')
 
         $scope.syncCommits = commitsListService.syncCommits;
         $scope.toReviewCount = 0;
+        $scope.loadedCommitCount = 0;
 
         $scope.switchToAll = function () {
             $scope.loadAllCommits();
@@ -20,19 +21,25 @@ angular.module('codebrag.commits')
         }
 
         $scope.loadAllCommits = function () {
-            $scope.commits = commitsListService.loadAllCommits();
+            _loadCommitsFromPromise(commitsListService.loadAllCommits());
         };
 
         $scope.loadPendingCommits = function () {
-            $scope.commits = commitsListService.loadCommitsPendingReview();
+            _loadCommitsFromPromise(commitsListService.loadCommitsPendingReview());
         };
 
+        function _loadCommitsFromPromise(promise) {
+            promise.then(function(commits) {
+                $scope.commits = commits;
+                $scope.loadedCommitCount = commits.length;
+            })
+        }
         $scope.canLoadMore = function () {
-            return !commitLoadFilter.isAll() && $scope.toReviewCount > commitLoadFilter.maxCommitsOnList();
+            return !commitLoadFilter.isAll() && $scope.toReviewCount > $scope.loadedCommitCount;
         };
 
         $scope.loadMoreCommits = function () {
-            $scope.commits = commitsListService.loadMoreCommits();
+            _loadCommitsFromPromise(commitsListService.loadMoreCommits());
         };
 
         $scope.loadPendingCommits();
