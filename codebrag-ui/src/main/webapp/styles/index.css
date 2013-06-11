@@ -116,6 +116,7 @@ body {
 body {
   background: #f7f5ef;
   font-family: 'PT Sans', Tahoma, sans-serif;
+  line-height: 1.2;
 }
 h1,
 h2,
@@ -187,7 +188,7 @@ i {
   width: 2.3em;
 }
 .comments-container .comment .authored-box .info-line {
-  line-height: 1;
+  line-height: 1.2;
   margin-bottom: 0.2em;
 }
 .comments-container .comment .authored-box p:last-child {
