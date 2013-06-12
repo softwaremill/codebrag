@@ -37,7 +37,7 @@ angular.module('codebrag.commits')
         var fileNameDataAttr = 'file-name';
         var lineNumberDataAttr = 'line-number';
 
-        function InlineCommentForm(rowClicked, fileDiffRoot) {
+        function InlineCommentForm(rowClicked) {
 
             var fileDiffLine = rowClicked.parents(fileDiffLineSelector);
 
@@ -56,7 +56,7 @@ angular.module('codebrag.commits')
 
             this.commentParams = function() {
                 return {
-                    fileName: fileDiffRoot.data(fileNameDataAttr),
+                    fileName: fileDiffLine.data(fileNameDataAttr),
                     lineNumber: fileDiffLine.data(lineNumberDataAttr)
                 }
             };
@@ -71,7 +71,7 @@ angular.module('codebrag.commits')
             var fileDiffRoot = el.parent(fileDiffRootSelector);
             fileDiffRoot.on('click', clickableSelector, function(event) {
                 var elementClicked = $(event.currentTarget);
-                var commentForm = new InlineCommentForm(elementClicked, fileDiffRoot);
+                var commentForm = new InlineCommentForm(elementClicked);
                 if(commentForm.isAlreadyPresent()) {
                     return;
                 }

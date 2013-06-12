@@ -3,14 +3,14 @@
     <commit-diff data="currentCommit" compile="tfoot">
         {{#each currentCommit.diff}}
         <div class="diff-table-wrapper">
-            <table class="diff-file-container" data-file-name="{{filename}}">
+            <table class="diff-file-container">
                 <thead class="diff-file-name">
                     <tr>
                         <th colspan="3">{{filename}}</th>
                     </tr>
                 </thead>
                 <!-- {{#each lines}} -->
-                <tbody data-line-number="{{@index}}">
+                <tbody data-line-number="{{@index}}" data-file-name="{{../filename}}">
                     <tr class="{{lineType}}">
                         <td class="diff-line-num">
                             <a class="like button">
