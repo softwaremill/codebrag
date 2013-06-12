@@ -1,8 +1,7 @@
-import _root_.akka.actor.Props
 import com.softwaremill.codebrag.dao.MongoInit
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
-import com.softwaremill.codebrag.service.updater.{RepositoryUpdateScheduler, LocalRepositoryUpdater}
+import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.{EventingConfiguration, Beans}
 import java.util.Locale
 import org.scalatra._
@@ -19,7 +18,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
 
     Locale.setDefault(Locale.US) // set default locale to prevent Scalatra from sending cookie expiration date in polish format :)
     MongoInit.initialize()
-    RepositoryUpdateScheduler.initialize(actorSystem)
+    RepositoryUpdateScheduler.initialize(actorSystem, importerFactory)
     context.mount(new UptimeServlet, Prefix + "uptime")
     context.mount(new UsersServlet(authenticator, swagger), Prefix + "users")
     context.mount(new CommitsServlet(authenticator, commitListFinder, commentListFinder, commentActivity, commitReviewTaskDao, userDao, swagger, diffWithCommentsService, importerFactory), Prefix + CommitsServlet.MAPPING_PATH)

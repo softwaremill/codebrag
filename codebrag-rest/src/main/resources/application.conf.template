@@ -12,5 +12,6 @@ encoding=UTF-8
 resetLinkPattern=
 
 localGitPath=./../
+syncUserLogin=
 GitHubClientId=
 GitHubClientSecret=
