@@ -470,7 +470,7 @@ form .form-group span.text-error:after {
   margin-right: 3px;
 }
 .diff {
-  padding: 0.77em;
+  padding: 0.77em 0.77em 2.3em;
   z-index: 100;
 }
 .diff.opened {
