@@ -1,13 +1,13 @@
 <div ng-controller="DiffCtrl" scrollable="scrollTo">
 
-    <commit-diff data="currentCommit" compile="thead">
+    <commit-diff data="currentCommit" compile="tfoot">
         {{#each currentCommit.diff}}
         <div class="diff-table-wrapper">
             <table class="diff-file-container" data-file-name="{{filename}}">
-                <thead class="diff-file-name" inline-commentable live-comments="currentCommit.inlineComments['{{filename}}']">
-                <tr>
-                    <th colspan="3">{{filename}}</th>
-                </tr>
+                <thead class="diff-file-name">
+                    <tr>
+                        <th colspan="3">{{filename}}</th>
+                    </tr>
                 </thead>
                 <!-- {{#each lines}} -->
                 <tbody data-line-number="{{@index}}">
@@ -28,6 +28,11 @@
                     </tr>
                 </tbody>
                 <!-- {{/each}} -->
+                <!-- angular hooks to bind to diff elements -->
+                <tfoot
+                     inline-commentable
+                     live-comments="currentCommit.inlineComments['{{filename}}']">
+                </tfoot>
             </table>
         </div>
         {{/each}}
