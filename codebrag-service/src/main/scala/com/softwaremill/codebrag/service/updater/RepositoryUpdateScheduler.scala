@@ -15,7 +15,7 @@ object RepositoryUpdateScheduler {
     val importService = importServiceFactory.createInstance(authorizedLogin)
     val updaterActor = actorSystem.actorOf(Props(new LocalRepositoryUpdater("softwaremill", "codebrag", importService)))
 
-    actorSystem.scheduler.schedule(20 seconds,
+    actorSystem.scheduler.schedule(60 seconds,
       45 seconds,
       updaterActor,
       LocalRepositoryUpdater.Tick)

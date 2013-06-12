@@ -50,6 +50,8 @@ class CommitInfoAssembler(var commit: CommitInfo) {
 
 object CommitInfoAssembler {
 
+  def randomCommits(count: Int) = { List.fill(count)(createRandomCommit) }
+
   def randomCommit = new CommitInfoAssembler(createRandomCommit)
 
   private def createRandomCommit = {

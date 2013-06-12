@@ -12,12 +12,15 @@ import service.github._
 import service.user.Authenticator
 import pl.softwaremill.common.util.time.RealTimeClock
 import com.softwaremill.codebrag.service.github.jgit.JgitGitHubCommitImportServiceFactory
+import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
+import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 
 
-trait Beans {
+trait Beans extends ActorSystemSupport {
   implicit lazy val clock = new RealTimeClock
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator
   lazy val authenticator = new Authenticator(userDao)
+  lazy val eventBus = new AkkaEventBus(actorSystem)
   lazy val userDao = new MongoUserDAO
   lazy val commitInfoDao = new MongoCommitInfoDAO
   lazy val followupDao = new MongoFollowupDAO
@@ -31,8 +34,7 @@ trait Beans {
   lazy val notificationCountFinder = new MongoNotificationCountFinder
   lazy val converter = new GitHubCommitInfoConverter()
   lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
-  lazy val reviewTaskGenerator = new CommitReviewTaskGenerator(userDao, commitReviewTaskDao)
-  lazy val importerFactory = new JgitGitHubCommitImportServiceFactory(commitInfoDao, reviewTaskGenerator, userDao)
+  lazy val importerFactory = new JgitGitHubCommitImportServiceFactory(commitInfoDao, userDao, eventBus)
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
   lazy val followupFinder = new MongoFollowupFinder
   lazy val commentActivity = new AddCommentActivity(commentService, followupService)

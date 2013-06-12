@@ -5,6 +5,8 @@ import org.bson.types.ObjectId
 
 trait CommitInfoDAO {
 
+  def hasCommits: Boolean
+
   def storeCommit(commit: CommitInfo)
 
   def findBySha(sha: String): Option[CommitInfo]

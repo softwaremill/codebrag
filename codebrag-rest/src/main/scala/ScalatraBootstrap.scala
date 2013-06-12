@@ -1,6 +1,5 @@
 import com.softwaremill.codebrag.dao.MongoInit
 import com.softwaremill.codebrag.rest._
-import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.{EventingConfiguration, Beans}
 import java.util.Locale
@@ -11,7 +10,7 @@ import javax.servlet.ServletContext
  * filters. It's also a good place to put initialization code which needs to
  * run at application start (e.g. database configurations), and init params.
  */
-class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration with ActorSystemSupport {
+class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration {
   val Prefix = "/rest/"
 
   override def init(context: ServletContext) {

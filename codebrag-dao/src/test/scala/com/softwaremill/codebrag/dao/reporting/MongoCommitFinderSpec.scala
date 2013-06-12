@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.dao.reporting
 
 import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{Authentication, User, CommitInfo}
+import com.softwaremill.codebrag.domain.{CommitReviewTask, Authentication, User, CommitInfo}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
@@ -212,9 +212,7 @@ class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wi
 
 
   def storeCommitReviewTasksFor(userId: ObjectId, commits: CommitInfo*) {
-    commits.foreach{commit =>
-      commit.createReviewTasksFor(List(user)).foreach{ commitReviewTaskDao.save(_)}
-    }
+    commits.map { commit => CommitReviewTask(commit.id, user.id) }.foreach { commitReviewTaskDao.save(_) }
   }
 
   def foundCommitView(commitsFound: CommitListView, storedCommits: List[CommitInfo], index: Int): CommitView = {
