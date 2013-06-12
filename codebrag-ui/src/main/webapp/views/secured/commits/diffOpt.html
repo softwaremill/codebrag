@@ -31,7 +31,9 @@
                 <!-- angular hooks to bind to diff elements -->
                 <tfoot
                      inline-commentable
-                     live-comments="currentCommit.inlineComments['{{filename}}']">
+                     live-comments="currentCommit.inlineComments['{{filename}}']"
+                     live-likes="currentCommit.lineLikes['{{filename}}']"
+                     inline-like>
                 </tfoot>
             </table>
         </div>

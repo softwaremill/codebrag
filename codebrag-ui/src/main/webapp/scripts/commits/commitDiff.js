@@ -150,6 +150,28 @@ angular.module('codebrag.commits')
             link: linkFn
         }
 
+    })
+
+    .directive('inlineLike', function() {
+
+        var fileDiffRootSelector = 'table';
+        var lineDiffRootSelector = 'tbody';
+        var clickSelector = '.like';
+
+        var fileNameDataAttr = 'file-name';
+        var lineNumberDataAttr = 'line-number';
+
+        return {
+            restrict: 'A',
+            link: function(scope, el, attrs) {
+                var fileDiffRoot = el.closest(fileDiffRootSelector);
+                fileDiffRoot.on('click', clickSelector, function(event) {
+                    var codeLine = $(event.currentTarget).closest(lineDiffRootSelector);
+                    scope.like(codeLine.data(fileNameDataAttr), codeLine.data(lineNumberDataAttr));
+                });
+            }
+        }
+
     });
 
 

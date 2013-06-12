@@ -2,6 +2,10 @@ angular.module('codebrag.commits')
 
     .controller('DiffCtrl', function ($scope, Comments) {
 
+        $scope.like = function(file, line) {
+            console.log('Like will be added to', file, line);
+        };
+
         $scope.submitInlineComment = function(content, commentData) {
             var newComment = {
                 commitId: $scope.currentCommit.commit.id,
