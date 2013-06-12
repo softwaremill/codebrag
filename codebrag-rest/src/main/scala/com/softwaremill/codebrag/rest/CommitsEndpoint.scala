@@ -36,7 +36,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
   post("/sync") {
     // synchronizes commits
     implicit val idGenerator = new ObjectIdGenerator()
-    val importer = importerFactory.createInstance(user.email)
+    val importer = importerFactory.createInstance(user.login)
     importer.importRepoCommits("softwaremill", "codebrag")
     fetchCommitsPendingReview(DefaultPaging)
   }
