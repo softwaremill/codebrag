@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag
 
 import activities.AddCommentActivity
-import common.{ObjectIdGenerator, IdGenerator}
+import com.softwaremill.codebrag.common.{ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.dao.reporting._
 import dao._
 import rest.CodebragSwagger
@@ -17,7 +17,6 @@ import com.softwaremill.codebrag.service.github.jgit.JgitGitHubCommitImportServi
 trait Beans {
   implicit lazy val clock = new RealTimeClock
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator
-
   lazy val authenticator = new Authenticator(userDao)
   lazy val userDao = new MongoUserDAO
   lazy val commitInfoDao = new MongoCommitInfoDAO

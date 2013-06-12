@@ -62,6 +62,7 @@ object Dependencies {
   val scalatraVersion = "2.2.0"
   val rogueVersion = "2.0.0-RC4"
   val scalaLoggingVersion = "1.0.1"
+  val akkaVersion = "2.1.4"
 
   val slf4jApi = "org.slf4j" % "slf4j-api" % slf4jVersion
   val logBackClassic = "ch.qos.logback" % "logback-classic" % logBackVersion
@@ -132,6 +133,8 @@ object Dependencies {
   val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "2.3.1.201302201838-r"
   val dispatch = "net.databinder.dispatch" %% "dispatch-core" % "0.9.5"
 
+  val akka = "com.typesafe.akka" %% "akka-actor" % akkaVersion
+
 }
 
 object SmlCodebragBuild extends Build {
@@ -149,7 +152,7 @@ object SmlCodebragBuild extends Build {
   lazy val common: Project = Project(
     "codebrag-common",
     file("codebrag-common"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies ++ Seq(akka))
   )
 
   lazy val domain: Project = Project(
