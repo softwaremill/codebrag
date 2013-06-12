@@ -62,6 +62,7 @@ object Dependencies {
   val scalatraVersion = "2.2.0"
   val rogueVersion = "2.0.0-RC4"
   val scalaLoggingVersion = "1.0.1"
+  val akkaVersion = "2.1.4"
 
   val slf4jApi = "org.slf4j" % "slf4j-api" % slf4jVersion
   val logBackClassic = "ch.qos.logback" % "logback-classic" % logBackVersion
@@ -97,7 +98,10 @@ object Dependencies {
   val jodaDependencies = Seq(jodaTime, jodaConvert)
   val scalatraStack = Seq(scalatra, scalatraScalatest, scalatraJson, json4s, scalatraAuth, commonsLang, swaggerCore, scalatraSwagger)
 
-  val testingDependencies = Seq(mockito, scalatest)
+  val akka = "com.typesafe.akka" %% "akka-actor" % akkaVersion
+  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test"
+
+  val testingDependencies = Seq(mockito, scalatest, akkaTestkit)
 
   val javaxMail = "javax.mail" % "mail" % "1.4.5"
 
@@ -149,7 +153,7 @@ object SmlCodebragBuild extends Build {
   lazy val common: Project = Project(
     "codebrag-common",
     file("codebrag-common"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies ++ Seq(akka))
   )
 
   lazy val domain: Project = Project(

@@ -24,4 +24,5 @@ object CodebragConfiguration {
   val githubClientId      = config.get("GitHubClientId")
   val githubClientSecret  = config.get("GitHubClientSecret")
   val localGitPath        = config.get("localGitPath")
+  val syncUserLogin       = config.get("syncUserLogin")
 }

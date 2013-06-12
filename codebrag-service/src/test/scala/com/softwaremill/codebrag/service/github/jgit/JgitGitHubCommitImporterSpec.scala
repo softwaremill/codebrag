@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.github.jgit
 
 import org.scalatest.mock.MockitoSugar
-import com.softwaremill.codebrag.service.github.{FlatSpecWithGit, CommitReviewTaskGenerator, GitHubCommitImportService}
+import com.softwaremill.codebrag.service.github.{FlatSpecWithGit, GitHubCommitImportService}
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.mockito.{ArgumentCaptor, ArgumentMatcher}
 import org.mockito.Mockito._
@@ -11,19 +11,19 @@ import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import org.mockito.Matchers._
 import scala.collection.JavaConversions._
+import com.softwaremill.codebrag.service.events.FakeEventBus
 
-class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
+class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar with FakeEventBus {
 
   var commitInfoDaoMock: CommitInfoDAO = _
-  var reviewTaskGeneratorMock: CommitReviewTaskGenerator = _
   var service: GitHubCommitImportService = _
   var supplementaryService: GitHubCommitImportService = _
   val commitInfoDaoSupplementaryStub = mock[CommitInfoDAO]
 
   before {
+    eventBus.clear()
     testRepo = initRepo()
     commitInfoDaoMock = mock[CommitInfoDAO]
-    reviewTaskGeneratorMock = mock[CommitReviewTaskGenerator]
     service = createService(commitInfoDaoMock)
     supplementaryService = createService(commitInfoDaoSupplementaryStub)
   }
@@ -84,6 +84,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
 
     // then
     val commitArgument = ArgumentCaptor.forClass(classOf[CommitInfo])
+    verify(commitInfoDaoMock).hasCommits
     verify(commitInfoDaoMock).findLastSha()
     verify(commitInfoDaoMock, times(2)).storeCommit(commitArgument.capture())
     val capturedCommits = commitArgument.getAllValues
@@ -106,7 +107,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar {
       uriBuilder,
       commitInfoDaoMock),
     commitInfoDaoMock,
-    reviewTaskGeneratorMock)
+    eventBus)
 }
 
 case class IsCommitInfoIgnoringId(otherCommit: CommitInfo) extends ArgumentMatcher[CommitInfo] {

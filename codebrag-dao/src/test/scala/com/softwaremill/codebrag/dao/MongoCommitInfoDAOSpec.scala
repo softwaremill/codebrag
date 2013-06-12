@@ -49,6 +49,21 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     commitInfoDAO.findBySha(commit.sha) should be('defined)
   }
 
+  it should "return false in hasCommits when empty" taggedAs(RequiresDb) in {
+    // given empty db
+
+    // then
+    commitInfoDAO.hasCommits should be(false)
+  }
+
+  it should "return true in hasCommits when not empty" taggedAs(RequiresDb) in {
+    // given
+    commitInfoDAO.storeCommit(randomCommit.get)
+
+    // then
+    commitInfoDAO.hasCommits should be(true)
+  }
+
   it should "retrieve commit sha with last commit date" taggedAs(RequiresDb) in {
     // given
     val date = new DateTime()

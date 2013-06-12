@@ -3,9 +3,15 @@
 Quick Start
 ---
 1. Start mongodb
-2. Navigate to the `codebrag` home directory 
-3. Execute `./run.sh` script
-4. Navigate to `localhost:8080` and use it (enter any user/pass to log in, an account will be created automatically)
+2. Configure application.conf
+If you want to access GitHub repositories, create a file called `application.conf` in your classpath. You can use `application.conf.template`.
+Important elements to fill:
+    * `syncUserLogin`: login of Codebrag user who will be used for synchronization with GitHub
+    * `GitHubClientId` and `GitHubClientSecret`: keys copied from GitHub settings of your Codebrag instance.
+    * `localGitPath` (Optional): path to directory where local git repositories should be stored. Useful for developers to avoid having these repositories in same directory as source files.
+3. Navigate to the `codebrag` home directory
+4. Execute `./run.sh` script
+5. Navigate to `localhost:8080` and use it (enter any user/pass to log in, an account will be created automatically)
 
 Run Codebrag with stubbed backend
 ---

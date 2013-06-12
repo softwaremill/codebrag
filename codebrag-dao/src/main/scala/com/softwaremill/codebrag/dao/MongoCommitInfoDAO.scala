@@ -14,24 +14,28 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
 
   import CommitInfoImplicits._
 
-  def storeCommit(commit: CommitInfo) {
+  override def storeCommit(commit: CommitInfo) {
     commit.save
   }
 
-  def findBySha(sha: String): Option[CommitInfo] = {
+  override def findBySha(sha: String): Option[CommitInfo] = {
     CommitInfoRecord where (_.sha eqs sha) get()
   }
 
-  def findByCommitId(commitId: ObjectId): Option[CommitInfo] = {
+  override def findByCommitId(commitId: ObjectId): Option[CommitInfo] = {
     CommitInfoRecord where (_.id eqs commitId) get()
   }
 
-  def findLastSha(): Option[String] = {
+  override def findLastSha(): Option[String] = {
     CommitInfoRecord.orderDesc(_.committerDate).get().map(_.sha.get)
   }
 
-  def findAllSha(): Set[String] = {
+  override def findAllSha(): Set[String] = {
     CommitInfoRecord.select(_.sha).fetch().toSet
+  }
+
+  override def hasCommits: Boolean = {
+    CommitInfoRecord.count() > 0
   }
 
   private object CommitInfoImplicits {
@@ -102,7 +106,7 @@ object CommitInfoRecord extends CommitInfoRecord with MongoMetaRecord[CommitInfo
   override def collectionName = "commit_infos"
 
   def ensureIndexes() {
-    this.ensureIndex((committerDate.name -> 1))
+    this.ensureIndex(committerDate.name -> 1)
   }
 }
 
