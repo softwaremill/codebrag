@@ -24,14 +24,13 @@ angular.module('codebrag.commits')
         }
     })
 
-    .directive('inlineCommentable', function($compile, events) {
+    .directive('lineCommentForm', function($compile, events) {
 
         var inlineCommentFormTemplate = $('#inlineCommentForm').html(); //$templateCache.get('inlineCommentForm');
 
         var fileDiffRootSelector = 'table';
         var fileDiffLineSelector = 'tbody';
         var clickableSelector = '[data-commentable]';
-        var addNoteRowSelector = '[data-add-note-row]';
         var inlineCommentFormRootSelector = 'tr.comment-form';
 
         var fileNameDataAttr = 'file-name';
@@ -44,13 +43,11 @@ angular.module('codebrag.commits')
             this.insert = function(afterFormInsertCallback) {
                 fileDiffLine.append(inlineCommentFormTemplate);
                 var insertedElement = fileDiffLine.find(inlineCommentFormRootSelector);
-                fileDiffLine.find(addNoteRowSelector).toggle();
                 afterFormInsertCallback(insertedElement);
             };
 
             this.destroy = function(afterFormDestroyCallback) {
                 fileDiffLine.find(inlineCommentFormRootSelector).remove();
-                fileDiffLine.find(addNoteRowSelector).toggle();
                 afterFormDestroyCallback();
             };
 
@@ -96,29 +93,29 @@ angular.module('codebrag.commits')
     })
 
 
-    .directive('liveComments', function($compile) {
+    .directive('lineReactions', function($compile) {
 
-        var commentTemplate = $('#inlineComment').html();    // templateCache ???
+        var lineReactionsTemplate = $('#lineReactions').html();    // templateCache ???
 
         var fileDiffRootSelector = 'table';
-        var lineCommentsListSelector = '.inline-comments-container';
+        var lineReactionsSelector = '.inline-comments-container';
 
         var lineNumberDataAttr = 'line-number';
 
-        function FileInlineComments(baseElement, fileInlineComments) {
+        function FileReactions(baseElement, fileReactions) {
 
             this.insert = function(afterDOMInsertCallback) {
-                _.forEach(fileInlineComments, function(lineComments, lineNumber) {
+                _.forEach(fileReactions, function(lineReactions, lineNumber) {
                     var diffLine = _getCorrespondingLineDOMElement(lineNumber);
-                    if(_lineHasNoCommentsYet(diffLine)) {
-                        diffLine.append(commentTemplate);
-                        afterDOMInsertCallback(diffLine, lineComments);
+                    if(_lineHasNoReactionsYet(diffLine)) {
+                        diffLine.append(lineReactionsTemplate);
+                        afterDOMInsertCallback(diffLine, lineReactions);
                     }
                 });
             };
 
-            function _lineHasNoCommentsYet(line) {
-                return line.find(lineCommentsListSelector).length === 0;
+            function _lineHasNoReactionsYet(line) {
+                return line.find(lineReactionsSelector).length === 0;
             }
 
             function _getCorrespondingLineDOMElement(lineNumber) {
@@ -132,14 +129,14 @@ angular.module('codebrag.commits')
 
             var fileDiffRoot = el.parent(fileDiffRootSelector);
 
-            scope.$watch(attrs.liveComments, function(fileComments) {
-                if(angular.isUndefined(fileComments)) {
+            scope.$watch(attrs.lineReactions, function(fileReactions) {
+                if(angular.isUndefined(fileReactions)) {
                     return;
                 }
-                var comments = new FileInlineComments(fileDiffRoot, fileComments);
-                comments.insert(function(line, lineComments) {
+                var comments = new FileReactions(fileDiffRoot, fileReactions);
+                comments.insert(function(line, lineReactions) {
                     var newScope = scope.$new();
-                    newScope.lineComments = lineComments;
+                    newScope.lineReactions = lineReactions;
                     $compile(line)(newScope);
                 });
             }, true);
@@ -152,7 +149,7 @@ angular.module('codebrag.commits')
 
     })
 
-    .directive('inlineLike', function() {
+    .directive('lineLike', function() {
 
         var fileDiffRootSelector = 'table';
         var lineDiffRootSelector = 'tbody';
@@ -167,7 +164,9 @@ angular.module('codebrag.commits')
                 var fileDiffRoot = el.closest(fileDiffRootSelector);
                 fileDiffRoot.on('click', clickSelector, function(event) {
                     var codeLine = $(event.currentTarget).closest(lineDiffRootSelector);
-                    scope.like(codeLine.data(fileNameDataAttr), codeLine.data(lineNumberDataAttr));
+                    scope.$apply(function(scope) {
+                        scope.like(codeLine.data(fileNameDataAttr), codeLine.data(lineNumberDataAttr));
+                    });
                 });
             }
         }

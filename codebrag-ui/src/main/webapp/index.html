@@ -105,11 +105,18 @@
         <div class="popup-error"><i class="icon-warning-sign"></i>Communication error occured...</div>
     </script>
 
-    <script type="text/ng-template" id="inlineComment">
-        <tr class="comments-container inline-comments-container">
+    <script type="text/ng-template" id="lineReactions">
+        <tr class="comments-container inline-comments-container" ng-show="lineReactions.likes">
+            <td colspan="3">
+                <div class="comment">
+                    <i class="icon-heart"></i> {{lineReactions.likes.length}}
+                </div>
+            </td>
+        </tr>
+        <tr class="comments-container inline-comments-container" ng-show="lineReactions.comments">
             <td colspan="3">
                 <!--inline comment start-->
-                <div class="comment" ng-repeat="comment in lineComments">
+                <div class="comment" ng-repeat="comment in lineReactions.comments">
                     <div class="authored-box">
                         <div class="author-box"><user-avatar url="comment.authorAvatarUrl"></user-avatar></div>
                         <div class="info-box">
@@ -121,15 +128,6 @@
                     </div>
                 </div>
                 <!--inline comment end-->
-            </td>
-        </tr>
-        <tr class="comments-container inline-comments-container" data-add-note-row>
-            <td colspan="3">
-                <div class="comment write active">
-                    <ul class="comment-action-btns button-group">
-                        <li><a class="button secondary" data-commentable>Follow up</a></li>
-                    </ul>
-                </div>
             </td>
         </tr>
     </script>

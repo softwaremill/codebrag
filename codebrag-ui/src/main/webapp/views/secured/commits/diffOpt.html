@@ -30,10 +30,9 @@
                 <!-- {{/each}} -->
                 <!-- angular hooks to bind to diff elements -->
                 <tfoot
-                     inline-commentable
-                     live-comments="currentCommit.inlineComments['{{filename}}']"
-                     live-likes="currentCommit.lineLikes['{{filename}}']"
-                     inline-like>
+                     line-like
+                     line-comment-form
+                     line-reactions="currentCommit.lineReactions['{{filename}}']">
                 </tfoot>
             </table>
         </div>

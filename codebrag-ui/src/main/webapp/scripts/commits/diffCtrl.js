@@ -2,8 +2,18 @@ angular.module('codebrag.commits')
 
     .controller('DiffCtrl', function ($scope, Comments) {
 
-        $scope.like = function(file, line) {
-            console.log('Like will be added to', file, line);
+        $scope.like = function(fileName, lineNumber) {
+            var reactions = $scope.currentCommit.lineReactions;
+            if(_.isUndefined(reactions[fileName])) {
+                reactions[fileName] = {};
+            }
+            if(_.isUndefined(reactions[fileName][lineNumber])) {
+                reactions[fileName][lineNumber] = [];
+            }
+            if(_.isUndefined(reactions[fileName][lineNumber]['likes'])) {
+                reactions[fileName][lineNumber]['likes'] = [];
+            }
+            reactions[fileName][lineNumber]['likes'].push({userName: 'You'});
         };
 
         $scope.submitInlineComment = function(content, commentData) {
@@ -20,14 +30,17 @@ angular.module('codebrag.commits')
             });
 
             function addCommentToCommentsCollection(comment, fileName, lineNumber) {
-                var comments = $scope.currentCommit.inlineComments;
-                if(_.isUndefined(comments[fileName])) {
-                    comments[fileName] = {};
+                var reactions = $scope.currentCommit.lineReactions;
+                if(_.isUndefined(reactions[fileName])) {
+                    reactions[fileName] = {};
                 }
-                if(_.isUndefined(comments[fileName][lineNumber])) {
-                    comments[fileName][lineNumber] = [];
+                if(_.isUndefined(reactions[fileName][lineNumber])) {
+                    reactions[fileName][lineNumber] = [];
                 }
-                comments[fileName][lineNumber].push(comment);
+                if(_.isUndefined(reactions[fileName][lineNumber]['comments'])) {
+                    reactions[fileName][lineNumber]['comments'] = [];
+                }
+                reactions[fileName][lineNumber]['comments'].push(comment);
             }
         };
 
