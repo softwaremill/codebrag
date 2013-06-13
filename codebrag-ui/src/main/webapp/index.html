@@ -106,14 +106,14 @@
     </script>
 
     <script type="text/ng-template" id="lineReactions">
-        <tr class="comments-container inline-comments-container" ng-show="lineReactions.likes">
+        <tr class="comments-container inline-comments-container" ng-show="lineReactions.likes.length > 0">
             <td colspan="3">
                 <div class="comment">
                     <i class="icon-heart"></i> {{lineReactions.likes.length}}
                 </div>
             </td>
         </tr>
-        <tr class="comments-container inline-comments-container" ng-show="lineReactions.comments">
+        <tr class="comments-container inline-comments-container" ng-show="lineReactions.comments.length > 0">
             <td colspan="3">
                 <!--inline comment start-->
                 <div class="comment" ng-repeat="comment in lineReactions.comments">
