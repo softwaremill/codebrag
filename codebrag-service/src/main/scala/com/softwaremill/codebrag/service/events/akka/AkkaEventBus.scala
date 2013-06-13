@@ -1,9 +1,8 @@
 package com.softwaremill.codebrag.service.events.akka
 
-import com.softwaremill.codebrag.service.events.EventBus
 import com.typesafe.scalalogging.slf4j.Logging
 import akka.actor.ActorSystem
-import com.softwaremill.codebrag.common.Event
+import com.softwaremill.codebrag.common.{EventBus, Event}
 
 class AkkaEventBus(actorSystem: ActorSystem) extends EventBus with Logging {
 

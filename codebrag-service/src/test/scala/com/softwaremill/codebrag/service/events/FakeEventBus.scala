@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.service.events
 
-import com.softwaremill.codebrag.common.Event
+import com.softwaremill.codebrag.common.{EventBus, Event}
 
 trait FakeEventBus {
 

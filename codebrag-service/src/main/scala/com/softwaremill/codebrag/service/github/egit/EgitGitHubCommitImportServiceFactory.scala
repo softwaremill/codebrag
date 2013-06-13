@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.service.github.egit
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.eclipse.egit.github.core.service.CommitService
 import com.softwaremill.codebrag.service.github._
-import com.softwaremill.codebrag.service.events.EventBus
+import com.softwaremill.codebrag.common.EventBus
 
 class EgitGitHubCommitImportServiceFactory(provider: GitHubClientProvider, commitInfoConverter: GitHubCommitInfoConverter, commitInfoDao: CommitInfoDAO, eventBus: EventBus)
   extends GitHubCommitImportServiceFactory {

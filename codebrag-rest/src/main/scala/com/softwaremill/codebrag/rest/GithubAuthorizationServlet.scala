@@ -9,8 +9,8 @@ import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.auth.AuthenticationSupport
 import com.softwaremill.codebrag.service.config.CodebragConfiguration
-import com.softwaremill.codebrag.service.events.EventBus
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.common.EventBus
 
 
 class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService: GitHubAuthService, userDao: UserDAO, eventBus: EventBus)

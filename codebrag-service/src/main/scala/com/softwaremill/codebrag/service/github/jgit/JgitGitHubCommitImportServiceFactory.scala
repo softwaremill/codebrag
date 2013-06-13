@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.service.github.jgit
 import com.softwaremill.codebrag.service.github.{GitHubCommitImportService, GitHubCommitImportServiceFactory}
 import com.softwaremill.codebrag.dao.{UserDAO, CommitInfoDAO}
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
-import com.softwaremill.codebrag.service.events.EventBus
+import com.softwaremill.codebrag.common.EventBus
 
 class JgitGitHubCommitImportServiceFactory(commitInfoDao: CommitInfoDAO, userDao: UserDAO, eventBus: EventBus) extends GitHubCommitImportServiceFactory {
 
