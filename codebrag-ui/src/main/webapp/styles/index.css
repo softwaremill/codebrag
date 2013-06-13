@@ -55,7 +55,7 @@ button.big {
 .button.big.reviewed,
 .button[disabled].big.reviewed,
 button.big.reviewed {
-  background: #87d3bf;
+  background: #5abfa3;
   float: right;
   margin-right: 0;
   margin-top: 1.15em;
@@ -63,7 +63,7 @@ button.big.reviewed {
 .button.big.reviewed:hover,
 .button[disabled].big.reviewed:hover,
 button.big.reviewed:hover {
-  background: #5abfa3;
+  background: #41a388;
 }
 .button:active,
 .button[disabled]:active,
@@ -81,7 +81,7 @@ table tr:nth-of-type(even) {
 table tr th,
 table tr td {
   font-size: 1em;
-  color: #2f0200;
+  color: $body-text-color;
   padding: 0.23em 0.77em;
 }
 input[type="text"],
@@ -131,7 +131,7 @@ p {
 }
 ::selection {
   background-color: #fcd01a;
-  color: #2f0200;
+  color: $body-text-color;
 }
 i {
   font-family: 'FontAwesome';
@@ -212,7 +212,7 @@ i {
   border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
-  color: #2f0200;
+  color: $body-text-color;
   cursor: text;
   font-size: 1em;
   height: auto;
@@ -344,7 +344,7 @@ form .form-group span.text-error:after {
 }
 .main-nav .button {
   background: transparent;
-  color: #a18953;
+  color: #ad8245;
   font-weight: bold;
   margin-bottom: -1px;
   padding: 1.15em 0;
@@ -362,7 +362,7 @@ form .form-group span.text-error:after {
 .main-nav .button.active {
   background: #f7f5ef;
   border-top: 0.39em solid #f3720b;
-  color: #75171b;
+  color: #300300;
   padding-top: 0.77em;
 }
 .commits {
@@ -379,7 +379,7 @@ form .form-group span.text-error:after {
   text-align: center;
 }
 .commits-sorting .button.link {
-  color: #2f0200;
+  color: $body-text-color;
   text-transform: uppercase;
 }
 .commits-sorting .button.link:hover {
@@ -396,7 +396,7 @@ form .form-group span.text-error:after {
   overflow-y: scroll;
 }
 .commit-container {
-  border-top: 1px solid #d9d2c1;
+  border-top: 1px solid #d1cbb9;
   padding: 1.15em 2.3em 1.15em 0.77em;
   position: relative;
 }
@@ -458,7 +458,7 @@ form .form-group span.text-error:after {
 }
 .commits-count {
   background: #f7f5ef;
-  border-top: 1px solid #d9d2c1;
+  border-top: 1px solid #d1cbb9;
   bottom: 0;
   color: #a27d69;
   padding: 1.15em 0;
@@ -557,11 +557,11 @@ form .form-group span.text-error:after {
   width: 100%;
 }
 .diff-file-container thead {
-  background: #f3f0e8;
+  background: #f7f5ef;
   border-bottom: 1px solid #d1cbb9;
 }
 .diff-file-container thead th {
-  color: #2f0200;
+  color: $body-text-color;
   font-size: 1em;
   font-weight: normal;
   padding: 0.77em 1.15em;
@@ -660,16 +660,16 @@ tbody tr.comments-container:last-child {
   border-bottom: 1px solid #d1cbb9;
 }
 tr:hover .diff-line-num .button {
-  background: #f58022;
+  background: #f3720b;
 }
 tr:hover .diff-line-num .button:hover {
-  background: #da670a;
+  background: #c25b09;
 }
 tr:hover .diff-line-num .button.comment {
-  background: #87d3bf;
+  background: #5abfa3;
 }
 tr:hover .diff-line-num .button.comment:hover {
-  background: #5abfa3;
+  background: #41a388;
 }
 tr:hover .diff-line-num .button .diff-line-num-content {
   opacity: 0;
@@ -709,7 +709,7 @@ tr:hover .diff-line-num .button i {
   font-size: 0.814em;
 }
 .like-commit {
-  background: #f3f0e8;
+  background: #f7f5ef;
   color: #a27d69;
   display: inline-block;
   margin-bottom: 0.38em;
@@ -770,11 +770,11 @@ tr:hover .diff-line-num .button i {
   margin-bottom: 2.3em;
 }
 .text-error {
-  color: #e53b21;
+  color: #f0552f;
 }
 .popup-error {
-  background: #f4aa96;
-  color: #d0190d;
+  background: #f0552f;
+  color: #ffd8cf;
   padding: 0.77em 1.15em;
   text-align: center;
   display: inline-block;
