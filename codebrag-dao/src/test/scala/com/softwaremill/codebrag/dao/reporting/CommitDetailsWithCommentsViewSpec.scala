@@ -23,8 +23,8 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
     val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
 
     // then
-    commitWithComments.comments should be('empty)
-    val lineComments = commitWithComments.inlineComments should be('empty)
+    commitWithComments.reactions.comments should be('empty)
+    val lineComments = commitWithComments.lineReactions should be('empty)
   }
 
   it should "have comments when commit has some general comments" in {
@@ -36,7 +36,7 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
     val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
 
     // then
-    commitWithComments.comments.head should be(generalComment)
+    commitWithComments.reactions.comments.head should be(generalComment)
   }
 
   it should "have inline comments when commit has some lines commented" in {
@@ -50,7 +50,7 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
     val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
 
     // then
-    val fileLines = commitWithComments.inlineComments("test.txt")
+    val fileLines = commitWithComments.lineReactions("test.txt")
     // keys need to be strings in order to serialize to JSON
     fileLines("0") should equal(List(lineCommentOne))
     fileLines("1") should equal(List(lineCommentTwo))
@@ -90,7 +90,7 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
 
   private def buildDummyDiffWithLinesNumber(largeFileSize: Int): List[DiffLine] = {
     (1 to largeFileSize).map(i => {
-      DiffLine(s"line content${i}", i, i, "added")
+      DiffLine(s"line content$i", i, i, "added")
     }).toList
   }
 

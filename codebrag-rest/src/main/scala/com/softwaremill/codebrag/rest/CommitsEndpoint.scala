@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.CommitReviewTaskDAO
 import com.softwaremill.codebrag.domain.CommitReviewTask
-import com.softwaremill.codebrag.dao.reporting.views.{CommitListView, CommitDetailsWithCommentsView}
+import com.softwaremill.codebrag.dao.reporting.views.{CommitDetailsWithCommentsView, CommitListView}
 
 trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpointSwaggerDefinition {
 
@@ -41,7 +41,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
     fetchCommitsPendingReview(DefaultPaging)
   }
 
-  get("/:id") {
+  get("/:id", operation(getDetailsOperation)) {
     val commitId = params("id")
     diffService.diffWithCommentsFor(new ObjectId(commitId), new ObjectId(user.id)) match {
       case Right(commitWithComments) => commitWithComments
@@ -72,6 +72,11 @@ trait CommitsEndpointSwaggerDefinition extends SwaggerSupport {
     .defaultValue(DefaultPaging.skip).optional)
     .parameter(queryParam[Int]("limit").description("Maximum number of elements to return (for pending filter mode)")
     .defaultValue(DefaultPaging.limit).optional)
+
+  val getDetailsOperation = apiOperation[CommitDetailsWithCommentsView]("details")
+    .summary("Gets commit details with diff, comments, likes, etc.")
+    .parameter(pathParam[String]("id").description("Commit identifier"))
+
 
   val markCommitAsReviewed = apiOperation[Unit]("delete")
     .summary("Removes given commit from user list of commits remaining to review")

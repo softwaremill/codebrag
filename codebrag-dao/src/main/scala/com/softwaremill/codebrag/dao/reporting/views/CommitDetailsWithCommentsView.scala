@@ -7,14 +7,15 @@ case class CommitDetailsWithCommentsView(
                                           commit: CommitView,
                                           diff: List[FileDiffView],
                                           supressedFiles: List[SupressedFileView],
-                                          comments: List[SingleCommentView],
-                                          inlineComments: Map[String, CommitDetailsWithCommentsView.StrLineToCommentListMap])
+                                          reactions: Reactions,
+                                          lineReactions: CommitDetailsWithCommentsView.FileToReactionsMap)
 
 case class FileDiffView(filename: String, status: String, lines: List[DiffLineView], diffStats: FileDiffStatsView)
 case class SupressedFileView(filename: String, status: String, diffStats: FileDiffStatsView)
 case class FileDiffStatsView(added: Int, removed: Int)
 case class DiffLineView(line: String, lineNumberOriginal: String, lineNumberChanged: String, lineType: String)
-
+case class Reactions(likes: List[LikeView], comments: List[SingleCommentView])
+case class LikeView(id: String, authorName: String)
 
 object DiffLineView {
 
@@ -40,26 +41,29 @@ object DiffLineView {
   }
 }
 
-
 object CommitDetailsWithCommentsView {
 
   val MaxAcceptableDiffLinesCount = 600
-  type StrLineToCommentListMap = Map[String, List[SingleCommentView]]
+  val FixMeEmptyLikes = List.empty
+  type LineToReactionsMap = Map[String, Reactions]
+  type FileToReactionsMap = Map[String, LineToReactionsMap]
 
   def buildFrom(commit: CommitView, comments: CommentsView, diffs: List[CommitFileDiff]) = {
     val stringifiedCommentsMap = mapKeysToString(comments)
     val (smallerDiffs, largerDiffs) = diffs.partition(_.lines.size < MaxAcceptableDiffLinesCount)
-    CommitDetailsWithCommentsView(commit, buildDiffView(smallerDiffs), buildSupressedDiffView(largerDiffs), comments.comments, stringifiedCommentsMap)
+    CommitDetailsWithCommentsView(commit, buildDiffView(smallerDiffs), buildSupressedDiffView(largerDiffs),
+      Reactions(FixMeEmptyLikes, comments.comments),
+      stringifiedCommentsMap)
   }
 
-  private def mapKeysToString(comments: CommentsView): Map[String, StrLineToCommentListMap] = {
+  private def mapKeysToString(comments: CommentsView): FileToReactionsMap = {
     val stringified = comments.inlineComments.map({
       case (fileName, fileComments) =>
-        val withLineNumbersAsStrings = fileComments.map({
+        val lineToReactions = fileComments.map({
           case (lineNumber, lineComments) =>
-            (lineNumber.toString, lineComments)
+            (lineNumber.toString, Reactions(FixMeEmptyLikes, lineComments))
         })
-        (fileName, withLineNumbersAsStrings)
+        (fileName, lineToReactions)
     })
     stringified
   }
