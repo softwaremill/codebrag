@@ -17,11 +17,12 @@ import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 
 
 trait Beans extends ActorSystemSupport {
+
   implicit lazy val clock = new RealTimeClock
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator
-  lazy val authenticator = new Authenticator(userDao)
+  val self = this
   lazy val eventBus = new AkkaEventBus(actorSystem)
-  lazy val userDao = new MongoUserDAO(eventBus)
+  lazy val userDao = new MongoUserDAO
   lazy val commitInfoDao = new MongoCommitInfoDAO
   lazy val followupDao = new MongoFollowupDAO
   lazy val commitListFinder = new MongoCommitWithAuthorDetailsFinder(new MongoCommitFinder)
@@ -36,6 +37,15 @@ trait Beans extends ActorSystemSupport {
   lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
   lazy val importerFactory = new JgitGitHubCommitImportServiceFactory(commitInfoDao, userDao, eventBus)
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
+
+  lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {
+      val userDao = self.userDao
+      val commitInfoDao = self.commitInfoDao
+      val commitToReviewDao = self.commitReviewTaskDao
+      val clock = self.clock
+    }
+
+  lazy val authenticator = new Authenticator(userDao, eventBus, reviewTaskGenerator)
   lazy val followupFinder = new MongoFollowupFinder
   lazy val commentActivity = new AddCommentActivity(commentService, followupService)
 

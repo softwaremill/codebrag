@@ -2,11 +2,11 @@ package com.softwaremill.codebrag.service.github
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{BeforeAndAfter, FlatSpec}
-import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, CommitInfoDAO, CommitReviewTaskDAO, UserDAO}
+import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO, UserDAO}
 import akka.testkit.TestActorRef
-import com.softwaremill.codebrag.domain.{User, CommitReviewTask, UpdatedCommit, CommitsUpdatedEvent}
+import com.softwaremill.codebrag.domain.{CommitReviewTask, UpdatedCommit, CommitsUpdatedEvent}
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.builder.{CommitInfoAssembler, UserAssembler}
+import com.softwaremill.codebrag.domain.builder.UserAssembler
 import org.scalatest.mock.MockitoSugar
 import org.mockito.BDDMockito._
 import org.mockito.Mockito._
@@ -14,12 +14,11 @@ import org.mockito.Matchers._
 import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
 import pl.softwaremill.common.util.time.FixtureTimeClock
-import org.joda.time.{Interval, DateTime}
-import com.softwaremill.codebrag.dao.events.NewUserRegistered
+import org.joda.time.DateTime
 
-class CommitReviewTaskGeneratorSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
+class CommitReviewTaskGeneratorActorSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
 
-  behavior of "CommitReviewTaskGenerator"
+  behavior of "CommitReviewTaskGeneratorActor"
 
   implicit var system = ActorSystem("MyActorSystem", ConfigFactory.load("test"))
   var generator: TestActorRef[CommitReviewTaskGenerator] = _
@@ -81,7 +80,7 @@ class CommitReviewTaskGeneratorSpec extends FlatSpec with ShouldMatchers with Be
     verify(reviewTaskDaoMock, times(40)).save(any[CommitReviewTask])
   }
 
-  it should "generate tasks only for non-author" in {
+  it should "generate tasks only for non-author when commits are updated" in {
     // given
     val commits = randomCommits(count = 1)
     val sofokles = user(name = "Sofokles Smart")
@@ -101,22 +100,6 @@ class CommitReviewTaskGeneratorSpec extends FlatSpec with ShouldMatchers with Be
     verify(reviewTaskDaoMock).save(CommitReviewTask(commits(0).id, bruce.id))
     verify(reviewTaskDaoMock, never()).save(CommitReviewTask(commits(0).id, commitAuthor.id))
 
-  }
-
-  it should "generate tasks for newly registered user, skipping commits performed by himself" in {
-    // given
-    val commitBySofokles = CommitInfoAssembler.randomCommit.withAuthorName("Sofokles Smart").get
-    val commits = commitBySofokles :: CommitInfoAssembler.randomCommits(count = 2)
-    given(commitInfoDaoMock.findForTimeRange(new Interval(FixtureTime.minusDays(7), FixtureTime))).willReturn(commits)
-    val sofoklesId = ObjectIdTestUtils.oid(1)
-
-    // when
-    generator ! NewUserRegistered(sofoklesId, "login", "Sofokles Smart", "sofokles@sml.com")
-
-    // then
-    verify(reviewTaskDaoMock).save(CommitReviewTask(commits(1).id, sofoklesId))
-    verify(reviewTaskDaoMock).save(CommitReviewTask(commits(2).id, sofoklesId))
-    verifyNoMoreInteractions(reviewTaskDaoMock)
   }
 
   private def user(name: String) = {

@@ -1,9 +1,9 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.service.github.GitHubAuthService
+import com.softwaremill.codebrag.service.github.{CommitReviewTaskGeneratorActions, GitHubAuthService}
 import org.scalatra.{Forbidden, ScalatraServlet, SeeOther}
 import com.softwaremill.codebrag.dao.UserDAO
-import com.softwaremill.codebrag.service.user.{Authenticator}
+import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.domain.{User, Authentication}
 import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
@@ -14,7 +14,8 @@ import com.softwaremill.codebrag.common.EventBus
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 
 
-class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService: GitHubAuthService, userDao: UserDAO, eventBus: EventBus)
+class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService: GitHubAuthService, userDao: UserDAO,
+                                  eventBus: EventBus, reviewTaskGenerator: CommitReviewTaskGeneratorActions)
   extends ScalatraServlet with AuthenticationSupport with Logging {
 
   private val TempUserLogin = "tmpLogin"
@@ -43,7 +44,9 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
         logger.debug("Creating new user")
         val newUser = User(new ObjectId, auth, user.name, user.email, UUID.randomUUID().toString, user.avatarUrl)
         userDao.add(newUser)
-        eventBus.publish(NewUserRegistered(newUser.id, newUser.authentication.usernameLowerCase, newUser.name, newUser.email))
+        val userRegisteredEvent = NewUserRegistered(newUser.id, newUser.authentication.usernameLowerCase, newUser.name, newUser.email)
+        reviewTaskGenerator.handleNewUserRegistered(userRegisteredEvent)
+        eventBus.publish(userRegisteredEvent)
       }
     }
     request.setAttribute(TempUserLogin, user.login)

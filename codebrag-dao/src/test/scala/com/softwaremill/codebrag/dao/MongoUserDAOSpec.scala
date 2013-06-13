@@ -87,7 +87,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
-  it should "find non-existing user by login" taggedAs (RequiresDb) in {
+  it should "not find non-existing user by login" taggedAs (RequiresDb) in {
     // Given
     val login = "non_existing_login"
 
@@ -95,13 +95,10 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     val userOpt = userDAO.findByLowerCasedLogin(login)
 
     // Then
-    userOpt match {
-      case Some(u) => u.authentication.username should be(login)
-      case _ => fail("User option should be defined")
-    }
+    userOpt should be(None)
   }
 
-  it should "find non-existing user by login or email" taggedAs (RequiresDb) in {
+  it should "not find non-existing user by login or email" taggedAs (RequiresDb) in {
     // Given
     val login = "non_existing_login"
 
@@ -109,10 +106,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     val userOpt = userDAO.findByLoginOrEmail(login)
 
     // Then
-    userOpt match {
-      case Some(u) => u.authentication.username should be(login)
-      case _ => fail("User option should be defined")
-    }
+    userOpt should be(None)
   }
 
   it should "find by uppercased email" taggedAs (RequiresDb) in {

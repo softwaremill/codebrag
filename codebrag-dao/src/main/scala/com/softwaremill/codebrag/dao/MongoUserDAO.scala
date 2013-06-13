@@ -5,9 +5,8 @@ import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, 
 import net.liftweb.mongodb.record.field.{BsonRecordField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.common.EventBus
 
-class MongoUserDAO(val eventBus: EventBus) extends UserDAO {
+class MongoUserDAO extends UserDAO {
 
   import UserImplicits._
 
@@ -24,20 +23,12 @@ class MongoUserDAO(val eventBus: EventBus) extends UserDAO {
   }
 
   override def findByLowerCasedLogin(login: String) = {
-    val userOption: Option[User] = UserRecord where (_.authentication.subfield(_.usernameLowerCase) eqs login.toLowerCase) get()
-    userOption match {
-      case Some(_) => userOption
-      case None => Some(createAndSaveDummyUser(login))
-    }
+    UserRecord where (_.authentication.subfield(_.usernameLowerCase) eqs login.toLowerCase) get()
   }
 
   override def findByLoginOrEmail(loginOrEmail: String) = {
     val lowercased = loginOrEmail.toLowerCase
-    val userOption: Option[User] = UserRecord or(_.where(_.authentication.subfield(_.usernameLowerCase) eqs lowercased), _.where(_.email eqs lowercased)) get()
-    userOption match {
-      case Some(_) => userOption
-      case None => Some(createAndSaveDummyUser(lowercased))
-    }
+    UserRecord or(_.where(_.authentication.subfield(_.usernameLowerCase) eqs lowercased), _.where(_.email eqs lowercased)) get()
   }
 
   def findByUserName(userName: String) = {

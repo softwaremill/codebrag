@@ -18,10 +18,9 @@ trait EventingConfiguration extends ActorSystemSupport {
   val clock: Clock
 
   val debugLogger = actorSystem.actorOf(Props(classOf[DebugEventLogger]))
-
-  val reviewTaskGenerator = actorSystem.actorOf(Props(new CommitReviewTaskGenerator(userDao, commitReviewTaskDao, commitInfoDao, clock)))
+  val reviewTaskGeneratorActor = actorSystem.actorOf(Props(new CommitReviewTaskGenerator(userDao, commitReviewTaskDao, commitInfoDao, clock)))
 
   actorSystem.eventStream.subscribe(debugLogger, classOf[Event])
-  actorSystem.eventStream.subscribe(reviewTaskGenerator, classOf[CommitsUpdatedEvent])
-  actorSystem.eventStream.subscribe(reviewTaskGenerator, classOf[NewUserRegistered])
+  actorSystem.eventStream.subscribe(reviewTaskGeneratorActor, classOf[CommitsUpdatedEvent])
+  actorSystem.eventStream.subscribe(reviewTaskGeneratorActor, classOf[NewUserRegistered])
 }
