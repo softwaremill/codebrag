@@ -24,7 +24,7 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
 
     // then
     commitWithComments.reactions.comments should be('empty)
-    val lineComments = commitWithComments.lineReactions should be('empty)
+    commitWithComments.lineReactions should be('empty)
   }
 
   it should "have comments when commit has some general comments" in {
@@ -50,10 +50,10 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
     val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
 
     // then
-    val fileLines = commitWithComments.lineReactions("test.txt")
+    val fileReactions = commitWithComments.lineReactions("test.txt")
     // keys need to be strings in order to serialize to JSON
-    fileLines("0") should equal(List(lineCommentOne))
-    fileLines("1") should equal(List(lineCommentTwo))
+    fileReactions("0") should equal(Reactions(List.empty, List(lineCommentOne)))
+    fileReactions("1") should equal(Reactions(List.empty, List(lineCommentTwo)))
   }
 
   it should "have diff stats for file" in {
