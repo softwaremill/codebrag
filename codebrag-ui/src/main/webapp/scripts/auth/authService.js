@@ -1,6 +1,6 @@
 angular.module('codebrag.auth')
 
-    .factory('authService', function($http, httpRequestsBuffer, $q, $rootScope, events) {
+    .factory('authService', function($http, httpRequestsBuffer, $q, $rootScope, events, $state) {
 
         var authService = {
 
@@ -12,6 +12,7 @@ angular.module('codebrag.auth')
                     authService.loggedInUser = response.data;
                     $rootScope.$broadcast(events.loggedIn);
                     httpRequestsBuffer.retryAllRequest();
+                    $state.transitionTo('commits.list');
                 });
             },
 
