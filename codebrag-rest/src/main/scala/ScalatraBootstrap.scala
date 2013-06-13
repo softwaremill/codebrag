@@ -31,5 +31,6 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
 
   override def destroy(context: ServletContext) {
     super.destroy(context)
+    actorSystem.shutdown()
   }
 }
