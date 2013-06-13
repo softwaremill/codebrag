@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.rest
 import com.softwaremill.codebrag.service.github.GitHubAuthService
 import org.scalatra.{Forbidden, ScalatraServlet, SeeOther}
 import com.softwaremill.codebrag.dao.UserDAO
-import com.softwaremill.codebrag.service.user.{NewUserRegistered, Authenticator}
+import com.softwaremill.codebrag.service.user.{Authenticator}
 import com.softwaremill.codebrag.domain.{User, Authentication}
 import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
@@ -11,6 +11,7 @@ import com.softwaremill.codebrag.auth.AuthenticationSupport
 import com.softwaremill.codebrag.service.config.CodebragConfiguration
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.EventBus
+import com.softwaremill.codebrag.dao.events.NewUserRegistered
 
 
 class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService: GitHubAuthService, userDao: UserDAO, eventBus: EventBus)

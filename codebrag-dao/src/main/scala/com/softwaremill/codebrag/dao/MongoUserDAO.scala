@@ -5,8 +5,9 @@ import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, 
 import net.liftweb.mongodb.record.field.{BsonRecordField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.common.EventBus
 
-class MongoUserDAO extends UserDAO {
+class MongoUserDAO(val eventBus: EventBus) extends UserDAO {
 
   import UserImplicits._
 

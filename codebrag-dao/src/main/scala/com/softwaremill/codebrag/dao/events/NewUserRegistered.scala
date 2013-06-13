@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.user
+package com.softwaremill.codebrag.dao.events
 
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.Event

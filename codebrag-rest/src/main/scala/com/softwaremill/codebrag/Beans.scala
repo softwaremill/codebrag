@@ -21,7 +21,7 @@ trait Beans extends ActorSystemSupport {
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator
   lazy val authenticator = new Authenticator(userDao)
   lazy val eventBus = new AkkaEventBus(actorSystem)
-  lazy val userDao = new MongoUserDAO
+  lazy val userDao = new MongoUserDAO(eventBus)
   lazy val commitInfoDao = new MongoCommitInfoDAO
   lazy val followupDao = new MongoFollowupDAO
   lazy val commitListFinder = new MongoCommitWithAuthorDetailsFinder(new MongoCommitFinder)

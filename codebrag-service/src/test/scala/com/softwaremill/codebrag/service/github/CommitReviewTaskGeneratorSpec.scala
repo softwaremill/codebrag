@@ -15,7 +15,7 @@ import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
 import pl.softwaremill.common.util.time.FixtureTimeClock
 import org.joda.time.{Interval, DateTime}
-import com.softwaremill.codebrag.service.user.NewUserRegistered
+import com.softwaremill.codebrag.dao.events.NewUserRegistered
 
 class CommitReviewTaskGeneratorSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
 

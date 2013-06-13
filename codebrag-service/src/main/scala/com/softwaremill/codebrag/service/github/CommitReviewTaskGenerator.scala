@@ -3,10 +3,10 @@ package com.softwaremill.codebrag.service.github
 import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO, UserDAO}
 import com.softwaremill.codebrag.domain.{User, UpdatedCommit, CommitReviewTask, CommitsUpdatedEvent}
 import akka.actor.Actor
-import com.softwaremill.codebrag.service.user.NewUserRegistered
 import pl.softwaremill.common.util.time.Clock
 import org.joda.time.{Interval, DateTime}
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.dao.events.NewUserRegistered
 
 class CommitReviewTaskGenerator(userDao: UserDAO, commitToReviewDao: CommitReviewTaskDAO, commitInfoDao: CommitInfoDAO, clock: Clock) extends Actor with Logging {
 

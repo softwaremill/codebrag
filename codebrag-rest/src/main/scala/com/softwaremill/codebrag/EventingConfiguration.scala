@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.service.github.CommitReviewTaskGenerator
 import com.softwaremill.codebrag.dao.{CommitInfoDAO, UserDAO, CommitReviewTaskDAO}
 import com.softwaremill.codebrag.domain.CommitsUpdatedEvent
 import pl.softwaremill.common.util.time.Clock
-import com.softwaremill.codebrag.service.user.NewUserRegistered
+import com.softwaremill.codebrag.dao.events.NewUserRegistered
 
 trait EventingConfiguration extends ActorSystemSupport {
 
