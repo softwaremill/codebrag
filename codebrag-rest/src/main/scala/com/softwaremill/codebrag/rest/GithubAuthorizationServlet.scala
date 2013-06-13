@@ -3,16 +3,17 @@ package com.softwaremill.codebrag.rest
 import com.softwaremill.codebrag.service.github.GitHubAuthService
 import org.scalatra.{Forbidden, ScalatraServlet, SeeOther}
 import com.softwaremill.codebrag.dao.UserDAO
-import com.softwaremill.codebrag.service.user.Authenticator
+import com.softwaremill.codebrag.service.user.{NewUserRegistered, Authenticator}
 import com.softwaremill.codebrag.domain.{User, Authentication}
 import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.auth.AuthenticationSupport
 import com.softwaremill.codebrag.service.config.CodebragConfiguration
-import com.softwaremill.codebrag.common.Utils
+import com.softwaremill.codebrag.service.events.EventBus
+import org.bson.types.ObjectId
 
 
-class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService: GitHubAuthService, userDao: UserDAO)
+class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService: GitHubAuthService, userDao: UserDAO, eventBus: EventBus)
   extends ScalatraServlet with AuthenticationSupport with Logging {
 
   private val TempUserLogin = "tmpLogin"
@@ -39,7 +40,9 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
       }
       case None => {
         logger.debug("Creating new user")
-        userDao.add(User(auth, user.name, user.email, UUID.randomUUID().toString,user.avatarUrl))
+        val newUser = User(new ObjectId, auth, user.name, user.email, UUID.randomUUID().toString, user.avatarUrl)
+        userDao.add(newUser)
+        eventBus.publish(NewUserRegistered(newUser.id, newUser.authentication.usernameLowerCase, newUser.name, newUser.email))
       }
     }
     request.setAttribute(TempUserLogin, user.login)

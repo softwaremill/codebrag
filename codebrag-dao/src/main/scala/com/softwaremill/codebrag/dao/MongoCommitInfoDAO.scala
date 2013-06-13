@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.domain.{CommitFileInfo, CommitInfo}
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{BsonRecordListField, MongoListField, DateField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
-import org.joda.time.DateTime
+import org.joda.time.{Interval, DateTime}
 import org.bson.types.ObjectId
 import net.liftweb.json.JsonDSL._
 
@@ -20,6 +20,10 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
 
   override def findBySha(sha: String): Option[CommitInfo] = {
     CommitInfoRecord where (_.sha eqs sha) get()
+  }
+
+  override def findForTimeRange(interval: Interval): List[CommitInfo] = {
+    CommitInfoRecord.where(_.committerDate between(interval.getStart, interval.getEnd)).fetch()
   }
 
   override def findByCommitId(commitId: ObjectId): Option[CommitInfo] = {

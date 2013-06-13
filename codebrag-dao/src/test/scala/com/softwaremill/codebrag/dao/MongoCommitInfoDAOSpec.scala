@@ -1,14 +1,15 @@
 package com.softwaremill.codebrag.dao
 
 import org.scalatest.matchers.ShouldMatchers
-import org.joda.time.DateTime
+import org.joda.time.{Interval, DateTime}
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import CommitInfoAssembler._
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.domain.CommitInfo
 
 class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
   var commitInfoDAO: MongoCommitInfoDAO = _
-
+  val FixtureTime = new DateTime(23333333)
   override def beforeEach() {
     super.beforeEach()
     commitInfoDAO = new MongoCommitInfoDAO
@@ -64,6 +65,36 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     commitInfoDAO.hasCommits should be(true)
   }
 
+  it should "find no commits for interval not matching any item" in {
+    // given
+    givenCommitStoredOn(FixtureTime)
+    givenCommitStoredOn(FixtureTime.plusMinutes(1))
+    givenCommitStoredOn(FixtureTime.plusMinutes(2))
+
+    // when
+    val commits = commitInfoDAO.findForTimeRange(new Interval(FixtureTime.plusDays(1), FixtureTime.plusDays(2)))
+
+    // then
+    commits should be('empty)
+  }
+
+  it should "find commits within given time range" in {
+    // given
+    givenCommitStoredOn(FixtureTime)
+    val commitAfterAMinute = givenCommitStoredOn(FixtureTime.plusMinutes(1))
+    givenCommitStoredOn(FixtureTime.plusMinutes(20))
+    val commitAfterTwoMinutes = givenCommitStoredOn(FixtureTime.plusMinutes(2))
+    givenCommitStoredOn(FixtureTime.plusMinutes(30))
+
+    // when
+    val commits = commitInfoDAO.findForTimeRange(new Interval(FixtureTime.plusSeconds(20), FixtureTime.plusMinutes(3)))
+
+    // then
+    commits.size should be(2)
+    commits(0) should equal(commitAfterAMinute)
+    commits(1) should equal(commitAfterTwoMinutes)
+  }
+
   it should "retrieve commit sha with last commit date" taggedAs(RequiresDb) in {
     // given
     val date = new DateTime()
@@ -94,6 +125,12 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
 
     // then
     commitsSha should equal(commits.map(_.sha).toSet)
+  }
+
+  private def givenCommitStoredOn(dateTime: DateTime) = {
+    val commit = randomCommit.withCommitDate(dateTime).get
+    commitInfoDAO.storeCommit(commit)
+    commit
   }
 
 }

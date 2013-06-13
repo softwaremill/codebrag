@@ -1,10 +1,14 @@
 package com.softwaremill.codebrag.service.github
 
-import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO, UserDAO}
+import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO, UserDAO}
 import com.softwaremill.codebrag.domain.{User, UpdatedCommit, CommitReviewTask, CommitsUpdatedEvent}
 import akka.actor.Actor
+import com.softwaremill.codebrag.service.user.NewUserRegistered
+import pl.softwaremill.common.util.time.Clock
+import org.joda.time.{Interval, DateTime}
+import com.typesafe.scalalogging.slf4j.Logging
 
-class CommitReviewTaskGenerator(userDao: UserDAO, commitToReviewDao: CommitReviewTaskDAO) extends Actor {
+class CommitReviewTaskGenerator(userDao: UserDAO, commitToReviewDao: CommitReviewTaskDAO, commitInfoDao: CommitInfoDAO, clock: Clock) extends Actor with Logging {
 
   val MaxCommitsForFirstImport = 20
 
@@ -12,6 +16,15 @@ class CommitReviewTaskGenerator(userDao: UserDAO, commitToReviewDao: CommitRevie
     case (CommitsUpdatedEvent(firstTime, newCommits)) => {
       val commitsToGenerateTasks = if (firstTime) newCommits.take(MaxCommitsForFirstImport) else newCommits
       commitsToGenerateTasks.foreach(createAndStoreReviewTasksFor(_))
+    }
+
+    case (event@NewUserRegistered(userId, login, fullName, email)) => {
+      val now = clock.currentDateTime()
+      val lastWeekInterval = new Interval(now.minusDays(7), now)
+      val commitsToReview = commitInfoDao.findForTimeRange(lastWeekInterval)
+      val tasks = commitsToReview.filterNot(_.authorName == fullName).map(commit => {CommitReviewTask(commit.id, userId)})
+      logger.debug(s"Generating ${tasks.length} tasks for newly registered user: $event")
+      tasks.foreach(commitToReviewDao.save(_))
     }
   }
 
