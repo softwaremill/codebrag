@@ -23,7 +23,7 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
     }
   }
 
-  def generateFollowupsForComment(currentComment: UserComment) {
+  def generateFollowupsForComment(currentComment: Comment) {
     findCommitWithCommentsRelatedTo(currentComment) match {
       case (None, _) => throwException(s"Commit ${currentComment.commitId} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")
       case (Some(commit), List()) => throwException(s"No stored comments for commit ${currentComment.commitId}. Cannot createOrUpdateExisting follow-ups for commit without comments")
@@ -34,7 +34,7 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
   }
 
 
-  def generateFollowUps(commit: CommitInfo, existingComments: List[UserComment], currentComment: UserComment) {
+  def generateFollowUps(commit: CommitInfo, existingComments: List[Comment], currentComment: Comment) {
     val followUpCreationDate = clock.currentDateTimeUTC()
     val lastCommenterName = commenterNameFor(currentComment)
     usersToGenerateFollowUpsFor(commit, existingComments, currentComment).foreach(userId => {
@@ -42,7 +42,7 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
     })
   }
 
-  private def commenterNameFor(currentComment: UserComment) = {
+  private def commenterNameFor(currentComment: Comment) = {
     userDao.findById(currentComment.authorId) match {
       case Some(user) => user.name
       case None => {
@@ -52,11 +52,11 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
     }
   }
 
-  private def findCommitWithCommentsRelatedTo(comment: UserComment): (Option[CommitInfo], List[UserComment]) = {
+  private def findCommitWithCommentsRelatedTo(comment: Comment): (Option[CommitInfo], List[Comment]) = {
     (commitInfoDao.findByCommitId(comment.commitId), commitCommentDao.findAllCommentsInThreadWith(comment))
   }
 
-  def usersToGenerateFollowUpsFor(commit: CommitInfo, comments: List[UserComment], currentComment: UserComment): Set[ObjectId] = {
+  def usersToGenerateFollowUpsFor(commit: CommitInfo, comments: List[Comment], currentComment: Comment): Set[ObjectId] = {
 
     def uniqueCommenters: Set[ObjectId] = {
       comments.map(_.authorId).toSet

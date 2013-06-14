@@ -7,23 +7,18 @@ import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.dao.UserDAO
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import com.softwaremill.codebrag.dao.reporting.{CommentFinder}
+import com.softwaremill.codebrag.dao.reporting.CommentFinder
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain._
 import org.scalatra.swagger.SwaggerEngine
 import org.mockito.ArgumentCaptor
-import com.softwaremill.codebrag.service.comments.command.{NewInlineCommitComment, NewEntireCommitComment}
 import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterEach
-import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
-import com.softwaremill.codebrag.domain.EntireCommitComment
-import com.softwaremill.codebrag.rest.AddCommentResponse
 import com.softwaremill.codebrag.service.comments.command.NewInlineCommitComment
 import scala.Some
 import com.softwaremill.codebrag.service.comments.command.NewEntireCommitComment
 import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
-import com.softwaremill.codebrag.domain.InlineCommitComment
 
 
 class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {
@@ -55,7 +50,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
   "POST /commits/:id/comments" should "create comment for commit" in {
     // given
     val body = "{\"body\": \"This is comment body\"}"
-    val dummyComment = UserComment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
+    val dummyComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
     when(commentActivity.addCommentToCommit(any[NewEntireCommitComment])).thenReturn(dummyComment)
@@ -75,7 +70,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
   "POST /commits/:id/comments" should "create inline comment for commit" in {
     // given
     val body = "{\"body\": \"This is comment body\", \"fileName\": \"test_file.txt\", \"lineNumber\": 20}"
-    val dummyComment = UserComment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body", Some("test_file.txt"), Some(20))
+    val dummyComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body", Some("test_file.txt"), Some(20))
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
     when(commentActivity.addCommentToCommit(any[NewInlineCommitComment])).thenReturn(dummyComment)
@@ -97,7 +92,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
   "POST /commits/:id/comments" should "return created comment in response" in {
     // given
     val body = "{\"body\": \"This is comment body\"}"
-    val createdComment = UserComment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
+    val createdComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
     when(commentActivity.addCommentToCommit(any[NewEntireCommitComment])).thenReturn(createdComment)

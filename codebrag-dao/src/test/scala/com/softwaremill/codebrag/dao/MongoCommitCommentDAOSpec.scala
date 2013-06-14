@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.dao
 
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.UserComment
+import com.softwaremill.codebrag.domain.Comment
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
@@ -100,7 +100,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTes
   //  }
 
 
-  private def createUserCommentsFor(commitId: ObjectId, howMany: Int): Seq[UserComment] = {
+  private def createUserCommentsFor(commitId: ObjectId, howMany: Int): Seq[Comment] = {
     (1 to howMany).map(i => commentFor(commitId).get).toSeq
   }
 }

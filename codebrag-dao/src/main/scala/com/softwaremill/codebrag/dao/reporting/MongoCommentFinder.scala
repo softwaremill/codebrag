@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.reporting
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.{UserDAO, MongoCommitCommentDAO, UserRecord}
 import com.foursquare.rogue.LiftRogue._
-import com.softwaremill.codebrag.domain.{UserComment, CommentBase, InlineCommitComment, EntireCommitComment}
+import com.softwaremill.codebrag.domain.Comment
 import com.softwaremill.codebrag.dao.reporting.views.{SingleCommentView, CommentsView}
 
 class MongoCommentFinder(userDao: UserDAO) extends CommentFinder {
@@ -16,7 +16,7 @@ class MongoCommentFinder(userDao: UserDAO) extends CommentFinder {
     CommentsView(comments = mapCommitCommentsToView(entireComments), inlineComments = mapInlineCommitCommentsToView(inlineComments))
   }
 
-  private def mapInlineCommitCommentsToView(comments: List[UserComment]): Map[String, CommentsView.LineToCommentListMap] = {
+  private def mapInlineCommitCommentsToView(comments: List[Comment]): Map[String, CommentsView.LineToCommentListMap] = {
     val commentersCached = findAllCommentersFor(comments)
     val byFiles = comments.groupBy(_.fileName.get)
     val byFileAndLineNumber = byFiles.map({
@@ -36,7 +36,7 @@ class MongoCommentFinder(userDao: UserDAO) extends CommentFinder {
     })
   }
 
-  private def findAllCommentersFor(comments: List[UserComment]): List[(ObjectId, String, String)] = {
+  private def findAllCommentersFor(comments: List[Comment]): List[(ObjectId, String, String)] = {
     UserRecord.select(_.id, _.name, _.avatarUrl).where(_.id in comments.map(_.authorId)).fetch()
   }
 
@@ -47,7 +47,7 @@ class MongoCommentFinder(userDao: UserDAO) extends CommentFinder {
     }
   }
 
-  private def mapCommitCommentsToView(comments: List[UserComment]) = {
+  private def mapCommitCommentsToView(comments: List[Comment]) = {
     val commentersCached = findAllCommentersFor(comments)
     comments.map(comment => {
       val (authorName, avatarUrl) = findCommenterDetails(commentersCached, comment.authorId)

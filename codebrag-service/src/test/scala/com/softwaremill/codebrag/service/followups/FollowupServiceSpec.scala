@@ -10,7 +10,6 @@ import pl.softwaremill.common.util.time.FixtureTimeClock
 import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.EntireCommitComment
 import scala.Some
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 
@@ -142,15 +141,15 @@ trait FollowupServiceSpecFixture {
   val BettyCommitAuthor = User(BettyCommitAuthorId, Authentication.basic("user", "password"), Commit.authorName, "user@email.com", "123213", "avatarUrl")
   val JohnCommenter = User(JohnId, Authentication.basic("john", "doe"), "John", "john@doe.com", "456456", "avatarUrl")
 
-  val JohnComment = UserComment(new ObjectId(), Commit.id, JohnId, CommentDateTime, "user one comment")
-  val MaryComment = UserComment(new ObjectId(), Commit.id, MaryId, CommentDateTime, "user two comment")
-  val MaryAnotherComment = UserComment(new ObjectId(), Commit.id, MaryId, CommentDateTime, "user two another comment")
+  val JohnComment = Comment(new ObjectId(), Commit.id, JohnId, CommentDateTime, "user one comment")
+  val MaryComment = Comment(new ObjectId(), Commit.id, MaryId, CommentDateTime, "user two comment")
+  val MaryAnotherComment = Comment(new ObjectId(), Commit.id, MaryId, CommentDateTime, "user two another comment")
 
   val InlineCommentFile = "file_1.txt"
   val InlineCommentLine = 20
-  val JohnInlineComment = UserComment(new ObjectId(), Commit.id, JohnId, CommentDateTime, "user one inline comment", Some("file_1.txt"), Some(20))
-  val MaryInlineComment = UserComment(new ObjectId(), Commit.id, MaryId, CommentDateTime, "user two inline comment", Some("file_1.txt"), Some(20))
-  val BobInlineComment = UserComment(new ObjectId(), Commit.id, BobId, CommentDateTime, "user three another inline comment", Some("file_1.txt"), Some(20))
+  val JohnInlineComment = Comment(new ObjectId(), Commit.id, JohnId, CommentDateTime, "user one inline comment", Some("file_1.txt"), Some(20))
+  val MaryInlineComment = Comment(new ObjectId(), Commit.id, MaryId, CommentDateTime, "user two inline comment", Some("file_1.txt"), Some(20))
+  val BobInlineComment = Comment(new ObjectId(), Commit.id, BobId, CommentDateTime, "user three another inline comment", Some("file_1.txt"), Some(20))
 
   val JohnAndMaryComments = List(JohnComment, MaryComment)
   val JohnAndTwoMaryComments = List(JohnComment, MaryComment, MaryAnotherComment)

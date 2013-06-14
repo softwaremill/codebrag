@@ -32,7 +32,7 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
     commentService.addCommentToCommit(CommentForCommit)
 
     // then
-    val commentArgument = ArgumentCaptor.forClass(classOf[UserComment])
+    val commentArgument = ArgumentCaptor.forClass(classOf[Comment])
     verify(commentDaoMock).save(commentArgument.capture())
     commentArgument.getValue.commitId should equal(CommentForCommit.commitId)
     commentArgument.getValue.authorId should equal(CommentForCommit.authorId)

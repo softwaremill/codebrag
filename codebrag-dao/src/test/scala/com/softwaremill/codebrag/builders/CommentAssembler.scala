@@ -2,17 +2,17 @@ package com.softwaremill.codebrag.builders
 
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.{UserComment, InlineCommitComment, EntireCommitComment}
+import com.softwaremill.codebrag.domain.Comment
 
 object CommentAssembler {
 
-  val dummyComment = UserComment(new ObjectId, new ObjectId, new ObjectId, DateTime.now, "Inline comment message")
+  private val dummyComment = Comment(new ObjectId, new ObjectId, new ObjectId, DateTime.now, "Comment message")
 
   def commentFor(commitId: ObjectId) = {
-    new UserCommentAssembler(dummyComment.copy(commitId = commitId))
+    new Assembler(dummyComment.copy(commitId = commitId))
   }
 
-  class UserCommentAssembler(var base: UserComment) {
+  class Assembler(var base: Comment) {
 
     def withFileNameAndLineNumber(newFileName: String, newLineNumber: Int) = {
       base = base.copy(fileName = Some(newFileName), lineNumber = Some(newLineNumber))

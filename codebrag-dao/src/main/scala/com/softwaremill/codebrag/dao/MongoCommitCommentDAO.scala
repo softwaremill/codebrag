@@ -1,17 +1,17 @@
 package com.softwaremill.codebrag.dao
 
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
-import com.softwaremill.codebrag.domain.{UserComment, CommentBase, InlineCommitComment, EntireCommitComment}
+import com.softwaremill.codebrag.domain.Comment
 import net.liftweb.mongodb.record.field.{ObjectIdField, DateField}
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
-import net.liftweb.record.field.{OptionalIntField, EnumField}
+import net.liftweb.record.field.OptionalIntField
 
 
 class MongoCommitCommentDAO extends CommitCommentDAO {
 
-  override def save(comment: UserComment) {
+  override def save(comment: Comment) {
     CommentToRecordBuilder.buildFrom(comment).save
   }
 
@@ -20,7 +20,7 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
     comments.map(RecordToCommentBuilder.buildFrom(_))
   }
 
-  def findAllCommentsInThreadWith(comment: UserComment) = {
+  def findAllCommentsInThreadWith(comment: Comment) = {
 //    val source = CommentToRecordBuilder.buildFrom(comment)
 //    val query = CommentRecord
 //      .where(_.commitId eqs source.commitId.get)
@@ -33,7 +33,7 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
 
   private object CommentToRecordBuilder {
 
-    def buildFrom(comment: UserComment) = {
+    def buildFrom(comment: Comment) = {
       CommentRecord.createRecord
         .id(comment.id)
         .commitId(comment.commitId)
@@ -49,7 +49,7 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
   private object RecordToCommentBuilder {
 
     def buildFrom(record: CommentRecord) = {
-      UserComment(
+      Comment(
         record.id.get,
         record.commitId.get,
         record.authorId.get,
