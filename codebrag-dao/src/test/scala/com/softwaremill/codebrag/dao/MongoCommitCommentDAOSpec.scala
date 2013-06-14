@@ -8,6 +8,7 @@ import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.builders.CommentAssembler._
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.builders.CommentAssembler
 
 class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 
@@ -22,7 +23,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTes
   }
 
   it should "store new comment for entire commit" taggedAs(RequiresDb) in {
-    val newComment = commitCommentFor(CommitId).get
+    val newComment = CommentAssembler.userCommentForCommit(CommitId).get
 
     // when
     commentDao.save(newComment)
@@ -34,7 +35,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTes
   }
 
   it should "store new line comment for commit" taggedAs(RequiresDb) in {
-    val lineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("myfile.txt", 20).get
+    val lineComment = CommentAssembler.userCommentForCommit(CommitId).withFileNameAndLineNumber("file.txt", 10).get
 
     // when
     commentDao.save(lineComment)
@@ -42,9 +43,10 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTes
 
     // then
     comments.size should be(1)
-    comments.head.message.get should equal(lineComment.message)
-    comments.head.fileName.valueBox.get should equal(lineComment.fileName)
-    comments.head.lineNumber.valueBox.get should equal(lineComment.lineNumber)
+    val savedComment = comments.head
+    savedComment.message.get should equal(lineComment.message)
+    savedComment.fileName.value should equal(lineComment.fileName)
+    savedComment.lineNumber.value should equal(lineComment.lineNumber)
   }
 
   it should "load only comments for commit id" taggedAs(RequiresDb) in {

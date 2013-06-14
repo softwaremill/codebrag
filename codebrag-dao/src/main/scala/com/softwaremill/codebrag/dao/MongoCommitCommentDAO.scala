@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.dao
 
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
-import com.softwaremill.codebrag.domain.{CommentBase, InlineCommitComment, EntireCommitComment}
+import com.softwaremill.codebrag.domain.{UserComment, CommentBase, InlineCommitComment, EntireCommitComment}
 import net.liftweb.mongodb.record.field.{ObjectIdField, DateField}
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
@@ -15,6 +15,14 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
 
   override def save(comment: CommentBase) {
     CommentToRecordBuilder.buildFrom(comment).save
+  }
+
+  override def save(comment: UserComment) {
+    CommentToRecordBuilder.buildFrom(comment).save
+  }
+
+  override def findCommentsForCommit(commitId: ObjectId) = {
+    CommentRecord.where(_.commitId eqs commitId).orderAsc(_.date).fetch().map(RecordToCommentBuilder.buildFromRecord(_))
   }
 
   override def findInlineCommentsForCommit(commitId: ObjectId) = {
@@ -40,6 +48,18 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
   private object CommentToRecordBuilder {
 
     import CommentRecord.CommentTypeEnum._
+
+    def buildFrom(comment: UserComment) = {
+      CommentRecord.createRecord
+        .id(comment.id)
+        .commitId(comment.commitId)
+        .authorId(comment.authorId)
+        .message(comment.message)
+        .date(comment.postingTime.toDate)
+        .commentType(Commit)
+        .fileName(comment.fileName)
+        .lineNumber(comment.lineNumber)
+    }
 
     def buildFrom(comment: CommentBase) = {
       comment match {
@@ -73,6 +93,17 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
   private object RecordToCommentBuilder {
 
     import CommentRecord.CommentTypeEnum._
+
+    def buildFromRecord(record: CommentRecord) = {
+      UserComment(
+        record.id.get,
+        record.commitId.get,
+        record.authorId.get,
+        new DateTime(record.date.get),
+        record.message.get,
+        record.fileName.value,
+        record.lineNumber.value)
+    }
 
     def buildFrom(comment: CommentRecord) = {
       comment.commentType.get match {
