@@ -27,6 +27,7 @@ case class EntireCommitComment(
 
 }
 
+
 case class InlineCommitComment(
                                 override val id: ObjectId,
                                 override val commitId: ObjectId,
@@ -41,3 +42,17 @@ case class InlineCommitComment(
 }
 
 case class ThreadDetails(commitId: ObjectId, lineNumber: Option[Int] = None, fileName: Option[String] = None)
+
+
+case class UserComment(
+                      override val id: ObjectId,
+                      override val commitId: ObjectId,
+                      override val authorId: ObjectId,
+                      override val postingTime: DateTime,
+                      message: String,
+                      fileName: Option[String] = None,
+                      lineNumber: Option[Int] = None) extends UserReactionBase(id, commitId, authorId, postingTime) {
+
+  def threadId = ThreadDetails(commitId, lineNumber, fileName)
+
+}

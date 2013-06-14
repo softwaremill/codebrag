@@ -15,3 +15,6 @@ case class NewInlineCommitComment(
                                    override val message: String,
                                    fileName: String,
                                    lineNumber: Int) extends  NewComment(commitId, authorId, message)
+
+
+case class IncomingComment(commitId: ObjectId, authorId: ObjectId, message: String, fileName: Option[String], lineNumber: Option[Int])
