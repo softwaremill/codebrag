@@ -77,7 +77,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   it should "throw exception and not generate follow-ups when commit not found" in {
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(None)
-    given(commitCommentDao.findCommentsForEntireCommit(Commit.id)).willReturn(JohnAndTwoMaryComments)
+    given(commitCommentDao.findCommentsForCommit(Commit.id)).willReturn(JohnAndTwoMaryComments)
 
     // When
     val thrown = intercept[RuntimeException] {
@@ -142,15 +142,15 @@ trait FollowupServiceSpecFixture {
   val BettyCommitAuthor = User(BettyCommitAuthorId, Authentication.basic("user", "password"), Commit.authorName, "user@email.com", "123213", "avatarUrl")
   val JohnCommenter = User(JohnId, Authentication.basic("john", "doe"), "John", "john@doe.com", "456456", "avatarUrl")
 
-  val JohnComment = EntireCommitComment(new ObjectId(), Commit.id, JohnId, "user one comment", CommentDateTime)
-  val MaryComment = EntireCommitComment(new ObjectId(), Commit.id, MaryId, "user two comment", CommentDateTime)
-  val MaryAnotherComment = EntireCommitComment(new ObjectId(), Commit.id, MaryId, "user two another comment", CommentDateTime)
+  val JohnComment = UserComment(new ObjectId(), Commit.id, JohnId, CommentDateTime, "user one comment")
+  val MaryComment = UserComment(new ObjectId(), Commit.id, MaryId, CommentDateTime, "user two comment")
+  val MaryAnotherComment = UserComment(new ObjectId(), Commit.id, MaryId, CommentDateTime, "user two another comment")
 
   val InlineCommentFile = "file_1.txt"
   val InlineCommentLine = 20
-  val JohnInlineComment = InlineCommitComment(new ObjectId(), Commit.id, JohnId, "user one inline comment", CommentDateTime, "file_1.txt", 20)
-  val MaryInlineComment = InlineCommitComment(new ObjectId(), Commit.id, MaryId, "user two inline comment", CommentDateTime, "file_1.txt", 20)
-  val BobInlineComment = InlineCommitComment(new ObjectId(), Commit.id, BobId, "user three another inline comment", CommentDateTime, "file_1.txt", 20)
+  val JohnInlineComment = UserComment(new ObjectId(), Commit.id, JohnId, CommentDateTime, "user one inline comment", Some("file_1.txt"), Some(20))
+  val MaryInlineComment = UserComment(new ObjectId(), Commit.id, MaryId, CommentDateTime, "user two inline comment", Some("file_1.txt"), Some(20))
+  val BobInlineComment = UserComment(new ObjectId(), Commit.id, BobId, CommentDateTime, "user three another inline comment", Some("file_1.txt"), Some(20))
 
   val JohnAndMaryComments = List(JohnComment, MaryComment)
   val JohnAndTwoMaryComments = List(JohnComment, MaryComment, MaryAnotherComment)

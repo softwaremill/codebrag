@@ -21,16 +21,16 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
   val Mary = User(oid(3), Authentication.basic("mary", "pass"), "Mary", "mary@smith.com", "123abc", "http://mary.com/avatar")
 
   val StoredCommitComments = List(
-    CommentAssembler.commitCommentFor(CommitId).withAuthorId(John.id).withMessage("Monster class").get,
-    CommentAssembler.commitCommentFor(CommitId).withAuthorId(Mary.id).withMessage("Fix it ASAP").get
+    CommentAssembler.commentFor(CommitId).withAuthorId(John.id).withMessage("Monster class").get,
+    CommentAssembler.commentFor(CommitId).withAuthorId(Mary.id).withMessage("Fix it ASAP").get
   )
 
   val StoredInlineComments = List(
-    CommentAssembler.inlineCommentFor(CommitId).withFileNameAndLineNumber("Main.scala", 10).withMessage("Cool thing").withAuthorId(John.id).get,
-    CommentAssembler.inlineCommentFor(CommitId).withFileNameAndLineNumber("Main.scala", 10).withMessage("Indeed").withAuthorId(Mary.id).get,
-    CommentAssembler.inlineCommentFor(CommitId).withFileNameAndLineNumber("Database.scala", 12).withMessage("Possible NPE?").withAuthorId(Mary.id).get,
-    CommentAssembler.inlineCommentFor(CommitId).withFileNameAndLineNumber("Database.scala", 12).withMessage("Nope").withAuthorId(John.id).get,
-    CommentAssembler.inlineCommentFor(CommitId).withFileNameAndLineNumber("Database.scala", 20).withMessage("Refactor that").withAuthorId(John.id).get
+    CommentAssembler.commentFor(CommitId).withFileNameAndLineNumber("Main.scala", 10).withMessage("Cool thing").withAuthorId(John.id).get,
+    CommentAssembler.commentFor(CommitId).withFileNameAndLineNumber("Main.scala", 10).withMessage("Indeed").withAuthorId(Mary.id).get,
+    CommentAssembler.commentFor(CommitId).withFileNameAndLineNumber("Database.scala", 12).withMessage("Possible NPE?").withAuthorId(Mary.id).get,
+    CommentAssembler.commentFor(CommitId).withFileNameAndLineNumber("Database.scala", 12).withMessage("Nope").withAuthorId(John.id).get,
+    CommentAssembler.commentFor(CommitId).withFileNameAndLineNumber("Database.scala", 20).withMessage("Refactor that").withAuthorId(John.id).get
   )
 
   override def beforeEach() {
@@ -86,7 +86,7 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
   it should "have comments ordered by date starting from the oldest" taggedAs (RequiresDb) in {
     // given
     val baseDate = DateTime.now
-    val commentBase = CommentAssembler.inlineCommentFor(CommitId).withFileNameAndLineNumber("Exception.scala", 10)
+    val commentBase = CommentAssembler.commentFor(CommitId).withFileNameAndLineNumber("Exception.scala", 10)
     val inlineComments = List(
       commentBase.withMessage("You'd better refactor that").withAuthorId(John.id).postedAt(baseDate.plusHours(1)).get,
       commentBase.withMessage("Man, it's Monday").withAuthorId(Mary.id).postedAt(baseDate.plusHours(2)).get
@@ -117,7 +117,7 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     // given
     val emptyAvatarUrl = ""
     val dummyCommitId = ObjectIdTestUtils.oid(123123)
-    val commentFromNonexistingUser = CommentAssembler.commitCommentFor(dummyCommitId).withAuthorId(ObjectIdTestUtils.oid(1111111)).get
+    val commentFromNonexistingUser = CommentAssembler.commentFor(dummyCommitId).withAuthorId(ObjectIdTestUtils.oid(1111111)).get
     commentDao.save(commentFromNonexistingUser)
 
     // when
