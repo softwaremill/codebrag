@@ -1,6 +1,5 @@
 package com.softwaremill.codebrag.service.comments
 
-import com.softwaremill.codebrag.service.comments.command.{NewInlineCommitComment, NewEntireCommitComment}
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
@@ -9,6 +8,7 @@ import pl.softwaremill.common.util.time.FixtureTimeClock
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain._
 import org.mockito.ArgumentCaptor
+import com.softwaremill.codebrag.service.comments.command.IncomingComment
 
 class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
@@ -19,8 +19,8 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
 
   val AuthorId = ObjectIdTestUtils.oid(100)
   val CommitId = ObjectIdTestUtils.oid(200)
-  val CommentForCommit = NewEntireCommitComment(CommitId, AuthorId, "new comment message")
-  val InlineCommentForCommit = NewInlineCommitComment(CommitId, AuthorId, "new inline comment message", "test_1.txt", 20)
+  val CommentForCommit = IncomingComment(CommitId, AuthorId, "new comment message")
+  val InlineCommentForCommit = IncomingComment(CommitId, AuthorId, "new inline comment message", Some("test_1.txt"), Some(20))
 
   override def beforeEach() {
     commentDaoMock = mock[CommitCommentDAO]
@@ -57,8 +57,8 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
     val savedComment = commentService.addCommentToCommit(InlineCommentForCommit)
 
     // then
-    savedComment.lineNumber.get should equal(InlineCommentForCommit.lineNumber)
-    savedComment.fileName.get should equal(InlineCommentForCommit.fileName)
+    savedComment.lineNumber should equal(InlineCommentForCommit.lineNumber)
+    savedComment.fileName should equal(InlineCommentForCommit.fileName)
   }
 
 }

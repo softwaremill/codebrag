@@ -5,9 +5,8 @@ import com.softwaremill.codebrag.dao.reporting._
 import org.scalatra.swagger.SwaggerSupport
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import com.softwaremill.codebrag.dao.UserDAO
-import com.softwaremill.codebrag.service.comments.command.NewInlineCommitComment
+import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import scala.Some
-import com.softwaremill.codebrag.service.comments.command.NewEntireCommitComment
 import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
 
 trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpointSwaggerDefinition {
@@ -31,11 +30,10 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpoi
     val fileNameOpt = (parsedBody \ "fileName").extractOpt[String]
     val lineNumberOpt = (parsedBody \ "lineNumber").extractOpt[Int]
     val commitIdParam = params("id")
-    (fileNameOpt, lineNumberOpt) match {
-      case (None, None) => NewEntireCommitComment(new ObjectId(commitIdParam), new ObjectId(user.id), messageBody)
-      case (Some(fileName), Some(lineNumber)) => NewInlineCommitComment(new ObjectId(commitIdParam), new ObjectId(user.id), messageBody, fileName, lineNumber)
-      case _ => halt(400, "File name and line number must be present for inline comment")
+    if(fileNameOpt.isDefined ^ lineNumberOpt.isDefined) {
+      halt(400, "File name and line number must be present for inline comment")
     }
+    IncomingComment(new ObjectId(commitIdParam), new ObjectId(user.id), messageBody, fileNameOpt, lineNumberOpt)
   }
 }
 
