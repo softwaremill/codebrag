@@ -6,7 +6,7 @@ import net.liftweb.mongodb.record.field.{ObjectIdField, DateField}
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
-import net.liftweb.record.field.{EnumField, IntField}
+import net.liftweb.record.field.{OptionalIntField, EnumField}
 
 
 class MongoCommitCommentDAO extends CommitCommentDAO {
@@ -120,9 +120,9 @@ class CommentRecord extends MongoRecord[CommentRecord] {
 
   object date extends DateField(this)
 
-  object fileName extends LongStringField(this) { override def optional_? = true }
+  object fileName extends OptionalLongStringField(this)
 
-  object lineNumber extends IntField(this) { override def optional_? = true }
+  object lineNumber extends OptionalIntField(this)
 
   object commentType extends EnumField(this, CommentRecord.CommentTypeEnum)
 
