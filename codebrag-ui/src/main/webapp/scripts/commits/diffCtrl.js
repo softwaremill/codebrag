@@ -50,7 +50,7 @@ angular.module('codebrag.commits')
                 body: content
             };
             return Comments.save(comment).$then(function (commentResponse) {
-                $scope.currentCommit.comments.push(commentResponse.data.comment);
+                $scope.currentCommit.reactions.comments.push(commentResponse.data.comment);
             });
         };
 

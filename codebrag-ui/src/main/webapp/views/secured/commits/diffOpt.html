@@ -53,7 +53,7 @@
 
     <div class="like-commit"><a class="like button"><i class="icon-heart"></i></a><span>Be the first to like this commit</span></div>
     <div class="comments-container">
-        <div class="comment" ng-repeat="comment in currentCommit.comments">
+        <div class="comment" ng-repeat="comment in currentCommit.reactions.comments">
             <div class="authored-box">
                 <div class="author-box"><user-avatar url="comment.authorAvatarUrl"></user-avatar></div>
                 <div class="info-box">
