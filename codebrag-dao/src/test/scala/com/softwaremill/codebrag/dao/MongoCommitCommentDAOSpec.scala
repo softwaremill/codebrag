@@ -50,8 +50,8 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTes
 
   it should "load only comments for commit id" taggedAs (RequiresDb) in {
     // given
-    val fixtureCommentList = createUserCommentsFor(CommitId, 3)
-    val additionalComments = createUserCommentsFor(AnotherCommitId, 5)
+    val fixtureCommentList = createCommentsFor(CommitId, 3)
+    val additionalComments = createCommentsFor(AnotherCommitId, 5)
     fixtureCommentList.foreach(commentDao.save(_))
     additionalComments.foreach(commentDao.save(_))
 
@@ -77,30 +77,31 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTes
     comments.map(_.id).toSet should equal(Set(comment.id, inlineComment.id))
   }
 
-  //  it should "find all comments in thread containing given comment (general or for the same file and line)" taggedAs(RequiresDb) in {
-  //    // given general comments
-  //    val commitComments = createFewCommentsFor(CommitId, 3)
-  //    commitComments.foreach(commentDao.save)
-  //
-  //    // and some inline comments
-  //    val firstInlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("file_1.txt", 10).get
-  //    val secondInlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("file_1.txt", 10).get
-  //    val anotherInlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("file_2.txt", 20).get
-  //    commentDao.save(firstInlineComment)
-  //    commentDao.save(secondInlineComment)
-  //    commentDao.save(anotherInlineComment)
-  //
-  //    // when
-  //    val inlineCommentsRelated = commentDao.findAllCommentsInThreadWith(firstInlineComment)
-  //    val generalCommentsRelated = commentDao.findAllCommentsInThreadWith(commitComments.head)
-  //
-  //    // then
-  //    inlineCommentsRelated.toSet should be(Set(firstInlineComment, secondInlineComment))
-  //    generalCommentsRelated.toSet should be(commitComments.toSet)
-  //  }
+    it should "find all comments in thread containing given comment (general or for the same file and line)" taggedAs(RequiresDb) in {
+      // given general comments
+      val commitComments = createCommentsFor(CommitId, 3)
+      commitComments.foreach(commentDao.save)
+
+      // and some inline comments
+      val firstInlineComment = commentFor(CommitId).withFileNameAndLineNumber("file_1.txt", 10).get
+      val secondInlineComment = commentFor(CommitId).withFileNameAndLineNumber("file_1.txt", 10).get
+      val anotherInlineComment = commentFor(CommitId).withFileNameAndLineNumber("file_2.txt", 20).get
+      commentDao.save(firstInlineComment)
+      commentDao.save(secondInlineComment)
+      commentDao.save(anotherInlineComment)
+
+      // when
+      val inlineCommentsRelated = commentDao.findAllCommentsInThreadWith(firstInlineComment)
+      val generalCommentsRelated = commentDao.findAllCommentsInThreadWith(commitComments.head)
+
+      // then
+      println(inlineCommentsRelated)
+      inlineCommentsRelated.toSet should be(Set(firstInlineComment, secondInlineComment))
+      generalCommentsRelated.toSet should be(commitComments.toSet)
+    }
 
 
-  private def createUserCommentsFor(commitId: ObjectId, howMany: Int): Seq[Comment] = {
+  private def createCommentsFor(commitId: ObjectId, howMany: Int): Seq[Comment] = {
     (1 to howMany).map(i => commentFor(commitId).get).toSeq
   }
 }

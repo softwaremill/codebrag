@@ -21,14 +21,15 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
   }
 
   def findAllCommentsInThreadWith(comment: Comment) = {
-//    val source = CommentToRecordBuilder.buildFrom(comment)
-//    val query = CommentRecord
-//      .where(_.commitId eqs source.commitId.get)
-//      .and(_.commentType eqs source.commentType.get)
-//      .andOpt(source.fileName.valueBox)(_.fileName eqs _)
-//      .andOpt(source.lineNumber.valueBox)(_.lineNumber eqs _)
-//    query.fetch().map(RecordToCommentBuilder.buildFrom(_))
-    List.empty
+    val query = (comment.fileName, comment.lineNumber) match {
+      case (Some(fileName), Some(lineNumber)) => {
+        CommentRecord.where(_.commitId eqs comment.commitId).and(_.fileName eqs fileName).and(_.lineNumber eqs lineNumber)
+      }
+      case _ => {
+        CommentRecord.where(_.commitId eqs comment.commitId).and(_.fileName exists false).and(_.lineNumber exists false)
+      }
+    }
+    query.fetch().map(RecordToCommentBuilder.buildFrom(_))
   }
 
   private object CommentToRecordBuilder {
