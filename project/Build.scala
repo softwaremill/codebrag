@@ -233,6 +233,10 @@ object SmlCodebragBuild extends Build {
         // Here we don't care for sure.
         case "about.html" => MergeStrategy.discard
         case x => old(x)
+      } },
+      // We need to include the whole webapp, hence replacing the resource directory
+      resourceDirectory in Compile <<= baseDirectory { bd => {
+        bd.getParentFile() / ui.base.getName / "src" / "main" / "webapp"
       } }
     )
   ) dependsOn (ui)

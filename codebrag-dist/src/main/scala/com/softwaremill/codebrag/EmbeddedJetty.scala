@@ -16,12 +16,15 @@ trait EmbeddedJetty {
   protected def prepareContext() = {
     val context = new WebAppContext()
     context.setContextPath("/")
+    context.setResourceBase(getResourceBase())
     context
   }
 
   def stopJetty() {
     jetty.stop()
   }
+
+  protected def getResourceBase(): String
 
   def webServerConfig: WebServerConfig
 

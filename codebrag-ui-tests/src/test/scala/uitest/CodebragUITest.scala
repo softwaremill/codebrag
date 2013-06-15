@@ -45,10 +45,11 @@ trait UITestsEmbeddedJetty extends EmbeddedJetty {
 
   override protected def prepareContext() = {
     val context = super.prepareContext()
-    context.setResourceBase("codebrag-ui/src/main/webapp")
     this.context = context.getServletContext
     context
   }
+
+  protected def getResourceBase() = "codebrag-ui/src/main/webapp"
 
   def webServerConfig = new WebServerConfig {
     def rootConfig = null
