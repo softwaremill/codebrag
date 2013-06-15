@@ -107,7 +107,6 @@ object Dependencies {
 
   val smlCommonUtil = "pl.softwaremill.common" % "softwaremill-util" % smlCommonVersion
   val smlCommonSqs = "pl.softwaremill.common" % "softwaremill-sqs" % smlCommonVersion
-  val smlCommonConfig = "pl.softwaremill.common" % "softwaremill-conf" % smlCommonVersion
 
   val scalate = "org.fusesource.scalate" %% "scalate-core" % "1.6.0"
 
@@ -171,14 +170,14 @@ object SmlCodebragBuild extends Build {
   lazy val service: Project = Project(
     "codebrag-service",
     file("codebrag-service"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator, smlCommonSqs, smlCommonConfig,
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator, smlCommonSqs,
       javaxMail, scalate, egitGithubApi, jGit, dispatch, json4s))
   ) dependsOn(domain, common, dao % "test->test;compile->compile")
 
   lazy val rest: Project = Project(
     "codebrag-rest",
     file("codebrag-rest"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, smlCommonConfig))
+    settings = buildSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided))
   ) dependsOn(service % "test->test;compile->compile", domain, common)
 
 
