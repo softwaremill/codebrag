@@ -214,4 +214,7 @@ object SmlCodebragBuild extends Build {
 
   ) dependsOn (rest)
 
+  // To run the embedded container, we need to provide the path to the configuration. To make things easier, we assume
+  // that the local conf is in the current dir in the local.conf file.
+  System.setProperty("config.file", "local.conf")
 }

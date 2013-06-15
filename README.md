@@ -2,9 +2,9 @@
 
 Quick Start
 ---
+
 1. Start mongodb
-2. Configure application.conf
-If you want to access GitHub repositories, create a file called `application.conf` in your classpath. You can use `application.conf.template`.
+2. Configure `local.conf` basing on `codebrag-rest/main/resources/application.conf`
 Important elements to fill:
     * `syncUserLogin`: login of Codebrag user who will be used for synchronization with GitHub
     * `GitHubClientId` and `GitHubClientSecret`: keys copied from GitHub settings of your Codebrag instance.
