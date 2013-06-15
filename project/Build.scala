@@ -100,6 +100,7 @@ object Dependencies {
 
   val akka = "com.typesafe.akka" %% "akka-actor" % akkaVersion
   val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test"
+  val typesafeConfig = "com.typesafe" % "config" % "1.0.1"
 
   val testingDependencies = Seq(mockito, scalatest, akkaTestkit)
 
@@ -164,7 +165,7 @@ object SmlCodebragBuild extends Build {
   lazy val dao: Project = Project(
     "codebrag-dao",
     file("codebrag-dao"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(smlCommonUtil))
+    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(smlCommonUtil, typesafeConfig))
   ) dependsOn(domain % "test->test;compile->compile", common)
 
   lazy val service: Project = Project(
@@ -177,7 +178,7 @@ object SmlCodebragBuild extends Build {
   lazy val rest: Project = Project(
     "codebrag-rest",
     file("codebrag-rest"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided))
+    settings = buildSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig))
   ) dependsOn(service % "test->test;compile->compile", domain, common)
 
 
