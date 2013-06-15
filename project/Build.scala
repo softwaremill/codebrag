@@ -63,6 +63,7 @@ object Dependencies {
   val rogueVersion = "2.0.0-RC4"
   val scalaLoggingVersion = "1.0.1"
   val akkaVersion = "2.1.4"
+  val jettyVersion = "8.1.7.v20120910"
 
   val slf4jApi = "org.slf4j" % "slf4j-api" % slf4jVersion
   val logBackClassic = "ch.qos.logback" % "logback-classic" % logBackVersion
@@ -89,8 +90,8 @@ object Dependencies {
   val commonsValidator = "commons-validator" % "commons-validator" % "1.4.0" exclude("commons-logging", "commons-logging")
   val commonsLang = "org.apache.commons" % "commons-lang3" % "3.1"
 
-  val jetty = "org.eclipse.jetty" % "jetty-webapp" % "8.1.7.v20120910" % "container"
-  val jettyTest = "org.eclipse.jetty" % "jetty-webapp" % "8.1.7.v20120910" % "test"
+  val jetty = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion
+  val jettyContainer = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container"
 
   val mockito = "org.mockito" % "mockito-all" % "1.9.5" % "test"
   val scalatest = "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
@@ -148,7 +149,7 @@ object SmlCodebragBuild extends Build {
     "codebrag-root",
     file("."),
     settings = buildSettings
-  ) aggregate(common, domain, dao, service, rest, ui)
+  ) aggregate(common, domain, dao, service, rest, ui, dist)
 
   lazy val common: Project = Project(
     "codebrag-common",
@@ -195,7 +196,7 @@ object SmlCodebragBuild extends Build {
       artifactName := { (config: ScalaVersion, module: ModuleID, artifact: Artifact) =>
         "codebrag." + artifact.extension // produces nice war name -> http://stackoverflow.com/questions/8288859/how-do-you-remove-the-scala-version-postfix-from-artifacts-builtpublished-wi
       },
-      libraryDependencies ++= Seq(jetty, servletApiProvided),
+      libraryDependencies ++= Seq(jettyContainer, servletApiProvided),
       appJsDir <+= sourceDirectory { src => src / "main" / "webapp" / "scripts" },
       appJsLibDir <+= sourceDirectory { src => src / "main" / "webapp" / "scripts" / "vendor" },
       jasmineTestDir <+= sourceDirectory { src => src / "test" / "unit" },
@@ -205,14 +206,23 @@ object SmlCodebragBuild extends Build {
       (test in Test) <<= (test in Test) dependsOn (jasmine))
   ) dependsOn (rest)
 
+  lazy val dist = Project(
+    "codebrag-dist",
+    file("codebrag-dist"),
+    settings = buildSettings ++ Seq(
+      libraryDependencies ++= Seq(jetty)
+    )
+
+  ) dependsOn (ui)
+
   lazy val uiTests = Project(
     "codebrag-ui-tests",
     file("codebrag-ui-tests"),
     settings = buildSettings ++ Seq(
-      libraryDependencies ++= selenium ++ Seq(awaitility, jettyTest, servletApiProvided)
+      libraryDependencies ++= selenium ++ Seq(awaitility)
     )
 
-  ) dependsOn (rest)
+  ) dependsOn (dist)
 
   // To run the embedded container, we need to provide the path to the configuration. To make things easier, we assume
   // that the local conf is in the current dir in the local.conf file.
