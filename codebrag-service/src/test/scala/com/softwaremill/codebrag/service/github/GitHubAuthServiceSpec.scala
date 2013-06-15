@@ -11,7 +11,9 @@ import com.softwaremill.codebrag.service.config.GithubConfig
 class GitHubAuthServiceSpec extends FlatSpec with MockitoSugar with GivenWhenThen {
   behavior of "GitHub Auth Service"
 
-  val testConfig = new GithubConfig {}
+  val testConfig = new GithubConfig {
+    def rootConfig = ???
+  }
 
   it should "read email of user" in {
     Given("auth service")

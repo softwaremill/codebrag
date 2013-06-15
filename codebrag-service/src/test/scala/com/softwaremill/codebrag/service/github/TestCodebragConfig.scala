@@ -4,4 +4,6 @@ import com.softwaremill.codebrag.service.config.CodebragConfig
 
 object TestCodebragConfig extends CodebragConfig {
   override lazy val codebragLocalGitPath = ""
+
+  def rootConfig = ???
 }

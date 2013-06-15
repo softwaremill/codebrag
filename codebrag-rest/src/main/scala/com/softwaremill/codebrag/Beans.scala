@@ -15,11 +15,14 @@ import com.softwaremill.codebrag.service.github.jgit.JgitGitHubCommitImportServi
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig, GithubConfig}
+import com.typesafe.config.ConfigFactory
 
 
 trait Beans extends ActorSystemSupport {
 
-  lazy val config = new MongoConfig with RepositoryConfig with GithubConfig with CodebragConfig {}
+  lazy val config = new MongoConfig with RepositoryConfig with GithubConfig with CodebragConfig {
+    def rootConfig = ConfigFactory.load()
+  }
 
   implicit lazy val clock = new RealTimeClock
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator

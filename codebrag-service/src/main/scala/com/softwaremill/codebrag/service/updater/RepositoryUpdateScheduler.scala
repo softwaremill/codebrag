@@ -14,7 +14,7 @@ object RepositoryUpdateScheduler extends Logging {
                  repositoryConfig: RepositoryConfig,
                  codebragConfiguration: CodebragConfig) {
 
-    val authorizedLogin = codebragConfiguration.syncUserLogin
+    val authorizedLogin = codebragConfiguration.codebragSyncUserLogin
     if (StringUtils.isEmptyOrNull(authorizedLogin)) {
       logger.error("Cannot schedule automatic synchronization. Value syncUserLogin not configured in application.conf.")
     }

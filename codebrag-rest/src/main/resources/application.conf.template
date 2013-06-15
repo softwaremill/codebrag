@@ -1,17 +1,34 @@
-# Fill values below and rename this file to application.conf
-AWSAccessKeyId=
-SecretAccessKey=
-queue=
+mongo {
+    servers = "localhost:27017"
+    database = "codebrag"
+}
 
-smtpHost=
-smtpPort=
-smtpUsername=
-smtpPassword=
-from=
-encoding=UTF-8
-resetLinkPattern=
+repository {
+    owner = "softwaremill"
+    name = "codebrag"
+}
 
-localGitPath=./../
-syncUserLogin=
-GitHubClientId=
-GitHubClientSecret=
+aws {
+    access-key-id = ""
+    secret-access-key = ""
+}
+
+github {
+    client-id = ""
+    client-secret = ""
+}
+
+email {
+    smtp-host = ""
+    smtp-port = ""
+    smtp-username = ""
+    smtp-password = ""
+    from = ""
+    sqs-task-queue = ""
+    encoding = "UTF-8"
+}
+
+codebrag {
+    local-git-path = "."
+    sync-user-login = ""
+}
