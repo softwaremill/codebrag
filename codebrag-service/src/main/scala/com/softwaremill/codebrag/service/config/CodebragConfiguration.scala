@@ -11,16 +11,6 @@ object CodebragConfiguration {
     case e: RuntimeException => new MapWrapper(new util.HashMap[String, String]())
   }
 
-  val smtpHost            = config.get("smtpHost")
-  val smtpPort            = config.get("smtpPort")
-  val smtpUserName        = config.get("smtpUsername")
-  val smtpPassword        = config.get("smtpPassword")
-  val from                = config.get("from")
-  val taskSQSQueue        = config.get("queue")
-  val awsAccessKeyId      = config.get("AWSAccessKeyId")
-  val awsSecretAccessKey  = config.get("SecretAccessKey")
-  val encoding            = config.get("encoding")
-  val resetLinkPattern    = config.get("resetLinkPattern")
   val githubClientId      = config.get("GitHubClientId")
   val githubClientSecret  = config.get("GitHubClientSecret")
   val localGitPath        = config.get("localGitPath")

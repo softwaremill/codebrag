@@ -1,18 +1,18 @@
 package com.softwaremill.codebrag.service.schedulers
 
 import pl.softwaremill.common.sqs.email.EmailSender
-import com.softwaremill.codebrag.service.config.CodebragConfiguration._
 import pl.softwaremill.common.sqs.util.EmailDescription
 import javax.mail.MessagingException
 import pl.softwaremill.common.sqs.{ ReceivedMessage, Queue, SQS }
 import com.google.common.base.Optional
 import scala.util.control.Breaks._
 import com.softwaremill.codebrag.service.templates.EmailContentWithSubject
+import com.softwaremill.codebrag.service.config.{EmailConfig, AwsConfig}
 
-class ProductionEmailSendingService extends EmailSendingService {
+class ProductionEmailSendingService(config: EmailConfig with AwsConfig) extends EmailSendingService {
 
-  val sqsClient = new SQS("queue.amazonaws.com", awsAccessKeyId, awsSecretAccessKey)
-  val emailQueue: Queue = sqsClient.getQueueByName(taskSQSQueue)
+  val sqsClient = new SQS("queue.amazonaws.com", config.awsAccessKeyId, config.awsSecretAccessKey)
+  val emailQueue: Queue = sqsClient.getQueueByName(config.emailTaskSQSQueue)
   emailQueue.setReceiveMessageWaitTime(20)
 
   def run() {
@@ -25,7 +25,8 @@ class ProductionEmailSendingService extends EmailSendingService {
         val emailToSend: EmailDescription = message.getMessage.asInstanceOf[EmailDescription]
 
         try {
-          EmailSender.send(smtpHost, smtpPort, smtpUserName, smtpPassword, from, encoding, emailToSend)
+          EmailSender.send(config.emailSmtpHost, config.emailSmtpPort, config.emailSmtpUserName,
+            config.emailSmtpPassword, config.emailFrom, config.emailEncoding, emailToSend)
           logger.info("Email sent!")
           emailQueue.deleteMessage(message)
         } catch {
