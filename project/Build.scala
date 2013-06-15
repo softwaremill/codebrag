@@ -224,9 +224,17 @@ object SmlCodebragBuild extends Build {
     file("codebrag-dist"),
     settings = buildSettings ++ assemblySettings ++ Seq(
       libraryDependencies ++= Seq(jetty),
-      mainClass in assembly := Some("com.softwaremill.codebrag.Codebrag")
+      mainClass in assembly := Some("com.softwaremill.codebrag.Codebrag"),
+      mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) => {
+        // There are two of such files in jgit and javax.servlet - but we don't really care about them (I guess ... ;) )
+        // Probably some OSGi stuff.
+        case "plugin.properties" => MergeStrategy.discard
+        case PathList("META-INF", "eclipse.inf") => MergeStrategy.discard
+        // Here we don't care for sure.
+        case "about.html" => MergeStrategy.discard
+        case x => old(x)
+      } }
     )
-
   ) dependsOn (ui)
 
   lazy val uiTests = Project(
