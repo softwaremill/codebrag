@@ -14,9 +14,12 @@ import pl.softwaremill.common.util.time.RealTimeClock
 import com.softwaremill.codebrag.service.github.jgit.JgitGitHubCommitImportServiceFactory
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
+import com.softwaremill.codebrag.service.config.{RepositoryConfig, GithubConfig}
 
 
 trait Beans extends ActorSystemSupport {
+
+  lazy val config = new MongoConfig with RepositoryConfig with GithubConfig {}
 
   implicit lazy val clock = new RealTimeClock
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator
@@ -28,7 +31,7 @@ trait Beans extends ActorSystemSupport {
   lazy val commitListFinder = new MongoCommitWithAuthorDetailsFinder(new MongoCommitFinder)
   lazy val reactionFinder = new ReactionFinder
   lazy val swagger = new CodebragSwagger
-  lazy val ghService = new GitHubAuthService
+  lazy val ghService = new GitHubAuthService(config)
   lazy val commentDao = new MongoCommitCommentDAO
   lazy val githubClientProvider = new GitHubClientProvider(userDao)
   lazy val notificationCountFinder = new MongoNotificationCountFinder

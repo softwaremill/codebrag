@@ -17,15 +17,13 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
   override def init(context: ServletContext) {
     Locale.setDefault(Locale.US) // set default locale to prevent Scalatra from sending cookie expiration date in polish format :)
 
-    val config = new MongoConfig with RepositoryConfig {}
-
     MongoInit.initialize(config)
 
     RepositoryUpdateScheduler.initialize(actorSystem, importerFactory, config)
     context.mount(new UptimeServlet, Prefix + "uptime")
     context.mount(new UsersServlet(authenticator, swagger), Prefix + "users")
     context.mount(new CommitsServlet(authenticator, commitListFinder, reactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, swagger, diffWithCommentsService, importerFactory), Prefix + CommitsServlet.MAPPING_PATH)
-    context.mount(new GithubAuthorizationServlet(authenticator, ghService, userDao, eventBus, reviewTaskGenerator), Prefix + "github")
+    context.mount(new GithubAuthorizationServlet(authenticator, ghService, userDao, eventBus, reviewTaskGenerator, config), Prefix + "github")
     context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupService), Prefix + FollowupsServlet.MappingPath)
     context.mount(new NotificationCountServlet(authenticator, swagger, notificationCountFinder), Prefix + NotificationCountServlet.MappingPath)
     context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")

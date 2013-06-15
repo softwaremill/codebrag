@@ -6,13 +6,16 @@ import org.eclipse.egit.github.core.User
 import org.mockito.Mockito._
 import org.eclipse.egit.github.core.service.UserService
 import org.mockito.BDDMockito
+import com.softwaremill.codebrag.service.config.GithubConfig
 
 class GitHubAuthServiceSpec extends FlatSpec with MockitoSugar with GivenWhenThen {
-  behavior of ("GitHub Auth Service")
+  behavior of "GitHub Auth Service"
+
+  val testConfig = new GithubConfig {}
 
   it should "read email of user" in {
     Given("auth service")
-    val service = new GitHubAuthService
+    val service = new GitHubAuthService(testConfig)
     And("loaded user data")
     val user = mock[User]
     BDDMockito.given(user.getEmail).willReturn("some@email.com")
@@ -28,7 +31,7 @@ class GitHubAuthServiceSpec extends FlatSpec with MockitoSugar with GivenWhenThe
     import scala.collection.JavaConversions._
 
     Given("auth service")
-    val service = new GitHubAuthService
+    val service = new GitHubAuthService(testConfig)
     And("user service")
     val userService = mock[UserService]
     val user = mock[User]

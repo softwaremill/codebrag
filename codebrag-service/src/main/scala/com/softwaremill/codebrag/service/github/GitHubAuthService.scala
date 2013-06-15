@@ -7,10 +7,10 @@ import org.json4s.DefaultFormats
 import org.eclipse.egit.github.core.service.UserService
 import org.eclipse.egit.github.core.User
 import scala.collection.JavaConversions._
-import com.softwaremill.codebrag.service.config.CodebragConfiguration
+import com.softwaremill.codebrag.service.config.GithubConfig
 import org.eclipse.jgit.util.StringUtils
 
-class GitHubAuthService {
+class GitHubAuthService(githubConfig: GithubConfig) {
   implicit val formats = DefaultFormats
 
   private val GitHubLogin = "https://github.com/login/oauth/access_token"
@@ -23,8 +23,8 @@ class GitHubAuthService {
   }
 
   private def authData(code: String) = {
-    val clientId = Option(CodebragConfiguration.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
-    val clientSecret = Option(CodebragConfiguration.githubClientSecret) getOrElse (throw new IllegalStateException("No GitHub Client Secret found, check your application.conf"))
+    val clientId = Option(githubConfig.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
+    val clientSecret = Option(githubConfig.githubClientSecret) getOrElse (throw new IllegalStateException("No GitHub Client Secret found, check your application.conf"))
     s"""{"client_id":"$clientId", "client_secret":"$clientSecret", "code":"$code"}"""
   }
 

@@ -8,14 +8,18 @@ import com.softwaremill.codebrag.domain.{User, Authentication}
 import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.auth.AuthenticationSupport
-import com.softwaremill.codebrag.service.config.CodebragConfiguration
+import com.softwaremill.codebrag.service.config.{GithubConfig, CodebragConfiguration}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.EventBus
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 
 
-class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService: GitHubAuthService, userDao: UserDAO,
-                                  eventBus: EventBus, reviewTaskGenerator: CommitReviewTaskGeneratorActions)
+class GithubAuthorizationServlet(val authenticator: Authenticator,
+                                 ghAuthService: GitHubAuthService,
+                                 userDao: UserDAO,
+                                 eventBus: EventBus,
+                                 reviewTaskGenerator: CommitReviewTaskGeneratorActions,
+                                 githubConfig: GithubConfig)
   extends ScalatraServlet with AuthenticationSupport with Logging {
 
   private val TempUserLogin = "tmpLogin"
@@ -24,7 +28,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
 
   get("/authenticate") {
     request.getSession().put(RedirectToUrlParam, params.getOrElse(RedirectToUrlParam, "/commits"))
-    val clientId = Option(CodebragConfiguration.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
+    val clientId = Option(githubConfig.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
     SeeOther(s"https://github.com/login/oauth/authorize?client_id=$clientId&scope=user,repo")
   }
 

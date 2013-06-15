@@ -11,8 +11,6 @@ object CodebragConfiguration {
     case e: RuntimeException => new MapWrapper(new util.HashMap[String, String]())
   }
 
-  val githubClientId      = config.get("GitHubClientId")
-  val githubClientSecret  = config.get("GitHubClientSecret")
   val localGitPath        = config.get("localGitPath")
   val syncUserLogin       = config.get("syncUserLogin")
 }
