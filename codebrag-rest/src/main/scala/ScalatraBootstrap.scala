@@ -19,7 +19,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
 
     MongoInit.initialize(config)
 
-    RepositoryUpdateScheduler.initialize(actorSystem, importerFactory, config)
+    RepositoryUpdateScheduler.initialize(actorSystem, importerFactory, config, config)
     context.mount(new UptimeServlet, Prefix + "uptime")
     context.mount(new UsersServlet(authenticator, swagger), Prefix + "users")
     context.mount(new CommitsServlet(authenticator, commitListFinder, reactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, swagger, diffWithCommentsService, importerFactory), Prefix + CommitsServlet.MAPPING_PATH)

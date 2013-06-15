@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.domain.{User, Authentication}
 import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.auth.AuthenticationSupport
-import com.softwaremill.codebrag.service.config.{GithubConfig, CodebragConfiguration}
+import com.softwaremill.codebrag.service.config.GithubConfig
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.EventBus
 import com.softwaremill.codebrag.dao.events.NewUserRegistered

@@ -10,6 +10,7 @@ import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.util.FileUtils
 import com.softwaremill.codebrag.service.github.jgit.{RemoteGitUriBuilder, InternalGitDirTree}
 import com.google.common.io.Files
+import com.softwaremill.codebrag.service.config.CodebragConfig
 
 trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
 
@@ -60,8 +61,6 @@ trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
   }
 
   def deleteRootDirectoryRecursively() {
-    FileUtils.delete(new File(InternalGitDirTree.Root), FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
+    FileUtils.delete(new File(new InternalGitDirTree(TestCodebragConfig).root), FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
   }
-
-
 }

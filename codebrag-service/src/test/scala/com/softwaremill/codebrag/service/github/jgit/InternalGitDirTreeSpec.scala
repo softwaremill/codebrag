@@ -4,13 +4,14 @@ import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.eclipse.jgit.util.FileUtils
 import java.io.File
+import com.softwaremill.codebrag.service.github.TestCodebragConfig
 
 class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter {
 
   var dirTree: InternalGitDirTree = _
 
   before {
-    dirTree = new InternalGitDirTree
+    dirTree = new InternalGitDirTree(TestCodebragConfig)
   }
 
   after {
@@ -49,13 +50,13 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
   }
 
   def deleteRootDirectoryRecursively() {
-    FileUtils.delete(new File(InternalGitDirTree.Root), FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
+    FileUtils.delete(new File(dirTree.root), FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
   }
 
   def givenExistingRootDirectory() {
-    FileUtils.mkdirs(new File(InternalGitDirTree.Root))
+    FileUtils.mkdirs(new File(dirTree.root))
   }
 
   def givenExistingRepository(owner: String, repository: String) =
-    FileUtils.mkdirs(new File(s"${InternalGitDirTree.Root}/$owner/$repository"))
+    FileUtils.mkdirs(new File(s"${dirTree.root}/$owner/$repository"))
 }

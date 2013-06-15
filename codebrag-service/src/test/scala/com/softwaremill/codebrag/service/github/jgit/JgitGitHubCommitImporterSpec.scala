@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.github.jgit
 
 import org.scalatest.mock.MockitoSugar
-import com.softwaremill.codebrag.service.github.{FlatSpecWithGit, GitHubCommitImportService}
+import com.softwaremill.codebrag.service.github.{TestCodebragConfig, FlatSpecWithGit, GitHubCommitImportService}
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.mockito.{ArgumentCaptor, ArgumentMatcher}
 import org.mockito.Mockito._
@@ -102,7 +102,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
   private def createService(commitInfoDaoMock: CommitInfoDAO) = new GitHubCommitImportService(
     new JgitGitHubCommitsLoader(
       new JgitFacade(credentials),
-      new InternalGitDirTree,
+      new InternalGitDirTree(TestCodebragConfig),
       new JgitLogConverter,
       uriBuilder,
       commitInfoDaoMock),

@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.service.updater
 import akka.actor.{Props, ActorSystem}
 import scala.concurrent.duration._
 import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
-import com.softwaremill.codebrag.service.config.{RepositoryConfig, CodebragConfiguration}
+import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig}
 import org.eclipse.jgit.util.StringUtils
 import com.typesafe.scalalogging.slf4j.Logging
 
@@ -11,9 +11,10 @@ object RepositoryUpdateScheduler extends Logging {
 
   def initialize(actorSystem: ActorSystem,
                  importServiceFactory: GitHubCommitImportServiceFactory,
-                 repositoryConfig: RepositoryConfig) {
+                 repositoryConfig: RepositoryConfig,
+                 codebragConfiguration: CodebragConfig) {
 
-    val authorizedLogin = CodebragConfiguration.syncUserLogin
+    val authorizedLogin = codebragConfiguration.syncUserLogin
     if (StringUtils.isEmptyOrNull(authorizedLogin)) {
       logger.error("Cannot schedule automatic synchronization. Value syncUserLogin not configured in application.conf.")
     }

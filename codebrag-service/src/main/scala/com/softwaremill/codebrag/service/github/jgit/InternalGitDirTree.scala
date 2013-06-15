@@ -1,22 +1,18 @@
 package com.softwaremill.codebrag.service.github.jgit
 
 import java.nio.file.{Paths, Path}
-import com.softwaremill.codebrag.service.config.CodebragConfiguration
+import com.softwaremill.codebrag.service.config.CodebragConfig
 import org.eclipse.jgit.util.StringUtils._
 
-class InternalGitDirTree {
+class InternalGitDirTree(codebragConfig: CodebragConfig) {
+  val root = (
+    if (!isEmptyOrNull(codebragConfig.codebragLocalGitPath))
+      codebragConfig.codebragLocalGitPath
+    else ".") + "/repos"
 
   def containsRepo(owner: String, repoName: String): Boolean = {
     getPath(owner, repoName).toFile.exists()
   }
 
-  def getPath(owner: String, repoName: String): Path = Paths.get(s"${InternalGitDirTree.Root}/$owner/$repoName")
-}
-
-object InternalGitDirTree {
-
-  val Root = (
-    if (!isEmptyOrNull(CodebragConfiguration.localGitPath))
-      CodebragConfiguration.localGitPath
-    else ".") + "/repos"
+  def getPath(owner: String, repoName: String): Path = Paths.get(s"$root/$owner/$repoName")
 }
