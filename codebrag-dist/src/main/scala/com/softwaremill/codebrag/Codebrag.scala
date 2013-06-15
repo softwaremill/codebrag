@@ -9,5 +9,5 @@ object Codebrag extends App with EmbeddedJetty with Logging {
   }
 
   startJetty()
-  logger.info("Codebrag started")
+  logger.info(s"Codebrag started on $jettyAddress")
 }

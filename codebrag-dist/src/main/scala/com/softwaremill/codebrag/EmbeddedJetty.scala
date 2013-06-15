@@ -8,7 +8,7 @@ trait EmbeddedJetty {
   protected var jetty: Server = null
 
   def startJetty() {
-    jetty = new Server(new InetSocketAddress(webServerConfig.webServerHost, webServerConfig.webServerPort))
+    jetty = new Server(jettyAddress)
     jetty.setHandler(prepareContext())
     jetty.start()
   }
@@ -24,4 +24,6 @@ trait EmbeddedJetty {
   }
 
   def webServerConfig: WebServerConfig
+
+  lazy val jettyAddress = new InetSocketAddress(webServerConfig.webServerHost, webServerConfig.webServerPort)
 }

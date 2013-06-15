@@ -30,3 +30,14 @@ Skipping slow tests
 ---
 If you want to execute tests from sbt and skip slow cases requiring database, you can execute following command:
 `test-only * -- -l requiresDb`
+
+Create distribution
+---
+
+1. Start sbt, change subproject: `project codebrag-dist`
+2. Run: `assembly`
+3. This will create a fat-jar. To start Codebrag with the given configuration, run:
+
+````
+java -Dconfig.file=[path to .conf file] -jar codebrag-dist-assembly-[version].jar
+````
