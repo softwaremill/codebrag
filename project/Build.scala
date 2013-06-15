@@ -5,6 +5,8 @@ import net.virtualvoid.sbt.graph.Plugin._
 import com.typesafe.sbt.SbtScalariform._
 import sbtjslint.Plugin._
 import sbtjslint.Plugin.LintKeys._
+import sbtassembly.Plugin._
+import AssemblyKeys._
 
 object Resolvers {
   val codebragResolvers = Seq(
@@ -209,8 +211,9 @@ object SmlCodebragBuild extends Build {
   lazy val dist = Project(
     "codebrag-dist",
     file("codebrag-dist"),
-    settings = buildSettings ++ Seq(
-      libraryDependencies ++= Seq(jetty)
+    settings = buildSettings ++ assemblySettings ++ Seq(
+      libraryDependencies ++= Seq(jetty),
+      mainClass in assembly := Some("com.softwaremill.codebrag.Codebrag")
     )
 
   ) dependsOn (ui)
