@@ -1,5 +1,6 @@
 import com.softwaremill.codebrag.dao.{MongoConfig, MongoInit}
 import com.softwaremill.codebrag.rest._
+import com.softwaremill.codebrag.service.config.RepositoryConfig
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.{EventingConfiguration, Beans}
 import java.util.Locale
@@ -16,11 +17,11 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
   override def init(context: ServletContext) {
     Locale.setDefault(Locale.US) // set default locale to prevent Scalatra from sending cookie expiration date in polish format :)
 
-    val config = new MongoConfig {}
+    val config = new MongoConfig with RepositoryConfig {}
 
     MongoInit.initialize(config)
 
-    RepositoryUpdateScheduler.initialize(actorSystem, importerFactory)
+    RepositoryUpdateScheduler.initialize(actorSystem, importerFactory, config)
     context.mount(new UptimeServlet, Prefix + "uptime")
     context.mount(new UsersServlet(authenticator, swagger), Prefix + "users")
     context.mount(new CommitsServlet(authenticator, commitListFinder, commentListFinder, commentActivity, commitReviewTaskDao, userDao, swagger, diffWithCommentsService, importerFactory), Prefix + CommitsServlet.MAPPING_PATH)
