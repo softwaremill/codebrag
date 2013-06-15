@@ -1,4 +1,4 @@
-import com.softwaremill.codebrag.dao.MongoInit
+import com.softwaremill.codebrag.dao.{MongoConfig, MongoInit}
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.{EventingConfiguration, Beans}
@@ -14,9 +14,12 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
   val Prefix = "/rest/"
 
   override def init(context: ServletContext) {
-
     Locale.setDefault(Locale.US) // set default locale to prevent Scalatra from sending cookie expiration date in polish format :)
-    MongoInit.initialize()
+
+    val config = new MongoConfig {}
+
+    MongoInit.initialize(config)
+
     RepositoryUpdateScheduler.initialize(actorSystem, importerFactory)
     context.mount(new UptimeServlet, Prefix + "uptime")
     context.mount(new UsersServlet(authenticator, swagger), Prefix + "users")
