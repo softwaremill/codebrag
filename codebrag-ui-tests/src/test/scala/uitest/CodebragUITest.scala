@@ -1,16 +1,14 @@
 package uitest
 
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FunSuite}
-import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.webapp.WebAppContext
 import javax.servlet.ServletContext
 import org.openqa.selenium.firefox.FirefoxDriver
 import java.util.concurrent.TimeUnit
-import com.softwaremill.codebrag.Beans
+import com.softwaremill.codebrag.{WebServerConfig, EmbeddedJetty, Beans}
 import pages.{MainPage, LoginPage}
 import org.openqa.selenium.support.PageFactory
 
-class CodebragUITest extends FunSuite with EmbeddedJetty with BeforeAndAfterAll with BeforeAndAfter {
+class CodebragUITest extends FunSuite with UITestsEmbeddedJetty with BeforeAndAfterAll with BeforeAndAfter {
   final val REGUSER = "reguser"
   final val REGPASS = "regpass"
   final val REGMAIL = "reguser@regmail.pl"
@@ -33,7 +31,7 @@ class CodebragUITest extends FunSuite with EmbeddedJetty with BeforeAndAfterAll 
   }
 
   after {
-    driver.close
+    driver.close()
     driver = null
   }
 
@@ -42,26 +40,19 @@ class CodebragUITest extends FunSuite with EmbeddedJetty with BeforeAndAfterAll 
   }
 }
 
-trait EmbeddedJetty {
-  protected var jetty: Server = null
+trait UITestsEmbeddedJetty extends EmbeddedJetty {
   protected var context: ServletContext = null
 
-  def startJetty() {
-    jetty = new Server(8080)
-    jetty setHandler prepareContext
-    jetty.start()
-  }
-
-  private def prepareContext() = {
-    val context = new WebAppContext()
-    context setContextPath "/"
-    context setResourceBase "codebrag-ui/src/main/webapp"
+  override protected def prepareContext() = {
+    val context = super.prepareContext()
+    context.setResourceBase("codebrag-ui/src/main/webapp")
     this.context = context.getServletContext
     context
   }
 
-
-  def stopJetty() {
-    jetty.stop()
+  def webServerConfig = new WebServerConfig {
+    def rootConfig = null
+    override lazy val webServerHost = "0.0.0.0"
+    override lazy val webServerPort = 8080
   }
 }
