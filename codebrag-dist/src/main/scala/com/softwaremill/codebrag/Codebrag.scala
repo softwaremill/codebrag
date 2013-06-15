@@ -17,4 +17,11 @@ object Codebrag extends App with EmbeddedJetty with Logging {
 
   startJetty()
   logger.info(s"Codebrag started on $jettyAddress")
+
+  Runtime.getRuntime.addShutdownHook(new Thread() {
+    override def run() {
+      stopJetty()
+      logger.info("Codebrag stopped")
+    }
+  })
 }
