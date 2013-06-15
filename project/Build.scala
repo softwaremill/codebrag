@@ -51,7 +51,18 @@ object BuildSettings {
               "Trying to launch with MongoDB but unable to find it in 'mongo.directory' (%s). Please check your ~/.sbt/local.sbt file.".format(mongoFile.getAbsolutePath))
           }
       }
-    }
+    },
+
+    /*
+    swagger-core has a dependency to the slf4j -> log4j bridge, while we are using the log4j -> slf4j bridge.
+    We cannot exclude the dependency in the dependency declaration, as swagger-core is a transitive dep of
+    scalatra-swagger, hence the global exclude.
+     */
+    ivyXML :=
+      <dependencies>
+        <exclude org="org.slf4j" artifact="slf4j-log4j12" />
+        <exclude org="log4j" artifact="log4j" />
+      </dependencies>
   )
 
 }
@@ -69,10 +80,10 @@ object Dependencies {
 
   val slf4jApi = "org.slf4j" % "slf4j-api" % slf4jVersion
   val logBackClassic = "ch.qos.logback" % "logback-classic" % logBackVersion
-//  val jclOverSlf4j = "org.slf4j" % "jcl-over-slf4j" % slf4jVersion
+  val log4jOverSlf4j = "org.slf4j" % "log4j-over-slf4j" % slf4jVersion
   val scalaLogging = "com.typesafe" %% "scalalogging-slf4j" % scalaLoggingVersion
 
-  val logging = Seq(slf4jApi, logBackClassic, scalaLogging)
+  val logging = Seq(slf4jApi, logBackClassic, scalaLogging, log4jOverSlf4j)
 
   val guava = "com.google.guava" % "guava" % "13.0.1"
   val googleJsr305 = "com.google.code.findbugs" % "jsr305" % "2.0.1"
