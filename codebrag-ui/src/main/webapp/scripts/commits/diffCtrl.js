@@ -1,19 +1,31 @@
 angular.module('codebrag.commits')
 
-    .controller('DiffCtrl', function ($scope, Comments) {
+    .controller('DiffCtrl', function ($scope, Comments, Likes) {
 
         $scope.like = function(fileName, lineNumber) {
-            var reactions = $scope.currentCommit.lineReactions;
-            if(_.isUndefined(reactions[fileName])) {
-                reactions[fileName] = {};
+            var newLike = {
+                commitId: $scope.currentCommit.commit.id,
+                fileName: fileName,
+                lineNumber: lineNumber
+            };
+            return Likes.save(newLike).$then(function (likeResponse) {
+                var like = likeResponse.data;
+                addLikeToCollection(like, newLike.fileName, newLike.lineNumber);
+            });
+
+            function addLikeToCollection(like, fileName, lineNumber) {
+                var reactions = $scope.currentCommit.lineReactions;
+                if(_.isUndefined(reactions[fileName])) {
+                    reactions[fileName] = {};
+                }
+                if(_.isUndefined(reactions[fileName][lineNumber])) {
+                    reactions[fileName][lineNumber] = [];
+                }
+                if(_.isUndefined(reactions[fileName][lineNumber]['likes'])) {
+                    reactions[fileName][lineNumber]['likes'] = [];
+                }
+                reactions[fileName][lineNumber]['likes'].push(like);
             }
-            if(_.isUndefined(reactions[fileName][lineNumber])) {
-                reactions[fileName][lineNumber] = [];
-            }
-            if(_.isUndefined(reactions[fileName][lineNumber]['likes'])) {
-                reactions[fileName][lineNumber]['likes'] = [];
-            }
-            reactions[fileName][lineNumber]['likes'].push({userName: 'You'});
         };
 
         $scope.submitInlineComment = function(content, commentData) {
