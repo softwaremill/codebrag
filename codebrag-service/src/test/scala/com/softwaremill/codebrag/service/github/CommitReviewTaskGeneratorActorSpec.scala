@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.github
 
 import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.{BeforeAndAfter, FlatSpec}
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfter, FlatSpec}
 import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO, UserDAO}
 import akka.testkit.TestActorRef
 import com.softwaremill.codebrag.domain.{CommitReviewTask, UpdatedCommit, CommitsUpdatedEvent}
@@ -16,7 +16,8 @@ import com.typesafe.config.ConfigFactory
 import pl.softwaremill.common.util.time.FixtureTimeClock
 import org.joda.time.DateTime
 
-class CommitReviewTaskGeneratorActorSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
+class CommitReviewTaskGeneratorActorSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with
+BeforeAndAfterAll with MockitoSugar {
 
   behavior of "CommitReviewTaskGeneratorActor"
 
@@ -33,6 +34,12 @@ class CommitReviewTaskGeneratorActorSpec extends FlatSpec with ShouldMatchers wi
     reviewTaskDaoMock = mock[CommitReviewTaskDAO]
     commitInfoDaoMock = mock[CommitInfoDAO]
     generator = TestActorRef(new CommitReviewTaskGenerator(userDaoMock, reviewTaskDaoMock, commitInfoDaoMock, fixtureClock))
+  }
+
+  override protected def afterAll() {
+    super.afterAll()
+    system.shutdown()
+    system.awaitTermination()
   }
 
   it should "generate 22 tasks when there are two non-author users and 11 new commits" in {
@@ -111,3 +118,4 @@ class CommitReviewTaskGeneratorActorSpec extends FlatSpec with ShouldMatchers wi
   }
 
 }
+
