@@ -212,7 +212,7 @@ class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wi
 
 
   def storeCommitReviewTasksFor(userId: ObjectId, commits: CommitInfo*) {
-    commits.map { commit => CommitReviewTask(commit.id, user.id) }.foreach { commitReviewTaskDao.save(_) }
+    commits map { commit => CommitReviewTask(commit.id, user.id) } foreach { commitReviewTaskDao.save(_) }
   }
 
   def foundCommitView(commitsFound: CommitListView, storedCommits: List[CommitInfo], index: Int): CommitView = {
