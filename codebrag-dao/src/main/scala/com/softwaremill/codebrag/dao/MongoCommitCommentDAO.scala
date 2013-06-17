@@ -1,13 +1,12 @@
 package com.softwaremill.codebrag.dao
 
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
-import com.softwaremill.codebrag.domain.Comment
+import com.softwaremill.codebrag.domain.{Like, Comment}
 import net.liftweb.mongodb.record.field.{ObjectIdField, DateField}
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
 import net.liftweb.record.field.OptionalIntField
-
 
 class MongoCommitCommentDAO extends CommitCommentDAO {
 
@@ -56,33 +55,106 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
         record.authorId.get,
         new DateTime(record.date.get),
         record.message.get,
-        record.fileName.value,
-        record.lineNumber.value)
+        record.fileName.get,
+        record.lineNumber.get)
     }
 
   }
 }
 
-class CommentRecord extends MongoRecord[CommentRecord] {
+class MongoLikeDAO extends LikeDAO {
+
+  override def save(like: Like) {
+    LikeToRecordBuilder.buildFrom(like).save
+  }
+
+  override def findLikesForCommit(commitId: ObjectId) = {
+    val likes = LikeRecord.where(_.commitId eqs commitId).orderAsc(_.date).fetch()
+    likes.map(RecordToLikeBuilder.buildFrom(_))
+  }
+
+  def findAllLikesInThreadWith(like: Like) = {
+    val query = (like.fileName, like.lineNumber) match {
+      case (Some(fileName), Some(lineNumber)) => {
+        LikeRecord.where(_.commitId eqs like.commitId).and(_.fileName eqs fileName).and(_.lineNumber eqs lineNumber)
+      }
+      case _ => {
+        LikeRecord.where(_.commitId eqs like.commitId).and(_.fileName exists false).and(_.lineNumber exists false)
+      }
+    }
+    query.fetch().map(RecordToLikeBuilder.buildFrom(_))
+  }
+
+  private object LikeToRecordBuilder {
+
+    def buildFrom(like: Like) = {
+      LikeRecord.createRecord
+        .id(like.id)
+        .commitId(like.commitId)
+        .authorId(like.authorId)
+        .date(like.postingTime.toDate)
+        .fileName(like.fileName)
+        .lineNumber(like.lineNumber)
+    }
+
+  }
+
+  private object RecordToLikeBuilder {
+
+    def buildFrom(record: LikeRecord) = {
+      Like(
+        record.id.get,
+        record.commitId.get,
+        record.authorId.get,
+        new DateTime(record.date.get),
+        record.fileName.get,
+        record.lineNumber.get)
+    }
+
+  }
+}
+
+
+trait UserReactionRecord[MyType <: MongoRecord[MyType]] {
+
+  self: MongoRecord[MyType] =>
+
+  object id extends ObjectIdField(self.asInstanceOf[MyType])
+
+  object commitId extends ObjectIdField(self.asInstanceOf[MyType])
+
+  object authorId extends ObjectIdField(self.asInstanceOf[MyType])
+
+  object date extends DateField(self.asInstanceOf[MyType])
+
+  object fileName extends OptionalLongStringField(self.asInstanceOf[MyType])
+
+  object lineNumber extends OptionalIntField(self.asInstanceOf[MyType])
+
+}
+
+
+
+class CommentRecord extends MongoRecord[CommentRecord] with UserReactionRecord[CommentRecord] {
 
   def meta = CommentRecord
 
-  object id extends ObjectIdField(this)
-
-  object commitId extends ObjectIdField(this)
-
-  object authorId extends ObjectIdField(this)
-
   object message extends LongStringField(this)
-
-  object date extends DateField(this)
-
-  object fileName extends OptionalLongStringField(this)
-
-  object lineNumber extends OptionalIntField(this)
 
 }
 
 object CommentRecord extends CommentRecord with MongoMetaRecord[CommentRecord] {
   override def collectionName = "commit_comments"
+}
+
+
+
+class LikeRecord extends MongoRecord[LikeRecord] with UserReactionRecord[LikeRecord] {
+
+  def meta = LikeRecord
+
+}
+
+object LikeRecord extends LikeRecord with MongoMetaRecord[LikeRecord] {
+  override def collectionName = "commit_likes"
 }
