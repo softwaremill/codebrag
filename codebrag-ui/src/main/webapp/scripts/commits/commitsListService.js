@@ -102,7 +102,9 @@ angular.module('codebrag.commits')
                 markAsNotReviewable(commitId);
                 getNextPromise = commits.getNextAfter(_matchingId(commitId), responsePromise);
             } else {
-                getNextPromise = commits.removeElementAndGetNext(_matchingId(commitId), responsePromise.then(loadOneMore));
+                getNextPromise = loadOneMore().then(function () {
+                    return commits.removeElementAndGetNext(_matchingId(commitId), responsePromise);
+                });
             }
             return getNextPromise
         }
