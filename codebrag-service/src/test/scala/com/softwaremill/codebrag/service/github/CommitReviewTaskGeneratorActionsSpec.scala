@@ -39,7 +39,7 @@ class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers 
     // given
     val commitBySofokles = CommitInfoAssembler.randomCommit.withAuthorName("Sofokles Smart").get
     val commits = commitBySofokles :: CommitInfoAssembler.randomCommits(count = 2)
-    given(commitInfoDaoMock.findForTimeRange(new Interval(FixtureTime.minusDays(7), FixtureTime))).willReturn(commits)
+    given(commitInfoDaoMock.findForTimeRange(new Interval(FixtureTime.minusDays(3), FixtureTime))).willReturn(commits)
     val sofoklesId = ObjectIdTestUtils.oid(1)
 
     // when
@@ -55,7 +55,7 @@ class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers 
   it should "not generate any tasks if no commits for current user found within range" in {
     // given
     val commit = List(CommitInfoAssembler.randomCommit.withAuthorName("Sofokles Smart").get)
-    given(commitInfoDaoMock.findForTimeRange(new Interval(FixtureTime.minusDays(7), FixtureTime))).willReturn(commit)
+    given(commitInfoDaoMock.findForTimeRange(new Interval(FixtureTime.minusDays(3), FixtureTime))).willReturn(commit)
     val sofoklesId = ObjectIdTestUtils.oid(1)
 
     // when

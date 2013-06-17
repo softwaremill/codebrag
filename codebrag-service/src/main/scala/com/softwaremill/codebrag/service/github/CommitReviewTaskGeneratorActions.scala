@@ -16,8 +16,8 @@ trait CommitReviewTaskGeneratorActions extends Logging {
 
   def handleNewUserRegistered(event: NewUserRegistered) {
     val now = clock.currentDateTime()
-    val lastWeekInterval = new Interval(now.minusDays(7), now)
-    val commitsToReview = commitInfoDao.findForTimeRange(lastWeekInterval)
+    val lastCommitsFetchInterval = new Interval(now.minusDays(3), now)
+    val commitsToReview = commitInfoDao.findForTimeRange(lastCommitsFetchInterval)
     val tasks = commitsToReview.filterNot(_.authorName == event.fullName).map(commit => {CommitReviewTask(commit.id, event.id)})
     logger.debug(s"Generating ${tasks.length} tasks for newly registered user: $event")
     tasks.foreach(commitToReviewDao.save(_))
