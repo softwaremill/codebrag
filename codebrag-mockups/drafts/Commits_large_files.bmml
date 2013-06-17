@@ -1,0 +1,31 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1274" measuredH="798" mockupW="993" mockupH="779">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::Canvas" x="290" y="376" w="792" h="91" measuredW="100" measuredH="70" zOrder="0" locked="false" isInGroup="-1"/>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::Image" x="281" y="19" w="810" h="342" measuredW="1346" measuredH="568" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>../../../../../../Downloads/2013-05-31_1552.png</src>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="290" y="487" w="801" h="311" measuredW="1364" measuredH="528" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>../../../../../../Downloads/2013-05-31_1552-2.png</src>
+      </controlProperties>
+    </control>
+    <control controlID="4" controlTypeID="com.balsamiq.mockups::Label" x="299" y="391" w="-1" h="-1" measuredW="83" measuredH="21" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Not%20displayed%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="5" controlTypeID="com.balsamiq.mockups::Paragraph" x="299" y="415" w="737" h="80" measuredW="200" measuredH="80" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>codebrag-ui/src/main/lib/jquery-1.1.1.js%091453%20lines%20added%0Acodebrag-ui/src/main/lib/magic-work-on-IE6-v2.js%09324%20lines%20added%2C%204345%20changed%2C%20329%20removed</text>
+      </controlProperties>
+    </control>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::StickyNote" x="1165" y="433" w="-1" h="-1" measuredW="109" measuredH="123" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Usually%20this%20list%20will%20be%20short%20%281-3%20files%29</text>
+      </controlProperties>
+    </control>
+    <control controlID="7" controlTypeID="com.balsamiq.mockups::Arrow" x="1080" y="417" w="111" h="35" measuredW="150" measuredH="100" zOrder="6" locked="false" isInGroup="-1"/>
+  </controls>
+</mockup>
