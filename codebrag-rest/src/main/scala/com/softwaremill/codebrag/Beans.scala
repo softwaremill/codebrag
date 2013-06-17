@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.common.{ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.dao.reporting._
 import dao._
 import rest.CodebragSwagger
-import service.comments.CommentService
+import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
 import service.followups.FollowupService
 import service.github._
@@ -30,13 +30,14 @@ trait Beans extends ActorSystemSupport {
   lazy val swagger = new CodebragSwagger
   lazy val ghService = new GitHubAuthService
   lazy val commentDao = new MongoCommitCommentDAO
-  lazy val commentService = new CommentService(commentDao)
   lazy val githubClientProvider = new GitHubClientProvider(userDao)
   lazy val notificationCountFinder = new MongoNotificationCountFinder
   lazy val converter = new GitHubCommitInfoConverter()
   lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
   lazy val importerFactory = new JgitGitHubCommitImportServiceFactory(commitInfoDao, userDao, eventBus)
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
+  lazy val likeDao = new MongoLikeDAO
+  lazy val userReactionService = new UserReactionService(commentDao, likeDao)
 
   lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {
       val userDao = self.userDao
@@ -47,7 +48,7 @@ trait Beans extends ActorSystemSupport {
 
   lazy val authenticator = new Authenticator(userDao, eventBus, reviewTaskGenerator)
   lazy val followupFinder = new MongoFollowupFinder
-  lazy val commentActivity = new AddCommentActivity(commentService, followupService)
+  lazy val commentActivity = new AddCommentActivity(userReactionService, followupService)
 
   lazy val diffWithCommentsService = new DiffWithCommentsService(commitListFinder, commentListFinder, new DiffService(commitInfoDao))
 }

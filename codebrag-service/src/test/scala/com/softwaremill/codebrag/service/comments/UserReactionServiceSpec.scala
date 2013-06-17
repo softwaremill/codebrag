@@ -3,17 +3,18 @@ package com.softwaremill.codebrag.service.comments
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, CommitCommentDAO}
+import com.softwaremill.codebrag.dao.{LikeDAO, ObjectIdTestUtils, CommitCommentDAO}
 import pl.softwaremill.common.util.time.FixtureTimeClock
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain._
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.service.comments.command.IncomingComment
 
-class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
+class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
-  var commentService: CommentService = _
+  var userReactionService: UserReactionService = _
   var commentDaoMock: CommitCommentDAO = _
+  var likeDaoMock: LikeDAO = _
 
   val FixedClock = new FixtureTimeClock(System.currentTimeMillis())
 
@@ -24,12 +25,13 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
 
   override def beforeEach() {
     commentDaoMock = mock[CommitCommentDAO]
-    commentService = new CommentService(commentDaoMock)(FixedClock)
+    likeDaoMock = mock[LikeDAO]
+    userReactionService = new UserReactionService(commentDaoMock, likeDaoMock)(FixedClock)
   }
 
   it should "create a new comment for commit" in {
     // when
-    commentService.addCommentToCommit(CommentForCommit)
+    userReactionService.storeUserReaction(CommentForCommit)
 
     // then
     val commentArgument = ArgumentCaptor.forClass(classOf[Comment])
@@ -41,7 +43,7 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
 
   it should "return created comment as a result" in {
     // when
-    val savedComment = commentService.addCommentToCommit(CommentForCommit)
+    val savedComment = userReactionService.storeUserReaction(CommentForCommit).asInstanceOf[Comment]
 
     // then
     savedComment.commitId should equal(CommentForCommit.commitId)
@@ -54,7 +56,7 @@ class CommentServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
     // given
 
     // when
-    val savedComment = commentService.addCommentToCommit(InlineCommentForCommit)
+    val savedComment = userReactionService.storeUserReaction(InlineCommentForCommit).asInstanceOf[Comment]
 
     // then
     savedComment.lineNumber should equal(InlineCommentForCommit.lineNumber)
