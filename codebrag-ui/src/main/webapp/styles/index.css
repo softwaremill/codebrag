@@ -365,6 +365,15 @@ form .form-group span.text-error:after {
   color: #300300;
   padding-top: 0.77em;
 }
+a.uservoice-btn {
+  background: #99ab01;
+  color: #fff;
+  float: right;
+  margin: 1.54em 1.54em 0 0;
+  padding: 0.77em 1.15em;
+  text-transform: uppercase;
+  vertical-align: top;
+}
 .commits {
   padding-bottom: 3.3em;
   position: relative;
@@ -779,8 +788,8 @@ tr:hover .diff-line-num .button i {
   text-align: center;
   display: inline-block;
   position: fixed;
-  top: 1.35em;
-  right: 1.15em;
+  top: 1.54em;
+  right: 1.54em;
 }
 .spinner {
   display: none;
