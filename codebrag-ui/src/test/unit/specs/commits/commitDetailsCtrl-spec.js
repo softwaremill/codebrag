@@ -47,16 +47,14 @@ describe("CommitDetailsController", function () {
     it('should load diff for selected commit', inject(function ($controller, $stateParams, commitsListService, $q) {
         // Given
         $stateParams.id = selectedCommitId;
-        var expectedCommitDetails = {commit: {sha: '123'}, comments: [], files: []};
+        var expectedCommitDetails = {commit: {sha: '123'}, diff: [], supressedFiles: []};
         spyOn(commitsListService, 'loadCommitById').andReturn(promiseResolvedWith(expectedCommitDetails));
 
         // When
         $controller('CommitDetailsCtrl', {$scope:scope});
 
         //then
-        expect(scope.currentCommit.commit).toBe(expectedCommitDetails.commit);
-        expect(scope.currentCommit.comments).toBe(expectedCommitDetails.comments);
-        expect(scope.currentCommit.files).toBe(expectedCommitDetails.files);
+        expect(scope.currentCommit.info).toBe(expectedCommitDetails.commit);
     }));
 //
     it('should call service to mark current commit as reviewed', inject( function
