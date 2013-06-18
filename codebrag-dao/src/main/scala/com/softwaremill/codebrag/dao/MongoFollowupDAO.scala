@@ -47,7 +47,7 @@ class MongoFollowupDAO extends FollowupDAO {
 
   private def toFollowup(record: FollowupRecord) = {
     val threadId = ThreadDetails(record.threadId.get.commitId.get, record.threadId.get.lineNumber.get, record.threadId.get.fileName.get)
-    Followup(record.followupId.get, record.reactionId.get, new DateTime(record.date.get), record.lastCommenterName.get, threadId)
+    Followup(record.followupId.get, record.reactionId.get, record.user_id.get, new DateTime(record.date.get), record.lastCommenterName.get, threadId)
   }
 
   private def toRecord(followup: Followup, commitRecord: CommitInfoRecord): FollowupRecord = {
