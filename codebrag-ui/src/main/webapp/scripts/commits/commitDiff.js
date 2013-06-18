@@ -177,15 +177,11 @@ angular.module('codebrag.commits')
 
         return {
             restrict: 'E',
-            template: '<span class="username"><i class="icon-heart"></i> Coders who likes this: {{users}}</span>',
+            template: '<div class="username"><i class="icon-heart"></i> Coders who likes this: <span ng-repeat="like in collection" id="{{like.id}}">{{like.authorName}}</span></div>',
             replace: true,
+            transclude: true,
             scope: {
                 collection: '='
-            },
-            link: function(scope, el, attrs) {
-                scope.users = _.map(scope.collection, function(like) {
-                    return like.authorName;
-                }).join(', ');
             }
         }
 

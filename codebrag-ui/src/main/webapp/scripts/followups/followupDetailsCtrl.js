@@ -25,7 +25,7 @@ angular.module('codebrag.followups')
             if (_.isNull(nextFollowup)) {
                 $state.transitionTo('followups.list');
             } else {
-                $state.transitionTo('followups.details', {followupId: nextFollowup.followupId, commentId: nextFollowup.comment.commentId});
+                $state.transitionTo('followups.details', {followupId: nextFollowup.followupId, commentId: nextFollowup.reaction.reactionId});
             }
         }
 
