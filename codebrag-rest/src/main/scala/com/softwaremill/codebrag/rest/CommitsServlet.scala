@@ -15,7 +15,7 @@ import com.softwaremill.codebrag.service.comments.UserReactionService
 
 class CommitsServlet(val authenticator: Authenticator,
                      val commitListFinder: CommitFinder,
-                     val useReactionFinder: UserReactionFinder,
+                     val reactionFinder: ReactionFinder,
                      val commentActivity: AddCommentActivity,
                      val commitReviewTaksDao: CommitReviewTaskDAO,
                      val userReactionService: UserReactionService,

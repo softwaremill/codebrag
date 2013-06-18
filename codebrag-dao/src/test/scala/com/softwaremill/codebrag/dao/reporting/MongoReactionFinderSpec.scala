@@ -5,15 +5,16 @@ import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.builders.CommentAssembler
-import com.softwaremill.codebrag.dao.reporting.views.{ReactionsView, CommentView, ReactionView}
+import com.softwaremill.codebrag.builders.{LikeAssembler, CommentAssembler}
+import com.softwaremill.codebrag.dao.reporting.views.{CommitReactionsView, ReactionsView, CommentView, ReactionView}
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 
-class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with CommentListFinderVerifyHelpers {
+class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with ReactionFinderVerifyHelpers {
 
   val userDao = new MongoUserDAO
   val commentDao = new MongoCommitCommentDAO
-  var reactionsFinder: UserReactionFinder = _
+  val likeDao = new MongoLikeDAO
+  var reactionsFinder: ReactionFinder = _
 
   val CommitId = oid(1)
 
@@ -33,12 +34,21 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     CommentAssembler.commentFor(CommitId).withFileNameAndLineNumber("Database.scala", 20).withMessage("Refactor that").withAuthorId(John.id).get
   )
 
+  val StoredInlineLikes = List(
+    LikeAssembler.likeFor(CommitId).withFileNameAndLineNumber("Main.scala", 10).withAuthorId(John.id).get,
+    LikeAssembler.likeFor(CommitId).withFileNameAndLineNumber("Main.scala", 10).withAuthorId(Mary.id).get,
+    LikeAssembler.likeFor(CommitId).withFileNameAndLineNumber("Database.scala", 12).withAuthorId(Mary.id).get
+  )
+
   override def beforeEach() {
     super.beforeEach()
-    reactionsFinder = new UserReactionFinder
+    reactionsFinder = new ReactionFinder
 
     StoredCommitComments.foreach(commentDao.save)
     StoredInlineComments.foreach(commentDao.save)
+
+    StoredInlineLikes.foreach(likeDao.save)
+
     List(John, Mary).foreach(userDao.add)
   }
 
@@ -53,10 +63,8 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     commentList.entireCommitReactions.comments should be(None)
   }
 
-  it should "contain comments for whole commit" taggedAs (RequiresDb) in {
+  it should "contain reactions for whole commit" taggedAs (RequiresDb) in {
     // given
-    val firstComment = StoredCommitComments(0)
-    val secondComment = StoredCommitComments(1)
 
     // when
     val reactionsView = reactionsFinder.findReactionsForCommit(CommitId)
@@ -73,15 +81,28 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     // then
     val fileComments = reactionsView.inlineReactions
 
-    lineCommentsFor(fileComments, "Main.scala").size should be(1)
-    commentLineNumbersFor(fileComments, "Main.scala") should be(Set(10))
+    lineReactionsFor(fileComments, "Main.scala").size should be(1)
+    reactionLineNumbersFor(fileComments, "Main.scala") should be(Set(10))
     commentMessagesWithAuthorsFor(fileComments, "Main.scala", 10) should be(Set(("Cool thing", "John"), ("Indeed", "Mary")))
 
-    lineCommentsFor(fileComments, "Database.scala").size should be(2)
-    commentLineNumbersFor(fileComments, "Database.scala") should be(Set(12, 20))
+    lineReactionsFor(fileComments, "Database.scala").size should be(2)
+    reactionLineNumbersFor(fileComments, "Database.scala") should be(Set(12, 20))
     commentMessagesWithAuthorsFor(fileComments, "Database.scala", 12) should be(Set(("Possible NPE?", "Mary"), ("Nope", "John")))
     commentMessagesWithAuthorsFor(fileComments, "Database.scala", 20) should be(Set(("Refactor that", "John")))
 
+  }
+
+  it should "contain inline likes grouped by file and line" taggedAs (RequiresDb) in {
+    // when
+    val reactionsView = reactionsFinder.findReactionsForCommit(CommitId)
+
+    // then
+    likesForFileAndLike(reactionsView, "Main.scala", 10).get.size should be(2)
+    likesForFileAndLike(reactionsView, "Database.scala", 12).get.size should be(1)
+  }
+
+  def likesForFileAndLike(reactions: CommitReactionsView, fileName: String, lineNumber: Int) = {
+    reactions.inlineReactions(fileName)(lineNumber.toString).likes
   }
 
   it should "have comments ordered by date starting from the oldest" taggedAs (RequiresDb) in {
@@ -132,18 +153,18 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
 }
 
 
-trait CommentListFinderVerifyHelpers {
+trait ReactionFinderVerifyHelpers {
 
-  def lineCommentsFor(fileComments: Map[String, Map[String, ReactionsView]], fileName: String) = {
-    fileComments(fileName)
+  def lineReactionsFor(fileReactions: Map[String, Map[String, ReactionsView]], fileName: String) = {
+    fileReactions(fileName)
   }
 
-  def commentLineNumbersFor(fileComments: Map[String, Map[String, ReactionsView]], fileName: String) = {
-    lineCommentsFor(fileComments, fileName).map(_._1.toInt).toSet
+  def reactionLineNumbersFor(fileComments: Map[String, Map[String, ReactionsView]], fileName: String) = {
+    lineReactionsFor(fileComments, fileName).map(_._1.toInt).toSet
   }
 
   def commentMessagesWithAuthorsFor(fileComments: Map[String, Map[String, ReactionsView]], fileName: String, lineNumber: Int) = {
-    val Some(lineComments) = lineCommentsFor(fileComments, fileName)(lineNumber.toString).comments
+    val Some(lineComments) = lineReactionsFor(fileComments, fileName)(lineNumber.toString).comments
     commentMessagesWithAuthors(lineComments)
   }
 
@@ -161,7 +182,7 @@ trait CommentListFinderVerifyHelpers {
   }
 
   def orderedCommentMessagesFor(fileComments: Map[String, Map[String, ReactionsView]], fileName: String, lineNumber: Int) = {
-    val Some(comments) = lineCommentsFor(fileComments, fileName)(lineNumber.toString).comments
+    val Some(comments) = lineReactionsFor(fileComments, fileName)(lineNumber.toString).comments
     comments.map(c => {
       c.asInstanceOf[CommentView].message
     })

@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.domain.{Like, UserReaction, Comment}
 import com.softwaremill.codebrag.dao.reporting.views._
 import scala.Some
 
-class UserReactionFinder extends UserReactionToView {
+class ReactionFinder extends UserReactionToView {
 
   def findReactionsForCommit(commitId: ObjectId) = {
 

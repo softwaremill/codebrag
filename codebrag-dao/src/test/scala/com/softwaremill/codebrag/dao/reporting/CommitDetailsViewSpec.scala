@@ -6,7 +6,7 @@ import org.joda.time.DateTime
 import com.softwaremill.codebrag.dao.reporting.views._
 import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff}
 
-class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with CommentListFinderVerifyHelpers {
+class CommitDetailsViewSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with ReactionFinderVerifyHelpers {
 
   val Commit = CommitView("123", "123abc", "This is commit message", "John Doe", DateTime.now.toDate)
   val Lines = List(DiffLine("line one", 1, 2, "added"), DiffLine("line two", 2, 2, "added"))
