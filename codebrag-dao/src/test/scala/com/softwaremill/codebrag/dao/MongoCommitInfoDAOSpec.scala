@@ -95,13 +95,15 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     commits(1) should equal(commitAfterTwoMinutes)
   }
 
-  it should "retrieve commit sha with last commit date" taggedAs(RequiresDb) in {
+  it should "retrieve commit sha with last commit + author date" taggedAs(RequiresDb) in {
     // given
     val date = new DateTime()
+
     val expectedLastCommit = randomCommit.withAuthorDate(date.minusDays(2)).withCommitDate(date).get
-    commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusHours(2)).withCommitDate(date.minusHours(3)).get)
+    commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusDays(3)).withCommitDate(date).get)
     commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusHours(12)).withCommitDate(date.minusHours(13)).get)
     commitInfoDAO.storeCommit(expectedLastCommit)
+    commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusDays(11)).withCommitDate(date).get)
     commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusHours(6)).withCommitDate(date.minusHours(8)).get)
     commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusHours(10)).withCommitDate(date.minusHours(11)).get)
 
