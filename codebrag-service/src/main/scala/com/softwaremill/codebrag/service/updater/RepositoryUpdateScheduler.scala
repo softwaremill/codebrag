@@ -11,15 +11,14 @@ object RepositoryUpdateScheduler extends Logging {
 
   def initialize(actorSystem: ActorSystem,
                  importServiceFactory: GitHubCommitImportServiceFactory,
-                 repositoryConfig: RepositoryConfig,
-                 codebragConfiguration: CodebragConfig) {
+                 config: RepositoryConfig with CodebragConfig) {
 
-    val authorizedLogin = codebragConfiguration.codebragSyncUserLogin
+    val authorizedLogin = config.codebragSyncUserLogin
     if (StringUtils.isEmptyOrNull(authorizedLogin)) {
       logger.error("Cannot schedule automatic synchronization. Value syncUserLogin not configured in application.conf.")
     }
     else {
-      scheduleUpdate(importServiceFactory, authorizedLogin, actorSystem, repositoryConfig)
+      scheduleUpdate(importServiceFactory, authorizedLogin, actorSystem, config)
     }
   }
 
