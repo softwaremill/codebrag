@@ -110,7 +110,7 @@ object CommitInfoRecord extends CommitInfoRecord with MongoMetaRecord[CommitInfo
   override def collectionName = "commit_infos"
 
   def ensureIndexes() {
-    this.ensureIndex(committerDate.name -> 1)
+    this.ensureIndex(committerDate.name -> 1, authorDate.name -> 1)
   }
 }
 

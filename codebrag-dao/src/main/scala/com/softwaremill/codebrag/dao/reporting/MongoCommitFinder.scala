@@ -25,7 +25,9 @@ class MongoCommitFinder extends CommitFinder {
 
   private def findCommitsToReview(userId: ObjectId, paging: PagingCriteria) = {
     val commitIds = findPendingCommitsIds(userId)
-    val commitsFromDB = projectionQuery.where(_.id in commitIds).skip(paging.skip).limit(paging.limit).orderAsc(_.committerDate).fetch()
+    val commitsFromDB = projectionQuery.where(_.id in commitIds).skip(paging.skip).limit(paging.limit)
+      .orderAsc(_.committerDate)
+      .andAsc(_.authorDate).fetch()
     commitsFromDB.map(commit => (PartialCommitDetails.apply _).tupled(commit))
   }
 
@@ -51,7 +53,7 @@ class MongoCommitFinder extends CommitFinder {
   }
 
   override def findAll(userId: ObjectId) = {
-    val commitsFromDB = projectionQuery.orderAsc(_.committerDate).fetch()
+    val commitsFromDB = projectionQuery.orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
     val commits = commitsFromDB.map(commit => (PartialCommitDetails.apply _).tupled(commit))
     val pendingCommitsIds = findPendingCommitsIds(userId)
     val count = if (pendingCommitsIds.isEmpty) 0 else totalReviewTaskCount(userId)

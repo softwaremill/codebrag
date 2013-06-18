@@ -154,6 +154,52 @@ class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wi
     pendingCommitList.commits(1).sha should equal(newerCommit.sha)
   }
 
+  it should "sort pending commits with same commit date by author date" taggedAs(RequiresDb) in {
+    // given
+    val commitDate = DateTime.now()
+    val commits = List(
+    CommitInfoAssembler.randomCommit.withSha("111").withCommitDate(commitDate).
+      withAuthorDate(commitDate.plusSeconds(11)).get,
+    CommitInfoAssembler.randomCommit.withSha("222").withCommitDate(commitDate).
+      withAuthorDate(commitDate.plusSeconds(50)).get,
+    CommitInfoAssembler.randomCommit.withSha("333").withCommitDate(commitDate).
+      withAuthorDate(commitDate.plusSeconds(5)).get)
+    commits.foreach({commitInfoDao.storeCommit(_)})
+
+    storeCommitReviewTasksFor(userId, commits : _*)
+
+    // when
+    val pendingCommitList = commitListFinder.findCommitsToReviewForUser(userId, DefaultFixturePaging)
+
+    //then
+    pendingCommitList.commits.length should equal (3)
+    pendingCommitList.commits(0).sha should equal(commits(2).sha)
+    pendingCommitList.commits(1).sha should equal(commits(0).sha)
+    pendingCommitList.commits(2).sha should equal(commits(1).sha)
+  }
+
+  it should "sort non-pending commits with same commit date by author date" taggedAs(RequiresDb) in {
+    // given
+    val commitDate = DateTime.now()
+    val commits = List(
+      CommitInfoAssembler.randomCommit.withSha("111").withCommitDate(commitDate).
+        withAuthorDate(commitDate.plusSeconds(11)).get,
+      CommitInfoAssembler.randomCommit.withSha("222").withCommitDate(commitDate).
+        withAuthorDate(commitDate.plusSeconds(50)).get,
+      CommitInfoAssembler.randomCommit.withSha("333").withCommitDate(commitDate).
+        withAuthorDate(commitDate.plusSeconds(5)).get)
+    commits.foreach({commitInfoDao.storeCommit(_)})
+
+    // when
+    val pendingCommitList = commitListFinder.findAll(userId)
+
+    //then
+    pendingCommitList.commits.length should equal (3)
+    pendingCommitList.commits(0).sha should equal(commits(2).sha)
+    pendingCommitList.commits(1).sha should equal(commits(0).sha)
+    pendingCommitList.commits(2).sha should equal(commits(1).sha)
+  }
+
   it should "find empty list if there are no commits to review for user" taggedAs(RequiresDb) in {
     // given
     prepareAndStoreSomeCommits(5)
