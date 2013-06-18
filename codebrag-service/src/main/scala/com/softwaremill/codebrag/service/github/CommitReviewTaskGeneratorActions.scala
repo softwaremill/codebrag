@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.github
 
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import org.joda.time.Interval
-import com.softwaremill.codebrag.domain.{User, UpdatedCommit, CommitReviewTask}
+import com.softwaremill.codebrag.domain.{CommitsUpdatedEvent, User, UpdatedCommit, CommitReviewTask}
 import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO, UserDAO}
 import pl.softwaremill.common.util.time.Clock
 import com.typesafe.scalalogging.slf4j.Logging
@@ -15,15 +15,25 @@ trait CommitReviewTaskGeneratorActions extends Logging {
   val clock: Clock
 
   def handleNewUserRegistered(event: NewUserRegistered) {
-    val now = clock.currentDateTime()
-    val lastCommitsFetchInterval = new Interval(now.minusDays(3), now)
-    val commitsToReview = commitInfoDao.findForTimeRange(lastCommitsFetchInterval)
+    val commitsToReview = commitInfoDao.findForTimeRange(lastCommitsFetchInterval())
     val tasks = commitsToReview.filterNot(_.authorName == event.fullName).map(commit => {CommitReviewTask(commit.id, event.id)})
     logger.debug(s"Generating ${tasks.length} tasks for newly registered user: $event")
     tasks.foreach(commitToReviewDao.save(_))
   }
 
-  protected def createAndStoreReviewTasksFor(commit: UpdatedCommit) {
+  def handleCommitsUpdated(event: CommitsUpdatedEvent) {
+    val commitsToGenerateTasks = if (event.firstTime)
+      event.newCommits.withFilter(commit => lastCommitsFetchInterval().contains(commit.commitDate))
+    else event.newCommits
+    commitsToGenerateTasks.foreach(createAndStoreReviewTasksFor(_))
+  }
+
+  private def lastCommitsFetchInterval() = {
+    val now = clock.currentDateTime()
+    new Interval(now.minusDays(CommitReviewTaskGeneratorActions.LastDaysToFetchCount), now)
+  }
+
+  private def createAndStoreReviewTasksFor(commit: UpdatedCommit) {
     val repoUsers = repositoryUsers()
     val tasks = createReviewTasksFor(commit, repoUsers)
     tasks.foreach(commitToReviewDao.save(_))
@@ -34,8 +44,13 @@ trait CommitReviewTaskGeneratorActions extends Logging {
     userDao.findAll()
   }
 
-  protected def createReviewTasksFor(commit: UpdatedCommit, users: List[User]) = {
+  private def createReviewTasksFor(commit: UpdatedCommit, users: List[User]) = {
     users.filterNot(_.name == commit.authorName).map(user => CommitReviewTask(commit.id, user.id))
   }
 
+}
+
+object CommitReviewTaskGeneratorActions {
+
+  val LastDaysToFetchCount = 3
 }

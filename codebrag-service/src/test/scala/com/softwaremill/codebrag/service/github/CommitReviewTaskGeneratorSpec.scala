@@ -15,11 +15,12 @@ import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
 import pl.softwaremill.common.util.time.FixtureTimeClock
 import org.joda.time.DateTime
+import scala.util.Random
 
-class CommitReviewTaskGeneratorActorSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with
+class CommitReviewTaskGeneratorSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with
 BeforeAndAfterAll with MockitoSugar {
 
-  behavior of "CommitReviewTaskGeneratorActor"
+  behavior of "CommitReviewTaskGenerator"
 
   implicit var system = ActorSystem("MyActorSystem", ConfigFactory.load("test"))
   var generator: TestActorRef[CommitReviewTaskGenerator] = _
@@ -71,9 +72,13 @@ BeforeAndAfterAll with MockitoSugar {
     verify(reviewTaskDaoMock, never()).save(any[CommitReviewTask])
   }
 
-  it should "generate only 20 tasks for each user on first update" in {
+  it should "generate only tasks from limited time interval for each user on first update" in {
     // given
-    val commits = randomCommits(count = 31)
+    val oldDate = fixtureClock.currentDateTime().minusDays(4)
+    val commitWithinRange = UpdatedCommit(new ObjectId(), "Author Name", fixtureClock.currentDateTime().minusDays(1))
+    val anotherCommitWithinRange = UpdatedCommit(new ObjectId(), "Author Name", fixtureClock.currentDateTime().minusDays(2))
+    val commits = commitWithinRange :: anotherCommitWithinRange :: randomCommits(count = Random.nextInt(50), oldDate)
+
     val users = List(
       user(name = "Author Name"),
       user(name = "Sofokles Smart"),
@@ -84,7 +89,7 @@ BeforeAndAfterAll with MockitoSugar {
     generator ! CommitsUpdatedEvent(firstTime = true, commits)
 
     // then
-    verify(reviewTaskDaoMock, times(40)).save(any[CommitReviewTask])
+    verify(reviewTaskDaoMock, times(4)).save(any[CommitReviewTask])
   }
 
   it should "generate tasks only for non-author when commits are updated" in {
@@ -100,7 +105,7 @@ BeforeAndAfterAll with MockitoSugar {
     given(userDaoMock.findAll()).willReturn(users)
 
     // when
-    generator ! CommitsUpdatedEvent(firstTime = true, commits)
+    generator ! CommitsUpdatedEvent(firstTime = false, commits)
 
     // then
     verify(reviewTaskDaoMock).save(CommitReviewTask(commits(0).id, sofokles.id))
@@ -113,8 +118,8 @@ BeforeAndAfterAll with MockitoSugar {
     UserAssembler.randomUser.withFullName(name).get
   }
 
-  private def randomCommits(count: Int) = {
-    List.fill(count)(UpdatedCommit(new ObjectId(), "Author Name"))
+  private def randomCommits(count: Int, date: DateTime = new DateTime()) = {
+    List.fill(count)(UpdatedCommit(new ObjectId(), "Author Name", date))
   }
 
 }

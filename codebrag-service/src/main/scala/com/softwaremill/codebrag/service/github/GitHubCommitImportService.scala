@@ -15,7 +15,8 @@ class GitHubCommitImportService(commitsLoader: GitHubCommitsLoader, commitInfoDa
     commitsLoaded.foreach(commitInfoDao.storeCommit(_))
 
     if (!commitsLoaded.isEmpty) {
-      eventBus.publish(CommitsUpdatedEvent(isFirstImport, commitsLoaded.map(commit => UpdatedCommit(commit.id, commit.authorName))))
+      eventBus.publish(CommitsUpdatedEvent(isFirstImport, commitsLoaded.map(commit =>
+        UpdatedCommit(commit.id, commit.authorName, commit.commitDate))))
     }
     logger.debug("Commits stored. Loading finished.")
   }
