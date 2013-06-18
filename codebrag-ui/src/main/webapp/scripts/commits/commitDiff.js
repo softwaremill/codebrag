@@ -171,6 +171,25 @@ angular.module('codebrag.commits')
             }
         }
 
+    })
+
+    .directive('likes', function() {
+
+        return {
+            restrict: 'E',
+            template: '<span class="username"><i class="icon-heart"></i> Coders who likes this: {{users}}</span>',
+            replace: true,
+            scope: {
+                collection: '='
+            },
+            link: function(scope, el, attrs) {
+                console.log('in link');
+                scope.users = _.map(scope.collection, function(like) {
+                    return like.authorName;
+                }).join(', ');
+            }
+        }
+
     });
 
 
