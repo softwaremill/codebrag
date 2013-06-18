@@ -5,16 +5,12 @@ angular.module('codebrag.commits')
 
         $scope.like = function(fileName, lineNumber) {
             var currentUserName = authService.loggedInUser.fullName;
-            var reactions = $scope.currentCommit.lineReactions;
-            if(reactions[fileName] && reactions[fileName][lineNumber] && reactions[fileName][lineNumber]['likes']) {
-                var currentUserAlreadyLiked = _.some(reactions[fileName][lineNumber]['likes'], function(like) {
-                    return like.authorName === currentUserName;
-                });
-                if(currentUserAlreadyLiked) {
-                    return;
-                }
+            if(currentUserName === $scope.currentCommit.commit.authorName) {
+                return;
             }
-
+            if($scope.currentCommitReactions.userAlreadyLikedThis(currentUserName, fileName, lineNumber)) {
+                return;
+            }
             var newLike = {
                 commitId: $scope.currentCommit.commit.id,
                 fileName: fileName,
@@ -22,22 +18,8 @@ angular.module('codebrag.commits')
             };
             return Likes.save(newLike).$then(function (likeResponse) {
                 var like = likeResponse.data;
-                addLikeToCollection(like, newLike.fileName, newLike.lineNumber);
+                $scope.currentCommitReactions.addLike(like, fileName, lineNumber);
             });
-
-            function addLikeToCollection(like, fileName, lineNumber) {
-                var reactions = $scope.currentCommit.lineReactions;
-                if(_.isUndefined(reactions[fileName])) {
-                    reactions[fileName] = {};
-                }
-                if(_.isUndefined(reactions[fileName][lineNumber])) {
-                    reactions[fileName][lineNumber] = [];
-                }
-                if(_.isUndefined(reactions[fileName][lineNumber]['likes'])) {
-                    reactions[fileName][lineNumber]['likes'] = [];
-                }
-                reactions[fileName][lineNumber]['likes'].push(like);
-            }
         };
 
         $scope.submitInlineComment = function(content, commentData) {
@@ -50,22 +32,8 @@ angular.module('codebrag.commits')
 
             return Comments.save(newComment).$then(function (commentResponse) {
                 var comment = commentResponse.data.comment;
-                addCommentToCommentsCollection(comment, newComment.fileName, newComment.lineNumber);
+                $scope.currentCommitReactions.addInlineComment(comment, commentData.fileName, commentData.lineNumber);
             });
-
-            function addCommentToCommentsCollection(comment, fileName, lineNumber) {
-                var reactions = $scope.currentCommit.lineReactions;
-                if(_.isUndefined(reactions[fileName])) {
-                    reactions[fileName] = {};
-                }
-                if(_.isUndefined(reactions[fileName][lineNumber])) {
-                    reactions[fileName][lineNumber] = [];
-                }
-                if(_.isUndefined(reactions[fileName][lineNumber]['comments'])) {
-                    reactions[fileName][lineNumber]['comments'] = [];
-                }
-                reactions[fileName][lineNumber]['comments'].push(comment);
-            }
         };
 
         $scope.submitComment = function (content) {
@@ -74,7 +42,8 @@ angular.module('codebrag.commits')
                 body: content
             };
             return Comments.save(comment).$then(function (commentResponse) {
-                $scope.currentCommit.reactions.comments.push(commentResponse.data.comment);
+                var comment = commentResponse.data.comment;
+                $scope.currentCommitReactions.addComment(comment);
             });
         };
 
