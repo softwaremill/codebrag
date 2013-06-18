@@ -183,7 +183,6 @@ angular.module('codebrag.commits')
                 collection: '='
             },
             link: function(scope, el, attrs) {
-                console.log('in link');
                 scope.users = _.map(scope.collection, function(like) {
                     return like.authorName;
                 }).join(', ');

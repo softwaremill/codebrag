@@ -5,11 +5,11 @@
         <div class="author-box"><user-avatar url="currentCommit.commit.authorAvatarUrl"></user-avatar></div>
         <div class="info-box">
             <div class="commit-name" ng-bind-html-unsafe="currentCommit.commit.message"></div>
-            <div class="info-line"><span class="username">{{currentCommit.commit.authorName}}</span><span class="time">{{currentCommit.commit.date | relativeDate}}</span></div>
+            <div class="info-line"><span class="username">{{currentCommit.info.authorName}}</span><span class="time">{{currentCommit.info.date | relativeDate}}</span></div>
         </div>
     </div>
 
     <ng-include src="'views/secured/commits/diffOpt.html'"></ng-include>
-    <a class="reviewed big button" ng-show="currentCommit.commit.pendingReview" ng-click="markCurrentCommitAsReviewed()"><i class="icon-ok-circle"> </i>Reviewed</a>
+    <a class="reviewed big button" ng-show="currentCommit.info.pendingReview" ng-click="markCurrentCommitAsReviewed()"><i class="icon-ok-circle"> </i>Reviewed</a>
 
 </div>

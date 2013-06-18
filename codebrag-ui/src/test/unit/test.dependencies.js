@@ -55,5 +55,5 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/events.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/filters/dateFormatFilter.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/directives/messagePopup.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/AsyncCollection.js");
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/CommitReactions.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/CurrentCommit.js");
 

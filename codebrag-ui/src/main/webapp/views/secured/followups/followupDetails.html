@@ -3,8 +3,8 @@
     <div class="authored-box">
         <div class="author-box"><img src="images/avatar.png"></div>
         <div class="info-box">
-            <div class="commit-name" ng-bind-html-unsafe="currentCommit.commit.message"></div>
-            <div class="info-line"><span class="username">{{currentCommit.commit.authorName}}</span><span class="time">{{currentCommit.commit.date | relativeDate}}</span>
+            <div class="commit-name" ng-bind-html-unsafe="currentCommit.info.message"></div>
+            <div class="info-line"><span class="username">{{currentCommit.info.authorName}}</span><span class="time">{{currentCommit.info.date | relativeDate}}</span>
             </div>
         </div>
         <button class="btn btn-success" ng-click="markCurrentFollowupAsDone()">

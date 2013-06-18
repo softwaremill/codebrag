@@ -5,26 +5,23 @@ angular.module('codebrag.commits')
 
         $scope.like = function(fileName, lineNumber) {
             var currentUserName = authService.loggedInUser.fullName;
-            if(currentUserName === $scope.currentCommit.commit.authorName) {
-                return;
-            }
-            if($scope.currentCommitReactions.userAlreadyLikedThis(currentUserName, fileName, lineNumber)) {
+            if($scope.currentCommit.isUserAuthorOfCommit(currentUserName) || $scope.currentCommit.userAlreadyLikedThis(currentUserName, fileName, lineNumber)) {
                 return;
             }
             var newLike = {
-                commitId: $scope.currentCommit.commit.id,
+                commitId: $scope.currentCommit.info.id,
                 fileName: fileName,
                 lineNumber: lineNumber
             };
             return Likes.save(newLike).$then(function (likeResponse) {
                 var like = likeResponse.data;
-                $scope.currentCommitReactions.addLike(like, fileName, lineNumber);
+                $scope.currentCommit.addLike(like, fileName, lineNumber);
             });
         };
 
         $scope.submitInlineComment = function(content, commentData) {
             var newComment = {
-                commitId: $scope.currentCommit.commit.id,
+                commitId: $scope.currentCommit.info.id,
                 body: content,
                 fileName: commentData.fileName,
                 lineNumber: commentData.lineNumber
@@ -32,18 +29,18 @@ angular.module('codebrag.commits')
 
             return Comments.save(newComment).$then(function (commentResponse) {
                 var comment = commentResponse.data.comment;
-                $scope.currentCommitReactions.addInlineComment(comment, commentData.fileName, commentData.lineNumber);
+                $scope.currentCommit.addInlineComment(comment, commentData.fileName, commentData.lineNumber);
             });
         };
 
         $scope.submitComment = function (content) {
             var comment = {
-                commitId: $scope.currentCommit.commit.id,
+                commitId: $scope.currentCommit.info.id,
                 body: content
             };
             return Comments.save(comment).$then(function (commentResponse) {
                 var comment = commentResponse.data.comment;
-                $scope.currentCommitReactions.addComment(comment);
+                $scope.currentCommit.addComment(comment);
             });
         };
 

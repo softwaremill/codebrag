@@ -1,13 +1,19 @@
 var codebrag = codebrag || {};
 
-codebrag.CommitReactions = function(reactions, lineReactions) {
+codebrag.CurrentCommit = function(commitData) {
 
-    this.reactions = reactions;
-    this.lineReactions = lineReactions;
+    this.reactions = commitData.reactions;
+    this.lineReactions = commitData.lineReactions;
+
+    this.info = commitData.commit;
+
+    this.diff = commitData.diff;
+
+    this.supressedFiles = commitData.supressedFiles;
 
 };
 
-codebrag.CommitReactions.prototype = {
+codebrag.CurrentCommit.prototype = {
 
     addLike: function(like, fileName, lineNumber) {
         this._ensureReactionsCollectionExists(fileName, lineNumber, 'likes');
@@ -24,6 +30,10 @@ codebrag.CommitReactions.prototype = {
             this.reactions['comments'] = [];
         }
         this.reactions['comments'].push(comment);
+    },
+
+    isUserAuthorOfCommit: function(userName) {
+         return this.info.authorName === userName
     },
 
     userAlreadyLikedThis: function(userName, fileName, lineNumber) {
