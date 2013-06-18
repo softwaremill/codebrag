@@ -1,17 +1,17 @@
 package com.softwaremill.codebrag.service.diff
 
-import com.softwaremill.codebrag.dao.reporting.{CommentFinder, CommitFinder}
+import com.softwaremill.codebrag.dao.reporting.{UserReactionFinder, CommitFinder}
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitDetailsWithCommentsView}
+import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitDetailsView}
 
-class DiffWithCommentsService(commitListFinder: CommitFinder, commentsFinder: CommentFinder, diffService: DiffService) {
+class DiffWithCommentsService(commitListFinder: CommitFinder, reactionFinder: UserReactionFinder, diffService: DiffService) {
 
-  def diffWithCommentsFor(commitId: ObjectId, userId: ObjectId): Either[String, CommitDetailsWithCommentsView] = {
+  def diffWithCommentsFor(commitId: ObjectId, userId: ObjectId): Either[String, CommitDetailsView] = {
 
     def buildDiffWithComments(commit: CommitView) = {
-      val commitComments = commentsFinder.commentsForCommit(commitId)
+      val reactions = reactionFinder.findReactionsForCommit(commitId)
       val Right(diff) = diffService.getFilesWithDiffs(commitId.toString)
-      CommitDetailsWithCommentsView.buildFrom(commit, commitComments, diff)
+      CommitDetailsView.buildFrom(commit, reactions, diff)
     }
 
     commitListFinder.findCommitInfoById(commitId.toString, userId) match {

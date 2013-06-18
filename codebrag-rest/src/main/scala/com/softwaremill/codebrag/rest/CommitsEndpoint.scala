@@ -9,20 +9,22 @@ import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.CommitReviewTaskDAO
 import com.softwaremill.codebrag.domain.CommitReviewTask
-import com.softwaremill.codebrag.dao.reporting.views.{CommitDetailsWithCommentsView, CommitListView}
+import com.softwaremill.codebrag.dao.reporting.views.{CommitDetailsView, CommitListView}
 
-trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpointSwaggerDefinition {
+trait CommitsEndpoint extends JsonServletWithAuthentication {
 
   def importerFactory: GitHubCommitImportServiceFactory
   def diffService: DiffWithCommentsService
   def commitListFinder: CommitFinder
   def commitReviewTaksDao: CommitReviewTaskDAO
 
+  val DefaultPaging = PagingCriteria(0, 7)
+
   before() {
     haltIfNotAuthenticated
   }
 
-  get("/", operation(getCommitsOperation)) {
+  get("/") {
     val filterOpt = params.get("filter")
     val skip = extractPathIntOrHalt("skip", DefaultPaging.skip, "skip value must be non-negative", (_ >= 0))
     val limit = extractPathIntOrHalt("limit", DefaultPaging.limit, "limit value must be positive", (_ > 0))
@@ -41,7 +43,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
     fetchCommitsPendingReview(DefaultPaging)
   }
 
-  get("/:id", operation(getDetailsOperation)) {
+  get("/:id") {
     val commitId = params("id")
     diffService.diffWithCommentsFor(new ObjectId(commitId), new ObjectId(user.id)) match {
       case Right(commitWithComments) => commitWithComments
@@ -49,7 +51,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
     }
   }
 
-  delete("/:id", operation(markCommitAsReviewed)) {
+  delete("/:id") {
     val commitId = new ObjectId(params("id"))
     val userId = new ObjectId(user.id)
     val reviewTask = CommitReviewTask(commitId, userId)
@@ -58,27 +60,4 @@ trait CommitsEndpoint extends JsonServletWithAuthentication with CommitsEndpoint
 
   private def fetchCommitsPendingReview(paging: PagingCriteria) = commitListFinder.findCommitsToReviewForUser(new ObjectId(user.id), paging)
   private def fetchAllCommits() = commitListFinder.findAll(new ObjectId(user.id))
-}
-
-trait CommitsEndpointSwaggerDefinition extends SwaggerSupport {
-  val DefaultPaging = PagingCriteria(0, 7)
-
-  val getCommitsOperation = apiOperation[CommitListView]("get")
-    .summary("Gets all commits to review for current user ")
-    .parameter(queryParam[String]("filter").description("What kind of commits should be fetched")
-    .allowableValues("all", "pending")
-    .defaultValue("pending").optional)
-    .parameter(queryParam[Int]("skip").description("Numbers of elements to skip (for pending filter mode)")
-    .defaultValue(DefaultPaging.skip).optional)
-    .parameter(queryParam[Int]("limit").description("Maximum number of elements to return (for pending filter mode)")
-    .defaultValue(DefaultPaging.limit).optional)
-
-  val getDetailsOperation = apiOperation[CommitDetailsWithCommentsView]("details")
-    .summary("Gets commit details with diff, comments, likes, etc.")
-    .parameter(pathParam[String]("id").description("Commit identifier"))
-
-
-  val markCommitAsReviewed = apiOperation[Unit]("delete")
-    .summary("Removes given commit from user list of commits remaining to review")
-    .parameter(pathParam[String]("id").description("Identifier of the commit").required)
 }

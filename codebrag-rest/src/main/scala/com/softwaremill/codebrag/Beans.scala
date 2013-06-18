@@ -26,7 +26,7 @@ trait Beans extends ActorSystemSupport {
   lazy val commitInfoDao = new MongoCommitInfoDAO
   lazy val followupDao = new MongoFollowupDAO
   lazy val commitListFinder = new MongoCommitWithAuthorDetailsFinder(new MongoCommitFinder)
-  lazy val commentListFinder = new MongoCommentFinder(userDao)
+  lazy val userReactionFinder = new UserReactionFinder
   lazy val swagger = new CodebragSwagger
   lazy val ghService = new GitHubAuthService
   lazy val commentDao = new MongoCommitCommentDAO
@@ -50,5 +50,5 @@ trait Beans extends ActorSystemSupport {
   lazy val followupFinder = new MongoFollowupFinder
   lazy val commentActivity = new AddCommentActivity(userReactionService, followupService)
 
-  lazy val diffWithCommentsService = new DiffWithCommentsService(commitListFinder, commentListFinder, new DiffService(commitInfoDao))
+  lazy val diffWithCommentsService = new DiffWithCommentsService(commitListFinder, userReactionFinder, new DiffService(commitInfoDao))
 }

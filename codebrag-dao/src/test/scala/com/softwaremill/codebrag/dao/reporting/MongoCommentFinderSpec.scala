@@ -6,14 +6,14 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.builders.CommentAssembler
-import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
+import com.softwaremill.codebrag.dao.reporting.views.{ReactionsView, CommentView, ReactionView}
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 
 class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with CommentListFinderVerifyHelpers {
 
   val userDao = new MongoUserDAO
   val commentDao = new MongoCommitCommentDAO
-  var commentListFinder: MongoCommentFinder = _
+  var reactionsFinder: UserReactionFinder = _
 
   val CommitId = oid(1)
 
@@ -35,7 +35,7 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
 
   override def beforeEach() {
     super.beforeEach()
-    commentListFinder = new MongoCommentFinder(userDao)
+    reactionsFinder = new UserReactionFinder
 
     StoredCommitComments.foreach(commentDao.save)
     StoredInlineComments.foreach(commentDao.save)
@@ -47,10 +47,10 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     val commitWithNoCommentsId = oid(20)
 
     // when
-    val commentList = commentListFinder.commentsForCommit(commitWithNoCommentsId)
+    val commentList = reactionsFinder.findReactionsForCommit(commitWithNoCommentsId)
 
     // then
-    commentList.comments should be('empty)
+    commentList.entireCommitReactions.comments should be(None)
   }
 
   it should "contain comments for whole commit" taggedAs (RequiresDb) in {
@@ -59,18 +59,19 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     val secondComment = StoredCommitComments(1)
 
     // when
-    val commentsView = commentListFinder.commentsForCommit(CommitId)
+    val reactionsView = reactionsFinder.findReactionsForCommit(CommitId)
+    val Some(commitComments) = reactionsView.entireCommitReactions.comments
 
     // then
-    commentMessagesWithAuthorsFor(commentsView.comments) should be(Set(("Monster class", "John"), ("Fix it ASAP", "Mary")))
+    commentMessagesWithAuthors(commitComments) should be(Set(("Monster class", "John"), ("Fix it ASAP", "Mary")))
   }
 
   it should "contain inline comments grouped by file and line" taggedAs (RequiresDb) in {
     // when
-    val commentsView = commentListFinder.commentsForCommit(CommitId)
+    val reactionsView = reactionsFinder.findReactionsForCommit(CommitId)
 
     // then
-    val fileComments = commentsView.inlineComments
+    val fileComments = reactionsView.inlineReactions
 
     lineCommentsFor(fileComments, "Main.scala").size should be(1)
     commentLineNumbersFor(fileComments, "Main.scala") should be(Set(10))
@@ -94,11 +95,10 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     inlineComments.foreach(commentDao.save)
 
     // when
-    val commentsView = commentListFinder.commentsForCommit(CommitId)
+    val commentsView = reactionsFinder.findReactionsForCommit(CommitId)
 
     // then
-    val fileComments = commentsView.inlineComments
-    val fileComments2 = commentsView.inlineComments
+    val fileComments = commentsView.inlineReactions
     orderedCommentMessagesFor(fileComments, "Exception.scala", 10) should be(List("You'd better refactor that", "Man, it's Monday"))
   }
 
@@ -107,10 +107,11 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     val johnComment = StoredCommitComments(0)
 
     // when
-    val commentsView = commentListFinder.commentsForCommit(CommitId)
+    val commentsView = reactionsFinder.findReactionsForCommit(CommitId)
 
     // then
-    commentsView.comments(0).authorAvatarUrl should equal(John.avatarUrl)
+    val Some(comments) = commentsView.entireCommitReactions.comments
+    comments(0).asInstanceOf[CommentView].authorAvatarUrl should equal(John.avatarUrl)
   }
 
   it should "return empty string as author avatar if author not registered in codebrag" in {
@@ -121,10 +122,11 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     commentDao.save(commentFromNonexistingUser)
 
     // when
-    val commentsView = commentListFinder.commentsForCommit(dummyCommitId)
+    val commentsView = reactionsFinder.findReactionsForCommit(dummyCommitId)
 
     // then
-    commentsView.comments(0).authorAvatarUrl should equal(emptyAvatarUrl)
+    val Some(comments) = commentsView.entireCommitReactions.comments
+    comments(0).asInstanceOf[CommentView].authorAvatarUrl should equal(emptyAvatarUrl)
   }
 
 }
@@ -132,24 +134,37 @@ class MongoCommentFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest w
 
 trait CommentListFinderVerifyHelpers {
 
-  def lineCommentsFor(fileComments: Map[String, Map[Int, List[SingleCommentView]]], fileName: String) = {
+  def lineCommentsFor(fileComments: Map[String, Map[String, ReactionsView]], fileName: String) = {
     fileComments(fileName)
   }
 
-  def commentLineNumbersFor(fileComments: Map[String, Map[Int, List[SingleCommentView]]], fileName: String) = {
-    lineCommentsFor(fileComments, fileName).map(_._1).toSet
+  def commentLineNumbersFor(fileComments: Map[String, Map[String, ReactionsView]], fileName: String) = {
+    lineCommentsFor(fileComments, fileName).map(_._1.toInt).toSet
   }
 
-  def commentMessagesWithAuthorsFor(fileComments: Map[String, Map[Int, List[SingleCommentView]]], fileName: String, lineNumber: Int) = {
-    lineCommentsFor(fileComments, fileName)(lineNumber).map(comment => (comment.message, comment.authorName)).toSet
+  def commentMessagesWithAuthorsFor(fileComments: Map[String, Map[String, ReactionsView]], fileName: String, lineNumber: Int) = {
+    val Some(lineComments) = lineCommentsFor(fileComments, fileName)(lineNumber.toString).comments
+    commentMessagesWithAuthors(lineComments)
   }
 
-  def commentMessagesWithAuthorsFor(comments: List[SingleCommentView]) = {
-    comments.map(comment => (comment.message, comment.authorName)).toSet
+  def commentMessagesWithAuthors(comments: List[ReactionView]) = {
+    comments.map(c => {
+      val comment = c.asInstanceOf[CommentView]
+      (comment.message, comment.authorName)
+    }).toSet
   }
 
-  def orderedCommentMessagesFor(fileComments: Map[String, Map[Int, List[SingleCommentView]]], fileName: String, lineNumber: Int) = {
-    lineCommentsFor(fileComments, fileName)(lineNumber).map(comment => comment.message)
+  def commentMessagesFor(comments: List[ReactionView]) = {
+    comments.map(c => {
+      c.asInstanceOf[CommentView].message
+    }).toSet
+  }
+
+  def orderedCommentMessagesFor(fileComments: Map[String, Map[String, ReactionsView]], fileName: String, lineNumber: Int) = {
+    val Some(comments) = lineCommentsFor(fileComments, fileName)(lineNumber.toString).comments
+    comments.map(c => {
+      c.asInstanceOf[CommentView].message
+    })
   }
 
 }

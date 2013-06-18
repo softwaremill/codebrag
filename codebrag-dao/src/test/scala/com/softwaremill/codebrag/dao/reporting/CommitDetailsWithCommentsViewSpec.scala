@@ -5,60 +5,61 @@ import org.scalatest.{FlatSpec, BeforeAndAfterEach}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.dao.reporting.views._
 import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff}
-import com.softwaremill.codebrag.dao.reporting.views.CommentsView
-import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
 
 class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with CommentListFinderVerifyHelpers {
 
   val Commit = CommitView("123", "123abc", "This is commit message", "John Doe", DateTime.now.toDate)
   val Lines = List(DiffLine("line one", 1, 2, "added"), DiffLine("line two", 2, 2, "added"))
   val Diffs = List(CommitFileDiff("test.txt", "added", Lines, FileDiffStats(2, 0)))
-  val EmptyComments = CommentsView(comments = Nil, inlineComments = Map())
+  val EmptyReactions = CommitReactionsView(ReactionsView(None, None), Map())
 
   it should "have empty comments list when commit has no comments" in {
     // given
-    val comments = EmptyComments
+    val reactions = EmptyReactions
 
     // when
-    val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
+    val commitWithNoReactions = CommitDetailsView.buildFrom(Commit, reactions, Diffs)
 
     // then
-    commitWithComments.reactions.comments should be('empty)
-    commitWithComments.lineReactions should be('empty)
+    commitWithNoReactions.reactions.comments should be(None)
+    commitWithNoReactions.lineReactions should be('empty)
   }
 
   it should "have comments when commit has some general comments" in {
     // given
-    val generalComment = SingleCommentView("123", "Mary Smith", "Comment for commit", DateTime.now.toDate)
-    val comments = CommentsView(comments = List(generalComment), inlineComments = Map())
+    val generalComments = List(CommentView("123", "Mary Smith", "Comment for commit", DateTime.now.toDate))
+    val reactions = CommitReactionsView(ReactionsView(Some(generalComments), None), Map())
 
     // when
-    val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
+    val commitWithReactions = CommitDetailsView.buildFrom(Commit, reactions, Diffs)
 
     // then
-    commitWithComments.reactions.comments.head should be(generalComment)
+    val Some(comments) = commitWithReactions.reactions.comments
+    comments should be(generalComments)
   }
 
   it should "have inline comments when commit has some lines commented" in {
     // given
-    val lineCommentOne = SingleCommentView("123", "John Doe", "Line comment one", DateTime.now.toDate)
-    val lineCommentTwo = SingleCommentView("456", "Mary Smith", "Line comment two", DateTime.now.toDate)
-    val fileComments = Map("test.txt" -> Map(0 -> List(lineCommentOne), 1 -> List(lineCommentTwo)))
-    val comments = CommentsView(comments = Nil, inlineComments = fileComments)
+    val lineCommentOne = CommentView("123", "John Doe", "Line comment one", DateTime.now.toDate)
+    val lineCommentTwo = CommentView("456", "Mary Smith", "Line comment two", DateTime.now.toDate)
+    val reactionsForLineZero = ReactionsView(Some(List(lineCommentOne)), None)
+    val reactionsForLineOne = ReactionsView(Some(List(lineCommentTwo)), None)
+    val fileComments = Map("test.txt" -> Map(0.toString -> reactionsForLineZero, 1.toString -> reactionsForLineOne))
+    val comments = CommitReactionsView(ReactionsView(None, None), fileComments)
 
     // when
-    val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, comments, Diffs)
+    val commitWithReactions = CommitDetailsView.buildFrom(Commit, comments, Diffs)
 
     // then
-    val fileReactions = commitWithComments.lineReactions("test.txt")
+    val fileReactions = commitWithReactions.lineReactions("test.txt")
     // keys need to be strings in order to serialize to JSON
-    fileReactions("0") should equal(Reactions(List.empty, List(lineCommentOne)))
-    fileReactions("1") should equal(Reactions(List.empty, List(lineCommentTwo)))
+    fileReactions("0") should equal(reactionsForLineZero)
+    fileReactions("1") should equal(reactionsForLineOne)
   }
 
   it should "have diff stats for file" in {
     // when
-    val commitWithComments = CommitDetailsWithCommentsView.buildFrom(Commit, EmptyComments, Diffs)
+    val commitWithComments = CommitDetailsView.buildFrom(Commit, EmptyReactions, Diffs)
 
     // then
     commitWithComments.diff(0).diffStats.added should be(2)
@@ -66,11 +67,11 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
   }
 
   it should "supress diffs for large files" in {
-    val largeFileSize = CommitDetailsWithCommentsView.MaxAcceptableDiffLinesCount + 100; // diff size exceeding max acceptable size
+    val largeFileSize = CommitDetailsView.MaxAcceptableDiffLinesCount + 100; // diff size exceeding max acceptable size
     val diffLines = buildDummyDiffWithLinesNumber(largeFileSize)
     val largeFileDiff = CommitFileDiff("largefile.txt", "added", diffLines, FileDiffStats(largeFileSize, 0))
 
-    val viewWithSupressedDiff = CommitDetailsWithCommentsView.buildFrom(Commit, EmptyComments, List(largeFileDiff))
+    val viewWithSupressedDiff = CommitDetailsView.buildFrom(Commit, EmptyReactions, List(largeFileDiff))
 
     viewWithSupressedDiff.diff should be('empty)
     viewWithSupressedDiff.supressedFiles.size should be(1)
@@ -78,11 +79,11 @@ class CommitDetailsWithCommentsViewSpec extends FlatSpec with BeforeAndAfterEach
 
 
   it should "keep regular diff for small files" in {
-    val smallFileSize = CommitDetailsWithCommentsView.MaxAcceptableDiffLinesCount - 100; // diff size smaller than max acceptable size
+    val smallFileSize = CommitDetailsView.MaxAcceptableDiffLinesCount - 100; // diff size smaller than max acceptable size
     val diffLines = buildDummyDiffWithLinesNumber(smallFileSize)
     val smallFileDiff = CommitFileDiff("largefile.txt", "added", diffLines, FileDiffStats(smallFileSize, 0))
 
-    val viewWithRegularDiff = CommitDetailsWithCommentsView.buildFrom(Commit, EmptyComments, List(smallFileDiff))
+    val viewWithRegularDiff = CommitDetailsView.buildFrom(Commit, EmptyReactions, List(smallFileDiff))
 
     viewWithRegularDiff.diff.size should be(1)
     viewWithRegularDiff.supressedFiles should be('empty)

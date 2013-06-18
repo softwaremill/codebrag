@@ -1,13 +1,12 @@
 package com.softwaremill.codebrag.rest
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting._
 import org.scalatra.swagger.SwaggerSupport
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import com.softwaremill.codebrag.dao.UserDAO
-import com.softwaremill.codebrag.service.comments.command.{IncomingLike, IncomingComment}
+import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import scala.Some
-import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
+import com.softwaremill.codebrag.dao.reporting.views.CommentView
 
 trait UserReactionParametersReader {
 
@@ -30,14 +29,13 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with UserReactionPa
 
   def commentActivity: AddCommentActivity
   def userDao: UserDAO
-  def commentListFinder: CommentFinder
 
   post("/:id/comments", operation(addCommentOperation)) {
     haltIfNotAuthenticated()
     val comment = buildIncomingComment
     val savedComment = commentActivity.addCommentToCommit(comment)
     userDao.findById(savedComment.authorId) match {
-      case Some(user) => AddCommentResponse(SingleCommentView(savedComment.id.toString, user.name, savedComment.message, savedComment.postingTime.toDate, user.avatarUrl))
+      case Some(user) => AddCommentResponse(CommentView(savedComment.id.toString, user.name, savedComment.message, savedComment.postingTime.toDate, user.avatarUrl))
       case None => halt(400, s"Invalid user id $savedComment.authorId")
     }
   }
@@ -60,4 +58,4 @@ trait CommentsEndpointSwaggerDefinition extends SwaggerSupport {
 
 }
 
-case class AddCommentResponse(comment: SingleCommentView)
+case class AddCommentResponse(comment: CommentView)
