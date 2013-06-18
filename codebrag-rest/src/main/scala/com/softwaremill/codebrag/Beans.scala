@@ -43,7 +43,7 @@ trait Beans extends ActorSystemSupport {
   lazy val importerFactory = new JgitGitHubCommitImportServiceFactory(commitInfoDao, userDao, eventBus, config)
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
   lazy val likeDao = new MongoLikeDAO
-  lazy val userReactionService = new UserReactionService(commentDao, likeDao)
+  lazy val userReactionService = new UserReactionService(commentDao, likeDao, eventBus)
 
   lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {
       val userDao = self.userDao
