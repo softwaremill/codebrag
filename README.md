@@ -4,7 +4,7 @@ Quick Start
 ---
 
 1. Start mongodb
-2. Configure `local.conf` basing on `codebrag-rest/main/resources/application.conf`
+2. Configure `local.conf` basing on `codebrag-rest/main/resources/application.conf.template`
 Important elements to fill:
     * `syncUserLogin`: login of Codebrag user who will be used for synchronization with GitHub
     * `GitHubClientId` and `GitHubClientSecret`: keys copied from GitHub settings of your Codebrag instance.
