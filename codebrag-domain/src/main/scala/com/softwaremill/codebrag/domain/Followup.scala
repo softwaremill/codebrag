@@ -4,10 +4,10 @@ import org.bson.types.ObjectId
 import org.joda.time.DateTime
 
 
-case class Followup(id: Option[ObjectId], commentId: ObjectId, userId: ObjectId, date: DateTime, lastCommenterName: String, threadId: ThreadDetails) {
+case class Followup(id: Option[ObjectId], reactionId: ObjectId, userId: ObjectId, date: DateTime, lastCommenterName: String, threadId: ThreadDetails) {
 
   def isOwner(userId: ObjectId) = {
-    this.userId == this.userId
+    this.userId == userId
   }
 
 }

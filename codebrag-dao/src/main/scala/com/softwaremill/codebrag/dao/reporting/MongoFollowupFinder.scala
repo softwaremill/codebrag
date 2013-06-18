@@ -21,7 +21,7 @@ class MongoFollowupFinder extends FollowupFinder {
   }
 
   def extractCommentInfoFromRecord(record: FollowupRecord) = {
-    FollowupReactionView(record.commentId.get.toString, record.lastCommenterName.get)
+    FollowupReactionView(record.reactionId.get.toString, record.lastCommenterName.get)
   }
 
   def toFollowupInfo(record: FollowupRecord) = {

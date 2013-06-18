@@ -44,7 +44,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     val followupFound = allRecords.head
     followupFound.user_id.get should equal(FollowupTargetUserId)
     followupFound.commit.get.id.get should equal(Commit.id)
-    followupFound.commentId.get should equal(CommentId)
+    followupFound.reactionId.get should equal(CommentId)
     followupFound.date.get should equal(now.toDate)
   }
 
@@ -61,7 +61,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // then
     val followup = FollowupRecord.findAll.head
-    followup.commentId.get should equal(newCommentId)
+    followup.reactionId.get should equal(newCommentId)
     followup.date.get should equal(newDate.toDate)
     followup.lastCommenterName.get should equal(newCommentAuthorName)
   }
@@ -79,7 +79,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
 
     // then
-    val followups = FollowupRecord.where(_.commentId eqs newCommentId).fetch()
+    val followups = FollowupRecord.where(_.reactionId eqs newCommentId).fetch()
     followups.size should be(1)
     followups.head.date.get should equal(newDate.toDate)
     followups.head.threadId.get.lineNumber.get should equal(Some(20))

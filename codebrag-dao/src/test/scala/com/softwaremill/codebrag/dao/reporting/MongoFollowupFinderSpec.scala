@@ -74,7 +74,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
 
     // then
     followup.reaction.reactionAuthor should be(LastCommenterName)
-    followup.reaction.reactionId should be(stored.commentId.toString)
+    followup.reaction.reactionId should be(stored.reactionId.toString)
   }
 
   def storeFollowupsForJohn = {
