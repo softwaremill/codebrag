@@ -1,8 +1,20 @@
 angular.module('codebrag.commits')
 
-    .controller('DiffCtrl', function ($scope, Comments, Likes) {
+    .controller('DiffCtrl', function ($scope, Comments, Likes, authService) {
+
 
         $scope.like = function(fileName, lineNumber) {
+            var currentUserName = authService.loggedInUser.fullName;
+            var reactions = $scope.currentCommit.lineReactions;
+            if(reactions[fileName] && reactions[fileName][lineNumber] && reactions[fileName][lineNumber]['likes']) {
+                var currentUserAlreadyLiked = _.some(reactions[fileName][lineNumber]['likes'], function(like) {
+                    return like.authorName === currentUserName;
+                });
+                if(currentUserAlreadyLiked) {
+                    return;
+                }
+            }
+
             var newLike = {
                 commitId: $scope.currentCommit.commit.id,
                 fileName: fileName,
