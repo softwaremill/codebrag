@@ -1,11 +1,16 @@
 package com.softwaremill.codebrag.service.github
 
-import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import org.joda.time.Interval
-import com.softwaremill.codebrag.domain.{CommitsUpdatedEvent, User, UpdatedCommit, CommitReviewTask}
+import com.softwaremill.codebrag.domain._
 import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO, UserDAO}
 import pl.softwaremill.common.util.time.Clock
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.domain.CommitsUpdatedEvent
+import com.softwaremill.codebrag.domain.CommitReviewTask
+import com.softwaremill.codebrag.domain.UpdatedCommit
+import com.softwaremill.codebrag.domain.CommitUpdatedEvent._
+import com.softwaremill.codebrag.dao.events.NewUserRegistered
+import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 
 trait CommitReviewTaskGeneratorActions extends Logging {
 
@@ -16,7 +21,7 @@ trait CommitReviewTaskGeneratorActions extends Logging {
 
   def handleNewUserRegistered(event: NewUserRegistered) {
     val commitsToReview = commitInfoDao.findForTimeRange(lastCommitsFetchInterval())
-    val tasks = commitsToReview.filterNot(_.authorName == event.fullName).map(commit => {CommitReviewTask(commit.id, event.id)})
+    val tasks = commitsToReview.filterNot(commitAuthoredByUser(_, event)).map(commit => {CommitReviewTask(commit.id, event.id)})
     logger.debug(s"Generating ${tasks.length} tasks for newly registered user: $event")
     tasks.foreach(commitToReviewDao.save(_))
   }
@@ -45,7 +50,7 @@ trait CommitReviewTaskGeneratorActions extends Logging {
   }
 
   private def createReviewTasksFor(commit: UpdatedCommit, users: List[User]) = {
-    users.filterNot(_.name == commit.authorName).map(user => CommitReviewTask(commit.id, user.id))
+    users.filterNot(commitAuthoredByUser(commit, _)).map(user => CommitReviewTask(commit.id, user.id))
   }
 
 }

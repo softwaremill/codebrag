@@ -11,6 +11,14 @@ object CommitInfo {
             commitDate: DateTime, parents: List[String], files: List[CommitFileInfo]) = {
     new CommitInfo(new ObjectId(), sha, message, authorName, committerName, authorDate, commitDate, parents, files)
   }
+
+  implicit object CommitLikeCommitInfo extends CommitLike[CommitInfo] {
+    override def authorName(commitLike: CommitInfo): String = commitLike.authorName
+  }
 }
 
 case class CommitFileInfo(filename: String, status: String, patch: String)
+
+trait CommitLike[T] {
+  def authorName(commitLike: T): String
+}
