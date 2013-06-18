@@ -65,7 +65,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
     userFollowups(Second).date should equal(date.toDate)
   }
 
-  it should "return followup with last commenter name and comment id included" taggedAs(RequiresDb) in {
+  it should "return followup with last author name and comment id included" taggedAs(RequiresDb) in {
     // given
     val stored = storeFollowupForBob
 
@@ -73,8 +73,8 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
     val followup = followupFinder.findAllFollowupsForUser(BobId).followups.head
 
     // then
-    followup.comment.commenterName should be(LastCommenterName)
-    followup.comment.commentId should be(followup.comment.commentId)
+    followup.reaction.reactionAuthor should be(LastCommenterName)
+    followup.reaction.reactionId should be(stored.commentId.toString)
   }
 
   def storeFollowupsForJohn = {
