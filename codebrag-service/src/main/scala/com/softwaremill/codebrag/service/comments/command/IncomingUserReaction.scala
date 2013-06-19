@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.comments.command
 
 import org.bson.types.ObjectId
 
-trait IncomingUserReaction {
+sealed trait IncomingUserReaction {
 
   def commitId: ObjectId
   def authorId: ObjectId
