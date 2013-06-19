@@ -16,33 +16,49 @@ codebrag.CurrentCommit = function(commitData) {
 codebrag.CurrentCommit.prototype = {
 
     addLike: function(like, fileName, lineNumber) {
-        this._ensureReactionsCollectionExists(fileName, lineNumber, 'likes');
-        this.lineReactions[fileName][lineNumber]['likes'].push(like);
+        this._addLineReaction(like, 'likes', fileName, lineNumber)
     },
 
     addInlineComment: function(comment, fileName, lineNumber) {
-        this._ensureReactionsCollectionExists(fileName, lineNumber, 'comments');
-        this.lineReactions[fileName][lineNumber]['comments'].push(comment);
+        this._addLineReaction(comment, 'comments', fileName, lineNumber)
+    },
+
+    _addLineReaction: function(reaction, reactionType, fileName, lineNumber) {
+        this._ensureReactionsCollectionExists(fileName, lineNumber, reactionType);
+        this.lineReactions[fileName][lineNumber][reactionType].push(reaction);
     },
 
     addComment: function(comment) {
-        if(_.isUndefined(this.reactions['comments'])) {
-            this.reactions['comments'] = [];
-        }
-        this.reactions['comments'].push(comment);
+        this._addReaction('comments', comment);
+    },
+
+    _addReaction: function(reactionType, reactionObject) {
+    if(_.isUndefined(this.reactions[reactionType])) {
+        this.reactions[reactionType] = [];
+    }
+    this.reactions[reactionType].push(reactionObject);
     },
 
     isUserAuthorOfCommit: function(userName) {
          return this.info.authorName === userName
     },
 
-    userAlreadyLikedThis: function(userName, fileName, lineNumber) {
-        if(this.lineReactions[fileName] && this.lineReactions[fileName][lineNumber] && this.lineReactions[fileName][lineNumber]['likes']) {
-            return _.some(this.lineReactions[fileName][lineNumber]['likes'], function(like) {
-                return like.authorName === userName;
-            });
+    userAlreadyLikedLine: function (userName, fileName, lineNumber) {
+        if (this._hasAnyLikesForLine(fileName, lineNumber)) {
+            return this._containsLikeWithUserName(userName, this._likesForLine(fileName, lineNumber));
         }
         return false;
+    },
+    _hasAnyLikesForLine: function (fileName, lineNumber) {
+        return this.lineReactions[fileName] && this.lineReactions[fileName][lineNumber] && this._likesForLine(fileName, lineNumber);
+    },
+    _likesForLine: function (fileName, lineNumber) {
+        return this.lineReactions[fileName][lineNumber]['likes'];
+    },
+    _containsLikeWithUserName: function (userName, collection) {
+        return _.some(collection, function (like) {
+            return like.authorName === userName;
+        });
     },
 
     _ensureReactionsCollectionExists: function(fileName, lineNumber, reactionType) {

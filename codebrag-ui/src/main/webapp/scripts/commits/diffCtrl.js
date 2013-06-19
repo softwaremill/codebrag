@@ -5,7 +5,7 @@ angular.module('codebrag.commits')
 
         $scope.like = function(fileName, lineNumber) {
             var currentUserName = authService.loggedInUser.fullName;
-            if($scope.currentCommit.isUserAuthorOfCommit(currentUserName) || $scope.currentCommit.userAlreadyLikedThis(currentUserName, fileName, lineNumber)) {
+            if($scope.currentCommit.isUserAuthorOfCommit(currentUserName) || $scope.currentCommit.userAlreadyLikedLine(currentUserName, fileName, lineNumber)) {
                 return;
             }
             var newLike = {
