@@ -18,11 +18,7 @@ Run Codebrag with stubbed backend
 
 You may want to run Codebrag without backend services e.g. to work on frontend side (HTML, CSS).
 
-In order to do that:
-1. Execute `./scripts/run-no-backend.sh` script
-2. Open `http://localhost:8000/#/commits?nobackend` in your browser.
-
-The ***?nobackend*** param in the URL is important - don't miss it! You should see screen with some stubbed commits.
+Follow the instructions in `codebrag-ui-grunt` project README to install all required stuff.
 
 Files under `src/main/webapp/` can be now modified and results should be instantly visible in browser.
 

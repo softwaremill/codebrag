@@ -1,4 +1,4 @@
 #!/bin/bash
-cd codebrag-ui/src/main/webapp
-python -m SimpleHTTPServer
+cd codebrag-ui-grunt/
+grunt connect
 
