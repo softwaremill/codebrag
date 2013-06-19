@@ -619,6 +619,18 @@ tr:hover .diff-line-num .button
     text-transform: uppercase;
     vertical-align: top;
 
+// List of people who like a code line / commit
+.likes-list
+  list-style: none;
+  display: inline;
+  padding: 0;
+  margin-left: -10px;
+  & li
+    display: inline;
+    padding: 0 10px;
+    border-left: solid 1px black;
+  & li:first-child
+    border-left: none;
 
 // What are these for? start
 .scrolled-to
@@ -676,6 +688,7 @@ tr:hover .diff-line-num .button
   margin-bottom: 1.15em;
   position: relative;
   text-align: center;
+
 
 
 // for medium screens

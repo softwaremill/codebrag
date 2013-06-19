@@ -177,7 +177,8 @@ angular.module('codebrag.commits')
 
         return {
             restrict: 'E',
-            template: '<div class="username"><i class="icon-heart"></i> Coders who likes this: <span ng-repeat="like in collection" id="{{like.id}}">{{like.authorName}}</span></div>',
+            template: '<div class="username"><i class="icon-heart"></i> Users who like this: ' +
+                '<ul class="likes-list"><li ng-repeat="like in collection" id="{{like.id}}">{{like.authorName}}</li></ul></div',
             replace: true,
             transclude: true,
             scope: {

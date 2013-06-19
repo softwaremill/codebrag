@@ -733,6 +733,20 @@ tr:hover .diff-line-num .button i {
   text-transform: uppercase;
   vertical-align: top;
 }
+.likes-list {
+  list-style: none;
+  display: inline;
+  padding: 0;
+  margin-left: -10px;
+}
+.likes-list li {
+  display: inline;
+  padding: 0 10px;
+  border-left: solid 1px #000;
+}
+.likes-list li:first-child {
+  border-left: none;
+}
 .scrolled-to {
   background: #f58022;
 }
