@@ -2,7 +2,6 @@ angular.module('codebrag.commits')
 
     .controller('CommitsCtrl', function ($scope, $http, commitsListService, commitLoadFilter, $state, events) {
 
-        $scope.syncCommits = commitsListService.syncCommits;
         $scope.toReviewCount = 0;
         $scope.loadedCommitCount = 0;
 

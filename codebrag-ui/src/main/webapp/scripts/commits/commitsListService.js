@@ -43,16 +43,6 @@ angular.module('codebrag.commits')
             return commits.loadElements(responsePromise);
         }
 
-        function syncCommits() {
-            $http({method: 'POST', url: 'rest/commits/sync'}).success(function(response) {
-                commits.elements.length = 0;
-                _broadcastNewCommitCountEvent(response.totalCount);
-                _.forEach(response.commits, function(commit) {
-                    commits.elements.push(commit);
-                });
-            });
-        }
-
         function allCommits() {
             return commits.elements;
         }
@@ -126,8 +116,7 @@ angular.module('codebrag.commits')
             allCommits: allCommits,
             removeCommitAndGetNext: removeCommitAndGetNext,
             removeCommit: removeCommit,
-            loadCommitById: loadCommitById,
-            syncCommits: syncCommits
+            loadCommitById: loadCommitById
 		};
 
     });
