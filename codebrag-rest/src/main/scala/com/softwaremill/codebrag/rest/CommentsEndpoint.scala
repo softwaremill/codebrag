@@ -8,22 +8,6 @@ import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import scala.Some
 import com.softwaremill.codebrag.dao.reporting.views.CommentView
 
-trait UserReactionParametersReader {
-
-  self: JsonServlet =>
-
-  def readReactionParamsFromRequest = {
-    val fileNameOpt = (parsedBody \ "fileName").extractOpt[String]
-    val lineNumberOpt = (parsedBody \ "lineNumber").extractOpt[Int]
-    val commitIdParam = params("id")
-    if(fileNameOpt.isDefined ^ lineNumberOpt.isDefined) {
-      halt(400, "File name and line number must be present for inline comment")
-    }
-    CommonReactionRequestParams(commitIdParam, fileNameOpt, lineNumberOpt)
-  }
-
-  case class CommonReactionRequestParams(commitId: String, fileName: Option[String], lineNumber: Option[Int])
-}
 
 trait CommentsEndpoint extends JsonServletWithAuthentication with UserReactionParametersReader with CommentsEndpointSwaggerDefinition {
 
@@ -43,6 +27,7 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with UserReactionPa
   private def buildIncomingComment = {
     val params = readReactionParamsFromRequest
     val commentBody = extractNotEmptyString("body")
+
     IncomingComment(new ObjectId(params.commitId), new ObjectId(user.id), commentBody, params.fileName, params.lineNumber)
   }
 }
