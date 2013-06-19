@@ -1,7 +1,7 @@
 <div class="diff-container clearfix" ng-controller="FollowupDetailsCtrl">
     <div class="toggle-diff-container-btn"><i class="icon-chevron-left"></i></div>
     <div class="authored-box">
-        <div class="author-box"><img src="images/avatar.png"></div>
+        <div class="author-box"><user-avatar url="currentCommit.info.authorAvatarUrl"></user-avatar></div>
         <div class="info-box">
             <div class="commit-name" ng-bind-html-unsafe="currentCommit.info.message"></div>
             <div class="info-line"><span class="username">{{currentCommit.info.authorName}}</span><span class="time">{{currentCommit.info.date | relativeDate}}</span>
