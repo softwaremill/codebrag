@@ -94,45 +94,6 @@
     <script type="text/javascript" src="scripts/common/AsyncCollection.js"></script>
     <script type="text/javascript" src="scripts/common/CurrentCommit.js"></script>
 
-    <script type="text/ng-template" id="inlineCommentForm">
-        <tr class="comments-container comment-form">
-            <td colspan="3">
-                <markdown-comment-form action="submitInlineComment" extra-args="commentParams" closeable="true"></markdown-comment-form>
-            </td>
-        </tr>
-    </script>
-
-    <script type="text/ng-template" id="errorPopup">
-        <div class="popup-error"><i class="icon-warning-sign"></i>Communication error occured...</div>
-    </script>
-
-    <script type="text/ng-template" id="lineReactions">
-        <tr class="comments-container inline-comments-container" ng-show="lineReactions.likes.length > 0">
-            <td colspan="3">
-                <div class="comment">
-                    <likes collection="lineReactions.likes"></likes>
-                </div>
-            </td>
-        </tr>
-        <tr class="comments-container inline-comments-container" ng-show="lineReactions.comments.length > 0">
-            <td colspan="3">
-                <!--inline comment start-->
-                <div class="comment" ng-repeat="comment in lineReactions.comments">
-                    <div class="authored-box">
-                        <div class="author-box"><user-avatar url="comment.authorAvatarUrl"></user-avatar></div>
-                        <div class="info-box">
-                            <div class="info-line"><span class="username">{{comment.authorName}}</span><span class="time">{{comment.time | relativeDate}}</span></div>
-                            <div class="comment-body" id="{{comment.id}}">
-                                <markdown-to-html content="comment.message"></markdown-to-html>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--inline comment end-->
-            </td>
-        </tr>
-    </script>
-
 </head>
 
 <body ng-app="codebrag">
@@ -158,5 +119,49 @@
     <!-- UserVoice JavaScript SDK (only needed once on a page) -->
     <script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/0Qk3E43TdecsPPPczuhrw.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>
     <!-- User voice end -->
+
+    <script type="text/ng-template" id="inlineCommentForm">
+        <tr class="comments-container comment-form">
+            <td colspan="3">
+                <div data-resize-to-view="true">
+                    <markdown-comment-form action="submitInlineComment" extra-args="commentParams" closeable="true"></markdown-comment-form>
+                </div>
+            </td>
+        </tr>
+    </script>
+
+    <script type="text/ng-template" id="errorPopup">
+        <div class="popup-error"><i class="icon-warning-sign"></i>Communication error occured...</div>
+    </script>
+
+    <script type="text/ng-template" id="lineReactions">
+        <tr class="comments-container inline-comments-container" ng-show="lineReactions.likes.length > 0">
+            <td colspan="3">
+                <div class="comment" data-resize-to-view="true">
+                    <likes collection="lineReactions.likes"></likes>
+                </div>
+            </td>
+        </tr>
+        <tr class="comments-container inline-comments-container" ng-show="lineReactions.comments.length > 0">
+            <td colspan="3">
+                <!--inline comment start-->
+                <div data-resize-to-view="true">
+                <div class="comment" ng-repeat="comment in lineReactions.comments">
+                    <div class="authored-box">
+                        <div class="author-box"><user-avatar url="comment.authorAvatarUrl"></user-avatar></div>
+                        <div class="info-box">
+                            <div class="info-line"><span class="username">{{comment.authorName}}</span><span class="time">{{comment.time | relativeDate}}</span></div>
+                            <div class="comment-body" id="{{comment.id}}">
+                                <markdown-to-html content="comment.message"></markdown-to-html>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <!--inline comment end-->
+            </td>
+        </tr>
+    </script>
+
 </body>
 </html>

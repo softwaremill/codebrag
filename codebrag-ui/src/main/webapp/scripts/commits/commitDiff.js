@@ -1,3 +1,58 @@
+var codebrag = codebrag || {};
+
+
+/**
+ * Caches DOM nodes for all reactions that need to fit diff visible area and resizes accordingly
+ * When elements are added to cache all cached elements are resized at the end. Same for removal.
+ * On width recalculation there is no resize if width was not changed.
+ *
+ * Requires: underscore and jquery
+ */
+codebrag.diffReactionsDOMReferenceCacheAndResizer = {
+
+    collection: [],
+    targetWidth: 0,
+    resizableElementsSelector: '[data-resize-to-view]',
+
+    clearCache: function() {
+        this.collection.length = 0;
+    },
+
+    addElementsAndResizeAll: function(startElement) {
+        var self = this;
+        _.forEach(startElement.find(this.resizableElementsSelector), function(el) {
+            self.collection.push(el);
+        });
+        console.log('size is: ', this.collection.length);
+        this.resizeAll();
+    },
+
+    removeElementsAndResizeAll: function(startElement) {
+        var self = this;
+        _.forEach(startElement.find(this.resizableElementsSelector), function(el) {
+            self.collection.splice(self.collection.indexOf(el), 1);
+        });
+        console.log('size is: ', this.collection.length);
+        this.resizeAll();
+    },
+
+    resizeAll: function() {
+        var self = this;
+        _.forEach(this.collection, function(el) {
+            $(el).width(self.targetWidth);
+        })
+    },
+
+    recalculateWidthAndResizeAll: function(exampleElement) {
+        var newWidth = parseInt(exampleElement.width(), 10);
+        if(newWidth !== this.targetWidth) {
+            this.targetWidth = newWidth;
+            this.resizeAll();
+        }
+    }
+
+};
+
 angular.module('codebrag.commits')
 
     .directive('commitDiff', function($compile) {
@@ -16,6 +71,7 @@ angular.module('codebrag.commits')
                         }
                         dataRoot[dataAttrName] = scope.$eval(dataAttrName);
                         el.html(diffTemplate(dataRoot));
+                        codebrag.diffReactionsDOMReferenceCacheAndResizer.clearCache();
                         $compile(el.find(attrs.compile))(scope);
                         removeWatcher();
                     });
@@ -24,9 +80,9 @@ angular.module('codebrag.commits')
         }
     })
 
-    .directive('lineCommentForm', function($compile, events) {
+    .directive('lineCommentForm', function($compile, events, $templateCache) {
 
-        var inlineCommentFormTemplate = $('#inlineCommentForm').html(); //$templateCache.get('inlineCommentForm');
+        var inlineCommentFormTemplate = $templateCache.get('inlineCommentForm');
 
         var fileDiffRootSelector = 'table';
         var fileDiffLineSelector = 'tbody';
@@ -39,14 +95,17 @@ angular.module('codebrag.commits')
         function InlineCommentForm(rowClicked) {
 
             var fileDiffLine = rowClicked.parents(fileDiffLineSelector);
+            var insertedElement;
 
             this.insert = function(afterFormInsertCallback) {
                 fileDiffLine.append(inlineCommentFormTemplate);
-                var insertedElement = fileDiffLine.find(inlineCommentFormRootSelector);
+                insertedElement = fileDiffLine.find(inlineCommentFormRootSelector);
+                codebrag.diffReactionsDOMReferenceCacheAndResizer.addElementsAndResizeAll(insertedElement);
                 afterFormInsertCallback(insertedElement);
             };
 
             this.destroy = function(afterFormDestroyCallback) {
+                codebrag.diffReactionsDOMReferenceCacheAndResizer.removeElementsAndResizeAll(insertedElement);
                 fileDiffLine.find(inlineCommentFormRootSelector).remove();
                 afterFormDestroyCallback();
             };
@@ -93,9 +152,9 @@ angular.module('codebrag.commits')
     })
 
 
-    .directive('lineReactions', function($compile) {
+    .directive('lineReactions', function($compile, $templateCache) {
 
-        var lineReactionsTemplate = $('#lineReactions').html();    // templateCache ???
+        var lineReactionsTemplate = $templateCache.get('lineReactions');
 
         var fileDiffRootSelector = 'table';
         var lineReactionsSelector = '.inline-comments-container';
@@ -109,6 +168,7 @@ angular.module('codebrag.commits')
                     var diffLine = _getCorrespondingLineDOMElement(lineNumber);
                     if(_lineHasNoReactionsYet(diffLine)) {
                         diffLine.append(lineReactionsTemplate);
+                        codebrag.diffReactionsDOMReferenceCacheAndResizer.addElementsAndResizeAll(diffLine);
                         afterDOMInsertCallback(diffLine, lineReactions);
                     }
                 });
@@ -186,9 +246,39 @@ angular.module('codebrag.commits')
             }
         }
 
+    })
+
+    .directive('autoFitCommentsWidth', function($window) {
+
+        var diffFileSelector = '.diff-table-wrapper';
+        var exampleWidthElement = '#commit-comments-area';
+
+        function doWhenElementPresent(selector, actionFn) {
+            var interval = 10;
+            setTimeout(function() {
+                var elementFound = $(selector);
+                if(elementFound.length) {
+                    actionFn(elementFound);
+                } else {
+                    setTimeout(function() {
+                        doWhenElementPresent(selector, actionFn);
+                    }, interval);
+                }
+            }, interval);
+        }
+
+        return {
+            restrict: 'A',
+            link: function(scope, el, attrs) {
+                doWhenElementPresent(diffFileSelector, function() {
+                    var exampleEl = el.find(exampleWidthElement);
+                    codebrag.diffReactionsDOMReferenceCacheAndResizer.recalculateWidthAndResizeAll(exampleEl);
+                    $($window).on('resize', _.debounce(function(){
+                        codebrag.diffReactionsDOMReferenceCacheAndResizer.recalculateWidthAndResizeAll(exampleEl);
+                    },50));
+                });
+            }
+        }
+
     });
-
-
-
-
 
