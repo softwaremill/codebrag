@@ -13,9 +13,9 @@ trait ReactionView {
 }
 
 case class LikeView(id: String, authorName: String) extends ReactionView {
-  def reactionType = "like"
+  val reactionType = "like"
 }
 
 case class CommentView(id: String, authorName: String, message: String, time: Date, authorAvatarUrl: String = "") extends ReactionView {
-  def reactionType = "comment"
+  val reactionType = "comment"
 }
