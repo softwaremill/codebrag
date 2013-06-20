@@ -42,6 +42,7 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsListService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsResource.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsListItemCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitDetailsCtrl.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/diffCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/comments/commentsResource.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/comments/commentable.js");
 
