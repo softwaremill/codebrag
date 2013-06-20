@@ -5,7 +5,7 @@ angular.module('codebrag.commits')
 
         $scope.like = function(fileName, lineNumber) {
             var currentUserName = authService.loggedInUser.fullName;
-            if($scope.currentCommit.isUserAuthorOfCommit(currentUserName) || $scope.currentCommit.userAlreadyLikedLine(currentUserName, fileName, lineNumber)) {
+            if(_userCannotLikeThisLine(currentUserName, fileName, lineNumber)) {
                 return;
             }
             var newLike = {
@@ -19,9 +19,13 @@ angular.module('codebrag.commits')
             });
         };
 
+        function _userCannotLikeThisLine(currentUserName, fileName, lineNumber) {
+            return $scope.currentCommit.isUserAuthorOfCommit(currentUserName) || $scope.currentCommit.userAlreadyLikedLine(currentUserName, fileName, lineNumber);
+        }
+
         $scope.likeEntireDiff = function () {
             var currentUserName = authService.loggedInUser.fullName;
-            if ($scope.currentCommit.isUserAuthorOfCommit(currentUserName) || $scope.currentCommit.userAlreadyLikedCommit(currentUserName)) {
+            if (_userCannotLikeThisCommit(currentUserName)) {
                 return;
             }
             var newLike = {
@@ -32,6 +36,10 @@ angular.module('codebrag.commits')
                 $scope.currentCommit.addGeneralLike(like);
             });
         };
+
+        function _userCannotLikeThisCommit(currentUserName) {
+            return $scope.currentCommit.isUserAuthorOfCommit(currentUserName) || $scope.currentCommit.userAlreadyLikedCommit(currentUserName);
+        }
 
         $scope.submitInlineComment = function(content, commentData) {
             var newComment = {
