@@ -6,7 +6,7 @@ import akka.actor.Actor
 import pl.softwaremill.common.util.time.Clock
 import com.typesafe.scalalogging.slf4j.Logging
 
-class CommitReviewTaskGenerator(val userDao: UserDAO, val commitToReviewDao: CommitReviewTaskDAO, val commitInfoDao: CommitInfoDAO, val clock: Clock) extends Actor with Logging
+class CommitReviewTaskGenerator(val userDao: UserDAO, val commitToReviewDao: CommitReviewTaskDAO, val commitInfoDao: CommitInfoDAO) extends Actor with Logging
 with CommitReviewTaskGeneratorActions {
 
   def receive = {

@@ -28,13 +28,13 @@ BeforeAndAfterAll with MockitoSugar {
   var reviewTaskDaoMock: CommitReviewTaskDAO = _
   var commitInfoDaoMock: CommitInfoDAO = _
   val FixtureTime = new DateTime(23333333)
-  var fixtureClock: FixtureTimeClock = new FixtureTimeClock(FixtureTime.getMillis)
+  val fixtureClock = new FixtureTimeClock(FixtureTime.getMillis)
 
   before {
     userDaoMock = mock[UserDAO]
     reviewTaskDaoMock = mock[CommitReviewTaskDAO]
     commitInfoDaoMock = mock[CommitInfoDAO]
-    generator = TestActorRef(new CommitReviewTaskGenerator(userDaoMock, reviewTaskDaoMock, commitInfoDaoMock, fixtureClock))
+    generator = TestActorRef(new CommitReviewTaskGenerator(userDaoMock, reviewTaskDaoMock, commitInfoDaoMock))
   }
 
   override protected def afterAll() {
@@ -72,15 +72,12 @@ BeforeAndAfterAll with MockitoSugar {
     verify(reviewTaskDaoMock, never()).save(any[CommitReviewTask])
   }
 
-  it should "generate only tasks from limited time interval for each user on first update" in {
+  it should "generate only limited number of tasks for each user on first update" in {
     // given
-    val oldDate = fixtureClock.currentDateTime().minusDays(4)
-    val commitWithinRange = UpdatedCommit(new ObjectId(), "Author Name", fixtureClock.currentDateTime().minusDays(1))
-    val anotherCommitWithinRange = UpdatedCommit(new ObjectId(), "Author Name", fixtureClock.currentDateTime().minusDays(2))
-    val commits = commitWithinRange :: anotherCommitWithinRange :: randomCommits(count = Random.nextInt(50), oldDate)
-
+    val commits = randomCommits(count = CommitReviewTaskGeneratorActions.LastCommitsToReviewCount + Random.nextInt(500))
+    val userWhoShouldNotReceiveTasks =  user(name = "Author Name")
     val users = List(
-      user(name = "Author Name"),
+      userWhoShouldNotReceiveTasks,
       user(name = "Sofokles Smart"),
       user(name = "Bruce Angry"))
     given(userDaoMock.findAll()).willReturn(users)
@@ -89,9 +86,26 @@ BeforeAndAfterAll with MockitoSugar {
     generator ! CommitsUpdatedEvent(firstTime = true, commits)
 
     // then
-    verify(reviewTaskDaoMock, times(4)).save(any[CommitReviewTask])
+    verify(reviewTaskDaoMock, times(2 * CommitReviewTaskGeneratorActions.LastCommitsToReviewCount)).save(any[CommitReviewTask])
   }
 
+  it should "generate only limited number of tasks on first update if there are less commits than limit" in {
+    // given
+    val commitCount = CommitReviewTaskGeneratorActions.LastCommitsToReviewCount - 2
+    val commits = randomCommits(count = commitCount)
+    val userWhoShouldNotReceiveTasks =  user(name = "Author Name")
+    val users = List(
+      userWhoShouldNotReceiveTasks,
+      user(name = "Sofokles Smart"),
+      user(name = "Bruce Angry"))
+    given(userDaoMock.findAll()).willReturn(users)
+
+    // when
+    generator ! CommitsUpdatedEvent(firstTime = true, commits)
+
+    // then
+    verify(reviewTaskDaoMock, times(2 * commitCount)).save(any[CommitReviewTask])
+  }
   it should "generate tasks only for non-author when commits are updated" in {
     // given
     val commits = randomCommits(count = 1)
