@@ -1,9 +1,7 @@
 package com.softwaremill.codebrag.service.github
 
-import org.joda.time.Interval
 import com.softwaremill.codebrag.domain._
 import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO, UserDAO}
-import pl.softwaremill.common.util.time.Clock
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.domain.CommitsUpdatedEvent
 import com.softwaremill.codebrag.domain.CommitReviewTask
@@ -17,10 +15,9 @@ trait CommitReviewTaskGeneratorActions extends Logging {
   val userDao: UserDAO
   val commitToReviewDao: CommitReviewTaskDAO
   val commitInfoDao: CommitInfoDAO
-  val clock: Clock
 
   def handleNewUserRegistered(event: NewUserRegistered) {
-    val commitsToReview = commitInfoDao.findForTimeRange(lastCommitsFetchInterval())
+    val commitsToReview = commitInfoDao.findLast(CommitReviewTaskGeneratorActions.LastCommitsToReviewCount)
     val tasks = commitsToReview.filterNot(commitAuthoredByUser(_, event)).map(commit => {CommitReviewTask(commit.id, event.id)})
     logger.debug(s"Generating ${tasks.length} tasks for newly registered user: $event")
     tasks.foreach(commitToReviewDao.save(_))
@@ -28,14 +25,9 @@ trait CommitReviewTaskGeneratorActions extends Logging {
 
   def handleCommitsUpdated(event: CommitsUpdatedEvent) {
     val commitsToGenerateTasks = if (event.firstTime)
-      event.newCommits.withFilter(commit => lastCommitsFetchInterval().contains(commit.commitDate))
+      event.newCommits.take(CommitReviewTaskGeneratorActions.LastCommitsToReviewCount)
     else event.newCommits
     commitsToGenerateTasks.foreach(createAndStoreReviewTasksFor(_))
-  }
-
-  private def lastCommitsFetchInterval() = {
-    val now = clock.currentDateTime()
-    new Interval(now.minusDays(CommitReviewTaskGeneratorActions.LastDaysToFetchCount), now)
   }
 
   private def createAndStoreReviewTasksFor(commit: UpdatedCommit) {
@@ -57,5 +49,5 @@ trait CommitReviewTaskGeneratorActions extends Logging {
 
 object CommitReviewTaskGeneratorActions {
 
-  val LastDaysToFetchCount = 3
+  val LastCommitsToReviewCount = 10
 }

@@ -49,7 +49,6 @@ trait Beans extends ActorSystemSupport {
       val userDao = self.userDao
       val commitInfoDao = self.commitInfoDao
       val commitToReviewDao = self.commitReviewTaskDao
-      val clock = self.clock
     }
 
   lazy val authenticator = new Authenticator(userDao, eventBus, reviewTaskGenerator)

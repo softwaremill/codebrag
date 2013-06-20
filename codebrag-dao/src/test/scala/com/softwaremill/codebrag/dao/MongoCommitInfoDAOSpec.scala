@@ -65,34 +65,31 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     commitInfoDAO.hasCommits should be(true)
   }
 
-  it should "find no commits for interval not matching any item" in {
-    // given
-    givenCommitStoredOn(FixtureTime)
-    givenCommitStoredOn(FixtureTime.plusMinutes(1))
-    givenCommitStoredOn(FixtureTime.plusMinutes(2))
+  it should "find 0 last commits for empty storage" in {
+    // given nothing stored
 
     // when
-    val commits = commitInfoDAO.findForTimeRange(new Interval(FixtureTime.plusDays(1), FixtureTime.plusDays(2)))
+    val commits = commitInfoDAO.findLast(10)
 
     // then
     commits should be('empty)
   }
 
-  it should "find commits within given time range" in {
+  it should "find 10 last commits for non-empty storage" in {
     // given
-    givenCommitStoredOn(FixtureTime)
-    val commitAfterAMinute = givenCommitStoredOn(FixtureTime.plusMinutes(1))
-    givenCommitStoredOn(FixtureTime.plusMinutes(20))
-    val commitAfterTwoMinutes = givenCommitStoredOn(FixtureTime.plusMinutes(2))
-    givenCommitStoredOn(FixtureTime.plusMinutes(30))
+    val tenCommitsOnFixtureTime = List.fill(10)({randomCommit.withCommitDate(FixtureTime).withAuthorDate(FixtureTime).get})
+    val tenCommitsMadeEarlier = List.fill(10)({randomCommit.withCommitDate(FixtureTime.minusDays(2)).get})
+    val tenCommitsMadeEventEarlier = List.fill(10)({randomCommit.withCommitDate(FixtureTime.minusWeeks(2)).get})
+
+    tenCommitsMadeEarlier.foreach(commitInfoDAO.storeCommit(_))
+    tenCommitsOnFixtureTime.foreach(commitInfoDAO.storeCommit(_))
+    tenCommitsMadeEventEarlier.foreach(commitInfoDAO.storeCommit(_))
 
     // when
-    val commits = commitInfoDAO.findForTimeRange(new Interval(FixtureTime.plusSeconds(20), FixtureTime.plusMinutes(3)))
+    val commits = commitInfoDAO.findLast(10)
 
     // then
-    commits.size should be(2)
-    commits(0) should equal(commitAfterAMinute)
-    commits(1) should equal(commitAfterTwoMinutes)
+    commits should equal(tenCommitsOnFixtureTime)
   }
 
   it should "retrieve commit sha with last commit + author date" taggedAs(RequiresDb) in {

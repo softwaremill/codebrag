@@ -5,7 +5,7 @@ import org.scalatest.{FlatSpec, BeforeAndAfter}
 import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import org.mockito.BDDMockito._
-import org.joda.time.{DateTime, Interval}
+import org.joda.time.DateTime
 import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO, UserDAO, ObjectIdTestUtils}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
@@ -15,12 +15,10 @@ import pl.softwaremill.common.util.time.FixtureTimeClock
 class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
 
   behavior of "CommitReviewTaskGeneratorActions"
-  val FixtureDaysToFetch = CommitReviewTaskGeneratorActions.LastDaysToFetchCount
+  val FixtureCommitsToFetch = CommitReviewTaskGeneratorActions.LastCommitsToReviewCount
   var userDaoMock: UserDAO = _
   var reviewTaskDaoMock: CommitReviewTaskDAO = _
   var commitInfoDaoMock: CommitInfoDAO = _
-  val FixtureTime = new DateTime(23333333)
-  var fixtureClock: FixtureTimeClock = new FixtureTimeClock(FixtureTime.getMillis)
   var generator: CommitReviewTaskGeneratorActions = _
 
   before {
@@ -31,7 +29,6 @@ class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers 
       val userDao = userDaoMock
       val commitToReviewDao = reviewTaskDaoMock
       val commitInfoDao = commitInfoDaoMock
-      val clock = fixtureClock
     } with CommitReviewTaskGeneratorActions
   }
 
@@ -39,7 +36,7 @@ class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers 
     // given
     val commitBySofokles = CommitInfoAssembler.randomCommit.withAuthorName("Sofokles Smart").get
     val commits = commitBySofokles :: CommitInfoAssembler.randomCommits(count = 2)
-    given(commitInfoDaoMock.findForTimeRange(new Interval(FixtureTime.minusDays(FixtureDaysToFetch), FixtureTime))).willReturn(commits)
+    given(commitInfoDaoMock.findLast(10)).willReturn(commits)
     val sofoklesId = ObjectIdTestUtils.oid(1)
 
     // when
@@ -54,8 +51,8 @@ class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers 
 
   it should "not generate any tasks if no commits for current user found within range" in {
     // given
-    val commit = List(CommitInfoAssembler.randomCommit.withAuthorName("Sofokles Smart").get)
-    given(commitInfoDaoMock.findForTimeRange(new Interval(FixtureTime.minusDays(FixtureDaysToFetch), FixtureTime))).willReturn(commit)
+    val commits = List(CommitInfoAssembler.randomCommit.withAuthorName("Sofokles Smart").get)
+    given(commitInfoDaoMock.findLast(10)).willReturn(commits)
     val sofoklesId = ObjectIdTestUtils.oid(1)
 
     // when

@@ -22,18 +22,16 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
     CommitInfoRecord where (_.sha eqs sha) get()
   }
 
-  override def findForTimeRange(interval: Interval): List[CommitInfo] = {
-    CommitInfoRecord.where(_.committerDate between(interval.getStart, interval.getEnd)).fetch()
-  }
-
   override def findByCommitId(commitId: ObjectId): Option[CommitInfo] = {
     CommitInfoRecord where (_.id eqs commitId) get()
   }
 
   override def findLastSha(): Option[String] = {
-    CommitInfoRecord.orderDesc(_.committerDate).andDesc(_.authorDate).get().map(_.sha.get)
+    CommitInfoRecord orderDesc(_.committerDate) andDesc(_.authorDate) get() map(_.sha.get)
   }
-
+  def findLast(count: Int): List[CommitInfo] = {
+    CommitInfoRecord orderDesc(_.committerDate) andDesc(_.authorDate) limit count fetch()
+  }
   override def findAllSha(): Set[String] = {
     CommitInfoRecord.select(_.sha).fetch().toSet
   }

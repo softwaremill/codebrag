@@ -14,7 +14,7 @@ trait CommitInfoDAO {
 
   def findByCommitId(commitId: ObjectId): Option[CommitInfo]
 
-  def findForTimeRange(interval: Interval): List[CommitInfo]
+  def findLast(count: Int): List[CommitInfo]
 
   def findAllSha(): Set[String]
 
