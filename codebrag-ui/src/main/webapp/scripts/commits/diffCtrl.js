@@ -19,6 +19,20 @@ angular.module('codebrag.commits')
             });
         };
 
+        $scope.likeEntireDiff = function () {
+            var currentUserName = authService.loggedInUser.fullName;
+            if ($scope.currentCommit.isUserAuthorOfCommit(currentUserName) || $scope.currentCommit.userAlreadyLikedCommit(currentUserName)) {
+                return;
+            }
+            var newLike = {
+                commitId: $scope.currentCommit.info.id
+            };
+            return Likes.save(newLike).$then(function (likeResponse) {
+                var like = likeResponse.data;
+                $scope.currentCommit.addGeneralLike(like);
+            });
+        };
+
         $scope.submitInlineComment = function(content, commentData) {
             var newComment = {
                 commitId: $scope.currentCommit.info.id,
