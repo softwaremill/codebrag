@@ -117,6 +117,7 @@ body {
   background: #f7f5ef;
   font-family: 'PT Sans', Tahoma, sans-serif;
   line-height: 1.2;
+  overflow: hidden;
 }
 h1,
 h2,
@@ -132,6 +133,15 @@ p {
 ::selection {
   background-color: #fcd01a;
   color: $body-text-color;
+}
+::-webkit-scrollbar {
+  width: 13px;
+}
+::-webkit-scrollbar-track {
+  background-color: rgba(216,198,158,0.6);
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(197,172,124,0.6);
 }
 i {
   font-family: 'FontAwesome';
@@ -375,13 +385,9 @@ a.uservoice-btn {
   vertical-align: top;
 }
 .commits {
+  height: 700px;
   padding-bottom: 3.3em;
   position: relative;
-}
-.commits.fixed {
-  position: fixed;
-  width: 25%;
-  top: 0;
 }
 .commits-sorting {
   padding: 1.15em 0 1.15em 1.15em;
@@ -396,18 +402,18 @@ a.uservoice-btn {
   text-decoration: none;
 }
 .commits-container {
-  position: relative;
+  height: 600px;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
-.commits-container.scroll {
-  overflow: hidden;
-}
-.commits-container.scroll:hover {
-  overflow-y: scroll;
+.commits-container:hover {
+  overflow-y: auto;
 }
 .commit-container {
   border-top: 1px solid #d1cbb9;
   padding: 1.15em 2.3em 1.15em 0.77em;
   position: relative;
+  width: 480px;
 }
 .commit-container:hover {
   background: #fff;
@@ -451,6 +457,7 @@ a.uservoice-btn {
 }
 .commit-container.active {
   background: #fff;
+  z-index: 2;
 }
 .commit-container.active:before {
   background: #f3720b;
@@ -479,8 +486,8 @@ a.uservoice-btn {
   margin-right: 3px;
 }
 .diff {
-  padding: 0.77em 0.77em 2.3em;
-  z-index: 100;
+  height: 700px;
+  padding: 0.77em 0.77em 2.3em 0;
 }
 .diff.opened {
   position: absolute;
@@ -492,13 +499,20 @@ a.uservoice-btn {
   -ms-transition: width 1000ms;
   transition: width 1000ms;
 }
-.diff-container {
+.diff-wrapper {
+  height: 100%;
   background: #fff;
   border: 1px solid #e4d9b8;
-  -webkit-box-shadow: 0px 0px 7px 0px rgba(211,196,160,0.7);
-  box-shadow: 0px 0px 7px 0px rgba(211,196,160,0.7);
+  -webkit-box-shadow: 0 0 7px 0 rgba(211,196,160,0.7);
+  box-shadow: 0 0 7px 0 rgba(211,196,160,0.7);
+  margin-left: -1px;
+  overflow-y: hidden;
+}
+.diff-wrapper:hover {
+  overflow-y: auto;
+}
+.diff-container {
   padding: 2.3em 1.15em 1.15em 2.3em;
-  position: relative;
 }
 .diff-container .authored-box {
   margin-bottom: 2.3em;

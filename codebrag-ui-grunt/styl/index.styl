@@ -113,6 +113,7 @@ body
   background: $body-bg-color;
   font-family: 'PT Sans', Tahoma, sans-serif;
   line-height: 1.2;
+  overflow: hidden;
 
 h1, 
 h2, 
@@ -128,6 +129,15 @@ p
 ::selection
   background-color: #fcd01a;
   color: $body-text-color;
+
+::-webkit-scrollbar
+  width: 13px;
+ 
+::-webkit-scrollbar-track
+  background-color: rgba(216, 198, 158, 0.6);
+ 
+::-webkit-scrollbar-thumb
+  background-color: rgba(197, 172, 124, 0.6);
 
 i
   font-family: 'FontAwesome';
@@ -335,12 +345,10 @@ a.uservoice-btn
 
 // commits
 .commits
+  // height calculated in JS = windowHeight - headerHeight
+  height: 700px;
   padding-bottom: 3.3em;
   position: relative;
-  &.fixed
-    position: fixed;
-    width: 25%;
-    top: 0;
 
 .commits-sorting
   padding: 1.15em 0 1.15em 1.15em;
@@ -353,16 +361,19 @@ a.uservoice-btn
       text-decoration: none;
 
 .commits-container
-  position: relative;
-  &.scroll
-    overflow: hidden;
-    &:hover
-      overflow-y: scroll;
+  //height calculated in JS = commitsHeight - sortingHeight - LoadMoreHeight
+  height: 600px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  &:hover
+    overflow-y: auto;
 
 .commit-container
   border-top: 1px solid $main-border-color;
   padding: 1.15em 2.3em 1.15em 0.77em;
   position: relative;
+  // width calculated in JS = 25% from windowWidth
+  width: 480px;
   &:hover
     background: white;
     cursor: pointer;
@@ -393,6 +404,7 @@ a.uservoice-btn
     opacity: 0.4;
   &.active
     background: white;
+    z-index:2;
     &:before
       background: $main-orange-color;
       content: "";
@@ -421,20 +433,27 @@ a.uservoice-btn
 
 // diff
 .diff
-  padding: 0.77em 0.77em 2.3em;
-  z-index: 100;
+  // height calculated in JS (same as commitsHeight)
+  height: 700px;
+  padding: 0.77em 0.77em 2.3em 0;
   &.opened
     position: absolute;
     right: 0;
     width: 100%;
     transition: width 1000ms;
 
-.diff-container
-  background: white;
+.diff-wrapper
+  height: 100%;
+  background: #fff;
   border: 1px solid #e4d9b8;
-  box-shadow: 0px 0px 7px 0px rgba(211, 196, 160, 0.7);
+  box-shadow: 0 0 7px 0 rgba(211,196,160,0.7);
+  margin-left: -1px;
+  overflow-y: hidden;
+  &:hover
+    overflow-y: auto;
+
+.diff-container
   padding: 2.3em 1.15em 1.15em 2.3em;
-  position: relative;
   & .authored-box 
     margin-bottom: 2.3em;
     & img
