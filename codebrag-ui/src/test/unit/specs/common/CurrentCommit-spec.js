@@ -72,7 +72,7 @@ describe("Current Commit", function () {
         expect(commit.isUserAuthorOfCommit('Non-author Name')).toBeFalsy();
     }));
 
-    it('correctly determine whether a user already liked a line or not', inject(function() {
+    it('should correctly determine whether a user already liked a line or not', inject(function() {
         // Given
         var emptyCommitData = _emptyCommitData();
         var commit = new codebrag.CurrentCommit(emptyCommitData);
@@ -85,6 +85,43 @@ describe("Current Commit", function () {
         expect(commit.userAlreadyLikedLine('Author Name', fileName, lineNumber)).toBeTruthy();
         expect(commit.userAlreadyLikedLine('Author Name', fileName, lineNumber + 1)).toBeFalsy();
         expect(commit.userAlreadyLikedLine('Other User Name', fileName, lineNumber)).toBeFalsy();
+    }));
+
+    it('should add general likes to a commit', inject(function() {
+        // Given
+        var emptyCommitData = _emptyCommitData();
+        var commit = new codebrag.CurrentCommit(emptyCommitData);
+        var like1 = _randomLike();
+        var like2 = _randomLike();
+        commit.addGeneralLike(like1);
+        commit.addGeneralLike(like2);
+
+        // Then
+        var likes = commit.reactions["likes"];
+        expect(likes.length).toBe(2);
+        expect(likes[0]).toEqual(like1);
+        expect(likes[1]).toEqual(like2);
+    }));
+
+    it('should correctly determine whether a user already liked entire commit or not', inject(function() {
+        // Given
+        var emptyCommitData = _emptyCommitData();
+        var commit = new codebrag.CurrentCommit(emptyCommitData);
+        var like = _randomLike();
+        commit.addGeneralLike(like);
+
+        // Then
+        expect(commit.userAlreadyLikedCommit('Author Name')).toBeTruthy();
+        expect(commit.userAlreadyLikedCommit('Other User Name')).toBeFalsy();
+    }));
+
+    it('should say that user did not like a commit if there are no likes for commit', inject(function() {
+        // Given
+        var emptyCommitData = _emptyCommitData();
+        var commit = new codebrag.CurrentCommit(emptyCommitData);
+
+        // Then
+        expect(commit.userAlreadyLikedCommit('Author Name')).toBeFalsy();
     }));
 
     function _emptyCommitData() {

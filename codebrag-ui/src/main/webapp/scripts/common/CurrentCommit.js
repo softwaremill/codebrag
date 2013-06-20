@@ -60,6 +60,20 @@ codebrag.CurrentCommit.prototype = {
             return like.authorName === userName;
         });
     },
+    addGeneralLike: function(like) {
+        this._addReaction('likes', like);
+    },
+
+    userAlreadyLikedCommit: function (userName) {
+        if (this._hasAnyGeneralLikes()) {
+            return this._containsLikeWithUserName(userName, this.reactions['likes']);
+        }
+        return false;
+    },
+
+    _hasAnyGeneralLikes: function () {
+        return !(_.isUndefined(this.reactions['likes']) || _.isEmpty(this.reactions['likes']));
+    },
 
     _ensureReactionsCollectionExists: function(fileName, lineNumber, reactionType) {
         if(_.isUndefined(this.lineReactions[fileName])) {
