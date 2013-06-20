@@ -1,6 +1,7 @@
-package uitest
+package uitest.login
 
 import org.fest.assertions.Assertions
+import uitest.CodebragUITest
 
 class ScalaLoginUITest extends CodebragUITest {
   test("login") {

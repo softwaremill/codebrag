@@ -9,7 +9,7 @@ import uitest.commands.SeleniumCommands
 class MainPage(driver: WebDriver) {
   private val sc: SeleniumCommands = new SeleniumCommands(driver)
 
-  @FindBy(css = "#logoutLink")
+  @FindBy(linkText = "Logout")
   val logoutLink: WebElement = null
 
   @FindBy(css = ".alert-info")
