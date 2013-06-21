@@ -31,6 +31,6 @@ trait LikesEndpoint extends JsonServletWithAuthentication with UserReactionParam
     IncomingLike(new ObjectId(params.commitId), new ObjectId(user.id), params.fileName, params.lineNumber)
   }
 
-  case class LikeResponse(id: String, authorName: String, time: Date, authorAvatarUrl: String = "")
-
 }
+
+case class LikeResponse(id: String, authorName: String, time: Date, authorAvatarUrl: String = "")
