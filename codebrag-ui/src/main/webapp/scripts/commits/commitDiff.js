@@ -23,7 +23,6 @@ codebrag.diffReactionsDOMReferenceCacheAndResizer = {
         _.forEach(startElement.find(this.resizableElementsSelector), function(el) {
             self.collection.push(el);
         });
-        console.log('size is: ', this.collection.length);
         this.resizeAll();
     },
 
