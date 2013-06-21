@@ -32,22 +32,15 @@ trait UserIsCommitAuthorCheck extends Logging {
   def commitDao: CommitInfoDAO
 
   def userIsCommitAuthor(like: Like) = {
-    val commitOpt = commitDao.findByCommitId(like.commitId)
-    commitOpt match {
-      case Some(commit) => {
-        isUserNameSameAsAuthor(commit, like)
-      }
-      case None => {
-        // TODO: how to handle that better? Either or Exception?
-        logger.error(s"Cannot find commit ${like.commitId}")
-        false
-      }
-    }
+    val Some(commit) = commitDao.findByCommitId(like.commitId)
+    isUserNameSameAsAuthor(commit, like)
   }
 
   private def isUserNameSameAsAuthor(commit: CommitInfo, like: Like): Boolean = {
     userDao.findByUserName(commit.authorName) match {
-      case Some(user) => user.id == like.authorId
+      case Some(commitAuthor) => {
+        commitAuthor.id == like.authorId
+      }
       case None => {
         logger.debug(s"Cannot find user ${commit.authorName}")
         false
