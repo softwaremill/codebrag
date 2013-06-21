@@ -15,7 +15,7 @@ trait LikesEndpoint extends JsonServletWithAuthentication with UserReactionParam
   post("/:id/likes") {
     haltIfNotAuthenticated()
     val incomingLike = buildIncomingLike
-    userReactionService.storeUserReaction(incomingLike) match {
+    userReactionService.storeLike(incomingLike) match {
       case Right(savedLike) => {
         userDao.findById(savedLike.authorId) match {
           case Some(user) => LikeResponse(savedLike.id.toString, user.name, savedLike.postingTime.toDate, user.avatarUrl)

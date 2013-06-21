@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.domain.Comment
 class AddCommentActivity(userReactionService: UserReactionService, followupService: FollowupService) {
 
   def addCommentToCommit(newComment: IncomingComment) = {
-    val addedComment = userReactionService.storeUserReaction(newComment).asInstanceOf[Comment]
+    val addedComment = userReactionService.storeComment(newComment).asInstanceOf[Comment]
     followupService.generateFollowupsForComment(addedComment)
     addedComment
   }

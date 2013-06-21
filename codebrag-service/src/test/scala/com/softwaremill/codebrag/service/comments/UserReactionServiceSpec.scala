@@ -41,7 +41,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
 
   it should "create a new comment for commit" in {
     // when
-    userReactionService.storeUserReaction(CommentForCommit)
+    userReactionService.storeComment(CommentForCommit)
 
     // then
     val commentArgument = ArgumentCaptor.forClass(classOf[Comment])
@@ -53,7 +53,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
 
   it should "return created comment as a result" in {
     // when
-    val savedComment = userReactionService.storeUserReaction(CommentForCommit).asInstanceOf[Comment]
+    val savedComment = userReactionService.storeComment(CommentForCommit).asInstanceOf[Comment]
 
     // then
     savedComment.commitId should equal(CommentForCommit.commitId)
@@ -66,7 +66,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
     // given
 
     // when
-    val savedComment = userReactionService.storeUserReaction(InlineCommentForCommit).asInstanceOf[Comment]
+    val savedComment = userReactionService.storeComment(InlineCommentForCommit).asInstanceOf[Comment]
 
     // then
     savedComment.lineNumber should equal(InlineCommentForCommit.lineNumber)
@@ -75,7 +75,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
 
   it should "create a new inline like" in {
     // when
-    userReactionService.storeUserReaction(InlineLikeForCommit)
+    userReactionService.storeLike(InlineLikeForCommit)
 
     // then
     val likeArgument = ArgumentCaptor.forClass(classOf[Like])
@@ -87,8 +87,8 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
   it should "return created reaction" in {
 
     // when
-    val savedComment = userReactionService.storeUserReaction(CommentForCommit)
-    val Right(savedLike) = userReactionService.storeUserReaction(InlineLikeForCommit)
+    val savedComment = userReactionService.storeComment(CommentForCommit)
+    val Right(savedLike) = userReactionService.storeLike(InlineLikeForCommit)
 
     // then
     savedComment.commitId should equal(CommentForCommit.commitId)
@@ -101,7 +101,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
 
   it should "publish proper event after saving a 'like'" in {
     // when
-    val Right(savedLike) = userReactionService.storeUserReaction(InlineLikeForCommit)
+    val Right(savedLike) = userReactionService.storeLike(InlineLikeForCommit)
 
     // then
     eventBus.getEvents.head should equal(CommitLiked(savedLike))
@@ -113,7 +113,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
     when(likeValidatorMock.isLikeValid(any[Like])).thenReturn(Left(msg))
 
     // when
-    val Left(secondSaveResult) = userReactionService.storeUserReaction(InlineLikeForCommit)
+    val Left(secondSaveResult) = userReactionService.storeLike(InlineLikeForCommit)
 
     // then
     verifyZeroInteractions(likeDaoMock)
@@ -126,7 +126,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
     when(likeValidatorMock.isLikeValid(any[Like])).thenReturn(Left(msg))
 
     // when
-    val Left(secondSaveResult) = userReactionService.storeUserReaction(InlineLikeForCommit)
+    val Left(secondSaveResult) = userReactionService.storeLike(InlineLikeForCommit)
 
     // then
     verifyZeroInteractions(likeDaoMock)
@@ -135,12 +135,12 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
 
   it should "not publish event when duplicate like not saved" in {
     // given
-    userReactionService.storeUserReaction(InlineLikeForCommit)
+    userReactionService.storeLike(InlineLikeForCommit)
     when(likeValidatorMock.isLikeValid(any[Like])).thenReturn(Left("not valid"))
     eventBus.clear()
 
     // when
-    userReactionService.storeUserReaction(InlineLikeForCommit)
+    userReactionService.storeLike(InlineLikeForCommit)
 
     // then
     eventBus.getEvents should be('empty)

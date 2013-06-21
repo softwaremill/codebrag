@@ -11,7 +11,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 
 class UserReactionService(commentDao: CommitCommentDAO, likeDao: LikeDAO, likeValidator: LikeValidator, eventBus: EventBus)(implicit clock: Clock) {
 
-  def storeUserReaction(like: IncomingLike): Either[String, Like] = {
+  def storeLike(like: IncomingLike): Either[String, Like] = {
     val likeDomainObject = Like(new ObjectId, like.commitId, like.authorId, clock.currentDateTimeUTC(), like.fileName, like.lineNumber)
     likeValidator.isLikeValid(likeDomainObject) match {
       case Right(_) => {
@@ -22,7 +22,7 @@ class UserReactionService(commentDao: CommitCommentDAO, likeDao: LikeDAO, likeVa
     }
   }
 
-  def storeUserReaction(comment: IncomingComment): Comment = {
+  def storeComment(comment: IncomingComment): Comment = {
     val commentDomainObject = Comment(new ObjectId, comment.commitId, comment.authorId, clock.currentDateTimeUTC(), comment.message, comment.fileName, comment.lineNumber)
     save(commentDomainObject)
     commentDomainObject
