@@ -162,8 +162,9 @@ i
   & .author-box
     float: left;
     vertical-align: top;
-  & .info-box
-    overflow-y: hidden;
+
+.info-box
+  overflow-y: hidden;
   & .info-line
     color: $second-body-text-color;
     font-size: 11px;
@@ -344,13 +345,13 @@ a.uservoice-btn
 
 
 // commits
-.commits
+.items-list
   // height calculated in JS = windowHeight - headerHeight
   height: 700px;
   padding-bottom: 3.3em;
   position: relative;
 
-.commits-sorting
+.sorting
   padding: 1.15em 0 1.15em 1.15em;
   text-align: center;
   & .button.link
@@ -360,7 +361,7 @@ a.uservoice-btn
       color: $main-orange-color;
       text-decoration: none;
 
-.commits-container
+.items-container
   //height calculated in JS = commitsHeight - sortingHeight - LoadMoreHeight
   height: 600px;
   overflow-x: hidden;
@@ -430,6 +431,67 @@ a.uservoice-btn
     margin-right: 3px;
 
 
+// followups
+.followups-container
+  background: #eee8d7;
+  margin-bottom: 0.77em;
+  padding: 0.77em 0.38em 0.38em;
+  // JS calculations for width
+  width: 460px;
+  & .info-line
+    margin-bottom: 0.77em;
+  & .commit-name
+    color: #70493e;
+    font-weight: bold;
+    margin-bottom: 0.4em;
+    opacity: 0.75;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+.followup-container
+  background: #faf8ed;
+  border: 1px solid $main-border-color;
+  margin-top: -1px;
+  padding: 0.77em 2.3em 0.77em 0.77em;
+  position: relative;
+  &:hover
+    background: white;
+    cursor: pointer;
+    & i
+      display: inherit;
+  & i
+    color: #c1b28b;
+    display: none;
+    font-size: 1.2em;
+    margin-top: -0.5em;
+    position: absolute;
+    right: 0.6em;
+    top: 50%;
+  & .author-box img
+    height: 1.54em;
+    margin-right: 0.77em;
+    width: 1.54em;
+
+.followups-container.active .commit-name
+  opacity: 1;
+
+.followups-container.active .followup-container.active
+  background: white;
+  z-index:2;
+  // JS calculations for width
+  width: 480px;
+  &:before
+    background: $main-orange-color;
+    content: "";
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0px;
+    width: .38em;
+    z-index: 1;
+  & i
+    display: block;
 
 // diff
 .diff
