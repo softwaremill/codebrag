@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.common.{ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.dao.reporting._
 import dao._
 import rest.CodebragSwagger
-import com.softwaremill.codebrag.service.comments.UserReactionService
+import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
 import service.followups.FollowupService
 import service.github._
@@ -43,7 +43,8 @@ trait Beans extends ActorSystemSupport {
   lazy val importerFactory = new JgitGitHubCommitImportServiceFactory(commitInfoDao, userDao, eventBus, config)
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
   lazy val likeDao = new MongoLikeDAO
-  lazy val userReactionService = new UserReactionService(commentDao, likeDao, eventBus)
+  lazy val likeValidator = new LikeValidator(commitInfoDao, likeDao, userDao)
+  lazy val userReactionService = new UserReactionService(commentDao, likeDao, likeValidator, eventBus)
 
   lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {
       val userDao = self.userDao

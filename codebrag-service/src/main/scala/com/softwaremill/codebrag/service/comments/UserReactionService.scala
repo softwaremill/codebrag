@@ -1,26 +1,31 @@
 package com.softwaremill.codebrag.service.comments
 
-import com.softwaremill.codebrag.dao.{LikeDAO, CommitCommentDAO}
-import com.softwaremill.codebrag.domain.{UserReaction, Like, Comment}
+import com.softwaremill.codebrag.dao.{UserDAO, CommitInfoDAO, LikeDAO, CommitCommentDAO}
+import com.softwaremill.codebrag.domain.{CommitInfo, UserReaction, Like, Comment}
 import pl.softwaremill.common.util.time.Clock
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.comments.command.{IncomingUserReaction, IncomingLike, IncomingComment}
 import com.softwaremill.codebrag.common.EventBus
 import com.softwaremill.codebrag.domain.reactions.CommitLiked
+import com.typesafe.scalalogging.slf4j.Logging
 
-class UserReactionService(commentDao: CommitCommentDAO, likeDao: LikeDAO, eventBus: EventBus)(implicit clock: Clock) {
+class UserReactionService(commentDao: CommitCommentDAO, likeDao: LikeDAO, likeValidator: LikeValidator, eventBus: EventBus)(implicit clock: Clock) {
 
-  def storeUserReaction(reaction: IncomingUserReaction): UserReaction = {
-    val reactionDomainObject = toDomainObject(reaction)
-    save(reactionDomainObject)
-    reactionDomainObject
+  def storeUserReaction(like: IncomingLike): Either[String, Like] = {
+    val likeDomainObject = Like(new ObjectId, like.commitId, like.authorId, clock.currentDateTimeUTC(), like.fileName, like.lineNumber)
+    likeValidator.isLikeValid(likeDomainObject) match {
+      case Right(_) => {
+        save(likeDomainObject)
+        Right(likeDomainObject)
+      }
+      case Left(msg) => Left(msg)
+    }
   }
 
-  private def toDomainObject(reaction: IncomingUserReaction): UserReaction with Product with Serializable = {
-    reaction match {
-      case r: IncomingComment => Comment(new ObjectId, r.commitId, r.authorId, clock.currentDateTimeUTC(), r.message, r.fileName, r.lineNumber)
-      case r: IncomingLike => Like(new ObjectId, r.commitId, r.authorId, clock.currentDateTimeUTC(), r.fileName, r.lineNumber)
-    }
+  def storeUserReaction(comment: IncomingComment): Comment = {
+    val commentDomainObject = Comment(new ObjectId, comment.commitId, comment.authorId, clock.currentDateTimeUTC(), comment.message, comment.fileName, comment.lineNumber)
+    save(commentDomainObject)
+    commentDomainObject
   }
 
   private def save(reaction: UserReaction) {
