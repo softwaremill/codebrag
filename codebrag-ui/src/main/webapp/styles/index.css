@@ -860,6 +860,9 @@ tr:hover .diff-line-num .button i {
 .likes-list li:last-child:after {
   content: '';
 }
+.likes {
+  color: #f3720b;
+}
 .scrolled-to {
   background: #f58022;
 }
