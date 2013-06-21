@@ -710,18 +710,29 @@ tr:hover .diff-line-num .button
     text-transform: uppercase;
     vertical-align: top;
 
-// List of people who like a code line / commit
-.likes-list
-  list-style: none;
-  display: inline;
+// Inline likes
+.diff-file-container tr.inline-likes
+  background: $main-orange-color;
+  color: white;
   padding: 0;
-  margin-left: -10px;
+  & td
+    padding: 0.38em 0.38em 0.38em 1.15em;
+    & .comment
+      margin-bottom: 0;
+
+.likes-list
+  display: inline;
+  list-style: none;
+  margin-left: 5px;
+  padding: 0;
   & li
     display: inline;
-    padding: 0 10px;
-    border-left: solid 1px black;
-  & li:first-child
-    border-left: none;
+    margin-right: 5px;
+    &:after
+      content:',';
+      position: relative;
+  & li:last-child:after
+    content:'';
 
 // What are these for? start
 .scrolled-to
@@ -772,6 +783,8 @@ tr:hover .diff-line-num .button
   position: fixed;
   top: 1.54em;
   right: 1.54em;
+  & i
+    margin-right: 5px;
 
 .spinner 
   display: none;

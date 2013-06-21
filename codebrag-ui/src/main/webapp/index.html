@@ -136,7 +136,7 @@
     </script>
 
     <script type="text/ng-template" id="lineReactions">
-        <tr class="comments-container inline-comments-container" ng-show="lineReactions.likes.length > 0">
+        <tr class="inline-likes comments-container inline-comments-container" ng-show="lineReactions.likes.length > 0">
             <td colspan="3">
                 <div class="comment" data-resize-to-view="true">
                     <likes collection="lineReactions.likes"></likes>
@@ -170,7 +170,7 @@
     <script type="text/ng-template" id="generalLikes">
         <div class="like-commit">
             <div ng-show="userAllowedToLike"><a class="like button" ng-click="submitLike()"><i class="icon-heart"></i></a><span ng-show="noLikes()">Be the first to like this commit</span></div>
-            <div ng-hide="noLikes()">Users who like this: <ul class="likes-list"><li ng-repeat="like in likesCollection" id="{{like.id}}">{{like.authorName}}</li></ul></div>
+            <div ng-hide="noLikes()"><i class="icon-heart"></i> Users who like this: <ul class="likes-list"><li ng-repeat="like in likesCollection" id="{{like.id}}">{{like.authorName}}</li></ul></div>
         </div>
     </script>
 

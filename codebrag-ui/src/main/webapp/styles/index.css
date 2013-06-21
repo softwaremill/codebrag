@@ -832,19 +832,33 @@ tr:hover .diff-line-num .button i {
   text-transform: uppercase;
   vertical-align: top;
 }
-.likes-list {
-  list-style: none;
-  display: inline;
+.diff-file-container tr.inline-likes {
+  background: #f3720b;
+  color: #fff;
   padding: 0;
-  margin-left: -10px;
+}
+.diff-file-container tr.inline-likes td {
+  padding: 0.38em 0.38em 0.38em 1.15em;
+}
+.diff-file-container tr.inline-likes td .comment {
+  margin-bottom: 0;
+}
+.likes-list {
+  display: inline;
+  list-style: none;
+  margin-left: 5px;
+  padding: 0;
 }
 .likes-list li {
   display: inline;
-  padding: 0 10px;
-  border-left: solid 1px #000;
+  margin-right: 5px;
 }
-.likes-list li:first-child {
-  border-left: none;
+.likes-list li:after {
+  content: ',';
+  position: relative;
+}
+.likes-list li:last-child:after {
+  content: '';
 }
 .scrolled-to {
   background: #f58022;
@@ -903,6 +917,9 @@ tr:hover .diff-line-num .button i {
   position: fixed;
   top: 1.54em;
   right: 1.54em;
+}
+.popup-error i {
+  margin-right: 5px;
 }
 .spinner {
   display: none;
