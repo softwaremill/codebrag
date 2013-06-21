@@ -136,12 +136,19 @@ p {
 }
 ::-webkit-scrollbar {
   width: 13px;
+  height: 13px;
 }
 ::-webkit-scrollbar-track {
   background-color: rgba(216,198,158,0.6);
+  opacity: 0.6;
+  filter: alpha(opacity=60);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
 }
 ::-webkit-scrollbar-thumb {
   background-color: rgba(197,172,124,0.6);
+  opacity: 0.6;
+  filter: alpha(opacity=60);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
 }
 i {
   font-family: 'FontAwesome';
@@ -390,6 +397,7 @@ a.uservoice-btn {
   position: relative;
 }
 .sorting {
+  border-bottom: 1px solid #d1cbb9;
   padding: 1.15em 0 1.15em 1.15em;
   text-align: center;
 }
@@ -413,6 +421,7 @@ a.uservoice-btn {
   border-top: 1px solid #d1cbb9;
   padding: 1.15em 2.3em 1.15em 0.77em;
   position: relative;
+  width: 100%;
 }
 .commit-container:hover {
   background: #fff;
@@ -471,11 +480,18 @@ a.uservoice-btn {
 .commit-container.active i {
   display: block;
 }
+.items-container .commit-container:first-child {
+  margin-top: -1px;
+}
+.items-container .commit-container:last-child {
+  border-bottom: 1px solid #d1cbb9;
+}
 .commits-count {
   background: #f7f5ef;
   border-top: 1px solid #d1cbb9;
   bottom: 0;
   color: #a27d69;
+  margin-top: -1px;
   padding: 1.15em 0;
   text-align: center;
   text-transform: uppercase;
@@ -601,17 +617,14 @@ a.uservoice-btn {
   background: #fff;
   border: 1px solid #e4d9b8;
   border-right: none;
-  -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
+  bottom: 2.3em;
   cursor: pointer;
-  height: 100%;
   left: 0;
   opacity: 0;
   filter: alpha(opacity=0);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   position: absolute;
-  top: -1px;
+  top: 0.77em;
   width: 2.2em;
   z-index: 5;
   -webkit-transition: opacity 250ms, width 500ms, left 500ms;
@@ -630,6 +643,7 @@ a.uservoice-btn {
 .toggle-diff-container-btn i {
   color: #f3720b;
   margin-left: 5px;
+  position: absolute;
   top: 45%;
 }
 .diff-statistics {
