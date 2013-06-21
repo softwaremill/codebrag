@@ -69,7 +69,7 @@
     <script type="text/javascript" src="scripts/commits/comments/markdownCommentForm.js"></script>
     <script type="text/javascript" src="scripts/commits/comments/commentable.js"></script>
     <script type="text/javascript" src="scripts/commits/commitDiff.js"></script>
-
+    <script type="text/javascript" src="scripts/commits/generalLikes.js"></script>
 
     <!-- follow-ups -->
     <script type="text/javascript" src="scripts/followups/followupsCtrl.js"></script>
@@ -166,6 +166,12 @@
 
     <script type="text/ng-template" id="likesLine">
         <div class="username"><i class="icon-heart"></i> Users who like this: <ul class="likes-list"><li ng-repeat="like in collection" id="{{like.id}}">{{like.authorName}}</li></ul></div>
+    </script>
+    <script type="text/ng-template" id="generalLikes">
+        <div class="like-commit">
+            <div ng-show="userAllowedToLike"><a class="like button" ng-click="submitLike()"><i class="icon-heart"></i></a><span ng-show="noLikes()">Be the first to like this commit</span></div>
+            <div ng-hide="noLikes()">Users who like this: <ul class="likes-list"><li ng-repeat="like in likesCollection" id="{{like.id}}">{{like.authorName}}</li></ul></div>
+        </div>
     </script>
 
 </body>

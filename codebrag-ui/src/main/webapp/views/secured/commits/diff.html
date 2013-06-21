@@ -51,7 +51,7 @@
         {{/if}}
     </commit-diff>
 
-    <div class="like-commit"><a class="like button"><i class="icon-heart"></i></a><span>Be the first to like this commit</span></div>
+    <general-likes submit-like="likeEntireDiff()" likes-collection="currentCommit.reactions.likes" commit="currentCommit" author="currentCommit.info.authorName"></general-likes>
     <div id="commit-comments-area" class="comments-container">
         <div class="comment" ng-repeat="comment in currentCommit.reactions.comments">
             <div class="authored-box">
