@@ -13,13 +13,15 @@ angular.module('codebrag.common.directives')
                 function scrollIfElementPresent() {
                     var element = document.getElementById(scrollToId);
                     if(element) {
-                        var $el = $(element);
-                        $el.parent('div').addClass('scrolled-to');
-                        $('html, body').animate({
-                            scrollTop: $el.offset().top - 80
-                        }, scrollDuration, function() {
-                            $el.parent('div').addClass('scroll-to');
-                        });
+                        var options = {
+                            duration: 800,
+                            offset: -400,
+                            easing:'easeInOutExpo',
+                            onAfter: function() {
+                                // mark target element here
+                            }
+                        };
+                        $('.diff-wrapper').scrollTo('#' + scrollToId, options);
                     } else {
                         setTimeout(scrollIfElementPresent, pollingInterval);
                     }
