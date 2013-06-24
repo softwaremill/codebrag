@@ -3,6 +3,7 @@ angular.module('codebrag.commits')
     .factory('commitsListService', function($resource, $q, $http, Commits, $rootScope, commitLoadFilter, events) {
 
         var commits = new codebrag.AsyncCollection();
+        var totalCount = 0;
 
         function loadCommitsPendingReview() {
             commitLoadFilter.setPendingMode();
@@ -57,21 +58,6 @@ angular.module('codebrag.commits')
             });
         }
 
-        /**
-         * Removes commit with given identifier. Broadcasts a global event with new commit count.
-         * @param commitId identifier of commit to remove.
-         * @returns a promise of successful commit removal with no parameters in callback.
-         */
-        function removeCommit(commitId) {
-            var responsePromise = Commits.remove({id: commitId}).$then();
-            if (commitLoadFilter.isAll()) {
-                markAsNotReviewable(commitId);
-            } else {
-                commits.removeElement(_matchingId(commitId), responsePromise).then(loadOneMore);
-            }
-            return responsePromise;
-        }
-
         function _matchingId(id) {
             return function(element) {
                 return element.id == id;
@@ -79,24 +65,46 @@ angular.module('codebrag.commits')
         }
 
         /**
-         * Removes commit with given identifier and returns promise of next element.
+         * Removes commit with given identifier, loads one more from server (if there are more)
+         * and returns promise of next element.
          * Broadcasts a global event with new commit count.
          * @param commitId identifier of commit to remove.
          * @returns a promise of successful commit removal. Callback function passes next available commit for review or
          * null if removed commit was last.
          */
         function removeCommitAndGetNext(commitId) {
-            var responsePromise = Commits.remove({id: commitId}).$then();
-            var getNextPromise;
+
+            var removePromise = _removeCommitFromServer(commitId);
+
             if (commitLoadFilter.isAll()) {
                 markAsNotReviewable(commitId);
-                getNextPromise = commits.getNextAfter(_matchingId(commitId), responsePromise);
-            } else {
-                getNextPromise = loadOneMore().then(function () {
-                    return commits.removeElementAndGetNext(_matchingId(commitId), responsePromise);
-                });
+                return commits.getNextAfter(_matchingId(commitId), removePromise);
             }
-            return getNextPromise
+            else {
+                var indexRemoved = {};
+                 return commits.removeElement(_matchingId(commitId), removePromise)
+                     .then(function(index) {
+                         indexRemoved = index;
+                     })
+                     .then(_loadOneMoreIfAvailable)
+                     .then(function () {
+                        return commits.getElementOrNull(indexRemoved);
+                    });
+            }
+        }
+
+        function _removeCommitFromServer(commitId) {
+            return Commits.remove({id: commitId}).$then();
+        }
+
+        function _loadOneMoreIfAvailable() {
+            if (totalCount > commitLoadFilter.MAX_COMMITS_ON_LIST)
+                return loadOneMore();
+            else {
+                totalCount--;
+                _broadcastNewCommitCountEvent(totalCount);
+                return $q.defer().resolve();
+            }
         }
 
         function loadCommitById(commitId) {
@@ -105,8 +113,9 @@ angular.module('codebrag.commits')
             });
         }
 
-        function _broadcastNewCommitCountEvent(totalCount) {
-            $rootScope.$broadcast(events.commitCountChanged, {commitCount: totalCount})
+        function _broadcastNewCommitCountEvent(newTotalCount) {
+            totalCount = newTotalCount;
+            $rootScope.$broadcast(events.commitCountChanged, {commitCount: newTotalCount})
         }
 
         return {
@@ -115,7 +124,6 @@ angular.module('codebrag.commits')
             loadAllCommits: loadAllCommits,
             allCommits: allCommits,
             removeCommitAndGetNext: removeCommitAndGetNext,
-            removeCommit: removeCommit,
             loadCommitById: loadCommitById
 		};
 

@@ -76,7 +76,7 @@ codebrag.AsyncCollection.prototype = {
      * @returns a promise of removing matching element and returning element on same index after removing.
      */
     removeElementAndGetNext: function(matchFn, promise) {
-        return this.removeElement(matchFn, promise).then(this._getElementOrNull.bind(this));
+        return this.removeElement(matchFn, promise).then(this.getElementOrNull.bind(this));
     },
 
     _indexOf: function(matchFn) {
@@ -100,11 +100,14 @@ codebrag.AsyncCollection.prototype = {
         });
     },
 
-    _getElementOrNull: function(index) {
+    getElementOrNull: function(index) {
         var self = this;
         var elements = self.elements;
-        if (_.isEmpty(elements) || elements.length < index) {
+        if (_.isEmpty(elements)) {
             return null;
+        }
+        if (elements.length <= index) {
+            return elements[elements.length - 1];
         }
         return elements[index];
     },
