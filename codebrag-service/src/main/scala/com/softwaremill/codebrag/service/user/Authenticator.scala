@@ -7,27 +7,12 @@ import com.softwaremill.codebrag.service.github.CommitReviewTaskGeneratorActions
 import com.softwaremill.codebrag.common.EventBus
 import com.typesafe.scalalogging.slf4j.Logging
 
-class Authenticator(userDAO: UserDAO, eventBus: EventBus, reviewTaskGenerator: CommitReviewTaskGeneratorActions) extends Logging{
+trait Authenticator {
 
-  def authenticate(login: String, nonEncryptedPassword: String): Option[UserJson] = {
-    logger.debug("authenticating")
-    val userOpt: Option[User] = userDAO.findByLoginOrEmail(login)
-    userOpt match {
-      case Some(u) => {
-        logger.debug("found user")
-        if(Authentication.passwordsMatch(nonEncryptedPassword, u.authentication)) {
-          logger.debug("passwords match")
-          Some(UserJson(u))
-        } else {
-          logger.debug("password don't match")
-          None
-        }
-      }
-      case _ => {
-        logger.debug("user not found")
-        None
-      }
-    }
+  def userDAO: UserDAO
+
+  def authenticateWithToken(token: String): Option[UserJson] = {
+    userDAO.findByToken(token).map(UserJson(_))
   }
 
   def findByLogin(login: String): Option[UserJson] = {
@@ -37,8 +22,38 @@ class Authenticator(userDAO: UserDAO, eventBus: EventBus, reviewTaskGenerator: C
     }
   }
 
-  def authenticateWithToken(token: String): Option[UserJson] = {
-    userDAO.findByToken(token).map(UserJson(_))
+  def authenticate(login: String, nonEncryptedPassword: String): Option[UserJson]
+
+}
+
+class UserPasswordAuthenticator(val userDAO: UserDAO, eventBus: EventBus, reviewTaskGenerator: CommitReviewTaskGeneratorActions) extends Authenticator with Logging {
+
+  def authenticate(login: String, nonEncryptedPassword: String): Option[UserJson] = {
+    val userOpt: Option[User] = userDAO.findByLoginOrEmail(login)
+    userOpt match {
+      case Some(u) => {
+        if(Authentication.passwordsMatch(nonEncryptedPassword, u.authentication)) {
+          Some(UserJson(u))
+        } else {
+          None
+        }
+      }
+      case _ => {
+        None
+      }
+    }
+  }
+
+}
+
+class GitHubEmptyAuthenticator(val userDAO: UserDAO) extends Authenticator with Logging {
+
+  def authenticate(login: String, nonEncryptedPassword: String): Option[UserJson] = {
+    val userOpt: Option[User] = userDAO.findByLoginOrEmail(login)
+    userOpt match {
+      case Some(u) => Some(UserJson(u))
+      case _ => None
+    }
   }
 
 }

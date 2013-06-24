@@ -15,23 +15,22 @@ import org.eclipse.jgit.util.StringUtils
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import org.mockito.ArgumentCaptor
 
-class AuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with FakeEventBus {
+class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with FakeEventBus {
 
   var userDAO: UserDAO = _
   var authenticator: Authenticator = _
   var userDAOMock: UserDAO = _
   var reviewTaskGeneratorMock: CommitReviewTaskGeneratorActions = _
-  val fixtureLogin = "someLogin"
-  val fixtureLoginLowerCase = fixtureLogin.toLowerCase
-  val fixturePassword = "somePassword"
+  val fixtureLogin = "johndoe"
+  val fixturePassword = "password"
   val fixtureUserId: ObjectId = ObjectIdTestUtils.oid(123)
-  val fixtureUser = User(fixtureUserId, Authentication.basic(fixtureLogin, fixturePassword), "name", "someLogin@sml.com", "token", "avatarUrl")
+  val fixtureUser = User(fixtureUserId, Authentication.basic(fixtureLogin, fixturePassword), "John Doe", "john@doe.com", "123abc", "http://gravatar.com")
 
   before {
     eventBus.clear()
     userDAOMock = mock[UserDAO]
     reviewTaskGeneratorMock = mock[CommitReviewTaskGeneratorActions]
-    authenticator = new Authenticator(userDAOMock, eventBus, reviewTaskGeneratorMock)
+    authenticator = new UserPasswordAuthenticator(userDAOMock, eventBus, reviewTaskGeneratorMock)
   }
 
   it should "call dao to authenticate user" in {
@@ -66,4 +65,24 @@ class AuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar w
     userOpt should be (None)
   }
 
+  it should "return user if user credentials match" in {
+    // given
+    given(userDAOMock.findByLoginOrEmail(fixtureLogin)).willReturn(Some(fixtureUser))
+
+    // when
+    val Some(userOpt) = authenticator.authenticate(fixtureLogin, fixturePassword)
+
+    userOpt.fullName should be(fixtureUser.name)
+    userOpt.email should be(fixtureUser.email)
+  }
+
+  it should "return None if user credentials don't match" in {
+    // given
+    given(userDAOMock.findByLoginOrEmail(fixtureLogin)).willReturn(Some(fixtureUser))
+
+    // when
+    val userOpt = authenticator.authenticate(fixtureLogin, "invalid password")
+
+    userOpt should be(None)
+  }
 }

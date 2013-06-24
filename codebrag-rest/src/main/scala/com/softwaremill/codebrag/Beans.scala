@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionSe
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
 import service.followups.FollowupService
 import service.github._
-import service.user.Authenticator
+import com.softwaremill.codebrag.service.user.{GitHubEmptyAuthenticator, UserPasswordAuthenticator, Authenticator}
 import pl.softwaremill.common.util.time.RealTimeClock
 import com.softwaremill.codebrag.service.github.jgit.JgitGitHubCommitImportServiceFactory
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
@@ -52,7 +52,8 @@ trait Beans extends ActorSystemSupport {
       val commitToReviewDao = self.commitReviewTaskDao
     }
 
-  lazy val authenticator = new Authenticator(userDao, eventBus, reviewTaskGenerator)
+  lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus, reviewTaskGenerator)
+  lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
   lazy val followupFinder = new MongoFollowupFinder
   lazy val commentActivity = new AddCommentActivity(userReactionService, followupService)
 
