@@ -55,55 +55,15 @@ class AuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar w
     result should equal(Option(UserJson(fixtureUser)))
   }
 
-  it should "return new user data if not found in DAO by login" in {
+  it should "return None when user not found" in {
     // given
     given(userDAOMock.findByLowerCasedLogin(fixtureLogin)).willReturn(None)
 
     // when
-    val userOpt = authenticator.findByLogin(fixtureLogin)
-
-    // then
-    userOpt.isDefined should be (true)
-    val user = userOpt.get
-    user.login should equal(fixtureLogin)
-    user.fullName should equal(fixtureLogin)
-    user.email should equal(s"$fixtureLogin@sml.com")
-    StringUtils.isEmptyOrNull(user.token) should be(false)
-  }
-
-  it should "publish an event and ask review task generator to generate tasks when user gets created" in {
-    // given
-    given(userDAOMock.findByLoginOrEmail(fixtureLogin)).willReturn(None)
-
-    // when
     val userOpt = authenticator.authenticate(fixtureLogin, fixturePassword)
 
     // then
-    userOpt.isDefined should be (true)
-    val user = userOpt.get
-    val expectedEvent = NewUserRegistered(new ObjectId(user.id), fixtureLoginLowerCase, fixtureLogin, s"$fixtureLogin@sml.com")
-
-    verify(reviewTaskGeneratorMock).handleNewUserRegistered(expectedEvent)
-    eventBus.size() should be(1)
-    eventBus.getEvents(0) should equal(expectedEvent)
-  }
-
-  it should "save newly created user to DAO" in {
-    // given
-    given(userDAOMock.findByLoginOrEmail(fixtureLogin)).willReturn(None)
-
-    // when
-    val userOpt = authenticator.authenticate(fixtureLogin, fixturePassword)
-
-    // then
-    userOpt.isDefined should be (true)
-
-    val userArgument = ArgumentCaptor.forClass(classOf[User])
-    verify(userDAOMock).add(userArgument.capture())
-
-    userArgument.getValue.name should equal(fixtureLogin)
-    userArgument.getValue.authentication.username should equal(fixtureLogin)
-    userArgument.getValue.email should equal(s"$fixtureLogin@sml.com")
+    userOpt should be (None)
   }
 
 }
