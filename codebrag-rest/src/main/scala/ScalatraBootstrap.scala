@@ -1,6 +1,6 @@
-import com.softwaremill.codebrag.dao.{MongoConfig, MongoInit}
+import com.softwaremill.codebrag.dao.MongoInit
 import com.softwaremill.codebrag.rest._
-import com.softwaremill.codebrag.service.config.RepositoryConfig
+import com.softwaremill.codebrag.rest.debug.DebugServlet
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.{EventingConfiguration, Beans}
 import java.util.Locale
@@ -27,6 +27,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupService), Prefix + FollowupsServlet.MappingPath)
     context.mount(new NotificationCountServlet(authenticator, swagger, notificationCountFinder), Prefix + NotificationCountServlet.MappingPath)
     context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")
+    context.mount(new DebugServlet(authenticator, swagger, importerFactory, config), Prefix + DebugServlet.MappingPath)
 
     context.put("codebrag", this)
   }
