@@ -22,7 +22,7 @@ class DebugServlet(importerFactory: GitHubCommitImportServiceFactory,
   def triggerRepositoryUpdate() {
     basicAuth()
     val importService = importerFactory.createInstance(configuration.codebragSyncUserLogin)
-    importService.importRepoCommits(configuration.repositoryOwner, configuration.codebragSyncUserLogin)
+    importService.importRepoCommits(configuration.repositoryOwner, configuration.repositoryName)
   }
 
   def dropAllDataExceptUsers() {
