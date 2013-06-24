@@ -37,17 +37,10 @@ trait UserIsCommitAuthorCheck extends Logging {
   }
 
   private def isUserNameSameAsAuthor(commit: CommitInfo, like: Like): Boolean = {
-    userDao.findByUserName(commit.authorName) match {
-      case Some(commitAuthor) => {
-        commitAuthor.id == like.authorId
-      }
-      case None => {
-        logger.debug(s"Cannot find user ${commit.authorName}")
-        false
-      }
-    }
+    val userOpt = userDao.findByUserName(commit.authorName)
+    userOpt.getOrElse(logger.debug(s"Cannot find user ${commit.authorName}"))
+    userOpt.exists(_.id == like.authorId)
   }
-
 }
 
 trait UserAlreadyLikedItCheck {
