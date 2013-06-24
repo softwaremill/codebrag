@@ -1,23 +1,17 @@
 package com.softwaremill.codebrag.rest.debug
 
-import com.softwaremill.codebrag.service.user.Authenticator
-import org.scalatra.swagger.{SwaggerSupport, Swagger}
-import com.softwaremill.codebrag.rest.JsonServletWithAuthentication
-import org.scalatra.json.JacksonJsonSupport
+import com.softwaremill.codebrag.rest.JsonServlet
 import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 import net.liftweb.mongodb.record.MongoMetaRecord
 import com.softwaremill.codebrag.dao._
-import scala.Some
 import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig}
 
-class DebugServlet(val authenticator: Authenticator,
-                   val swagger: Swagger,
-                   importerFactory: GitHubCommitImportServiceFactory,
+class DebugServlet(importerFactory: GitHubCommitImportServiceFactory,
                    configuration: CodebragConfig with RepositoryConfig)
-  extends JsonServletWithAuthentication with SwaggerSupport with JacksonJsonSupport {
+  extends JsonServlet with DebugBasicAuthSupport {
 
-  override protected val applicationName = Some(DebugServlet.MappingPath)
-  override protected val applicationDescription = "Debugging services endpoint"
+  override def login = configuration.debugServicesLogin
+  override def password = configuration.debugServicesPassword
 
   get("/resetAll") {
     dropAllDataExceptUsers()
@@ -26,6 +20,7 @@ class DebugServlet(val authenticator: Authenticator,
   }
 
   def triggerRepositoryUpdate() {
+    basicAuth()
     val importService = importerFactory.createInstance(configuration.codebragSyncUserLogin)
     importService.importRepoCommits(configuration.repositoryOwner, configuration.codebragSyncUserLogin)
   }

@@ -27,7 +27,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupService), Prefix + FollowupsServlet.MappingPath)
     context.mount(new NotificationCountServlet(authenticator, swagger, notificationCountFinder), Prefix + NotificationCountServlet.MappingPath)
     context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")
-    context.mount(new DebugServlet(authenticator, swagger, importerFactory, config), Prefix + DebugServlet.MappingPath)
+    context.mount(new DebugServlet(importerFactory, config), Prefix + DebugServlet.MappingPath)
 
     context.put("codebrag", this)
   }
