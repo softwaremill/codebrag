@@ -2,7 +2,12 @@ package com.softwaremill.codebrag.service.github
 
 import java.nio.file.Path
 
-case class RepoData(repoOwner: String, repoName: String) {
+trait RepoData {
+  def remoteUri: String
+  def localPathRelativeTo(path: Path): Path
+}
+
+case class GitHubRepoData(repoOwner: String, repoName: String) extends RepoData {
   def remoteUri = s"https://github.com/$repoOwner/$repoName.git"
   def localPathRelativeTo(path: Path) = path.resolve(repoOwner).resolve(repoName)
 }

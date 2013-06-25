@@ -22,6 +22,8 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   val repoName = "project"
   val EmptyCommitsList = List[CommitInfo]()
 
+  val mockRepoData = mock[RepoData]
+
   before {
     eventBus.clear()
     commitsLoader = mock[CommitsLoader]
@@ -30,18 +32,18 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   }
 
   it should "not store anything when no new commits available" in {
-    when(commitsLoader.loadMissingCommits(new RepoData(repoOwner, repoName))).thenReturn(EmptyCommitsList)
+    when(commitsLoader.loadMissingCommits(mockRepoData)).thenReturn(EmptyCommitsList)
 
-    service.importRepoCommits(new RepoData(repoOwner, repoName))
+    service.importRepoCommits(mockRepoData)
 
     verify(commitInfoDao, never).storeCommit(any[CommitInfo])
   }
 
   it should "store all new commits available" in {
     val newCommits = newGithubCommits(5)
-    when(commitsLoader.loadMissingCommits(new RepoData(repoOwner, repoName))).thenReturn(newCommits)
+    when(commitsLoader.loadMissingCommits(mockRepoData)).thenReturn(newCommits)
 
-    service.importRepoCommits(new RepoData(repoOwner, repoName))
+    service.importRepoCommits(mockRepoData)
 
     newCommits.foreach(commit => {
       verify(commitInfoDao).storeCommit(commit)
@@ -51,10 +53,10 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   it should "publish event with correct data about imported commits" in {
     // given
     val newCommits = newGithubCommits(2)
-    given(commitsLoader.loadMissingCommits(new RepoData(repoOwner, repoName))).willReturn(newCommits)
+    given(commitsLoader.loadMissingCommits(mockRepoData)).willReturn(newCommits)
 
     // when
-    service.importRepoCommits(new RepoData(repoOwner, repoName))
+    service.importRepoCommits(mockRepoData)
 
     // then
     eventBus.size() should equal(1)
@@ -68,10 +70,10 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
   it should "not publish event about updated commits when nothing gets updated" in {
     // given
-    given(commitsLoader.loadMissingCommits(new RepoData(repoOwner, repoName))).willReturn(EmptyCommitsList)
+    given(commitsLoader.loadMissingCommits(mockRepoData)).willReturn(EmptyCommitsList)
 
     // when
-    service.importRepoCommits(new RepoData(repoOwner, repoName))
+    service.importRepoCommits(mockRepoData)
 
     // then
     eventBus.size() should equal(0)
@@ -80,10 +82,10 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   it should "publish event about first update if no commits found in dao" in {
     // given
     val newCommits = newGithubCommits(2)
-    given(commitsLoader.loadMissingCommits(new RepoData(repoOwner, repoName))).willReturn(newCommits)
+    given(commitsLoader.loadMissingCommits(mockRepoData)).willReturn(newCommits)
     given(commitInfoDao.hasCommits).willReturn(false)
     // when
-    service.importRepoCommits(new RepoData(repoOwner, repoName))
+    service.importRepoCommits(mockRepoData)
 
     // then
     val onlyEvent = getEvents(0).asInstanceOf[CommitsUpdatedEvent]
@@ -93,10 +95,10 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   it should "publish event about not-first update if some commits found in dao" in {
     // given
     val newCommits = newGithubCommits(2)
-    given(commitsLoader.loadMissingCommits(new RepoData(repoOwner, repoName))).willReturn(newCommits)
+    given(commitsLoader.loadMissingCommits(mockRepoData)).willReturn(newCommits)
     given(commitInfoDao.hasCommits).willReturn(true)
     // when
-    service.importRepoCommits(new RepoData(repoOwner, repoName))
+    service.importRepoCommits(mockRepoData)
 
     // then
     val onlyEvent = getEvents(0).asInstanceOf[CommitsUpdatedEvent]
