@@ -138,14 +138,14 @@
     </script>
 
     <script type="text/ng-template" id="lineReactions">
-        <tr class="inline-likes comments-container inline-comments-container" ng-show="lineReactions.likes.length > 0">
+        <tr class="inline-likes comments-container" ng-show="lineReactions.likes.length > 0" data-inline-reactions-container>
             <td colspan="3">
                 <div class="comment" data-resize-to-view="true">
                     <likes collection="lineReactions.likes"></likes>
                 </div>
             </td>
         </tr>
-        <tr class="comments-container inline-comments-container" ng-show="lineReactions.comments.length > 0">
+        <tr class="comments-container" ng-show="lineReactions.comments.length > 0" data-inline-reactions-container>
             <td colspan="3">
                 <!--inline comment start-->
                 <div data-resize-to-view="true">
