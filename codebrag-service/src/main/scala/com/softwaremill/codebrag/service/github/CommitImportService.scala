@@ -5,11 +5,11 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.domain.{UpdatedCommit, CommitsUpdatedEvent}
 import com.softwaremill.codebrag.common.EventBus
 
-class GitHubCommitImportService(commitsLoader: GitHubCommitsLoader, commitInfoDao: CommitInfoDAO, eventBus: EventBus) extends Logging {
+class CommitImportService(commitsLoader: CommitsLoader, commitInfoDao: CommitInfoDAO, eventBus: EventBus) extends Logging {
 
-  def importRepoCommits(owner: String, repo: String) {
+  def importRepoCommits(repoData: RepoData) {
     logger.debug("Start loading commits")
-    val commitsLoaded = commitsLoader.loadMissingCommits(owner, repo)
+    val commitsLoaded = commitsLoader.loadMissingCommits(repoData)
     logger.debug(s"Commits loaded: ${commitsLoaded.size}")
     val isFirstImport = !commitInfoDao.hasCommits
     commitsLoaded.foreach(commitInfoDao.storeCommit(_))

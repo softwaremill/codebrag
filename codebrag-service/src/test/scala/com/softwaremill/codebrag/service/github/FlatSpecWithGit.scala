@@ -8,19 +8,15 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.{PersonIdent, Constants}
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.util.FileUtils
-import com.softwaremill.codebrag.service.github.jgit.{RemoteGitUriBuilder, InternalGitDirTree}
+import com.softwaremill.codebrag.service.github.jgit.InternalGitDirTree
 import com.google.common.io.Files
-import com.softwaremill.codebrag.service.config.CodebragConfig
+import java.nio.file.Path
 
 trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
 
   var testRepo: File = _
 
   def credentials = new UsernamePasswordCredentialsProvider("codebrag-user", "")
-
-  val uriBuilder = new RemoteGitUriBuilder {
-    def build(ownerName: String, repoName: String): String = testRepoPath
-  }
 
   def testRepoPath = testRepo.getCanonicalPath
 
@@ -61,6 +57,11 @@ trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
   }
 
   def deleteRootDirectoryRecursively() {
-    FileUtils.delete(new File(new InternalGitDirTree(TestCodebragConfig).root), FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
+    FileUtils.delete(new InternalGitDirTree(TestCodebragConfig).root.toFile, FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
+  }
+
+  object TestRepoData extends RepoData {
+    override def remoteUri = testRepoPath
+    def localPathRelativeTo(path: Path) = path.resolve("something")
   }
 }

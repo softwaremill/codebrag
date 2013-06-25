@@ -12,36 +12,38 @@ import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.events.MockEventBus
 
-class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with MockEventBus {
+class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with MockEventBus {
 
-  var commitsLoader: GitHubCommitsLoader = _
+  var commitsLoader: CommitsLoader = _
   var commitInfoDao: CommitInfoDAO = _
-  var service: GitHubCommitImportService = _
+  var service: CommitImportService = _
 
   val repoOwner = "johndoe"
   val repoName = "project"
   val EmptyCommitsList = List[CommitInfo]()
 
+  val mockRepoData = mock[RepoData]
+
   before {
     eventBus.clear()
-    commitsLoader = mock[GitHubCommitsLoader]
+    commitsLoader = mock[CommitsLoader]
     commitInfoDao = mock[CommitInfoDAO]
-    service = new GitHubCommitImportService(commitsLoader, commitInfoDao, eventBus)
+    service = new CommitImportService(commitsLoader, commitInfoDao, eventBus)
   }
 
   it should "not store anything when no new commits available" in {
-    when(commitsLoader.loadMissingCommits(repoOwner, repoName)).thenReturn(EmptyCommitsList)
+    when(commitsLoader.loadMissingCommits(mockRepoData)).thenReturn(EmptyCommitsList)
 
-    service.importRepoCommits(repoOwner, repoName)
+    service.importRepoCommits(mockRepoData)
 
     verify(commitInfoDao, never).storeCommit(any[CommitInfo])
   }
 
   it should "store all new commits available" in {
     val newCommits = newGithubCommits(5)
-    when(commitsLoader.loadMissingCommits(repoOwner, repoName)).thenReturn(newCommits)
+    when(commitsLoader.loadMissingCommits(mockRepoData)).thenReturn(newCommits)
 
-    service.importRepoCommits(repoOwner, repoName)
+    service.importRepoCommits(mockRepoData)
 
     newCommits.foreach(commit => {
       verify(commitInfoDao).storeCommit(commit)
@@ -51,10 +53,10 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
   it should "publish event with correct data about imported commits" in {
     // given
     val newCommits = newGithubCommits(2)
-    given(commitsLoader.loadMissingCommits(repoOwner, repoName)).willReturn(newCommits)
+    given(commitsLoader.loadMissingCommits(mockRepoData)).willReturn(newCommits)
 
     // when
-    service.importRepoCommits(repoOwner, repoName)
+    service.importRepoCommits(mockRepoData)
 
     // then
     eventBus.size() should equal(1)
@@ -68,10 +70,10 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
 
   it should "not publish event about updated commits when nothing gets updated" in {
     // given
-    given(commitsLoader.loadMissingCommits(repoOwner, repoName)).willReturn(EmptyCommitsList)
+    given(commitsLoader.loadMissingCommits(mockRepoData)).willReturn(EmptyCommitsList)
 
     // when
-    service.importRepoCommits(repoOwner, repoName)
+    service.importRepoCommits(mockRepoData)
 
     // then
     eventBus.size() should equal(0)
@@ -80,10 +82,10 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
   it should "publish event about first update if no commits found in dao" in {
     // given
     val newCommits = newGithubCommits(2)
-    given(commitsLoader.loadMissingCommits(repoOwner, repoName)).willReturn(newCommits)
+    given(commitsLoader.loadMissingCommits(mockRepoData)).willReturn(newCommits)
     given(commitInfoDao.hasCommits).willReturn(false)
     // when
-    service.importRepoCommits(repoOwner, repoName)
+    service.importRepoCommits(mockRepoData)
 
     // then
     val onlyEvent = getEvents(0).asInstanceOf[CommitsUpdatedEvent]
@@ -93,10 +95,10 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
   it should "publish event about not-first update if some commits found in dao" in {
     // given
     val newCommits = newGithubCommits(2)
-    given(commitsLoader.loadMissingCommits(repoOwner, repoName)).willReturn(newCommits)
+    given(commitsLoader.loadMissingCommits(mockRepoData)).willReturn(newCommits)
     given(commitInfoDao.hasCommits).willReturn(true)
     // when
-    service.importRepoCommits(repoOwner, repoName)
+    service.importRepoCommits(mockRepoData)
 
     // then
     val onlyEvent = getEvents(0).asInstanceOf[CommitsUpdatedEvent]

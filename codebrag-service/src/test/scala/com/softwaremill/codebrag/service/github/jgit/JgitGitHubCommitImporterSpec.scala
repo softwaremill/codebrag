@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.github.jgit
 
 import org.scalatest.mock.MockitoSugar
-import com.softwaremill.codebrag.service.github.{TestCodebragConfig, FlatSpecWithGit, GitHubCommitImportService}
+import com.softwaremill.codebrag.service.github.{TestCodebragConfig, FlatSpecWithGit, CommitImportService}
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.mockito.{ArgumentCaptor, ArgumentMatcher}
 import org.mockito.Mockito._
@@ -16,8 +16,8 @@ import com.softwaremill.codebrag.service.events.MockEventBus
 class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar with MockEventBus {
 
   var commitInfoDaoMock: CommitInfoDAO = _
-  var service: GitHubCommitImportService = _
-  var supplementaryService: GitHubCommitImportService = _
+  var service: CommitImportService = _
+  var supplementaryService: CommitImportService = _
   val commitInfoDaoSupplementaryStub = mock[CommitInfoDAO]
 
   before {
@@ -47,7 +47,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
       commitTime, authorTime, List(parentId), List(CommitFileInfo("file.txt", "added", expectedPatch)))
 
     // when
-    service.importRepoCommits("codebragUser", "remoteRepoName")
+    service.importRepoCommits(TestRepoData)
     // then
     verify(commitInfoDaoMock).storeCommit(argThat(IsCommitInfoIgnoringId(expectedCommit)))
   }
@@ -64,7 +64,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
       commitTime, authorTime, List(parentId), List(CommitFileInfo("file.txt", "added", expectedPatch)))
 
     // when
-    service.importRepoCommits("codebragUser", "remoteRepoName")
+    service.importRepoCommits(TestRepoData)
 
     // then
     verify(commitInfoDaoMock).storeCommit(argThat(IsCommitInfoIgnoringId(expectedCommit)))
@@ -80,7 +80,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
     givenCommit("file.txt", "fourth update content", "fourth update message")
 
     // when
-    service.importRepoCommits("codebragUser", "remoteRepoName")
+    service.importRepoCommits(TestRepoData)
 
     // then
     val commitArgument = ArgumentCaptor.forClass(classOf[CommitInfo])
@@ -96,15 +96,14 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
   private def givenInitialCommit() = givenCommit("some-file", "content", "Initial commit").getId.name()
 
   private def givenAlreadyCalledImport() {
-    supplementaryService.importRepoCommits("codebragUser", "remoteRepoName")
+    supplementaryService.importRepoCommits(TestRepoData)
   }
 
-  private def createService(commitInfoDaoMock: CommitInfoDAO) = new GitHubCommitImportService(
-    new JgitGitHubCommitsLoader(
+  private def createService(commitInfoDaoMock: CommitInfoDAO) = new CommitImportService(
+    new JgitCommitsLoader(
       new JgitFacade(credentials),
       new InternalGitDirTree(TestCodebragConfig),
       new JgitLogConverter,
-      uriBuilder,
       commitInfoDaoMock),
     commitInfoDaoMock,
     eventBus)

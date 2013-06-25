@@ -4,7 +4,7 @@ import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.eclipse.jgit.util.FileUtils
 import java.io.File
-import com.softwaremill.codebrag.service.github.TestCodebragConfig
+import com.softwaremill.codebrag.service.github.{GitHubRepoData, TestCodebragConfig}
 
 class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter {
 
@@ -22,7 +22,7 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
 
   it should "not contain a repository if root directory does not exist" in {
     // given no root directory
-    dirTree.containsRepo("someOwner", "someRepo") should be(false)
+    dirTree.containsRepo(new GitHubRepoData("someOwner", "someRepo")) should be(false)
   }
 
 
@@ -30,7 +30,7 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
     // given
     givenExistingRootDirectory()
     // when
-    dirTree.containsRepo("someOwner", "someRepo") should be(false)
+    dirTree.containsRepo(new GitHubRepoData("someOwner", "someRepo")) should be(false)
   }
 
   it should "not contain a repository if there's owner directory but no repository directory" in {
@@ -38,7 +38,7 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
     givenExistingRootDirectory()
     givenExistingRepository("softwaremill", "someOtherProject")
     // when
-    dirTree.containsRepo("softwaremill", "codebrag") should be(false)
+    dirTree.containsRepo(new GitHubRepoData("softwaremill", "codebrag")) should be(false)
   }
 
   it should "contain a repository if its directory exists" in {
@@ -46,17 +46,18 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
     givenExistingRootDirectory()
     givenExistingRepository("softwaremill", "codebrag")
     // when
-    dirTree.containsRepo("softwaremill", "codebrag") should be(true)
+    dirTree.containsRepo(new GitHubRepoData("softwaremill", "codebrag")) should be(true)
   }
 
   def deleteRootDirectoryRecursively() {
-    FileUtils.delete(new File(dirTree.root), FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
+    FileUtils.delete(dirTree.root.toFile, FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
   }
 
   def givenExistingRootDirectory() {
-    FileUtils.mkdirs(new File(dirTree.root))
+    FileUtils.mkdirs(dirTree.root.toFile)
   }
 
-  def givenExistingRepository(owner: String, repository: String) =
-    FileUtils.mkdirs(new File(s"${dirTree.root}/$owner/$repository"))
+  def givenExistingRepository(owner: String, repository: String) {
+    FileUtils.mkdirs(dirTree.root.resolve(owner).resolve(repository).toFile)
+  }
 }
