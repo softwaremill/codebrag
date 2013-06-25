@@ -1,6 +1,6 @@
-package com.softwaremill.codebrag.service.commits.jgit
+package com.softwaremill.codebrag.service.events
 
-import akka.actor.Actor
+import _root_.akka.actor.Actor
 import com.softwaremill.codebrag.common.Event
 import com.typesafe.scalalogging.slf4j.Logging
 

@@ -1,7 +1,6 @@
 package com.softwaremill.codebrag
 
 import akka.actor.Props
-import com.softwaremill.codebrag.service.commits.jgit.EventLogger
 import com.softwaremill.codebrag.common.Event
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.commits.CommitReviewTaskGenerator
@@ -11,6 +10,7 @@ import pl.softwaremill.common.util.time.Clock
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.service.followups.FollowupsGenerator
 import com.softwaremill.codebrag.domain.reactions.CommitLiked
+import com.softwaremill.codebrag.service.events.EventLogger
 
 trait EventingConfiguration extends ActorSystemSupport {
 
@@ -19,11 +19,11 @@ trait EventingConfiguration extends ActorSystemSupport {
   def commitInfoDao: CommitInfoDAO
   def followupDao: FollowupDAO
 
-  val debugLogger = actorSystem.actorOf(Props(classOf[EventLogger]))
+  val eventLogger = actorSystem.actorOf(Props(classOf[EventLogger]))
   val reviewTaskGeneratorActor = actorSystem.actorOf(Props(new CommitReviewTaskGenerator(userDao, commitReviewTaskDao, commitInfoDao)))
   val followupGeneratorActor = actorSystem.actorOf(Props(new FollowupsGenerator(followupDao, userDao, commitInfoDao)))
 
-  actorSystem.eventStream.subscribe(debugLogger, classOf[Event])
+  actorSystem.eventStream.subscribe(eventLogger, classOf[Event])
   actorSystem.eventStream.subscribe(reviewTaskGeneratorActor, classOf[CommitsUpdatedEvent])
   actorSystem.eventStream.subscribe(reviewTaskGeneratorActor, classOf[NewUserRegistered])
   actorSystem.eventStream.subscribe(followupGeneratorActor, classOf[CommitLiked])
