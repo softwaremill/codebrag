@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionSe
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
 import service.followups.FollowupService
 import service.commits._
-import com.softwaremill.codebrag.service.user.{GitHubEmptyAuthenticator, UserPasswordAuthenticator, Authenticator}
+import com.softwaremill.codebrag.service.user.{GitHubAuthService, GitHubEmptyAuthenticator, UserPasswordAuthenticator, Authenticator}
 import pl.softwaremill.common.util.time.RealTimeClock
 import com.softwaremill.codebrag.service.commits.jgit.JgitGitHubCommitImportServiceFactory
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus

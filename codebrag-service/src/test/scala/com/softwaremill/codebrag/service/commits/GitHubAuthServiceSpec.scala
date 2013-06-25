@@ -7,6 +7,7 @@ import org.mockito.Mockito._
 import org.eclipse.egit.github.core.service.UserService
 import org.mockito.BDDMockito
 import com.softwaremill.codebrag.service.config.GithubConfig
+import com.softwaremill.codebrag.service.user.GitHubAuthService
 
 class GitHubAuthServiceSpec extends FlatSpec with MockitoSugar with GivenWhenThen {
   behavior of "GitHub Auth Service"

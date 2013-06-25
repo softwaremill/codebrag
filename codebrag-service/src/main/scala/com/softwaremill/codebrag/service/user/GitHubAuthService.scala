@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.commits
+package com.softwaremill.codebrag.service.user
 
 import dispatch._
 import org.json4s.jackson.JsonMethods._
