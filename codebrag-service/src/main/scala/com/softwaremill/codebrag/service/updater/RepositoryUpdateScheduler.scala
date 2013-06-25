@@ -33,6 +33,6 @@ object RepositoryUpdateScheduler extends Logging {
     actorSystem.scheduler.schedule(60 seconds,
       45 seconds,
       updaterActor,
-      LocalRepositoryUpdater.Tick)
+      LocalRepositoryUpdater.UpdateCommand)
   }
 }

@@ -7,11 +7,11 @@ import com.softwaremill.codebrag.service.github.GitHubCommitImportService
 class LocalRepositoryUpdater(owner: String, repositoryName: String, importService: GitHubCommitImportService) extends Actor with Logging {
 
   def receive = {
-    case LocalRepositoryUpdater.Tick =>
+    case LocalRepositoryUpdater.UpdateCommand =>
       importService.importRepoCommits(owner, repositoryName)
   }
 }
 
 object LocalRepositoryUpdater {
-  val Tick = "Tick"
+  val UpdateCommand = "UpdateCommand"
 }
