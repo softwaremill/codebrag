@@ -1,14 +1,6 @@
 describe("Current Commit", function () {
 
-    var rootScope;
-
-    beforeEach(module('codebrag.common'));
-
-    beforeEach(inject(function ($rootScope) {
-        rootScope = $rootScope;
-    }));
-
-    it('should add some likes to a line', inject(function () {
+    it('should add some likes to a line', function () {
         // Given
         var emptyCommitData = _emptyCommitData();
         var like1 = _randomLike();
@@ -26,9 +18,9 @@ describe("Current Commit", function () {
         expect(likes.length).toBe(2);
         expect(likes[0]).toBe(like1);
         expect(likes[1]).toBe(like2);
-    }));
+    });
 
-    it('should add some likes to different files and lines', inject(function () {
+    it('should add some likes to different files and lines', function () {
         // Given
         var emptyCommitData = _emptyCommitData();
         var like1 = _randomLike();
@@ -60,9 +52,9 @@ describe("Current Commit", function () {
         var likes3 = commit.lineReactions[fileName2][lineNumber1File2]['likes'];
         expect(likes3.length).toBe(1);
         expect(likes3[0]).toBe(like3);
-    }));
+    });
 
-    it('should correctly recognize author of commit', inject(function() {
+    it('should correctly recognize author of commit', function() {
         // Given
         var emptyCommitData = _emptyCommitData();
         var commit = new codebrag.CurrentCommit(emptyCommitData);
@@ -70,9 +62,9 @@ describe("Current Commit", function () {
         // Then
         expect(commit.isUserAuthorOfCommit('Author Name')).toBeTruthy();
         expect(commit.isUserAuthorOfCommit('Non-author Name')).toBeFalsy();
-    }));
+    });
 
-    it('should correctly determine whether a user already liked a line or not', inject(function() {
+    it('should correctly determine whether a user already liked a line or not', function() {
         // Given
         var emptyCommitData = _emptyCommitData();
         var commit = new codebrag.CurrentCommit(emptyCommitData);
@@ -85,9 +77,9 @@ describe("Current Commit", function () {
         expect(commit.userAlreadyLikedLine('Author Name', fileName, lineNumber)).toBeTruthy();
         expect(commit.userAlreadyLikedLine('Author Name', fileName, lineNumber + 1)).toBeFalsy();
         expect(commit.userAlreadyLikedLine('Other User Name', fileName, lineNumber)).toBeFalsy();
-    }));
+    });
 
-    it('should add general likes to a commit', inject(function() {
+    it('should add general likes to a commit', function() {
         // Given
         var emptyCommitData = _emptyCommitData();
         var commit = new codebrag.CurrentCommit(emptyCommitData);
@@ -101,9 +93,9 @@ describe("Current Commit", function () {
         expect(likes.length).toBe(2);
         expect(likes[0]).toEqual(like1);
         expect(likes[1]).toEqual(like2);
-    }));
+    });
 
-    it('should correctly determine whether a user already liked entire commit or not', inject(function() {
+    it('should correctly determine whether a user already liked entire commit or not', function() {
         // Given
         var emptyCommitData = _emptyCommitData();
         var commit = new codebrag.CurrentCommit(emptyCommitData);
@@ -113,16 +105,16 @@ describe("Current Commit", function () {
         // Then
         expect(commit.userAlreadyLikedCommit('Author Name')).toBeTruthy();
         expect(commit.userAlreadyLikedCommit('Other User Name')).toBeFalsy();
-    }));
+    });
 
-    it('should say that user did not like a commit if there are no likes for commit', inject(function() {
+    it('should say that user did not like a commit if there are no likes for commit', function() {
         // Given
         var emptyCommitData = _emptyCommitData();
         var commit = new codebrag.CurrentCommit(emptyCommitData);
 
         // Then
         expect(commit.userAlreadyLikedCommit('Author Name')).toBeFalsy();
-    }));
+    });
 
     function _emptyCommitData() {
         return {
