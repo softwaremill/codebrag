@@ -14,10 +14,10 @@ import com.softwaremill.codebrag.domain.reactions.CommitLiked
 
 trait EventingConfiguration extends ActorSystemSupport {
 
-  val userDao: UserDAO
-  val commitReviewTaskDao: CommitReviewTaskDAO
-  val commitInfoDao: CommitInfoDAO
-  val followupDao: FollowupDAO
+  def userDao: UserDAO
+  def commitReviewTaskDao: CommitReviewTaskDAO
+  def commitInfoDao: CommitInfoDAO
+  def followupDao: FollowupDAO
 
   val debugLogger = actorSystem.actorOf(Props(classOf[EventLogger]))
   val reviewTaskGeneratorActor = actorSystem.actorOf(Props(new CommitReviewTaskGenerator(userDao, commitReviewTaskDao, commitInfoDao)))
