@@ -14,13 +14,13 @@ class DebugServlet(importerFactory: GitHubCommitImportServiceFactory,
   override def password = configuration.debugServicesPassword
 
   get("/resetAll") {
+    basicAuth()
     dropAllDataExceptUsers()
     triggerRepositoryUpdate()
     "Reset successfull."
   }
 
   def triggerRepositoryUpdate() {
-    basicAuth()
     val importService = importerFactory.createInstance(configuration.codebragSyncUserLogin)
     importService.importRepoCommits(configuration.repositoryOwner, configuration.repositoryName)
   }
