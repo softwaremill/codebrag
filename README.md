@@ -27,6 +27,13 @@ Skipping slow tests
 If you want to execute tests from sbt and skip slow cases requiring database, you can execute following command:
 `test-only * -- -l requiresDb`
 
+Logging
+---
+
+For logging we use SLF4J+Logback. An example configration file can be found in `scripts/logback-example.xml`. To use a
+configuration file, either place a `logback.xml` file in the bundle, or specify an external one using
+`-Dlogback.configurationFile`.
+
 Create distribution
 ---
 
@@ -35,5 +42,5 @@ Create distribution
 3. This will create a fat-jar. To start Codebrag with the given configuration, run:
 
 ````
-java -Dconfig.file=[path to .conf file] -jar codebrag-dist-assembly-[version].jar
+java -Dconfig.file=[path to .conf file] -Dlogback.configurationFile=logback.xml -jar codebrag-dist-assembly-[version].jar
 ````
