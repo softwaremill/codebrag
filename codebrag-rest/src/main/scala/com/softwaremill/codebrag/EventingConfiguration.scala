@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag
 
 import akka.actor.Props
-import com.softwaremill.codebrag.service.github.jgit.DebugEventLogger
+import com.softwaremill.codebrag.service.github.jgit.EventLogger
 import com.softwaremill.codebrag.common.Event
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.github.CommitReviewTaskGenerator
@@ -19,7 +19,7 @@ trait EventingConfiguration extends ActorSystemSupport {
   val commitInfoDao: CommitInfoDAO
   val followupDao: FollowupDAO
 
-  val debugLogger = actorSystem.actorOf(Props(classOf[DebugEventLogger]))
+  val debugLogger = actorSystem.actorOf(Props(classOf[EventLogger]))
   val reviewTaskGeneratorActor = actorSystem.actorOf(Props(new CommitReviewTaskGenerator(userDao, commitReviewTaskDao, commitInfoDao)))
   val followupGeneratorActor = actorSystem.actorOf(Props(new FollowupsGenerator(followupDao, userDao, commitInfoDao)))
 
