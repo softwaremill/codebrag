@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.user
 
 import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.service.data.UserJson
-import com.softwaremill.codebrag.domain.{Authentication, User}
+import com.softwaremill.codebrag.domain.Authentication
 import com.softwaremill.codebrag.service.github.CommitReviewTaskGeneratorActions
 import com.softwaremill.codebrag.common.EventBus
 import com.typesafe.scalalogging.slf4j.Logging
@@ -29,19 +29,8 @@ trait Authenticator {
 class UserPasswordAuthenticator(val userDAO: UserDAO, eventBus: EventBus, reviewTaskGenerator: CommitReviewTaskGeneratorActions) extends Authenticator with Logging {
 
   def authenticate(login: String, nonEncryptedPassword: String): Option[UserJson] = {
-    val userOpt: Option[User] = userDAO.findByLoginOrEmail(login)
-    userOpt match {
-      case Some(u) => {
-        if(Authentication.passwordsMatch(nonEncryptedPassword, u.authentication)) {
-          Some(UserJson(u))
-        } else {
-          None
-        }
-      }
-      case _ => {
-        None
-      }
-    }
+    val userOpt = userDAO.findByLoginOrEmail(login)
+    userOpt.filter(user => Authentication.passwordsMatch(nonEncryptedPassword, user.authentication)).map(UserJson(_))
   }
 
 }
@@ -49,11 +38,7 @@ class UserPasswordAuthenticator(val userDAO: UserDAO, eventBus: EventBus, review
 class GitHubEmptyAuthenticator(val userDAO: UserDAO) extends Authenticator with Logging {
 
   def authenticate(login: String, nonEncryptedPassword: String): Option[UserJson] = {
-    val userOpt: Option[User] = userDAO.findByLoginOrEmail(login)
-    userOpt match {
-      case Some(u) => Some(UserJson(u))
-      case _ => None
-    }
+    userDAO.findByLoginOrEmail(login).map(UserJson(_))
   }
 
 }

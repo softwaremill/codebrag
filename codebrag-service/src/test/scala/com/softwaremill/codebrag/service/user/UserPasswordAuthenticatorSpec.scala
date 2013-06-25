@@ -53,7 +53,7 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
 
   it should "return None when user not found" in {
     // given
-    given(userDAOMock.findByLowerCasedLogin(fixtureLogin)).willReturn(None)
+    given(userDAOMock.findByLoginOrEmail(fixtureLogin)).willReturn(None)
 
     // when
     val userOpt = authenticator.authenticate(fixtureLogin, fixturePassword)
