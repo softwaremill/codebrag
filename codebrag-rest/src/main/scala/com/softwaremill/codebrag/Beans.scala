@@ -36,9 +36,7 @@ trait Beans extends ActorSystemSupport {
   lazy val swagger = new CodebragSwagger
   lazy val ghService = new GitHubAuthService(config)
   lazy val commentDao = new MongoCommitCommentDAO
-  lazy val githubClientProvider = new GitHubClientProvider(userDao)
   lazy val notificationCountFinder = new MongoNotificationCountFinder
-  lazy val converter = new GitHubCommitInfoConverter()
   lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
   lazy val importerFactory = new JgitGitHubCommitImportServiceFactory(commitInfoDao, userDao, eventBus, config)
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
