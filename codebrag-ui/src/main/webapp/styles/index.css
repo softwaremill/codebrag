@@ -764,6 +764,39 @@ a.uservoice-btn {
 .diff-file-container tr.comments-container td {
   padding: 1.15em 1.15em 0;
 }
+.diff-file-container tr.removed.liked-by-user,
+.diff-file-container tr.added.liked-by-user {
+  background: rgba(243,114,11,0.26);
+}
+.diff-file-container tr.removed.liked-by-user .diff-line-num,
+.diff-file-container tr.added.liked-by-user .diff-line-num {
+  background: rgba(243,114,11,0.26);
+}
+.diff-file-container tr.removed.liked-by-user .diff-line-num .like.button,
+.diff-file-container tr.added.liked-by-user .diff-line-num .like.button {
+  background: #f3720b;
+}
+.diff-file-container tr.removed.liked-by-user .diff-line-num .like.button .icon-heart,
+.diff-file-container tr.added.liked-by-user .diff-line-num .like.button .icon-heart {
+  color: #b95015;
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+}
+.diff-file-container tr.removed.liked-by-user .diff-line-num .like.button .diff-line-num-content,
+.diff-file-container tr.added.liked-by-user .diff-line-num .like.button .diff-line-num-content {
+  opacity: 0;
+  filter: alpha(opacity=0);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+}
+.diff-file-container tr.removed.liked,
+.diff-file-container tr.added.liked {
+  background: rgba(243,114,11,0.26);
+}
+.diff-file-container tr.removed.liked .diff-line-num,
+.diff-file-container tr.added.liked .diff-line-num {
+  background: rgba(243,114,11,0.26);
+}
 tbody tr.comments-container:last-child {
   border-bottom: 1px solid #d1cbb9;
 }
@@ -829,12 +862,11 @@ tr:hover .diff-line-num .button i {
 .like-commit span {
   display: inline-block;
   margin-top: 0.3em;
-  text-transform: uppercase;
   vertical-align: top;
 }
 .diff-file-container tr.inline-likes {
-  background: #f3720b;
-  color: #fff;
+  background: #f7f5ef;
+  color: #f3720b;
   padding: 0;
 }
 .diff-file-container tr.inline-likes td {
@@ -846,7 +878,6 @@ tr:hover .diff-line-num .button i {
 .likes-list {
   display: inline;
   list-style: none;
-  margin-left: 5px;
   padding: 0;
 }
 .likes-list li {
