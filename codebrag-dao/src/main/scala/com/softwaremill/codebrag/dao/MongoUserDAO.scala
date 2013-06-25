@@ -85,7 +85,7 @@ class MongoUserDAO extends UserDAO {
 
 }
 
-private class UserRecord extends MongoRecord[UserRecord] with ObjectIdPk[UserRecord] {
+class UserRecord extends MongoRecord[UserRecord] with ObjectIdPk[UserRecord] {
   def meta = UserRecord
 
   object authentication extends BsonRecordField(this, AuthenticationRecord)
@@ -100,11 +100,11 @@ private class UserRecord extends MongoRecord[UserRecord] with ObjectIdPk[UserRec
 
 }
 
-private object UserRecord extends UserRecord with MongoMetaRecord[UserRecord] {
+object UserRecord extends UserRecord with MongoMetaRecord[UserRecord] {
   override def collectionName = "users"
 }
 
-private class AuthenticationRecord extends BsonRecord[AuthenticationRecord] {
+class AuthenticationRecord extends BsonRecord[AuthenticationRecord] {
   def meta = AuthenticationRecord
 
   object provider extends LongStringField(this)
@@ -118,4 +118,4 @@ private class AuthenticationRecord extends BsonRecord[AuthenticationRecord] {
   object salt extends LongStringField(this)
 }
 
-private object AuthenticationRecord extends AuthenticationRecord with BsonMetaRecord[AuthenticationRecord]
+object AuthenticationRecord extends AuthenticationRecord with BsonMetaRecord[AuthenticationRecord]

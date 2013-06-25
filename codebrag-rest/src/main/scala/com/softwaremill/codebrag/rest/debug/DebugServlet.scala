@@ -5,6 +5,7 @@ import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 import net.liftweb.mongodb.record.MongoMetaRecord
 import com.softwaremill.codebrag.dao._
 import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig}
+import com.foursquare.rogue.LiftRogue._
 
 class DebugServlet(importerFactory: GitHubCommitImportServiceFactory,
                    configuration: CodebragConfig with RepositoryConfig)
@@ -15,7 +16,7 @@ class DebugServlet(importerFactory: GitHubCommitImportServiceFactory,
 
   get("/resetAll") {
     basicAuth()
-    dropAllDataExceptUsers()
+    dropAllDataExceptInitialUsers()
     triggerRepositoryUpdate()
     "Reset successfull."
   }
@@ -25,7 +26,7 @@ class DebugServlet(importerFactory: GitHubCommitImportServiceFactory,
     importService.importRepoCommits(configuration.repositoryOwner, configuration.repositoryName)
   }
 
-  def dropAllDataExceptUsers() {
+  def dropAllDataExceptInitialUsers() {
 
     val list: List[MongoMetaRecord[_]] = List(
       CommitInfoRecord,
@@ -35,8 +36,14 @@ class DebugServlet(importerFactory: GitHubCommitImportServiceFactory,
       LikeRecord
     )
     list.foreach(_.drop)
+    deleteUsersExcludingInitial()
   }
 
+  def deleteUsersExcludingInitial() {
+    UserRecord.where(_.authentication.subfield(_.provider) eqs "GitHub").
+               and(_.authentication.subfield(_.usernameLowerCase) neqs "codebrag").
+               bulkDelete_!!!
+  }
 }
 
 object DebugServlet {
