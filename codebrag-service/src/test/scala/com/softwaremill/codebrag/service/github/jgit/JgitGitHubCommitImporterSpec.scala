@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.github.jgit
 
 import org.scalatest.mock.MockitoSugar
-import com.softwaremill.codebrag.service.github.{RepoData, TestCodebragConfig, FlatSpecWithGit, GitHubCommitImportService}
+import com.softwaremill.codebrag.service.github.{RepoData, TestCodebragConfig, FlatSpecWithGit, CommitImportService}
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.mockito.{ArgumentCaptor, ArgumentMatcher}
 import org.mockito.Mockito._
@@ -16,8 +16,8 @@ import com.softwaremill.codebrag.service.events.MockEventBus
 class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar with MockEventBus {
 
   var commitInfoDaoMock: CommitInfoDAO = _
-  var service: GitHubCommitImportService = _
-  var supplementaryService: GitHubCommitImportService = _
+  var service: CommitImportService = _
+  var supplementaryService: CommitImportService = _
   val commitInfoDaoSupplementaryStub = mock[CommitInfoDAO]
 
   before {
@@ -99,8 +99,8 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
     supplementaryService.importRepoCommits(new RepoData("codebragUser", "remoteRepoName"))
   }
 
-  private def createService(commitInfoDaoMock: CommitInfoDAO) = new GitHubCommitImportService(
-    new JgitGitHubCommitsLoader(
+  private def createService(commitInfoDaoMock: CommitInfoDAO) = new CommitImportService(
+    new JgitCommitsLoader(
       new JgitFacade(credentials),
       new InternalGitDirTree(TestCodebragConfig),
       new JgitLogConverter,

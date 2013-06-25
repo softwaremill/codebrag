@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.service.github.jgit
 
-import com.softwaremill.codebrag.service.github.{GitHubCommitImportService, GitHubCommitImportServiceFactory}
+import com.softwaremill.codebrag.service.github.{CommitImportService, GitHubCommitImportServiceFactory}
 import com.softwaremill.codebrag.dao.{UserDAO, CommitInfoDAO}
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import com.softwaremill.codebrag.common.EventBus
@@ -12,7 +12,7 @@ class JgitGitHubCommitImportServiceFactory(commitInfoDao: CommitInfoDAO,
                                            eventBus: EventBus,
                                            codebragConfiguration: CodebragConfig) extends GitHubCommitImportServiceFactory with Logging {
 
-  def createInstance(login: String): GitHubCommitImportService = {
+  def createInstance(login: String): CommitImportService = {
     val importingUserOpt = userDao.findByLoginOrEmail(login)
 
       val token = importingUserOpt match {
@@ -24,8 +24,8 @@ class JgitGitHubCommitImportServiceFactory(commitInfoDao: CommitInfoDAO,
       }
     val credentials = new UsernamePasswordCredentialsProvider(token, "")
     val uriBuilder = new GitHubRemoteUriBuilder
-    new GitHubCommitImportService(
-      new JgitGitHubCommitsLoader(
+    new CommitImportService(
+      new JgitCommitsLoader(
         new JgitFacade(credentials),
         new InternalGitDirTree(codebragConfiguration),
         new JgitLogConverter,

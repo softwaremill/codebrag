@@ -12,11 +12,11 @@ import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.events.MockEventBus
 
-class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with MockEventBus {
+class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with MockEventBus {
 
-  var commitsLoader: GitHubCommitsLoader = _
+  var commitsLoader: CommitsLoader = _
   var commitInfoDao: CommitInfoDAO = _
-  var service: GitHubCommitImportService = _
+  var service: CommitImportService = _
 
   val repoOwner = "johndoe"
   val repoName = "project"
@@ -24,9 +24,9 @@ class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with Befo
 
   before {
     eventBus.clear()
-    commitsLoader = mock[GitHubCommitsLoader]
+    commitsLoader = mock[CommitsLoader]
     commitInfoDao = mock[CommitInfoDAO]
-    service = new GitHubCommitImportService(commitsLoader, commitInfoDao, eventBus)
+    service = new CommitImportService(commitsLoader, commitInfoDao, eventBus)
   }
 
   it should "not store anything when no new commits available" in {

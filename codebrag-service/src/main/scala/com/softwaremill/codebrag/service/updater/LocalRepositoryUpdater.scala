@@ -2,9 +2,9 @@ package com.softwaremill.codebrag.service.updater
 
 import akka.actor.Actor
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.service.github.{RepoData, GitHubCommitImportService}
+import com.softwaremill.codebrag.service.github.{RepoData, CommitImportService}
 
-class LocalRepositoryUpdater(repoData: RepoData, importService: GitHubCommitImportService) extends Actor with Logging {
+class LocalRepositoryUpdater(repoData: RepoData, importService: CommitImportService) extends Actor with Logging {
 
   def receive = {
     case LocalRepositoryUpdater.UpdateCommand =>

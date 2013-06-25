@@ -1,14 +1,14 @@
 package com.softwaremill.codebrag.service.github.jgit
 
-import com.softwaremill.codebrag.service.github.{RepoData, GitHubCommitsLoader}
+import com.softwaremill.codebrag.service.github.{RepoData, CommitsLoader}
 import com.softwaremill.codebrag.domain.CommitInfo
 import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.JavaConversions._
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.eclipse.jgit.lib.ObjectId
 
-class JgitGitHubCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirTree, converter: JgitLogConverter, uriBuilder: RemoteGitUriBuilder,
-                              commitInfoDao: CommitInfoDAO) extends GitHubCommitsLoader with Logging {
+class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirTree, converter: JgitLogConverter, uriBuilder: RemoteGitUriBuilder,
+                              commitInfoDao: CommitInfoDAO) extends CommitsLoader with Logging {
 
   def loadMissingCommits(repoData: RepoData): List[CommitInfo] = {
 
