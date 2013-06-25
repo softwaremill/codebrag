@@ -157,8 +157,10 @@ angular.module('codebrag.commits')
 
         var fileDiffRootSelector = 'table';
         var lineReactionsSelector = '[data-inline-reactions-container]';
+        var codeRowSelector = '[data-code-row]'
 
         var lineNumberDataAttr = 'line-number';
+
 
         function FileReactions(baseElement, fileReactions) {
 
@@ -166,7 +168,7 @@ angular.module('codebrag.commits')
                 _.forEach(fileReactions, function(lineReactions, lineNumber) {
                     var diffLine = _getCorrespondingLineDOMElement(lineNumber);
                     if(_lineHasNoReactionsYet(diffLine)) {
-                        diffLine.find('tr:first').after(lineReactionsTemplate);
+                        diffLine.find(codeRowSelector).after(lineReactionsTemplate);
                         codebrag.diffReactionsDOMReferenceCacheAndResizer.addElementsAndResizeAll(diffLine);
                         afterDOMInsertCallback(diffLine, lineReactions);
                     }
