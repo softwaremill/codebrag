@@ -1,5 +1,7 @@
 package com.softwaremill.codebrag.service.github.jgit
 
+import com.softwaremill.codebrag.service.github.RepoData
+
 trait RemoteGitUriBuilder {
-  def build(ownerName: String, repoName: String): String
+  def build(repoData: RepoData): String
 }

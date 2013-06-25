@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.rest.debug
 
 import com.softwaremill.codebrag.rest.JsonServlet
-import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
+import com.softwaremill.codebrag.service.github.{RepoData, GitHubCommitImportServiceFactory}
 import net.liftweb.mongodb.record.MongoMetaRecord
 import com.softwaremill.codebrag.dao._
 import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig}
@@ -23,7 +23,7 @@ class DebugServlet(importerFactory: GitHubCommitImportServiceFactory,
 
   def triggerRepositoryUpdate() {
     val importService = importerFactory.createInstance(configuration.codebragSyncUserLogin)
-    importService.importRepoCommits(configuration.repositoryOwner, configuration.repositoryName)
+    importService.importRepoCommits(new RepoData(configuration.repositoryOwner, configuration.repositoryName))
   }
 
   def dropAllDataExceptInitialUsers() {

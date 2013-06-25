@@ -10,7 +10,6 @@ import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.util.FileUtils
 import com.softwaremill.codebrag.service.github.jgit.{RemoteGitUriBuilder, InternalGitDirTree}
 import com.google.common.io.Files
-import com.softwaremill.codebrag.service.config.CodebragConfig
 
 trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
 
@@ -19,7 +18,7 @@ trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
   def credentials = new UsernamePasswordCredentialsProvider("codebrag-user", "")
 
   val uriBuilder = new RemoteGitUriBuilder {
-    def build(ownerName: String, repoName: String): String = testRepoPath
+    def build(repoData: RepoData): String = testRepoPath
   }
 
   def testRepoPath = testRepo.getCanonicalPath

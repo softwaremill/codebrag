@@ -4,7 +4,7 @@ import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.eclipse.jgit.util.FileUtils
 import java.io.File
-import com.softwaremill.codebrag.service.github.TestCodebragConfig
+import com.softwaremill.codebrag.service.github.{RepoData, TestCodebragConfig}
 
 class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter {
 
@@ -22,7 +22,7 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
 
   it should "not contain a repository if root directory does not exist" in {
     // given no root directory
-    dirTree.containsRepo("someOwner", "someRepo") should be(false)
+    dirTree.containsRepo(new RepoData("someOwner", "someRepo")) should be(false)
   }
 
 
@@ -30,7 +30,7 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
     // given
     givenExistingRootDirectory()
     // when
-    dirTree.containsRepo("someOwner", "someRepo") should be(false)
+    dirTree.containsRepo(new RepoData("someOwner", "someRepo")) should be(false)
   }
 
   it should "not contain a repository if there's owner directory but no repository directory" in {
@@ -38,7 +38,7 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
     givenExistingRootDirectory()
     givenExistingRepository("softwaremill", "someOtherProject")
     // when
-    dirTree.containsRepo("softwaremill", "codebrag") should be(false)
+    dirTree.containsRepo(new RepoData("softwaremill", "codebrag")) should be(false)
   }
 
   it should "contain a repository if its directory exists" in {
@@ -46,7 +46,7 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
     givenExistingRootDirectory()
     givenExistingRepository("softwaremill", "codebrag")
     // when
-    dirTree.containsRepo("softwaremill", "codebrag") should be(true)
+    dirTree.containsRepo(new RepoData("softwaremill", "codebrag")) should be(true)
   }
 
   def deleteRootDirectoryRecursively() {
