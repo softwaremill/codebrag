@@ -29,7 +29,7 @@ email {
 }
 
 codebrag {
-    local-git-path = "."
+    local-git-storage-path = "."
     sync-user-login = ""
     debug-services-login = "codebrag"
     debug-services-password = "codebrag"

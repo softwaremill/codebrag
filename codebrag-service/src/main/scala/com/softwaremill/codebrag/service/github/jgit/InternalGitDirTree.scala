@@ -6,8 +6,8 @@ import org.eclipse.jgit.util.StringUtils._
 
 class InternalGitDirTree(codebragConfig: CodebragConfig) {
   val root = (
-    if (!isEmptyOrNull(codebragConfig.codebragLocalGitPath))
-      codebragConfig.codebragLocalGitPath
+    if (!isEmptyOrNull(codebragConfig.localGitStoragePath))
+      codebragConfig.localGitStoragePath
     else ".") + "/repos"
 
   def containsRepo(owner: String, repoName: String): Boolean = {
