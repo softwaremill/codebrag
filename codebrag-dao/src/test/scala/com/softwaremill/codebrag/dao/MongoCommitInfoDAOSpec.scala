@@ -69,7 +69,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     // given nothing stored
 
     // when
-    val commits = commitInfoDAO.findLast(10)
+    val commits = commitInfoDAO.findNewestCommits(10)
 
     // then
     commits should be('empty)
@@ -86,7 +86,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     tenCommitsMadeEventEarlier.foreach(commitInfoDAO.storeCommit(_))
 
     // when
-    val commits = commitInfoDAO.findLast(10)
+    val commits = commitInfoDAO.findNewestCommits(10)
 
     // then
     commits should equal(tenCommitsOnFixtureTime)

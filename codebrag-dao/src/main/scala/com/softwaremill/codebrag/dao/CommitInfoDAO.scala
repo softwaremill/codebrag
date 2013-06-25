@@ -14,7 +14,7 @@ trait CommitInfoDAO {
 
   def findByCommitId(commitId: ObjectId): Option[CommitInfo]
 
-  def findLast(count: Int): List[CommitInfo]
+  def findNewestCommits(count: Int): List[CommitInfo]
 
   def findAllSha(): Set[String]
 

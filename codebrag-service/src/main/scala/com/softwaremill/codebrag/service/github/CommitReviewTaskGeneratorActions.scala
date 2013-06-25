@@ -17,7 +17,7 @@ trait CommitReviewTaskGeneratorActions extends Logging {
   val commitInfoDao: CommitInfoDAO
 
   def handleNewUserRegistered(event: NewUserRegistered) {
-    val commitsToReview = commitInfoDao.findLast(CommitReviewTaskGeneratorActions.LastCommitsToReviewCount)
+    val commitsToReview = commitInfoDao.findNewestCommits(CommitReviewTaskGeneratorActions.LastCommitsToReviewCount)
     val tasks = commitsToReview.filterNot(commitAuthoredByUser(_, event)).map(commit => {CommitReviewTask(commit.id, event.id)})
     logger.debug(s"Generating ${tasks.length} tasks for newly registered user: $event")
     tasks.foreach(commitToReviewDao.save(_))

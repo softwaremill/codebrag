@@ -29,7 +29,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
   override def findLastSha(): Option[String] = {
     CommitInfoRecord orderDesc(_.committerDate) andDesc(_.authorDate) get() map(_.sha.get)
   }
-  def findLast(count: Int): List[CommitInfo] = {
+  def findNewestCommits(count: Int): List[CommitInfo] = {
     CommitInfoRecord orderDesc(_.committerDate) andDesc(_.authorDate) limit count fetch()
   }
   override def findAllSha(): Set[String] = {
