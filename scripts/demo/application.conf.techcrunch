@@ -1,0 +1,41 @@
+mongo {
+    servers = "localhost:27017"
+    database = "codebrag"
+}
+
+repository {
+    owner = "maciej"
+    name = "GameOfLife2"
+}
+
+aws {
+    access-key-id = ""
+    secret-access-key = ""
+}
+
+github {
+    client-id = "c91fd4edeee1d9a4a056"
+    client-secret = "16713ce0cdfe2392b64e020a34a295975a881224"
+}
+
+email {
+    smtp-host = ""
+    smtp-port = ""
+    smtp-username = ""
+    smtp-password = ""
+    from = ""
+    sqs-task-queue = ""
+    encoding = "UTF-8"
+}
+
+codebrag {
+    local-git-path = "."
+    sync-user-login = "codebrag"
+    debug-services-login = "codebrag"
+    debug-services-password = "$c0debr4g"
+}
+
+web-server {
+    host = "0.0.0.0"
+    port = 8080
+}
