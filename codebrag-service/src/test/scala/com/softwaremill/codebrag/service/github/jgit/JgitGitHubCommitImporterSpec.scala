@@ -11,9 +11,9 @@ import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import org.mockito.Matchers._
 import scala.collection.JavaConversions._
-import com.softwaremill.codebrag.service.events.FakeEventBus
+import com.softwaremill.codebrag.service.events.MockEventBus
 
-class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar with FakeEventBus {
+class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar with MockEventBus {
 
   var commitInfoDaoMock: CommitInfoDAO = _
   var service: GitHubCommitImportService = _

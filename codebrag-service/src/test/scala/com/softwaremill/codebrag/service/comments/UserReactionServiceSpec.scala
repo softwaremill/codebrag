@@ -9,11 +9,11 @@ import org.mockito.Mockito._
 import org.mockito.Matchers._
 import com.softwaremill.codebrag.domain._
 import com.softwaremill.codebrag.service.comments.command.{IncomingLike, IncomingComment}
-import com.softwaremill.codebrag.service.events.FakeEventBus
+import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.domain.reactions.CommitLiked
 import org.mockito.ArgumentCaptor
 
-class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with FakeEventBus {
+class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with MockEventBus {
 
   var userReactionService: UserReactionService = _
   var commentDaoMock: CommitCommentDAO = _
@@ -53,7 +53,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
 
   it should "return created comment as a result" in {
     // when
-    val savedComment = userReactionService.storeComment(CommentForCommit).asInstanceOf[Comment]
+    val savedComment = userReactionService.storeComment(CommentForCommit)
 
     // then
     savedComment.commitId should equal(CommentForCommit.commitId)
@@ -66,7 +66,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
     // given
 
     // when
-    val savedComment = userReactionService.storeComment(InlineCommentForCommit).asInstanceOf[Comment]
+    val savedComment = userReactionService.storeComment(InlineCommentForCommit)
 
     // then
     savedComment.lineNumber should equal(InlineCommentForCommit.lineNumber)

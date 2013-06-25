@@ -9,13 +9,10 @@ import org.mockito.BDDMockito._
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.service.data.UserJson
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.service.events.FakeEventBus
+import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.service.github.CommitReviewTaskGeneratorActions
-import org.eclipse.jgit.util.StringUtils
-import com.softwaremill.codebrag.dao.events.NewUserRegistered
-import org.mockito.ArgumentCaptor
 
-class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with FakeEventBus {
+class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with MockEventBus {
 
   var userDAO: UserDAO = _
   var authenticator: Authenticator = _

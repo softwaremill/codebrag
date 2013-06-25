@@ -10,9 +10,9 @@ import org.mockito.BDDMockito._
 import com.softwaremill.codebrag.domain.{CommitsUpdatedEvent, CommitInfo}
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.service.events.FakeEventBus
+import com.softwaremill.codebrag.service.events.MockEventBus
 
-class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with FakeEventBus {
+class GitHubCommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with MockEventBus {
 
   var commitsLoader: GitHubCommitsLoader = _
   var commitInfoDao: CommitInfoDAO = _

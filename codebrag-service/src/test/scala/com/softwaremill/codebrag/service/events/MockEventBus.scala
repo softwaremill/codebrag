@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.events
 
 import com.softwaremill.codebrag.common.{EventBus, Event}
 
-trait FakeEventBus {
+trait MockEventBus {
 
   var events = new scala.collection.mutable.ListBuffer[Event]
 
