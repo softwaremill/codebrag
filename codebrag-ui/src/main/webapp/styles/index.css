@@ -864,6 +864,12 @@ tr:hover .diff-line-num .button i {
   margin-top: 0.3em;
   vertical-align: top;
 }
+.like-commit.liked-by-user .like.button {
+  background: #f3720b;
+}
+.like-commit.liked-by-user .like.button .icon-heart {
+  color: #b95015;
+}
 .diff-file-container tr.inline-likes {
   background: #f7f5ef;
   color: #f3720b;
