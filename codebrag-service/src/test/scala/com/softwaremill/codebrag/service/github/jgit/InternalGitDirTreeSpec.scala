@@ -50,13 +50,14 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
   }
 
   def deleteRootDirectoryRecursively() {
-    FileUtils.delete(new File(dirTree.root), FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
+    FileUtils.delete(dirTree.root.toFile, FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
   }
 
   def givenExistingRootDirectory() {
-    FileUtils.mkdirs(new File(dirTree.root))
+    FileUtils.mkdirs(dirTree.root.toFile)
   }
 
-  def givenExistingRepository(owner: String, repository: String) =
-    FileUtils.mkdirs(new File(s"${dirTree.root}/$owner/$repository"))
+  def givenExistingRepository(owner: String, repository: String) {
+    FileUtils.mkdirs(dirTree.root.resolve(owner).resolve(repository).toFile)
+  }
 }
