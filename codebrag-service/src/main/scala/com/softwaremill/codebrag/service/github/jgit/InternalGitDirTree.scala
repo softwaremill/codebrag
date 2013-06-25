@@ -11,9 +11,9 @@ class InternalGitDirTree(codebragConfig: CodebragConfig) {
       codebragConfig.localGitStoragePath
     else ".") + "/repos"
 
-  def containsRepo(repoData: RepoData): Boolean = {
-    getPath(repoData).toFile.exists()
-  }
+  val rootPath = Paths.get(root)
 
-  def getPath(repoData: RepoData): Path = Paths.get(s"$root/${repoData.repoOwner}/${repoData.repoName}")
+  def containsRepo(repoData: RepoData): Boolean = getPath(repoData).toFile.exists()
+
+  def getPath(repoData: RepoData): Path = repoData.localPathRelativeTo(rootPath)
 }

@@ -7,12 +7,12 @@ import scala.collection.JavaConversions._
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.eclipse.jgit.lib.ObjectId
 
-class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirTree, converter: JgitLogConverter, uriBuilder: RemoteGitUriBuilder,
+class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirTree, converter: JgitLogConverter,
                               commitInfoDao: CommitInfoDAO) extends CommitsLoader with Logging {
 
   def loadMissingCommits(repoData: RepoData): List[CommitInfo] = {
 
-    val remotePath = uriBuilder.build(repoData)
+    val remotePath = repoData.remoteUri
     val localPath = internalDirTree.getPath(repoData)
 
     val logCommand = if (!internalDirTree.containsRepo(repoData))

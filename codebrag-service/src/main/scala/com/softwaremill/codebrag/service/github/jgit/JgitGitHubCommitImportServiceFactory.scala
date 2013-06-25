@@ -23,13 +23,11 @@ class JgitGitHubCommitImportServiceFactory(commitInfoDao: CommitInfoDAO,
         }
       }
     val credentials = new UsernamePasswordCredentialsProvider(token, "")
-    val uriBuilder = new GitHubRemoteUriBuilder
     new CommitImportService(
       new JgitCommitsLoader(
         new JgitFacade(credentials),
         new InternalGitDirTree(codebragConfiguration),
         new JgitLogConverter,
-        uriBuilder,
         commitInfoDao),
       commitInfoDao,
       eventBus)
