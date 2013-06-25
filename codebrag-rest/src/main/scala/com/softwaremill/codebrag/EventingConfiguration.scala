@@ -1,10 +1,10 @@
 package com.softwaremill.codebrag
 
 import akka.actor.Props
-import com.softwaremill.codebrag.service.github.jgit.EventLogger
+import com.softwaremill.codebrag.service.commits.jgit.EventLogger
 import com.softwaremill.codebrag.common.Event
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
-import com.softwaremill.codebrag.service.github.CommitReviewTaskGenerator
+import com.softwaremill.codebrag.service.commits.CommitReviewTaskGenerator
 import com.softwaremill.codebrag.dao.{FollowupDAO, CommitInfoDAO, UserDAO, CommitReviewTaskDAO}
 import com.softwaremill.codebrag.domain.CommitsUpdatedEvent
 import pl.softwaremill.common.util.time.Clock

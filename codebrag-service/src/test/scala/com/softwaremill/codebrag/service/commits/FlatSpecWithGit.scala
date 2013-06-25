@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.github
+package com.softwaremill.codebrag.service.commits
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
@@ -8,7 +8,7 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.{PersonIdent, Constants}
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.util.FileUtils
-import com.softwaremill.codebrag.service.github.jgit.InternalGitDirTree
+import com.softwaremill.codebrag.service.commits.jgit.InternalGitDirTree
 import com.google.common.io.Files
 import java.nio.file.Path
 

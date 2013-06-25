@@ -1,6 +1,6 @@
-package com.softwaremill.codebrag.service.github.jgit
+package com.softwaremill.codebrag.service.commits.jgit
 
-import com.softwaremill.codebrag.service.github.{RepoData, CommitsLoader}
+import com.softwaremill.codebrag.service.commits.{RepoData, CommitsLoader}
 import com.softwaremill.codebrag.domain.CommitInfo
 import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.JavaConversions._

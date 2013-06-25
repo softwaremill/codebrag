@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.github
+package com.softwaremill.codebrag.service.commits
 
 import org.scalatest.{GivenWhenThen, FlatSpec}
 import org.scalatest.mock.MockitoSugar

@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.github
+package com.softwaremill.codebrag.service.commits
 
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import com.typesafe.scalalogging.slf4j.Logging

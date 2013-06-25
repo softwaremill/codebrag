@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.github.jgit
+package com.softwaremill.codebrag.service.commits.jgit
 
 import org.eclipse.jgit.revwalk.{RevTree, RevWalk, RevCommit}
 import org.eclipse.jgit.lib.Repository

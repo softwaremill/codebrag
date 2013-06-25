@@ -1,7 +1,7 @@
-package com.softwaremill.codebrag.service.github.jgit
+package com.softwaremill.codebrag.service.commits.jgit
 
 import org.scalatest.mock.MockitoSugar
-import com.softwaremill.codebrag.service.github.{TestCodebragConfig, FlatSpecWithGit, CommitImportService}
+import com.softwaremill.codebrag.service.commits.{TestCodebragConfig, FlatSpecWithGit, CommitImportService}
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.mockito.{ArgumentCaptor, ArgumentMatcher}
 import org.mockito.Mockito._

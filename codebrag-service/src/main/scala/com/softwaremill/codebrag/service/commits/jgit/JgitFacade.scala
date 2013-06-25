@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.github.jgit
+package com.softwaremill.codebrag.service.commits.jgit
 
 import org.eclipse.jgit.api._
 import java.nio.file.{Paths, Path}

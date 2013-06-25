@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.rest.debug
 
 import com.softwaremill.codebrag.rest.JsonServlet
-import com.softwaremill.codebrag.service.github.{GitHubRepoData, GitHubCommitImportServiceFactory}
+import com.softwaremill.codebrag.service.commits.{GitHubRepoData, GitHubCommitImportServiceFactory}
 import net.liftweb.mongodb.record.MongoMetaRecord
 import com.softwaremill.codebrag.dao._
 import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig}

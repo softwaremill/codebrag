@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.github.jgit
+package com.softwaremill.codebrag.service.commits.jgit
 
 import akka.actor.Actor
 import com.softwaremill.codebrag.common.Event

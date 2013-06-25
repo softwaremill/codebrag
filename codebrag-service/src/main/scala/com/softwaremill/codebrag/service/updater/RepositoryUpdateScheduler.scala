@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.updater
 
 import akka.actor.{Props, ActorSystem}
 import scala.concurrent.duration._
-import com.softwaremill.codebrag.service.github.{GitHubRepoData, GitHubCommitImportServiceFactory}
+import com.softwaremill.codebrag.service.commits.{GitHubRepoData, GitHubCommitImportServiceFactory}
 import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig}
 import org.eclipse.jgit.util.StringUtils
 import com.typesafe.scalalogging.slf4j.Logging

@@ -1,6 +1,6 @@
-package com.softwaremill.codebrag.service.github.jgit
+package com.softwaremill.codebrag.service.commits.jgit
 
-import com.softwaremill.codebrag.service.github.{CommitImportService, GitHubCommitImportServiceFactory}
+import com.softwaremill.codebrag.service.commits.{CommitImportService, GitHubCommitImportServiceFactory}
 import com.softwaremill.codebrag.dao.{UserDAO, CommitInfoDAO}
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import com.softwaremill.codebrag.common.EventBus

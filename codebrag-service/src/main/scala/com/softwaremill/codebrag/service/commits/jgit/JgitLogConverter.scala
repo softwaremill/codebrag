@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.github.jgit
+package com.softwaremill.codebrag.service.commits.jgit
 
 import org.eclipse.jgit.revwalk.RevCommit
 import com.softwaremill.codebrag.domain.{CommitFileInfo, CommitInfo}

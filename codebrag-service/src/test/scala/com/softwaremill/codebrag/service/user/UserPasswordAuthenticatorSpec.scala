@@ -10,7 +10,7 @@ import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.service.data.UserJson
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.events.MockEventBus
-import com.softwaremill.codebrag.service.github.CommitReviewTaskGeneratorActions
+import com.softwaremill.codebrag.service.commits.CommitReviewTaskGeneratorActions
 
 class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with MockEventBus {
 

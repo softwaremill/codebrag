@@ -8,10 +8,10 @@ import rest.CodebragSwagger
 import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
 import service.followups.FollowupService
-import service.github._
+import service.commits._
 import com.softwaremill.codebrag.service.user.{GitHubEmptyAuthenticator, UserPasswordAuthenticator, Authenticator}
 import pl.softwaremill.common.util.time.RealTimeClock
-import com.softwaremill.codebrag.service.github.jgit.JgitGitHubCommitImportServiceFactory
+import com.softwaremill.codebrag.service.commits.jgit.JgitGitHubCommitImportServiceFactory
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig, GithubConfig}

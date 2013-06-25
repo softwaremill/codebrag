@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.service.github.{CommitReviewTaskGeneratorActions, GitHubAuthService}
+import com.softwaremill.codebrag.service.commits.{CommitReviewTaskGeneratorActions, GitHubAuthService}
 import org.scalatra.{Forbidden, ScalatraServlet, SeeOther}
 import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.service.user.Authenticator
