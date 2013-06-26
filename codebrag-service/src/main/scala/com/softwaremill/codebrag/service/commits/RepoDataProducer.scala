@@ -16,11 +16,15 @@ class RepoDataProducer(userDao: UserDAO, config: RepositoryConfig) extends Loggi
   }
 
   private def createGitConfig() = {
+    logger.info(s"Using repo config: git, name: ${config.gitRepositoryName}, uri: ${config.gitRepositoryUri}")
+
     Some(new GitRepoData(config.gitRepositoryName, config.gitRepositoryUri,
       config.gitRepositoryUsername, config.gitRepositoryPassword))
   }
 
   private def createGithubConfig() = {
+    logger.info(s"Using repo config: github, owner: ${config.githubRepositoryOwner}, name: ${config.githubRepositoryName}")
+
     val authorizedLogin = config.githubRepositorySyncUserLogin
     if (StringUtils.isEmptyOrNull(authorizedLogin)) {
       logger.error("Cannot schedule automatic synchronization. Value syncUserLogin not configured in application.conf.")
