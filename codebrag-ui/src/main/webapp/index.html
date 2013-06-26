@@ -197,7 +197,7 @@
         <div class="like-commit">
             <a class="like button" ng-click="submitLike()"><i class="icon-heart"></i></a>
                 <span ng-show="noLikes()">Be the first to like this commit</span>
-                <span class="likes" ng-hide="noLikes()"><ul class="likes-list"><li ng-repeat="like in likesCollection" id="{{like.id}}">{{like.authorName}}</li></ul>{{conjugatedLike}} this commit</span>
+                <span class="likes" ng-hide="noLikes()"><ul class="likes-list"><li ng-repeat="like in likesCollection" id="{{like.id}}">{{like.authorName}}</li></ul>{{conjugatedLike}}&nbsp;this&nbsp;commit</span>
         </div>
     </script>
 
