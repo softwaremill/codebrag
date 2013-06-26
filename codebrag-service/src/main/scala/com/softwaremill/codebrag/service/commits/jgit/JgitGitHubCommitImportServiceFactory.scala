@@ -25,16 +25,4 @@ class JgitGitHubCommitImportServiceFactory(commitInfoDao: CommitInfoDAO,
 
     token
   }
-
-  def createInstance(login: String): CommitImportService = {
-    new CommitImportService(
-      new JgitCommitsLoader(
-        new JgitFacade,
-        new InternalGitDirTree(codebragConfiguration),
-        new JgitLogConverter,
-        commitInfoDao),
-      commitInfoDao,
-      eventBus)
-  }
-
 }

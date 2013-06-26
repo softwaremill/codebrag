@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.commits.jgit
 
 import org.scalatest.mock.MockitoSugar
-import com.softwaremill.codebrag.service.commits.{TestCodebragConfig, FlatSpecWithGit, CommitImportService}
+import com.softwaremill.codebrag.service.commits.{CommitsModule, TestCodebragConfig, FlatSpecWithGit, CommitImportService}
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.mockito.{ArgumentCaptor, ArgumentMatcher}
 import org.mockito.Mockito._
@@ -99,14 +99,16 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
     supplementaryService.importRepoCommits(TestRepoData)
   }
 
-  private def createService(commitInfoDaoMock: CommitInfoDAO) = new CommitImportService(
-    new JgitCommitsLoader(
-      new JgitFacade,
-      new InternalGitDirTree(TestCodebragConfig),
-      new JgitLogConverter,
-      commitInfoDaoMock),
-    commitInfoDaoMock,
-    eventBus)
+  private def createService(commitInfoDaoMock: CommitInfoDAO) = {
+    val self = this
+    val module = new CommitsModule {
+      def commitInfoDao = commitInfoDaoMock
+      def userDao = null
+      def eventBus = self.eventBus
+      def config = TestCodebragConfig
+    }
+    module.commitImportService
+  }
 }
 
 case class IsCommitInfoIgnoringId(otherCommit: CommitInfo) extends ArgumentMatcher[CommitInfo] {

@@ -1,13 +1,14 @@
 package com.softwaremill.codebrag.rest.debug
 
 import com.softwaremill.codebrag.rest.JsonServlet
-import com.softwaremill.codebrag.service.commits.{GitHubRepoData, GitHubCommitImportServiceFactory}
+import com.softwaremill.codebrag.service.commits.{CommitImportService, GitHubRepoData, GitHubCommitImportServiceFactory}
 import net.liftweb.mongodb.record.MongoMetaRecord
 import com.softwaremill.codebrag.dao._
 import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig}
 import com.foursquare.rogue.LiftRogue._
 
 class DebugServlet(importerFactory: GitHubCommitImportServiceFactory,
+                   commitImportService: CommitImportService,
                    configuration: CodebragConfig with RepositoryConfig)
   extends JsonServlet with DebugBasicAuthSupport {
 
@@ -22,8 +23,7 @@ class DebugServlet(importerFactory: GitHubCommitImportServiceFactory,
   }
 
   def triggerRepositoryUpdate() {
-    val importService = importerFactory.createInstance(configuration.codebragSyncUserLogin)
-    importService.importRepoCommits(new GitHubRepoData(configuration.repositoryOwner, configuration.repositoryName,
+    commitImportService.importRepoCommits(new GitHubRepoData(configuration.repositoryOwner, configuration.repositoryName,
       importerFactory.fetchToken(configuration.codebragSyncUserLogin)))
   }
 

@@ -9,16 +9,14 @@ import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionSe
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
 import service.followups.FollowupService
 import service.commits._
-import com.softwaremill.codebrag.service.user.{GitHubAuthService, GitHubEmptyAuthenticator, UserPasswordAuthenticator, Authenticator}
+import com.softwaremill.codebrag.service.user.{GitHubAuthService, GitHubEmptyAuthenticator, UserPasswordAuthenticator}
 import pl.softwaremill.common.util.time.RealTimeClock
-import com.softwaremill.codebrag.service.commits.jgit.JgitGitHubCommitImportServiceFactory
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig, GithubConfig}
 import com.typesafe.config.ConfigFactory
 
-
-trait Beans extends ActorSystemSupport {
+trait Beans extends ActorSystemSupport with CommitsModule {
 
   lazy val config = new MongoConfig with RepositoryConfig with GithubConfig with CodebragConfig {
     def rootConfig = ConfigFactory.load()
@@ -38,7 +36,6 @@ trait Beans extends ActorSystemSupport {
   lazy val commentDao = new MongoCommitCommentDAO
   lazy val notificationCountFinder = new MongoNotificationCountFinder
   lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
-  lazy val importerFactory = new JgitGitHubCommitImportServiceFactory(commitInfoDao, userDao, eventBus, config)
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
   lazy val likeDao = new MongoLikeDAO
   lazy val likeValidator = new LikeValidator(commitInfoDao, likeDao, userDao)
