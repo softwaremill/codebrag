@@ -1,15 +1,15 @@
 package com.softwaremill.codebrag.rest.debug
 
 import com.softwaremill.codebrag.rest.JsonServlet
-import com.softwaremill.codebrag.service.commits.{CommitImportService, GitHubRepoData, GitHubCommitImportServiceFactory}
+import com.softwaremill.codebrag.service.commits.{RepoDataProducer, CommitImportService}
 import net.liftweb.mongodb.record.MongoMetaRecord
 import com.softwaremill.codebrag.dao._
-import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig}
+import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.foursquare.rogue.LiftRogue._
 
-class DebugServlet(importerFactory: GitHubCommitImportServiceFactory,
+class DebugServlet(repoDataProducer: RepoDataProducer,
                    commitImportService: CommitImportService,
-                   configuration: CodebragConfig with RepositoryConfig)
+                   configuration: CodebragConfig)
   extends JsonServlet with DebugBasicAuthSupport {
 
   override def login = configuration.debugServicesLogin
@@ -23,8 +23,7 @@ class DebugServlet(importerFactory: GitHubCommitImportServiceFactory,
   }
 
   def triggerRepositoryUpdate() {
-    commitImportService.importRepoCommits(new GitHubRepoData(configuration.repositoryOwner, configuration.repositoryName,
-      importerFactory.fetchToken(configuration.codebragSyncUserLogin)))
+    repoDataProducer.createFromConfiguration().foreach(commitImportService.importRepoCommits(_))
   }
 
   def dropAllDataExceptInitialUsers() {

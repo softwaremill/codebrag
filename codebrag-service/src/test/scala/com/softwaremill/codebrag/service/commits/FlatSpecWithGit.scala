@@ -55,7 +55,7 @@ trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
   }
 
   def deleteRootDirectoryRecursively() {
-    FileUtils.delete(new InternalGitDirTree(TestCodebragConfig).root.toFile, FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
+    FileUtils.delete(new InternalGitDirTree(TestCodebragAndRepositoryConfig).root.toFile, FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
   }
 
   object TestRepoData extends RepoData {

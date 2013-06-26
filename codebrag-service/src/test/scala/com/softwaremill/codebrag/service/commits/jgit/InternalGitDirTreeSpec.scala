@@ -3,14 +3,14 @@ package com.softwaremill.codebrag.service.commits.jgit
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.eclipse.jgit.util.FileUtils
-import com.softwaremill.codebrag.service.commits.{GitHubRepoData, TestCodebragConfig}
+import com.softwaremill.codebrag.service.commits.{GitHubRepoData, TestCodebragAndRepositoryConfig}
 
 class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter {
 
   var dirTree: InternalGitDirTree = _
 
   before {
-    dirTree = new InternalGitDirTree(TestCodebragConfig)
+    dirTree = new InternalGitDirTree(TestCodebragAndRepositoryConfig)
   }
 
   after {

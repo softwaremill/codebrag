@@ -19,7 +19,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
 
     MongoInit.initialize(config)
 
-    RepositoryUpdateScheduler.initialize(actorSystem, importerFactory, commitImportService, config)
+    RepositoryUpdateScheduler.initialize(actorSystem, repoDataProducer, commitImportService)
     context.mount(new UptimeServlet, Prefix + "uptime")
     context.mount(new UsersServlet(authenticator, swagger), Prefix + "users")
     context.mount(new CommitsServlet(authenticator, commitListFinder, reactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, swagger, diffWithCommentsService), Prefix + CommitsServlet.MAPPING_PATH)
@@ -27,7 +27,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupService), Prefix + FollowupsServlet.MappingPath)
     context.mount(new NotificationCountServlet(authenticator, swagger, notificationCountFinder), Prefix + NotificationCountServlet.MappingPath)
     context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")
-    context.mount(new DebugServlet(importerFactory, commitImportService, config), Prefix + DebugServlet.MappingPath)
+    context.mount(new DebugServlet(repoDataProducer, commitImportService, config), Prefix + DebugServlet.MappingPath)
 
     context.put("codebrag", this)
   }
