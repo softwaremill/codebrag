@@ -31,7 +31,6 @@ codebrag.diffReactionsDOMReferenceCacheAndResizer = {
         _.forEach(startElement.find(this.resizableElementsSelector), function(el) {
             self.collection.splice(self.collection.indexOf(el), 1);
         });
-        console.log('size is: ', this.collection.length);
         this.resizeAll();
     },
 
@@ -259,15 +258,11 @@ angular.module('codebrag.commits')
         $scope.ifCurrentFollowup = function(collection) {
             var notInFollowup = _.isUndefined($stateParams.followupId);
             if(notInFollowup) {
-                console.log('not in followups');
                 return false;
             }
-            console.log('filtering', collection);
             var x = _.filter(collection, function(reaction) {
-                console.log('checking', reaction.id, $scope.currentFollowup.reaction.reactionId);
                 return reaction.id === $scope.currentFollowup.reaction.reactionId;
             });
-            console.log('filtered', x);
             return x.length > 0;
         };
 
