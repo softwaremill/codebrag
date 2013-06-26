@@ -87,9 +87,11 @@ angular.module('codebrag.commits')
         var fileDiffLineSelector = 'tbody';
         var clickableSelector = '[data-commentable]';
         var inlineCommentFormRootSelector = 'tr.comment-form';
+        var inlineCommentsControlsSelector = '[data-thread-controls]';
 
         var fileNameDataAttr = 'file-name';
         var lineNumberDataAttr = 'line-number';
+
 
         function InlineCommentForm(rowClicked) {
 
@@ -98,6 +100,9 @@ angular.module('codebrag.commits')
 
             this.insert = function(afterFormInsertCallback) {
                 fileDiffLine.append(inlineCommentFormTemplate);
+
+                fileDiffLine.find(inlineCommentsControlsSelector).hide();
+
                 insertedElement = fileDiffLine.find(inlineCommentFormRootSelector);
                 codebrag.diffReactionsDOMReferenceCacheAndResizer.addElementsAndResizeAll(insertedElement);
                 afterFormInsertCallback(insertedElement);
@@ -106,6 +111,7 @@ angular.module('codebrag.commits')
             this.destroy = function(afterFormDestroyCallback) {
                 codebrag.diffReactionsDOMReferenceCacheAndResizer.removeElementsAndResizeAll(insertedElement);
                 fileDiffLine.find(inlineCommentFormRootSelector).remove();
+                fileDiffLine.find(inlineCommentsControlsSelector).show();
                 afterFormDestroyCallback();
             };
 
@@ -157,7 +163,7 @@ angular.module('codebrag.commits')
 
         var fileDiffRootSelector = 'table';
         var lineReactionsSelector = '[data-inline-reactions-container]';
-        var codeRowSelector = '[data-code-row]'
+        var codeRowSelector = '[data-code-row]';
 
         var lineNumberDataAttr = 'line-number';
 
@@ -245,6 +251,25 @@ angular.module('codebrag.commits')
                 collection: '='
             }
         }
+
+    })
+
+    .controller('ThreadControlCtrl', function($scope, $stateParams) {
+
+        $scope.ifCurrentFollowup = function(collection) {
+            var notInFollowup = _.isUndefined($stateParams.followupId);
+            if(notInFollowup) {
+                console.log('not in followups');
+                return false;
+            }
+            console.log('filtering', collection);
+            var x = _.filter(collection, function(reaction) {
+                console.log('checking', reaction.id, $scope.currentFollowup.reaction.reactionId);
+                return reaction.id === $scope.currentFollowup.reaction.reactionId;
+            });
+            console.log('filtered', x);
+            return x.length > 0;
+        };
 
     })
 

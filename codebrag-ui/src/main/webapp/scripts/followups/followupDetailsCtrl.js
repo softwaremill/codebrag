@@ -10,7 +10,6 @@ angular.module('codebrag.followups')
             $scope.currentFollowup = followup;
             commitsListService.loadCommitById(followup.commit.commitId).then(function(commit) {
                 $scope.currentCommit = new codebrag.CurrentCommit(commit);
-                console.log($scope.currentCommit);
 
             })
         });
