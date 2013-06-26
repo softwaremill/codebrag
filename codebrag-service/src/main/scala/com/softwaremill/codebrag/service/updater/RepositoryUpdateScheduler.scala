@@ -17,7 +17,7 @@ object RepositoryUpdateScheduler extends Logging {
       val updaterActor = actorSystem.actorOf(Props(
         new LocalRepositoryUpdater(repoData, commitImportService)))
 
-      actorSystem.scheduler.schedule(60 seconds,
+      actorSystem.scheduler.schedule(3 seconds,
         45 seconds,
         updaterActor,
         LocalRepositoryUpdater.UpdateCommand)
