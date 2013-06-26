@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.commits
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
-import java.io.{PrintWriter, File}
+import java.io.{FileOutputStream, PrintWriter, File}
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.{PersonIdent, Constants}
@@ -31,16 +31,20 @@ trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
     commitFile(testRepo, path, content, message)
   }
 
+  def givenCommitAppending(path: String, content: String, message: String): RevCommit = {
+    commitFile(testRepo, path, content, message, append = true)
+  }
+
   val author = new PersonIdent("Sofokles", "sofokles@softwaremill.com")
   val committer = new PersonIdent("Bruce", "bruce@softwaremill.com")
 
-  def commitFile(repo: File, path: String, content: String, message: String): RevCommit = {
+  def commitFile(repo: File, path: String, content: String, message: String, append: Boolean = false): RevCommit = {
     val file = new File(repo.getParentFile, path)
     if (!file.getParentFile.exists())
       file.getParentFile.mkdirs() should be(true)
     if (!file.exists())
       file.createNewFile() should be(true)
-    val writer = new PrintWriter(file)
+    val writer = new PrintWriter(new FileOutputStream(file, append))
     try {
       writer.print(content)
     } finally {

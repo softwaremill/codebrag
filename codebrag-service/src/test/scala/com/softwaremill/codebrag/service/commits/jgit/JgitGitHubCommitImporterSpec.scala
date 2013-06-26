@@ -87,6 +87,26 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
     verify(commitInfoDaoMock).storeCommit(argThat(IsCommitInfoIgnoringId(expectedCommit)))
   }
 
+  it should "ignore whitespaces when generating diffs" in {
+    // given
+    givenInitialCommit()
+    val previousCommit = givenCommit("file.txt", "file content", "commit1 msg")
+    val revCommit = givenCommitAppending("file.txt", "  ", "commit2 msg")
+
+    val sha = revCommit.toObjectId.name
+    val commitTime = new DateTime(revCommit.getCommitTime * 1000l)
+    val authorTime = new DateTime(revCommit.getAuthorIdent.getWhen)
+    val expectedPatch = "diff --git a/file.txt b/file.txt\nindex 8773f39..caf1bcc 100644\n--- a/file.txt\n+++ b/file.txt\n"
+    val expectedCommit = CommitInfo(sha, "commit2 msg", author.getName, committer.getName,
+      commitTime, authorTime, List(previousCommit.getId.name()), List(CommitFileInfo("file.txt", "modified", expectedPatch)))
+
+    // when
+    service.importRepoCommits(TestRepoData)
+
+    // then
+    verify(commitInfoDaoMock).storeCommit(argThat(IsCommitInfoIgnoringId(expectedCommit)))
+  }
+
   it should "load only new commits on second call" in {
     // given
     givenInitialCommit()
