@@ -18,7 +18,7 @@ trait JgitDiffExtractor {
     val outputStream = new ByteArrayOutputStream
     val formatter = new DiffFormatter(outputStream)
     formatter.setRepository(repository)
-    formatter.setDiffComparator(RawTextComparator.DEFAULT)
+    formatter.setDiffComparator(RawTextComparator.WS_IGNORE_CHANGE)
     formatter.setDetectRenames(true)
 
     try {
