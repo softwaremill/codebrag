@@ -14,3 +14,9 @@ case class GitHubRepoData(repoOwner: String, repoName: String, token: String) ex
   def localPathRelativeTo(path: Path) = path.resolve(repoOwner).resolve(repoName)
   def credentials = new UsernamePasswordCredentialsProvider(token, "")
 }
+
+case class GitRepoData(name: String, uri: String, username: String, password: String) extends RepoData {
+  def remoteUri = uri
+  def localPathRelativeTo(path: Path) = path.resolve(name)
+  def credentials = new UsernamePasswordCredentialsProvider(username, password)
+}

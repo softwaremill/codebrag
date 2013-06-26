@@ -8,6 +8,19 @@ import org.eclipse.jgit.util.StringUtils
 class RepoDataProducer(userDao: UserDAO, config: RepositoryConfig) extends Logging {
 
   def createFromConfiguration(): Option[RepoData] = {
+    config.repositoryType match {
+      case "github" => createGithubConfig()
+      case "git" => createGitConfig()
+      case _ => throw new IllegalArgumentException(s"Unknown repository type: ${config.repositoryType}")
+    }
+  }
+
+  private def createGitConfig() = {
+    Some(new GitRepoData(config.gitRepositoryName, config.gitRepositoryUri,
+      config.gitRepositoryUsername, config.gitRepositoryPassword))
+  }
+
+  private def createGithubConfig() = {
     val authorizedLogin = config.githubRepositorySyncUserLogin
     if (StringUtils.isEmptyOrNull(authorizedLogin)) {
       logger.error("Cannot schedule automatic synchronization. Value syncUserLogin not configured in application.conf.")
