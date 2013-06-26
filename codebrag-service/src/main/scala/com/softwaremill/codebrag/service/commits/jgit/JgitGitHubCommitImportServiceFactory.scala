@@ -12,17 +12,23 @@ class JgitGitHubCommitImportServiceFactory(commitInfoDao: CommitInfoDAO,
                                            eventBus: EventBus,
                                            codebragConfiguration: CodebragConfig) extends GitHubCommitImportServiceFactory with Logging {
 
-  def createInstance(login: String): CommitImportService = {
+  def fetchToken(login: String) = {
     val importingUserOpt = userDao.findByLoginOrEmail(login)
 
-      val token = importingUserOpt match {
-        case Some(user) => user.authentication.token
-        case None => {
-          logger.warn(s"User $login not found in DB. Cannot properly initialize commit importer")
-          s"user-$login-not-found"
-        }
+    val token = importingUserOpt match {
+      case Some(user) => user.authentication.token
+      case None => {
+        logger.warn(s"User $login not found in DB. Cannot properly initialize commit importer")
+        s"user-$login-not-found"
       }
-    val credentials = new UsernamePasswordCredentialsProvider(token, "")
+    }
+
+    token
+  }
+
+  def createInstance(login: String): CommitImportService = {
+    val credentials = new UsernamePasswordCredentialsProvider(fetchToken(login), "")
+
     new CommitImportService(
       new JgitCommitsLoader(
         new JgitFacade(credentials),

@@ -23,7 +23,8 @@ class DebugServlet(importerFactory: GitHubCommitImportServiceFactory,
 
   def triggerRepositoryUpdate() {
     val importService = importerFactory.createInstance(configuration.codebragSyncUserLogin)
-    importService.importRepoCommits(new GitHubRepoData(configuration.repositoryOwner, configuration.repositoryName))
+    importService.importRepoCommits(new GitHubRepoData(configuration.repositoryOwner, configuration.repositoryName,
+      importerFactory.fetchToken(configuration.codebragSyncUserLogin)))
   }
 
   def dropAllDataExceptInitialUsers() {

@@ -28,7 +28,8 @@ object RepositoryUpdateScheduler extends Logging {
 
     val importService = importServiceFactory.createInstance(authorizedLogin)
     val updaterActor = actorSystem.actorOf(Props(new LocalRepositoryUpdater(
-      new GitHubRepoData(repositoryConfig.repositoryOwner, repositoryConfig.repositoryName),
+      new GitHubRepoData(repositoryConfig.repositoryOwner, repositoryConfig.repositoryName,
+        importServiceFactory.fetchToken(authorizedLogin)),
       importService)))
 
     actorSystem.scheduler.schedule(60 seconds,
