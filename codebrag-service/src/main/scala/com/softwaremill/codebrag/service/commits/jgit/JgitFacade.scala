@@ -6,12 +6,12 @@ import org.eclipse.jgit.storage.file.FileRepository
 import org.eclipse.jgit.lib.{Constants, ObjectId}
 import org.eclipse.jgit.transport.CredentialsProvider
 
-class JgitFacade(credentials: CredentialsProvider) {
+class JgitFacade {
 
-  def clone(remote: String, localPath: Path): Git =
+  def clone(remote: String, localPath: Path, credentials: CredentialsProvider): Git =
     new CloneCommand().setURI(remote).setCredentialsProvider(credentials).setDirectory(localPath.toFile).call()
 
-  def pull(localPath: Path): Git = {
+  def pull(localPath: Path, credentials: CredentialsProvider): Git = {
 
     val repository = getRepository(localPath)
     val git = new Git(repository)

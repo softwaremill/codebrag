@@ -27,11 +27,9 @@ class JgitGitHubCommitImportServiceFactory(commitInfoDao: CommitInfoDAO,
   }
 
   def createInstance(login: String): CommitImportService = {
-    val credentials = new UsernamePasswordCredentialsProvider(fetchToken(login), "")
-
     new CommitImportService(
       new JgitCommitsLoader(
-        new JgitFacade(credentials),
+        new JgitFacade,
         new InternalGitDirTree(codebragConfiguration),
         new JgitLogConverter,
         commitInfoDao),

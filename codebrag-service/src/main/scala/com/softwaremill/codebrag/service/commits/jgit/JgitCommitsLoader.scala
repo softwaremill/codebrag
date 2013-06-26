@@ -16,10 +16,10 @@ class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirT
     val localPath = internalDirTree.getPath(repoData)
 
     val logCommand = if (!internalDirTree.containsRepo(repoData))
-      jGitFacade.clone(remotePath, localPath).log()
+      jGitFacade.clone(remotePath, localPath, repoData.credentials).log()
     else {
       val previousHead = fetchPreviousHead
-      val git = jGitFacade.pull(localPath)
+      val git = jGitFacade.pull(localPath, repoData.credentials)
       val headAfterPull = jGitFacade.getHeadId(localPath)
       previousHead match {
         case Some(sha) => git.log.addRange(sha, headAfterPull)

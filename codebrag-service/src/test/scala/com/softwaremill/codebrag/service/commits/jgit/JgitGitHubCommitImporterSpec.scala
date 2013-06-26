@@ -101,7 +101,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
 
   private def createService(commitInfoDaoMock: CommitInfoDAO) = new CommitImportService(
     new JgitCommitsLoader(
-      new JgitFacade(credentials),
+      new JgitFacade,
       new InternalGitDirTree(TestCodebragConfig),
       new JgitLogConverter,
       commitInfoDaoMock),

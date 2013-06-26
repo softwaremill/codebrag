@@ -16,8 +16,6 @@ trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
 
   var testRepo: File = _
 
-  def credentials = new UsernamePasswordCredentialsProvider("codebrag-user", "")
-
   def testRepoPath = testRepo.getCanonicalPath
 
   def initRepo(): File = {
@@ -63,6 +61,6 @@ trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
   object TestRepoData extends RepoData {
     override def remoteUri = testRepoPath
     def localPathRelativeTo(path: Path) = path.resolve("something")
-    def credentials = null
+    def credentials = new UsernamePasswordCredentialsProvider("codebrag-user", "")
   }
 }
