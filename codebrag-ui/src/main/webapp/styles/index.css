@@ -24,6 +24,16 @@ button.secondary {
 button.secondary:hover {
   color: #fff;
 }
+.button.kthxbye,
+.button[disabled].kthxbye,
+button.kthxbye {
+  background: #41a388;
+}
+.button.kthxbye:hover,
+.button[disabled].kthxbye:hover,
+button.kthxbye:hover {
+  background: #5abfa3;
+}
 .button.link,
 .button[disabled].link,
 button.link {
