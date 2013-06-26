@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.commits.jgit
 
 import org.eclipse.jgit.revwalk.{RevTree, RevWalk, RevCommit}
-import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.lib.{Constants, ObjectId, Repository}
 import org.eclipse.jgit.diff.{DiffFormatter, RawTextComparator, DiffEntry}
 import java.io.ByteArrayOutputStream
 import scala.collection.JavaConversions._
@@ -12,8 +12,10 @@ trait JgitDiffExtractor {
   def extractDiffsFromCommit(commit: RevCommit, repository: Repository): List[CommitFileInfo] = {
 
     val tree = commit.getTree
-    val baseTree = if (isInitial(commit)) tree
-    else  firstParent(repository, commit)
+    val baseTree = if (isInitial(commit))
+      emptyTree(repository)
+    else
+      firstParent(repository, commit)
 
     val outputStream = new ByteArrayOutputStream
     val formatter = new DiffFormatter(outputStream)
@@ -63,4 +65,15 @@ trait JgitDiffExtractor {
     }
   }
 
+  private def emptyTree(repo: Repository): ObjectId = {
+    val inserter = repo.newObjectInserter
+    try {
+      val newTreeId = inserter.insert(Constants.OBJ_TREE, Array[Byte]())
+      inserter.flush()
+      newTreeId
+    }
+    finally {
+      inserter.release()
+    }
+  }
 }

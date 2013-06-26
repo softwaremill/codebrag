@@ -70,6 +70,23 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
     verify(commitInfoDaoMock).storeCommit(argThat(IsCommitInfoIgnoringId(expectedCommit)))
   }
 
+  it should "generate proper diff data for initial commit" in {
+    // given
+    val revCommit = givenCommit("file.txt", "file content", "commit1 msg")
+    val sha = revCommit.toObjectId.name
+    val commitTime = new DateTime(revCommit.getCommitTime * 1000l)
+    val authorTime = new DateTime(revCommit.getAuthorIdent.getWhen)
+    val expectedPatch = "diff --git a/file.txt b/file.txt\nnew file mode 100644\nindex 0000000..8773f39\n--- /dev/null\n+++ b/file.txt\n@@ -0,0 +1 @@\n+file content\n\\ No newline at end of file\n"
+    val expectedCommit = CommitInfo(sha, "commit1 msg", author.getName, committer.getName,
+      commitTime, authorTime, List(), List(CommitFileInfo("file.txt", "added", expectedPatch)))
+
+    // when
+    service.importRepoCommits(TestRepoData)
+
+    // then
+    verify(commitInfoDaoMock).storeCommit(argThat(IsCommitInfoIgnoringId(expectedCommit)))
+  }
+
   it should "load only new commits on second call" in {
     // given
     givenInitialCommit()
