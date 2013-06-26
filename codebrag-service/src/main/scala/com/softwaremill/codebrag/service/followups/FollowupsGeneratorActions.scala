@@ -22,7 +22,6 @@ trait FollowupsGeneratorActions extends Logging {
 
     commitAuthorOpt.foreach(commitAuthor => {
       val followup = new Followup(
-        id = None,
         reactionId = like.id,
         userId = commitAuthor.id,
         lastCommenterName = author.name,
@@ -31,7 +30,8 @@ trait FollowupsGeneratorActions extends Logging {
           commitId = like.commitId,
           lineNumber = like.lineNumber,
           fileName = like.fileName
-        )
+        ),
+        followupType = Followup.FollowupType.Like
       )
       logger.debug("Generating follow-up for liked commits")
       followupDao.createOrUpdateExisting(followup)

@@ -111,14 +111,14 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
   private def verifyFollowupsCreatedFor(commitId: ObjectId, commentId: ObjectId, commentAuthorName: String, users: List[ObjectId]) {
     users.foreach { userId =>
-      val followup = Followup(commentId, userId, FollowupCreationDateTime, commentAuthorName, ThreadDetails(commitId))
+      val followup = Followup.forComment(commentId, userId, FollowupCreationDateTime, commentAuthorName, ThreadDetails(commitId))
       verify(followupDao).createOrUpdateExisting(followup)
     }
   }
 
   private def verifyFollowupsCreatedFor(commitId: ObjectId, commentId: ObjectId, commentAuthorName: String, fileName: String, lineNumber: Int, users: List[ObjectId]) {
     users.foreach { userId =>
-      val followup = Followup(commentId, userId, FollowupCreationDateTime, commentAuthorName, ThreadDetails(commitId, Some(lineNumber), Some(fileName)))
+      val followup = Followup.forComment(commentId, userId, FollowupCreationDateTime, commentAuthorName, ThreadDetails(commitId, Some(lineNumber), Some(fileName)))
       verify(followupDao).createOrUpdateExisting(followup)
     }
   }

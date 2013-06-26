@@ -5,7 +5,7 @@ import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, 
 import net.liftweb.mongodb.record.field._
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
-import net.liftweb.record.field.{OptionalIntField, OptionalStringField}
+import net.liftweb.record.field.{EnumNameField, EnumField, OptionalIntField, OptionalStringField}
 import org.joda.time.DateTime
 import scala.None
 import net.liftweb.common.Box
@@ -23,6 +23,7 @@ class MongoFollowupDAO extends FollowupDAO {
   def createOrUpdateExisting(followup: Followup) {
     val query = FollowupRecord
       .where(_.user_id eqs followup.userId)
+      .and(_.followupType eqs FollowupRecord.FollowupTypeEnum.apply(followup.followupType.id))
       .and(_.threadId.subselect(_.commitId) eqs followup.threadId.commitId)
       .and(_.threadId.subselect(_.fileName) exists(followup.threadId.fileName.isDefined))
       .andOpt(followup.threadId.fileName)(_.threadId.subselect(_.fileName) eqs _)
@@ -47,7 +48,8 @@ class MongoFollowupDAO extends FollowupDAO {
 
   private def toFollowup(record: FollowupRecord) = {
     val threadId = ThreadDetails(record.threadId.get.commitId.get, record.threadId.get.lineNumber.get, record.threadId.get.fileName.get)
-    Followup(record.followupId.get, record.reactionId.get, record.user_id.get, new DateTime(record.date.get), record.lastCommenterName.get, threadId)
+    val followupType = Followup.FollowupType.apply(record.followupType.get.id)
+    Followup(record.reactionId.get, record.user_id.get, new DateTime(record.date.get), record.lastCommenterName.get, threadId, followupType)
   }
 
   private def toRecord(followup: Followup, commitRecord: CommitInfoRecord): FollowupRecord = {
@@ -64,13 +66,14 @@ class MongoFollowupDAO extends FollowupDAO {
     }
 
     FollowupRecord.createRecord
-      .followupId(followup.id.getOrElse(new ObjectId))
+      .followupId(new ObjectId)
       .reactionId(followup.reactionId)
       .commit(commitInfo)
       .user_id(followup.userId)
       .date(followup.date.toDate)
       .threadId(threadId)
       .lastCommenterName(followup.lastCommenterName)
+      .followupType(FollowupRecord.FollowupTypeEnum.apply(followup.followupType.id))
   }
 
 }
@@ -92,10 +95,18 @@ class FollowupRecord extends MongoRecord[FollowupRecord] with ObjectIdPk[Followu
 
   object lastCommenterName extends LongStringField(this)
 
+  object followupType extends EnumNameField(this, FollowupRecord.FollowupTypeEnum)
+
 }
 
 object FollowupRecord extends FollowupRecord with MongoMetaRecord[FollowupRecord] {
+
   override def collectionName = "follow_ups"
+
+  object FollowupTypeEnum extends Enumeration {
+    type FollowupType = Value
+    val Like, Comment = Value
+  }
 }
 
 class FollowupCommitInfoRecord extends BsonRecord[FollowupCommitInfoRecord] {

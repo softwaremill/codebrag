@@ -8,6 +8,8 @@ import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import com.softwaremill.codebrag.domain.ThreadDetails
 import scala.Some
 import com.softwaremill.codebrag.dao._
+import com.foursquare.rogue.LiftRogue._
+import org.bson.types.ObjectId
 
 class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with MongoFollowupFinderSpecFixture {
 
@@ -37,8 +39,8 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
 
   it should "find followup by id for given user" taggedAs(RequiresDb) in {
     // given
-    val followupsStored = storeFollowupsForJohn
-    val Some(followupIdToFind) = followupsStored.head.id
+    val storedFollowupsId = storeFollowupsForJohn
+    val followupIdToFind = storedFollowupsId.head
 
     // when & then
     val Right(followupFound) = followupFinder.findFollowupForUser(JohnId, followupIdToFind)
@@ -47,7 +49,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
   it should "not find followup by id for another user" taggedAs(RequiresDb) in {
     // given
     val followupsStored = storeFollowupsForJohn
-    val Some(followupIdToFind) = followupsStored.head.id
+    val followupIdToFind = followupsStored.head
 
     // when & then
     val Left(msg) = followupFinder.findFollowupForUser(BobId, followupIdToFind)
@@ -67,26 +69,26 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
 
   it should "return followup with last author name and comment id included" taggedAs(RequiresDb) in {
     // given
-    val stored = storeFollowupForBob
+    val storedFollowupId = storeFollowupForBob
 
     // when
     val followup = followupFinder.findAllFollowupsForUser(BobId).followups.head
 
     // then
     followup.reaction.reactionAuthor should be(LastCommenterName)
-    followup.reaction.reactionId should be(stored.reactionId.toString)
+    followup.reaction.reactionId should be(storedFollowupId.reactionId.toString)
   }
 
-  def storeFollowupsForJohn = {
+  def storeFollowupsForJohn: List[ObjectId] = {
     val followups = List(
-      Followup(ObjectIdTestUtils.oid(100), FixtureCommit1.id, JohnId, date, LastCommenterName, ThreadDetails(FixtureCommit1.id)),
-      Followup(ObjectIdTestUtils.oid(200), FixtureCommit2.id, JohnId, laterDate, LastCommenterName, ThreadDetails(FixtureCommit2.id)))
+      Followup.forComment(FixtureCommit1.id, JohnId, date, LastCommenterName, ThreadDetails(FixtureCommit1.id)),
+      Followup.forComment(FixtureCommit2.id, JohnId, laterDate, LastCommenterName, ThreadDetails(FixtureCommit2.id)))
     followups.foreach(followupDao.createOrUpdateExisting(_))
-    followups
+    FollowupRecord.where(_.user_id eqs JohnId).fetch().map(_.followupId.get)
   }
 
-  def storeFollowupForBob = {
-    val followup = Followup(ObjectIdTestUtils.oid(300), FixtureCommit3.id, BobId, latestDate, LastCommenterName, ThreadDetails(FixtureCommit3.id))
+  def storeFollowupForBob: Followup = {
+    val followup = Followup.forComment(FixtureCommit3.id, BobId, latestDate, LastCommenterName, ThreadDetails(FixtureCommit3.id))
     followupDao.createOrUpdateExisting(followup)
     followup
   }
