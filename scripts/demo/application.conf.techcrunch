@@ -4,8 +4,13 @@ mongo {
 }
 
 repository {
-    owner = "maciej"
-    name = "GameOfLife2"
+    type = "github"
+
+    github {
+        owner = "maciej"
+        name = "GameOfLife2"
+        sync-user-login = "codebrag"
+    }
 }
 
 aws {
@@ -30,7 +35,6 @@ email {
 
 codebrag {
     local-git-storage-path = "."
-    sync-user-login = "codebrag"
     debug-services-login = "codebrag"
     debug-services-password = "$c0debr4g"
 }

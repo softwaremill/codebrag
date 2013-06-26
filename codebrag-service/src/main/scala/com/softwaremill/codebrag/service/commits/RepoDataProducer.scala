@@ -1,20 +1,20 @@
 package com.softwaremill.codebrag.service.commits
 
 import com.softwaremill.codebrag.dao.UserDAO
-import com.softwaremill.codebrag.service.config.{RepositoryConfig, CodebragConfig}
+import com.softwaremill.codebrag.service.config.RepositoryConfig
 import com.typesafe.scalalogging.slf4j.Logging
 import org.eclipse.jgit.util.StringUtils
 
-class RepoDataProducer(userDao: UserDAO, config: CodebragConfig with RepositoryConfig) extends Logging {
+class RepoDataProducer(userDao: UserDAO, config: RepositoryConfig) extends Logging {
 
   def createFromConfiguration(): Option[RepoData] = {
-    val authorizedLogin = config.codebragSyncUserLogin
+    val authorizedLogin = config.githubRepositorySyncUserLogin
     if (StringUtils.isEmptyOrNull(authorizedLogin)) {
       logger.error("Cannot schedule automatic synchronization. Value syncUserLogin not configured in application.conf.")
       None
     } else {
       val token = fetchGitHubToken(authorizedLogin)
-      Some(new GitHubRepoData(config.repositoryOwner, config.repositoryName, token))
+      Some(new GitHubRepoData(config.githubRepositoryOwner, config.githubRepositoryName, token))
     }
   }
 

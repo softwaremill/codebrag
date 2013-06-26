@@ -4,8 +4,21 @@ mongo {
 }
 
 repository {
-    owner = "softwaremill"
-    name = "codebrag"
+    // git or github
+    type = "github"
+
+    github {
+        owner = "softwaremill"
+        name = "codebrag"
+        sync-user-login = ""
+    }
+
+    git {
+        name = ""
+        uri = ""
+        username = ""
+        password = ""
+    }
 }
 
 aws {
@@ -30,7 +43,6 @@ email {
 
 codebrag {
     local-git-storage-path = "."
-    sync-user-login = ""
     debug-services-login = "codebrag"
     debug-services-password = "codebrag"
 }
