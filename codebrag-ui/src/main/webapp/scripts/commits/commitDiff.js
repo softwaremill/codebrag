@@ -275,6 +275,10 @@ angular.module('codebrag.commits')
 
         function doWhenElementPresent(selector, actionFn) {
             var interval = 10;
+
+            // the setTimeout below checks whether element is present in DOM with some delay
+            // if element not found it sets up another setTimeout for the same delay to wait
+            // it is due to the fact that code may be executed before DOM is fully loaded/rendered
             setTimeout(function() {
                 var elementFound = $(selector);
                 if(elementFound.length) {
