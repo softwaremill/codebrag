@@ -13,13 +13,11 @@ class UserReactionService(commentDao: CommitCommentDAO, likeDao: LikeDAO, likeVa
 
   def storeLike(like: IncomingLike): Either[String, Like] = {
     val likeDomainObject = Like(new ObjectId, like.commitId, like.authorId, clock.currentDateTimeUTC(), like.fileName, like.lineNumber)
-    likeValidator.isLikeValid(likeDomainObject) match {
-      case Right(_) => {
-        save(likeDomainObject)
-        Right(likeDomainObject)
-      }
-      case Left(msg) => Left(msg)
-    }
+    val valid = likeValidator.isLikeValid(likeDomainObject)
+    valid.right.map(_ => {
+      save(likeDomainObject)
+      likeDomainObject
+    })
   }
 
   def storeComment(comment: IncomingComment): Comment = {
