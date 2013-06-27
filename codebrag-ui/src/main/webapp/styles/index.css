@@ -899,6 +899,7 @@ tr:hover .diff-line-num .button i {
 .likes-list li {
   display: inline;
   margin-right: 5px;
+  white-space: nowrap;
 }
 .likes-list li:after {
   content: ',';
