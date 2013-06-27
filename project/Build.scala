@@ -73,7 +73,7 @@ object Dependencies {
   val logBackVersion = "1.0.9"
   val smlCommonVersion = "72"
   val scalatraVersion = "2.2.0"
-  val rogueVersion = "2.0.0-RC4"
+  val rogueVersion = "2.1.0"
   val scalaLoggingVersion = "1.0.1"
   val akkaVersion = "2.1.4"
   val jettyVersion = "8.1.7.v20120910"
@@ -143,7 +143,7 @@ object Dependencies {
   val rogueCore = "com.foursquare" %% "rogue-core" % rogueVersion intransitive()
   val rogueLift = "com.foursquare" %% "rogue-lift" % rogueVersion intransitive()
   val rogueIndex = "com.foursquare" %% "rogue-index" % rogueVersion intransitive()
-  val liftMongoRecord = "net.liftweb" %% "lift-mongodb-record" % "2.5-RC6"
+  val liftMongoRecord = "net.liftweb" %% "lift-mongodb-record" % "2.5.1"
   val rogue = Seq(rogueCore, rogueField, rogueLift, rogueIndex, liftMongoRecord)
 
   val egitGithubApi = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.3"
