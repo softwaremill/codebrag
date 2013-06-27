@@ -15,7 +15,6 @@ angular.module('codebrag.commits')
                 scope.noLikes = function () {
                     return _.isEmpty(scope.likesCollection)
                 };
-                scope.conjugatedLike = "likes";
 
                 var currentUserName = authService.loggedInUser.fullName;
 
@@ -41,10 +40,7 @@ angular.module('codebrag.commits')
                     }
                     scope.$watch(function () {
                             return scope.likesCollection.length;
-                        }, function (newVal) {
-                            if (newVal > 1) {
-                                scope.conjugatedLike = "like";
-                            }
+                        }, function () {
                             if (_.some(scope.likesCollection, function (like) {
                                 return like.authorName == currentUserName
                             })) {
