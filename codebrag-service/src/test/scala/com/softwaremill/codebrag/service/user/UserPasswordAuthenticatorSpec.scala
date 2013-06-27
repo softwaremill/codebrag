@@ -67,10 +67,10 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
     given(userDAOMock.findByLoginOrEmail(fixtureLogin)).willReturn(Some(fixtureUser))
 
     // when
-    val Some(userOpt) = authenticator.authenticate(fixtureLogin, fixturePassword)
+    val Some(user) = authenticator.authenticate(fixtureLogin, fixturePassword)
 
-    userOpt.fullName should be(fixtureUser.name)
-    userOpt.email should be(fixtureUser.email)
+    user.fullName should be(fixtureUser.name)
+    user.email should be(fixtureUser.email)
   }
 
   it should "return None if user credentials don't match" in {
