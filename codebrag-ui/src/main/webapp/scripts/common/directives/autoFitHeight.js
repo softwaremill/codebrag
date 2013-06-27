@@ -48,7 +48,7 @@ angular.module('codebrag.common.directives')
                 var listArea = el.find(listAreaSelector);
                 var diffArea = el.find(diffAreaSelector);
                 resizer.resize(listArea, diffArea);
-                $(window).on('resize', resizeWithDelay);
+                $(window).on('resize', resizeWithDelay());
 
                 function resizeWithDelay() {
                     return _.debounce(function() {
