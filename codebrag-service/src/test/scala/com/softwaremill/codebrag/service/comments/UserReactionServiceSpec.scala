@@ -36,7 +36,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
     userReactionService = new UserReactionService(commentDaoMock, likeDaoMock, likeValidatorMock, eventBus)(FixedClock)
 
     // make all likes to be first and valid
-    when(likeValidatorMock.isLikeValid(any[Like])).thenReturn(Right(true))
+    when(likeValidatorMock.isLikeValid(any[Like])).thenReturn(Right())
   }
 
   it should "create a new comment for commit" in {

@@ -8,13 +8,13 @@ class LikeValidator(val commitDao: CommitInfoDAO, val likeDao: LikeDAO, val user
 
   import LikeValidator._
 
-  def isLikeValid(like: Like) = {
+  def isLikeValid(like: Like): Either[String, Unit] = {
     if(userIsCommitAuthor(like)) {
       Left(UserCantLikeOwnCode)
     } else if(userAlreadyLikedThat(like)) {
       Left(UserCantLikeMultipleTimes)
     } else {
-      Right(true)
+      Right()
     }
   }
 

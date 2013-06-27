@@ -31,10 +31,10 @@ class LikeValidatorSpec extends FlatSpec with MockitoSugar with ShouldMatchers w
     likeValidator.userAlreadyLikedIt = false
 
     // when
-    val Right(result) = likeValidator.isLikeValid(LikeToValidate)
+    val result = likeValidator.isLikeValid(LikeToValidate)
 
     // then
-    result should be(true)
+    result should be(Right())
   }
 
   it should "mark like as invalid when there is another like of given user for given code" in {
