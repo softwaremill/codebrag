@@ -2,10 +2,9 @@ package com.softwaremill.codebrag.rest.debug
 
 import com.softwaremill.codebrag.rest.JsonServlet
 import com.softwaremill.codebrag.service.commits.{RepoDataProducer, CommitImportService}
-import net.liftweb.mongodb.record.MongoMetaRecord
-import com.softwaremill.codebrag.dao._
 import com.softwaremill.codebrag.service.config.CodebragConfig
-import com.foursquare.rogue.LiftRogue._
+import scala.sys.process.Process
+import org.apache.commons.lang3.exception.ExceptionUtils
 
 class DebugServlet(repoDataProducer: RepoDataProducer,
                    commitImportService: CommitImportService,
@@ -17,33 +16,17 @@ class DebugServlet(repoDataProducer: RepoDataProducer,
 
   get("/resetAll") {
     basicAuth()
-    dropAllDataExceptInitialUsers()
-    triggerRepositoryUpdate()
+    val homeDir = System.getProperty("user.home")
+    try
+    {
+    Process("./resetAll.sh", new java.io.File(homeDir)).!
     "Reset successfull."
+    }
+    catch {
+      case exception: Throwable => ExceptionUtils.getStackTrace(exception)
+    }
   }
 
-  def triggerRepositoryUpdate() {
-    repoDataProducer.createFromConfiguration().foreach(commitImportService.importRepoCommits(_))
-  }
-
-  def dropAllDataExceptInitialUsers() {
-
-    val list: List[MongoMetaRecord[_]] = List(
-      CommitInfoRecord,
-      CommitReviewTaskRecord,
-      FollowupRecord,
-      CommentRecord,
-      LikeRecord
-    )
-    list.foreach(_.drop)
-    deleteUsersExcludingInitial()
-  }
-
-  def deleteUsersExcludingInitial() {
-    UserRecord.where(_.authentication.subfield(_.provider) eqs "GitHub").
-               and(_.authentication.subfield(_.usernameLowerCase) neqs "codebrag").
-               bulkDelete_!!!
-  }
 }
 
 object DebugServlet {
