@@ -4,7 +4,6 @@ angular.module('codebrag.commits')
 
         return {
             restrict: 'E',
-            replace: true,
             scope: {
                 author: '=',
                 likesCollection: '=',
