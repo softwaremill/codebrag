@@ -260,10 +260,10 @@ angular.module('codebrag.commits')
             if(notInFollowup) {
                 return false;
             }
-            var x = _.filter(collection, function(reaction) {
+            var reactionsFound = _.filter(collection, function(reaction) {
                 return reaction.id === $scope.currentFollowup.reaction.reactionId;
             });
-            return x.length > 0;
+            return reactionsFound.length > 0;
         };
 
     })
