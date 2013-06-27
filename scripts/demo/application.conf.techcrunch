@@ -8,7 +8,7 @@ repository {
 
     github {
         owner = "maciej"
-        name = "GameOfLife2"
+        name = "GameOfLife"
         sync-user-login = "codebrag"
     }
 }
