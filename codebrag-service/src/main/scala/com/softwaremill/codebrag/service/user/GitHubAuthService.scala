@@ -17,7 +17,7 @@ class GitHubAuthService(githubConfig: GithubConfig) {
 
   def getAccessToken(code: String): AccessToken = {
     val svc = dispatch.url(GitHubLogin) << authData(code)
-    svc.setHeader("Accept", "application/json").setHeader("Content-Type", "application/json")
+    svc.setHeader("Accept", "application/json").setHeader("Content-Type", "application/x-www-form-urlencoded")
     val response = Http(svc OK as.String)()
     parse(response).extract[AccessToken]
   }
@@ -25,7 +25,7 @@ class GitHubAuthService(githubConfig: GithubConfig) {
   private def authData(code: String) = {
     val clientId = Option(githubConfig.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
     val clientSecret = Option(githubConfig.githubClientSecret) getOrElse (throw new IllegalStateException("No GitHub Client Secret found, check your application.conf"))
-    s"""{"client_id":"$clientId", "client_secret":"$clientSecret", "code":"$code"}"""
+    Map("client_id" -> clientId, "client_secret" -> clientSecret, "code" -> code).map(param => s"${param._1}=${param._2}").mkString("&")
   }
 
   def loadUserData(accessToken: AccessToken) = {
