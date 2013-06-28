@@ -5,14 +5,8 @@ $('.comment-text').on('click', function() {
   $(this).closest('.comment.write').addClass('active');
 })
 
-// placement of toggle diff-panel btn
+//toggle diff-panel
 function toggleDiff() {
-  if ($('.diff-container').height() <= 600) {
-    $('.toggle-diff-container-btn i').css('position', 'relative');
-  } else {
-    $('.toggle-diff-container-btn i').css('position', 'fixed');
-  }
-
   $('.toggle-diff-container-btn').on('click', function() {
     $('.diff').toggleClass('opened');
     if ($('.diff').hasClass('opened')) {
@@ -25,8 +19,6 @@ function toggleDiff() {
     }
   })
 } 
-
-// opens diff panel fullscreen
 
 
 function inlineCommentWidthFinder() {
