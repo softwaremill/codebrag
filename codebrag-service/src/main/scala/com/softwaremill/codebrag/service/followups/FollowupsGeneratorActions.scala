@@ -23,6 +23,7 @@ trait FollowupsGeneratorActions extends Logging {
     commitAuthorOpt.foreach(commitAuthor => {
       val followup = new Followup(
         reactionId = like.id,
+        authorId = like.authorId,
         userId = commitAuthor.id,
         lastCommenterName = author.name,
         date = like.postingTime,

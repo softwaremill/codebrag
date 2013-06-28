@@ -47,7 +47,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(JohnComment)
 
     // Then
-    verifyFollowupsCreatedFor(Commit.id, JohnComment.id, JohnCommenter.name, List(MaryId, BettyCommitAuthorId))
+    verifyFollowupsCreatedFor(Commit.id, JohnComment.id, JohnId, JohnCommenter.name, List(MaryId, BettyCommitAuthorId))
     verifyNoMoreInteractions(followupDao)
   }
 
@@ -71,7 +71,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(JohnComment)
 
     // Then
-    verifyFollowupsCreatedFor(Commit.id, JohnComment.id, JohnCommenter.name, List(MaryId, BettyCommitAuthorId))
+    verifyFollowupsCreatedFor(Commit.id, JohnComment.id, JohnId, JohnCommenter.name, List(MaryId, BettyCommitAuthorId))
     verifyNoMoreInteractions(followupDao)
   }
 
@@ -85,8 +85,8 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(JohnInlineComment)  // should generate for bob betty and mary
 
     // Then
-    verifyFollowupsCreatedFor(Commit.id, JohnComment.id, JohnCommenter.name, List(BettyCommitAuthorId, MaryId))
-    verifyFollowupsCreatedFor(Commit.id, JohnInlineComment.id, JohnCommenter.name, InlineCommentFile, InlineCommentLine, List(BobId, BettyCommitAuthorId, MaryId))
+    verifyFollowupsCreatedFor(Commit.id, JohnComment.id, JohnId, JohnCommenter.name, List(BettyCommitAuthorId, MaryId))
+    verifyFollowupsCreatedFor(Commit.id, JohnInlineComment.id, JohnId, JohnCommenter.name, InlineCommentFile, InlineCommentLine, List(BobId, BettyCommitAuthorId, MaryId))
     verifyNoMoreInteractions(followupDao)
   }
 
@@ -110,7 +110,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
     // When
     followupService.generateFollowupsForComment(JohnComment)
-    verifyFollowupsCreatedFor(Commit.id, JohnComment.id, JohnCommenter.name, List(MaryId))
+    verifyFollowupsCreatedFor(Commit.id, JohnComment.id, JohnId, JohnCommenter.name, List(MaryId))
     verifyNoMoreInteractions(followupDao)
   }
 
@@ -126,16 +126,16 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     verifyZeroInteractions(followupDao)
   }
 
-  private def verifyFollowupsCreatedFor(commitId: ObjectId, commentId: ObjectId, commentAuthorName: String, users: List[ObjectId]) {
+  private def verifyFollowupsCreatedFor(commitId: ObjectId, commentId: ObjectId, commentAuthorId: ObjectId, commentAuthorName: String, users: List[ObjectId]) {
     users.foreach { userId =>
-      val followup = Followup.forComment(commentId, userId, FollowupCreationDateTime, commentAuthorName, ThreadDetails(commitId))
+      val followup = Followup.forComment(commentId, commentAuthorId, userId, FollowupCreationDateTime, commentAuthorName, ThreadDetails(commitId))
       verify(followupDao).createOrUpdateExisting(followup)
     }
   }
 
-  private def verifyFollowupsCreatedFor(commitId: ObjectId, commentId: ObjectId, commentAuthorName: String, fileName: String, lineNumber: Int, users: List[ObjectId]) {
+  private def verifyFollowupsCreatedFor(commitId: ObjectId, commentId: ObjectId, commentAuthorId: ObjectId, commentAuthorName: String, fileName: String, lineNumber: Int, users: List[ObjectId]) {
     users.foreach { userId =>
-      val followup = Followup.forComment(commentId, userId, FollowupCreationDateTime, commentAuthorName, ThreadDetails(commitId, Some(lineNumber), Some(fileName)))
+      val followup = Followup.forComment(commentId, commentAuthorId, userId, FollowupCreationDateTime, commentAuthorName, ThreadDetails(commitId, Some(lineNumber), Some(fileName)))
       verify(followupDao).createOrUpdateExisting(followup)
     }
   }

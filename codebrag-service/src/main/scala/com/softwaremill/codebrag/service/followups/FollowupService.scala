@@ -38,7 +38,7 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
     val followUpCreationDate = clock.currentDateTimeUTC()
     val lastCommenterName = commenterNameFor(currentComment)
     usersToGenerateFollowUpsFor(commit, existingComments, currentComment).foreach(userId => {
-      followupDao.createOrUpdateExisting(Followup.forComment(currentComment.id, userId, followUpCreationDate, lastCommenterName, currentComment.threadId))
+      followupDao.createOrUpdateExisting(Followup.forComment(currentComment.id, currentComment.authorId, userId, followUpCreationDate, lastCommenterName, currentComment.threadId))
     })
   }
 

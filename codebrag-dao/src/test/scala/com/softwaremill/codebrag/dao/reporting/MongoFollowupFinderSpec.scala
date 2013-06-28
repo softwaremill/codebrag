@@ -80,15 +80,17 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
   }
 
   def storeFollowupsForJohn: List[ObjectId] = {
+    val authorId = new ObjectId
     val followups = List(
-      Followup.forComment(FixtureCommit1.id, JohnId, date, LastCommenterName, ThreadDetails(FixtureCommit1.id)),
-      Followup.forComment(FixtureCommit2.id, JohnId, laterDate, LastCommenterName, ThreadDetails(FixtureCommit2.id)))
+      Followup.forComment(FixtureCommit1.id, authorId, JohnId, date, LastCommenterName, ThreadDetails(FixtureCommit1.id)),
+      Followup.forComment(FixtureCommit2.id, authorId, JohnId, laterDate, LastCommenterName, ThreadDetails(FixtureCommit2.id)))
     followups.foreach(followupDao.createOrUpdateExisting(_))
     FollowupRecord.where(_.user_id eqs JohnId).fetch().map(_.followupId.get)
   }
 
   def storeFollowupForBob: Followup = {
-    val followup = Followup.forComment(FixtureCommit3.id, BobId, latestDate, LastCommenterName, ThreadDetails(FixtureCommit3.id))
+    val authorId = new ObjectId
+    val followup = Followup.forComment(FixtureCommit3.id, authorId, BobId, latestDate, LastCommenterName, ThreadDetails(FixtureCommit3.id))
     followupDao.createOrUpdateExisting(followup)
     followup
   }
