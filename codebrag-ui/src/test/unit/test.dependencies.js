@@ -23,12 +23,14 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "app.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/httpAuthInterceptor.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/httpErrorsInterceptor.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/authService.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/registerService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/currentUserResolver.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/httpRequestsBuffer.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/loginForm.js");
 
 <!-- session -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/sessionCtrl.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/registerCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/profileCtrl.js");
 
 <!-- notifications -->

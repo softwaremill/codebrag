@@ -43,6 +43,11 @@ angular.module('codebrag.session')
                 url: '/',
                 templateUrl: 'views/main.html'
             })
+            .state('register', {
+                url: '/register',
+                templateUrl: 'views/register.html',
+                noLogin: true
+            })
             .state('profile', {
                 url: '/profile',
                 templateUrl: 'views/secured/profile.html',

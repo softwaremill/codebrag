@@ -953,6 +953,7 @@ tr:hover .diff-line-num .button i {
   text-transform: lowercase;
 }
 #loginform input[type="password"],
+#loginform input[type="email"],
 #loginform input[type="text"] {
   background: #f2ecd5;
   border: none;
