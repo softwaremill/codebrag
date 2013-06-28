@@ -4,7 +4,7 @@
             <li><a ng-click="switchToPending()" class="button">To review</a></li>
             <li><a ng-click="switchToAll()" class="button link">All</a></li>
         </ul>
-        <div class="items-container">
+        <div class="items-container" scroll-commits-list>
             <!--commit info start-->
             <div class="commit-container" ng-repeat="commit in commits" ng-controller="CommitsListItemCtrl"  mark-current="commit.id"
                  state-param-name="id" ng-click="openCommitDetails(commit)">
@@ -17,6 +17,7 @@
                 </div ><i class="icon-ok-circle" ng-show="commit.pendingReview" ng-click="markAsReviewed(commit)" isolate-click></i>
             </div>
             <!--commit info end-->
+            <div id="commits-list-end"></div>
         </div>
         <div class="commits-count" ng-show="canLoadMore()" ng-click="loadMoreCommits()">load more</div>
     </div>

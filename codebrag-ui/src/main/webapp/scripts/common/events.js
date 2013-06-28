@@ -9,5 +9,7 @@ angular.module('codebrag.events', []).constant('events', {
     followupCountChanged: 'codebrag:followupCountChanged',
 
     closeForm: 'codebrag:closeForm',
-    scrollOnly: 'codebrag:scrollOnly'
+    scrollOnly: 'codebrag:scrollOnly',
+
+    moreCommitsLoaded: 'codebrag:moreCommitsLoaded'
 });

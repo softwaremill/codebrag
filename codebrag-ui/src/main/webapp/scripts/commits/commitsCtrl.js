@@ -28,7 +28,7 @@ angular.module('codebrag.commits')
         };
 
         function _loadCommitsFromPromise(promise) {
-            promise.then(function(commits) {
+            return promise.then(function(commits) {
                 $scope.commits = commits;
                 $scope.loadedCommitCount = commits.length;
             })
@@ -38,7 +38,9 @@ angular.module('codebrag.commits')
         };
 
         $scope.loadMoreCommits = function () {
-            _loadCommitsFromPromise(commitsListService.loadMoreCommits());
+            _loadCommitsFromPromise(commitsListService.loadMoreCommits()).then(function() {
+                $scope.$broadcast(events.moreCommitsLoaded);
+            });
         };
 
         $scope.loadPendingCommits();

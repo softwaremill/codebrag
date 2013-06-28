@@ -72,6 +72,7 @@
     <script type="text/javascript" src="scripts/commits/comments/commentable.js"></script>
     <script type="text/javascript" src="scripts/commits/commitDiff.js"></script>
     <script type="text/javascript" src="scripts/commits/generalLikes.js"></script>
+    <script type="text/javascript" src="scripts/commits/scrollCommitsList.js"></script>
 
     <!-- follow-ups -->
     <script type="text/javascript" src="scripts/followups/followupsCtrl.js"></script>
@@ -140,7 +141,7 @@
     <script type="text/ng-template" id="lineReactions">
         <tr class="inline-likes comments-container" ng-show="lineReactions.likes.length > 0" data-inline-reactions-container>
             <td colspan="3">
-                <div class="comment" data-resize-to-view="true">
+                <div class="comment reaction" data-resize-to-view="true">
                     <likes collection="lineReactions.likes"></likes>
                 </div>
             </td>
@@ -160,12 +161,12 @@
             <td colspan="3">
                 <!--inline comment start-->
                 <div data-resize-to-view="true">
-                    <div class="comment" ng-repeat="comment in lineReactions.comments">
+                    <div class="comment reaction" ng-repeat="comment in lineReactions.comments" id="{{comment.id}}">
                         <div class="authored-box">
                             <div class="author-box"><user-avatar url="comment.authorAvatarUrl"></user-avatar></div>
                             <div class="info-box">
                                 <div class="info-line"><span class="username">{{comment.authorName}}</span><span class="time">{{comment.time | relativeDate}}</span></div>
-                                <div class="comment-body" id="{{comment.id}}">
+                                <div class="comment-body">
                                     <markdown-to-html content="comment.message"></markdown-to-html>
                                 </div>
                             </div>
@@ -194,10 +195,12 @@
         <div class="username"><ul class="likes-list"><li ng-repeat="like in collection" id="{{like.id}}">{{like.authorName}}</li></ul>like(s) this line</div>
     </script>
     <script type="text/ng-template" id="generalLikes">
-        <div class="like-commit">
+        <div class="like-commit reaction">
             <a class="like button" ng-click="submitLike()"><i class="icon-heart"></i></a>
                 <span ng-show="noLikes()">Be the first to like this commit</span>
-                <span class="likes" ng-hide="noLikes()"><ul class="likes-list"><li ng-repeat="like in likesCollection" id="{{like.id}}">{{like.authorName}}</li></ul>like(s)&nbsp;this&nbsp;commit</span>
+                <span class="likes" ng-hide="noLikes()"><ul class="likes-list">
+                    <li ng-repeat="like in likesCollection" id="{{like.id}}">{{like.authorName}}</li>
+                </ul>like(s)&nbsp;this&nbsp;commit</span>
         </div>
     </script>
 
