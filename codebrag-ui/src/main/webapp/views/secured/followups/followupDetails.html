@@ -1,5 +1,10 @@
-<div class="diff-wrapper">
-    <div class="diff-container clearfix" ng-controller="FollowupDetailsCtrl">
+<div class="diff-wrapper" ng-controller="FollowupDetailsCtrl">
+    <div class="diff-container" ng-hide="currentCommit">
+        <div class="diff-loading">
+            Loading followup details for you. Please wait a second.
+        </div>
+    </div>
+    <div class="diff-container clearfix" ng-show="currentCommit">
         <div class="toggle-diff-container-btn"><i class="icon-chevron-left"></i></div>
         <div class="authored-box">
             <div class="author-box"><user-avatar url="currentCommit.info.authorAvatarUrl"></user-avatar></div>
