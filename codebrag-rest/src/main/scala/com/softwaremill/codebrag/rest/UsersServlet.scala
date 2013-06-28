@@ -1,12 +1,12 @@
 package com.softwaremill.codebrag.rest
 
 import org.scalatra._
-import com.softwaremill.codebrag.service.user.Authenticator
+import com.softwaremill.codebrag.service.user.{RegisterService, Authenticator}
 import com.softwaremill.codebrag.service.data.UserJson
 import swagger.{Swagger, SwaggerSupport}
 
-class UsersServlet(val authenticator: Authenticator, val swagger: Swagger) extends JsonServletWithAuthentication
-with UsersServletSwaggerDefinition with CookieSupport {
+class UsersServlet(val authenticator: Authenticator, registerService: RegisterService, val swagger: Swagger)
+  extends JsonServletWithAuthentication with UsersServletSwaggerDefinition with CookieSupport {
 
   post(operation(loginOperation)) {
     val userOpt: Option[UserJson] = authenticate()
@@ -27,6 +27,13 @@ with UsersServletSwaggerDefinition with CookieSupport {
     if (isAuthenticated) {
       // call logout only when logged in to avoid NPE
       logOut()
+    }
+  }
+
+  post("/register", operation(registerOperation)) {
+    registerService.register(login, email, password) match {
+      case Left(error) => halt(403, error)
+      case Right(()) => true
     }
   }
 
@@ -72,4 +79,9 @@ trait UsersServletSwaggerDefinition extends SwaggerSupport {
     .summary("logs user out")
     .notes("Requires user to be authenticated")
 
+  val registerOperation = apiOperation[UserJson]("register")
+    .summary("registers a user")
+    .parameter(bodyParam[String]("login").description("user login").required)
+    .parameter(bodyParam[String]("email").description("user email").required)
+    .parameter(bodyParam[String]("password").description("user password").required)
 }

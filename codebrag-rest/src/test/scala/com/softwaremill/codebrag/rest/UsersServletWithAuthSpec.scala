@@ -1,13 +1,17 @@
 package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.AuthenticatableServletSpec
-import com.softwaremill.codebrag.service.user.Authenticator
+import com.softwaremill.codebrag.service.user.{RegisterService, Authenticator}
 import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
+import org.json4s.JsonAST.JValue
+import org.json4s.JsonDSL._
 
 class UsersServletSpec extends AuthenticatableServletSpec {
+
+  val registerService = mock[RegisterService]
 
   def bindServlet {
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
@@ -37,9 +41,28 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     }
   }
 
-}
+  "POST /register" should "call the register service and return 200 if registration is successful" in {
+    when(registerService.register("adamw", "adam@example.org", "123456")).thenReturn(Right(()))
 
-class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-  extends UsersServlet(fakeAuthenticator, new CodebragSwagger) {
-  override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
+    post("/register",
+      mapToJson(Map("login" -> "adamw", "email" -> "adam@example.org", "password" -> "123456")),
+      defaultJsonHeaders) {
+      status should be (200)
+    }
+  }
+
+  "POST /register" should "call the register service and return 403 if registration is unsuccessful" in {
+    when(registerService.register("adamw", "adam@example.org", "123456")).thenReturn(Left("error"))
+
+    post("/register",
+      mapToJson(Map("login" -> "adamw", "email" -> "adam@example.org", "password" -> "123456")),
+      defaultJsonHeaders) {
+      status should be (403)
+    }
+  }
+
+  class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
+    extends UsersServlet(fakeAuthenticator, registerService, new CodebragSwagger) {
+    override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
+  }
 }

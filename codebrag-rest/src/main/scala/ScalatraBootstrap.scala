@@ -21,7 +21,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
 
     RepositoryUpdateScheduler.initialize(actorSystem, repoDataProducer, commitImportService)
     context.mount(new UptimeServlet, Prefix + "uptime")
-    context.mount(new UsersServlet(authenticator, swagger), Prefix + "users")
+    context.mount(new UsersServlet(authenticator, registerService, swagger), Prefix + "users")
     context.mount(new CommitsServlet(authenticator, commitListFinder, reactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, swagger, diffWithCommentsService), Prefix + CommitsServlet.MAPPING_PATH)
     context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, eventBus, reviewTaskGenerator, config), Prefix + "github")
     context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupService), Prefix + FollowupsServlet.MappingPath)
