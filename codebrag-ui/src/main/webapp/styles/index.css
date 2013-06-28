@@ -81,6 +81,9 @@ button:active {
   -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
   box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
 }
+ul.button-group {
+  padding-left: 0;
+}
 .button-group li:last-child .button,
 li:last-child .button {
   margin-right: 0;
@@ -995,6 +998,14 @@ tr:hover .diff-line-num .button i {
   margin-bottom: 1.15em;
   position: relative;
   text-align: center;
+}
+@media all and (max-width: 1000px) {
+  .main-header .logo {
+    margin: 1em 1em 0;
+  }
+  .main-nav .button {
+    width: 7.15em;
+  }
 }
 @media all and (max-width: 1279px) {
   html {
