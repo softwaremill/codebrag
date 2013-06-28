@@ -1006,6 +1006,11 @@ tr:hover .diff-line-num .button i {
   .main-nav .button {
     width: 7.15em;
   }
+  .main-header .user-info .username {
+    max-width: 10em;
+    margin-top: 0;
+    text-align: left;
+  }
 }
 @media all and (max-width: 1279px) {
   html {
