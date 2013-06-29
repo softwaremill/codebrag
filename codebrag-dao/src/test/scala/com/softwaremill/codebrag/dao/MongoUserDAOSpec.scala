@@ -5,6 +5,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.domain.builder.UserAssembler
 
 class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearDataAfterTest with Logging {
 
@@ -20,7 +21,6 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     for (i <- 1 to 3) {
       val login = "user" + i
       val password = "pass" + i
-      val salt = "salt" + i
       val token = "token" + i
       val name = s"User Name $i"
       userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token, "avatarUrl"))
@@ -41,6 +41,18 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
 
     // then
     assert(userDAO.findByLoginOrEmail(login).isDefined)
+  }
+
+  it should "generate the id if one is not present" taggedAs (RequiresDb) in {
+    // Given
+    val user = User(Authentication.basic("x", "x"), "x", "y", "z", "")
+
+    // When
+    val addedUser = userDAO.add(user)
+
+    // then
+    user.id should be (null)
+    addedUser.id should not be (null)
   }
 
   it should "add user with existing email" taggedAs (RequiresDb) in {

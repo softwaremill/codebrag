@@ -10,8 +10,12 @@ class MongoUserDAO extends UserDAO {
 
   import UserImplicits._
 
-  override def add(user: User) {
-    user.save
+  override def add(user: User) = {
+    val toSave = if (user.id == null) {
+      user.copy(id = new ObjectId())
+    } else user
+
+    toSave.save(safe = true)
   }
 
   override def findAll() = {
