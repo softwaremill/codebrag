@@ -11,8 +11,8 @@ class NewUserAdder(userDao: UserDAO,
                    reviewTaskGenerator: CommitReviewTaskGeneratorActions) {
 
   def add(user: User) {
-    userDao.add(user)
-    val userRegisteredEvent = NewUserRegistered(user.id, user.authentication.usernameLowerCase, user.name, user.email)
+    val addedUser = userDao.add(user)
+    val userRegisteredEvent = NewUserRegistered(addedUser.id, addedUser.authentication.usernameLowerCase, addedUser.name, addedUser.email)
     reviewTaskGenerator.handleNewUserRegistered(userRegisteredEvent)
     eventBus.publish(userRegisteredEvent)
   }

@@ -4,8 +4,10 @@ import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.bson.types.ObjectId
 
 trait UserDAO {
-
-  def add(user: User)
+  /**
+   * @return The saved user - in case id was not present, it will be filled after saving.
+   */
+  def add(user: User): User
 
   def findAll(): List[User]
 
