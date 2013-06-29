@@ -16,7 +16,7 @@ describe("Session Controller", function () {
 
         scope = $rootScope.$new();
         authSrv = authService;
-        ctrl = $controller('SessionCtrl', {$scope: scope, authService: authSrv});
+        ctrl = $controller('SessionCtrl', {$scope: scope, authService: authSrv, flash: {}});
         q = $q;
 
         scope.loginForm = {
