@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionSe
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
 import service.followups.FollowupService
 import service.commits._
-import com.softwaremill.codebrag.service.user.{RegisterService, GitHubAuthService, GitHubEmptyAuthenticator, UserPasswordAuthenticator}
+import com.softwaremill.codebrag.service.user._
 import pl.softwaremill.common.util.time.RealTimeClock
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
@@ -52,7 +52,8 @@ trait Beans extends ActorSystemSupport with CommitsModule {
   lazy val followupFinder = new MongoFollowupFinder
   lazy val commentActivity = new AddCommentActivity(userReactionService, followupService)
 
-  lazy val registerService = new RegisterService()
+  lazy val newUserAdder = new NewUserAdder(userDao, eventBus, reviewTaskGenerator)
+  lazy val registerService = new RegisterService(userDao, newUserAdder)
 
   lazy val diffWithCommentsService = new DiffWithCommentsService(commitListFinder, reactionFinder, new DiffService(commitInfoDao))
 }

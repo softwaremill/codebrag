@@ -1,24 +1,20 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.service.commits.{CommitReviewTaskGeneratorActions}
 import org.scalatra.{Forbidden, ScalatraServlet, SeeOther}
 import com.softwaremill.codebrag.dao.UserDAO
-import com.softwaremill.codebrag.service.user.{GitHubAuthService, Authenticator}
+import com.softwaremill.codebrag.service.user.{NewUserAdder, GitHubAuthService, Authenticator}
 import com.softwaremill.codebrag.domain.{User, Authentication}
 import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.auth.AuthenticationSupport
 import com.softwaremill.codebrag.service.config.GithubConfig
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.common.EventBus
-import com.softwaremill.codebrag.dao.events.NewUserRegistered
 
 
 class GithubAuthorizationServlet(val authenticator: Authenticator,
                                  ghAuthService: GitHubAuthService,
                                  userDao: UserDAO,
-                                 eventBus: EventBus,
-                                 reviewTaskGenerator: CommitReviewTaskGeneratorActions,
+                                 newUserAdder: NewUserAdder,
                                  githubConfig: GithubConfig)
   extends ScalatraServlet with AuthenticationSupport with Logging {
 
@@ -47,10 +43,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator,
       case None => {
         logger.debug("Creating new user")
         val newUser = User(new ObjectId, auth, user.name, user.email, UUID.randomUUID().toString, user.avatarUrl)
-        userDao.add(newUser)
-        val userRegisteredEvent = NewUserRegistered(newUser.id, newUser.authentication.usernameLowerCase, newUser.name, newUser.email)
-        reviewTaskGenerator.handleNewUserRegistered(userRegisteredEvent)
-        eventBus.publish(userRegisteredEvent)
+        newUserAdder.add(newUser)
       }
     }
     request.setAttribute(TempUserLogin, user.login)
@@ -59,14 +52,14 @@ class GithubAuthorizationServlet(val authenticator: Authenticator,
     authenticate() match {
       case Some(u) => {
         logger.debug("Authentication done")
-        val redirectTo = request.getSession().getOrElse(RedirectToUrlParam, "")
+        val redirectTo = request.getSession.getOrElse(RedirectToUrlParam, "")
         val redirectPath: String = s"$contextPath/#$redirectTo"
         logger.debug(s"Redirect path: $redirectPath")
-        request.getSession().removeAttribute(RedirectToUrlParam)
+        request.getSession.removeAttribute(RedirectToUrlParam)
         SeeOther(redirectPath)
       }
       case None => {
-        request.getSession().invalidate()
+        request.getSession.invalidate()
         Forbidden
       }
     }
