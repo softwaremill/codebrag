@@ -42,6 +42,7 @@ angular.module('codebrag.session')
                 clearForm();
             }, function (errorResponse) {
                 $scope.registerFailed = true;
+                $scope.registerFailedMessage = errorResponse.data;
             });
         }
     });
