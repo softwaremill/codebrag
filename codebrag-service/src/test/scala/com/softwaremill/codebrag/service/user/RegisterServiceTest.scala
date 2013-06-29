@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.service.user
 
-import org.scalatest.{BeforeAndAfterEach, FlatSpec}
+import org.scalatest.FlatSpec
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao.UserDAO
@@ -9,7 +9,7 @@ import org.mockito.Matchers._
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.mockito.ArgumentCaptor
 
-class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
+class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers {
   it should "register a user" in {
     // Given
     val userDaoMock = mock[UserDAO]
