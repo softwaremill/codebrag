@@ -7,6 +7,9 @@
             <section ng-show="loginFailed">
                 <div class="login-error"><i class="icon-warning-sign"></i> Invalid login/e-mail or password</div>
             </section>
+            <section ng-show="flash.get().length">
+                <div class="login-error"> {{flash.get()}}</div>
+            </section>
             <fieldset>
                 <div class="form-group">
                     <label class="prefix"><i class="icon-user"></i></label>

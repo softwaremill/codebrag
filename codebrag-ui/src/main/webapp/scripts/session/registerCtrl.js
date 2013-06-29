@@ -1,5 +1,5 @@
 angular.module('codebrag.session')
-    .controller('RegisterCtrl', function RegisterCtrl($scope, $rootScope, registerService) {
+    .controller('RegisterCtrl', function RegisterCtrl($scope, $rootScope, registerService, flash) {
 
         $scope.user = {
             login: '',
@@ -40,6 +40,7 @@ angular.module('codebrag.session')
             delete $scope.registerFailed;
             registerService.register($scope.user).then(function() {
                 clearForm();
+                flash.set("Registration was successful! You can now log in.");
             }, function (errorResponse) {
                 $scope.registerFailed = true;
                 $scope.registerFailedMessage = errorResponse.data;
