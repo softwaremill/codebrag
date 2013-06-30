@@ -21,6 +21,8 @@ trait UserDAO {
 
   def findByLoginOrEmail(login: String, email: String): Option[User]
 
+  def findByUserNameOrEmail(userName: String, email: String): Option[User]
+
   def findByToken(token: String): Option[User]
 
   def findByUserName(userName: String): Option[User]

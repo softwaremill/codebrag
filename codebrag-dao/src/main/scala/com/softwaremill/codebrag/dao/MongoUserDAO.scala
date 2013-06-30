@@ -40,6 +40,10 @@ class MongoUserDAO extends UserDAO {
     UserRecord where (_.name eqs userName) get()
   }
 
+  def findByUserNameOrEmail(userName: String, email: String) = {
+    UserRecord or(_.where(_.name eqs userName), _.where(_.email eqs email)) get()
+  }
+
   def findByToken(token: String) = {
     UserRecord where (_.token eqs token) get()
   }

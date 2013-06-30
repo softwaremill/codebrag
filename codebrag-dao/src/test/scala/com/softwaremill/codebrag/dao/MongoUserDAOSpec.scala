@@ -205,6 +205,34 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     }
   }
 
+  it should "find using login with findByUserNameOrEmail" taggedAs (RequiresDb) in {
+    // Given
+    val userName = "User Name 1"
+
+    // When
+    val userOpt = userDAO.findByUserNameOrEmail(userName, "")
+
+    // Then
+    userOpt match {
+      case Some(u) => u.name should be (userName)
+      case _ => fail("User option should be defined")
+    }
+  }
+
+  it should "find using email with findByUserNameOrEmail" taggedAs (RequiresDb) in {
+    // Given
+    val email = "user1@sml.com"
+
+    // When
+    val userOpt = userDAO.findByUserNameOrEmail("", email)
+
+    // Then
+    userOpt match {
+      case Some(u) => u.email should be (email)
+      case _ => fail("User option should be defined")
+    }
+  }
+
   it should "find using uppercased email with findByLoginOrEmail" taggedAs (RequiresDb) in {
     // Given
     val email = "user1@sml.com".toUpperCase
