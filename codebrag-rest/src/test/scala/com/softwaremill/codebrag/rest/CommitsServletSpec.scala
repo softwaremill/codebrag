@@ -22,7 +22,8 @@ import com.softwaremill.codebrag.service.comments.UserReactionService
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
-  val SamplePendingCommits = CommitListView(List(CommitView("id", "abcd0123", "this is commit message", "mostr", new Date())), 1)
+  val SamplePendingCommits = CommitListView(List(CommitView("id", "abcd0123", "this is commit message", "mostr",
+    "mostr@sml.com", new Date())), 1)
   var commentActivity = mock[AddCommentActivity]
   var commitsInfoDao = mock[CommitInfoDAO]
   var commitsListFinder = mock[CommitFinder]

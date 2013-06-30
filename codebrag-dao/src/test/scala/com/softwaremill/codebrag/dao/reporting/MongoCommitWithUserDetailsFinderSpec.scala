@@ -26,24 +26,33 @@ class MongoCommitWithUserDetailsFinderSpec extends FlatSpecWithMongo with ClearD
   val AvatarForNonexistingUser = ""
 
   val John = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "John Doe", "john@doe.com", "123", "http://john.doe.com/avatar")
+  val JohnOnlyEmail = User(ObjectIdTestUtils.oid(124), Authentication.basic("user", "password"), "?", "john@doe.com", "123", "http://johnonlyemail.doe.com/avatar")
   val Alice = User(ObjectIdTestUtils.oid(456), Authentication.basic("user", "password"), "Alice Doe", "alice@doe.com", "456", "http://alice.doe.com/avatar")
 
-  val johnsCommit = CommitView(ObjectIdTestUtils.oid(10).toString, "sha", "this is commit message", "John Doe", new Date())
-  val bobsCommit = CommitView(ObjectIdTestUtils.oid(20).toString, "sha", "this is commit message", "Bob Nonexisting", new Date())
-  val aliceCommit = CommitView(ObjectIdTestUtils.oid(30).toString, "sha", "this is commit message", "Alice Doe", new Date())
+  val johnsCommit = CommitView(ObjectIdTestUtils.oid(10).toString, "sha", "this is commit message", "John Doe", "john@doe.com", new Date())
+  val bobsCommit = CommitView(ObjectIdTestUtils.oid(20).toString, "sha", "this is commit message", "Bob Nonexisting", "bob@doe.com", new Date())
+  val aliceCommit = CommitView(ObjectIdTestUtils.oid(30).toString, "sha", "this is commit message", "Alice Doe", "alice@doe.com", new Date())
 
   val page = PagingCriteria(0, 10)
 
   it should "add author avatar to commit" taggedAs(RequiresDb) in {
+    testAddAuthorAvatorToCommit(John)
+  }
+
+  it should "add author avatar to commit when only the email matches" taggedAs(RequiresDb) in {
+    testAddAuthorAvatorToCommit(JohnOnlyEmail)
+  }
+
+  private def testAddAuthorAvatorToCommit(johnUser: User) {
     // given
-    userDao.add(John)
+    userDao.add(johnUser)
     Mockito.when(baseCommitFinderMock.findCommitInfoById(johnsCommit.id.toString, AliceReviewer)).thenReturn(Right(johnsCommit))
 
     // when
     val Right(enrichedCommitView) = commitWithUserFinder.findCommitInfoById(johnsCommit.id.toString, AliceReviewer)
 
     // then
-    enrichedCommitView.authorAvatarUrl should equal(John.avatarUrl)
+    enrichedCommitView.authorAvatarUrl should equal(johnUser.avatarUrl)
   }
 
   it should "add empty avatar string to commit if commit author not registered in codebrag" taggedAs(RequiresDb) in {

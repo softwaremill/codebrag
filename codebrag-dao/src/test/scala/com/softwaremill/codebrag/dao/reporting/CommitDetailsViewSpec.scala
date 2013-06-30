@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff
 
 class CommitDetailsViewSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with ReactionFinderVerifyHelpers {
 
-  val Commit = CommitView("123", "123abc", "This is commit message", "John Doe", DateTime.now.toDate)
+  val Commit = CommitView("123", "123abc", "This is commit message", "John Doe", "john@example.org", DateTime.now.toDate)
   val Lines = List(DiffLine("line one", 1, 2, "added"), DiffLine("line two", 2, 2, "added"))
   val Diffs = List(CommitFileDiff("test.txt", "added", Lines, FileDiffStats(2, 0)))
   val EmptyReactions = CommitReactionsView(ReactionsView(None, None), Map())
