@@ -17,12 +17,12 @@ class FollowupsServlet(val authenticator: Authenticator,
   extends JsonServletWithAuthentication with FollowupsServletSwaggerDefinition with JacksonJsonSupport {
 
   get("/", operation(getOperation)) {
-    haltIfNotAuthenticated
+    haltIfNotAuthenticated()
     followupFinder.findAllFollowupsForUser(new ObjectId(user.id))
   }
 
   get("/:id", operation(getSingleOperation)) {
-    haltIfNotAuthenticated
+    haltIfNotAuthenticated()
     val followupId = params("id")
     followupFinder.findFollowupForUser(new ObjectId(user.id), new ObjectId(followupId)) match {
       case Right(followup) => followup
@@ -31,7 +31,7 @@ class FollowupsServlet(val authenticator: Authenticator,
   }
 
   delete("/:id", operation(dismissOperation)) {
-    haltIfNotAuthenticated
+    haltIfNotAuthenticated()
     val followupId = params("id")
     followupService.deleteUserFollowup(new ObjectId(user.id), new ObjectId(followupId))
   }
