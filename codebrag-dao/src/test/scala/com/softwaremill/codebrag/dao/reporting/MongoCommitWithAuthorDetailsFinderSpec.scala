@@ -2,10 +2,7 @@ package com.softwaremill.codebrag.dao.reporting
 
 import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{Authentication, User, CommitInfo}
-import org.joda.time.DateTime
-import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import com.softwaremill.codebrag.common.PagingCriteria
@@ -13,11 +10,10 @@ import org.scalatest.mock.MockitoSugar
 import java.util.Date
 import org.mockito.Mockito
 
-
-class MongoCommitWithUserDetailsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with MockitoSugar {
+class MongoCommitWithAuthorDetailsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with MockitoSugar {
 
   val baseCommitFinderMock = mock[MongoCommitFinder]
-  val commitWithUserFinder = new MongoCommitWithAuthorDetailsFinder(baseCommitFinderMock)
+  val commitWithAuthorFinder = new MongoCommitWithAuthorDetailsFinder(baseCommitFinderMock)
 
   val userDao = new MongoUserDAO
 
@@ -49,7 +45,7 @@ class MongoCommitWithUserDetailsFinderSpec extends FlatSpecWithMongo with ClearD
     Mockito.when(baseCommitFinderMock.findCommitInfoById(johnsCommit.id.toString, AliceReviewer)).thenReturn(Right(johnsCommit))
 
     // when
-    val Right(enrichedCommitView) = commitWithUserFinder.findCommitInfoById(johnsCommit.id.toString, AliceReviewer)
+    val Right(enrichedCommitView) = commitWithAuthorFinder.findCommitInfoById(johnsCommit.id.toString, AliceReviewer)
 
     // then
     enrichedCommitView.authorAvatarUrl should equal(johnUser.avatarUrl)
@@ -60,7 +56,7 @@ class MongoCommitWithUserDetailsFinderSpec extends FlatSpecWithMongo with ClearD
     Mockito.when(baseCommitFinderMock.findCommitInfoById(bobsCommit.id.toString, AliceReviewer)).thenReturn(Right(bobsCommit))
 
     // when
-    val Right(enrichedCommitView) = commitWithUserFinder.findCommitInfoById(bobsCommit.id.toString, AliceReviewer)
+    val Right(enrichedCommitView) = commitWithAuthorFinder.findCommitInfoById(bobsCommit.id.toString, AliceReviewer)
 
     // then
     enrichedCommitView.authorAvatarUrl should equal(AvatarForNonexistingUser)
@@ -74,7 +70,7 @@ class MongoCommitWithUserDetailsFinderSpec extends FlatSpecWithMongo with ClearD
     Mockito.when(baseCommitFinderMock.findCommitsToReviewForUser(AliceReviewer, page)).thenReturn(commits)
 
     // when
-    val enrichedCommitsList = commitWithUserFinder.findCommitsToReviewForUser(AliceReviewer, page)
+    val enrichedCommitsList = commitWithAuthorFinder.findCommitsToReviewForUser(AliceReviewer, page)
 
     // then
     enrichedCommitsList.commits(0).authorAvatarUrl should equal(John.avatarUrl)
@@ -88,7 +84,7 @@ class MongoCommitWithUserDetailsFinderSpec extends FlatSpecWithMongo with ClearD
     Mockito.when(baseCommitFinderMock.findCommitInfoById(johnsCommit.id.toString, AliceReviewer)).thenReturn(Right(johnsCommit))
 
     // when
-    val Right(enrichedCommitView) = commitWithUserFinder.findCommitInfoById(johnsCommit.id.toString, AliceReviewer)
+    val Right(enrichedCommitView) = commitWithAuthorFinder.findCommitInfoById(johnsCommit.id.toString, AliceReviewer)
 
     // then
     enrichedCommitView.authorAvatarUrl should equal(John.avatarUrl)
