@@ -30,9 +30,10 @@ class MongoUserDAO extends UserDAO {
     UserRecord where (_.authentication.subfield(_.usernameLowerCase) eqs login.toLowerCase) get()
   }
 
-  override def findByLoginOrEmail(loginOrEmail: String) = {
-    val lowercased = loginOrEmail.toLowerCase
-    UserRecord or(_.where(_.authentication.subfield(_.usernameLowerCase) eqs lowercased), _.where(_.email eqs lowercased)) get()
+  def findByLoginOrEmail(login: String, email: String) = {
+    val lowercasedLogin = login.toLowerCase
+    val lowercasedEmail = email.toLowerCase
+    UserRecord or(_.where(_.authentication.subfield(_.usernameLowerCase) eqs lowercasedLogin), _.where(_.email eqs lowercasedEmail)) get()
   }
 
   def findByUserName(userName: String) = {

@@ -17,7 +17,9 @@ trait UserDAO {
 
   def findByLowerCasedLogin(login: String): Option[User]
 
-  def findByLoginOrEmail(loginOrEmail: String): Option[User]
+  def findByLoginOrEmail(loginOrEmail: String): Option[User] = findByLoginOrEmail(loginOrEmail, loginOrEmail)
+
+  def findByLoginOrEmail(login: String, email: String): Option[User]
 
   def findByToken(token: String): Option[User]
 

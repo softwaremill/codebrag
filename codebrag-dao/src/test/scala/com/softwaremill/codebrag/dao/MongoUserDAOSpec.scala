@@ -5,7 +5,6 @@ import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
-import com.softwaremill.codebrag.domain.builder.UserAssembler
 
 class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearDataAfterTest with Logging {
 
@@ -169,7 +168,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     val login = "user1"
 
     // When
-    val userOpt = userDAO.findByLoginOrEmail(login)
+    val userOpt = userDAO.findByLoginOrEmail(login, "")
 
     // Then
     userOpt match {
@@ -197,7 +196,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     val email = "user1@sml.com"
 
     // When
-    val userOpt = userDAO.findByLoginOrEmail(email)
+    val userOpt = userDAO.findByLoginOrEmail("", email)
 
     // Then
     userOpt match {
