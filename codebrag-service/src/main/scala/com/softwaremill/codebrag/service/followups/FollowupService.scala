@@ -63,12 +63,11 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
     }
 
     def addCommitAuthor(users: Set[ObjectId]): Set[ObjectId] = {
-
-      val authorIdOpt = userDao.findByUserName(commit.authorName).map(_.id)
+      val authorIdOpt = userDao.findByUserNameOrEmail(commit.authorName, commit.authorEmail).map(_.id)
       authorIdOpt match {
         case Some(authorId) => users + authorId
         case None => {
-          logger.warn(s"Unknown commit author ${commit.authorName}. No such user registered. Cannot generate follow-up.")
+          logger.warn(s"Unknown commit author ${commit.authorName} (${commit.authorEmail}). No such user registered. Cannot generate follow-up.")
           users
         }
       }
