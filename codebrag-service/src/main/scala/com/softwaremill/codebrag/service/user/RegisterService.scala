@@ -15,7 +15,7 @@ class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder) extends Logg
       _ <- leftIfFound(userDao.findByLowerCasedLogin(login), "User with the given login already exists").right
       _ <- leftIfFound(userDao.findByEmail(emailLowerCase), "User with the given email already exists").right
     } yield {
-      val user = User(Authentication.basic(login, password), "", emailLowerCase,
+      val user = User(Authentication.basic(login, password), login, emailLowerCase,
         UUID.randomUUID().toString, User.defaultAvatarUrl(emailLowerCase))
 
       newUserAdder.add(user)
