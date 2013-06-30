@@ -133,7 +133,7 @@ BeforeAndAfterAll with MockitoSugar {
   }
 
   private def randomCommits(count: Int, date: DateTime = new DateTime()) = {
-    List.fill(count)(UpdatedCommit(new ObjectId(), "Author Name", date))
+    List.fill(count)(UpdatedCommit(new ObjectId(), "Author Name", "author@example.org", date))
   }
 
 }

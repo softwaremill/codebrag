@@ -44,6 +44,11 @@ class CommitInfoAssembler(var commit: CommitInfo) {
     this
   }
 
+  def withAuthorEmail(newAuthorEmail: String) = {
+    commit = commit.copy(authorEmail = newAuthorEmail)
+    this
+  }
+
   def get = commit
 
 }
@@ -58,9 +63,12 @@ object CommitInfoAssembler {
     val sha = RichString.generateRandom(10)
     val message = RichString.generateRandom(10)
     val authorName = RichString.generateRandom(10)
+    val authorEmail = RichString.generateRandom(10)
     val committerName = RichString.generateRandom(10)
+    val committerEmail = RichString.generateRandom(10)
     val parent = RichString.generateRandom(10)
-    CommitInfo(new ObjectId, sha, message, authorName, committerName, new DateTime(), new DateTime(), List(parent), List())
+    CommitInfo(new ObjectId, sha, message, authorName, authorEmail, committerName, committerEmail,
+      new DateTime(), new DateTime(), List(parent), List())
   }
 
 }

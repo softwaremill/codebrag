@@ -43,8 +43,9 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
     val authorTime = new DateTime(revCommit.getAuthorIdent.getWhen)
     val expectedPatch = "diff --git a/file.txt b/file.txt\nnew file mode 100644\nindex 0000000..2e80f50\n--- /dev/null\n+++ b/file.txt\n@@ -0,0 +1 @@\n+file1 content\n\\ No newline at end of file\n"
 
-    val expectedCommit = CommitInfo(sha, "commit1 msg", author.getName, committer.getName,
-      commitTime, authorTime, List(parentId), List(CommitFileInfo("file.txt", "added", expectedPatch)))
+    val expectedCommit = CommitInfo(sha, "commit1 msg", author.getName, author.getEmailAddress,
+      committer.getName, committer.getEmailAddress, commitTime, authorTime,
+      List(parentId), List(CommitFileInfo("file.txt", "added", expectedPatch)))
 
     // when
     service.importRepoCommits(TestRepoData)
@@ -60,8 +61,9 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
     val commitTime = new DateTime(revCommit.getCommitTime * 1000l)
     val authorTime = new DateTime(revCommit.getAuthorIdent.getWhen)
     val expectedPatch = "diff --git a/file.txt b/file.txt\nnew file mode 100644\nindex 0000000..e69de29\n--- /dev/null\n+++ b/file.txt\n"
-    val expectedCommit = CommitInfo(sha, "commit1 msg", author.getName, committer.getName,
-      commitTime, authorTime, List(parentId), List(CommitFileInfo("file.txt", "added", expectedPatch)))
+    val expectedCommit = CommitInfo(sha, "commit1 msg", author.getName, author.getEmailAddress,
+      committer.getName, committer.getEmailAddress, commitTime, authorTime,
+      List(parentId), List(CommitFileInfo("file.txt", "added", expectedPatch)))
 
     // when
     service.importRepoCommits(TestRepoData)
@@ -77,8 +79,9 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
     val commitTime = new DateTime(revCommit.getCommitTime * 1000l)
     val authorTime = new DateTime(revCommit.getAuthorIdent.getWhen)
     val expectedPatch = "diff --git a/file.txt b/file.txt\nnew file mode 100644\nindex 0000000..8773f39\n--- /dev/null\n+++ b/file.txt\n@@ -0,0 +1 @@\n+file content\n\\ No newline at end of file\n"
-    val expectedCommit = CommitInfo(sha, "commit1 msg", author.getName, committer.getName,
-      commitTime, authorTime, List(), List(CommitFileInfo("file.txt", "added", expectedPatch)))
+    val expectedCommit = CommitInfo(sha, "commit1 msg", author.getName, author.getEmailAddress,
+      committer.getName, committer.getEmailAddress, commitTime, authorTime,
+      List(), List(CommitFileInfo("file.txt", "added", expectedPatch)))
 
     // when
     service.importRepoCommits(TestRepoData)
@@ -97,8 +100,9 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
     val commitTime = new DateTime(revCommit.getCommitTime * 1000l)
     val authorTime = new DateTime(revCommit.getAuthorIdent.getWhen)
     val expectedPatch = "diff --git a/file.txt b/file.txt\nindex 8773f39..caf1bcc 100644\n--- a/file.txt\n+++ b/file.txt\n"
-    val expectedCommit = CommitInfo(sha, "commit2 msg", author.getName, committer.getName,
-      commitTime, authorTime, List(previousCommit.getId.name()), List(CommitFileInfo("file.txt", "modified", expectedPatch)))
+    val expectedCommit = CommitInfo(sha, "commit2 msg", author.getName, author.getEmailAddress,
+      committer.getName, committer.getEmailAddress, commitTime, authorTime,
+      List(previousCommit.getId.name()), List(CommitFileInfo("file.txt", "modified", expectedPatch)))
 
     // when
     service.importRepoCommits(TestRepoData)

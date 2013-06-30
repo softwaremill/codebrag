@@ -43,7 +43,8 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
   private object CommitInfoImplicits {
 
     implicit def toCommitInfo(record: CommitInfoRecord): CommitInfo = {
-      CommitInfo(record.id.get, record.sha.get, record.message.get, record.authorName.get, record.committerName.get, new DateTime(record.authorDate.get),
+      CommitInfo(record.id.get, record.sha.get, record.message.get, record.authorName.get, record.authorEmail.get,
+        record.committerName.get, record.committerEmail.get, new DateTime(record.authorDate.get),
         new DateTime(record.committerDate.get), record.parents.get, record.files.get.toList)
     }
 
@@ -58,7 +59,9 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
         .sha(commit.sha)
         .message(commit.message)
         .authorName(commit.authorName)
+        .authorEmail(commit.authorEmail)
         .committerName(commit.committerName)
+        .committerEmail(commit.committerEmail)
         .authorDate(commit.authorDate.toDate)
         .committerDate(commit.commitDate.toDate)
         .parents(commit.parents)
@@ -92,7 +95,11 @@ class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with ObjectIdPk[Com
 
   object authorName extends LongStringField(this)
 
+  object authorEmail extends LongStringField(this)
+
   object committerName extends LongStringField(this)
+
+  object committerEmail extends LongStringField(this)
 
   object authorDate extends DateField(this)
 

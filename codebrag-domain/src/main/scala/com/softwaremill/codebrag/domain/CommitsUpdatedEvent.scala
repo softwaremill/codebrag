@@ -6,10 +6,11 @@ import org.joda.time.DateTime
 
 case class CommitsUpdatedEvent(firstTime: Boolean, newCommits: List[UpdatedCommit]) extends Event
 
-case class UpdatedCommit(id: ObjectId, authorName: String, commitDate: DateTime)
+case class UpdatedCommit(id: ObjectId, authorName: String, authorEmail: String, commitDate: DateTime)
 
 object CommitUpdatedEvent {
   implicit object CommitLikeUpdatedCommitEvent extends CommitLike[UpdatedCommit] {
-    override def authorName(commitLike: UpdatedCommit): String = commitLike.authorName
+    def authorName(commitLike: UpdatedCommit) = commitLike.authorName
+    def authorEmail(commitLike: UpdatedCommit) = commitLike.authorEmail
   }
 }
