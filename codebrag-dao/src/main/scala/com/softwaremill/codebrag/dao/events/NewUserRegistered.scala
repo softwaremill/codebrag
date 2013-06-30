@@ -8,6 +8,7 @@ case class NewUserRegistered(id: ObjectId, login: String, fullName: String, emai
 
 object NewUserRegistered {
   implicit object UserLikeNewUserRegisteredEvent extends UserLike[NewUserRegistered]{
-    def userFullName(userLike: NewUserRegistered): String = userLike.fullName
+    def userFullName(userLike: NewUserRegistered) = userLike.fullName
+    def userEmail(userLike: NewUserRegistered) = userLike.email
   }
 }

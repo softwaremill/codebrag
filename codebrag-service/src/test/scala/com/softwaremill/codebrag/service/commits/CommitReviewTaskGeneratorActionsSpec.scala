@@ -9,7 +9,7 @@ import org.joda.time.DateTime
 import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO, UserDAO, ObjectIdTestUtils}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
-import com.softwaremill.codebrag.domain.CommitReviewTask
+import com.softwaremill.codebrag.domain.{CommitInfo, CommitReviewTask}
 import pl.softwaremill.common.util.time.FixtureTimeClock
 
 class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
@@ -32,9 +32,16 @@ class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers 
     } with CommitReviewTaskGeneratorActions
   }
 
-  it should "generate tasks for newly registered user, skipping commits performed by himself" in {
+  it should "generate tasks for newly registered user, skipping commits performed by himself, when the author name matches" in {
+    testGenerateTasksForNewlyRegisteredUser(CommitInfoAssembler.randomCommit.withAuthorName("Sofokles Smart").get)
+  }
+
+  it should "generate tasks for newly registered user, skipping commits performed by himself, when the author email matches" in {
+    testGenerateTasksForNewlyRegisteredUser(CommitInfoAssembler.randomCommit.withAuthorEmail("sofokles@sml.com").get)
+  }
+
+  def testGenerateTasksForNewlyRegisteredUser(commitBySofokles: CommitInfo) {
     // given
-    val commitBySofokles = CommitInfoAssembler.randomCommit.withAuthorName("Sofokles Smart").get
     val commits = commitBySofokles :: CommitInfoAssembler.randomCommits(count = 2)
     given(commitInfoDaoMock.findNewestCommits(10)).willReturn(commits)
     val sofoklesId = ObjectIdTestUtils.oid(1)
@@ -47,7 +54,6 @@ class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers 
     verify(reviewTaskDaoMock).save(CommitReviewTask(commits(2).id, sofoklesId))
     verifyNoMoreInteractions(reviewTaskDaoMock)
   }
-
 
   it should "not generate any tasks if no commits for current user found within range" in {
     // given

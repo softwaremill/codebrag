@@ -16,12 +16,14 @@ object User {
   }
 
   implicit object UserLikeRegularUser extends UserLike[User] {
-    override def userFullName(userLike: User) = userLike.name
+    def userFullName(userLike: User) = userLike.name
+    def userEmail(userLike: User) = userLike.email
   }
 }
 
 trait UserLike[T] {
   def userFullName(userLike: T): String
+  def userEmail(userLike: T): String
 }
 
 case class Authentication(provider: String, username: String, usernameLowerCase: String, token: String, salt: String)
