@@ -10,6 +10,16 @@ class UserAssembler(var user: User) {
     this
   }
 
+  def withId(id: ObjectId) = {
+    user = user.copy(id = id)
+    this
+  }
+
+  def withAvatarUrl(url: String) = {
+    user = user.copy(avatarUrl = url)
+    this
+  }
+
   def get = user
 }
 
