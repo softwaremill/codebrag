@@ -879,7 +879,7 @@ tr:hover .diff-line-num .button i {
 }
 .like-commit span {
   display: inline-block;
-  margin-top: 0.3em;
+  margin-top: 0.2em;
   vertical-align: top;
 }
 .like-commit.liked-by-user .like.button {
@@ -919,16 +919,16 @@ tr:hover .diff-line-num .button i {
 .likes {
   color: #f3720b;
 }
-.scrolled-to {
-  background: #f58022;
+.scroll-target-reaction-mark {
+  background: #d1cbb9;
 }
-.scroll-to {
+.scroll-target-reaction-done {
   background: #f7f5ef;
-  -webkit-transition: background 1s linear;
-  -moz-transition: background 1s linear;
-  -o-transition: background 1s linear;
-  -ms-transition: background 1s linear;
-  transition: background 1s linear;
+  -webkit-transition: background 1.5s linear;
+  -moz-transition: background 1.5s linear;
+  -o-transition: background 1.5s linear;
+  -ms-transition: background 1.5s linear;
+  transition: background 1.5s linear;
 }
 #loginform {
   margin-left: -11.61em;
@@ -953,7 +953,6 @@ tr:hover .diff-line-num .button i {
   text-transform: lowercase;
 }
 #loginform input[type="password"],
-#loginform input[type="email"],
 #loginform input[type="text"] {
   background: #f2ecd5;
   border: none;

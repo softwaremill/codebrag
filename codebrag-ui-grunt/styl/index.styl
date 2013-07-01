@@ -20,8 +20,8 @@ $lime-green-color = #99ab01
 $error-red-color = #f0552f
 $error-text-color = #ffd8cf
 
-$form-input-bg-color = #f2ecd5
 
+$form-input-bg-color = #f2ecd5
 $main-border-color = #d1cbb9
 
 
@@ -736,7 +736,7 @@ tr:hover .diff-line-num .button
     padding: .4em 1.15em 0.25em;
   & span
     display: inline-block;
-    margin-top: .3em;
+    margin-top: .2em;
     vertical-align: top;
   &.liked-by-user .like.button
     background: #f3720b;
@@ -771,14 +771,12 @@ tr:hover .diff-line-num .button
 .likes
   color: $main-orange-color;
 
-// What are these for? start
-.scrolled-to
-  background: #f58022;
-  
-.scroll-to
+.scroll-target-reaction-mark
+  background: $main-border-color;
+
+.scroll-target-reaction-done
   background: $body-bg-color;
-  transition: background 1s linear; 
-// What are these for? end
+  transition: background 1.5s linear;
 
 
 // login form

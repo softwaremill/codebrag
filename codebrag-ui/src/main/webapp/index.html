@@ -145,7 +145,7 @@
     <script type="text/ng-template" id="lineReactions">
         <tr class="inline-likes comments-container" ng-show="lineReactions.likes.length > 0" data-inline-reactions-container>
             <td colspan="3">
-                <div class="comment reaction" data-resize-to-view="true">
+                <div class="comment" data-resize-to-view="true" data-scrollable-reaction>
                     <likes collection="lineReactions.likes"></likes>
                 </div>
             </td>
@@ -153,7 +153,7 @@
         <tr class="comments-container" data-inline-reactions-container ng-controller="ThreadControlCtrl" ng-show="ifCurrentFollowup(lineReactions.likes)">
             <td colspan="3">
                 <div data-resize-to-view="true">
-                    <div class="comment write active" >
+                    <div class="comment write active">
                         <ul class="comment-action-btns button-group">
                             <li><a class="button primary kthxbye" ng-click="markCurrentFollowupAsDone()"><i class="icon-ok-circle"> </i>KTHXBYE</a></li>
                         </ul>
@@ -165,7 +165,7 @@
             <td colspan="3">
                 <!--inline comment start-->
                 <div data-resize-to-view="true">
-                    <div class="comment reaction" ng-repeat="comment in lineReactions.comments" id="{{comment.id}}">
+                    <div class="comment" data-scrollable-reaction ng-repeat="comment in lineReactions.comments" id="{{comment.id}}">
                         <div class="authored-box">
                             <div class="author-box"><user-avatar url="comment.authorAvatarUrl"></user-avatar></div>
                             <div class="info-box">
@@ -196,10 +196,10 @@
     </script>
 
     <script type="text/ng-template" id="likesLine">
-        <div class="username"><ul class="likes-list"><li ng-repeat="like in collection" id="{{like.id}}">{{like.authorName}}</li></ul>like(s) this line</div>
+        <div class="username" data-scrollable-reaction><ul class="likes-list"><li ng-repeat="like in collection" id="{{like.id}}">{{like.authorName}}</li></ul>like(s) this line</div>
     </script>
     <script type="text/ng-template" id="generalLikes">
-        <div class="like-commit reaction">
+        <div class="like-commit" data-scrollable-reaction>
             <a class="like button" ng-click="submitLike()"><i class="icon-heart"></i></a>
                 <span ng-show="noLikes()">Be the first to like this commit</span>
                 <span ng-hide="noLikes()">
