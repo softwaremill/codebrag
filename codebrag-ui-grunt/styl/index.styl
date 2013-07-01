@@ -309,7 +309,7 @@ form
     width: 127px;
   & .user-info
     float: right;
-    margin: 1.54em 1.54em 0 0;
+    margin: 1.54em 0.77em 0 1.54em;
     vertical-align: top;
     & .username
       display: inline-block;
@@ -356,7 +356,63 @@ a.uservoice-btn
   padding: 0.77em 1.15em;
   text-transform: uppercase;
   vertical-align: top;
+  &:hover
+    background: #8a9b00;
 
+a.ribbon
+  background: $main-orange-color;
+  color: white;
+  display: inline-block;
+  opacity: 0.9;
+  padding: 0.5em;
+  position: fixed;
+  right: -44px;
+  text-align: center;
+  text-decoration: none;
+  top: 44px;
+  width: 200px;
+  z-index: 1;
+  transform: rotate(45deg);
+  &:hover
+    opacity: 1;
+
+.promo-page
+  background-color: rgba(0,0,0,0.7);
+  bottom: 0;
+  display: none;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  &.opened
+    display: block;
+  & .promo-box
+    background-color: $body-bg-color;
+    left: 50%;
+    margin-left: -250px;
+    max-width: 500px;
+    padding: 2.3em;
+    position: fixed;
+    text-align: center;
+    top: 35%;
+    & h1
+      font-size: 1.17em;  
+    & .close-btn
+      background: $form-input-bg-color;
+      color: $error-red-color;
+      display: inline-block;
+      padding: 0.77em;
+      position: absolute;
+      right: 0;
+      top: 0;
+      transition: background 250ms, color 250ms; 
+      &:hover
+        background: $error-red-color;
+        color: white;
 
 // commits
 .items-list
@@ -377,8 +433,6 @@ a.uservoice-btn
       text-decoration: none;
 
 .items-container
-  //height calculated in JS = commitsHeight - sortingHeight - LoadMoreHeight
-  height: 600px;
   overflow-x: hidden;
   overflow-y: hidden;
   &:hover
@@ -845,6 +899,7 @@ tr:hover .diff-line-num .button
 @media all and (max-width: 1000px) {
   .main-header .logo {
     margin: 1em 1em 0;
+    width: 110px;
   }
   .main-nav .button {
     width: 7.15em;
@@ -853,7 +908,7 @@ tr:hover .diff-line-num .button
   .main-header .user-info .username {
     max-width: 10em;
     margin-top: 0;
-    text-align: left;
+    text-align: right;
   }
 }
 
@@ -881,14 +936,5 @@ tr:hover .diff-line-num .button
   }
   .diff-file-container tr.comments-container {
     font-size: 14px;
-  }
-}
-
-@keyframes spinner {
-  0% {
-    width: 55px;
-  }
-  100% {
-    width: 100%;
   }
 }

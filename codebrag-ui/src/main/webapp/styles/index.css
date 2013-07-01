@@ -353,7 +353,7 @@ form .form-group span.text-error:after {
 }
 .main-header .user-info {
   float: right;
-  margin: 1.54em 1.54em 0 0;
+  margin: 1.54em 0.77em 0 1.54em;
   vertical-align: top;
 }
 .main-header .user-info .username {
@@ -409,6 +409,82 @@ a.uservoice-btn {
   text-transform: uppercase;
   vertical-align: top;
 }
+a.uservoice-btn:hover {
+  background: #8a9b00;
+}
+a.ribbon {
+  background: #f3720b;
+  color: #fff;
+  display: inline-block;
+  opacity: 0.9;
+  filter: alpha(opacity=90);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+  padding: 0.5em;
+  position: fixed;
+  right: -44px;
+  text-align: center;
+  text-decoration: none;
+  top: 44px;
+  width: 200px;
+  z-index: 1;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+a.ribbon:hover {
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+}
+.promo-page {
+  background-color: rgba(0,0,0,0.7);
+  bottom: 0;
+  display: none;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+.promo-page.opened {
+  display: block;
+}
+.promo-page .promo-box {
+  background-color: #f7f5ef;
+  left: 50%;
+  margin-left: -250px;
+  max-width: 500px;
+  padding: 2.3em;
+  position: fixed;
+  text-align: center;
+  top: 35%;
+}
+.promo-page .promo-box h1 {
+  font-size: 1.17em;
+}
+.promo-page .promo-box .close-btn {
+  background: #f2ecd5;
+  color: #f0552f;
+  display: inline-block;
+  padding: 0.77em;
+  position: absolute;
+  right: 0;
+  top: 0;
+  -webkit-transition: background 250ms, color 250ms;
+  -moz-transition: background 250ms, color 250ms;
+  -o-transition: background 250ms, color 250ms;
+  -ms-transition: background 250ms, color 250ms;
+  transition: background 250ms, color 250ms;
+}
+.promo-page .promo-box .close-btn:hover {
+  background: #f0552f;
+  color: #fff;
+}
 .items-list {
   height: 700px;
   padding-bottom: 3.3em;
@@ -428,7 +504,6 @@ a.uservoice-btn {
   text-decoration: none;
 }
 .items-container {
-  height: 600px;
   overflow-x: hidden;
   overflow-y: hidden;
 }
@@ -1002,6 +1077,7 @@ tr:hover .diff-line-num .button i {
 @media all and (max-width: 1000px) {
   .main-header .logo {
     margin: 1em 1em 0;
+    width: 110px;
   }
   .main-nav .button {
     width: 7.15em;
@@ -1009,7 +1085,7 @@ tr:hover .diff-line-num .button i {
   .main-header .user-info .username {
     max-width: 10em;
     margin-top: 0;
-    text-align: left;
+    text-align: right;
   }
 }
 @media all and (max-width: 1279px) {
@@ -1033,50 +1109,5 @@ tr:hover .diff-line-num .button i {
   }
   .diff-file-container tr.comments-container {
     font-size: 14px;
-  }
-}
-@-moz-keyframes spinner {
-  0% {
-    width: 55px;
-  }
-
-  100% {
-    width: 100%;
-  }
-}
-@-webkit-keyframes spinner {
-  0% {
-    width: 55px;
-  }
-
-  100% {
-    width: 100%;
-  }
-}
-@-o-keyframes spinner {
-  0% {
-    width: 55px;
-  }
-
-  100% {
-    width: 100%;
-  }
-}
-@-ms-keyframes spinner {
-  0% {
-    width: 55px;
-  }
-
-  100% {
-    width: 100%;
-  }
-}
-@keyframes spinner {
-  0% {
-    width: 55px;
-  }
-
-  100% {
-    width: 100%;
   }
 }

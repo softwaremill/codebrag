@@ -18,7 +18,18 @@ function toggleDiff() {
       $('.toggle-diff-container-btn i').removeClass().addClass('icon-chevron-left');
     }
   })
-} 
+}
+
+// Open/close promo page
+function togglePromoPage() {
+  $('.ribbon').on('click', function() {
+    $('.promo-page').toggleClass('opened');
+  })
+
+  $('.promo-page .close-btn').on('click', function() {
+    $('.promo-page').toggleClass('opened');
+  })
+}
 
 
 function inlineCommentWidthFinder() {
