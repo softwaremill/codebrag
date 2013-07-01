@@ -59,7 +59,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(JohnComment2)
 
     // Then
-    verifyFollowupsCreatedFor(Commit2.id, JohnComment2.id, JohnCommenter.name, List(JackCommitAuthorId))
+    verifyFollowupsCreatedFor(Commit2.id, JohnComment2.id, JohnId, JohnCommenter.name, List(JackCommitAuthorId))
     verifyNoMoreInteractions(followupDao)
   }
 
