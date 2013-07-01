@@ -5,9 +5,9 @@ angular.module('codebrag.common.directives')
 
     .directive('scrollable', function(events) {
 
-        var maxTimeoutCount = 10;
+        var maxTimeoutCount = 50;
 
-        var pollingInterval = 10;
+        var pollingInterval = 100;
         var scrollDuration = 500;
 
         var scrollableReactionAttr = 'data-scrollable-reaction';
@@ -45,7 +45,7 @@ angular.module('codebrag.common.directives')
                         };
                         $('.diff-wrapper').scrollTo('#' + scrollToId, options);
                     } else {
-                        timeoutsCount < 10 && setTimeout(scrollIfElementPresent, pollingInterval);
+                        timeoutsCount < maxTimeoutCount && setTimeout(scrollIfElementPresent, pollingInterval);
                     }
                 }
                 setTimeout(scrollIfElementPresent, pollingInterval);
