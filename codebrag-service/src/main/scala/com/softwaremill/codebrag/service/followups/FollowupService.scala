@@ -43,13 +43,11 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
   }
 
   private def commenterNameFor(currentComment: Comment) = {
-    userDao.findById(currentComment.authorId) match {
-      case Some(user) => user.name
-      case None => {
+
+    userDao.findById(currentComment.authorId).map(_.name).getOrElse({
         logger.warn("Cannot find current commenter's user name - generating UNKNOWN name")
         "unknown"
-      }
-    }
+    })
   }
 
   private def findCommitWithCommentsRelatedTo(comment: Comment): (Option[CommitInfo], List[Comment]) = {
@@ -64,13 +62,10 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
 
     def addCommitAuthor(users: Set[ObjectId]): Set[ObjectId] = {
       val authorIdOpt = userDao.findByUserNameOrEmail(commit.authorName, commit.authorEmail).map(_.id)
-      authorIdOpt match {
-        case Some(authorId) => users + authorId
-        case None => {
-          logger.warn(s"Unknown commit author ${commit.authorName} (${commit.authorEmail}). No such user registered. Cannot generate follow-up.")
-          users
-        }
-      }
+      authorIdOpt.map(users + _).getOrElse({
+        logger.warn(s"Unknown commit author ${commit.authorName} (${commit.authorEmail}). No such user registered. Cannot generate follow-up.")
+        users
+      })
     }
 
     def withoutCurrentCommentAuthor(users: Set[ObjectId]): Set[ObjectId] = {
