@@ -1,6 +1,6 @@
 <div id="commits-tab-content" class="row" ng-controller="FollowupsCtrl" auto-fit-height>
-    <div class="commits items-list large-3 columns">
-        <div class="commits-container">
+    <div class="followups items-list large-3 columns">
+        <div class="items-container">
             <!--commit info start-->
             <div class="commit-container" ng-repeat="followup in followups" ng-controller="FollowupListItemCtrl"
                  mark-current="followup.followupId" state-param-name="followupId" ng-click="openFollowupDetails(followup)">
