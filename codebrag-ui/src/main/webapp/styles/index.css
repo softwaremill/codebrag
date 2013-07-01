@@ -438,7 +438,7 @@ a.ribbon:hover {
   -ms-filter: none;
   filter: none;
 }
-.promo-page {
+.popup-page {
   background-color: rgba(0,0,0,0.7);
   bottom: 0;
   display: none;
@@ -451,10 +451,10 @@ a.ribbon:hover {
   width: 100%;
   z-index: 1000;
 }
-.promo-page.opened {
+.popup-page.opened {
   display: block;
 }
-.promo-page .promo-box {
+.popup-page .popup-box {
   background-color: #f7f5ef;
   left: 50%;
   margin-left: -250px;
@@ -464,10 +464,10 @@ a.ribbon:hover {
   text-align: center;
   top: 35%;
 }
-.promo-page .promo-box h1 {
+.popup-page .popup-box h1 {
   font-size: 1.17em;
 }
-.promo-page .promo-box .close-btn {
+.popup-page .popup-box .close-btn {
   background: #f2ecd5;
   color: #f0552f;
   display: inline-block;
@@ -481,7 +481,7 @@ a.ribbon:hover {
   -ms-transition: background 250ms, color 250ms;
   transition: background 250ms, color 250ms;
 }
-.promo-page .promo-box .close-btn:hover {
+.popup-page .popup-box .close-btn:hover {
   background: #f0552f;
   color: #fff;
 }

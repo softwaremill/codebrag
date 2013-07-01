@@ -21,13 +21,13 @@ function toggleDiff() {
 }
 
 // Open/close promo page
-function togglePromoPage() {
+function togglePopupPage() {
   $('.ribbon').on('click', function() {
-    $('.promo-page').toggleClass('opened');
+    $('.popup-page').toggleClass('opened');
   })
 
-  $('.promo-page .close-btn').on('click', function() {
-    $('.promo-page').toggleClass('opened');
+  $('.popup-page .close-btn').on('click', function() {
+    $('.popup-page').toggleClass('opened');
   })
 }
 
