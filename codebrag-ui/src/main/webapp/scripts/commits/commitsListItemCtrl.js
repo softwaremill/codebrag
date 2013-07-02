@@ -7,14 +7,16 @@ angular.module('codebrag.commits')
         };
 
         $scope.markAsReviewed = function(commit) {
-			commitsListService.removeCommit(commit.id).then(function() {
-                _getOutOfCommitDetailsIfCurrentRemoved(commit.id);
+			commitsListService.removeCommitAndGetNext(commit.id).then(function(nextCommit) {
+                goTo(nextCommit);
             });
         };
 
-        function _getOutOfCommitDetailsIfCurrentRemoved(commitId) {
-            if (commitId === $stateParams.id) {
+        function goTo(nextCommit) {
+            if (_.isNull(nextCommit)) {
                 $state.transitionTo('commits.list');
+            } else {
+                $state.transitionTo('commits.details', {id: nextCommit.id});
             }
         }
 

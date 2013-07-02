@@ -1,12 +1,14 @@
 angular.module('codebrag.session')
 
-    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, $state, events, $window, $location) {
+    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, $state, events, $window, $location, flash) {
 
         $scope.user = {
             login: '',
             password: '',
             rememberme: false
         };
+
+        $scope.flash = flash;
 
         $scope.login = function () {
             if (loginFormValid()) {
@@ -58,14 +60,14 @@ angular.module('codebrag.session')
         }
 
         function logInUser() {
+            delete $scope.loginFailed;
+            delete $rootScope.registerSuccessful;
             authService.login($scope.user).then(function() {
                 clearLoginField();
                 clearPasswordField();
             }, function (errorResponse) {
                 clearPasswordField();
-                if (errorResponse.status === 401) {
-                    $rootScope.$broadcast(events.httpAuthError, {status: 401, text: 'Invalid credentials'})
-                }
+                $scope.loginFailed = true;
             });
         }
 

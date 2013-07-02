@@ -1,0 +1,60 @@
+<!--  
+  recently it was called 'commits.large-3.columns
+  now we have 'commits.items-list.large-3' 
+  and 'followups.items-list.large-3'
+-->
+<div class="followups items-list large-3 columns">
+<!-- 'commits-sorting' rename into just 'sorting' -->
+  <ul class="sorting button-group">
+    <li><a href="#" class="button link">Inbox</a></li>
+    <li><a href="#" class="button">All</a></li>
+  </ul>
+<!-- 
+recently it was 'commits-container'
+now it's more general 'items-container'
+-->
+  <div class="items-container">
+    <!--followup info start-->
+    <div class="followups-container">
+      <div class="info-box">
+        <div class="commit-name">Fixed something here</div>
+        <div class="info-line"><span class="username">m_aleksandrova</span><span class="time">2 hours ago</span></div>
+      </div>
+      <div class="followup-container">
+        <div class="authored-box">
+          <div class="author-box"><img src="images/avatar.png"></div>
+          <div class="info-box">
+            <div class="comment">Fixed something here</div>
+          </div>
+        </div><i class="icon-ok-circle"></i>
+      </div>
+    </div>
+    <!--followup info end-->
+    <!-- active followup-container start -->
+    <div class="followups-container active">
+      <div class="info-box">
+        <div class="commit-name">Fixed something here</div>
+        <div class="info-line"><span class="username">m_aleksandrova</span><span class="time">2 hours ago</span></div>
+      </div>
+      <!-- active followup start -->
+      <div class="followup-container active">
+        <div class="authored-box">
+          <div class="author-box"><img src="images/avatar.png"></div>
+          <div class="info-box">
+            <div class="comment">Fixed something here</div>
+          </div>
+        </div><i class="icon-ok-circle"></i>
+      </div>
+      <!-- active followup end -->
+      <div class="followup-container">
+        <div class="authored-box">
+          <div class="author-box"><img src="images/avatar.png"></div>
+          <div class="info-box">
+            <div class="comment">Fixed something here</div>
+          </div>
+        </div><i class="icon-ok-circle"></i>
+      </div>
+    </div>
+    <!-- active followup-container end -->
+  </div>
+</div>

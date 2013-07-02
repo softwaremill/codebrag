@@ -1,42 +1,59 @@
 package com.softwaremill.codebrag
 
 import activities.AddCommentActivity
-import common.{ObjectIdGenerator, IdGenerator}
+import com.softwaremill.codebrag.common.{ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.dao.reporting._
 import dao._
 import rest.CodebragSwagger
-import service.comments.CommentService
+import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
 import service.followups.FollowupService
-import service.github._
-import service.user.Authenticator
+import service.commits._
+import com.softwaremill.codebrag.service.user._
 import pl.softwaremill.common.util.time.RealTimeClock
-import com.softwaremill.codebrag.service.github.jgit.JgitGitHubCommitImportServiceFactory
+import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
+import com.softwaremill.codebrag.service.actors.ActorSystemSupport
+import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig, GithubConfig}
+import com.typesafe.config.ConfigFactory
 
+trait Beans extends ActorSystemSupport with CommitsModule {
 
-trait Beans {
+  lazy val config = new MongoConfig with RepositoryConfig with GithubConfig with CodebragConfig {
+    def rootConfig = ConfigFactory.load()
+  }
+
   implicit lazy val clock = new RealTimeClock
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator
-
-  lazy val authenticator = new Authenticator(userDao)
+  val self = this
+  lazy val eventBus = new AkkaEventBus(actorSystem)
   lazy val userDao = new MongoUserDAO
   lazy val commitInfoDao = new MongoCommitInfoDAO
   lazy val followupDao = new MongoFollowupDAO
   lazy val commitListFinder = new MongoCommitWithAuthorDetailsFinder(new MongoCommitFinder)
-  lazy val commentListFinder = new MongoCommentFinder(userDao)
+  lazy val reactionFinder = new ReactionFinder
   lazy val swagger = new CodebragSwagger
-  lazy val ghService = new GitHubAuthService
+  lazy val ghService = new GitHubAuthService(config)
   lazy val commentDao = new MongoCommitCommentDAO
-  lazy val commentService = new CommentService(commentDao)
-  lazy val githubClientProvider = new GitHubClientProvider(userDao)
   lazy val notificationCountFinder = new MongoNotificationCountFinder
-  lazy val converter = new GitHubCommitInfoConverter()
   lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
-  lazy val reviewTaskGenerator = new CommitReviewTaskGenerator(userDao, commitReviewTaskDao)
-  lazy val importerFactory = new JgitGitHubCommitImportServiceFactory(commitInfoDao, reviewTaskGenerator, userDao)
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
-  lazy val followupFinder = new MongoFollowupFinder
-  lazy val commentActivity = new AddCommentActivity(commentService, followupService)
+  lazy val likeDao = new MongoLikeDAO
+  lazy val likeValidator = new LikeValidator(commitInfoDao, likeDao, userDao)
+  lazy val userReactionService = new UserReactionService(commentDao, likeDao, likeValidator, eventBus)
 
-  lazy val diffWithCommentsService = new DiffWithCommentsService(commitListFinder, commentListFinder, new DiffService(commitInfoDao))
+  lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {
+      val userDao = self.userDao
+      val commitInfoDao = self.commitInfoDao
+      val commitToReviewDao = self.commitReviewTaskDao
+    }
+
+  lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus, reviewTaskGenerator)
+  lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
+  lazy val followupFinder = new MongoFollowupFinder
+  lazy val commentActivity = new AddCommentActivity(userReactionService, followupService)
+
+  lazy val newUserAdder = new NewUserAdder(userDao, eventBus, reviewTaskGenerator)
+  lazy val registerService = new RegisterService(userDao, newUserAdder)
+
+  lazy val diffWithCommentsService = new DiffWithCommentsService(commitListFinder, reactionFinder, new DiffService(commitInfoDao))
 }

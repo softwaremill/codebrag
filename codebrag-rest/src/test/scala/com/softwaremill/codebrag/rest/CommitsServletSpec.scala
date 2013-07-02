@@ -8,30 +8,31 @@ import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO, UserDAO, CommitInfoDAO}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import com.softwaremill.codebrag.dao.reporting.{CommentFinder, CommitFinder}
+import com.softwaremill.codebrag.dao.reporting.{ReactionFinder, CommitFinder}
 import java.util.Date
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
-import com.softwaremill.codebrag.service.github.GitHubCommitImportServiceFactory
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
 import org.mockito.Matchers
 import com.softwaremill.codebrag.common.PagingCriteria
+import com.softwaremill.codebrag.service.comments.UserReactionService
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
-  val SamplePendingCommits = CommitListView(List(CommitView("id", "abcd0123", "this is commit message", "mostr", new Date())), 1)
+  val SamplePendingCommits = CommitListView(List(CommitView("id", "abcd0123", "this is commit message", "mostr",
+    "mostr@sml.com", new Date())), 1)
   var commentActivity = mock[AddCommentActivity]
   var commitsInfoDao = mock[CommitInfoDAO]
   var commitsListFinder = mock[CommitFinder]
   var diffService = mock[DiffWithCommentsService]
-  var commentListFinder = mock[CommentFinder]
+  var userReactionFinder = mock[ReactionFinder]
   var userDao = mock[UserDAO]
   var commitReviewTaskDao = mock[CommitReviewTaskDAO]
   val UserJson = someUser()
-  val importerFactory = mock[GitHubCommitImportServiceFactory]
+  val userReactionService = mock[UserReactionService]
 
   def bindServlet {
     addServlet(new TestableCommitsServlet(fakeAuthenticator, fakeScentry), "/*")
@@ -134,7 +135,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends CommitsServlet(fakeAuthenticator, commitsListFinder, commentListFinder, commentActivity, commitReviewTaskDao, userDao, new CodebragSwagger, diffService, importerFactory) {
+    extends CommitsServlet(fakeAuthenticator, commitsListFinder, userReactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, new CodebragSwagger, diffService) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

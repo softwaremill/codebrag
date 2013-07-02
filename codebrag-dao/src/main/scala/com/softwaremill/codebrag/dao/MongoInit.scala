@@ -1,18 +1,33 @@
 package com.softwaremill.codebrag.dao
 
 import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB}
-import com.mongodb.Mongo
+import com.mongodb.{ServerAddress, Mongo}
 import com.typesafe.scalalogging.slf4j.Logging
+import scala.collection.JavaConversions
 
 object MongoInit extends Logging {
+  def initialize(mongoConfig: MongoConfig) {
+    MongoDB.defineDb(DefaultMongoIdentifier, createMongo(asServerAdresses(mongoConfig.mongoServers)), mongoConfig.mongoDatabase)
+    ensureIndexes()
+  }
 
-  def ensureIndexes() {
+  private def ensureIndexes() {
     logger.info("Ensuring Mongo indexes")
     CommitInfoRecord.ensureIndexes()
   }
 
-  def initialize() {
-    MongoDB.defineDb(DefaultMongoIdentifier, new Mongo, "codebrag")
-    ensureIndexes()
+  private def createMongo(serverList: List[ServerAddress]) = {
+    // We need to use a different constructor if there's only 1 server to avoid startup exceptions where Mongo thinks
+    // it's in a replica set.
+    if (serverList.size == 1) {
+      new Mongo(serverList.head)
+    } else {
+      import JavaConversions._
+      new Mongo(serverList)
+    }
+  }
+
+  private def asServerAdresses(servers: String): scala.List[ServerAddress] = {
+    servers.split(",").map(new ServerAddress(_)).toList
   }
 }

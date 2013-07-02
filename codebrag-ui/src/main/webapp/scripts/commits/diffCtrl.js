@@ -1,10 +1,49 @@
 angular.module('codebrag.commits')
 
-    .controller('DiffCtrl', function ($scope, Comments) {
+    .controller('DiffCtrl', function ($scope, Comments, Likes, authService) {
+
+
+        $scope.like = function(fileName, lineNumber) {
+            var currentUserName = authService.loggedInUser.fullName;
+            if(_userCannotLikeThisLine(currentUserName, fileName, lineNumber)) {
+                return;
+            }
+            var newLike = {
+                commitId: $scope.currentCommit.info.id,
+                fileName: fileName,
+                lineNumber: lineNumber
+            };
+            return Likes.save(newLike).$then(function (likeResponse) {
+                var like = likeResponse.data;
+                $scope.currentCommit.addLike(like, fileName, lineNumber);
+            });
+        };
+
+        function _userCannotLikeThisLine(currentUserName, fileName, lineNumber) {
+            return $scope.currentCommit.isUserAuthorOfCommit(currentUserName) || $scope.currentCommit.userAlreadyLikedLine(currentUserName, fileName, lineNumber);
+        }
+
+        $scope.likeEntireDiff = function () {
+            var currentUserName = authService.loggedInUser.fullName;
+            if (_userCannotLikeThisCommit(currentUserName)) {
+                return;
+            }
+            var newLike = {
+                commitId: $scope.currentCommit.info.id
+            };
+            return Likes.save(newLike).$then(function (likeResponse) {
+                var like = likeResponse.data;
+                $scope.currentCommit.addGeneralLike(like);
+            });
+        };
+
+        function _userCannotLikeThisCommit(currentUserName) {
+            return $scope.currentCommit.isUserAuthorOfCommit(currentUserName) || $scope.currentCommit.userAlreadyLikedCommit(currentUserName);
+        }
 
         $scope.submitInlineComment = function(content, commentData) {
             var newComment = {
-                commitId: $scope.currentCommit.commit.id,
+                commitId: $scope.currentCommit.info.id,
                 body: content,
                 fileName: commentData.fileName,
                 lineNumber: commentData.lineNumber
@@ -12,28 +51,18 @@ angular.module('codebrag.commits')
 
             return Comments.save(newComment).$then(function (commentResponse) {
                 var comment = commentResponse.data.comment;
-                addCommentToCommentsCollection(comment, newComment.fileName, newComment.lineNumber);
+                $scope.currentCommit.addInlineComment(comment, commentData.fileName, commentData.lineNumber);
             });
-
-            function addCommentToCommentsCollection(comment, fileName, lineNumber) {
-                var comments = $scope.currentCommit.inlineComments;
-                if(_.isUndefined(comments[fileName])) {
-                    comments[fileName] = {};
-                }
-                if(_.isUndefined(comments[fileName][lineNumber])) {
-                    comments[fileName][lineNumber] = [];
-                }
-                comments[fileName][lineNumber].push(comment);
-            }
         };
 
         $scope.submitComment = function (content) {
             var comment = {
-                commitId: $scope.currentCommit.commit.id,
+                commitId: $scope.currentCommit.info.id,
                 body: content
             };
             return Comments.save(comment).$then(function (commentResponse) {
-                $scope.currentCommit.comments.push(commentResponse.data.comment);
+                var comment = commentResponse.data.comment;
+                $scope.currentCommit.addComment(comment);
             });
         };
 

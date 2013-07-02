@@ -5,7 +5,7 @@ angular.module('codebrag.commits')
         var commitId = $stateParams.id;
 
         commitsListService.loadCommitById(commitId).then(function(commit) {
-            $scope.currentCommit = commit;
+            $scope.currentCommit = new codebrag.CurrentCommit(commit);
         });
 
         $scope.markCurrentCommitAsReviewed = function() {

@@ -1,138 +1,161 @@
 package com.softwaremill.codebrag.dao
 
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
-import com.softwaremill.codebrag.domain.{CommentBase, InlineCommitComment, EntireCommitComment}
+import com.softwaremill.codebrag.domain.{Like, Comment}
 import net.liftweb.mongodb.record.field.{ObjectIdField, DateField}
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
-import net.liftweb.record.field.{EnumField, IntField}
-
+import net.liftweb.record.field.OptionalIntField
 
 class MongoCommitCommentDAO extends CommitCommentDAO {
 
-  import CommentRecord.CommentTypeEnum._
-
-  override def save(comment: CommentBase) {
+  override def save(comment: Comment) {
     CommentToRecordBuilder.buildFrom(comment).save
   }
 
-  override def findInlineCommentsForCommit(commitId: ObjectId) = {
-    val inlineCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.commentType eqs Inline)
-    inlineCommentsQuery.orderAsc(_.date).fetch().map(RecordToCommentBuilder.buildFrom(_).asInstanceOf[InlineCommitComment])
+  override def findCommentsForCommit(commitId: ObjectId) = {
+    val comments = CommentRecord.where(_.commitId eqs commitId).orderAsc(_.date).fetch()
+    comments.map(RecordToCommentBuilder.buildFrom(_))
   }
 
-  override def findCommentsForEntireCommit(commitId: ObjectId) = {
-    val commitCommentsQuery = CommentRecord.where(_.commitId eqs commitId).and(_.commentType eqs Commit)
-    commitCommentsQuery.orderAsc(_.date).fetch().map(RecordToCommentBuilder.buildFrom(_).asInstanceOf[EntireCommitComment])
-  }
-
-  def findAllCommentsInThreadWith(comment: CommentBase) = {
-    val source = CommentToRecordBuilder.buildFrom(comment)
-    val query = CommentRecord
-      .where(_.commitId eqs source.commitId.get)
-      .and(_.commentType eqs source.commentType.get)
-      .andOpt(source.fileName.valueBox)(_.fileName eqs _)
-      .andOpt(source.lineNumber.valueBox)(_.lineNumber eqs _)
+  def findAllCommentsInThreadWith(comment: Comment) = {
+    val baseQuery = CommentRecord.where(_.commitId eqs comment.commitId)
+    val query = (comment.fileName, comment.lineNumber) match {
+      case (Some(fileName), Some(lineNumber)) => {
+        baseQuery.and(_.fileName eqs fileName).and(_.lineNumber eqs lineNumber)
+      }
+      case _ => {
+        baseQuery.and(_.fileName exists false).and(_.lineNumber exists false)
+      }
+    }
     query.fetch().map(RecordToCommentBuilder.buildFrom(_))
   }
 
   private object CommentToRecordBuilder {
 
-    import CommentRecord.CommentTypeEnum._
-
-    def buildFrom(comment: CommentBase) = {
-      comment match {
-        case c: InlineCommitComment => inlineCommitCommentToRecord(c)
-        case c: EntireCommitComment => entireCommitCommentToRecord(c)
-      }
-    }
-
-    private def commentBaseToRecord(comment: CommentBase) = {
+    def buildFrom(comment: Comment) = {
       CommentRecord.createRecord
         .id(comment.id)
         .commitId(comment.commitId)
         .authorId(comment.authorId)
         .message(comment.message)
         .date(comment.postingTime.toDate)
-    }
-
-    private def entireCommitCommentToRecord(comment: EntireCommitComment) = {
-        commentBaseToRecord(comment).commentType(Commit)
-    }
-
-    private def inlineCommitCommentToRecord(inlineComment: InlineCommitComment) = {
-      commentBaseToRecord(inlineComment)
-        .fileName(inlineComment.fileName)
-        .lineNumber(inlineComment.lineNumber)
-        .commentType(Inline)
+        .fileName(comment.fileName)
+        .lineNumber(comment.lineNumber)
     }
 
   }
 
   private object RecordToCommentBuilder {
 
-    import CommentRecord.CommentTypeEnum._
+    def buildFrom(record: CommentRecord) = {
+      Comment(
+        record.id.get,
+        record.commitId.get,
+        record.authorId.get,
+        new DateTime(record.date.get),
+        record.message.get,
+        record.fileName.get,
+        record.lineNumber.get)
+    }
 
-    def buildFrom(comment: CommentRecord) = {
-      comment.commentType.get match {
-        case Inline => recordToInlineComment(comment)
-        case Commit => recordToComment(comment)
+  }
+}
+
+class MongoLikeDAO extends LikeDAO {
+
+  override def save(like: Like) {
+    LikeToRecordBuilder.buildFrom(like).save
+  }
+
+  override def findLikesForCommit(commitId: ObjectId) = {
+    val likes = LikeRecord.where(_.commitId eqs commitId).orderAsc(_.date).fetch()
+    likes.map(RecordToLikeBuilder.buildFrom(_))
+  }
+
+  def findAllLikesInThreadWith(like: Like) = {
+    val query = (like.fileName, like.lineNumber) match {
+      case (Some(fileName), Some(lineNumber)) => {
+        LikeRecord.where(_.commitId eqs like.commitId).and(_.fileName eqs fileName).and(_.lineNumber eqs lineNumber)
+      }
+      case _ => {
+        LikeRecord.where(_.commitId eqs like.commitId).and(_.fileName exists false).and(_.lineNumber exists false)
       }
     }
+    query.fetch().map(RecordToLikeBuilder.buildFrom(_))
+  }
 
-    private def recordToComment(record: CommentRecord) = {
-      EntireCommitComment(
-        record.id.get,
-        record.commitId.get,
-        record.authorId.get,
-        record.message.get,
-        new DateTime(record.date.get)
-      )
-    }
+  private object LikeToRecordBuilder {
 
-    private def recordToInlineComment(record: CommentRecord): InlineCommitComment = {
-      InlineCommitComment(
-        record.id.get,
-        record.commitId.get,
-        record.authorId.get,
-        record.message.get,
-        new DateTime(record.date.get),
-        record.fileName.valueBox.get,
-        record.lineNumber.valueBox.get)
+    def buildFrom(like: Like) = {
+      LikeRecord.createRecord
+        .id(like.id)
+        .commitId(like.commitId)
+        .authorId(like.authorId)
+        .date(like.postingTime.toDate)
+        .fileName(like.fileName)
+        .lineNumber(like.lineNumber)
     }
 
   }
 
+  private object RecordToLikeBuilder {
+
+    def buildFrom(record: LikeRecord) = {
+      Like(
+        record.id.get,
+        record.commitId.get,
+        record.authorId.get,
+        new DateTime(record.date.get),
+        record.fileName.get,
+        record.lineNumber.get)
+    }
+
+  }
 }
 
-class CommentRecord extends MongoRecord[CommentRecord] {
+
+trait UserReactionRecord[MyType <: MongoRecord[MyType]] {
+
+  self: MongoRecord[MyType] =>
+
+  object id extends ObjectIdField(self.asInstanceOf[MyType])
+
+  object commitId extends ObjectIdField(self.asInstanceOf[MyType])
+
+  object authorId extends ObjectIdField(self.asInstanceOf[MyType])
+
+  object date extends DateField(self.asInstanceOf[MyType])
+
+  object fileName extends OptionalLongStringField(self.asInstanceOf[MyType])
+
+  object lineNumber extends OptionalIntField(self.asInstanceOf[MyType])
+
+}
+
+
+
+class CommentRecord extends MongoRecord[CommentRecord] with UserReactionRecord[CommentRecord] {
 
   def meta = CommentRecord
 
-  object id extends ObjectIdField(this)
-
-  object commitId extends ObjectIdField(this)
-
-  object authorId extends ObjectIdField(this)
-
   object message extends LongStringField(this)
-
-  object date extends DateField(this)
-
-  object fileName extends LongStringField(this) { override def optional_? = true }
-
-  object lineNumber extends IntField(this) { override def optional_? = true }
-
-  object commentType extends EnumField(this, CommentRecord.CommentTypeEnum)
 
 }
 
 object CommentRecord extends CommentRecord with MongoMetaRecord[CommentRecord] {
   override def collectionName = "commit_comments"
+}
 
-  object CommentTypeEnum extends Enumeration {
-    type CommentTypeEnum = Value
-    val Commit, Inline = Value
-  }
+
+
+class LikeRecord extends MongoRecord[LikeRecord] with UserReactionRecord[LikeRecord] {
+
+  def meta = LikeRecord
+
+}
+
+object LikeRecord extends LikeRecord with MongoMetaRecord[LikeRecord] {
+  override def collectionName = "commit_likes"
 }

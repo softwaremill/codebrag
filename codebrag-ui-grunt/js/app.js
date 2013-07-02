@@ -5,35 +5,32 @@ $('.comment-text').on('click', function() {
   $(this).closest('.comment.write').addClass('active');
 })
 
-// placement of toggle diff-panel btn
-if ($('.diff-container').height() <= 600) {
-
-  $('.toggle-diff-container-btn i').css('position', 'relative');
-
-} else {
-
-  $('.toggle-diff-container-btn i').css('position', 'fixed');
-
+//toggle diff-panel
+function toggleDiff() {
+  $('.toggle-diff-container-btn').on('click', function() {
+    $('.diff').toggleClass('opened');
+    if ($('.diff').hasClass('opened')) {
+      $('.commits').animate({opacity: 0}, 500);
+      setTimeout(function() {
+        $('.toggle-diff-container-btn i').removeClass().addClass('icon-chevron-right')}, 1000);
+    } else {
+      $('.commits').animate({opacity: 1}, 500);
+      $('.toggle-diff-container-btn i').removeClass().addClass('icon-chevron-left');
+    }
+  })
 }
 
-// opens diff panel fullscreen
-$('.toggle-diff-container-btn').on('click', function() {
-  $('.diff').toggleClass('opened');
+// Open/close promo page
+function togglePopupPage() {
+  $('.ribbon').on('click', function() {
+    $('.popup-page').toggleClass('opened');
+  })
 
-  if ($('.diff').hasClass('opened')) {
+  $('.popup-page .close-btn').on('click', function() {
+    $('.popup-page').toggleClass('opened');
+  })
+}
 
-    $('.commits').animate({opacity: 0}, 500);
-    setTimeout(function() {
-      $('.toggle-diff-container-btn i').removeClass().addClass('icon-chevron-right')}, 1000);
-
-  } else {
-
-    $('.commits').animate({opacity: 1}, 500);
-    $('.toggle-diff-container-btn i').removeClass().addClass('icon-chevron-left');
-
-  }
-
-})
 
 function inlineCommentWidthFinder() {
   // make comments in diff table do not overflow to the right if there is a long line of the code in the table
@@ -72,7 +69,7 @@ function inlineCommentWidthFinder() {
 
 // sticky commits panel
 function uiUpdate() {
-  // make commits panel sticky and update it's haight to make scroll work
+  // make commits panel sticky and update it's height to make scroll work
   var windowTop = $(window).scrollTop();
   var commitsTop = $('#sticky').offset().top;
   var commitsHeight = $($('.commit-container')[0]).outerHeight()*$('.commit-container').length

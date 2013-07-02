@@ -1,12 +1,10 @@
-<div id="commits-tab-content" class="row" ng-controller="CommitsCtrl">
-    <div id="sticky"></div>
-    <div class="commits large-3 columns">
-        <ul class="commits-sorting button-group" activate-single-on-click="a.button" toggle-class="link">
+<div id="commits-tab-content" class="row" ng-controller="CommitsCtrl" auto-fit-height>
+    <div class="commits items-list small-3 large-3 columns">
+        <ul class="sorting button-group" activate-single-on-click="a.button" toggle-class="link">
             <li><a ng-click="switchToPending()" class="button">To review</a></li>
             <li><a ng-click="switchToAll()" class="button link">All</a></li>
-            <li><span ng-click="syncCommits()" class="button link">Sync</span></li>
         </ul>
-        <div class="commits-container">
+        <div class="items-container" scroll-commits-list>
             <!--commit info start-->
             <div class="commit-container" ng-repeat="commit in commits" ng-controller="CommitsListItemCtrl"  mark-current="commit.id"
                  state-param-name="id" ng-click="openCommitDetails(commit)">
@@ -19,9 +17,12 @@
                 </div ><i class="icon-ok-circle" ng-show="commit.pendingReview" ng-click="markAsReviewed(commit)" isolate-click></i>
             </div>
             <!--commit info end-->
+            <div id="commits-list-end"></div>
         </div>
-        <div class="commits-count" ng-show="canLoadMore()" ng-click="loadMoreCommits()">load more</div>
+        <div class="commits-count" ng-controller="LoadMoreCommitsCtrl" ng-show="moreCommitsAvailable">
+            <div ng-click="loadMoreCommits()">load more</div>
+        </div>
     </div>
-    <div class="diff large-9 columns" ui-view>
+    <div class="diff small-9 large-9 columns" ui-view>
     </div>
 </div>

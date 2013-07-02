@@ -1,18 +1,21 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.service.github.GitHubAuthService
 import org.scalatra.{Forbidden, ScalatraServlet, SeeOther}
 import com.softwaremill.codebrag.dao.UserDAO
-import com.softwaremill.codebrag.service.user.Authenticator
+import com.softwaremill.codebrag.service.user.{NewUserAdder, GitHubAuthService, Authenticator}
 import com.softwaremill.codebrag.domain.{User, Authentication}
 import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.auth.AuthenticationSupport
-import com.softwaremill.codebrag.service.config.CodebragConfiguration
-import com.softwaremill.codebrag.common.Utils
+import com.softwaremill.codebrag.service.config.GithubConfig
+import org.bson.types.ObjectId
 
 
-class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService: GitHubAuthService, userDao: UserDAO)
+class GithubAuthorizationServlet(val authenticator: Authenticator,
+                                 ghAuthService: GitHubAuthService,
+                                 userDao: UserDAO,
+                                 newUserAdder: NewUserAdder,
+                                 githubConfig: GithubConfig)
   extends ScalatraServlet with AuthenticationSupport with Logging {
 
   private val TempUserLogin = "tmpLogin"
@@ -21,7 +24,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
 
   get("/authenticate") {
     request.getSession().put(RedirectToUrlParam, params.getOrElse(RedirectToUrlParam, "/commits"))
-    val clientId = Option(CodebragConfiguration.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
+    val clientId = Option(githubConfig.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
     SeeOther(s"https://github.com/login/oauth/authorize?client_id=$clientId&scope=user,repo")
   }
 
@@ -39,7 +42,8 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
       }
       case None => {
         logger.debug("Creating new user")
-        userDao.add(User(auth, user.name, user.email, UUID.randomUUID().toString,user.avatarUrl))
+        val newUser = User(new ObjectId, auth, user.name, user.email, UUID.randomUUID().toString, user.avatarUrl)
+        newUserAdder.add(newUser)
       }
     }
     request.setAttribute(TempUserLogin, user.login)
@@ -48,14 +52,14 @@ class GithubAuthorizationServlet(val authenticator: Authenticator, ghAuthService
     authenticate() match {
       case Some(u) => {
         logger.debug("Authentication done")
-        val redirectTo = request.getSession().getOrElse(RedirectToUrlParam, "")
+        val redirectTo = request.getSession.getOrElse(RedirectToUrlParam, "")
         val redirectPath: String = s"$contextPath/#$redirectTo"
         logger.debug(s"Redirect path: $redirectPath")
-        request.getSession().removeAttribute(RedirectToUrlParam)
+        request.getSession.removeAttribute(RedirectToUrlParam)
         SeeOther(redirectPath)
       }
       case None => {
-        request.getSession().invalidate()
+        request.getSession.invalidate()
         Forbidden
       }
     }

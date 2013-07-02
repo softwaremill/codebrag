@@ -1,41 +1,34 @@
 package com.softwaremill.codebrag.rest
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting._
 import org.scalatra.swagger.SwaggerSupport
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import com.softwaremill.codebrag.dao.UserDAO
-import com.softwaremill.codebrag.service.comments.command.NewInlineCommitComment
+import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import scala.Some
-import com.softwaremill.codebrag.service.comments.command.NewEntireCommitComment
-import com.softwaremill.codebrag.dao.reporting.views.SingleCommentView
+import com.softwaremill.codebrag.dao.reporting.views.CommentView
 
-trait CommentsEndpoint extends JsonServletWithAuthentication with CommentsEndpointSwaggerDefinition {
+
+trait CommentsEndpoint extends JsonServletWithAuthentication with UserReactionParametersReader with CommentsEndpointSwaggerDefinition {
 
   def commentActivity: AddCommentActivity
   def userDao: UserDAO
-  def commentListFinder: CommentFinder
 
   post("/:id/comments", operation(addCommentOperation)) {
-
     haltIfNotAuthenticated()
-    val savedComment = commentActivity.addCommentToCommit(extractComment)
+    val comment = buildIncomingComment
+    val savedComment = commentActivity.addCommentToCommit(comment)
     userDao.findById(savedComment.authorId) match {
-      case Some(user) => AddCommentResponse(SingleCommentView(savedComment.id.toString, user.name, savedComment.message, savedComment.postingTime.toDate, user.avatarUrl))
+      case Some(user) => AddCommentResponse(CommentView(savedComment.id.toString, user.name, savedComment.message, savedComment.postingTime.toDate, user.avatarUrl))
       case None => halt(400, s"Invalid user id $savedComment.authorId")
     }
   }
 
-  def extractComment = {
-    val messageBody = extractNotEmptyString("body")
-    val fileNameOpt = (parsedBody \ "fileName").extractOpt[String]
-    val lineNumberOpt = (parsedBody \ "lineNumber").extractOpt[Int]
-    val commitIdParam = params("id")
-    (fileNameOpt, lineNumberOpt) match {
-      case (None, None) => NewEntireCommitComment(new ObjectId(commitIdParam), new ObjectId(user.id), messageBody)
-      case (Some(fileName), Some(lineNumber)) => NewInlineCommitComment(new ObjectId(commitIdParam), new ObjectId(user.id), messageBody, fileName, lineNumber)
-      case _ => halt(400, "File name and line number must be present for inline comment")
-    }
+  private def buildIncomingComment = {
+    val params = readReactionParamsFromRequest
+    val commentBody = extractNotEmptyString("body")
+
+    IncomingComment(new ObjectId(params.commitId), new ObjectId(user.id), commentBody, params.fileName, params.lineNumber)
   }
 }
 
@@ -50,4 +43,4 @@ trait CommentsEndpointSwaggerDefinition extends SwaggerSupport {
 
 }
 
-case class AddCommentResponse(comment: SingleCommentView)
+case class AddCommentResponse(comment: CommentView)

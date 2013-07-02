@@ -11,8 +11,7 @@ angular.module("codebrag.auth")
                 status: response.status,
                 text: "Something is seriously wrong, officer."
             }
-            if (response.status !== 401) {
-                console.log("Got this response:", response);
+            if (response.status !== 401 && response.status !== 403) {
                 $rootScope.$broadcast(events.httpError, errorMessage);
             }
             return $q.reject(response);

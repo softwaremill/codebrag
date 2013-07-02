@@ -6,4 +6,4 @@ target/
 *.log
 repos
 .DS_Store
-application.conf
+local.conf

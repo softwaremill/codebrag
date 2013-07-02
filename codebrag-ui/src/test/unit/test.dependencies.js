@@ -23,12 +23,14 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "app.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/httpAuthInterceptor.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/httpErrorsInterceptor.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/authService.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/registerService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/currentUserResolver.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/httpRequestsBuffer.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/loginForm.js");
 
 <!-- session -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/sessionCtrl.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/registerCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/profileCtrl.js");
 
 <!-- notifications -->
@@ -38,10 +40,12 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "notifications/notificationCountersCt
 <!-- commits -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitLoadFilter.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsCtrl.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/loadMoreCommitsCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsListService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsResource.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsListItemCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitDetailsCtrl.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/diffCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/comments/commentsResource.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/comments/commentable.js");
 
@@ -55,4 +59,5 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/events.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/filters/dateFormatFilter.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/directives/messagePopup.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/AsyncCollection.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/CurrentCommit.js");
 

@@ -24,8 +24,11 @@ Same as grunt watch, but compile index.css file just once. Run this command, if 
 ```
 	grunt connect
 ```
-Run server. Go to [http://localhost:8080/#/commits?nobackend](http://localhost:8080/#/commits?nobackend) to work with frontend.
-Hint: run 'grunt watch' in the other terminal window to see all your updates immediately without compiling index.css by yourself. 
+Run server. Go to [http://localhost:9090/#/commits?nobackend](http://localhost:9090/#/commits?nobackend) to work with frontend.
+
+The ***?nobackend*** param in the URL is important - don't miss it! You should see screen with some stubbed commits.
+
+Hint: run 'grunt watch' in the other terminal window to see all your updates immediately without compiling index.css by yourself.
 
 
 If you need to apply any css changes, apply it to codebrag/codebrag-ui-grunt/styl/index.styl file.

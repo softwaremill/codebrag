@@ -1,0 +1,102 @@
+<mockup version="1.0" skin="sketch" measuredW="1245" measuredH="778" mockupW="1024" mockupH="760">
+  <controls>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="221" y="18" w="1024" h="760" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>A%20Web%20Page%0Ahttp%3A//codebrag.com</text>
+      </controlProperties>
+    </control>
+    <control controlID="4" controlTypeID="com.balsamiq.mockups::HRule" x="222" y="126" w="1016" h="-1" measuredW="100" measuredH="5" zOrder="1" locked="false" isInGroup="-1"/>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::VRule" x="372" y="90" w="-1" h="41" measuredW="5" measuredH="100" zOrder="2" locked="false" isInGroup="-1"/>
+    <control controlID="7" controlTypeID="com.balsamiq.mockups::VRule" x="570" y="90" w="-1" h="41" measuredW="5" measuredH="100" zOrder="3" locked="false" isInGroup="-1"/>
+    <control controlID="8" controlTypeID="com.balsamiq.mockups::VRule" x="763" y="92" w="-1" h="39" measuredW="5" measuredH="100" zOrder="4" locked="false" isInGroup="-1"/>
+    <control controlID="9" controlTypeID="com.balsamiq.mockups::Label" x="252" y="97" w="79" h="21" measuredW="79" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%3CCodebrag%3E</text>
+      </controlProperties>
+    </control>
+    <control controlID="10" controlTypeID="com.balsamiq.mockups::Label" x="430" y="98" w="79" h="21" measuredW="58" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Commits</text>
+      </controlProperties>
+    </control>
+    <control controlID="11" controlTypeID="com.balsamiq.mockups::Label" x="629" y="100" w="79" h="21" measuredW="64" measuredH="21" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Follow-ups</text>
+      </controlProperties>
+    </control>
+    <control controlID="12" controlTypeID="com.balsamiq.mockups::Webcam" x="1186" y="96" w="33" h="28" measuredW="177" measuredH="146" zOrder="8" locked="false" isInGroup="-1"/>
+    <control controlID="13" controlTypeID="com.balsamiq.mockups::RoundButton" x="493" y="100" w="25" h="21" measuredW="32" measuredH="32" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>13</text>
+      </controlProperties>
+    </control>
+    <control controlID="14" controlTypeID="com.balsamiq.mockups::RoundButton" x="698" y="100" w="25" h="21" measuredW="32" measuredH="32" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>5</text>
+      </controlProperties>
+    </control>
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::HRule" x="221" y="133" w="1024" h="-1" measuredW="100" measuredH="5" zOrder="11" locked="false" isInGroup="-1"/>
+    <control controlID="188" controlTypeID="com.balsamiq.mockups::Menu" x="438" y="187" w="533" h="-1" measuredW="150" measuredH="146" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%20%20%20%20%20%20Fixed%20major%20changes...%0A%20%20%20%20%20%20%202%20hours%20ago%20by%0A---%0A%20%20%20%20%20%20Code%20in%20line%2070%20changed...%0A%20%20%20%20%20%20%203%20hours%20ago%20by%0A%3D%0A%20%20%20%20%20%20New%20id%20in%20...%0A%20%20%20%20%20%20%203%20hours%20ago%20by</text>
+      </controlProperties>
+    </control>
+    <control controlID="189" controlTypeID="com.balsamiq.mockups::TextArea" x="438" y="161" w="534" h="35" measuredW="200" measuredH="140" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>center</align>
+        <text>Activity%20stream</text>
+      </controlProperties>
+    </control>
+    <control controlID="190" controlTypeID="com.balsamiq.mockups::Button" x="443" y="202" w="30" h="22" measuredW="33" measuredH="27" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <text>V</text>
+      </controlProperties>
+    </control>
+    <control controlID="191" controlTypeID="com.balsamiq.mockups::Webcam" x="579" y="210" w="25" h="22" measuredW="177" measuredH="146" zOrder="15" locked="false" isInGroup="-1"/>
+    <control controlID="192" controlTypeID="com.balsamiq.mockups::Menu" x="438" y="324" w="534" h="-1" measuredW="150" measuredH="146" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%20%20%20%20%20%20Fixed%20major%20changes...%0A%20%20%20%20%20%20%205%20hours%20ago%20by%0A---%0A%20%20%20%20%20%20Code%20in%20line%2070%20changed...%0A%20%20%20%20%20%20%205%20hours%20ago%20by%0A%3D%0A%20%20%20%20%20%20New%20id%20in%20...%0A%20%20%20%20%20%20%205%20hours%20ago%20by</text>
+      </controlProperties>
+    </control>
+    <control controlID="193" controlTypeID="com.balsamiq.mockups::Menu" x="438" y="463" w="533" h="-1" measuredW="150" measuredH="146" zOrder="17" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%20%20%20%20%20%20Fixed%20major%20changes...%0A%20%20%20%20%20%20%208%20hours%20ago%20by%0A---%0A%20%20%20%20%20%20Code%20in%20line%2070%20changed...%0A%20%20%20%20%20%20%209%20hours%20ago%20by%0A%3D%0A%20%20%20%20%20%20New%20id%20in%20...%0A%20%20%20%20%20%20%209%20hours%20ago%20by</text>
+      </controlProperties>
+    </control>
+    <control controlID="194" controlTypeID="com.balsamiq.mockups::Menu" x="438" y="598" w="532" h="-1" measuredW="150" measuredH="146" zOrder="18" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%20%20%20%20%20%20Fixed%20major%20changes...%0A%20%20%20%20%20%20%209%20hours%20ago%20by%0A---%0A%20%20%20%20%20%20Code%20in%20line%2070%20changed...%0A%20%20%20%20%20%20%209%20hours%20ago%20by%0A%3D%0A%20%20%20%20%20%20...%20...%20...%0A%20%20%20%20%20%206%20more%20...</text>
+      </controlProperties>
+    </control>
+    <control controlID="196" controlTypeID="com.balsamiq.mockups::Webcam" x="446" y="614" w="25" h="22" measuredW="177" measuredH="146" zOrder="19" locked="false" isInGroup="-1"/>
+    <control controlID="199" controlTypeID="com.balsamiq.mockups::TextArea" x="438" y="187" w="534" h="51" measuredW="200" measuredH="140" zOrder="20" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%20%20%20%20%20%20%20%20%20%20%20Fixed%20major%20changes...%0A%20%20%20%20%20%20%20%20%20%20%202%20hours%20ago%20by%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="200" controlTypeID="__group__" x="446" y="200" w="25" h="116" measuredW="25" measuredH="116" zOrder="21" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::Webcam" x="0" y="49" w="25" h="22" measuredW="177" measuredH="146" zOrder="0" locked="false" isInGroup="200"/>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Webcam" x="0" y="94" w="25" h="22" measuredW="177" measuredH="146" zOrder="1" locked="false" isInGroup="200"/>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Webcam" x="0" y="0" w="25" h="22" measuredW="177" measuredH="146" zOrder="2" locked="false" isInGroup="200"/>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="201" controlTypeID="__group__" x="446" y="339" w="25" h="116" measuredW="25" measuredH="116" zOrder="22" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::Webcam" x="0" y="49" w="25" h="22" measuredW="177" measuredH="146" zOrder="0" locked="false" isInGroup="201"/>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Webcam" x="0" y="94" w="25" h="22" measuredW="177" measuredH="146" zOrder="1" locked="false" isInGroup="201"/>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Webcam" x="0" y="0" w="25" h="22" measuredW="177" measuredH="146" zOrder="2" locked="false" isInGroup="201"/>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="202" controlTypeID="__group__" x="446" y="478" w="25" h="116" measuredW="25" measuredH="116" zOrder="23" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::Webcam" x="0" y="49" w="25" h="22" measuredW="177" measuredH="146" zOrder="0" locked="false" isInGroup="202"/>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Webcam" x="0" y="94" w="25" h="22" measuredW="177" measuredH="146" zOrder="1" locked="false" isInGroup="202"/>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Webcam" x="0" y="0" w="25" h="22" measuredW="177" measuredH="146" zOrder="2" locked="false" isInGroup="202"/>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="203" controlTypeID="com.balsamiq.mockups::Webcam" x="446" y="660" w="25" h="22" measuredW="177" measuredH="146" zOrder="24" locked="false" isInGroup="-1"/>
+    <control controlID="204" controlTypeID="com.balsamiq.mockups::VerticalScrollBar" x="956" y="187" w="-1" h="557" measuredW="16" measuredH="100" zOrder="25" locked="false" isInGroup="-1"/>
+  </controls>
+</mockup>

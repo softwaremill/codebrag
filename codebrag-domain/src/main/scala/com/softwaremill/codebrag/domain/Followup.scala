@@ -4,22 +4,27 @@ import org.bson.types.ObjectId
 import org.joda.time.DateTime
 
 
-case class Followup(id: Option[ObjectId], commentId: ObjectId, userId: ObjectId, date: DateTime, lastCommenterName: String, threadId: ThreadDetails) {
+case class Followup(reactionId: ObjectId, authorId: ObjectId, userId: ObjectId, date: DateTime, lastCommenterName: String, threadId: ThreadDetails, followupType: Followup.FollowupType.Value) {
 
   def isOwner(userId: ObjectId) = {
-    this.userId == this.userId
+    this.userId == userId
   }
 
 }
 
 object Followup {
 
-  def apply(commitId: ObjectId, userId: ObjectId, date: DateTime, lastCommenterName: String, threadId: ThreadDetails) = {
-    new Followup(None, commitId: ObjectId, userId: ObjectId, date: DateTime, lastCommenterName, threadId: ThreadDetails)
+  def forComment(commitId: ObjectId, authorId: ObjectId, userId: ObjectId, date: DateTime, lastCommenterName: String, threadId: ThreadDetails) = {
+    new Followup(commitId: ObjectId, authorId: ObjectId, userId: ObjectId, date: DateTime, lastCommenterName, threadId: ThreadDetails, FollowupType.Comment)
   }
 
-  def apply(followupId: ObjectId, commitId: ObjectId, userId: ObjectId, date: DateTime, lastCommenterName: String, threadId: ThreadDetails) = {
-    new Followup(Some(followupId), commitId: ObjectId, userId: ObjectId, date: DateTime, lastCommenterName, threadId: ThreadDetails)
+  def forLike(commitId: ObjectId, authorId: ObjectId, userId: ObjectId, date: DateTime, lastCommenterName: String, threadId: ThreadDetails) = {
+    new Followup(commitId: ObjectId, authorId: ObjectId, userId: ObjectId, date: DateTime, lastCommenterName, threadId: ThreadDetails, FollowupType.Like)
   }
 
+  object FollowupType extends Enumeration {
+    type FollowupType = Value
+    val Like = Value("Like")
+    val Comment = Value("Comment")
+  }
 }

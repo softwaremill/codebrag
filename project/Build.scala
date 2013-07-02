@@ -5,6 +5,8 @@ import net.virtualvoid.sbt.graph.Plugin._
 import com.typesafe.sbt.SbtScalariform._
 import sbtjslint.Plugin._
 import sbtjslint.Plugin.LintKeys._
+import sbtassembly.Plugin._
+import AssemblyKeys._
 
 object Resolvers {
   val codebragResolvers = Seq(
@@ -49,7 +51,18 @@ object BuildSettings {
               "Trying to launch with MongoDB but unable to find it in 'mongo.directory' (%s). Please check your ~/.sbt/local.sbt file.".format(mongoFile.getAbsolutePath))
           }
       }
-    }
+    },
+
+    /*
+    swagger-core has a dependency to the slf4j -> log4j bridge, while we are using the log4j -> slf4j bridge.
+    We cannot exclude the dependency in the dependency declaration, as swagger-core is a transitive dep of
+    scalatra-swagger, hence the global exclude.
+     */
+    ivyXML :=
+      <dependencies>
+        <exclude org="org.slf4j" artifact="slf4j-log4j12" />
+        <exclude org="log4j" artifact="log4j" />
+      </dependencies>
   )
 
 }
@@ -60,15 +73,17 @@ object Dependencies {
   val logBackVersion = "1.0.9"
   val smlCommonVersion = "72"
   val scalatraVersion = "2.2.0"
-  val rogueVersion = "2.0.0-RC4"
+  val rogueVersion = "2.1.0"
   val scalaLoggingVersion = "1.0.1"
+  val akkaVersion = "2.1.4"
+  val jettyVersion = "8.1.7.v20120910"
 
   val slf4jApi = "org.slf4j" % "slf4j-api" % slf4jVersion
   val logBackClassic = "ch.qos.logback" % "logback-classic" % logBackVersion
-//  val jclOverSlf4j = "org.slf4j" % "jcl-over-slf4j" % slf4jVersion
+  val log4jOverSlf4j = "org.slf4j" % "log4j-over-slf4j" % slf4jVersion
   val scalaLogging = "com.typesafe" %% "scalalogging-slf4j" % scalaLoggingVersion
 
-  val logging = Seq(slf4jApi, logBackClassic, scalaLogging)
+  val logging = Seq(slf4jApi, logBackClassic, scalaLogging, log4jOverSlf4j)
 
   val guava = "com.google.guava" % "guava" % "13.0.1"
   val googleJsr305 = "com.google.code.findbugs" % "jsr305" % "2.0.1"
@@ -88,8 +103,8 @@ object Dependencies {
   val commonsValidator = "commons-validator" % "commons-validator" % "1.4.0" exclude("commons-logging", "commons-logging")
   val commonsLang = "org.apache.commons" % "commons-lang3" % "3.1"
 
-  val jetty = "org.eclipse.jetty" % "jetty-webapp" % "8.1.7.v20120910" % "container"
-  val jettyTest = "org.eclipse.jetty" % "jetty-webapp" % "8.1.7.v20120910" % "test"
+  val jetty = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion
+  val jettyContainer = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container"
 
   val mockito = "org.mockito" % "mockito-all" % "1.9.5" % "test"
   val scalatest = "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
@@ -97,13 +112,16 @@ object Dependencies {
   val jodaDependencies = Seq(jodaTime, jodaConvert)
   val scalatraStack = Seq(scalatra, scalatraScalatest, scalatraJson, json4s, scalatraAuth, commonsLang, swaggerCore, scalatraSwagger)
 
-  val testingDependencies = Seq(mockito, scalatest)
+  val akka = "com.typesafe.akka" %% "akka-actor" % akkaVersion
+  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test"
+  val typesafeConfig = "com.typesafe" % "config" % "1.0.1"
+
+  val testingDependencies = Seq(mockito, scalatest, akkaTestkit)
 
   val javaxMail = "javax.mail" % "mail" % "1.4.5"
 
   val smlCommonUtil = "pl.softwaremill.common" % "softwaremill-util" % smlCommonVersion
   val smlCommonSqs = "pl.softwaremill.common" % "softwaremill-sqs" % smlCommonVersion
-  val smlCommonConfig = "pl.softwaremill.common" % "softwaremill-conf" % smlCommonVersion
 
   val scalate = "org.fusesource.scalate" %% "scalate-core" % "1.6.0"
 
@@ -125,7 +143,7 @@ object Dependencies {
   val rogueCore = "com.foursquare" %% "rogue-core" % rogueVersion intransitive()
   val rogueLift = "com.foursquare" %% "rogue-lift" % rogueVersion intransitive()
   val rogueIndex = "com.foursquare" %% "rogue-index" % rogueVersion intransitive()
-  val liftMongoRecord = "net.liftweb" %% "lift-mongodb-record" % "2.5-RC6"
+  val liftMongoRecord = "net.liftweb" %% "lift-mongodb-record" % "2.5.1"
   val rogue = Seq(rogueCore, rogueField, rogueLift, rogueIndex, liftMongoRecord)
 
   val egitGithubApi = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.3"
@@ -144,12 +162,12 @@ object SmlCodebragBuild extends Build {
     "codebrag-root",
     file("."),
     settings = buildSettings
-  ) aggregate(common, domain, dao, service, rest, ui)
+  ) aggregate(common, domain, dao, service, rest, ui, dist)
 
   lazy val common: Project = Project(
     "codebrag-common",
     file("codebrag-common"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies ++ Seq(akka))
   )
 
   lazy val domain: Project = Project(
@@ -161,20 +179,20 @@ object SmlCodebragBuild extends Build {
   lazy val dao: Project = Project(
     "codebrag-dao",
     file("codebrag-dao"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(smlCommonUtil))
+    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(smlCommonUtil, typesafeConfig))
   ) dependsOn(domain % "test->test;compile->compile", common)
 
   lazy val service: Project = Project(
     "codebrag-service",
     file("codebrag-service"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator, smlCommonSqs, smlCommonConfig,
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator, smlCommonSqs,
       javaxMail, scalate, egitGithubApi, jGit, dispatch, json4s))
   ) dependsOn(domain, common, dao % "test->test;compile->compile")
 
   lazy val rest: Project = Project(
     "codebrag-rest",
     file("codebrag-rest"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, smlCommonConfig))
+    settings = buildSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig))
   ) dependsOn(service % "test->test;compile->compile", domain, common)
 
 
@@ -191,7 +209,7 @@ object SmlCodebragBuild extends Build {
       artifactName := { (config: ScalaVersion, module: ModuleID, artifact: Artifact) =>
         "codebrag." + artifact.extension // produces nice war name -> http://stackoverflow.com/questions/8288859/how-do-you-remove-the-scala-version-postfix-from-artifacts-builtpublished-wi
       },
-      libraryDependencies ++= Seq(jetty, servletApiProvided),
+      libraryDependencies ++= Seq(jettyContainer, servletApiProvided),
       appJsDir <+= sourceDirectory { src => src / "main" / "webapp" / "scripts" },
       appJsLibDir <+= sourceDirectory { src => src / "main" / "webapp" / "scripts" / "vendor" },
       jasmineTestDir <+= sourceDirectory { src => src / "test" / "unit" },
@@ -201,13 +219,38 @@ object SmlCodebragBuild extends Build {
       (test in Test) <<= (test in Test) dependsOn (jasmine))
   ) dependsOn (rest)
 
+  lazy val dist = Project(
+    "codebrag-dist",
+    file("codebrag-dist"),
+    settings = buildSettings ++ assemblySettings ++ Seq(
+      libraryDependencies ++= Seq(jetty),
+      mainClass in assembly := Some("com.softwaremill.codebrag.Codebrag"),
+      mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) => {
+        // There are two of such files in jgit and javax.servlet - but we don't really care about them (I guess ... ;) )
+        // Probably some OSGi stuff.
+        case "plugin.properties" => MergeStrategy.discard
+        case PathList("META-INF", "eclipse.inf") => MergeStrategy.discard
+        // Here we don't care for sure.
+        case "about.html" => MergeStrategy.discard
+        case x => old(x)
+      } },
+      // We need to include the whole webapp, hence replacing the resource directory
+      resourceDirectory in Compile <<= baseDirectory { bd => {
+        bd.getParentFile() / ui.base.getName / "src" / "main" / "webapp"
+      } }
+    )
+  ) dependsOn (ui)
+
   lazy val uiTests = Project(
     "codebrag-ui-tests",
     file("codebrag-ui-tests"),
     settings = buildSettings ++ Seq(
-      libraryDependencies ++= selenium ++ Seq(awaitility, jettyTest, servletApiProvided)
+      libraryDependencies ++= selenium ++ Seq(awaitility)
     )
 
-  ) dependsOn (rest)
+  ) dependsOn (dist)
 
+  // To run the embedded container, we need to provide the path to the configuration. To make things easier, we assume
+  // that the local conf is in the current dir in the local.conf file.
+  System.setProperty("config.file", "local.conf")
 }

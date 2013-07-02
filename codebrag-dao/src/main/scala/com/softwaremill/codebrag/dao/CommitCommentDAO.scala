@@ -1,16 +1,24 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{CommentBase, InlineCommitComment, EntireCommitComment}
+import com.softwaremill.codebrag.domain.{Like, Comment}
 import org.bson.types.ObjectId
 
 trait CommitCommentDAO {
 
-  def save(comment: CommentBase)
+  def save(comment: Comment)
 
-  def findCommentsForEntireCommit(commitId: ObjectId): List[EntireCommitComment]
+  def findCommentsForCommit(commitId: ObjectId): List[Comment]
 
-  def findInlineCommentsForCommit(commitId: ObjectId): List[InlineCommitComment]
+  def findAllCommentsInThreadWith(comment: Comment): List[Comment]
 
-  def findAllCommentsInThreadWith(comment: CommentBase): List[CommentBase]
+}
+
+trait LikeDAO {
+
+  def save(like: Like)
+
+  def findLikesForCommit(commitId: ObjectId): List[Like]
+
+  def findAllLikesInThreadWith(comment: Like): List[Like]
 
 }

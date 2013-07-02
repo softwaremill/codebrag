@@ -4,12 +4,25 @@
 
 
 // COLORS:
-// #a27d69 second body-color used in info-lines
-// #f3720b orange color
-// #a18953 font color in header
-// #f7f5ef body bg color
-// #70493e commit-name color
-// #a27d69 username and time color
+$body-text-color = #2f0200
+$second-body-text-color = #a27d69
+$body-bg-color = #f7f5ef
+
+$header-bg-color = #300300
+$header-text-color = #ad8245
+
+$main-orange-color = #f3720b
+$green-button-bg-color = #5abfa3
+$green-button-bg-hover = #41a388
+
+$lime-green-color = #99ab01
+
+$error-red-color = #f0552f
+$error-text-color = #ffd8cf
+
+
+$form-input-bg-color = #f2ecd5
+$main-border-color = #d1cbb9
 
 
 // rewriting foundaton styles
@@ -29,28 +42,34 @@ button
     color: white;
     &:hover
       color: white;
+  &.kthxbye
+    background: #41a388;
+    &:hover
+      background: #5abfa3;
   &.link
     background: transparent;
-    color: #a27d69;
+    color: $second-body-text-color;
     text-transform: none;
     transition: color 250ms;
     &:hover
       background: transparent;
-      color: #f3720b;
+      color: $main-orange-color;
     &:active
       background: #ece7d9;
   &.big
     padding: 1.15em 2.3em;
     &.reviewed
-      background: #87d3bf;
+      background: $green-button-bg-color;
       float: right;
       margin-right: 0;
       margin-top: 1.15em;
       &:hover
-        background: #5abfa3;
+        background: $green-button-bg-hover;
   &:active
     box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
 
+.button-group
+  padding-left: 0;
 
 .button-group li:last-child .button,
 li:last-child .button
@@ -62,7 +81,7 @@ table tr:nth-of-type(even)
 table tr th,
 table tr td
   font-size: 1em;
-  color: #2f0200;
+  color: $body-text-color;
   padding: 0.23em 0.77em;
 
 input[type="text"],
@@ -88,8 +107,7 @@ input[type="checkbox"]
   margin-bottom: 0;
 
 label
-  color: #a27d69;
-
+  color: $second-body-text-color;
 
 
 // general styles
@@ -98,8 +116,10 @@ body
   height: 100%;
 
 body
-  background: #f7f5ef;
+  background: $body-bg-color;
   font-family: 'PT Sans', Tahoma, sans-serif;
+  line-height: 1.2;
+  overflow: hidden;
 
 h1, 
 h2, 
@@ -114,7 +134,19 @@ p
 
 ::selection
   background-color: #fcd01a;
-  color: #2f0200;
+  color: $body-text-color;
+
+::-webkit-scrollbar
+  width: 13px;
+  height: 13px;
+ 
+::-webkit-scrollbar-track
+  background-color: rgba(216, 198, 158, 0.6);
+  opacity: 0.6;
+ 
+::-webkit-scrollbar-thumb
+  background-color: rgba(197, 172, 124, 0.6);
+  opacity: 0.6;
 
 i
   font-family: 'FontAwesome';
@@ -126,6 +158,11 @@ i
   display: block; 
   height: 0; 
   clear: right;
+
+.diff-loading
+    text-align: center;
+    padding-top: 1em;
+    padding-bottom: 1em;
 
 .pick-commit
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPsAAABCCAMAAACmaVApAAAAk1BMVEWKb0j////////////////////////////////////////////////////////////////////////////////////////////NvJnMupbMupXOu5fMuZPMuZPNupXSv5jRv5fcy6PBrITMuJGrlGyagVq7pn6wmnKgiGDfzaXfzqbgzqbgz6fhz6fh0Kji0Kji0alWYRiBAAAAIHRSTlMAAA0QKCowNzg5Ojw9PkBgb3CAj5+3v8/x9Pb2+fv7/kD6VZUAAANBSURBVHhe7ZrZbttADEWdqp1uqdNUrt298pKk6/L/X1cILHAAEcxFCMRQE94nz1zqDs4DPRLARXfxBV10CzRa7LAlKvmNVAaWSmedcC0fgna5R5dtgUaLHbZEJb+RysBS6awTruVDsNz/QfvlAo0WO2yJSn4jlYGl0lkLN1zBeu/Zt5u1aXWgO0hZ0CyH1TWVlPRtAiUysKL04WrcsaqrYcIjXFatX683WwPumwWfL01nO7oDIpplvzu7ppKSZkRIZGBF6dth3LGqYTuhEy6rri2X54MBt+6feTJKdBJm2FW613UGju8E3xXajTvo/rLTLiZ6VbG3nkpCol4XGZLdOnR1sBM2W+1qdtrFRK8q9q5RSUjU6yJDsluHnu3shPNBuDdgR1QJdnE3CXZhiY5KuZ6q2Lnf+5ZgJ4R7+RbY+X9IuAE79zvdp9j5RsD6/JJ72UlmaHb+H5SbuuNMmp1vBKzfn15Q4qQzNLtJuEdg9yf8+niau9/vAPvPD8+t5+j5O8RuYNFb0I/3z6zngp4XGVg4M2I3sOgt6Pu7py4byQwsnJmw6+/3b2+fHOH7fZ7sX988/q/Y+aBw7FjTLVPfJtuvXz30TyGdgYXjE1mnXHw+KBw71nTL1LrJ9umjB/4ppDOwcHwi64Q79U/Q4r6p2It9vir2Yi/2Yi/2Yi/2Yi/2Yi/2Yi/2Yi/2YhfTpeEuVigVbUpMiuYiPLuYLg13sUKpaFNiUjQX4dnFBEa4ixVKRZsS05LZCNiL3U2fiFnPeBwV6Up3aoo9jqDPBbubPhGznsE4KtKV7tQUexxBnyt2PD0DhIOVHjlAKfY4AjtgL3amS+X8kxhHRbIyOJXpFTeZDlYQkWFnulTOP4lxVCQrg1OZXnGT6WAFETl2JGaAbvWOi6ezU3dcsWfudz3bzdi2l650p6bYfYRm1/e7nu1mbNtLV7pTE+wu4lh3HNteqtLvCPb53O/FLkZJReWs2fWspx4l9ZXq3YaTOXWaJyJ43MUodj3rmX+n1S8mnMypSET4x4mR7Il5xwS7uN+jWB2h2wb2Yg+HQfWsJwukKrGQC/CxOsIXEhOxM12KsEZhuwdYIF1JtMuPYnWELwxi/gJB1GLyhz+IaQAAAABJRU5ErkJggg==");
@@ -139,10 +176,11 @@ i
   & .author-box
     float: left;
     vertical-align: top;
-  & .info-box
-    overflow-y: hidden;
+
+.info-box
+  overflow-y: hidden;
   & .info-line
-    color: #a27d69;
+    color: $second-body-text-color;
     font-size: 11px;
     // font-size: 0.7em;
     overflow: hidden;
@@ -152,8 +190,8 @@ i
     margin-left: 0.3em;
 
 .comments-container
-  background: #f7f5ef;
-  border: 1px solid #d1cbb9;
+  background: $body-bg-color;
+  border: 1px solid $main-border-color;
   font-family: 'PT Sans', Tahoma, sans-serif;
   padding: 1.15em 1.15em 0;
   & .comment
@@ -164,7 +202,7 @@ i
         height: 2.3em;
         width: 2.3em;
       & .info-line
-        line-height: 1;
+        line-height: 1.2;
         margin-bottom: 0.2em;
       & p:last-child
         margin-bottom: 0;
@@ -184,7 +222,7 @@ i
         & textarea.comment-text
           border: none;
           box-shadow: none;
-          color: #2f0200;
+          color: $body-text-color;
           cursor: text;
           font-size: 1em;
           height: auto;
@@ -202,7 +240,7 @@ i
         & .icon-info-sign
           visibility: visible;
         & .comment-body
-          border: 1px solid #f3720b;
+          border: 1px solid $main-orange-color;
           margin-bottom: 0.77em;
           & textarea.comment-text
             min-height: 57px;
@@ -215,8 +253,8 @@ form
   padding: 0;
   font-size: 1em;
   & .form-header
-    background: #300300;
-    color: #ad8245;
+    background: $header-bg-color;
+    color: $header-text-color;
     height: 5.38em;
     text-align: center;
     & img.logo
@@ -226,7 +264,7 @@ form
     margin: 0;
     padding: 1.15em;
     & .prefix
-      background: #99ab01;
+      background: $lime-green-color;
       border: none;
       color: white;
       display: inline-block;
@@ -238,21 +276,21 @@ form
     &.inline
       display: inline-block;
     & span.text-error
-      background: #f0552f;
+      background: $error-red-color;
       bottom: 0.1em;
-      color: #ffd8cf;
+      color: $error-text-color;
       font-size: 0.814em;
       padding: 0.2em;
       position: absolute;
       right: 0;
       & i
-        color: #f0552f;
+        color: $error-red-color;
         position: absolute;
         right: 0.6em;
         top: -1.68em;
       &:after
         border: 4px solid transparent;
-        border-bottom-color: #f0552f;
+        border-bottom-color: $error-red-color;
         content: "";
         position: absolute;
         right: 0.6em;
@@ -261,8 +299,8 @@ form
 
 // header styles
 .main-header
-  background: #300300;
-  color: #ad8245;
+  background: $header-bg-color;
+  color: $header-text-color;
   height: 5.38em;
   & .logo
     display: inline-block;
@@ -271,14 +309,14 @@ form
     width: 127px;
   & .user-info
     float: right;
-    margin: 1.54em 1.54em 0 0;
+    margin: 1.54em 0.77em 0 1.54em;
     vertical-align: top;
     & .username
       display: inline-block;
       margin-top: 0.77em;
       vertical-align: middle;
       &:hover
-        color: #f3720b;
+        color: $main-orange-color;
     & img
       float: right;
       margin-left: 0.38em;
@@ -292,56 +330,119 @@ form
   margin-bottom: -1px;
   & .button
     background: transparent;
-    color: #a18953;
+    color: $header-text-color;
     font-weight: bold;
     margin-bottom: -1px;
     padding: 1.15em 0;
     text-transform: uppercase;
     width: 11.15em;
     &:hover
-      color: #f3720b;
+      color: $main-orange-color;
     & .number
       display: block;
       font-size: 2.3em;
       font-weight: normal;
     &.active
-      background: #f7f5ef;
-      border-top: 0.39em solid #f3720b;
-      color: #75171b;
+      background: $body-bg-color;
+      border-top: 0.39em solid $main-orange-color;
+      color: $header-bg-color;
       padding-top: 0.77em;
 
+a.uservoice-btn
+  background: #99ab01;
+  color: white;
+  float: right;
+  margin: 1.54em 1.54em 0 0;
+  padding: 0.77em 1.15em;
+  text-transform: uppercase;
+  vertical-align: top;
+  &:hover
+    background: #8a9b00;
 
+a.ribbon
+  background: $main-orange-color;
+  color: white;
+  display: inline-block;
+  opacity: 0.9;
+  padding: 0.5em;
+  position: fixed;
+  right: -44px;
+  text-align: center;
+  text-decoration: none;
+  top: 44px;
+  width: 200px;
+  z-index: 1;
+  transform: rotate(45deg);
+  &:hover
+    opacity: 1;
+
+.popup-page
+  background-color: rgba(0,0,0,0.7);
+  bottom: 0;
+  display: none;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  &.opened
+    display: block;
+  & .popup-box
+    background-color: $body-bg-color;
+    left: 50%;
+    margin-left: -250px;
+    max-width: 500px;
+    padding: 2.3em;
+    position: fixed;
+    text-align: center;
+    top: 35%;
+    & h1
+      font-size: 1.17em;  
+    & .close-btn
+      background: $form-input-bg-color;
+      color: $error-red-color;
+      display: inline-block;
+      padding: 0.77em;
+      position: absolute;
+      right: 0;
+      top: 0;
+      transition: background 250ms, color 250ms; 
+      &:hover
+        background: $error-red-color;
+        color: white;
 
 // commits
-.commits
+.items-list
+  // height calculated in JS = windowHeight - headerHeight
+  height: 700px;
   padding-bottom: 3.3em;
   position: relative;
-  &.fixed
-    position: fixed;
-    width: 25%;
-    top: 0;
 
-.commits-sorting
-  padding: 1.15em 0 1.15em 1.15em;
+.sorting
+  border-bottom: 1px solid $main-border-color; 
+  padding: 1.15em;
   text-align: center;
   & .button.link
-    color: #2f0200;
+    color: $body-text-color;
     text-transform: uppercase;
     &:hover
-      color: #f3720b;
+      color: $main-orange-color;
       text-decoration: none;
 
-.commits-container
-  position: relative;
-  &.scroll
-    overflow: hidden;
-    &:hover
-      overflow-y: scroll;
+.items-container
+  overflow-x: hidden;
+  overflow-y: hidden;
+  &:hover
+    overflow-y: auto;
 
 .commit-container
-  border-top: 1px solid #d9d2c1;
+  border-top: 1px solid $main-border-color;
   padding: 1.15em 2.3em 1.15em 0.77em;
   position: relative;
+  width: 100%;
   &:hover
     background: white;
     cursor: pointer;
@@ -372,8 +473,9 @@ form
     opacity: 0.4;
   &.active
     background: white;
+    z-index:2;
     &:before
-      background: #f3720b;
+      background: $main-orange-color;
       content: "";
       height: 100%;
       left: 0;
@@ -384,38 +486,111 @@ form
     & i
       display: block;
 
+.items-container .commit-container:first-child
+  margin-top: -1px;
+
+.items-container .commit-container:last-child
+  border-bottom: 1px solid $main-border-color;
+
 .commits-count
-  background: #f7f5ef;
-  border-top: 1px solid #d9d2c1;
+  background: $body-bg-color;
+  border-top: 1px solid $main-border-color;
   bottom: 0;
-  color: #a27d69;
+  color: $second-body-text-color;
+  margin-top: -1px;
   padding: 1.15em 0;
   text-align: center;
   text-transform: uppercase;
   cursor: pointer;
-  position: fixed;
-  width: 25%;
   & span
     margin-right: 3px;
 
 
+// followups
+.followups-container
+  background: #eee8d7;
+  margin-bottom: 0.77em;
+  padding: 0.77em 0.38em 0.38em;
+  // JS calculations for width
+  width: 460px;
+  & .info-line
+    margin-bottom: 0.77em;
+  & .commit-name
+    color: #70493e;
+    font-weight: bold;
+    margin-bottom: 0.4em;
+    opacity: 0.75;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+.followup-container
+  background: #faf8ed;
+  border: 1px solid $main-border-color;
+  margin-top: -1px;
+  padding: 0.77em 2.3em 0.77em 0.77em;
+  position: relative;
+  &:hover
+    background: white;
+    cursor: pointer;
+    & i
+      display: inherit;
+  & i
+    color: #c1b28b;
+    display: none;
+    font-size: 1.2em;
+    margin-top: -0.5em;
+    position: absolute;
+    right: 0.6em;
+    top: 50%;
+  & .author-box img
+    height: 1.54em;
+    margin-right: 0.77em;
+    width: 1.54em;
+
+.followups-container.active .commit-name
+  opacity: 1;
+
+.followups-container.active .followup-container.active
+  background: white;
+  z-index:2;
+  // JS calculations for width
+  width: 480px;
+  &:before
+    background: $main-orange-color;
+    content: "";
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0px;
+    width: .38em;
+    z-index: 1;
+  & i
+    display: block;
 
 // diff
 .diff
-  padding: 0.77em;
-  z-index: 100;
+  // height calculated in JS (same as commitsHeight)
+  height: 700px;
+  padding: 0.77em 0.77em 2.3em 0;
   &.opened
     position: absolute;
     right: 0;
     width: 100%;
     transition: width 1000ms;
 
-.diff-container
-  background: white;
+.diff-wrapper
+  height: 100%;
+  background: #fff;
   border: 1px solid #e4d9b8;
-  box-shadow: 0px 0px 7px 0px rgba(211, 196, 160, 0.7);
+  box-shadow: 0 0 7px 0 rgba(211,196,160,0.7);
+  margin-left: -1px;
+  overflow-y: hidden;
+  &:hover
+    overflow-y: auto;
+
+.diff-container
   padding: 2.3em 1.15em 1.15em 2.3em;
-  position: relative;
   & .authored-box 
     margin-bottom: 2.3em;
     & img
@@ -430,13 +605,12 @@ form
   background: white;
   border: 1px solid #e4d9b8;
   border-right: none;
-  box-sizing: content-box;
+  bottom: 2.3em;
   cursor: pointer;
-  height: 100%;
   left: 0;
   opacity: 0;
   position: absolute;
-  top: -1px;
+  top: 0.77em;
   width: 2.2em;
   z-index: 5;
   transition: opacity 250ms, width 500ms, left 500ms;
@@ -445,18 +619,19 @@ form
     opacity: 1;
     width: 2.9em;
   & i
-    color: #f3720b;
+    color: $main-orange-color;
     margin-left: 5px;
+    position: absolute;
     top: 45%;
 
 .diff-statistics
   clear: left;
-  color: #f3720b;
+  color: $main-orange-color;
   margin-bottom: 1.15em;
   text-transform: uppercase;
 
 .diff-table-wrapper
-  border: 1px solid #d1cbb9;
+  border: 1px solid $main-border-color;
   margin-bottom: 2.3em;
   overflow-x: auto;
   overflow-y: hidden;
@@ -467,10 +642,10 @@ form
   margin: 0;
   width: 100%;
   & thead
-    background: #f3f0e8;
-    border-bottom: 1px solid #d1cbb9;
+    background: $body-bg-color;
+    border-bottom: 1px solid $main-border-color;
     & th
-      color: #2f0200;
+      color: $body-text-color;
       font-size: 1em;
       font-weight: normal;
       padding: 0.77em 1.15em;
@@ -482,8 +657,10 @@ form
     cursor: pointer;
   & .diff-line-num
     border-right: 1px solid #d6d6d6;
-    line-height: 1.125em
+    line-height: 1.125em;
     margin: 0;
+    max-width: 50px;
+    min-width: 50px;
     padding: 0;
     text-align: right;
     width: 50px;
@@ -536,24 +713,33 @@ form
       border-color: #cdcdcd;
       color: #ababab;
   & tr.comments-container
-    background: #f7f5ef;
+    background: $body-bg-color;
     border-left: none;
     border-right: none;
     border-bottom: none;
     & td
       padding: 1.15em 1.15em 0;
 
+.diff-file-container tr.liked-by-user
+    & .like.button
+      background: #f3720b;
+      & .icon-heart
+        color: rgb(185, 80, 21);
+        opacity: 1;
+      & .diff-line-num-content
+        opacity: 0;
+
 tbody tr.comments-container:last-child
-  border-bottom: 1px solid #d1cbb9;
+  border-bottom: 1px solid $main-border-color;
 
 tr:hover .diff-line-num .button
-  background: #f58022;
+  background: $main-orange-color;
   &:hover
-    background: #da670a;
+    background: #c25b09;
   &.comment
-    background: #87d3bf;
+    background: $green-button-bg-color;
     &:hover
-      background: #5abfa3;
+      background: $green-button-bg-hover;
   & .diff-line-num-content
     opacity: 0;
   & i
@@ -568,7 +754,7 @@ tr:hover .diff-line-num .button
     list-style: none;
 
 .diff-not-displayed h6
-  color: #f3720b;
+  color: $main-orange-color;
   font-size: 1em;
   font-weight: normal;
   margin: 0 0 0.38em 0;
@@ -580,13 +766,13 @@ tr:hover .diff-line-num .button
   list-style: none;
 
 .diff-not-displayed-stat
-  color: #a27d69;
+  color: $second-body-text-color;
   font-family: 'PT Sans', Tahoma, sans-serif;
   font-size: 0.814em;
 
 .like-commit
-  background: #f3f0e8;
-  color: #a27d69;
+  background: $body-bg-color;
+  color: $second-body-text-color;
   display: inline-block;
   margin-bottom: 0.38em;
   padding-right: 1.15em;
@@ -594,19 +780,47 @@ tr:hover .diff-line-num .button
     padding: .4em 1.15em 0.25em;
   & span
     display: inline-block;
-    margin-top: .3em;
-    text-transform: uppercase;
+    margin-top: .2em;
     vertical-align: top;
+  &.liked-by-user .like.button
+    background: #f3720b;
+    & .icon-heart
+      color: rgb(185, 80, 21);
 
 
-// What are these for? start
-.scrolled-to
-  background: #f58022;
-  
-.scroll-to
-  background: #f7f5ef;
-  transition: background 1s linear; 
-// What are these for? end
+// Inline likes
+.diff-file-container tr.inline-likes
+  background: $body-bg-color;
+  color: $main-orange-color;
+  padding: 0;
+  & td
+    padding: 0.38em 0.38em 0.38em 1.15em;
+    & .comment
+      margin-bottom: 0;
+
+.likes-list
+  display: inline;
+  list-style: none;
+  padding: 0;
+  & li
+    display: inline;
+    margin-right: 5px;
+    white-space: nowrap;
+    &:after
+      content:',';
+      position: relative;
+  & li:last-child:after
+    content:'';
+
+.likes
+  color: $main-orange-color;
+
+.scroll-target-reaction-mark
+  background: $main-border-color;
+
+.scroll-target-reaction-done
+  background: $body-bg-color;
+  transition: background 1.5s linear;
 
 
 // login form
@@ -628,7 +842,7 @@ tr:hover .diff-line-num .button
           text-transform: lowercase;
   & input[type="password"],
     input[type="text"]
-    background: #f2ecd5;
+    background: $form-input-bg-color;
     border: none;
     box-shadow: none;
     display: inline-block;
@@ -636,18 +850,32 @@ tr:hover .diff-line-num .button
   & .checkbox
     margin-bottom: 2.3em;
 
+.login-error
+    background: #f3720b;
+    color: #ffd8cf;
+    padding: 0.77em 1.15em;
+    text-align: center;
+
+.demo-login-info
+    background: #f2ecd5;
+    color: #a27d69;
+    padding: 0.77em 1.15em;
+    text-align: center;
+
 .text-error
-  color: #e53b21;
+  color: $error-red-color;
 
 .popup-error
-  background: #f4aa96;
-  color: #d0190d;
+  background: $error-red-color;
+  color: $error-text-color;
   padding: 0.77em 1.15em;
   text-align: center;
   display: inline-block;
   position: fixed;
-  top: 1.35em;
-  right: 1.15em;
+  top: 1.54em;
+  right: 1.54em;
+  & i
+    margin-right: 5px;
 
 .spinner 
   display: none;
@@ -656,6 +884,23 @@ tr:hover .diff-line-num .button
   position: relative;
   text-align: center;
 
+
+// for small screens
+@media all and (max-width: 1000px) {
+  .main-header .logo {
+    margin: 1em 1em 0;
+    width: 110px;
+  }
+  .main-nav .button {
+    width: 7.15em;
+  }
+
+  .main-header .user-info .username {
+    max-width: 10em;
+    margin-top: 0;
+    text-align: right;
+  }
+}
 
 // for medium screens
 @media all and (max-width: 1279px) {
@@ -681,14 +926,5 @@ tr:hover .diff-line-num .button
   }
   .diff-file-container tr.comments-container {
     font-size: 14px;
-  }
-}
-
-@keyframes spinner {
-  0% {
-    width: 55px;
-  }
-  100% {
-    width: 100%;
   }
 }

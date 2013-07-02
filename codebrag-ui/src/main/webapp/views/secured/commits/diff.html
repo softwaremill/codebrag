@@ -1,67 +1,64 @@
-<div ng-controller="DiffCtrl" scrollable="scrollTo">
+<div ng-controller="DiffCtrl" id="diff-area" auto-fit-comments-width>
 
-    <div class="diff-table-wrapper" ng-repeat="file in currentCommit.files">
-    <table class="diff-file-container">
-        <thead class="diff-file-name">
-        <tr>
-            <th colspan="3">{{file.filename}}</th>
-        </tr>
-        </thead>
-        <tbody ng-repeat="line in file.lines" commentable>
-        <!--line of code start-->
-        <tr ng-class="line.lineType">
-            <td class="diff-line-num">
-                <a class="like button">
-                    <span class="diff-line-num-content" ng-switch on="line.lineType">
-                        <span ng-switch-when="header">...</span>
-                        <span ng-switch-when="added"></span>
-                        <span ng-switch-default>{{line.lineNumberOriginal}}</span>
-                    </span>
-                    <i class="icon-heart"></i>
-                </a>
-            </td>
-            <td class="diff-line-num">
-                <a class="comment button">
-                    <span class="diff-line-num-content" ng-switch on="line.lineType">
-                        <span ng-switch-when="header">...</span>
-                        <span ng-switch-when="removed"></span>
-                        <span ng-switch-default>{{line.lineNumberChanged}}</span>
-                    </span>
-                    <i class="icon-pencil"></i>
-                </a>
-            </td>
-            <td class="diff-line-code" ng-bind-html-unsafe="line.line"></td>
-        </tr>
-        <tr class="comments-container" ng-show="line.comments.length > 0">
-            <td colspan="3">
-                <!--inline comment start-->
-                <div class="comment" ng-repeat="comment in line.comments">
-                    <div class="authored-box">
-                        <div class="author-box"><img src="images/avatar.png"></div>
-                        <div class="info-box">
-                            <div class="info-line"><span class="username">{{comment.authorName}}</span><span class="time">{{comment.time | relativeDate}}</span></div>
-                            <div class="comment-body" id="{{comment.id}}">
-                                <markdown-to-html content="comment.message"></markdown-to-html>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--inline comment end-->
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    </div>
+    <commit-diff data="currentCommit" compile="tfoot">
+        {{#each currentCommit.diff}}
+        <div class="diff-table-wrapper">
+            <table class="diff-file-container">
+                <thead class="diff-file-name">
+                    <tr>
+                        <th colspan="3">{{filename}}</th>
+                    </tr>
+                </thead>
+                <!-- {{#each lines}} -->
+                <tbody data-line-number="{{@index}}" data-file-name="{{../filename}}">
+                    <tr class="{{lineType}}" data-code-row>
+                        <td class="diff-line-num">
+                            <a class="like button">
+                                <span class="diff-line-num-content">{{lineNumberOriginal}}</span>
+                                <i class="icon-heart"></i>
+                            </a>
+                        </td>
+                        <td class="diff-line-num" >
+                            <a class="comment button" data-commentable>
+                                <span class="diff-line-num-content">{{lineNumberChanged}}</span>
+                                <i class="icon-pencil"></i>
+                            </a>
+                        </td>
+                        <td class="diff-line-code" ng-non-bindable data-commentable>{{{line}}}</td>
+                    </tr>
+                </tbody>
+                <!-- {{/each}} -->
+                <!-- angular hooks to bind to diff elements -->
+                <tfoot
+                     line-like
+                     line-comment-form
+                     line-reactions="currentCommit.lineReactions['{{filename}}']">
+                </tfoot>
+            </table>
+        </div>
+        {{/each}}
 
-    <!--diff bottom section start-->
-    <div class="like-commit"><a class="like button"><i class="icon-heart"></i></a><span>Be the first to like this commit</span></div>
-    <div class="comments-container">
-        <div class="comment" ng-repeat="comment in currentCommit.comments">
+        {{#if currentCommit.supressedFiles}}
+        <div class="diff-not-displayed">
+            <h6>Not displayed:</h6>
+            <ul>
+                <!-- {{#each currentCommit.supressedFiles}} -->
+                    <li class="diff-not-displayed-file-name">{{filename}} <span class="diff-not-displayed-stat">{{diffStats.added}} lines added, {{diffStats.removed}} lines removed</span></li>
+                </tr>
+                <!-- {{/each}} -->
+            </ul>
+        </div>
+        {{/if}}
+    </commit-diff>
+
+    <general-likes submit-like="likeEntireDiff()" likes-collection="currentCommit.reactions.likes" commit="currentCommit" author="currentCommit.info.authorName"></general-likes>
+    <div id="commit-comments-area" class="comments-container">
+        <div class="comment" data-scrollable-reaction id="{{comment.id}}" ng-repeat="comment in currentCommit.reactions.comments">
             <div class="authored-box">
-                <div class="author-box"><img src="images/avatar.png"></div>
+                <div class="author-box"><user-avatar url="comment.authorAvatarUrl"></user-avatar></div>
                 <div class="info-box">
                     <div class="info-line"><span class="username">{{comment.authorName}}</span><span class="time">{{comment.time | relativeDate}}</span></div>
-                    <div id="{{comment.id}}" class="comment-body">
+                    <div class="comment-body">
                         <markdown-to-html content="comment.message"></markdown-to-html>
                     </div>
                 </div>
@@ -69,6 +66,5 @@
         </div>
         <markdown-comment-form action="submitComment"></markdown-comment-form>
     </div>
-    <!--diff bottom section end-->
 
 </div>

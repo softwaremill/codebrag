@@ -3,23 +3,28 @@ angular.module('codebrag.commits')
     .value('commitLoadFilter',
 
         {
-            modes: {
+            MODES: {
                 all: 'all',
                 pending: 'pending'
             },
             current: 'pending',
+            MAX_COMMITS_ON_LIST: 7,
 
 
             setPendingMode: function() {
-                this.current = this.modes.pending;
+                this.current = this.MODES.pending;
             },
 
             setAllMode: function() {
-                this.current = this.modes.all;
+                this.current = this.MODES.all;
+            },
+
+            maxCommitsOnList: function() {
+                return this.MAX_COMMITS_ON_LIST;
             },
 
             isAll: function () {
-                return this.current == this.modes.all;
+                return this.current == this.MODES.all;
             }
         }
     );

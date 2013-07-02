@@ -1,13 +1,13 @@
 package com.softwaremill.codebrag.dao
 
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.EntireCommitComment
+import com.softwaremill.codebrag.domain.Comment
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.builders.CommentAssembler._
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.builders.CommentAssembler
 
 class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 
@@ -21,8 +21,8 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTes
     commentDao = new MongoCommitCommentDAO
   }
 
-  it should "store new comment for entire commit" taggedAs(RequiresDb) in {
-    val newComment = commitCommentFor(CommitId).get
+  it should "store new comment for entire commit" taggedAs (RequiresDb) in {
+    val newComment = CommentAssembler.commentFor(CommitId).get
 
     // when
     commentDao.save(newComment)
@@ -33,8 +33,8 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTes
     comments.head.message.get should be(newComment.message)
   }
 
-  it should "store new line comment for commit" taggedAs(RequiresDb) in {
-    val lineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("myfile.txt", 20).get
+  it should "store new line comment for commit" taggedAs (RequiresDb) in {
+    val lineComment = CommentAssembler.commentFor(CommitId).withFileNameAndLineNumber("file.txt", 10).get
 
     // when
     commentDao.save(lineComment)
@@ -42,80 +42,66 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTes
 
     // then
     comments.size should be(1)
-    comments.head.message.get should equal(lineComment.message)
-    comments.head.fileName.valueBox.get should equal(lineComment.fileName)
-    comments.head.lineNumber.valueBox.get should equal(lineComment.lineNumber)
+    val savedComment = comments.head
+    savedComment.message.get should equal(lineComment.message)
+    savedComment.fileName.value should equal(lineComment.fileName)
+    savedComment.lineNumber.value should equal(lineComment.lineNumber)
   }
 
-  it should "load only comments for commit id" taggedAs(RequiresDb) in {
+  it should "load only comments for commit id" taggedAs (RequiresDb) in {
     // given
-    val fixtureCommentList = createFewCommentsFor(CommitId, 3)
-    val additionalComments = createFewCommentsFor(AnotherCommitId, 5)
+    val fixtureCommentList = createCommentsFor(CommitId, 3)
+    val additionalComments = createCommentsFor(AnotherCommitId, 5)
     fixtureCommentList.foreach(commentDao.save(_))
     additionalComments.foreach(commentDao.save(_))
 
     // when
-    val comments = commentDao.findCommentsForEntireCommit(CommitId)
+    val comments = commentDao.findCommentsForCommit(CommitId)
 
     // then
     comments should equal(fixtureCommentList)
   }
 
-  it should "find only comments for entire commit" taggedAs(RequiresDb) in {
+  it should "find inline comments and comments for entire commit" taggedAs (RequiresDb) in {
     // given
-    val comment = commitCommentFor(CommitId).get
-    val inlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("text.txt", 10).get
+    val comment = commentFor(CommitId).get
+    val inlineComment = commentFor(CommitId).withFileNameAndLineNumber("text.txt", 10).get
     commentDao.save(comment)
     commentDao.save(inlineComment)
 
     // when
-    val comments = commentDao.findCommentsForEntireCommit(CommitId)
+    val comments = commentDao.findCommentsForCommit(CommitId)
 
     // then
-    comments.length should be(1)
-    comments.head should equal(comment)
+    comments.length should be(2)
+    comments.map(_.id).toSet should equal(Set(comment.id, inlineComment.id))
   }
 
-  it should "find only inline comments for commit" taggedAs(RequiresDb) in {
-    // given
-    val comment = commitCommentFor(CommitId).get
-    val inlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("text.txt", 10).get
-    commentDao.save(comment)
-    commentDao.save(inlineComment)
+    it should "find all comments in thread containing given comment (general or for the same file and line)" taggedAs(RequiresDb) in {
+      // given general comments
+      val commitComments = createCommentsFor(CommitId, 3)
+      commitComments.foreach(commentDao.save)
 
-    // when
-    val comments = commentDao.findInlineCommentsForCommit(CommitId)
+      // and some inline comments
+      val firstInlineComment = commentFor(CommitId).withFileNameAndLineNumber("file_1.txt", 10).get
+      val secondInlineComment = commentFor(CommitId).withFileNameAndLineNumber("file_1.txt", 10).get
+      val anotherInlineComment = commentFor(CommitId).withFileNameAndLineNumber("file_2.txt", 20).get
+      commentDao.save(firstInlineComment)
+      commentDao.save(secondInlineComment)
+      commentDao.save(anotherInlineComment)
 
-    // then
-    comments.length should be(1)
-    comments.head should equal(inlineComment)
+      // when
+      val inlineCommentsRelated = commentDao.findAllCommentsInThreadWith(firstInlineComment)
+      val generalCommentsRelated = commentDao.findAllCommentsInThreadWith(commitComments.head)
+
+      // then
+      println(inlineCommentsRelated)
+      inlineCommentsRelated.toSet should be(Set(firstInlineComment, secondInlineComment))
+      generalCommentsRelated.toSet should be(commitComments.toSet)
+    }
+
+
+  private def createCommentsFor(commitId: ObjectId, howMany: Int): Seq[Comment] = {
+    (1 to howMany).map(i => commentFor(commitId).get).toSeq
   }
-
-  it should "find all comments in thread containing given comment (general or for the same file and line)" taggedAs(RequiresDb) in {
-    // given general comments
-    val commitComments = createFewCommentsFor(CommitId, 3)
-    commitComments.foreach(commentDao.save)
-
-    // and some inline comments
-    val firstInlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("file_1.txt", 10).get
-    val secondInlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("file_1.txt", 10).get
-    val anotherInlineComment = inlineCommentFor(CommitId).withFileNameAndLineNumber("file_2.txt", 20).get
-    commentDao.save(firstInlineComment)
-    commentDao.save(secondInlineComment)
-    commentDao.save(anotherInlineComment)
-
-    // when
-    val inlineCommentsRelated = commentDao.findAllCommentsInThreadWith(firstInlineComment)
-    val generalCommentsRelated = commentDao.findAllCommentsInThreadWith(commitComments.head)
-
-    // then
-    inlineCommentsRelated.toSet should be(Set(firstInlineComment, secondInlineComment))
-    generalCommentsRelated.toSet should be(commitComments.toSet)
-  }
-
-
-  private def createFewCommentsFor(commitId: ObjectId, howMany: Int): Seq[EntireCommitComment] = {
-    (1 to howMany).map{i => commitCommentFor(commitId).get}.toSeq
-  }
-
 }

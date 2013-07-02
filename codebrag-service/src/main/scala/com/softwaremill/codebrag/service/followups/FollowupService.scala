@@ -23,7 +23,7 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
     }
   }
 
-  def generateFollowupsForComment(currentComment: CommentBase) {
+  def generateFollowupsForComment(currentComment: Comment) {
     findCommitWithCommentsRelatedTo(currentComment) match {
       case (None, _) => throwException(s"Commit ${currentComment.commitId} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")
       case (Some(commit), List()) => throwException(s"No stored comments for commit ${currentComment.commitId}. Cannot createOrUpdateExisting follow-ups for commit without comments")
@@ -34,44 +34,38 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
   }
 
 
-  def generateFollowUps(commit: CommitInfo, existingComments: List[CommentBase], currentComment: CommentBase) {
+  private def generateFollowUps(commit: CommitInfo, existingComments: List[Comment], currentComment: Comment) {
     val followUpCreationDate = clock.currentDateTimeUTC()
     val lastCommenterName = commenterNameFor(currentComment)
     usersToGenerateFollowUpsFor(commit, existingComments, currentComment).foreach(userId => {
-      followupDao.createOrUpdateExisting(Followup(currentComment.id, userId, followUpCreationDate, lastCommenterName, currentComment.threadId))
+      followupDao.createOrUpdateExisting(Followup.forComment(currentComment.id, currentComment.authorId, userId, followUpCreationDate, lastCommenterName, currentComment.threadId))
     })
   }
 
-  private def commenterNameFor(currentComment: CommentBase) = {
-    userDao.findById(currentComment.authorId) match {
-      case Some(user) => user.name
-      case None => {
+  private def commenterNameFor(currentComment: Comment) = {
+
+    userDao.findById(currentComment.authorId).map(_.name).getOrElse({
         logger.warn("Cannot find current commenter's user name - generating UNKNOWN name")
         "unknown"
-      }
-    }
+    })
   }
 
-  private def findCommitWithCommentsRelatedTo(comment: CommentBase): (Option[CommitInfo], List[CommentBase]) = {
+  private def findCommitWithCommentsRelatedTo(comment: Comment): (Option[CommitInfo], List[Comment]) = {
     (commitInfoDao.findByCommitId(comment.commitId), commitCommentDao.findAllCommentsInThreadWith(comment))
   }
 
-  def usersToGenerateFollowUpsFor(commit: CommitInfo, comments: List[CommentBase], currentComment: CommentBase): Set[ObjectId] = {
+  def usersToGenerateFollowUpsFor(commit: CommitInfo, comments: List[Comment], currentComment: Comment): Set[ObjectId] = {
 
     def uniqueCommenters: Set[ObjectId] = {
       comments.map(_.authorId).toSet
     }
 
     def addCommitAuthor(users: Set[ObjectId]): Set[ObjectId] = {
-
-      val authorIdOpt = userDao.findByUserName(commit.authorName).map(_.id)
-      authorIdOpt match {
-        case Some(authorId) => users + authorId
-        case None => {
-          logger.warn(s"Unknown commit author ${commit.authorName}. No such user registered. Cannot generate follow-up.")
-          users
-        }
-      }
+      val authorIdOpt = userDao.findByUserNameOrEmail(commit.authorName, commit.authorEmail).map(_.id)
+      authorIdOpt.map(users + _).getOrElse({
+        logger.warn(s"Unknown commit author ${commit.authorName} (${commit.authorEmail}). No such user registered. Cannot generate follow-up.")
+        users
+      })
     }
 
     def withoutCurrentCommentAuthor(users: Set[ObjectId]): Set[ObjectId] = {

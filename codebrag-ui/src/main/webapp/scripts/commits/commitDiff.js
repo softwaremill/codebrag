@@ -1,3 +1,56 @@
+var codebrag = codebrag || {};
+
+
+/**
+ * Caches DOM nodes for all reactions that need to fit diff visible area and resizes accordingly
+ * When elements are added to cache all cached elements are resized at the end. Same for removal.
+ * On width recalculation there is no resize if width was not changed.
+ *
+ * Requires: underscore and jquery
+ */
+codebrag.diffReactionsDOMReferenceCacheAndResizer = {
+
+    collection: [],
+    targetWidth: 0,
+    resizableElementsSelector: '[data-resize-to-view]',
+
+    clearCache: function() {
+        this.collection.length = 0;
+    },
+
+    addElementsAndResizeAll: function(startElement) {
+        var self = this;
+        _.forEach(startElement.find(this.resizableElementsSelector), function(el) {
+            self.collection.push(el);
+        });
+        this.resizeAll();
+    },
+
+    removeElementsAndResizeAll: function(startElement) {
+        var self = this;
+        _.forEach(startElement.find(this.resizableElementsSelector), function(el) {
+            self.collection.splice(self.collection.indexOf(el), 1);
+        });
+        this.resizeAll();
+    },
+
+    resizeAll: function() {
+        var self = this;
+        _.forEach(this.collection, function(el) {
+            $(el).width(self.targetWidth);
+        })
+    },
+
+    recalculateWidthAndResizeAll: function(exampleElement) {
+        var newWidth = parseInt(exampleElement.width(), 10);
+        if(newWidth !== this.targetWidth) {
+            this.targetWidth = newWidth;
+            this.resizeAll();
+        }
+    }
+
+};
+
 angular.module('codebrag.commits')
 
     .directive('commitDiff', function($compile) {
@@ -16,6 +69,7 @@ angular.module('codebrag.commits')
                         }
                         dataRoot[dataAttrName] = scope.$eval(dataAttrName);
                         el.html(diffTemplate(dataRoot));
+                        codebrag.diffReactionsDOMReferenceCacheAndResizer.clearCache();
                         $compile(el.find(attrs.compile))(scope);
                         removeWatcher();
                     });
@@ -24,39 +78,45 @@ angular.module('codebrag.commits')
         }
     })
 
-    .directive('inlineCommentable', function($compile, events) {
+    .directive('lineCommentForm', function($compile, events, $templateCache) {
 
-        var inlineCommentFormTemplate = $('#inlineCommentForm').html(); //$templateCache.get('inlineCommentForm');
+        var inlineCommentFormTemplate = $templateCache.get('inlineCommentForm');
 
         var fileDiffRootSelector = 'table';
         var fileDiffLineSelector = 'tbody';
         var clickableSelector = '[data-commentable]';
-        var addNoteRowSelector = '[data-add-note-row]';
         var inlineCommentFormRootSelector = 'tr.comment-form';
+        var inlineCommentsControlsSelector = '[data-thread-controls]';
 
         var fileNameDataAttr = 'file-name';
         var lineNumberDataAttr = 'line-number';
 
-        function InlineCommentForm(rowClicked, fileDiffRoot) {
+
+        function InlineCommentForm(rowClicked) {
 
             var fileDiffLine = rowClicked.parents(fileDiffLineSelector);
+            var insertedElement;
 
             this.insert = function(afterFormInsertCallback) {
                 fileDiffLine.append(inlineCommentFormTemplate);
-                var insertedElement = fileDiffLine.find(inlineCommentFormRootSelector);
-                fileDiffLine.find(addNoteRowSelector).toggle();
+
+                fileDiffLine.find(inlineCommentsControlsSelector).hide();
+
+                insertedElement = fileDiffLine.find(inlineCommentFormRootSelector);
+                codebrag.diffReactionsDOMReferenceCacheAndResizer.addElementsAndResizeAll(insertedElement);
                 afterFormInsertCallback(insertedElement);
             };
 
             this.destroy = function(afterFormDestroyCallback) {
+                codebrag.diffReactionsDOMReferenceCacheAndResizer.removeElementsAndResizeAll(insertedElement);
                 fileDiffLine.find(inlineCommentFormRootSelector).remove();
-                fileDiffLine.find(addNoteRowSelector).toggle();
+                fileDiffLine.find(inlineCommentsControlsSelector).show();
                 afterFormDestroyCallback();
             };
 
             this.commentParams = function() {
                 return {
-                    fileName: fileDiffRoot.data(fileNameDataAttr),
+                    fileName: fileDiffLine.data(fileNameDataAttr),
                     lineNumber: fileDiffLine.data(lineNumberDataAttr)
                 }
             };
@@ -71,7 +131,7 @@ angular.module('codebrag.commits')
             var fileDiffRoot = el.parent(fileDiffRootSelector);
             fileDiffRoot.on('click', clickableSelector, function(event) {
                 var elementClicked = $(event.currentTarget);
-                var commentForm = new InlineCommentForm(elementClicked, fileDiffRoot);
+                var commentForm = new InlineCommentForm(elementClicked);
                 if(commentForm.isAlreadyPresent()) {
                     return;
                 }
@@ -96,29 +156,40 @@ angular.module('codebrag.commits')
     })
 
 
-    .directive('liveComments', function($compile) {
+    .directive('lineReactions', function($compile, $templateCache) {
 
-        var commentTemplate = $('#inlineComment').html();    // templateCache ???
+        var lineReactionsTemplate = $templateCache.get('lineReactions');
 
         var fileDiffRootSelector = 'table';
-        var lineCommentsListSelector = '.inline-comments-container';
+        var lineReactionsSelector = '[data-inline-reactions-container]';
+        var codeRowSelector = '[data-code-row]';
 
         var lineNumberDataAttr = 'line-number';
 
-        function FileInlineComments(baseElement, fileInlineComments) {
+
+        function FileReactions(baseElement, fileReactions) {
 
             this.insert = function(afterDOMInsertCallback) {
-                _.forEach(fileInlineComments, function(lineComments, lineNumber) {
+                _.forEach(fileReactions, function(lineReactions, lineNumber) {
                     var diffLine = _getCorrespondingLineDOMElement(lineNumber);
-                    if(_lineHasNoCommentsYet(diffLine)) {
-                        diffLine.append(commentTemplate);
-                        afterDOMInsertCallback(diffLine, lineComments);
+                    var codeRow = diffLine.find(codeRowSelector);
+                    if(_lineHasNoReactionsYet(diffLine)) {
+                        codeRow.after(lineReactionsTemplate);
+                        codebrag.diffReactionsDOMReferenceCacheAndResizer.addElementsAndResizeAll(diffLine);
+                        afterDOMInsertCallback(diffLine, lineReactions);
                     }
+                    _markLineAsLikedWhenRequired(codeRow, lineReactions);
                 });
             };
 
-            function _lineHasNoCommentsYet(line) {
-                return line.find(lineCommentsListSelector).length === 0;
+            function _markLineAsLikedWhenRequired(codeRow, lineReactions) {
+                if(lineReactions.likes && lineReactions.likes.length > 0) {
+                    codeRow.addClass('liked-by-user');
+                }
+            }
+
+            function _lineHasNoReactionsYet(line) {
+                return line.find(lineReactionsSelector).length === 0;
             }
 
             function _getCorrespondingLineDOMElement(lineNumber) {
@@ -132,15 +203,15 @@ angular.module('codebrag.commits')
 
             var fileDiffRoot = el.parent(fileDiffRootSelector);
 
-            scope.$watch(attrs.liveComments, function(fileComments) {
-                if(angular.isUndefined(fileComments)) {
+            scope.$watch(attrs.lineReactions, function(fileReactions) {
+                if(angular.isUndefined(fileReactions)) {
                     return;
                 }
-                var comments = new FileInlineComments(fileDiffRoot, fileComments);
-                comments.insert(function(line, lineComments) {
+                var comments = new FileReactions(fileDiffRoot, fileReactions);
+                comments.insert(function(line, lineReactions) {
                     var newScope = scope.$new();
-                    newScope.lineComments = lineComments;
-                    $compile(line)(newScope);
+                    newScope.lineReactions = lineReactions;
+                    $compile(line.find(lineReactionsSelector))(newScope);
                 });
             }, true);
         }
@@ -150,9 +221,99 @@ angular.module('codebrag.commits')
             link: linkFn
         }
 
+    })
+
+    .directive('lineLike', function() {
+
+        var fileDiffRootSelector = 'table';
+        var lineDiffRootSelector = 'tbody';
+        var clickSelector = '.like';
+
+        var fileNameDataAttr = 'file-name';
+        var lineNumberDataAttr = 'line-number';
+        var codeRowSelector = '[data-code-row]';
+
+        return {
+            restrict: 'A',
+            link: function(scope, el, attrs) {
+                var fileDiffRoot = el.closest(fileDiffRootSelector);
+                fileDiffRoot.on('click', clickSelector, function(event) {
+                    var codeLine = $(event.currentTarget).closest(lineDiffRootSelector);
+                    scope.$apply(function(scope) {
+                        scope.like(codeLine.data(fileNameDataAttr), codeLine.data(lineNumberDataAttr)).then(function() {
+                            codeLine.find(codeRowSelector).addClass('liked-by-user');
+                        });
+                    });
+                });
+            }
+        }
+
+    })
+
+    .directive('likes', function() {
+
+        return {
+            restrict: 'E',
+            templateUrl: 'likesLine',
+            replace: true,
+            transclude: true,
+            scope: {
+                collection: '='
+            }
+        }
+
+    })
+
+    .controller('ThreadControlCtrl', function($scope, $stateParams) {
+
+        $scope.ifCurrentFollowup = function(collection) {
+            var notInFollowup = _.isUndefined($stateParams.followupId);
+            if(notInFollowup) {
+                return false;
+            }
+            var reactionsFound = _.filter(collection, function(reaction) {
+                return reaction.id === $scope.currentFollowup.reaction.reactionId;
+            });
+            return reactionsFound.length > 0;
+        };
+
+    })
+
+    .directive('autoFitCommentsWidth', function($window) {
+
+        var diffFileSelector = '.diff-table-wrapper';
+        var exampleWidthElement = '#commit-comments-area';
+
+        function doWhenElementPresent(selector, actionFn) {
+            var interval = 10;
+
+            // the setTimeout below checks whether element is present in DOM with some delay
+            // if element not found it sets up another setTimeout for the same delay to wait
+            // it is due to the fact that code may be executed before DOM is fully loaded/rendered
+            setTimeout(function() {
+                var elementFound = $(selector);
+                if(elementFound.length) {
+                    actionFn(elementFound);
+                } else {
+                    setTimeout(function() {
+                        doWhenElementPresent(selector, actionFn);
+                    }, interval);
+                }
+            }, interval);
+        }
+
+        return {
+            restrict: 'A',
+            link: function(scope, el, attrs) {
+                doWhenElementPresent(diffFileSelector, function() {
+                    var exampleEl = el.find(exampleWidthElement);
+                    codebrag.diffReactionsDOMReferenceCacheAndResizer.recalculateWidthAndResizeAll(exampleEl);
+                    $($window).on('resize', _.debounce(function(){
+                        codebrag.diffReactionsDOMReferenceCacheAndResizer.recalculateWidthAndResizeAll(exampleEl);
+                    },50));
+                });
+            }
+        }
+
     });
-
-
-
-
 

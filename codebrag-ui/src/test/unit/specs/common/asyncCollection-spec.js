@@ -26,16 +26,23 @@ describe("Async Collection", function () {
         expect(nextElement).toBeNull();
     }));
 
+    function alwaysResolvedPromise($q) {
+        var dfd = $q.defer();
+        dfd.resolve();
+        return dfd.promise;
+    }
+
     it('should return first element as next for collection with one element', inject(function ($q, $rootScope) {
         // Given
         var collection = new codebrag.AsyncCollection();
         var nextElement = undefined;
         var addedElement = {id: 1};
         var elementIdToSearch = 1;
-        var addPromise = _givenCollectionHasElements(collection, [addedElement], $q);
+        _givenCollectionHasElements(collection, [addedElement]);
+
 
         // When
-        collection.getNextAfter(_matchingId(elementIdToSearch), addPromise).then(function(found) {
+        collection.getNextAfter(_matchingId(elementIdToSearch), alwaysResolvedPromise($q)).then(function(found) {
             nextElement = found;
         });
         $rootScope.$apply();
@@ -51,10 +58,10 @@ describe("Async Collection", function () {
         var nextElement = undefined;
         var addedElements = [{id: 1}, {id: 2}];
         var elementIdToSearch = 1;
-        var addPromise = _givenCollectionHasElements(collection, addedElements, $q);
+        _givenCollectionHasElements(collection, addedElements);
 
         // When
-        collection.getNextAfter(_matchingId(elementIdToSearch), addPromise).then(function(found) {
+        collection.getNextAfter(_matchingId(elementIdToSearch), alwaysResolvedPromise($q)).then(function(found) {
             nextElement = found;
         });
         $rootScope.$apply();
@@ -69,10 +76,10 @@ describe("Async Collection", function () {
         var nextElement = undefined;
         var addedElements = [{id: 1}, {id: 2}];
         var elementIdToSearch = 2;
-        var addPromise = _givenCollectionHasElements(collection, addedElements, $q);
+        _givenCollectionHasElements(collection, addedElements);
 
         // When
-        collection.getNextAfter(_matchingId(elementIdToSearch), addPromise).then(function(found) {
+        collection.getNextAfter(_matchingId(elementIdToSearch), alwaysResolvedPromise($q)).then(function(found) {
             nextElement = found;
         });
         $rootScope.$apply();
@@ -87,10 +94,10 @@ describe("Async Collection", function () {
         var nextElement = undefined;
         var addedElements = [{id: 1}];
         var elementIdToRemove = 1;
-        var addPromise = _givenCollectionHasElements(collection, addedElements, $q);
+        _givenCollectionHasElements(collection, addedElements);
 
         // When
-        collection.removeElementAndGetNext(_matchingId(elementIdToRemove), addPromise).then(function(found) {
+        collection.removeElementAndGetNext(_matchingId(elementIdToRemove), alwaysResolvedPromise($q)).then(function(found) {
             nextElement = found;
         });
         $rootScope.$apply();
@@ -105,10 +112,10 @@ describe("Async Collection", function () {
         var nextElement = undefined;
         var addedElements = [{id: 1}, {id: 2}, {id: 3}, {id: 4}];
         var elementIdToRemove = 2;
-        var addPromise = _givenCollectionHasElements(collection, addedElements, $q);
+        _givenCollectionHasElements(collection, addedElements);
 
         // When
-        collection.removeElementAndGetNext(_matchingId(elementIdToRemove), addPromise).then(function(found) {
+        collection.removeElementAndGetNext(_matchingId(elementIdToRemove), alwaysResolvedPromise($q)).then(function(found) {
             nextElement = found;
         });
         $rootScope.$apply();
@@ -118,10 +125,8 @@ describe("Async Collection", function () {
         expect(nextElement).toEqual({id: 3});
     }));
 
-    function _givenCollectionHasElements(collection, elements, $q) {
-        var deferred = $q.defer();
-        deferred.resolve(elements);
-        return collection.addElements(deferred.promise);
+    function _givenCollectionHasElements(collection, elements) {
+        return collection.appendElements(elements);
     }
 
     function _matchingId(id) {

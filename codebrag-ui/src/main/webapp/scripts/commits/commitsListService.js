@@ -2,9 +2,8 @@ angular.module('codebrag.commits')
 
     .factory('commitsListService', function($resource, $q, $http, Commits, $rootScope, commitLoadFilter, events) {
 
-        var MAX_LOAD_COMMIT_COUNT = 7;
-
         var commits = new codebrag.AsyncCollection();
+        var totalCount = 0;
 
         function loadCommitsPendingReview() {
             commitLoadFilter.setPendingMode();
@@ -26,32 +25,22 @@ angular.module('codebrag.commits')
                 skip: commits.elements.length,
                 limit: limit
             };
-            var responsePromise = Commits.get(request).$then(function(response) {
+            return Commits.get(request).$then(function(response) {
+                commits.appendElements(response.data.commits);
                 _broadcastNewCommitCountEvent(response.data.totalCount);
-                return response.data.commits;
+                return commits.elements;
             });
-            return commits.addElements(responsePromise);
         }
 
         function loadMoreCommits() {
-            return loadMore(MAX_LOAD_COMMIT_COUNT);
+            return loadMore(commitLoadFilter.maxCommitsOnList());
         }
 
         function _loadCommits() {
-            var responsePromise = Commits.get({filter: commitLoadFilter.current}).$then(function (response) {
+            return Commits.get({filter: commitLoadFilter.current}).$then(function (response) {
+                commits.replaceWith(response.data.commits);
                 _broadcastNewCommitCountEvent(response.data.totalCount);
-                return response.data.commits;
-            });
-            return commits.loadElements(responsePromise);
-        }
-
-        function syncCommits() {
-            $http({method: 'POST', url: 'rest/commits/sync'}).success(function(response) {
-                commits.elements.length = 0;
-                _broadcastNewCommitCountEvent(response.totalCount);
-                _.forEach(response.commits, function(commit) {
-                    commits.elements.push(commit);
-                });
+                return commits.elements;
             });
         }
 
@@ -69,21 +58,6 @@ angular.module('codebrag.commits')
             });
         }
 
-        /**
-         * Removes commit with given identifier. Broadcasts a global event with new commit count.
-         * @param commitId identifier of commit to remove.
-         * @returns a promise of successful commit removal with no parameters in callback.
-         */
-        function removeCommit(commitId) {
-            var responsePromise = Commits.remove({id: commitId}).$then();
-            if (commitLoadFilter.isAll()) {
-                markAsNotReviewable(commitId);
-            } else {
-                commits.removeElement(_matchingId(commitId), responsePromise).then(loadOneMore);
-            }
-            return responsePromise;
-        }
-
         function _matchingId(id) {
             return function(element) {
                 return element.id == id;
@@ -91,22 +65,46 @@ angular.module('codebrag.commits')
         }
 
         /**
-         * Removes commit with given identifier and returns promise of next element.
+         * Removes commit with given identifier, loads one more from server (if there are more)
+         * and returns promise of next element.
          * Broadcasts a global event with new commit count.
          * @param commitId identifier of commit to remove.
          * @returns a promise of successful commit removal. Callback function passes next available commit for review or
          * null if removed commit was last.
          */
         function removeCommitAndGetNext(commitId) {
-            var responsePromise = Commits.remove({id: commitId}).$then();
-            var getNextPromise;
+
+            var removePromise = _removeCommitFromServer(commitId);
+
             if (commitLoadFilter.isAll()) {
                 markAsNotReviewable(commitId);
-                getNextPromise = commits.getNextAfter(_matchingId(commitId), responsePromise);
-            } else {
-                getNextPromise = commits.removeElementAndGetNext(_matchingId(commitId), responsePromise.then(loadOneMore));
+                return commits.getNextAfter(_matchingId(commitId), removePromise);
             }
-            return getNextPromise
+            else {
+                var indexRemoved = {};
+                 return commits.removeElement(_matchingId(commitId), removePromise)
+                     .then(function(index) {
+                         indexRemoved = index;
+                     })
+                     .then(_loadOneMoreIfAvailable)
+                     .then(function () {
+                        return commits.getElementOrNull(indexRemoved);
+                    });
+            }
+        }
+
+        function _removeCommitFromServer(commitId) {
+            return Commits.remove({id: commitId}).$then();
+        }
+
+        function _loadOneMoreIfAvailable() {
+            if (totalCount > commitLoadFilter.MAX_COMMITS_ON_LIST)
+                return loadOneMore();
+            else {
+                totalCount--;
+                _broadcastNewCommitCountEvent(totalCount);
+                return $q.defer().resolve();
+            }
         }
 
         function loadCommitById(commitId) {
@@ -115,8 +113,9 @@ angular.module('codebrag.commits')
             });
         }
 
-        function _broadcastNewCommitCountEvent(totalCount) {
-            $rootScope.$broadcast(events.commitCountChanged, {commitCount: totalCount})
+        function _broadcastNewCommitCountEvent(newTotalCount) {
+            totalCount = newTotalCount;
+            $rootScope.$broadcast(events.commitCountChanged, {commitCount: newTotalCount})
         }
 
         return {
@@ -125,9 +124,7 @@ angular.module('codebrag.commits')
             loadAllCommits: loadAllCommits,
             allCommits: allCommits,
             removeCommitAndGetNext: removeCommitAndGetNext,
-            removeCommit: removeCommit,
-            loadCommitById: loadCommitById,
-            syncCommits: syncCommits
+            loadCommitById: loadCommitById
 		};
 
     });

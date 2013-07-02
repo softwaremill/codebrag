@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.domain.{CommitFileInfo, CommitInfo}
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{BsonRecordListField, MongoListField, DateField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
-import org.joda.time.DateTime
+import org.joda.time.{Interval, DateTime}
 import org.bson.types.ObjectId
 import net.liftweb.json.JsonDSL._
 
@@ -14,30 +14,37 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
 
   import CommitInfoImplicits._
 
-  def storeCommit(commit: CommitInfo) {
+  override def storeCommit(commit: CommitInfo) {
     commit.save
   }
 
-  def findBySha(sha: String): Option[CommitInfo] = {
+  override def findBySha(sha: String): Option[CommitInfo] = {
     CommitInfoRecord where (_.sha eqs sha) get()
   }
 
-  def findByCommitId(commitId: ObjectId): Option[CommitInfo] = {
+  override def findByCommitId(commitId: ObjectId): Option[CommitInfo] = {
     CommitInfoRecord where (_.id eqs commitId) get()
   }
 
-  def findLastSha(): Option[String] = {
-    CommitInfoRecord.orderDesc(_.committerDate).get().map(_.sha.get)
+  override def findLastSha(): Option[String] = {
+    CommitInfoRecord orderDesc(_.committerDate) andDesc(_.authorDate) get() map(_.sha.get)
+  }
+  def findNewestCommits(count: Int): List[CommitInfo] = {
+    CommitInfoRecord orderDesc(_.committerDate) andDesc(_.authorDate) limit count fetch()
+  }
+  override def findAllSha(): Set[String] = {
+    CommitInfoRecord.select(_.sha).fetch().toSet
   }
 
-  def findAllSha(): Set[String] = {
-    CommitInfoRecord.select(_.sha).fetch().toSet
+  override def hasCommits: Boolean = {
+    CommitInfoRecord.count() > 0
   }
 
   private object CommitInfoImplicits {
 
     implicit def toCommitInfo(record: CommitInfoRecord): CommitInfo = {
-      CommitInfo(record.id.get, record.sha.get, record.message.get, record.authorName.get, record.committerName.get, new DateTime(record.authorDate.get),
+      CommitInfo(record.id.get, record.sha.get, record.message.get, record.authorName.get, record.authorEmail.get,
+        record.committerName.get, record.committerEmail.get, new DateTime(record.authorDate.get),
         new DateTime(record.committerDate.get), record.parents.get, record.files.get.toList)
     }
 
@@ -52,7 +59,9 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
         .sha(commit.sha)
         .message(commit.message)
         .authorName(commit.authorName)
+        .authorEmail(commit.authorEmail)
         .committerName(commit.committerName)
+        .committerEmail(commit.committerEmail)
         .authorDate(commit.authorDate.toDate)
         .committerDate(commit.commitDate.toDate)
         .parents(commit.parents)
@@ -86,7 +95,11 @@ class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with ObjectIdPk[Com
 
   object authorName extends LongStringField(this)
 
+  object authorEmail extends LongStringField(this)
+
   object committerName extends LongStringField(this)
+
+  object committerEmail extends LongStringField(this)
 
   object authorDate extends DateField(this)
 
@@ -102,7 +115,7 @@ object CommitInfoRecord extends CommitInfoRecord with MongoMetaRecord[CommitInfo
   override def collectionName = "commit_infos"
 
   def ensureIndexes() {
-    this.ensureIndex((committerDate.name -> 1))
+    this.ensureIndex(keys = (committerDate.name -> 1) ~ (authorDate.name -> 1))
   }
 }
 

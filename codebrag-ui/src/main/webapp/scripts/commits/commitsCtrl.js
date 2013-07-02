@@ -1,8 +1,6 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, $http, commitsListService, commitLoadFilter, $state) {
-
-        $scope.syncCommits = commitsListService.syncCommits;
+    .controller('CommitsCtrl', function ($scope, commitsListService, $state, events) {
 
         $scope.switchToAll = function () {
             $scope.loadAllCommits();
@@ -24,14 +22,6 @@ angular.module('codebrag.commits')
 
         $scope.loadPendingCommits = function () {
             $scope.commits = commitsListService.loadCommitsPendingReview();
-        };
-
-        $scope.canLoadMore = function () {
-            return !commitLoadFilter.isAll();
-        };
-
-        $scope.loadMoreCommits = function () {
-            $scope.commits = commitsListService.loadMoreCommits();
         };
 
         $scope.loadPendingCommits();

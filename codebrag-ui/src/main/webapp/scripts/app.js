@@ -43,6 +43,11 @@ angular.module('codebrag.session')
                 url: '/',
                 templateUrl: 'views/main.html'
             })
+            .state('register', {
+                url: '/register',
+                templateUrl: 'views/register.html',
+                noLogin: true
+            })
             .state('profile', {
                 url: '/profile',
                 templateUrl: 'views/secured/profile.html',
@@ -65,7 +70,7 @@ angular.module('codebrag.commits')
             })
             .state('commits.details', {
                 url: '/{id}',
-                templateUrl: 'views/secured/commits/commitDetailsOpt.html'
+                templateUrl: 'views/secured/commits/commitDetails.html'
             })
     });
 

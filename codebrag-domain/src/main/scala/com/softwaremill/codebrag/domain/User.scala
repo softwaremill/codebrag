@@ -10,9 +10,20 @@ object User {
   def apply(authentication: Authentication, name: String, email: String, token: String, avatarUrl: String) = {
     new User(null, authentication, name, email, token, avatarUrl)
   }
+
   def defaultAvatarUrl(email: String): String = {
     s"http://www.gravatar.com/avatar/${Utils.md5(email)}.png"
   }
+
+  implicit object UserLikeRegularUser extends UserLike[User] {
+    def userFullName(userLike: User) = userLike.name
+    def userEmail(userLike: User) = userLike.email
+  }
+}
+
+trait UserLike[T] {
+  def userFullName(userLike: T): String
+  def userEmail(userLike: T): String
 }
 
 case class Authentication(provider: String, username: String, usernameLowerCase: String, token: String, salt: String)

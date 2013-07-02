@@ -2,14 +2,19 @@ package com.softwaremill.codebrag.dao
 
 import com.softwaremill.codebrag.domain.CommitInfo
 import org.bson.types.ObjectId
+import org.joda.time.Interval
 
 trait CommitInfoDAO {
+
+  def hasCommits: Boolean
 
   def storeCommit(commit: CommitInfo)
 
   def findBySha(sha: String): Option[CommitInfo]
 
   def findByCommitId(commitId: ObjectId): Option[CommitInfo]
+
+  def findNewestCommits(count: Int): List[CommitInfo]
 
   def findAllSha(): Set[String]
 
