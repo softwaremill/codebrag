@@ -5,7 +5,7 @@
             <div class="commit-container" ng-repeat="followup in followups" ng-controller="FollowupListItemCtrl"
                  mark-current="followup.followupId" state-param-name="followupId" ng-click="openFollowupDetails(followup)">
                 <div class="authored-box">
-                    <div class="author-box"><img src="images/avatar.png"></div>
+                    <div class="author-box"><user-avatar url="followup.reaction.reactionAuthorAvatarUrl"></user-avatar></div>
                     <div class="info-box">
                         <div class="commit-name" ng-bind-html-unsafe="followup.commit.message"></div>
                         <div class="info-line"><span class="username">{{followup.reaction.reactionAuthor}}</span><span
