@@ -24,11 +24,15 @@ function toggleDiff() {
 function togglePopupPage() {
   $('.ribbon').on('click', function() {
     $('.popup-page').toggleClass('opened');
-  })
+  });
 
   $('.popup-page .close-btn').on('click', function() {
     $('.popup-page').toggleClass('opened');
-  })
+  });
+
+  $('.popup-page a[data-uv-lightbox="classic_widget"]').on('click', function() {
+    $('.popup-page').toggleClass('opened');
+  });
 }
 
 

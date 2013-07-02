@@ -414,18 +414,18 @@ a.uservoice-btn:hover {
 }
 a.ribbon {
   background: #f3720b;
+  bottom: 19px;
   color: #fff;
   display: inline-block;
+  left: -44px;
   opacity: 0.9;
   filter: alpha(opacity=90);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
   padding: 0.5em;
   position: fixed;
-  right: -44px;
   text-align: center;
   text-decoration: none;
-  top: 44px;
-  width: 200px;
+  width: 154px;
   z-index: 1;
   -webkit-transform: rotate(45deg);
   -moz-transform: rotate(45deg);
@@ -446,7 +446,6 @@ a.ribbon:hover {
   left: 0;
   position: absolute;
   right: 0;
-  text-align: center;
   top: 0;
   width: 100%;
   z-index: 1000;
@@ -461,11 +460,12 @@ a.ribbon:hover {
   max-width: 500px;
   padding: 2.3em;
   position: fixed;
-  text-align: center;
   top: 35%;
 }
 .popup-page .popup-box h1 {
   font-size: 1.17em;
+  margin-top: 0;
+  text-align: center;
 }
 .popup-page .popup-box .close-btn {
   background: #f2ecd5;
@@ -484,6 +484,23 @@ a.ribbon:hover {
 .popup-page .popup-box .close-btn:hover {
   background: #f0552f;
   color: #fff;
+}
+.popup-page .popup-box a {
+  color: #f3720b;
+  text-decoration: none;
+}
+.popup-page .popup-box blockquote {
+  background: #f2ecd5;
+  border-left: 0.38em solid #f3720b;
+  color: #a27d69;
+  font-style: italic;
+  line-height: 1.4;
+  margin: 1.5em 0 0;
+  padding: 0.77em 1em 0.77em 2.3em;
+}
+.popup-page .popup-box blockquote footer {
+  font-style: normal;
+  margin-top: 0.5em;
 }
 .items-list {
   height: 700px;

@@ -361,16 +361,16 @@ a.uservoice-btn
 
 a.ribbon
   background: $main-orange-color;
+  bottom: 19px;
   color: white;
   display: inline-block;
+  left: -44px;
   opacity: 0.9;
   padding: 0.5em;
   position: fixed;
-  right: -44px;
   text-align: center;
   text-decoration: none;
-  top: 44px;
-  width: 200px;
+  width: 154px;
   z-index: 1;
   transform: rotate(45deg);
   &:hover
@@ -384,7 +384,6 @@ a.ribbon
   left: 0;
   position: absolute;
   right: 0;
-  text-align: center;
   top: 0;
   width: 100%;
   z-index: 1000;
@@ -397,10 +396,11 @@ a.ribbon
     max-width: 500px;
     padding: 2.3em;
     position: fixed;
-    text-align: center;
     top: 35%;
     & h1
-      font-size: 1.17em;  
+      font-size: 1.17em;
+      margin-top: 0;
+      text-align: center;
     & .close-btn
       background: $form-input-bg-color;
       color: $error-red-color;
@@ -413,6 +413,20 @@ a.ribbon
       &:hover
         background: $error-red-color;
         color: white;
+    & a
+      color: $main-orange-color;
+      text-decoration: none;
+    & blockquote
+      background: $form-input-bg-color;
+      border-left: 0.38em solid $main-orange-color;
+      color: $second-body-text-color;
+      font-style: italic;
+      line-height: 1.4;
+      margin: 1.5em 0 0;
+      padding: 0.77em 1em 0.77em 2.3em;
+      & footer
+        font-style: normal;
+        margin-top: 0.5em;
 
 // commits
 .items-list
