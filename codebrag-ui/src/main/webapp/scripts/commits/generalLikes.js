@@ -11,7 +11,7 @@ angular.module('codebrag.commits')
             },
             templateUrl: 'generalLikes',
             link: function (scope, element) {
-
+                var COMPARE_FOR_EQUALITY = true;
                 scope.noLikes = function () {
                     return _.isEmpty(scope.likesCollection)
                 };
@@ -32,24 +32,19 @@ angular.module('codebrag.commits')
                     removeAuthorWatch();
                 });
 
-                var removeCollectionReferenceWatch = scope.$watch(function () {
+                scope.$watch(function () {
                     return scope.likesCollection
                 }, function (newVal) {
                     if (angular.isUndefined(newVal)) {
                         return;
                     }
-                    scope.$watch(function () {
-                            return scope.likesCollection.length;
-                        }, function () {
-                            if (_.some(scope.likesCollection, function (like) {
+                            if (_.some(newVal, function (like) {
                                 return like.authorName == currentUserName
                             })) {
                                 setUserAlreadyLikedStyle(true);
                             }
-                        }
+                        }, COMPARE_FOR_EQUALITY
                     );
-                    removeCollectionReferenceWatch();
-                });
             }
         }
 
