@@ -40,6 +40,7 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "notifications/notificationCountersCt
 <!-- commits -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitLoadFilter.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsCtrl.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/loadMoreCommitsCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsListService.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsResource.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/commitsListItemCtrl.js");

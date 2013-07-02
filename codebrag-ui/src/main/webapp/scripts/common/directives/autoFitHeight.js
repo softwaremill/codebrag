@@ -10,11 +10,16 @@ angular.module('codebrag.common.directives')
             var loadMoreArea = $('.commits-count');
 
             function recalculateHeights() {
+
+                function getHeightOrDefault(element) {
+                    return (element.length && element.outerHeight()) || 0;
+                }
+
                 return {
-                    windowHeight: windowArea.height(),
-                    headerHeight: headerArea.outerHeight(),
-                    sortingHeight:  sortingArea.outerHeight(),
-                    loadMoreHeight: loadMoreArea.outerHeight()
+                    windowHeight: getHeightOrDefault(windowArea),
+                    headerHeight: getHeightOrDefault(headerArea),
+                    sortingHeight:  getHeightOrDefault(sortingArea),
+                    loadMoreHeight: getHeightOrDefault(loadMoreArea)
                 }
             }
 
@@ -40,11 +45,11 @@ angular.module('codebrag.common.directives')
         var listAreaSelector = '.items-container';
         var diffAreaSelector = '.diff';
 
-        var resizer = new HeightsResizer();
 
         return {
             restrict: 'A',
             link: function(scope, el, attrs) {
+                var resizer = new HeightsResizer();
                 var listArea = el.find(listAreaSelector);
                 var diffArea = el.find(diffAreaSelector);
                 resizer.resize(listArea, diffArea);

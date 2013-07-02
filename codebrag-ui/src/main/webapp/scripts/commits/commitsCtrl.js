@@ -1,9 +1,6 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, $http, commitsListService, commitLoadFilter, $state, events) {
-
-        $scope.toReviewCount = 0;
-        $scope.loadedCommitCount = 0;
+    .controller('CommitsCtrl', function ($scope, commitsListService, $state, events) {
 
         $scope.switchToAll = function () {
             $scope.loadAllCommits();
@@ -20,34 +17,13 @@ angular.module('codebrag.commits')
         }
 
         $scope.loadAllCommits = function () {
-            _loadCommitsFromPromise(commitsListService.loadAllCommits());
+            $scope.commits = commitsListService.loadAllCommits();
         };
 
         $scope.loadPendingCommits = function () {
-            _loadCommitsFromPromise(commitsListService.loadCommitsPendingReview());
-        };
-
-        function _loadCommitsFromPromise(promise) {
-            return promise.then(function(commits) {
-                $scope.commits = commits;
-                $scope.loadedCommitCount = commits.length;
-            })
-        }
-        $scope.canLoadMore = function () {
-            return !commitLoadFilter.isAll() && $scope.toReviewCount > $scope.loadedCommitCount;
-        };
-
-        $scope.loadMoreCommits = function () {
-            _loadCommitsFromPromise(commitsListService.loadMoreCommits()).then(function() {
-                $scope.$broadcast(events.moreCommitsLoaded);
-            });
+            $scope.commits = commitsListService.loadCommitsPendingReview();
         };
 
         $scope.loadPendingCommits();
-
-        $scope.$on(events.commitCountChanged, function(event, data) {
-            $scope.toReviewCount = data.commitCount;
-        });
-
 
     });

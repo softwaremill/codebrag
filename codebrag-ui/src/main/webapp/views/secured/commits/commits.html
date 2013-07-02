@@ -19,7 +19,9 @@
             <!--commit info end-->
             <div id="commits-list-end"></div>
         </div>
-        <div class="commits-count" ng-show="canLoadMore()" ng-click="loadMoreCommits()">load more</div>
+        <div class="commits-count" ng-controller="LoadMoreCommitsCtrl" ng-show="moreCommitsAvailable">
+            <div ng-click="loadMoreCommits()">load more</div>
+        </div>
     </div>
     <div class="diff small-9 large-9 columns" ui-view>
     </div>
