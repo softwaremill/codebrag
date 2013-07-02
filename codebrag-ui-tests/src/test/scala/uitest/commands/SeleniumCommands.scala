@@ -8,6 +8,7 @@ import org.openqa.selenium.support.ui.FluentWait
 import org.openqa.selenium.support.ui.Wait
 
 import java.util.concurrent.TimeUnit
+import org.openqa.selenium.interactions.Actions
 
 class SeleniumCommands(driver: WebDriver) {
   final val URL = "http://localhost:8080/#/"
@@ -17,7 +18,7 @@ class SeleniumCommands(driver: WebDriver) {
     .pollingEvery(100, TimeUnit.MILLISECONDS)
 
   def waitForFinishLoading() {
-    waitForElementInvisible(By.cssSelector("#ajaxthrobber"))
+    waitForElementInvisible(By.cssSelector(".diff-loading"))
   }
 
   def waitForElementClickable(locator: By) {
@@ -38,5 +39,10 @@ class SeleniumCommands(driver: WebDriver) {
 
   def waitForElementPresent(locator: By) {
     fluentwait.until(ExpectedConditions.presenceOfElementLocated(locator))
+  }
+
+  def mouseOverElement(element: WebElement) {
+    val mouseOverAction: Actions = new Actions(driver)
+    mouseOverAction.moveToElement(element)
   }
 }
