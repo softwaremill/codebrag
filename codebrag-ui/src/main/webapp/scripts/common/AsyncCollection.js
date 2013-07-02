@@ -23,12 +23,9 @@ codebrag.AsyncCollection.prototype = {
      * @param promise a promise of returning an array.
      * @returns a promise of filling this collection with elements from array.
      */
-    addElements: function(promise) {
-        var self = this;
-        return promise.then(function(receivedCollection) {
-            _.forEach(receivedCollection, function(element) {self.elements.push(element)});
-            return self.elements;
-        });
+
+    appendElements: function(elements) {
+        Array.prototype.push.apply(this.elements, elements);
     },
 
     /**
@@ -39,17 +36,14 @@ codebrag.AsyncCollection.prototype = {
     loadElements: function (promise) {
         var self = this;
         return promise.then(function(receivedCollection) {
-            self._replaceElementsWith(receivedCollection);
+            self.replaceWith(receivedCollection);
             return self.elements;
         })
     },
 
-    _replaceElementsWith: function(source) {
-        var self = this;
-        self.elements.length = 0;
-        _.forEach(source, function(el) {
-            self.elements.push(el);
-        })
+    replaceWith: function(receivedCollection) {
+        this.elements.length = 0;
+        Array.prototype.push.apply(this.elements, receivedCollection);
     },
 
     /**

@@ -25,11 +25,11 @@ angular.module('codebrag.commits')
                 skip: commits.elements.length,
                 limit: limit
             };
-            var responsePromise = Commits.get(request).$then(function(response) {
+            return Commits.get(request).$then(function(response) {
+                commits.appendElements(response.data.commits);
                 _broadcastNewCommitCountEvent(response.data.totalCount);
-                return response.data.commits;
+                return commits.elements;
             });
-            return commits.addElements(responsePromise);
         }
 
         function loadMoreCommits() {
@@ -37,11 +37,11 @@ angular.module('codebrag.commits')
         }
 
         function _loadCommits() {
-            var responsePromise = Commits.get({filter: commitLoadFilter.current}).$then(function (response) {
+            return Commits.get({filter: commitLoadFilter.current}).$then(function (response) {
+                commits.replaceWith(response.data.commits);
                 _broadcastNewCommitCountEvent(response.data.totalCount);
-                return response.data.commits;
+                return commits.elements;
             });
-            return commits.loadElements(responsePromise);
         }
 
         function allCommits() {
