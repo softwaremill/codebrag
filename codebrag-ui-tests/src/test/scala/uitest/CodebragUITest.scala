@@ -9,8 +9,8 @@ import pages.{MainPage, LoginPage}
 import org.openqa.selenium.support.PageFactory
 
 class CodebragUITest extends FunSuite with UITestsEmbeddedJetty with BeforeAndAfterAll with BeforeAndAfter {
-  final val REGUSER = "reguser"
-  final val REGPASS = "regpass"
+  final val REGUSER = "fox"
+  final val REGPASS = "codebrag"
   final val REGMAIL = "reguser@regmail.pl"
 
   var driver: FirefoxDriver = _
