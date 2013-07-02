@@ -5,7 +5,7 @@ import javax.servlet.ServletContext
 import org.openqa.selenium.firefox.FirefoxDriver
 import java.util.concurrent.TimeUnit
 import com.softwaremill.codebrag.{WebServerConfig, EmbeddedJetty, Beans}
-import pages.{MainPage, LoginPage}
+import pages.{CommitsPage, MainPage, LoginPage}
 import org.openqa.selenium.support.PageFactory
 
 class CodebragUITest extends FunSuite with UITestsEmbeddedJetty with BeforeAndAfterAll with BeforeAndAfter {
@@ -16,6 +16,7 @@ class CodebragUITest extends FunSuite with UITestsEmbeddedJetty with BeforeAndAf
   var driver: FirefoxDriver = _
   var loginPage: LoginPage = _
   var mainPage: MainPage = _
+  var commitsPage: CommitsPage = _
   var beans: Beans = _
 
   override def beforeAll() {
@@ -28,6 +29,7 @@ class CodebragUITest extends FunSuite with UITestsEmbeddedJetty with BeforeAndAf
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS)
     loginPage = PageFactory.initElements(driver, classOf[LoginPage])
     mainPage = PageFactory.initElements(driver, classOf[MainPage])
+    commitsPage = PageFactory.initElements(driver, classOf[CommitsPage])
   }
 
   after {
