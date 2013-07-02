@@ -172,13 +172,21 @@ angular.module('codebrag.commits')
             this.insert = function(afterDOMInsertCallback) {
                 _.forEach(fileReactions, function(lineReactions, lineNumber) {
                     var diffLine = _getCorrespondingLineDOMElement(lineNumber);
+                    var codeRow = diffLine.find(codeRowSelector);
                     if(_lineHasNoReactionsYet(diffLine)) {
-                        diffLine.find(codeRowSelector).after(lineReactionsTemplate);
+                        codeRow.after(lineReactionsTemplate);
                         codebrag.diffReactionsDOMReferenceCacheAndResizer.addElementsAndResizeAll(diffLine);
                         afterDOMInsertCallback(diffLine, lineReactions);
                     }
+                    _markLineAsLikedWhenRequired(codeRow, lineReactions);
                 });
             };
+
+            function _markLineAsLikedWhenRequired(codeRow, lineReactions) {
+                if(lineReactions.likes && lineReactions.likes.length > 0) {
+                    codeRow.addClass('liked-by-user');
+                }
+            }
 
             function _lineHasNoReactionsYet(line) {
                 return line.find(lineReactionsSelector).length === 0;
@@ -223,6 +231,7 @@ angular.module('codebrag.commits')
 
         var fileNameDataAttr = 'file-name';
         var lineNumberDataAttr = 'line-number';
+        var codeRowSelector = '[data-code-row]';
 
         return {
             restrict: 'A',
@@ -231,7 +240,9 @@ angular.module('codebrag.commits')
                 fileDiffRoot.on('click', clickSelector, function(event) {
                     var codeLine = $(event.currentTarget).closest(lineDiffRootSelector);
                     scope.$apply(function(scope) {
-                        scope.like(codeLine.data(fileNameDataAttr), codeLine.data(lineNumberDataAttr));
+                        scope.like(codeLine.data(fileNameDataAttr), codeLine.data(lineNumberDataAttr)).then(function() {
+                            codeLine.find(codeRowSelector).addClass('liked-by-user');
+                        });
                     });
                 });
             }

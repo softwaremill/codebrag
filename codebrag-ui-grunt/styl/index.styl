@@ -720,11 +720,7 @@ a.ribbon
     & td
       padding: 1.15em 1.15em 0;
 
-.diff-file-container tr.removed.liked-by-user,
-.diff-file-container tr.added.liked-by-user
-  background: rgba(243, 114, 11, 0.26);
-  & .diff-line-num
-    background: rgba(243, 114, 11, 0.26);
+.diff-file-container tr.liked-by-user
     & .like.button
       background: #f3720b;
       & .icon-heart
@@ -732,12 +728,6 @@ a.ribbon
         opacity: 1;
       & .diff-line-num-content
         opacity: 0;
-
-.diff-file-container tr.removed.liked,
-.diff-file-container tr.added.liked
-  background: rgba(243, 114, 11, 0.26);
-  & .diff-line-num
-    background: rgba(243, 114, 11, 0.26);
 
 tbody tr.comments-container:last-child
   border-bottom: 1px solid $main-border-color;
