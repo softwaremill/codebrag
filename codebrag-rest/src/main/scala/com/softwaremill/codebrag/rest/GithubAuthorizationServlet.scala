@@ -16,7 +16,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator,
                                  userDao: UserDAO,
                                  newUserAdder: NewUserAdder,
                                  githubConfig: GithubConfig)
-  extends ScalatraServlet with AuthenticationSupport with Logging {
+  extends ScalatraServlet with AuthenticationSupport with Logging with CodebragErrorHandler {
 
   private val TempUserLogin = "tmpLogin"
   private val TempUserPass = "tmpPassword"

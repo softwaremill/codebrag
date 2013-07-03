@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit
 import com.softwaremill.codebrag.{WebServerConfig, EmbeddedJetty, Beans}
 import pages.{CommitsPage, MainPage, LoginPage}
 import org.openqa.selenium.support.PageFactory
+import org.eclipse.jetty.webapp.WebAppContext
 
 class CodebragUITest extends FunSuite with UITestsEmbeddedJetty with BeforeAndAfterAll with BeforeAndAfter {
   final val REGUSER = "fox"
@@ -51,7 +52,9 @@ trait UITestsEmbeddedJetty extends EmbeddedJetty {
     context
   }
 
-  protected def getResourceBase() = "codebrag-ui/src/main/webapp"
+  protected def setResourceBase(context: WebAppContext) {
+    context.setResourceBase("ui/src/main/webapp")
+  }
 
   def webServerConfig = new WebServerConfig {
     def rootConfig = null

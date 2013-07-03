@@ -19,8 +19,4 @@
         <listener-class>org.scalatra.servlet.ScalatraListener</listener-class>
     </listener>
 
-    <error-page>
-        <error-code>404</error-code>
-        <location>/error404redirectingPage.html</location>
-    </error-page>
 </web-app>

@@ -15,6 +15,10 @@ angular.module('codebrag.commits.comments')
                     scope.previewModeOn = !scope.previewModeOn;
                     if(scope.previewModeOn) {
                         scope.preview = mdConverter.makeHtml(scope.content || 'Nothing to preview');
+                    } else {
+                        setTimeout(function() {
+                            element.find('textarea').focus()
+                        }, 0);
                     }
                 };
                 scope.username = authService.loggedInUser.fullName;
@@ -45,6 +49,15 @@ angular.module('codebrag.commits.comments')
                     }
                 };
 
+            }
+        }
+    })
+
+    .directive('focus', function($timeout) {
+        return {
+            restrict: 'A',
+            link: function(scope, el, attrs) {
+                el.focus();
             }
         }
     });

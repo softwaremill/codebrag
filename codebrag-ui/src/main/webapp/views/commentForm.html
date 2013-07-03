@@ -5,7 +5,7 @@
             <div class="info-line"><span class="username">{{username}}:</span></div>
             <form name="newCommentForm">
                 <div class="comment-body" ng-hide="previewModeOn">
-                        <textarea ng-hide="previewModeOn" ng-model="content" required class="comment-text" placeholder="Write a comment..."></textarea>
+                        <textarea focus ng-hide="previewModeOn" ng-model="content" required class="comment-text" placeholder="Write a comment..."></textarea>
                 </div>
                 <div ng-show="previewModeOn" ng-bind-html-unsafe="preview"></div>
             </form>

@@ -16,7 +16,7 @@ trait EmbeddedJetty {
   protected def prepareContext() = {
     val context = new WebAppContext()
     context.setContextPath("/")
-    context.setResourceBase(getResourceBase())
+    setResourceBase(context)
     context
   }
 
@@ -24,7 +24,7 @@ trait EmbeddedJetty {
     jetty.stop()
   }
 
-  protected def getResourceBase(): String
+  protected def setResourceBase(context: WebAppContext)
 
   def webServerConfig: WebServerConfig
 
