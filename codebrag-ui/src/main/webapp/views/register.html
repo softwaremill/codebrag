@@ -9,7 +9,7 @@
         <fieldset>
             <div class="form-group">
                 <label class="prefix"><i class="icon-user"></i></label>
-                <input type="text" name="login" id="login" placeholder="Login" ng-model="user.login" required>
+                <input type="text" name="login" id="reg-login" placeholder="Login" ng-model="user.login" required>
                     <span class="text-error login-error"
                           ng-show="registerForm.login.$dirty && registerForm.login.$error.required">
                           <i class="icon-remove"></i>
@@ -31,7 +31,7 @@
 
             <div class="form-group">
                 <label class="prefix"><i class="icon-lock"></i></label>
-                <input type="password" name="password" id="password" placeholder="Enter password"
+                <input type="password" name="password" id="reg-password" placeholder="Enter password"
                        ng-model="user.password" required>
                     <span class="text-error login-error"
                           ng-show="registerForm.password.$dirty && registerForm.password.$error.required">
