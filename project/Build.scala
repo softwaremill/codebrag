@@ -236,7 +236,7 @@ object SmlCodebragBuild extends Build {
       } },
       // We need to include the whole webapp, hence replacing the resource directory
       resourceDirectory in Compile <<= baseDirectory { bd => {
-        bd.getParentFile() / ui.base.getName / "src" / "main" / "webapp"
+        bd.getParentFile() / ui.base.getName / "src" / "main"
       } }
     )
   ) dependsOn (ui)
