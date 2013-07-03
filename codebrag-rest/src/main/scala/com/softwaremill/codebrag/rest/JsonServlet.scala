@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse
 import java.util.Date
 import com.typesafe.scalalogging.slf4j.Logging
 
-class JsonServlet extends ScalatraServlet with JacksonJsonSupport with JValueResult with Logging {
+class JsonServlet extends ScalatraServlet with JacksonJsonSupport with JValueResult with Logging with CodebragErrorHandler {
 
   protected implicit val jsonFormats: Formats = DefaultFormats ++ org.json4s.ext.JodaTimeSerializers.all
 

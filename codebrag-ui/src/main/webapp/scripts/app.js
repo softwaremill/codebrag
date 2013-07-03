@@ -53,6 +53,11 @@ angular.module('codebrag.session')
                 templateUrl: 'views/secured/profile.html',
                 resolve: authenticatedUser
             })
+            .state('error', {
+                url: '/error',
+                templateUrl: 'views/errorpages/error500.html',
+                noLogin: true
+            })
     });
 
 angular.module('codebrag.commits')
