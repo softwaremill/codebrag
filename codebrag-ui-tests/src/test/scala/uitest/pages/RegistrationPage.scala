@@ -24,6 +24,7 @@ class RegistrationPage(driver: WebDriver) {
   val registerButton: WebElement = null
 
   def register(login: String, email: String, password: String) {
+    sc.waitForElementVisible(loginField)
     loginField.sendKeys(login)
     emailField.sendKeys(email)
     passwordField.sendKeys(password)
