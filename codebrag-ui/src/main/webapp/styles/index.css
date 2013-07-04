@@ -635,6 +635,18 @@ a.ribbon:hover {
 .commits-count span {
   margin-right: 3px;
 }
+.no-more-commits {
+  background: url("/images/trophy.png") no-repeat center top;
+  color: $body-text-color;
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 3em;
+  min-height: 154px;
+  min-width: 156px;
+  padding-top: 132px;
+  text-align: center;
+  text-transform: uppercase;
+}
 .followups-container {
   background: #eee8d7;
   margin-bottom: 0.77em;
