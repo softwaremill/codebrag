@@ -688,6 +688,9 @@ a.ribbon:hover {
 .followups-container.active .followup-container.active i {
   display: block;
 }
+#followups-tab-content .items-container .commmit-container:first-child {
+  margin-top: 0.77em;
+}
 .diff {
   height: 700px;
   padding: 0.77em 0.77em 2.3em 0;
