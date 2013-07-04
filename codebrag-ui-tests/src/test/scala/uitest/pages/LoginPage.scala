@@ -18,7 +18,11 @@ class LoginPage(driver: WebDriver) {
   @FindBy(css = "button[type=submit]")
   val loginButton: WebElement = null
 
+  @FindBy(css = ".login-error")
+  val info: WebElement = null
+
   def login(login: String, password: String) {
+    sc.waitForElementVisible(loginField)
     loginField.sendKeys(login)
     passwordField.sendKeys(password)
     loginButton.click()
@@ -28,5 +32,10 @@ class LoginPage(driver: WebDriver) {
   def openLoginPage() {
     driver.get(url)
     sc.waitForFinishLoading()
+  }
+
+  def getInfoText(): String = {
+    sc.waitForElementVisible(info)
+    return info.getText()
   }
 }
