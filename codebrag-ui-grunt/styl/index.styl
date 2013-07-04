@@ -42,6 +42,9 @@ button
     color: white;
     &:hover
       color: white;
+    &:focus
+      background: #998d68;
+      color: white;
   &.kthxbye
     background: #41a388;
     &:hover
@@ -56,6 +59,9 @@ button
       color: $main-orange-color;
     &:active
       background: #ece7d9;
+    &:focus
+      background: #e4dece;
+      color: $second-body-text-color;
   &.big
     padding: 1.15em 2.3em;
     &.reviewed
@@ -67,6 +73,10 @@ button
         background: $green-button-bg-hover;
   &:active
     box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
+  &:focus
+    background: #a14700;
+    color: white;
+    outline: 0;
 
 .button-group
   padding-left: 0;
