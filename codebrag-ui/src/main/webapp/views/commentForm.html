@@ -12,8 +12,8 @@
         </div>
     </div>
     <ul class="comment-action-btns button-group">
-        <li><a class="button secondary" ng-disabled="newCommentForm.$invalid" ng-click="togglePreviewMode()">{{ previewModeOn && 'Edit' || 'Preview' }}</a></li>
-        <li><a class="button" ng-disabled="newCommentForm.$invalid" ng-click="_submitComment(content)">Send</a></li>
-        <li ng-show="isCloseable()"><a class="button link" ng-click="closeForm()">Cancel</a></li>
+        <li><a button class="button secondary" ng-disabled="newCommentForm.$invalid" ng-click="togglePreviewMode()">{{ previewModeOn && 'Edit' || 'Preview' }}</button></li>
+        <li><button class="button" ng-disabled="newCommentForm.$invalid" ng-click="_submitComment(content)">Send</button></li>
+        <li ng-show="isCloseable()"><button class="button link" ng-click="closeForm()">Cancel</button></li>
     </ul>
 </div>

@@ -23,9 +23,6 @@ class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder) extends Logg
   }
 
   private def leftIfFound(userOpt: Option[User], msg: String) = {
-    userOpt match {
-      case Some(user) => Left(msg)
-      case None => Right(())
-    }
+    userOpt.map({user => Left(msg)}).getOrElse(Right())
   }
 }
