@@ -8,7 +8,7 @@ class RegistrationPage(driver: WebDriver) {
   private val sc: SeleniumCommands = new SeleniumCommands(driver)
   val url = sc.URL + "register"
 
-  @FindBy(css = "#reg-login")
+  @FindBy(id = "reg-login")
   val loginField: WebElement = null
 
   @FindBy(css = "#email")
