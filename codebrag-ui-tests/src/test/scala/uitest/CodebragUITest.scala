@@ -53,7 +53,8 @@ trait UITestsEmbeddedJetty extends EmbeddedJetty {
   }
 
   protected def setResourceBase(context: WebAppContext) {
-    context.setResourceBase("ui/src/main/webapp")
+    val webappDirInsideJar = context.getClass.getClassLoader.getResource("webapp").toExternalForm
+    context.setWar(webappDirInsideJar)
   }
 
   def webServerConfig = new WebServerConfig {
