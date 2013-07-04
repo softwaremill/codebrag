@@ -8,33 +8,33 @@ class RegistrationPage(driver: WebDriver) {
   private val sc: SeleniumCommands = new SeleniumCommands(driver)
   val url = sc.URL + "register"
 
-  @FindBy(css = "#login")
+  @FindBy(css = "#reg-login")
   val loginField: WebElement = null
 
   @FindBy(css = "#email")
   val emailField: WebElement = null
 
-  @FindBy(css = "#password")
+  @FindBy(css = "#reg-password")
   val passwordField: WebElement = null
 
   @FindBy(css = "#repassword")
   val repasswordField: WebElement = null
 
-  @FindBy(linkText = "Register")
+  @FindBy(css = "#reg-btn")
   val registerButton: WebElement = null
 
   def register(login: String, email: String, password: String) {
     loginField.sendKeys(login)
     emailField.sendKeys(email)
-//    passwordField.sendKeys(password)
+    passwordField.sendKeys(password)
     repasswordField.sendKeys(password)
     registerButton.click()
-//    sc.waitForFinishLoading()
+    sc.waitForFinishLoading()
   }
 
   def openRegistrationPage() {
     driver.get(url)
-//    sc.waitForFinishLoading()
+    sc.waitForFinishLoading()
   }
 
 }

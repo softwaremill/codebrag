@@ -12,9 +12,6 @@ class MainPage(driver: WebDriver) {
   @FindBy(linkText = "Logout")
   val logoutLink: WebElement = null
 
-  @FindBy(css = ".alert-info")
-  val alert: WebElement = null
-
   def logout() {
     logoutLink.click()
     sc.waitForFinishLoading()
@@ -23,10 +20,5 @@ class MainPage(driver: WebDriver) {
   def isUserLogged(user: String): Boolean = {
     sc.waitForElementVisible(By.linkText("Signed in as " + user))
     return true
-  }
-
-  def getInfoText(): String = {
-    sc.waitForElementVisible(By.cssSelector("#info-message"))
-    return alert.getText()
   }
 }

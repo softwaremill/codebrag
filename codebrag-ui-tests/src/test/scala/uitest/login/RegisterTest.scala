@@ -16,11 +16,10 @@ class RegisterTest extends CodebragUITest {
 
       registrationPage.openRegistrationPage()
       registrationPage.register(LOGIN, EMAIL, PASSWORD)
-//      Assertions.assertThat(loginPage.getInfoText).contains("Registration was successful!")
-//
-//      loginPage.login(EMAIL, REGPASS)
-//      Assertions.assertThat(mainPage.isUserLogged(LOGIN)).isTrue()
-//      mainPage.logout()
-    }
+      Assertions.assertThat(loginPage.getInfoText).contains("Registration was successful!")
 
+      loginPage.login(EMAIL, REGPASS)
+      Assertions.assertThat(mainPage.isUserLogged(LOGIN)).isTrue()
+      mainPage.logout()
+    }
 }
