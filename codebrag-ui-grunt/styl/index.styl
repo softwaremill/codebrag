@@ -377,7 +377,7 @@ a.ribbon
   text-align: center;
   text-decoration: none;
   width: 154px;
-  z-index: 1;
+  z-index: 1000;
   transform: rotate(45deg);
   &:hover
     opacity: 1;
@@ -598,6 +598,9 @@ a.ribbon
     right: 0;
     width: 100%;
     transition: width 1000ms;
+    z-index: 3;
+    & .toggle-diff-container-btn:hover i
+      margin-left: 12px;
 
 .diff-wrapper
   height: 100%;
