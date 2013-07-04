@@ -71,7 +71,7 @@ angular.module('codebrag.commits')
             })
             .state('commits.list', {
                 url: '',
-                templateUrl: 'views/secured/empty.html'
+                templateUrl: 'views/secured/commits/emptyCommits.html'
             })
             .state('commits.details', {
                 url: '/{id}',
@@ -90,7 +90,7 @@ angular.module('codebrag.followups')
             })
             .state('followups.list', {
                 url: '',
-                templateUrl: 'views/secured/empty.html'
+                templateUrl: 'views/secured/followups/emptyFollowups.html'
             })
             .state('followups.details', {
                 url: '/{followupId}/comments/{commentId}',
