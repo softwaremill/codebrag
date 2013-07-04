@@ -57,36 +57,34 @@ angular.module('codebrag.commits.comments')
 
         var TAB_KEY = 9;
 
+        function focusableElementsCollection() {
+            var focusableElements = ['textarea', '[data-action-send]', '[data-action-preview]', '[data-action-cancel]'];
+            var index = -1;
+            return {
+                next: function() {
+                    index = (index + 1) % focusableElements.length;
+                    return focusableElements[index];
+                }
+            };
+        }
+
+        function findFirstEnabled(baseEl, array) {
+            var found = baseEl.find(array.next());
+            if(found.length && !found.is(':disabled')) {
+                return found;
+            }
+            return findFirstEnabled(baseEl, array);
+        }
+
         return {
             restrict: 'A',
             link: function(scope, el, attrs) {
-
-                var focusableElements = ['textarea', '[data-action-send]', '[data-action-preview]', '[data-action-cancel]'];
-                focusableElements.next = function() {
-                    var returnVal;
-                    this.current = this.current || 0;
-                    returnVal = this[this.current];
-                    if(this.current == this.length - 1) {
-                        this.current = 0;
-                    } else {
-                        this.current++;
-                    }
-                    return returnVal;
-                };
-
-                function findFirstEnabled() {
-                    var found = el.find(focusableElements.next());
-                    if(found.length && !found.is(':disabled')) {
-                        return found;
-                    }
-                    return findFirstEnabled();
-                }
-
-                el.find(findFirstEnabled()).focus();
+                var focusables = focusableElementsCollection();
+                el.find(findFirstEnabled(el, focusables)).focus();
                 el.on('keydown', function(event) {
                     if (event.which == TAB_KEY) {
                         event.preventDefault();
-                        var nextEl = findFirstEnabled();
+                        var nextEl = findFirstEnabled(el, focusables);
                         nextEl.focus();
                     }
                 });
