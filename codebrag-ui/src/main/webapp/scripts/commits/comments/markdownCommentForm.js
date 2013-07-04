@@ -53,11 +53,43 @@ angular.module('codebrag.commits.comments')
         }
     })
 
-    .directive('focus', function($timeout) {
+    .directive('focusAndTabLoop', function() {
+
+        var TAB_KEY = 9;
+
         return {
             restrict: 'A',
             link: function(scope, el, attrs) {
-                el.focus();
+
+                var focusableElements = ['textarea', '[data-action-send]', '[data-action-preview]', '[data-action-cancel]'];
+                focusableElements.next = function() {
+                    var returnVal;
+                    this.current = this.current || 0;
+                    returnVal = this[this.current];
+                    if(this.current == this.length - 1) {
+                        this.current = 0;
+                    } else {
+                        this.current++;
+                    }
+                    return returnVal;
+                };
+
+                function findFirstEnabled() {
+                    var found = el.find(focusableElements.next());
+                    if(found.length && !found.is(':disabled')) {
+                        return found;
+                    }
+                    return findFirstEnabled();
+                }
+
+                el.find(findFirstEnabled()).focus();
+                el.on('keydown', function(event) {
+                    if (event.which == TAB_KEY) {
+                        event.preventDefault();
+                        var nextEl = findFirstEnabled();
+                        nextEl.focus();
+                    }
+                });
             }
         }
     });
