@@ -1,19 +1,19 @@
-<div class="comment write active"><i class="icon-info-sign"></i>
+<div class="comment write active" focus-and-tab-loop><i title="Codebrag supports markdown format" class="icon-info-sign"></i>
     <div class="authored-box">
         <div class="author-box"><user-avatar url="avatarUrl"></user-avatar></div>
         <div class="info-box">
             <div class="info-line"><span class="username">{{username}}:</span></div>
             <form name="newCommentForm">
                 <div class="comment-body" ng-hide="previewModeOn">
-                        <textarea focus ng-hide="previewModeOn" ng-model="content" required class="comment-text" placeholder="Write a comment..."></textarea>
+                        <textarea tabindex="0" ng-hide="previewModeOn" ng-model="content" required class="comment-text" placeholder="Write a comment..."></textarea>
                 </div>
                 <div ng-show="previewModeOn" ng-bind-html-unsafe="preview"></div>
             </form>
         </div>
     </div>
     <ul class="comment-action-btns button-group">
-        <li><a button class="button secondary" ng-disabled="newCommentForm.$invalid" ng-click="togglePreviewMode()">{{ previewModeOn && 'Edit' || 'Preview' }}</button></li>
-        <li><button class="button" ng-disabled="newCommentForm.$invalid" ng-click="_submitComment(content)">Send</button></li>
-        <li ng-show="isCloseable()"><button class="button link" ng-click="closeForm()">Cancel</button></li>
+        <li><button tabindex="2" data-action-preview class="button secondary" ng-disabled="newCommentForm.$invalid" ng-click="togglePreviewMode()">{{ previewModeOn && 'Edit' || 'Preview' }}</button></li>
+        <li><button tabindex="1" data-action-send class="button" ng-disabled="newCommentForm.$invalid" ng-click="_submitComment(content)">Send</button></li>
+        <li ng-show="isCloseable()"><button data-action-cancel class="button link" ng-disabled="!isCloseable()" ng-click="closeForm()">Cancel</button></li>
     </ul>
 </div>

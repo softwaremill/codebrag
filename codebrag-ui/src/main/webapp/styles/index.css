@@ -24,6 +24,12 @@ button.secondary {
 button.secondary:hover {
   color: #fff;
 }
+.button.secondary:focus,
+.button[disabled].secondary:focus,
+button.secondary:focus {
+  background: #998d68;
+  color: #fff;
+}
 .button.kthxbye,
 .button[disabled].kthxbye,
 button.kthxbye {
@@ -57,6 +63,12 @@ button.link:hover {
 button.link:active {
   background: #ece7d9;
 }
+.button.link:focus,
+.button[disabled].link:focus,
+button.link:focus {
+  background: #e4dece;
+  color: #a27d69;
+}
 .button.big,
 .button[disabled].big,
 button.big {
@@ -80,6 +92,13 @@ button.big.reviewed:hover {
 button:active {
   -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
   box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
+}
+.button:focus,
+.button[disabled]:focus,
+button:focus {
+  background: #a14700;
+  color: #fff;
+  outline: 0;
 }
 .button-group {
   padding-left: 0;
@@ -180,7 +199,13 @@ i {
   padding-bottom: 1em;
 }
 .pick-commit {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPsAAABCCAMAAACmaVApAAAAk1BMVEWKb0j////////////////////////////////////////////////////////////////////////////////////////////NvJnMupbMupXOu5fMuZPMuZPNupXSv5jRv5fcy6PBrITMuJGrlGyagVq7pn6wmnKgiGDfzaXfzqbgzqbgz6fhz6fh0Kji0Kji0alWYRiBAAAAIHRSTlMAAA0QKCowNzg5Ojw9PkBgb3CAj5+3v8/x9Pb2+fv7/kD6VZUAAANBSURBVHhe7ZrZbttADEWdqp1uqdNUrt298pKk6/L/X1cILHAAEcxFCMRQE94nz1zqDs4DPRLARXfxBV10CzRa7LAlKvmNVAaWSmedcC0fgna5R5dtgUaLHbZEJb+RysBS6awTruVDsNz/QfvlAo0WO2yJSn4jlYGl0lkLN1zBeu/Zt5u1aXWgO0hZ0CyH1TWVlPRtAiUysKL04WrcsaqrYcIjXFatX683WwPumwWfL01nO7oDIpplvzu7ppKSZkRIZGBF6dth3LGqYTuhEy6rri2X54MBt+6feTJKdBJm2FW613UGju8E3xXajTvo/rLTLiZ6VbG3nkpCol4XGZLdOnR1sBM2W+1qdtrFRK8q9q5RSUjU6yJDsluHnu3shPNBuDdgR1QJdnE3CXZhiY5KuZ6q2Lnf+5ZgJ4R7+RbY+X9IuAE79zvdp9j5RsD6/JJ72UlmaHb+H5SbuuNMmp1vBKzfn15Q4qQzNLtJuEdg9yf8+niau9/vAPvPD8+t5+j5O8RuYNFb0I/3z6zngp4XGVg4M2I3sOgt6Pu7py4byQwsnJmw6+/3b2+fHOH7fZ7sX988/q/Y+aBw7FjTLVPfJtuvXz30TyGdgYXjE1mnXHw+KBw71nTL1LrJ9umjB/4ppDOwcHwi64Q79U/Q4r6p2It9vir2Yi/2Yi/2Yi/2Yi/2Yi/2Yi/2Yi/2YhfTpeEuVigVbUpMiuYiPLuYLg13sUKpaFNiUjQX4dnFBEa4ixVKRZsS05LZCNiL3U2fiFnPeBwV6Up3aoo9jqDPBbubPhGznsE4KtKV7tQUexxBnyt2PD0DhIOVHjlAKfY4AjtgL3amS+X8kxhHRbIyOJXpFTeZDlYQkWFnulTOP4lxVCQrg1OZXnGT6WAFETl2JGaAbvWOi6ezU3dcsWfudz3bzdi2l650p6bYfYRm1/e7nu1mbNtLV7pTE+wu4lh3HNteqtLvCPb53O/FLkZJReWs2fWspx4l9ZXq3YaTOXWaJyJ43MUodj3rmX+n1S8mnMypSET4x4mR7Il5xwS7uN+jWB2h2wb2Yg+HQfWsJwukKrGQC/CxOsIXEhOxM12KsEZhuwdYIF1JtMuPYnWELwxi/gJB1GLyhz+IaQAAAABJRU5ErkJggg==");
+  background-image: url("/images/pick-commit.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+  min-height: 550px;
+}
+.pick-followup {
+  background-image: url("/images/pick-followup.png");
   background-position: center center;
   background-repeat: no-repeat;
   min-height: 550px;
@@ -426,7 +451,7 @@ a.ribbon {
   text-align: center;
   text-decoration: none;
   width: 154px;
-  z-index: 1;
+  z-index: 1000;
   -webkit-transform: rotate(45deg);
   -moz-transform: rotate(45deg);
   -o-transform: rotate(45deg);
@@ -610,6 +635,18 @@ a.ribbon:hover {
 .commits-count span {
   margin-right: 3px;
 }
+.no-more-commits {
+  background: url("/images/trophy.png") no-repeat center top;
+  color: $body-text-color;
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 3em;
+  min-height: 154px;
+  min-width: 156px;
+  padding-top: 132px;
+  text-align: center;
+  text-transform: uppercase;
+}
 .followups-container {
   background: #eee8d7;
   margin-bottom: 0.77em;
@@ -682,6 +719,9 @@ a.ribbon:hover {
 .followups-container.active .followup-container.active i {
   display: block;
 }
+#followups-tab-content .items-container .commmit-container:first-child {
+  margin-top: 0.77em;
+}
 .diff {
   height: 700px;
   padding: 0.77em 0.77em 2.3em 0;
@@ -695,6 +735,10 @@ a.ribbon:hover {
   -o-transition: width 1000ms;
   -ms-transition: width 1000ms;
   transition: width 1000ms;
+  z-index: 3;
+}
+.diff.opened .toggle-diff-container-btn:hover i {
+  margin-left: 12px;
 }
 .diff-wrapper {
   height: 100%;
