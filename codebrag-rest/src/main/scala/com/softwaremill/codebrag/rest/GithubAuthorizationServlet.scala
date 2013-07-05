@@ -11,7 +11,8 @@ import com.softwaremill.codebrag.service.config.GithubConfig
 import org.bson.types.ObjectId
 
 
-class GithubAuthorizationServlet(val authenticator: Authenticator,
+class
+GithubAuthorizationServlet(val authenticator: Authenticator,
                                  ghAuthService: GitHubAuthService,
                                  userDao: UserDAO,
                                  newUserAdder: NewUserAdder,
@@ -28,7 +29,15 @@ class GithubAuthorizationServlet(val authenticator: Authenticator,
     SeeOther(s"https://github.com/login/oauth/authorize?client_id=$clientId&scope=user,repo")
   }
 
+  def stopIfDeniedOnGithub {
+    if(params.get("code").isEmpty) {
+      request.getSession().invalidate()
+      redirect(contextPath)
+    }
+  }
+
   get("/auth_callback") {
+    stopIfDeniedOnGithub
     val code = params.get("code").get
     logger.debug(s"Retrieved code $code")
     val accessToken = ghAuthService.getAccessToken(code)
