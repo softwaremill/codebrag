@@ -115,8 +115,8 @@
                 <li><a id="followups-btn" href="#/followups" class="button" active-for-states="followups,followups.list,followups.details"><span class="number">{{counters.followups}} </span>follow-ups</a></li>
             </ul>
         </nav>
-        <div class="user-info" ng-show="isLogged()"><span class="username"><a  ng-click="logout()">Logout</a></span></div>
-        <div class="user-info" ng-show="isLogged()"><span class="username"><a href="#/profile">Signed in as {{loggedInUser().fullName}}</a></span><logged-in-user-avatar></logged-in-user-avatar></div>
+        <div class="user-info" ng-show="isLogged()"><span class="logout"><a  ng-click="logout()">Logout</a></span></div>
+        <div class="user-info" ng-show="isLogged()"><span class="username">Signed in as {{loggedInUser().fullName}}</span><logged-in-user-avatar></logged-in-user-avatar></div>
         <!-- Uservoice link start -->
         <a href="javascript:void(0)" class="uservoice-btn" data-uv-lightbox="classic_widget" data-uv-mode="full" data-uv-primary-color="#320a0b" data-uv-link-color="#819511" data-uv-default-mode="support" data-uv-forum-id="202607">Feedback</a>
         <!-- Uservoice link end -->

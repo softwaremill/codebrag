@@ -392,7 +392,12 @@ form .form-group span.text-error:after {
   margin-top: 0.77em;
   vertical-align: middle;
 }
-.main-header .user-info .username:hover {
+.main-header .user-info .logout {
+  display: inline-block;
+  margin-top: 0.77em;
+  vertical-align: middle;
+}
+.main-header .user-info .logout:hover {
   color: #f3720b;
 }
 .main-header .user-info img {
@@ -1130,6 +1135,11 @@ tr:hover .diff-line-num .button i {
     width: 7.15em;
   }
   .main-header .user-info .username {
+    max-width: 10em;
+    margin-top: 0;
+    text-align: right;
+  }
+  .main-header .user-info .logout {
     max-width: 10em;
     margin-top: 0;
     text-align: right;
