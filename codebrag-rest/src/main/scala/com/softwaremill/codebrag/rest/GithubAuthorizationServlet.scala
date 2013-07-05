@@ -61,7 +61,10 @@ GithubAuthorizationServlet(val authenticator: Authenticator,
     authenticate() match {
       case Some(u) => {
         logger.debug("Authentication done")
-        val redirectTo = request.getSession.getOrElse(RedirectToUrlParam, "")
+        val redirectTo = request.getSession.getOrElse(RedirectToUrlParam, "") match {
+          case "/" => "/commits"
+          case other => other
+        }
         val redirectPath: String = s"$contextPath/#$redirectTo"
         logger.debug(s"Redirect path: $redirectPath")
         request.getSession.removeAttribute(RedirectToUrlParam)
