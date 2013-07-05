@@ -8,6 +8,7 @@ import com.softwaremill.codebrag.{WebServerConfig, EmbeddedJetty, Beans}
 import pages.{CommitsPage, MainPage, LoginPage}
 import org.openqa.selenium.support.PageFactory
 import org.eclipse.jetty.webapp.WebAppContext
+import org.openqa.selenium.OutputType
 
 class CodebragUITest extends FunSuite with UITestsEmbeddedJetty with BeforeAndAfterAll with BeforeAndAfter {
   final val REGUSER = "fox"
@@ -34,6 +35,7 @@ class CodebragUITest extends FunSuite with UITestsEmbeddedJetty with BeforeAndAf
   }
 
   after {
+    driver.getScreenshotAs(OutputType.FILE)
     driver.close()
     driver = null
   }
