@@ -16,7 +16,7 @@
                     </div>
                 </div ><i class="icon-ok-circle" ng-show="commit.pendingReview" ng-click="markAsReviewed(commit)" isolate-click></i>
             </div>
-            <div class="no-more-commits" ng-hide="commits.length">
+            <div class="no-more-commits" ng-show="commits && commits.length == 0">
                 Yay!<br> You did it!
             </div>
             <!--commit info end-->
