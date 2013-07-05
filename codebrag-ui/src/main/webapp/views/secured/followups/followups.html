@@ -15,6 +15,9 @@
                 <i class="icon-ok-circle" ng-click="dismiss(followup)" isolate-click></i>
             </div>
             <!--commit info end-->
+            <div class="no-more-items" ng-show="followups && followups.length == 0">
+                Yay!<br> No more follow-ups!
+            </div>
         </div>
     </div>
     <div class="diff large-9 columns" ui-view>

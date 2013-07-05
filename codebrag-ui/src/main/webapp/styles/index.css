@@ -198,6 +198,12 @@ i {
   padding-top: 1em;
   padding-bottom: 1em;
 }
+.no-items-trophy {
+  background-image: url("/images/trophy.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+  min-height: 550px;
+}
 .pick-commit {
   background-image: url("/images/pick-commit.png");
   background-position: center center;
@@ -635,9 +641,8 @@ a.ribbon:hover {
 .commits-count span {
   margin-right: 3px;
 }
-.no-more-commits {
-  background: url("/images/trophy.png") no-repeat center top;
-  color: $body-text-color;
+.no-more-items {
+  color: #ad8245;
   font-size: 22px;
   font-weight: bold;
   margin-top: 3em;
