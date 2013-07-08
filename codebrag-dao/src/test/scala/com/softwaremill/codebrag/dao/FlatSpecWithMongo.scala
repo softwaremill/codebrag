@@ -3,10 +3,21 @@ package com.softwaremill.codebrag.dao
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, FlatSpec}
 import net.liftweb.mongodb.{MongoDB, DefaultMongoIdentifier}
 import com.mongodb.Mongo
+import com.typesafe.config.Config
 
 trait FlatSpecWithMongo extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
-  val mongoPort = 24567
+  object TestMongoConfig extends MongoConfig {
+
+    def rootConfig: Config = null
+
+    val MongoPort = 24567
+    val MongoHost = "localhost"
+
+    override lazy val mongoServers: String = s"$MongoHost:$MongoPort"
+    override lazy val mongoDatabase: String = "codebrag_test"
+
+  }
 
   protected var mongoRunner: MongoRunner = null
 
@@ -31,31 +42,11 @@ trait FlatSpecWithMongo extends FlatSpec with BeforeAndAfterAll with BeforeAndAf
   }
 
   def startMongo() {
-    mongoRunner = MongoRunner.run(mongoPort, verbose = true)
-    MongoDB.defineDb(DefaultMongoIdentifier, new Mongo("localhost", mongoPort), "codebrag_test")
+    mongoRunner = MongoRunner.run(TestMongoConfig.MongoPort, verbose = true)
+    MongoInit.initialize(TestMongoConfig)
   }
 
   def stopMongo() {
     mongoRunner.stop()
   }
-}
-
-/**
- * Run tests on MongoDB instance that is running on given host and port,
- * This will neither start nor stop MongoDB instance for you.
- */
-trait FlatSpecWithRemoteMongo extends FlatSpec with BeforeAndAfterAll {
-
-  override protected def beforeAll() {
-    super.beforeAll()
-    MongoDB.defineDb(DefaultMongoIdentifier, new Mongo(mongoHost, mongoPort), databaseName)
-  }
-
-  override protected def afterAll() {
-    super.afterAll()
-  }
-
-  protected def mongoPort = 27017
-  protected def mongoHost = "localhost"
-  protected def databaseName = "codebrag_test"
 }
