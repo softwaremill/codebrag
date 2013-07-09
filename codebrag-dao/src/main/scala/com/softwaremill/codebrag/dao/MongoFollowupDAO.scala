@@ -38,10 +38,7 @@ class MongoFollowupDAO extends FollowupDAO {
         updated.followupId.get
       }
       case None => {
-        val commitRecord = CommitInfoRecord.where(_.id eqs followup.threadId.commitId).get().getOrElse(
-          throw new IllegalStateException(s"Cannot find commit ${followup.threadId.commitId}")
-        )
-        val incomingFollowupRecord = toRecord(followup, commitRecord)
+        val incomingFollowupRecord = toRecord(followup)
         incomingFollowupRecord.save.followupId.get
       }
     }
@@ -65,18 +62,22 @@ class MongoFollowupDAO extends FollowupDAO {
     Followup(record.reactionId.get, record.author_id.get, record.user_id.get, new DateTime(record.date.get), record.lastCommenterName.get, threadId, followupType)
   }
 
-  private def toRecord(followup: Followup, commitRecord: CommitInfoRecord): FollowupRecord = {
+  private def toRecord(followup: Followup): FollowupRecord = {
+
+    val commitRecord = CommitInfoRecord.where(_.id eqs followup.threadId.commitId).get().getOrElse(
+      throw new IllegalStateException(s"Cannot find commit ${followup.threadId.commitId}")
+    )
+
+    val threadId = (followup.threadId.fileName, followup.threadId.lineNumber) match {
+      case (Some(fileName), Some(lineNumber)) => ThreadIdRecord.createRecord.commitId(followup.threadId.commitId).fileName(fileName).lineNumber(lineNumber)
+      case _ => ThreadIdRecord.createRecord.commitId(followup.threadId.commitId)
+    }
 
     val commitInfo = FollowupCommitInfoRecord.createRecord
       .id(followup.threadId.commitId)
       .message(commitRecord.message.get)
       .author(commitRecord.authorName.get)
       .date(commitRecord.committerDate.get)
-
-    val threadId = (followup.threadId.fileName, followup.threadId.lineNumber) match {
-      case (Some(fileName), Some(lineNumber)) => ThreadIdRecord.createRecord.commitId(followup.threadId.commitId).fileName(fileName).lineNumber(lineNumber)
-      case _ => ThreadIdRecord.createRecord.commitId(followup.threadId.commitId)
-    }
 
     FollowupRecord.createRecord
       .followupId(new ObjectId)
