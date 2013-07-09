@@ -30,5 +30,12 @@ case class Like(
 
 case class ThreadDetails(commitId: ObjectId, lineNumber: Option[Int] = None, fileName: Option[String] = None)
 
+object ThreadDetails {
+
+  def inline(commitId: ObjectId, lineNumber: Int, fileName: String) = {
+    new ThreadDetails(commitId, Some(lineNumber), Some(fileName))
+  }
+}
+
 
 

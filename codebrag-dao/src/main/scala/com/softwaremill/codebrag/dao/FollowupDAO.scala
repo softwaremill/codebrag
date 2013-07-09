@@ -7,7 +7,7 @@ trait FollowupDAO {
 
   def findById(followupId: ObjectId): Option[Followup]
 
-  def createOrUpdateExisting(followup: Followup)
+  def createOrUpdateExisting(followup: Followup): ObjectId
 
   def delete(followupId: ObjectId)
 

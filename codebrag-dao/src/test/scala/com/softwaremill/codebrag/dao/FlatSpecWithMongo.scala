@@ -1,7 +1,6 @@
 package com.softwaremill.codebrag.dao
 
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, FlatSpec}
-import net.liftweb.mongodb.{MongoDB, DefaultMongoIdentifier}
 import com.mongodb.Mongo
 import com.typesafe.config.Config
 

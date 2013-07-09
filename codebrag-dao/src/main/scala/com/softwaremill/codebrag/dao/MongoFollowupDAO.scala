@@ -9,6 +9,9 @@ import net.liftweb.record.field.{EnumNameField, EnumField, OptionalIntField, Opt
 import org.joda.time.DateTime
 import scala.None
 import net.liftweb.common.Box
+import net.liftweb.json.JsonDSL._
+import com.foursquare.rogue.Query
+import com.foursquare.rogue
 
 class MongoFollowupDAO extends FollowupDAO {
 
@@ -20,8 +23,8 @@ class MongoFollowupDAO extends FollowupDAO {
     }
   }
 
-  def createOrUpdateExisting(followup: Followup) {
-    val query = FollowupRecord
+  def createOrUpdateExisting(followup: Followup) = {
+    val alreadyExistsQuery = FollowupRecord
       .where(_.user_id eqs followup.userId)
       .and(_.followupType eqs FollowupRecord.FollowupTypeEnum.apply(followup.followupType.id))
       .and(_.threadId.subselect(_.commitId) eqs followup.threadId.commitId)
@@ -29,21 +32,32 @@ class MongoFollowupDAO extends FollowupDAO {
       .andOpt(followup.threadId.fileName)(_.threadId.subselect(_.fileName) eqs _)
       .and(_.threadId.subselect(_.lineNumber) exists(followup.threadId.lineNumber.isDefined))
       .andOpt(followup.threadId.lineNumber)(_.threadId.subselect(_.lineNumber) eqs _)
-      .asDBObject
-    val commitRecord = CommitInfoRecord.where(_.id eqs followup.threadId.commitId).get().getOrElse(
-      throw new IllegalStateException(s"Cannot find commit ${followup.threadId.commitId}")
-    )
-    FollowupRecord.upsert(query, followupToRecord(followup, commitRecord))
+
+    val modificationQuery = buildModificationQuery(followup, alreadyExistsQuery)
+    modificationQuery.updateOne(true) match {
+      case Some(updated) => {
+        updated.followupId.get
+      }
+      case None => {
+        val commitRecord = CommitInfoRecord.where(_.id eqs followup.threadId.commitId).get().getOrElse(
+          throw new IllegalStateException(s"Cannot find commit ${followup.threadId.commitId}")
+        )
+        val incomingFollowupRecord = toRecord(followup, commitRecord)
+        incomingFollowupRecord.save.followupId.get
+      }
+    }
+  }
+
+  def buildModificationQuery(followup: Followup, query: Query[FollowupRecord, FollowupRecord, rogue.InitialState]) = {
+    query.findAndModify(_.author_id setTo followup.authorId)
+      .and(_.followupType setTo FollowupRecord.FollowupTypeEnum(followup.followupType.id))
+      .and(_.lastCommenterName setTo followup.lastCommenterName)
+      .and(_.reactionId setTo followup.reactionId)
+      .and(_.date setTo followup.date)
   }
 
   override def delete(followupId: ObjectId) {
     FollowupRecord.where(_.followupId eqs followupId).findAndDeleteOne()
-  }
-
-  private def followupToRecord(followup: Followup, commitRecord: CommitInfoRecord) = {
-    val record = toRecord(followup, commitRecord).asDBObject
-    record.removeField("_id") // remove _id field, otherwise Mongo screams it cannot modify _id when updating record
-    record
   }
 
   private def toFollowup(record: FollowupRecord) = {
@@ -110,6 +124,14 @@ object FollowupRecord extends FollowupRecord with MongoMetaRecord[FollowupRecord
     type FollowupType = Value
     val Like, Comment = Value
   }
+
+  def ensureIndexes() {
+    val commitIdField = threadId.subfield(_.commitId).name
+    val fileNameField = threadId.subfield(_.fileName).name
+    val lineNumberField = threadId.subfield(_.lineNumber).name
+    this.ensureIndex(keys = (commitIdField -> 1) ~ (fileNameField -> 1) ~ (lineNumberField -> 1), unique = true)
+  }
+
 }
 
 class FollowupCommitInfoRecord extends BsonRecord[FollowupCommitInfoRecord] {
