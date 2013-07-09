@@ -10,7 +10,7 @@ class MongoCommitReviewTaskDAO extends CommitReviewTaskDAO {
 
   def save(reviewTask: CommitReviewTask) {
     val ifExistsQuery = CommitReviewTaskRecord.where(_.userId eqs reviewTask.userId).and(_.commitId eqs reviewTask.commitId).asDBObject
-    CommitReviewTaskRecord.upsert(ifExistsQuery, toRecord(reviewTask).asDBObject)
+    CommitReviewTaskRecord.upsert(ifExistsQuery, toRecord(reviewTask))
   }
 
   def delete(task: CommitReviewTask) {
@@ -18,9 +18,12 @@ class MongoCommitReviewTaskDAO extends CommitReviewTaskDAO {
   }
 
   private def toRecord(commitToReview: CommitReviewTask) = {
-    CommitReviewTaskRecord.createRecord
+    val dbo = CommitReviewTaskRecord.createRecord
       .commitId(commitToReview.commitId)
       .userId(commitToReview.userId)
+    .asDBObject
+    dbo.removeField("_id")
+    dbo
   }
 
 }
