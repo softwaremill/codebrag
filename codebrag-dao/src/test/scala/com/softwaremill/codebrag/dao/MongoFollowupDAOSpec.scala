@@ -169,10 +169,10 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     storedUserIds should equal (List(DifferentUserId1, DifferentUserId2))
   }
 
-  it should "create new followup for like when comment followup exists for the same file/line" in {
+  it should "update followup for like when comment followup exists for file/line" in {
     // given
     val threadDetails = ThreadDetails(Commit.id, Some(20), Some("file.txt"))
-    followupDao.createOrUpdateExisting(Followup.forComment(CommentId, CommentAuthorId, FollowupTargetUserId, DateTime.now, CommenterName, threadDetails))
+    val storedFollowupId = followupDao.createOrUpdateExisting(Followup.forComment(CommentId, CommentAuthorId, FollowupTargetUserId, DateTime.now, CommenterName, threadDetails))
 
     // when
     val likeFollowup = Followup.forLike(LikeId, CommentAuthorId, FollowupTargetUserId, DateTime.now, LikerName, threadDetails)
@@ -180,8 +180,12 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // then
     val followups = FollowupRecord.findAll
-    followups.length should be(2)
-    followups.map(_.threadId.get.fileName.get.get).distinct.head should be("file.txt")
-    followups.map(_.lastCommenterName.get).toSet should be(Set(CommenterName, LikerName))
+    followups.length should be(1)
+    val updated = followups.head
+    updated.reactionId.get should equal(likeFollowup.reactionId)
+    updated.author_id.get should equal(likeFollowup.authorId)
+    updated.date.get should equal(likeFollowup.date.toDate)
+    updated.lastCommenterName.get should equal(likeFollowup.lastCommenterName)
+    updated.followupId.get should equal(storedFollowupId)
   }
 }

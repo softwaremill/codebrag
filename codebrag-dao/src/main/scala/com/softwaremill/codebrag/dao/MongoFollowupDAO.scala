@@ -26,7 +26,6 @@ class MongoFollowupDAO extends FollowupDAO {
   def createOrUpdateExisting(followup: Followup) = {
     val alreadyExistsQuery = FollowupRecord
       .where(_.user_id eqs followup.userId)
-      .and(_.followupType eqs FollowupRecord.FollowupTypeEnum.apply(followup.followupType.id))
       .and(_.threadId.subselect(_.commitId) eqs followup.threadId.commitId)
       .and(_.threadId.subselect(_.fileName) exists(followup.threadId.fileName.isDefined))
       .andOpt(followup.threadId.fileName)(_.threadId.subselect(_.fileName) eqs _)
