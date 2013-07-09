@@ -186,7 +186,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
       Followup.forComment(FixtureCommit1.id, authorId, JohnId, date, LastCommenterName, ThreadDetails(FixtureCommit1.id)),
       Followup.forComment(FixtureCommit2.id, authorId, JohnId, laterDate, LastCommenterName, ThreadDetails(FixtureCommit2.id)))
     followups.foreach(followupDao.createOrUpdateExisting(_))
-    FollowupRecord.where(_.user_id eqs JohnId).fetch().map(_.followupId.get)
+    FollowupRecord.where(_.receivingUserId eqs JohnId).fetch().map(_.id.get)
   }
 
   def storeFollowupForBob: Followup = {

@@ -8,11 +8,12 @@ import com.softwaremill.codebrag.dao.reporting.views.{FollowupReactionView, Foll
 class MongoFollowupFinder extends FollowupFinder {
 
   def findAllFollowupsForUser(userId: ObjectId): FollowupListView = {
-    val followupRecords = FollowupRecord.where(_.user_id eqs userId).orderDesc(_.date).fetch()
-    val userAvatarMap = UserRecord.select(_.id, _.avatarUrl).where(_.id in followupRecords.map(_.author_id.get)).fetch().toMap
+    val followupRecords = FollowupRecord.where(_.receivingUserId eqs userId).orderDesc(_.lastReaction.subfield(_.date)).fetch()
+    val authorIds = followupRecords.map(r => r.lastReaction.get.authorId.get)
+    val userAvatarMap = UserRecord.select(_.id, _.avatarUrl).where(_.id in authorIds).fetch().toMap
 
     val followups = followupRecords.map(record => {
-      val avatarOption = userAvatarMap.get(record.author_id.get)
+      val avatarOption = userAvatarMap.get(record.lastReaction.get.authorId.get)
       toFollowupInfo(record, avatarOption)
     })
 
@@ -20,10 +21,10 @@ class MongoFollowupFinder extends FollowupFinder {
   }
 
   def findFollowupForUser(userId: ObjectId, followupId: ObjectId) = {
-    val recordOpt = FollowupRecord.where(_.user_id eqs userId).and(_.followupId eqs followupId).get()
+    val recordOpt = FollowupRecord.where(_.receivingUserId eqs userId).and(_.id eqs followupId).get()
 
     val avatarOpt = recordOpt.flatMap(record => {
-    getAvatarForUser(record.author_id.get)
+    getAvatarForUser(record.lastReaction.get.authorId.get)
     })
 
     recordOpt match {
@@ -37,13 +38,13 @@ class MongoFollowupFinder extends FollowupFinder {
   }
 
   def extractReactionInfoFromRecord(record: FollowupRecord, avatarUrl: Option[String]) = {
-    FollowupReactionView(record.reactionId.get.toString, record.lastCommenterName.get, avatarUrl)
+    FollowupReactionView(record.lastReaction.get.reactionId.get.toString, record.lastReaction.get.authorName.get, avatarUrl)
   }
 
   def toFollowupInfo(record: FollowupRecord, avatarUrl: Option[String]) = {
     val commitInfo = extractCommitInfoFromRecord(record)
     val reactionInfo = extractReactionInfoFromRecord(record, avatarUrl.filter(_.nonEmpty))
-    FollowupView(record.followupId.get.toString, record.date.get, commitInfo, reactionInfo)
+    FollowupView(record.id.get.toString, record.lastReaction.get.date.get, commitInfo, reactionInfo)
   }
 
   def extractCommitInfoFromRecord(record: FollowupRecord) = {

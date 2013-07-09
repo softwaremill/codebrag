@@ -9,7 +9,7 @@ import com.foursquare.rogue.LiftRogue._
 class MongoNotificationCountFinder extends NotificationCountFinder {
 
   def getCounters(userId: ObjectId): NotificationCountersView = {
-    val followupCount = FollowupRecord.where(_.user_id eqs userId).count()
+    val followupCount = FollowupRecord.where(_.receivingUserId eqs userId).count()
     val commitCount = CommitReviewTaskRecord.where(_.userId eqs userId).count()
     NotificationCountersView(commitCount, followupCount)
   }

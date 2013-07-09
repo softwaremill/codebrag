@@ -46,11 +46,11 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     val allRecords = FollowupRecord.findAll
     allRecords should have size(1)
     val followupFound = allRecords.head
-    followupFound.author_id.get should equal(CommentAuthorId)
-    followupFound.user_id.get should equal(FollowupTargetUserId)
+    followupFound.lastReaction.get.authorId.get should equal(CommentAuthorId)
+    followupFound.receivingUserId.get should equal(FollowupTargetUserId)
     followupFound.commit.get.id.get should equal(Commit.id)
-    followupFound.reactionId.get should equal(CommentId)
-    followupFound.date.get should equal(now.toDate)
+    followupFound.lastReaction.get.reactionId.get should equal(CommentId)
+    followupFound.lastReaction.get.date.get should equal(now.toDate)
   }
 
   it should "create new inline follow-up if one doesn't exist" taggedAs(RequiresDb) in {
@@ -65,11 +65,11 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     val allRecords = FollowupRecord.findAll
     allRecords should have size(1)
     val followupFound = allRecords.head
-    followupFound.author_id.get should equal(CommentAuthorId)
-    followupFound.user_id.get should equal(FollowupTargetUserId)
+    followupFound.lastReaction.get.authorId.get should equal(CommentAuthorId)
+    followupFound.receivingUserId.get should equal(FollowupTargetUserId)
     followupFound.commit.get.id.get should equal(Commit.id)
-    followupFound.reactionId.get should equal(CommentId)
-    followupFound.date.get should equal(now.toDate)
+    followupFound.lastReaction.get.reactionId.get should equal(CommentId)
+    followupFound.lastReaction.get.date.get should equal(now.toDate)
   }
 
   it should "update existing follow-up with reaction data when one already exits" taggedAs(RequiresDb) in {
@@ -86,11 +86,11 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // then
     val updated = FollowupRecord.findAll.head
-    updated.reactionId.get should equal(newCommentId)
-    updated.author_id.get should equal(newCommenterId)
-    updated.date.get should equal(newDate.toDate)
-    updated.lastCommenterName.get should equal(newCommentAuthorName)
-    updated.followupId.get should equal(createdFollowupId)
+    updated.lastReaction.get.reactionId.get should equal(newCommentId)
+    updated.lastReaction.get.authorId.get should equal(newCommenterId)
+    updated.lastReaction.get.date.get should equal(newDate.toDate)
+    updated.lastReaction.get.authorName.get should equal(newCommentAuthorName)
+    updated.id.get should equal(createdFollowupId)
   }
 
   it should "update follow up only for current thread" taggedAs(RequiresDb) in {
@@ -106,9 +106,9 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
 
     // then
-    val followups = FollowupRecord.where(_.reactionId eqs newCommentId).fetch()
+    val followups = FollowupRecord.where(_.lastReaction.subfield(_.reactionId) eqs newCommentId).fetch()
     followups.size should be(1)
-    followups.head.date.get should equal(newDate.toDate)
+    followups.head.lastReaction.get.date.get should equal(newDate.toDate)
     followups.head.threadId.get.lineNumber.get should equal(Some(20))
     followups.head.threadId.get.fileName.get should equal(Some("file.txt"))
   }
@@ -148,7 +148,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // when
     val toRemove = FollowupRecord.where(_.threadId.subselect(_.fileName) eqs "test.txt").fetch() // find followup created for text.txt file
-    followupDao.delete(toRemove.head.followupId.get)
+    followupDao.delete(toRemove.head.id.get)
 
     // then
     val followupsLeft = FollowupRecord.select(_.threadId.subselect(_.fileName)).fetch()
@@ -161,11 +161,11 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     followupDao.createOrUpdateExisting(Followup.forComment(Commit.id, CommentAuthorId, DifferentUserId2, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
 
     // when
-    val toRemove = FollowupRecord.where(_.user_id eqs FollowupTargetUserId).fetch() // find followup created for text.txt file
-    followupDao.delete(toRemove.head.followupId.get)
+    val toRemove = FollowupRecord.where(_.receivingUserId eqs FollowupTargetUserId).fetch() // find followup created for text.txt file
+    followupDao.delete(toRemove.head.id.get)
 
     // then
-    val storedUserIds = FollowupRecord.findAll.map(_.user_id.get)
+    val storedUserIds = FollowupRecord.findAll.map(_.receivingUserId.get)
     storedUserIds should equal (List(DifferentUserId1, DifferentUserId2))
   }
 
@@ -182,10 +182,10 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     val followups = FollowupRecord.findAll
     followups.length should be(1)
     val updated = followups.head
-    updated.reactionId.get should equal(likeFollowup.reactionId)
-    updated.author_id.get should equal(likeFollowup.authorId)
-    updated.date.get should equal(likeFollowup.date.toDate)
-    updated.lastCommenterName.get should equal(likeFollowup.lastCommenterName)
-    updated.followupId.get should equal(storedFollowupId)
+    updated.lastReaction.get.reactionId.get should equal(likeFollowup.reactionId)
+    updated.lastReaction.get.authorId.get should equal(likeFollowup.authorId)
+    updated.lastReaction.get.date.get should equal(likeFollowup.date.toDate)
+    updated.lastReaction.get.authorName.get should equal(likeFollowup.lastCommenterName)
+    updated.id.get should equal(storedFollowupId)
   }
 }
