@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{ThreadDetails, Followup}
+import com.softwaremill.codebrag.domain.{Followup, NewFollowup}
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
 import scala.None
@@ -10,7 +10,7 @@ import com.foursquare.rogue
 class MongoFollowupDAO extends FollowupDAO {
 
 
-  def findById(followupId: ObjectId): Option[Followup] = {
+  def findById(followupId: ObjectId): Option[NewFollowup] = {
     FollowupRecord.where(_.id eqs followupId).get() match {
       case Some(record) => Some(toFollowup(record))
       case None => None
@@ -18,13 +18,17 @@ class MongoFollowupDAO extends FollowupDAO {
   }
 
   def createOrUpdateExisting(followup: Followup) = {
+    createOrUpdateExisting(NewFollowup.fromOldFollowup(followup))
+  }
+
+  def createOrUpdateExisting(followup: NewFollowup) = {
     val alreadyExistsQuery = FollowupRecord
-      .where(_.receivingUserId eqs followup.userId)
-      .and(_.threadId.subselect(_.commitId) eqs followup.threadId.commitId)
-      .and(_.threadId.subselect(_.fileName) exists(followup.threadId.fileName.isDefined))
-      .andOpt(followup.threadId.fileName)(_.threadId.subselect(_.fileName) eqs _)
-      .and(_.threadId.subselect(_.lineNumber) exists(followup.threadId.lineNumber.isDefined))
-      .andOpt(followup.threadId.lineNumber)(_.threadId.subselect(_.lineNumber) eqs _)
+      .where(_.receivingUserId eqs followup.receivingUserId)
+      .and(_.threadId.subselect(_.commitId) eqs followup.reaction.commitId)
+      .and(_.threadId.subselect(_.fileName) exists(followup.reaction.fileName.isDefined))
+      .andOpt(followup.reaction.fileName)(_.threadId.subselect(_.fileName) eqs _)
+      .and(_.threadId.subselect(_.lineNumber) exists(followup.reaction.lineNumber.isDefined))
+      .andOpt(followup.reaction.lineNumber)(_.threadId.subselect(_.lineNumber) eqs _)
 
     val modificationQuery = buildModificationQuery(followup, alreadyExistsQuery)
     modificationQuery.updateOne(true) match {
@@ -38,11 +42,11 @@ class MongoFollowupDAO extends FollowupDAO {
     }
   }
 
-  def buildModificationQuery(followup: Followup, query: Query[FollowupRecord, FollowupRecord, rogue.InitialState]) = {
-    query.findAndModify(_.lastReaction.subfield(_.reactionId) setTo followup.reactionId)
-      .and(_.lastReaction.subfield(_.reactionAuthorId) setTo followup.authorId)
-      .and(_.lastReaction.subfield(_.reactionType) setTo LastReactionRecord.ReactionTypeEnum(followup.followupType.id))
-      .and(_.reactions push followup.reactionId)
+  def buildModificationQuery(followup: NewFollowup, query: Query[FollowupRecord, FollowupRecord, rogue.InitialState]) = {
+    query.findAndModify(_.lastReaction.subfield(_.reactionId) setTo followup.reaction.id)
+      .and(_.lastReaction.subfield(_.reactionAuthorId) setTo followup.reaction.authorId)
+      .and(_.lastReaction.subfield(_.reactionType) setTo LastReactionRecord.ReactionTypeEnum(followup.reaction.reactionType.id))
+      .and(_.reactions push followup.reaction.id)
   }
 
   override def delete(followupId: ObjectId) {
@@ -50,35 +54,34 @@ class MongoFollowupDAO extends FollowupDAO {
   }
 
   private def toFollowup(record: FollowupRecord) = {
-    val threadId = ThreadDetails(record.threadId.get.commitId.get, record.threadId.get.lineNumber.get, record.threadId.get.fileName.get)
-    val followupType = Followup.FollowupType.apply(record.lastReaction.get.reactionType.get.id)
-    Followup(
-      record.lastReaction.get.reactionId.get,
-      record.lastReaction.get.reactionAuthorId.get,
-      record.receivingUserId.get,
-      null,
-      null,
-      threadId,
-      followupType)
+    val reaction = record.lastReaction.get.reactionType.get match {
+      case LastReactionRecord.ReactionTypeEnum.Comment => {
+        null
+      }
+      case LastReactionRecord.ReactionTypeEnum.Like => {
+        null
+      }
+    }
+    NewFollowup(record.receivingUserId.get, reaction)
   }
 
-  private def toRecord(followup: Followup): FollowupRecord = {
+  private def toRecord(followup: NewFollowup): FollowupRecord = {
 
     val lastReactionRecord = LastReactionRecord.createRecord
-      .reactionAuthorId(followup.authorId)
-      .reactionId(followup.reactionId)
-      .reactionType(LastReactionRecord.ReactionTypeEnum(followup.followupType.id))
+      .reactionAuthorId(followup.reaction.authorId)
+      .reactionId(followup.reaction.id)
+      .reactionType(LastReactionRecord.ReactionTypeEnum(followup.reaction.reactionType.id))
 
-    val threadDetailsRecord = (followup.threadId.fileName, followup.threadId.lineNumber) match {
-      case (Some(fileName), Some(lineNumber)) => ThreadIdRecord.createRecord.commitId(followup.threadId.commitId).fileName(fileName).lineNumber(lineNumber)
-      case _ => ThreadIdRecord.createRecord.commitId(followup.threadId.commitId)
+    val threadDetailsRecord = (followup.reaction.fileName, followup.reaction.lineNumber) match {
+      case (Some(fileName), Some(lineNumber)) => ThreadIdRecord.createRecord.commitId(followup.reaction.commitId).fileName(fileName).lineNumber(lineNumber)
+      case _ => ThreadIdRecord.createRecord.commitId(followup.reaction.commitId)
     }
 
     FollowupRecord.createRecord
       .threadId(threadDetailsRecord)
       .lastReaction(lastReactionRecord)
-      .receivingUserId(followup.userId)
-      .reactions(List(followup.reactionId))
+      .receivingUserId(followup.receivingUserId)
+      .reactions(List(followup.reaction.id))
   }
 
 }
