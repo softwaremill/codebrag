@@ -36,7 +36,6 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     given(userDao.findByUserNameOrEmail(Matchers.any(), Matchers.eq(JackCommitAuthor.email))).willReturn(Some(JackCommitAuthor))
 
     given(userDao.findById(JohnId)).willReturn(Some(JohnCommenter))
-    //given(userDao.findById(JackId)).willReturn(Some(JackCommenter))
   }
 
   it should "generate follow-ups for commit for commit author and all commenters except of current commenter" in {
@@ -47,7 +46,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(JohnComment)
 
     // Then
-    verifyFollowupsCreatedFor(Commit.id, JohnComment.id, JohnId, JohnCommenter.name, List(MaryId, BettyCommitAuthorId))
+    verifyFollowupsCreatedFor(JohnComment, List(MaryId, BettyCommitAuthorId))
     verifyNoMoreInteractions(followupDao)
   }
 
@@ -59,7 +58,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(JohnComment2)
 
     // Then
-    verifyFollowupsCreatedFor(Commit2.id, JohnComment2.id, JohnId, JohnCommenter.name, List(JackCommitAuthorId))
+    verifyFollowupsCreatedFor(JohnComment2, List(JackCommitAuthorId))
     verifyNoMoreInteractions(followupDao)
   }
 
@@ -71,7 +70,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(JohnComment)
 
     // Then
-    verifyFollowupsCreatedFor(Commit.id, JohnComment.id, JohnId, JohnCommenter.name, List(MaryId, BettyCommitAuthorId))
+    verifyFollowupsCreatedFor(JohnComment, List(MaryId, BettyCommitAuthorId))
     verifyNoMoreInteractions(followupDao)
   }
 
@@ -85,8 +84,8 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     followupService.generateFollowupsForComment(JohnInlineComment)  // should generate for bob betty and mary
 
     // Then
-    verifyFollowupsCreatedFor(Commit.id, JohnComment.id, JohnId, JohnCommenter.name, List(BettyCommitAuthorId, MaryId))
-    verifyFollowupsCreatedFor(Commit.id, JohnInlineComment.id, JohnId, JohnCommenter.name, InlineCommentFile, InlineCommentLine, List(BobId, BettyCommitAuthorId, MaryId))
+    verifyFollowupsCreatedFor(JohnComment, List(BettyCommitAuthorId, MaryId))
+    verifyFollowupsCreatedFor(JohnInlineComment, List(BobId, BettyCommitAuthorId, MaryId))
     verifyNoMoreInteractions(followupDao)
   }
 
@@ -110,7 +109,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
     // When
     followupService.generateFollowupsForComment(JohnComment)
-    verifyFollowupsCreatedFor(Commit.id, JohnComment.id, JohnId, JohnCommenter.name, List(MaryId))
+    verifyFollowupsCreatedFor(JohnComment, List(MaryId))
     verifyNoMoreInteractions(followupDao)
   }
 
@@ -126,19 +125,13 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     verifyZeroInteractions(followupDao)
   }
 
-  private def verifyFollowupsCreatedFor(commitId: ObjectId, commentId: ObjectId, commentAuthorId: ObjectId, commentAuthorName: String, users: List[ObjectId]) {
-    users.foreach { userId =>
-      val followup = Followup.forComment(commentId, commentAuthorId, userId, FollowupCreationDateTime, commentAuthorName, ThreadDetails(commitId))
+  private def verifyFollowupsCreatedFor(reaction: UserReaction, users: List[ObjectId]) {
+    users.foreach{ userId =>
+      val followup = NewFollowup(userId, reaction)
       verify(followupDao).createOrUpdateExisting(followup)
     }
   }
 
-  private def verifyFollowupsCreatedFor(commitId: ObjectId, commentId: ObjectId, commentAuthorId: ObjectId, commentAuthorName: String, fileName: String, lineNumber: Int, users: List[ObjectId]) {
-    users.foreach { userId =>
-      val followup = Followup.forComment(commentId, commentAuthorId, userId, FollowupCreationDateTime, commentAuthorName, ThreadDetails(commitId, Some(lineNumber), Some(fileName)))
-      verify(followupDao).createOrUpdateExisting(followup)
-    }
-  }
 }
 
 trait FollowupServiceSpecFixture {

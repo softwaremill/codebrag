@@ -35,18 +35,8 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
 
 
   private def generateFollowUps(commit: CommitInfo, existingComments: List[Comment], currentComment: Comment) {
-    val followUpCreationDate = clock.currentDateTimeUTC()
-    val lastCommenterName = commenterNameFor(currentComment)
     usersToGenerateFollowUpsFor(commit, existingComments, currentComment).foreach(userId => {
-      followupDao.createOrUpdateExisting(Followup.forComment(currentComment.id, currentComment.authorId, userId, followUpCreationDate, lastCommenterName, currentComment.threadId))
-    })
-  }
-
-  private def commenterNameFor(currentComment: Comment) = {
-
-    userDao.findById(currentComment.authorId).map(_.name).getOrElse({
-        logger.warn("Cannot find current commenter's user name - generating UNKNOWN name")
-        "unknown"
+      followupDao.createOrUpdateExisting(NewFollowup(userId, currentComment))
     })
   }
 
