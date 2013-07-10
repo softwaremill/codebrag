@@ -7,7 +7,6 @@ import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssemb
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import scala.Some
 import com.softwaremill.codebrag.dao._
-import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.builders.CommentAssembler
 
@@ -31,7 +30,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
     commentDao = new MongoCommitCommentDAO
   }
 
-  case class CreatedFollowup(id: ObjectId, followup: Followup, reaction: Comment, reactionAuthor: User, commit: CommitInfo)
+  case class CreatedFollowup(id: ObjectId, followup: NewFollowup, reaction: Comment, reactionAuthor: User, commit: CommitInfo)
 
   def createFollowupWithDependenciesFor(receivingUserId: ObjectId, reactionDate: DateTime = DateTime.now) = {
     val commit = CommitInfoAssembler.randomCommit.get
@@ -43,7 +42,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
     val comment = CommentAssembler.commentFor(commit.id).withAuthorId(user.id).withDate(reactionDate).get
     commentDao.save(comment)
 
-    val followupToCreate = Followup.forComment(comment.id, user.id, receivingUserId, comment.postingTime, user.name, ThreadDetails(commit.id))
+    val followupToCreate = NewFollowup(receivingUserId, comment)
     val followupId = followupDao.createOrUpdateExisting(followupToCreate)
     CreatedFollowup(followupId, followupToCreate, comment, user, commit)
   }
