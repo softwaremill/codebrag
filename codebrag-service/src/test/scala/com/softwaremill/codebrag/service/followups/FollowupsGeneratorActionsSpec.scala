@@ -8,9 +8,12 @@ import com.softwaremill.codebrag.domain.reactions.CommitLiked
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.{CommitInfoDAO, UserDAO, FollowupDAO}
 import org.mockito.ArgumentCaptor
-import com.softwaremill.codebrag.domain.{CommitInfo, User, Like, Followup}
+import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
 import org.mockito.BDDMockito._
+import com.softwaremill.codebrag.domain.reactions.CommitLiked
+import scala.Some
+import com.softwaremill.codebrag.domain.Like
 
 class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterEach with MockitoSugar {
 
@@ -59,16 +62,15 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
     generator.handleCommitLiked(event)
 
     // then
-    val followupArgument = ArgumentCaptor.forClass(classOf[Followup])
+    val followupArgument = ArgumentCaptor.forClass(classOf[NewFollowup])
 
     verify(followupDaoMock).createOrUpdateExisting(followupArgument.capture())
-    val resultFollowup: Followup = followupArgument.getValue
-    resultFollowup.reactionId should equal(likeId)
-    resultFollowup.date should equal(likeDate)
-    resultFollowup.lastCommenterName should equal(likeAuthorName)
-    resultFollowup.threadId.commitId should equal(commitId)
-    resultFollowup.threadId.fileName.get should equal(likeFileName)
-    resultFollowup.threadId.lineNumber.get should equal(likeLineNumber)
+    val resultFollowup: NewFollowup = followupArgument.getValue
+    resultFollowup.reaction.id should equal(likeId)
+    resultFollowup.reaction.postingTime should equal(likeDate)
+    resultFollowup.reaction.commitId should equal(commitId)
+    resultFollowup.reaction.fileName.get should equal(likeFileName)
+    resultFollowup.reaction.lineNumber.get should equal(likeLineNumber)
   }
 
   it should "not generate a follow-up if commit author doesn't exist" in {
