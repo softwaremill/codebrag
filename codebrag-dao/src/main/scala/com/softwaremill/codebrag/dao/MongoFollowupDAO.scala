@@ -98,29 +98,3 @@ class MongoFollowupDAO extends FollowupDAO {
   }
 
 }
-
-
-//Followup {
-//
-//  id,
-//  targetUserId,
-//
-//  target {
-//    commitId:
-//    fileName:
-//    lineNumber:
-//  },
-//
-//  reactions:
-//
-//  lastReaction: {
-//    id:
-//    date:
-//    userId:
-//    userName:
-//    type:
-//    shortMsg:
-//  },
-//
-//}
-
