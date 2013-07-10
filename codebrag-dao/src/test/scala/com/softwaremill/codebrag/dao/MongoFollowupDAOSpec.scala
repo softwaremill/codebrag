@@ -142,9 +142,9 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
   }
 
   it should "delete follow-up for single thread" taggedAs(RequiresDb) in {
-    followupDao.createOrUpdateExisting(Followup.forComment(Commit.id, CommentAuthorId, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
-    followupDao.createOrUpdateExisting(Followup.forComment(Commit.id, CommentAuthorId, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
-    followupDao.createOrUpdateExisting(Followup.forComment(Commit.id, CommentAuthorId, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id, Some(23), Some("test.txt"))))
+    followupDao.createOrUpdateExisting(Followup.forComment(CommentId, CommentAuthorId, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
+    followupDao.createOrUpdateExisting(Followup.forComment(CommentId, CommentAuthorId, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
+    followupDao.createOrUpdateExisting(Followup.forComment(CommentId, CommentAuthorId, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id, Some(23), Some("test.txt"))))
 
     // when
     val toRemove = FollowupRecord.where(_.threadId.subselect(_.fileName) eqs "test.txt").fetch() // find followup created for text.txt file
@@ -156,9 +156,9 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
   }
 
   it should "not delete follow-ups of other users" taggedAs(RequiresDb) in {
-    followupDao.createOrUpdateExisting(Followup.forComment(Commit.id, CommentAuthorId, DifferentUserId1, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
-    followupDao.createOrUpdateExisting(Followup.forComment(Commit.id, CommentAuthorId, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
-    followupDao.createOrUpdateExisting(Followup.forComment(Commit.id, CommentAuthorId, DifferentUserId2, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
+    followupDao.createOrUpdateExisting(Followup.forComment(CommentId, CommentAuthorId, DifferentUserId1, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
+    followupDao.createOrUpdateExisting(Followup.forComment(CommentId, CommentAuthorId, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
+    followupDao.createOrUpdateExisting(Followup.forComment(CommentId, CommentAuthorId, DifferentUserId2, DateTime.now, CommenterName, ThreadDetails(Commit.id)))
 
     // when
     val toRemove = FollowupRecord.where(_.receivingUserId eqs FollowupTargetUserId).fetch() // find followup created for text.txt file
