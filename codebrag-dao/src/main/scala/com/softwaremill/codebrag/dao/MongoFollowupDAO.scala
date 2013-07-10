@@ -1,14 +1,10 @@
 package com.softwaremill.codebrag.dao
 
 import com.softwaremill.codebrag.domain.{ThreadDetails, Followup}
-import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
-import net.liftweb.mongodb.record.field._
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
-import net.liftweb.record.field.{EnumNameField, EnumField, OptionalIntField, OptionalStringField}
 import org.joda.time.DateTime
 import scala.None
-import net.liftweb.common.Box
 import com.foursquare.rogue.Query
 import com.foursquare.rogue
 
@@ -49,6 +45,7 @@ class MongoFollowupDAO extends FollowupDAO {
       .and(_.lastReaction.subfield(_.authorName) setTo followup.lastCommenterName)
       .and(_.lastReaction.subfield(_.reactionId) setTo followup.reactionId)
       .and(_.lastReaction.subfield(_.date) setTo followup.date)
+      .and(_.reactions push followup.reactionId)
   }
 
   override def delete(followupId: ObjectId) {
@@ -97,6 +94,7 @@ class MongoFollowupDAO extends FollowupDAO {
       .threadId(threadDetailsRecord)
       .lastReaction(lastReactionRecord)
       .receivingUserId(followup.userId)
+      .reactions(List(followup.reactionId))
   }
 
 }

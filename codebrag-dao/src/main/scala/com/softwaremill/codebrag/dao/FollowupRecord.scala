@@ -6,6 +6,7 @@ import net.liftweb.record.field.{OptionalIntField, OptionalStringField, EnumName
 import net.liftweb.common.Box
 import com.foursquare.rogue.LiftRogue._
 import net.liftweb.json.JsonDSL._
+import org.bson.types.ObjectId
 
 
 class FollowupRecord extends MongoRecord[FollowupRecord] with ObjectIdPk[FollowupRecord] {
@@ -14,7 +15,7 @@ class FollowupRecord extends MongoRecord[FollowupRecord] with ObjectIdPk[Followu
 
   object receivingUserId extends ObjectIdField(this)
 
-  object reactions extends MongoListField(this)
+  object reactions extends MongoListField[FollowupRecord, ObjectId](this)
 
   object commit extends BsonRecordField(this, FollowupCommitInfoRecord)
 

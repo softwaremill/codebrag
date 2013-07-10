@@ -188,4 +188,30 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     updated.lastReaction.get.authorName.get should equal(likeFollowup.lastCommenterName)
     updated.id.get should equal(storedFollowupId)
   }
+
+  it should "add reaction to followup's reactions list when new folllowup is created" in {
+    // given
+    val toSave = Followup.forComment(CommentId, CommentAuthorId, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt")))
+
+    // when
+    val savedId = followupDao.createOrUpdateExisting(toSave)
+
+    // then
+    val Some(found) = FollowupRecord.where(_.id eqs savedId).get()
+    found.reactions.get should equal(List(CommentId))
+  }
+
+  it should "add reaction to followup's reactions list when folllowup is updated" in {
+    // given
+    val forComment = Followup.forComment(CommentId, CommentAuthorId, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt")))
+    val forLike = Followup.forLike(LikeId, CommentAuthorId, FollowupTargetUserId, DateTime.now, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt")))
+
+    // when
+    val savedId = followupDao.createOrUpdateExisting(forComment)
+    followupDao.createOrUpdateExisting(forLike)
+
+    // then
+    val Some(found) = FollowupRecord.where(_.id eqs savedId).get()
+    found.reactions.get should equal(List(CommentId, LikeId))
+  }
 }
