@@ -11,6 +11,7 @@ import com.softwaremill.codebrag.domain.ThreadDetails
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import scala.util.Random
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.builders.CommentAssembler
 
 class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with MongoNotificationCountFinderSpecFixture {
 
@@ -56,8 +57,8 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearDataA
     for (i <- 1 to count) {
       val commentedCommit = CommitInfoAssembler.randomCommit.get
       commitInfoDao.storeCommit(commentedCommit)
-      val followup = Followup.forComment(commentedCommit.id, authorId, userId, date, LastCommenterName, ThreadDetails(commentedCommit.id))
-      followupDao.createOrUpdateExisting(followup)
+      val comment = CommentAssembler.commentFor(commentedCommit.id).withAuthorId(authorId).withDate(date).get
+      followupDao.createOrUpdateExisting(NewFollowup(userId, comment))
     }
   }
 
