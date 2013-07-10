@@ -17,8 +17,6 @@ class FollowupRecord extends MongoRecord[FollowupRecord] with ObjectIdPk[Followu
 
   object reactions extends MongoListField[FollowupRecord, ObjectId](this)
 
-  object commit extends BsonRecordField(this, FollowupCommitInfoRecord)
-
   object threadId extends BsonRecordField(this, ThreadIdRecord)
 
   object lastReaction extends BsonRecordField(this, LastReactionRecord)
@@ -43,15 +41,9 @@ class LastReactionRecord extends BsonRecord[LastReactionRecord] {
 
   object reactionId extends ObjectIdField(this)
 
-  object date extends DateField(this)
-
-  object authorId extends ObjectIdField(this)
-
-  object authorName extends LongStringField(this)
-
-  object shortMsg extends LongStringField(this)
-
   object reactionType extends EnumNameField(this, LastReactionRecord.ReactionTypeEnum)
+
+  object reactionAuthorId extends ObjectIdField(this)
 }
 
 object LastReactionRecord extends LastReactionRecord with BsonMetaRecord[LastReactionRecord] {
@@ -62,22 +54,6 @@ object LastReactionRecord extends LastReactionRecord with BsonMetaRecord[LastRea
   }
 
 }
-
-class FollowupCommitInfoRecord extends BsonRecord[FollowupCommitInfoRecord] {
-  def meta = FollowupCommitInfoRecord
-
-  object id extends ObjectIdField(this)
-
-  object message extends LongStringField(this)
-
-  object author extends LongStringField(this)
-
-  object date extends DateField(this)
-
-}
-
-object FollowupCommitInfoRecord extends FollowupCommitInfoRecord with BsonMetaRecord[FollowupCommitInfoRecord]
-
 
 class ThreadIdRecord extends BsonRecord[ThreadIdRecord] {
   def meta = ThreadIdRecord

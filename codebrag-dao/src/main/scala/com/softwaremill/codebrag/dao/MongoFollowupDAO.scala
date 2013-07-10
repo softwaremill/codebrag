@@ -3,7 +3,6 @@ package com.softwaremill.codebrag.dao
 import com.softwaremill.codebrag.domain.{ThreadDetails, Followup}
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
-import org.joda.time.DateTime
 import scala.None
 import com.foursquare.rogue.Query
 import com.foursquare.rogue
@@ -40,11 +39,9 @@ class MongoFollowupDAO extends FollowupDAO {
   }
 
   def buildModificationQuery(followup: Followup, query: Query[FollowupRecord, FollowupRecord, rogue.InitialState]) = {
-    query.findAndModify(_.lastReaction.subfield(_.authorId) setTo followup.authorId)
+    query.findAndModify(_.lastReaction.subfield(_.reactionId) setTo followup.reactionId)
+      .and(_.lastReaction.subfield(_.reactionAuthorId) setTo followup.authorId)
       .and(_.lastReaction.subfield(_.reactionType) setTo LastReactionRecord.ReactionTypeEnum(followup.followupType.id))
-      .and(_.lastReaction.subfield(_.authorName) setTo followup.lastCommenterName)
-      .and(_.lastReaction.subfield(_.reactionId) setTo followup.reactionId)
-      .and(_.lastReaction.subfield(_.date) setTo followup.date)
       .and(_.reactions push followup.reactionId)
   }
 
@@ -57,30 +54,18 @@ class MongoFollowupDAO extends FollowupDAO {
     val followupType = Followup.FollowupType.apply(record.lastReaction.get.reactionType.get.id)
     Followup(
       record.lastReaction.get.reactionId.get,
-      record.lastReaction.get.authorId.get,
+      record.lastReaction.get.reactionAuthorId.get,
       record.receivingUserId.get,
-      new DateTime(record.lastReaction.get.date.get),
-      record.lastReaction.get.authorName.get,
+      null,
+      null,
       threadId,
       followupType)
   }
 
   private def toRecord(followup: Followup): FollowupRecord = {
 
-    val commit = CommitInfoRecord.where(_.id eqs followup.threadId.commitId).get().getOrElse(
-      throw new IllegalStateException(s"Cannot find commit ${followup.threadId.commitId}")
-    )
-
-    val commitRecord = FollowupCommitInfoRecord.createRecord
-      .id(followup.threadId.commitId)
-      .message(commit.message.get)
-      .author(commit.authorName.get)
-      .date(commit.committerDate.get)
-
     val lastReactionRecord = LastReactionRecord.createRecord
-      .authorId(followup.authorId)
-      .authorName(followup.lastCommenterName)
-      .date(followup.date.toDate)
+      .reactionAuthorId(followup.authorId)
       .reactionId(followup.reactionId)
       .reactionType(LastReactionRecord.ReactionTypeEnum(followup.followupType.id))
 
@@ -90,7 +75,6 @@ class MongoFollowupDAO extends FollowupDAO {
     }
 
     FollowupRecord.createRecord
-      .commit(commitRecord)
       .threadId(threadDetailsRecord)
       .lastReaction(lastReactionRecord)
       .receivingUserId(followup.userId)

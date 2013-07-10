@@ -46,11 +46,8 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     val allRecords = FollowupRecord.findAll
     allRecords should have size(1)
     val followupFound = allRecords.head
-    followupFound.lastReaction.get.authorId.get should equal(CommentAuthorId)
-    followupFound.receivingUserId.get should equal(FollowupTargetUserId)
-    followupFound.commit.get.id.get should equal(Commit.id)
     followupFound.lastReaction.get.reactionId.get should equal(CommentId)
-    followupFound.lastReaction.get.date.get should equal(now.toDate)
+    followupFound.receivingUserId.get should equal(FollowupTargetUserId)
   }
 
   it should "create new inline follow-up if one doesn't exist" taggedAs(RequiresDb) in {
@@ -65,11 +62,10 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     val allRecords = FollowupRecord.findAll
     allRecords should have size(1)
     val followupFound = allRecords.head
-    followupFound.lastReaction.get.authorId.get should equal(CommentAuthorId)
-    followupFound.receivingUserId.get should equal(FollowupTargetUserId)
-    followupFound.commit.get.id.get should equal(Commit.id)
     followupFound.lastReaction.get.reactionId.get should equal(CommentId)
-    followupFound.lastReaction.get.date.get should equal(now.toDate)
+    followupFound.receivingUserId.get should equal(FollowupTargetUserId)
+    followupFound.threadId.get.fileName.get should equal(followup.threadId.fileName)
+    followupFound.threadId.get.lineNumber.get should equal(followup.threadId.lineNumber)
   }
 
   it should "update existing follow-up with reaction data when one already exits" taggedAs(RequiresDb) in {
@@ -87,16 +83,13 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     // then
     val updated = FollowupRecord.findAll.head
     updated.lastReaction.get.reactionId.get should equal(newCommentId)
-    updated.lastReaction.get.authorId.get should equal(newCommenterId)
-    updated.lastReaction.get.date.get should equal(newDate.toDate)
-    updated.lastReaction.get.authorName.get should equal(newCommentAuthorName)
     updated.id.get should equal(createdFollowupId)
   }
 
   it should "update follow up only for current thread" taggedAs(RequiresDb) in {
     val baseDate = DateTime.now
-    val firstId = followupDao.createOrUpdateExisting(Followup.forComment(CommentId, CommentAuthorId, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id)))
-    val secondId = followupDao.createOrUpdateExisting(Followup.forComment(OtherCommentId, CommentAuthorId, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
+    followupDao.createOrUpdateExisting(Followup.forComment(CommentId, CommentAuthorId, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id)))
+    followupDao.createOrUpdateExisting(Followup.forComment(OtherCommentId, CommentAuthorId, FollowupTargetUserId, baseDate, CommenterName, ThreadDetails(Commit.id, Some(20), Some("file.txt"))))
 
     // when
     val newDate = new FixtureTimeClock(23213213).currentDateTime()
@@ -108,7 +101,6 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     // then
     val followups = FollowupRecord.where(_.lastReaction.subfield(_.reactionId) eqs newCommentId).fetch()
     followups.size should be(1)
-    followups.head.lastReaction.get.date.get should equal(newDate.toDate)
     followups.head.threadId.get.lineNumber.get should equal(Some(20))
     followups.head.threadId.get.fileName.get should equal(Some("file.txt"))
   }
@@ -183,9 +175,6 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     followups.length should be(1)
     val updated = followups.head
     updated.lastReaction.get.reactionId.get should equal(likeFollowup.reactionId)
-    updated.lastReaction.get.authorId.get should equal(likeFollowup.authorId)
-    updated.lastReaction.get.date.get should equal(likeFollowup.date.toDate)
-    updated.lastReaction.get.authorName.get should equal(likeFollowup.lastCommenterName)
     updated.id.get should equal(storedFollowupId)
   }
 

@@ -2,13 +2,12 @@ package com.softwaremill.codebrag.builders
 
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.{UserReaction, Like, Comment}
+import com.softwaremill.codebrag.domain.{Like, Comment}
 
 object CommentAssembler {
 
-  private val dummyComment = Comment(new ObjectId, new ObjectId, new ObjectId, DateTime.now, "Comment message")
-
   def commentFor(commitId: ObjectId) = {
+    val dummyComment = Comment(new ObjectId, new ObjectId, new ObjectId, DateTime.now, "Comment message")
     new Assembler(dummyComment.copy(commitId = commitId))
   }
 
