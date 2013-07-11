@@ -1,23 +1,27 @@
 <div id="followups-tab-content" class="row" ng-controller="FollowupsCtrl" auto-fit-height>
     <div class="commits items-list large-3 columns">
         <div class="items-container">
-            <!--commit info start-->
-            <div class="commit-container" ng-repeat="followup in followups" ng-controller="FollowupListItemCtrl"
-                 mark-current="followup.followupId" state-param-name="followupId" ng-click="openFollowupDetails(followup)">
-                <div class="authored-box">
-                    <div class="author-box"><user-avatar url="followup.reaction.reactionAuthorAvatarUrl"></user-avatar></div>
-                    <div class="info-box">
-                        <div class="commit-name" ng-bind-html-unsafe="followup.commit.message"></div>
-                        <div class="info-line"><span class="username">{{followup.reaction.reactionAuthor}}</span><span
-                                class="time">{{followup.date | relativeDate}}</span></div>
-                    </div>
+
+            <div class="followups-container" ng-repeat="commit in followupCommits">
+                <div class="info-box">
+                    <div class="commit-name">{{commit.commit.message}}</div>
+                    <div class="info-line"><span class="username">{{commit.commit.authorName}}</span><span class="time">{{commit.commit.date | relativeDate}}</span></div>
                 </div>
-                <i class="icon-ok-circle" ng-click="dismiss(followup)" isolate-click></i>
+                <div class="followup-container" ng-repeat="followup in commit.followups" ng-controller="FollowupListItemCtrl" ng-click="openFollowupDetails(followup)"
+                     mark-current="followup.followupId" state-param-name="followupId">
+                    <div class="authored-box">
+                        <div class="author-box"><user-avatar url="followup.lastReaction.reactionAuthorAvatarUrl"></user-avatar></div>
+                        <div class="info-box">
+                            <div class="comment">Reaction message: comment or like</div>
+                        </div>
+                    </div><i class="icon-ok-circle" ng-click="dismiss(followup)" isolate-click></i>
+                </div>
             </div>
-            <!--commit info end-->
+
             <div class="no-more-items" ng-show="followups && followups.length == 0">
                 Yay!<br> No follow-ups!
             </div>
+
         </div>
     </div>
     <div class="diff large-9 columns" ui-view>

@@ -24,7 +24,7 @@ class FollowupsServletSpec extends AuthenticatableServletSpec {
     userIsAuthenticatedAs(currentUser)
     get("/") {
       status should be (200)
-      verify(followupFinder).findAllFollowupsForUser(new ObjectId(currentUser.id))
+      verify(followupFinder).findAllFollowupsByCommitForUser(new ObjectId(currentUser.id))
     }
   }
 

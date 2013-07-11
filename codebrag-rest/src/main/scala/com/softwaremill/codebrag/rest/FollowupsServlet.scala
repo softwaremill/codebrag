@@ -16,9 +16,9 @@ class FollowupsServlet(val authenticator: Authenticator,
                        followupService: FollowupService)
   extends JsonServletWithAuthentication with FollowupsServletSwaggerDefinition with JacksonJsonSupport {
 
-  get("/", operation(getOperation)) {
+  get("/") {
     haltIfNotAuthenticated()
-    followupFinder.findAllFollowupsForUser(new ObjectId(user.id))
+    followupFinder.findAllFollowupsByCommitForUser(new ObjectId(user.id))
   }
 
   get("/:id", operation(getSingleOperation)) {

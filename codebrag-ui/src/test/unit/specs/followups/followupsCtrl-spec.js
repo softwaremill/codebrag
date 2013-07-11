@@ -8,25 +8,25 @@ describe("Follow-ups Controller", function () {
 
     it('should fetch follow-ups from server', inject(function ($controller, followupsListService) {
         // Given
-        spyOn(followupsListService, 'loadFollowupsFromServer');
+        spyOn(followupsListService, 'loadFollowupGroupsFromServer');
 
         // When
         $controller('FollowupsCtrl', {$scope: scope});
 
         //Then
-        expect(followupsListService.loadFollowupsFromServer).toHaveBeenCalled();
+        expect(followupsListService.loadFollowupGroupsFromServer).toHaveBeenCalled();
     }));
 
     it('should make loaded followups available in scope', inject(function ($controller, followupsListService) {
         // Given
         var followups = 'some followups';
-        spyOn(followupsListService, 'loadFollowupsFromServer').andReturn(followups);
+        spyOn(followupsListService, 'loadFollowupGroupsFromServer').andReturn(followups);
 
         // When
         $controller('FollowupsCtrl', {$scope: scope});
 
         //Then
-        expect(scope.followups).toBe(followups);
+        expect(scope.followupCommits).toBe(followups);
     }));
 
 });

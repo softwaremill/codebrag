@@ -9,6 +9,12 @@ angular.module('codebrag.followups')
             return $http({method: method, url: followupsUrl});
         }
 
+        function loadFollowupGroupsFromServer() {
+            return $http({method: 'GET', url: 'rest/followups/'}).then(function(response) {
+                return response.data.followupsByCommit;
+            })
+        }
+
     	function loadFollowupsFromServer() {
             var requestPromise = _httpRequest('GET').then(function (response) {
                 _broadcastNewFollowupCountEvent(response.data.followups.length);
@@ -50,6 +56,7 @@ angular.module('codebrag.followups')
         }
 
         return {
+            loadFollowupGroupsFromServer: loadFollowupGroupsFromServer,
 			loadFollowupsFromServer: loadFollowupsFromServer,
             allFollowups: allFollowups,
             removeFollowupAndGetNext: removeFollowupAndGetNext,

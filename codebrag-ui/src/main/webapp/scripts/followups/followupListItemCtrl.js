@@ -8,7 +8,7 @@ angular.module('codebrag.followups')
             if(_thisFollowupOpened(followup)) {
                 $rootScope.$broadcast(events.scrollOnly);
             } else {
-                $state.transitionTo('followups.details', {followupId: followup.followupId, commentId: followup.reaction.reactionId})
+                $state.transitionTo('followups.details', {followupId: followup.followupId, commentId: followup.lastReaction.reactionId})
             }
         };
 
