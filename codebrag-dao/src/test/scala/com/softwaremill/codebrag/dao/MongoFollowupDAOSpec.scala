@@ -1,9 +1,8 @@
 package com.softwaremill.codebrag.dao
 
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{NewFollowup, ThreadDetails, Followup}
+import com.softwaremill.codebrag.domain.NewFollowup
 import org.joda.time.DateTime
-import pl.softwaremill.common.util.time.FixtureTimeClock
 import ObjectIdTestUtils._
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler

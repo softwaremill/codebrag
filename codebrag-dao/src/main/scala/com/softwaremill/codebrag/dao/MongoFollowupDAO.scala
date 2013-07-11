@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{Followup, NewFollowup}
+import com.softwaremill.codebrag.domain.NewFollowup
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
 import scala.None
@@ -15,10 +15,6 @@ class MongoFollowupDAO extends FollowupDAO {
       case Some(record) => Some(toFollowup(record))
       case None => None
     }
-  }
-
-  def createOrUpdateExisting(followup: Followup) = {
-    createOrUpdateExisting(NewFollowup.fromOldFollowup(followup))
   }
 
   def createOrUpdateExisting(followup: NewFollowup) = {
