@@ -28,7 +28,7 @@ object BuildSettings {
 
     organization := "pl.softwaremill",
     version := "0.0.1-SNAPSHOT",
-    scalaVersion := "2.10.0",
+    scalaVersion := "2.10.2",
 
     resolvers := codebragResolvers,
     scalacOptions += "-unchecked",
