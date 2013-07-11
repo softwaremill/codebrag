@@ -50,15 +50,8 @@ class MongoFollowupDAO extends FollowupDAO {
   }
 
   private def toFollowup(record: FollowupRecord) = {
-    val reaction = record.lastReaction.get.reactionType.get match {
-      case LastReactionRecord.ReactionTypeEnum.Comment => {
-        null
-      }
-      case LastReactionRecord.ReactionTypeEnum.Like => {
-        null
-      }
-    }
-    Followup(record.receivingUserId.get, reaction)
+    // TODO: if reaction is needed, fill it using like/comment daos
+    Followup(record.receivingUserId.get, null)
   }
 
   private def toRecord(followup: Followup): FollowupRecord = {
