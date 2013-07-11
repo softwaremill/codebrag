@@ -2,9 +2,9 @@
  *  THIS IS DEFINITION OF FAKE BACKEND FOR CODEBRAG. ENABLE IT BY ADDING "?nobackend" AT THE END OF URL
  **/
 
-(function(angular) {
+(function (angular) {
 
-    if(!document.URL.match(/\?nobackend$/)) {
+    if (!document.URL.match(/\?nobackend$/)) {
         return;
     } else {
         console.log('======== BEWARE!!! USING STUBBED BACKEND ========');
@@ -12,45 +12,43 @@
     }
 
     var pendingCommits = {
-        "commits":
-            [
-                {"id": "large", "sha": "a3258662067616c7c39d2f4b6426b5497ed46d34", "message": "Large commit with performance problems", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T13:16:04Z", "pendingReview": true},
-                {"id": "519b3364e4b0dff2992c9be6", "sha": "77388563ec21d8719da6edd20fb56e21af2b1419", "message": "Implement frontend logic for follow-up counter\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T13:07:52Z", "pendingReview": true},
-                {"id": "519b3365e4b0dff2992c9be7", "sha": "b96b18d02e67b8482739fae4c7440b66ff27912e", "message": "Fix test utility to produce an array of commits with correct size\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T12:35:11Z", "pendingReview": true},
-                {"id": "519b3365e4b0dff2992c9be8", "sha": "1c983f42a8e1e52ccf1247550549b90051c5c42c", "message": "Fix specs path in jsTestDriver configuration\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T12:26:12Z", "pendingReview": true},
-                {"id": "519b3365e4b0dff2992c9be9", "sha": "af1688bf365cf3dfe34e340c5d80ba053b155b2f", "message": "Implement frontend for pending commit counter\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T07:41:45Z", "pendingReview": true},
-                {"id": "519b3365e4b0dff2992c9bea", "sha": "055bc2915e951261dc88ee80503d6e6a5d41abde", "message": "Fix test dependencies\n- remove reference to non-existing files which was causing fails\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T12:02:08Z", "pendingReview": true},
-                {"id": "519b3365e4b0dff2992c9beb", "sha": "3a335098dd49ea0cf1f53dfaa563db02df780596", "message": "Frontend service for loading and updating notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T11:42:30Z", "pendingReview": true},
-                {"id": "519b3365e4b0dff2992c9bec", "sha": "7fea045446165cbaf90c4f24e4d440d65afe3c41", "message": "ReST API for notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-13T12:38:18Z", "pendingReview": true}
-            ]
+        "commits": [
+            {"id": "large", "sha": "a3258662067616c7c39d2f4b6426b5497ed46d34", "message": "Large commit with performance problems", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T13:16:04Z", "pendingReview": true},
+            {"id": "519b3364e4b0dff2992c9be6", "sha": "77388563ec21d8719da6edd20fb56e21af2b1419", "message": "Implement frontend logic for follow-up counter\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T13:07:52Z", "pendingReview": true},
+            {"id": "519b3365e4b0dff2992c9be7", "sha": "b96b18d02e67b8482739fae4c7440b66ff27912e", "message": "Fix test utility to produce an array of commits with correct size\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T12:35:11Z", "pendingReview": true},
+            {"id": "519b3365e4b0dff2992c9be8", "sha": "1c983f42a8e1e52ccf1247550549b90051c5c42c", "message": "Fix specs path in jsTestDriver configuration\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T12:26:12Z", "pendingReview": true},
+            {"id": "519b3365e4b0dff2992c9be9", "sha": "af1688bf365cf3dfe34e340c5d80ba053b155b2f", "message": "Implement frontend for pending commit counter\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T07:41:45Z", "pendingReview": true},
+            {"id": "519b3365e4b0dff2992c9bea", "sha": "055bc2915e951261dc88ee80503d6e6a5d41abde", "message": "Fix test dependencies\n- remove reference to non-existing files which was causing fails\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T12:02:08Z", "pendingReview": true},
+            {"id": "519b3365e4b0dff2992c9beb", "sha": "3a335098dd49ea0cf1f53dfaa563db02df780596", "message": "Frontend service for loading and updating notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T11:42:30Z", "pendingReview": true},
+            {"id": "519b3365e4b0dff2992c9bec", "sha": "7fea045446165cbaf90c4f24e4d440d65afe3c41", "message": "ReST API for notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-13T12:38:18Z", "pendingReview": true}
+        ]
     };
 
     var allCommits = {
-        "commits":
-            [
-                {"id": "51a31ee3e4b025f047aa0941", "sha": "08793a80d7e267daed16b397518d48c56d4f6c7b", "message": "Add directive for activating elements on specified states\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T14:03:18Z", "pendingReview": false},
-                {"id": "51a31ee3e4b025f047aa0942", "sha": "cdae3e9f5e4741926188c0ce853ba30e57cfd84a", "message": "Adjust new UI to support autoscroll on follow-ups\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T12:59:05Z", "pendingReview": false},
-                {"id": "51a31ee3e4b025f047aa0943", "sha": "02e095b6a462ffd2d73c7f484430489edb247aa7", "message": "Apply new styles to follow-up details\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T12:11:26Z", "pendingReview": false},
-                {"id": "51a31ee3e4b025f047aa0948", "sha": "83aa5ce0f5bf6047bc6fb210abe1b5e15d8617e4", "message": "Merge branch 'master' into pretty_ui\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T11:24:09Z", "pendingReview": false},
-                {"id": "51a31ee3e4b025f047aa0949", "sha": "1e1ad2f30e9efc24b984f5d3c2e5d6ffb8de13d9", "message": "Add a parameter to markCurrent directive for selecting which state param should be used\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T11:23:42Z", "pendingReview": false},
-                {"id": "51a31ee3e4b025f047aa094a", "sha": "870c4aab847fd3f9e8b55834782d55a69aee027b", "message": "Fix place of broadcasting of 'user logged in' event\n- It was called only for standard authentication\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T09:30:15Z", "pendingReview": false},
-                {"id": "51a31ee3e4b025f047aa094b", "sha": "b1c0a4067b5771947486dd247469fbadccec056b", "message": "Remove redundant call on app initialization to avoid duplicate checks\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T09:29:03Z", "pendingReview": false},
-                {"id": "51a31ee3e4b025f047aa094c", "sha": "420369a7442a20088fc526f36307413d6350c66e", "message": "First cuts of sexy follow-ups\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T09:21:24Z", "pendingReview": true},
-                {"id": "51a31ee4e4b025f047aa0953", "sha": "04aae22ae774f0b912d7521114aa90a21184c8a7", "message": "Make the notification counter service load data on successful user logon\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-22T20:46:57Z", "pendingReview": true},
-                {"id": "51a31ee4e4b025f047aa0954", "sha": "b5934ef7bc73134fe2e36d1eb5525e073e0dbc8e", "message": "Decouple notification counters by using events instead of direct update calls\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-22T20:38:52Z", "pendingReview": true},
-                {"id": "519cb89de4b094da13c6cbd6", "sha": "699380adb0e1bd5aaf800d50d1896c3740244d95", "message": "Rewrite diff extraction to use pure jgit instead of gitective\n- former implementation was producing corrupted entries for merges and was much slower\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-22T11:21:35Z", "pendingReview": false},
-                {"id": "519cb89de4b094da13c6cbd8", "sha": "36af35bb34684c72e6f8c7993469fab11d7d3295", "message": "Fix decreasing of counter on dismissing a follow-up\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-21T09:11:56Z", "pendingReview": true},
-                {"id": "519b3364e4b0dff2992c9be3", "sha": "3bd2d37f869f3b52bcdfc5010e96e4893a7eecfd", "message": "Implement finder for notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-21T07:26:25Z", "pendingReview": false},
-                {"id": "519b3364e4b0dff2992c9be4", "sha": "5b7f38e2649a1528738fe65a06ab50f4b92ea442", "message": "Implement servlet for notification counters with stubbed finder\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T20:34:31Z", "pendingReview": false},
-                {"id": "519b3364e4b0dff2992c9be5", "sha": "a3258662067616c7c39d2f4b6426b5497ed46d34", "message": "Fix counting of pending commits for notification number\n- function _countBy is not intuitive in this case and can return undefined\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T13:16:04Z", "pendingReview": false},
-                {"id": "519b3364e4b0dff2992c9be6", "sha": "77388563ec21d8719da6edd20fb56e21af2b1419", "message": "Implement frontend logic for follow-up counter\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T13:07:52Z", "pendingReview": false},
-                {"id": "519b3365e4b0dff2992c9be7", "sha": "b96b18d02e67b8482739fae4c7440b66ff27912e", "message": "Fix test utility to produce an array of commits with correct size\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T12:35:11Z", "pendingReview": false},
-                {"id": "519b3365e4b0dff2992c9be8", "sha": "1c983f42a8e1e52ccf1247550549b90051c5c42c", "message": "Fix specs path in jsTestDriver configuration\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T12:26:12Z", "pendingReview": false},
-                {"id": "519b3365e4b0dff2992c9be9", "sha": "af1688bf365cf3dfe34e340c5d80ba053b155b2f", "message": "Implement frontend for pending commit counter\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T07:41:45Z", "pendingReview": false},
-                {"id": "519b3365e4b0dff2992c9bea", "sha": "055bc2915e951261dc88ee80503d6e6a5d41abde", "message": "Fix test dependencies\n- remove reference to non-existing files which was causing fails\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T12:02:08Z", "pendingReview": false},
-                {"id": "519b3365e4b0dff2992c9beb", "sha": "3a335098dd49ea0cf1f53dfaa563db02df780596", "message": "Frontend service for loading and updating notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T11:42:30Z", "pendingReview": false},
-                {"id": "519b3365e4b0dff2992c9bec", "sha": "7fea045446165cbaf90c4f24e4d440d65afe3c41", "message": "ReST API for notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-13T12:38:18Z", "pendingReview": false}
-            ]
+        "commits": [
+            {"id": "51a31ee3e4b025f047aa0941", "sha": "08793a80d7e267daed16b397518d48c56d4f6c7b", "message": "Add directive for activating elements on specified states\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T14:03:18Z", "pendingReview": false},
+            {"id": "51a31ee3e4b025f047aa0942", "sha": "cdae3e9f5e4741926188c0ce853ba30e57cfd84a", "message": "Adjust new UI to support autoscroll on follow-ups\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T12:59:05Z", "pendingReview": false},
+            {"id": "51a31ee3e4b025f047aa0943", "sha": "02e095b6a462ffd2d73c7f484430489edb247aa7", "message": "Apply new styles to follow-up details\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T12:11:26Z", "pendingReview": false},
+            {"id": "51a31ee3e4b025f047aa0948", "sha": "83aa5ce0f5bf6047bc6fb210abe1b5e15d8617e4", "message": "Merge branch 'master' into pretty_ui\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T11:24:09Z", "pendingReview": false},
+            {"id": "51a31ee3e4b025f047aa0949", "sha": "1e1ad2f30e9efc24b984f5d3c2e5d6ffb8de13d9", "message": "Add a parameter to markCurrent directive for selecting which state param should be used\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T11:23:42Z", "pendingReview": false},
+            {"id": "51a31ee3e4b025f047aa094a", "sha": "870c4aab847fd3f9e8b55834782d55a69aee027b", "message": "Fix place of broadcasting of 'user logged in' event\n- It was called only for standard authentication\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T09:30:15Z", "pendingReview": false},
+            {"id": "51a31ee3e4b025f047aa094b", "sha": "b1c0a4067b5771947486dd247469fbadccec056b", "message": "Remove redundant call on app initialization to avoid duplicate checks\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T09:29:03Z", "pendingReview": false},
+            {"id": "51a31ee3e4b025f047aa094c", "sha": "420369a7442a20088fc526f36307413d6350c66e", "message": "First cuts of sexy follow-ups\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T09:21:24Z", "pendingReview": true},
+            {"id": "51a31ee4e4b025f047aa0953", "sha": "04aae22ae774f0b912d7521114aa90a21184c8a7", "message": "Make the notification counter service load data on successful user logon\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-22T20:46:57Z", "pendingReview": true},
+            {"id": "51a31ee4e4b025f047aa0954", "sha": "b5934ef7bc73134fe2e36d1eb5525e073e0dbc8e", "message": "Decouple notification counters by using events instead of direct update calls\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-22T20:38:52Z", "pendingReview": true},
+            {"id": "519cb89de4b094da13c6cbd6", "sha": "699380adb0e1bd5aaf800d50d1896c3740244d95", "message": "Rewrite diff extraction to use pure jgit instead of gitective\n- former implementation was producing corrupted entries for merges and was much slower\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-22T11:21:35Z", "pendingReview": false},
+            {"id": "519cb89de4b094da13c6cbd8", "sha": "36af35bb34684c72e6f8c7993469fab11d7d3295", "message": "Fix decreasing of counter on dismissing a follow-up\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-21T09:11:56Z", "pendingReview": true},
+            {"id": "519b3364e4b0dff2992c9be3", "sha": "3bd2d37f869f3b52bcdfc5010e96e4893a7eecfd", "message": "Implement finder for notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-21T07:26:25Z", "pendingReview": false},
+            {"id": "519b3364e4b0dff2992c9be4", "sha": "5b7f38e2649a1528738fe65a06ab50f4b92ea442", "message": "Implement servlet for notification counters with stubbed finder\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T20:34:31Z", "pendingReview": false},
+            {"id": "519b3364e4b0dff2992c9be5", "sha": "a3258662067616c7c39d2f4b6426b5497ed46d34", "message": "Fix counting of pending commits for notification number\n- function _countBy is not intuitive in this case and can return undefined\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T13:16:04Z", "pendingReview": false},
+            {"id": "519b3364e4b0dff2992c9be6", "sha": "77388563ec21d8719da6edd20fb56e21af2b1419", "message": "Implement frontend logic for follow-up counter\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T13:07:52Z", "pendingReview": false},
+            {"id": "519b3365e4b0dff2992c9be7", "sha": "b96b18d02e67b8482739fae4c7440b66ff27912e", "message": "Fix test utility to produce an array of commits with correct size\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T12:35:11Z", "pendingReview": false},
+            {"id": "519b3365e4b0dff2992c9be8", "sha": "1c983f42a8e1e52ccf1247550549b90051c5c42c", "message": "Fix specs path in jsTestDriver configuration\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T12:26:12Z", "pendingReview": false},
+            {"id": "519b3365e4b0dff2992c9be9", "sha": "af1688bf365cf3dfe34e340c5d80ba053b155b2f", "message": "Implement frontend for pending commit counter\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T07:41:45Z", "pendingReview": false},
+            {"id": "519b3365e4b0dff2992c9bea", "sha": "055bc2915e951261dc88ee80503d6e6a5d41abde", "message": "Fix test dependencies\n- remove reference to non-existing files which was causing fails\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T12:02:08Z", "pendingReview": false},
+            {"id": "519b3365e4b0dff2992c9beb", "sha": "3a335098dd49ea0cf1f53dfaa563db02df780596", "message": "Frontend service for loading and updating notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T11:42:30Z", "pendingReview": false},
+            {"id": "519b3365e4b0dff2992c9bec", "sha": "7fea045446165cbaf90c4f24e4d440d65afe3c41", "message": "ReST API for notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-13T12:38:18Z", "pendingReview": false}
+        ]
     };
 
     var commitDiff = {"commit": {"id": "519b3365e4b0dff2992c9beb", "sha": "3a335098dd49ea0cf1f53dfaa563db02df780596", "message": "Frontend service for loading and updating notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T11:42:30Z", "pendingReview": true}, "diff": [
@@ -267,16 +265,16 @@
         {"id": "51acbed2e4b00ef6d5383f62", "authorName": "Michal Ostruszka", "message": "Sweet chupa chups chocolate cake gummies drag&eacute;e pudding faworki gummies. Applicake macaroon ice cream cookie gingerbread topping jelly. Tart pastry cheesecake chocolate bar bonbon jelly apple pie. Macaroon cotton candy wafer cake macaroon gummi bears candy. Souffl&eacute; lemon drops candy tiramisu. Tart sesame snaps sesame snaps danish souffl&eacute; oat cake jelly jelly beans. Jelly beans muffin brownie dessert. Marzipan jelly beans bear claw lollipop tootsie roll cake topping biscuit chocolate cake.", "time": "2013-06-03T16:05:38Z"},
         {"id": "51acbed4e4b00ef6d5383f66", "authorName": "Michal Ostruszka", "message": "Sweet chupa chups chocolate cake gummies drag&eacute;e pudding faworki gummies. Applicake macaroon ice cream cookie gingerbread topping jelly. Tart pastry cheesecake chocolate bar bonbon jelly apple pie. Macaroon cotton candy wafer cake macaroon gummi bears candy. Souffl&eacute; lemon drops candy tiramisu. Tart sesame snaps sesame snaps danish souffl&eacute; oat cake jelly jelly beans. Jelly beans muffin brownie dessert. Marzipan jelly beans bear claw lollipop tootsie roll cake topping biscuit chocolate cake.", "time": "2013-06-03T16:05:40Z"}
     ], "lineReactions": {"codebrag-ui/src/main/webapp/scripts/app.js": {"25": {
-            "likes": [
-                {"id": "51acbec9e4b00ef6d5383f56", "authorName": "Michal Ostruszka 1"},
-                {"id": "51acbecce4b00ef6d5383f5a", "authorName": "Michal Ostruszka 2"},
-                {"id": "51acbecfe4b00ef6d5383f5e", "authorName": "Michal Ostruszka 3"}
-            ],
-            "comments": [
-        {"id": "51acbec9e4b00ef6d5383f56", "authorName": "Michal Ostruszka", "message": "Sweet chupa chups chocolate cake gummies ", "time": "2013-06-03T16:05:29Z"},
-        {"id": "51acbecce4b00ef6d5383f5a", "authorName": "Michal Ostruszka", "message": "Sweet chupa chups chocolate cake gummies ", "time": "2013-06-03T16:05:32Z"},
-        {"id": "51acbecfe4b00ef6d5383f5e", "authorName": "Michal Ostruszka", "message": "Sweet chupa chups chocolate cake gummies ", "time": "2013-06-03T16:05:35Z"}
-    ]}}}, "inlineComments": {"codebrag-ui/src/main/webapp/scripts/app.js": {"25": [
+        "likes": [
+            {"id": "51acbec9e4b00ef6d5383f56", "authorName": "Michal Ostruszka 1"},
+            {"id": "51acbecce4b00ef6d5383f5a", "authorName": "Michal Ostruszka 2"},
+            {"id": "51acbecfe4b00ef6d5383f5e", "authorName": "Michal Ostruszka 3"}
+        ],
+        "comments": [
+            {"id": "51acbec9e4b00ef6d5383f56", "authorName": "Michal Ostruszka", "message": "Sweet chupa chups chocolate cake gummies ", "time": "2013-06-03T16:05:29Z"},
+            {"id": "51acbecce4b00ef6d5383f5a", "authorName": "Michal Ostruszka", "message": "Sweet chupa chups chocolate cake gummies ", "time": "2013-06-03T16:05:32Z"},
+            {"id": "51acbecfe4b00ef6d5383f5e", "authorName": "Michal Ostruszka", "message": "Sweet chupa chups chocolate cake gummies ", "time": "2013-06-03T16:05:35Z"}
+        ]}}}, "inlineComments": {"codebrag-ui/src/main/webapp/scripts/app.js": {"25": [
         {"id": "51acbec9e4b00ef6d5383f56", "authorName": "Michal Ostruszka", "message": "Sweet chupa chups chocolate cake gummies drag&eacute;e pudding faworki gummies. Applicake macaroon ice cream cookie gingerbread topping jelly. Tart pastry cheesecake chocolate bar bonbon jelly apple pie. Macaroon cotton candy wafer cake macaroon gummi bears candy. Souffl&eacute; lemon drops candy tiramisu. Tart sesame snaps sesame snaps danish souffl&eacute; oat cake jelly jelly beans. Jelly beans muffin brownie dessert. Marzipan jelly beans bear claw lollipop tootsie roll cake topping biscuit chocolate cake.", "time": "2013-06-03T16:05:29Z"},
         {"id": "51acbecce4b00ef6d5383f5a", "authorName": "Michal Ostruszka", "message": "Sweet chupa chups chocolate cake gummies drag&eacute;e pudding faworki gummies. Applicake macaroon ice cream cookie gingerbread topping jelly. Tart pastry cheesecake chocolate bar bonbon jelly apple pie. Macaroon cotton candy wafer cake macaroon gummi bears candy. Souffl&eacute; lemon drops candy tiramisu. Tart sesame snaps sesame snaps danish souffl&eacute; oat cake jelly jelly beans. Jelly beans muffin brownie dessert. Marzipan jelly beans bear claw lollipop tootsie roll cake topping biscuit chocolate cake.", "time": "2013-06-03T16:05:32Z"},
         {"id": "51acbecfe4b00ef6d5383f5e", "authorName": "Michal Ostruszka", "message": "Sweet chupa chups chocolate cake gummies drag&eacute;e pudding faworki gummies. Applicake macaroon ice cream cookie gingerbread topping jelly. Tart pastry cheesecake chocolate bar bonbon jelly apple pie. Macaroon cotton candy wafer cake macaroon gummi bears candy. Souffl&eacute; lemon drops candy tiramisu. Tart sesame snaps sesame snaps danish souffl&eacute; oat cake jelly jelly beans. Jelly beans muffin brownie dessert. Marzipan jelly beans bear claw lollipop tootsie roll cake topping biscuit chocolate cake.", "time": "2013-06-03T16:05:35Z"}
@@ -4453,24 +4451,41 @@
     ]}}};
 
 
-    var counters = {"pendingCommitCount":8,"followupCount":3};
+    var counters = {"pendingCommitCount": 8, "followupCount": 3};
 
     var authUser = {
-        "id":"517a3debe4b055c40cadecea",
-        "login":"john_doe",
-        "email":"michal.ostruszka@softwaremill.com",
-        "token":"818728e2-ced3-4d58-b676-1003d4106816"
+        "id": "517a3debe4b055c40cadecea",
+        "login": "john_doe",
+        "email": "michal.ostruszka@softwaremill.com",
+        "token": "818728e2-ced3-4d58-b676-1003d4106816"
     };
+
+    var followups = {"followupsByCommit": [
+        {"commit": {"commitId": "51cd63b33004edd49fbefb3b", "authorName": "Michal Ostruszka", "message": "Styling of KTHXBYE button changed according to mockup\n", "date": "2013-06-26T14:25:05Z"}, "followups": [
+            {"followupId": "51deb248300413ead5f708c5", "lastReaction": {"reactionId": "51deb248300413ead5f708c3", "reactionAuthor": "Happy Coder", "date": "2013-07-11T13:25:28Z", "reactionAuthorAvatarUrl": "https://softwaremill.com/wp-content/uploads/2013/04/puchta.jpg"}, "allReactions": ["51deb248300413ead5f708c3"]},
+            {"followupId": "51deb0ef300413ead5f708c2", "lastReaction": {"reactionId": "51deb0ef300413ead5f708c0", "reactionAuthor": "Happy Coder", "date": "2013-07-11T13:19:43Z", "reactionAuthorAvatarUrl": "https://softwaremill.com/wp-content/uploads/2013/04/puchta.jpg"}, "allReactions": ["51deb0ef300413ead5f708c0"]},
+            {"followupId": "51deb0ee300413ead5f708bf", "lastReaction": {"reactionId": "51deb0ee300413ead5f708bd", "reactionAuthor": "Happy Coder", "date": "2013-07-11T13:19:42Z", "reactionAuthorAvatarUrl": "https://softwaremill.com/wp-content/uploads/2013/04/puchta.jpg"}, "allReactions": ["51deb0ee300413ead5f708bd"]},
+            {"followupId": "51deb0ee300413ead5f708bc", "lastReaction": {"reactionId": "51deb0ee300413ead5f708ba", "reactionAuthor": "Happy Coder", "date": "2013-07-11T13:19:42Z", "reactionAuthorAvatarUrl": "https://softwaremill.com/wp-content/uploads/2013/04/puchta.jpg"}, "allReactions": ["51deb0ee300413ead5f708ba"]},
+            {"followupId": "51deb0e1300413ead5f708b9", "lastReaction": {"reactionId": "51deb0e1300413ead5f708b7", "reactionAuthor": "Happy Coder", "date": "2013-07-11T13:19:29Z", "reactionAuthorAvatarUrl": "https://softwaremill.com/wp-content/uploads/2013/04/puchta.jpg"}, "allReactions": ["51deb0e1300413ead5f708b7"]},
+            {"followupId": "51deb0e0300413ead5f708b6", "lastReaction": {"reactionId": "51deb0e0300413ead5f708b4", "reactionAuthor": "Happy Coder", "date": "2013-07-11T13:19:28Z", "reactionAuthorAvatarUrl": "https://softwaremill.com/wp-content/uploads/2013/04/puchta.jpg"}, "allReactions": ["51deb0e0300413ead5f708b4"]}
+        ]},
+        {"commit": {"commitId": "51cd63b33004edd49fbefb3f", "authorName": "Michal Ostruszka", "message": "Add Reply and KTHXBYE buttons to inline threads\n", "date": "2013-06-26T12:58:24Z"}, "followups": [
+            {"followupId": "51de73b6300437a6de66535e", "lastReaction": {"reactionId": "51de73b6300437a6de66535c", "reactionAuthor": "Evil Coder", "date": "2013-07-11T08:58:30Z", "reactionAuthorAvatarUrl": ""}, "allReactions": ["51de73b6300437a6de66535c"]},
+            {"followupId": "51de73b4300437a6de66535b", "lastReaction": {"reactionId": "51de73b4300437a6de665359", "reactionAuthor": "Evil Coder", "date": "2013-07-11T08:58:28Z", "reactionAuthorAvatarUrl": ""}, "allReactions": ["51de73b4300437a6de665359"]}
+        ]}
+    ]};
+
+    var followup = {"followupId":"51deb248300413ead5f708c5","date":"2013-07-11T13:25:28Z","commit":{"commitId":"51cd63b33004edd49fbefb3b","authorName":"Michal Ostruszka","message":"Styling of KTHXBYE button changed according to mockup\n","date":"2013-06-26T14:25:05Z"},"reaction":{"reactionId":"51deb248300413ead5f708c3","reactionAuthor":"Happy Coder","reactionAuthorAvatarUrl":"https://softwaremill.com/wp-content/uploads/2013/04/puchta.jpg"}};
 
     function initialize() {
 
         angular.module('codebrag')
-            .config(function($provide) {
+            .config(function ($provide) {
                 $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
             });
 
         angular.module('codebrag')
-            .run(function($httpBackend) {
+            .run(function ($httpBackend) {
 
                 $httpBackend.whenGET(/views\/.*/).passThrough();
 
@@ -4483,6 +4498,10 @@
 
                 $httpBackend.whenGET(/rest\/commits\/[a-z0-9]{12}/).respond(commitDiff);
                 $httpBackend.whenGET(/rest\/commits\/large/).respond(largeDiff);
+
+                $httpBackend.whenGET('rest/followups/').respond(followups);
+
+                $httpBackend.whenGET(/rest\/followups\/[a-z0-9]{12}/).respond(followup);
 
             });
     }
