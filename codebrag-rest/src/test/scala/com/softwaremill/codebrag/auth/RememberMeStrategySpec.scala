@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.auth
 
 import org.scalatra.SweetCookies
-import javax.servlet.http.HttpServletResponse
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import com.softwaremill.codebrag.rest.UsersServlet
 import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.service.user.UserJsonBuilder._
@@ -16,6 +16,7 @@ class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
   behavior of "RememberMe"
 
   val httpResponse = mock[HttpServletResponse]
+  val httpRequest = mock[HttpServletRequest]
   val app = mock[UsersServlet]
   val userService = mock[Authenticator]
   val loggedUser = someUser()
@@ -29,7 +30,7 @@ class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
     given(app.cookies) willReturn new SweetCookies(Map(("rememberMe", loggedUser.token)), httpResponse)
 
     // When
-    val user = strategy.authenticate()
+    val user = strategy.authenticate()(httpRequest, httpResponse)
 
     // Then
     user must not be (None)
@@ -41,7 +42,7 @@ class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
     given(app.cookies) willReturn new SweetCookies(Map(("rememberMe", loggedUser.token + "X")), httpResponse)
 
     // When
-    val user: Option[UserJson] = strategy.authenticate()
+    val user: Option[UserJson] = strategy.authenticate()(httpRequest, httpResponse)
 
     // Then
     user must be (null)

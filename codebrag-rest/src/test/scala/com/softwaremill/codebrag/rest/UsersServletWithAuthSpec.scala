@@ -6,8 +6,9 @@ import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
-import org.json4s.JsonAST.JValue
+import org.mockito.Matchers._
 import org.json4s.JsonDSL._
+import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
@@ -20,14 +21,14 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   "GET /logout" should "call logout() when user is already authenticated" in {
     userIsAuthenticated
     get("/logout") {
-      verify(fakeScentry).logout()
+      verify(fakeScentry).logout()(any[HttpServletRequest], any[HttpServletResponse])
     }
   }
 
   "GET /logout" should "not call logout() when user is not authenticated" in {
     userIsNotAuthenticated
     get("/logout") {
-      verify(fakeScentry, never).logout()
+      verify(fakeScentry, never).logout()(any[HttpServletRequest], any[HttpServletResponse])
       verifyZeroInteractions(fakeAuthenticator)
     }
   }

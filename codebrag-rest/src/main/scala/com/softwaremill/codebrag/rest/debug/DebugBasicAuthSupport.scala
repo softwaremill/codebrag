@@ -3,17 +3,18 @@ package com.softwaremill.codebrag.rest.debug
 import org.scalatra.auth.{ScentryConfig, ScentrySupport}
 import org.scalatra.ScalatraBase
 import org.scalatra.auth.strategy.{BasicAuthSupport, BasicAuthStrategy}
+import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 
 class DebugBasicAuthStrategy(protected override val app: ScalatraBase, realm: String,
                              login: String, password: String)
   extends BasicAuthStrategy[User](app, realm) {
 
-  protected def validate(userName: String, password: String): Option[User] = {
+  protected def validate(userName: String, password: String)(implicit request: HttpServletRequest, response: HttpServletResponse): Option[User] = {
     if (userName == this.login && password == this.password) Some(User("debugUser"))
     else None
   }
 
-  protected def getUserId(user: User): String = user.id
+  protected def getUserId(user: User)(implicit request: HttpServletRequest, response: HttpServletResponse): String = user.id
 }
 
 trait DebugBasicAuthSupport extends ScentrySupport[User] with BasicAuthSupport[User] {
