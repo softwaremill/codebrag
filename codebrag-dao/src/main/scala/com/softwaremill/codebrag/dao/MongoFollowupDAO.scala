@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.NewFollowup
+import com.softwaremill.codebrag.domain.Followup
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
 import scala.None
@@ -10,14 +10,14 @@ import com.foursquare.rogue
 class MongoFollowupDAO extends FollowupDAO {
 
 
-  def findById(followupId: ObjectId): Option[NewFollowup] = {
+  def findById(followupId: ObjectId): Option[Followup] = {
     FollowupRecord.where(_.id eqs followupId).get() match {
       case Some(record) => Some(toFollowup(record))
       case None => None
     }
   }
 
-  def createOrUpdateExisting(followup: NewFollowup) = {
+  def createOrUpdateExisting(followup: Followup) = {
     val alreadyExistsQuery = FollowupRecord
       .where(_.receivingUserId eqs followup.receivingUserId)
       .and(_.threadId.subselect(_.commitId) eqs followup.reaction.commitId)
@@ -38,7 +38,7 @@ class MongoFollowupDAO extends FollowupDAO {
     }
   }
 
-  def buildModificationQuery(followup: NewFollowup, query: Query[FollowupRecord, FollowupRecord, rogue.InitialState]) = {
+  def buildModificationQuery(followup: Followup, query: Query[FollowupRecord, FollowupRecord, rogue.InitialState]) = {
     query.findAndModify(_.lastReaction.subfield(_.reactionId) setTo followup.reaction.id)
       .and(_.lastReaction.subfield(_.reactionAuthorId) setTo followup.reaction.authorId)
       .and(_.lastReaction.subfield(_.reactionType) setTo LastReactionRecord.ReactionTypeEnum(followup.reaction.reactionType.id))
@@ -58,10 +58,10 @@ class MongoFollowupDAO extends FollowupDAO {
         null
       }
     }
-    NewFollowup(record.receivingUserId.get, reaction)
+    Followup(record.receivingUserId.get, reaction)
   }
 
-  private def toRecord(followup: NewFollowup): FollowupRecord = {
+  private def toRecord(followup: Followup): FollowupRecord = {
 
     val lastReactionRecord = LastReactionRecord.createRecord
       .reactionAuthorId(followup.reaction.authorId)

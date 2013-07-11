@@ -62,10 +62,10 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
     generator.handleCommitLiked(event)
 
     // then
-    val followupArgument = ArgumentCaptor.forClass(classOf[NewFollowup])
+    val followupArgument = ArgumentCaptor.forClass(classOf[Followup])
 
     verify(followupDaoMock).createOrUpdateExisting(followupArgument.capture())
-    val resultFollowup: NewFollowup = followupArgument.getValue
+    val resultFollowup: Followup = followupArgument.getValue
     resultFollowup.reaction.id should equal(likeId)
     resultFollowup.reaction.postingTime should equal(likeDate)
     resultFollowup.reaction.commitId should equal(commitId)

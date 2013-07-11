@@ -58,7 +58,7 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearDataA
       val commentedCommit = CommitInfoAssembler.randomCommit.get
       commitInfoDao.storeCommit(commentedCommit)
       val comment = CommentAssembler.commentFor(commentedCommit.id).withAuthorId(authorId).withDate(date).get
-      followupDao.createOrUpdateExisting(NewFollowup(userId, comment))
+      followupDao.createOrUpdateExisting(Followup(userId, comment))
     }
   }
 

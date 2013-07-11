@@ -36,7 +36,7 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
 
   private def generateFollowUps(commit: CommitInfo, existingComments: List[Comment], currentComment: Comment) {
     usersToGenerateFollowUpsFor(commit, existingComments, currentComment).foreach(userId => {
-      followupDao.createOrUpdateExisting(NewFollowup(userId, currentComment))
+      followupDao.createOrUpdateExisting(Followup(userId, currentComment))
     })
   }
 

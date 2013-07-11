@@ -30,7 +30,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
     commentDao = new MongoCommitCommentDAO
   }
 
-  case class CreatedFollowup(id: ObjectId, followup: NewFollowup, reaction: Comment, reactionAuthor: User, commit: CommitInfo)
+  case class CreatedFollowup(id: ObjectId, followup: Followup, reaction: Comment, reactionAuthor: User, commit: CommitInfo)
 
   def createFollowupWithDependenciesFor(receivingUserId: ObjectId, reactionDate: DateTime = DateTime.now) = {
     val commit = CommitInfoAssembler.randomCommit.get
@@ -42,7 +42,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
     val comment = CommentAssembler.commentFor(commit.id).withAuthorId(user.id).withDate(reactionDate).get
     commentDao.save(comment)
 
-    val followupToCreate = NewFollowup(receivingUserId, comment)
+    val followupToCreate = Followup(receivingUserId, comment)
     val followupId = followupDao.createOrUpdateExisting(followupToCreate)
     CreatedFollowup(followupId, followupToCreate, comment, user, commit)
   }
