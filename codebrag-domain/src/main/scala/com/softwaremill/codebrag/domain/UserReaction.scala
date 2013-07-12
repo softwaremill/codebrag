@@ -10,12 +10,12 @@ abstract sealed class UserReaction(val id: ObjectId, val commitId: ObjectId, val
 
   def reactionType: UserReactionTypeEnum.Value
 
-  object UserReactionTypeEnum extends Enumeration {
-    type UserReactionTypeEnum = Value
-    val Like = Value("Like")
-    val Comment = Value("Comment")
-  }
+}
 
+object UserReactionTypeEnum extends Enumeration {
+  type UserReactionTypeEnum = Value
+  val Like = Value("Like")
+  val Comment = Value("Comment")
 }
 
 case class Comment(

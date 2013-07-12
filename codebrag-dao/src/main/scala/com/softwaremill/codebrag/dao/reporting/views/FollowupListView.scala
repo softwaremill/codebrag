@@ -1,6 +1,7 @@
 package com.softwaremill.codebrag.dao.reporting.views
 
 import java.util.Date
+import com.softwaremill.codebrag.domain.UserReactionTypeEnum
 
 case class SingleFollowupView(followupId: String, date: Date, commit: FollowupCommitView, reaction: FollowupLastReactionView)
 
@@ -12,4 +13,26 @@ case class FollowupsByCommitView(commit: FollowupCommitView, followups: List[Fol
 
 case class FollowupReactionsView(followupId: String, lastReaction: FollowupLastReactionView, allReactions: List[String])
 
-case class FollowupLastReactionView(reactionId: String, reactionAuthor: String, date: Date, reactionAuthorAvatarUrl: Option[String])
+
+trait FollowupLastReactionView {
+
+  def reactionId: String
+  def reactionAuthor: String
+  def date: Date
+  def reactionAuthorAvatarUrl: String
+  def reactionType: String
+
+}
+
+case class FollowupLastCommentView(reactionId: String, reactionAuthor: String, date: Date, reactionAuthorAvatarUrl: String, shortMsg: String) extends FollowupLastReactionView {
+
+  override val reactionType = UserReactionTypeEnum.Comment.toString
+
+}
+
+case class FollowupLastLikeView(reactionId: String, reactionAuthor: String, date: Date, reactionAuthorAvatarUrl: String) extends FollowupLastReactionView {
+
+  override val reactionType = UserReactionTypeEnum.Like.toString
+
+}
+

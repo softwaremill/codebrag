@@ -9,6 +9,7 @@ import scala.Some
 import com.softwaremill.codebrag.dao._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.builders.CommentAssembler
+import com.softwaremill.codebrag.dao.reporting.views.{FollowupLastLikeView, FollowupLastCommentView}
 
 class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 
@@ -123,7 +124,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
 
     inlineFollowup.lastReaction.date should be(secondInlineFollowup.reaction.postingTime.toDate)
     inlineFollowup.lastReaction.reactionAuthor should be(secondInlineFollowup.reactionAuthor.name)
-    inlineFollowup.lastReaction.reactionAuthorAvatarUrl.get should be(secondInlineFollowup.reactionAuthor.avatarUrl)
+    inlineFollowup.lastReaction.reactionAuthorAvatarUrl should be(secondInlineFollowup.reactionAuthor.avatarUrl)
     inlineFollowup.lastReaction.reactionId should be(secondInlineFollowup.reaction.id.toString)
   }
 
@@ -196,4 +197,20 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
     result.followupsByCommit(0).commit.commitId should be(anotherCommit.id.toString)
     result.followupsByCommit(1).commit.commitId should be(commit.id.toString)
   }
+
+  it should "have reaction containing valid type and comment message" in {
+    // given
+    val now = DateTime.now
+    val commit = CommitInfoAssembler.randomCommit.get
+    val created = createFollowupWithDependenciesFor(commit, JohnId, now, ThreadDetails(commit.id))
+
+    // when
+    val result = followupFinder.findAllFollowupsByCommitForUser(JohnId)
+
+    // then
+    val reaction = result.followupsByCommit(0).followups(0).lastReaction.asInstanceOf[FollowupLastCommentView]
+    reaction.reactionType should be(UserReactionTypeEnum.Comment.toString)
+    reaction.shortMsg should be(created.reaction.message)
+  }
+
 }

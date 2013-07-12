@@ -7,6 +7,7 @@ import com.softwaremill.codebrag.dao.reporting.views._
 import com.softwaremill.codebrag.dao.reporting.views.SingleFollowupView
 import com.softwaremill.codebrag.dao.reporting.views.FollowupCommitView
 import scala.Some
+import net.liftweb.mongodb.record.MongoRecord
 
 class MongoFollowupFinder extends FollowupFinder {
 
@@ -62,15 +63,15 @@ class MongoFollowupFinder extends FollowupFinder {
   private def followupToReactionsView(followup: FollowupRecord, lastReactions: Map[ObjectId, UserReactionRecord[_]], reactionAuthors: Map[ObjectId, UserRecord]): FollowupReactionsView = {
     val reaction = lastReactions(followup.lastReaction.get.reactionId.get)
     val author = reactionAuthors(reaction.authorId.get)
-    val reactionView = FollowupLastReactionView(reaction.id.get.toString, author.name.get, reaction.date.get, Some(author.avatarUrl.get))
+    val lastReactionView = buildLastReactionView(reaction, author)
     val allReactions = followup.reactions.get.map(reactionId => reactionId.toString)
-    FollowupReactionsView(followup.id.toString, reactionView, allReactions)
+    FollowupReactionsView(followup.id.toString, lastReactionView, allReactions)
   }
 
   private def recordsToFollowupView(commit: CommitInfoRecord, reaction: UserReactionRecord[_], author: UserRecord, followup: FollowupRecord): SingleFollowupView = {
     val commitView = FollowupCommitView(commit.id.get.toString, commit.authorName.get, commit.message.get, commit.authorDate.get)
-    val reactionView = FollowupLastReactionView(reaction.id.get.toString, author.name.get, reaction.date.get, Some(author.avatarUrl.get))
-    val followupView = SingleFollowupView(followup.id.get.toString, reaction.date.get, commitView, reactionView)
+    val lastReactionView = buildLastReactionView(reaction, author)
+    val followupView = SingleFollowupView(followup.id.get.toString, reaction.date.get, commitView, lastReactionView)
     followupView
   }
 
@@ -93,6 +94,13 @@ class MongoFollowupFinder extends FollowupFinder {
       case None => {
         LikeRecord.where(_.id eqs id).get.get
       }
+    }
+  }
+
+  def buildLastReactionView[T <: MongoRecord[T]](reaction: UserReactionRecord[_], author: UserRecord): FollowupLastReactionView = {
+    reaction.asInstanceOf[MongoRecord[T]] match {
+      case comment: CommentRecord => FollowupLastCommentView(comment.id.get.toString, author.name.get, comment.date.get, author.avatarUrl.get, comment.message.get)
+      case like: LikeRecord => FollowupLastLikeView(like.id.get.toString, author.name.get, like.date.get, author.avatarUrl.get)
     }
   }
 
