@@ -4,11 +4,9 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao._
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.dao.reporting.views._
-import com.softwaremill.codebrag.dao.reporting.views.FollowupView
-import com.softwaremill.codebrag.dao.reporting.views.FollowupReactionView
+import com.softwaremill.codebrag.dao.reporting.views.SingleFollowupView
 import com.softwaremill.codebrag.dao.reporting.views.FollowupCommitView
 import scala.Some
-import com.softwaremill.codebrag.dao.reporting.views.FollowupListView
 
 class MongoFollowupFinder extends FollowupFinder {
 
@@ -20,7 +18,7 @@ class MongoFollowupFinder extends FollowupFinder {
 
     val followupsGroupedByCommit = followupRecords.groupBy(_.threadId.get.commitId.get)
 
-    val sortFollowupsForCommitByDate = (f1: FollowupReactions, f2: FollowupReactions) => f1.lastReaction.date.after(f2.lastReaction.date)
+    val sortFollowupsForCommitByDate = (f1: FollowupReactionsView, f2: FollowupReactionsView) => f1.lastReaction.date.after(f2.lastReaction.date)
 
     val followupsForCommits = followupsGroupedByCommit.map { case(commitId, followups) =>
       val followupsForCommitViews = followups.map(followupToReactionsView(_, lastReactions, reactionAuthors)).sortWith(sortFollowupsForCommitByDate)
@@ -61,51 +59,18 @@ class MongoFollowupFinder extends FollowupFinder {
     followupsGroupsSorted
   }
 
-  private def followupToReactionsView(followup: FollowupRecord, lastReactions: Map[ObjectId, UserReactionRecord[_]], reactionAuthors: Map[ObjectId, UserRecord]): FollowupReactions = {
+  private def followupToReactionsView(followup: FollowupRecord, lastReactions: Map[ObjectId, UserReactionRecord[_]], reactionAuthors: Map[ObjectId, UserRecord]): FollowupReactionsView = {
     val reaction = lastReactions(followup.lastReaction.get.reactionId.get)
     val author = reactionAuthors(reaction.authorId.get)
     val reactionView = FollowupLastReactionView(reaction.id.get.toString, author.name.get, reaction.date.get, Some(author.avatarUrl.get))
     val allReactions = followup.reactions.get.map(reactionId => reactionId.toString)
-    FollowupReactions(followup.id.toString, reactionView, allReactions)
+    FollowupReactionsView(followup.id.toString, reactionView, allReactions)
   }
 
-
-
-  def findAllFollowupsForUser(userId: ObjectId): FollowupListView = {
-
-    val followupRecords = FollowupRecord.where(_.receivingUserId eqs userId).fetch()
-
-    val lastReactionsIds = followupRecords.map(_.lastReaction.get.reactionId.get)
-
-    val lastLikesReactions = LikeRecord.where(_.id in lastReactionsIds).fetch()
-    val lastCommentsReactions = CommentRecord.where(_.id in lastReactionsIds).fetch()
-    val lastReactions = (lastLikesReactions ++ lastCommentsReactions).map(reaction => (reaction.id.get, reaction)).toMap[ObjectId, UserReactionRecord[_]]
-
-    val reactionAuthorsIds = lastReactions.map(_._2.authorId.get)
-    val reactionAuthors = UserRecord.where(_.id in reactionAuthorsIds).fetch().map(author => (author.id.get, author)).toMap
-
-    val commitsIds = followupRecords.map(_.threadId.get.commitId.get)
-    val commits = CommitInfoRecord.where(_.id in commitsIds).fetch().map(commit => (commit.id.get, commit)).toMap
-
-
-    val followupsViews = followupRecords.map { followup =>
-      val commit = commits(followup.threadId.get.commitId.get)
-      val reaction = lastReactions(followup.lastReaction.get.reactionId.get)
-      val author = reactionAuthors(reaction.authorId.get)
-
-      val followupView = recordsToFollowupView(commit, reaction, author, followup)
-
-      followupView
-    }.sortWith((f1, f2) => f1.date.after(f2.date))
-
-    FollowupListView(followupsViews)
-  }
-
-
-  private def recordsToFollowupView(commit: CommitInfoRecord, reaction: UserReactionRecord[_], author: UserRecord, followup: FollowupRecord): FollowupView = {
+  private def recordsToFollowupView(commit: CommitInfoRecord, reaction: UserReactionRecord[_], author: UserRecord, followup: FollowupRecord): SingleFollowupView = {
     val commitView = FollowupCommitView(commit.id.get.toString, commit.authorName.get, commit.message.get, commit.authorDate.get)
-    val reactionView = FollowupReactionView(reaction.id.get.toString, author.name.get, Some(author.avatarUrl.get))
-    val followupView = FollowupView(followup.id.get.toString, reaction.date.get, commitView, reactionView)
+    val reactionView = FollowupLastReactionView(reaction.id.get.toString, author.name.get, reaction.date.get, Some(author.avatarUrl.get))
+    val followupView = SingleFollowupView(followup.id.get.toString, reaction.date.get, commitView, reactionView)
     followupView
   }
 
