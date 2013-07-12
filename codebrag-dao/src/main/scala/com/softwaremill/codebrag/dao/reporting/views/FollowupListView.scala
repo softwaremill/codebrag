@@ -20,19 +20,10 @@ trait FollowupLastReactionView {
   def reactionAuthor: String
   def date: Date
   def reactionAuthorAvatarUrl: String
-  def reactionType: String
 
 }
 
-case class FollowupLastCommentView(reactionId: String, reactionAuthor: String, date: Date, reactionAuthorAvatarUrl: String, shortMsg: String) extends FollowupLastReactionView {
+case class FollowupLastCommentView(reactionId: String, reactionAuthor: String, date: Date, reactionAuthorAvatarUrl: String, message: String) extends FollowupLastReactionView
 
-  override val reactionType = UserReactionTypeEnum.Comment.toString
-
-}
-
-case class FollowupLastLikeView(reactionId: String, reactionAuthor: String, date: Date, reactionAuthorAvatarUrl: String) extends FollowupLastReactionView {
-
-  override val reactionType = UserReactionTypeEnum.Like.toString
-
-}
+case class FollowupLastLikeView(reactionId: String, reactionAuthor: String, date: Date, reactionAuthorAvatarUrl: String) extends FollowupLastReactionView
 

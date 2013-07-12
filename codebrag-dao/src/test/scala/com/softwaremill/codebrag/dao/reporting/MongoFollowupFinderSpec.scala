@@ -209,8 +209,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
 
     // then
     val reaction = result.followupsByCommit(0).followups(0).lastReaction.asInstanceOf[FollowupLastCommentView]
-    reaction.reactionType should be(UserReactionTypeEnum.Comment.toString)
-    reaction.shortMsg should be(created.reaction.message)
+    reaction.message should be(created.reaction.message)
   }
 
 }
