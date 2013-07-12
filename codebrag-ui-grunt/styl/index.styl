@@ -558,12 +558,13 @@ a.ribbon
 
 
 // followups
+#followups-tab-content .items-container
+  padding-right: 2.3em;  
+
 .followups-container
   background: #eee8d7;
   margin-bottom: 0.77em;
   padding: 0.77em 0.38em 0.38em;
-  // JS calculations for width
-  width: 460px;
   & .info-line
     margin-bottom: 0.77em;
   & .commit-name
@@ -577,7 +578,7 @@ a.ribbon
 
 .followup-container
   background: #faf8ed;
-  border: 1px solid $main-border-color;
+  border: 1px solid #e2d8bf;
   margin-top: -1px;
   padding: 0.77em 2.3em 0.77em 0.77em;
   position: relative;
@@ -598,29 +599,28 @@ a.ribbon
     height: 1.54em;
     margin-right: 0.77em;
     width: 1.54em;
-
-.followups-container.active .commit-name
-  opacity: 1;
-
-.followups-container.active .followup-container.active
-  background: white;
-  z-index:2;
-  // JS calculations for width
-  width: 480px;
-  &:before
-    background: $main-orange-color;
-    content: "";
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0px;
-    width: .38em;
-    z-index: 1;
-  & i
-    display: block;
+  & .comment
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  &.active
+    background: white;
+    width: 480px;
+    z-index: 2;
+    &:before
+      background: #f3720b;
+      content: "";
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0px;
+      width: 0.38em;
+      z-index: 1;
 
 #followups-tab-content .items-container .commmit-container:first-child
   margin-top: 0.77em;
+
+
 
 // diff
 .diff

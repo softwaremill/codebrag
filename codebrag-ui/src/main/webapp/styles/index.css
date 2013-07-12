@@ -657,11 +657,13 @@ a.ribbon:hover {
   text-align: center;
   text-transform: uppercase;
 }
+#followups-tab-content .items-container {
+  padding-right: 2.3em;
+}
 .followups-container {
   background: #eee8d7;
   margin-bottom: 0.77em;
   padding: 0.77em 0.38em 0.38em;
-  width: 460px;
 }
 .followups-container .info-line {
   margin-bottom: 0.77em;
@@ -680,7 +682,7 @@ a.ribbon:hover {
 }
 .followup-container {
   background: #faf8ed;
-  border: 1px solid #d1cbb9;
+  border: 1px solid #e2d8bf;
   margin-top: -1px;
   padding: 0.77em 2.3em 0.77em 0.77em;
   position: relative;
@@ -706,17 +708,18 @@ a.ribbon:hover {
   margin-right: 0.77em;
   width: 1.54em;
 }
-.followups-container.active .commit-name {
-  opacity: 1;
-  -ms-filter: none;
-  filter: none;
+.followup-container .comment {
+  overflow: hidden;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.followups-container.active .followup-container.active {
+.followup-container.active {
   background: #fff;
-  z-index: 2;
   width: 480px;
+  z-index: 2;
 }
-.followups-container.active .followup-container.active:before {
+.followup-container.active:before {
   background: #f3720b;
   content: "";
   height: 100%;
@@ -725,9 +728,6 @@ a.ribbon:hover {
   top: 0px;
   width: 0.38em;
   z-index: 1;
-}
-.followups-container.active .followup-container.active i {
-  display: block;
 }
 #followups-tab-content .items-container .commmit-container:first-child {
   margin-top: 0.77em;
