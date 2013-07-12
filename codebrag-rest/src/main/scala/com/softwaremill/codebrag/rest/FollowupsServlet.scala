@@ -14,14 +14,14 @@ class FollowupsServlet(val authenticator: Authenticator,
                        val swagger: Swagger,
                        followupFinder: FollowupFinder,
                        followupService: FollowupService)
-  extends JsonServletWithAuthentication with FollowupsServletSwaggerDefinition with JacksonJsonSupport {
+  extends JsonServletWithAuthentication with JacksonJsonSupport {
 
   get("/") {
     haltIfNotAuthenticated()
     followupFinder.findAllFollowupsByCommitForUser(new ObjectId(user.id))
   }
 
-  get("/:id", operation(getSingleOperation)) {
+  get("/:id") {
     haltIfNotAuthenticated()
     val followupId = params("id")
     followupFinder.findFollowupForUser(new ObjectId(user.id), new ObjectId(followupId)) match {
@@ -30,7 +30,7 @@ class FollowupsServlet(val authenticator: Authenticator,
     }
   }
 
-  delete("/:id", operation(dismissOperation)) {
+  delete("/:id") {
     haltIfNotAuthenticated()
     val followupId = params("id")
     followupService.deleteUserFollowup(new ObjectId(user.id), new ObjectId(followupId))
