@@ -266,15 +266,26 @@ angular.module('codebrag.commits')
 
     .controller('ThreadControlCtrl', function($scope, $stateParams) {
 
-        $scope.ifCurrentFollowup = function(collection) {
+        $scope.isCurrentFollowup = function(lineReactions) {
             var notInFollowup = _.isUndefined($stateParams.followupId);
             if(notInFollowup) {
                 return false;
             }
-            var reactionsFound = _.filter(collection, function(reaction) {
+            var allReactions = (lineReactions.comments || []).concat(lineReactions.likes || []);
+            var reactionsFound = _.filter(allReactions, function(reaction) {
                 return reaction.id === $scope.currentFollowup.reaction.reactionId;
             });
             return reactionsFound.length > 0;
+        };
+
+        $scope.displayLineControls = function(lineReactions) {
+            var lineHasComments = $scope.lineHasComments(lineReactions);
+            var isCurrentFollowup = $scope.isCurrentFollowup(lineReactions);
+            return lineHasComments || isCurrentFollowup;
+        };
+
+        $scope.lineHasComments = function(lineReactions) {
+            return lineReactions.comments && lineReactions.comments.length > 0;
         };
 
     })
