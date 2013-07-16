@@ -185,13 +185,13 @@
                 <!--inline comment end-->
             </td>
         </tr>
-        <tr class="comments-container" data-inline-reactions-container data-thread-controls ng-controller="ThreadControlCtrl" ng-show="displayLineControls(lineReactions)">
+        <tr class="comments-container" data-inline-reactions-container data-thread-controls ng-controller="ReactionControlsCtrl" ng-show="displayLineControls(lineReactions)">
             <td colspan="3">
                 <!--inline comment start-->
                 <div data-resize-to-view="true">
                     <div class="comment write active">
                         <ul class="comment-action-btns button-group">
-                            <li data-commentable ng-show="lineHasComments(lineReactions)"><a class="button primary reply">Reply</a></li>
+                            <li ng-show="lineHasComments(lineReactions)" data-commentable><a class="button primary reply">Reply</a></li>
                             <li><a ng-show="isCurrentFollowup(lineReactions)" class="button primary kthxbye" ng-click="markCurrentFollowupAsDone()"><i class="icon-ok-circle"> </i>KTHXBYE</a></li>
                         </ul>
                     </div>

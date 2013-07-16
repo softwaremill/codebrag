@@ -264,28 +264,48 @@ angular.module('codebrag.commits')
 
     })
 
-    .controller('ThreadControlCtrl', function($scope, $stateParams) {
+    .controller('ReactionControlsCtrl', function($scope, $stateParams) {
 
-        $scope.isCurrentFollowup = function(lineReactions) {
+        var _lineHasComments, _isCurrentFollowup;
+
+        $scope.isCurrentFollowup = function(reactions) {
+            if(_isCurrentFollowup) {
+                return _isCurrentFollowup;
+            }
             var notInFollowup = _.isUndefined($stateParams.followupId);
             if(notInFollowup) {
                 return false;
             }
-            var allReactions = (lineReactions.comments || []).concat(lineReactions.likes || []);
+            var allReactions = (reactions.comments || []).concat(reactions.likes || []);
             var reactionsFound = _.filter(allReactions, function(reaction) {
                 return reaction.id === $scope.currentFollowup.reaction.reactionId;
             });
-            return reactionsFound.length > 0;
+            _isCurrentFollowup = reactionsFound.length > 0;
+            return _isCurrentFollowup;
         };
 
-        $scope.displayLineControls = function(lineReactions) {
-            var lineHasComments = $scope.lineHasComments(lineReactions);
-            var isCurrentFollowup = $scope.isCurrentFollowup(lineReactions);
+        $scope.lineHasComments = function(reactions) {
+            if(_lineHasComments) {
+                return _lineHasComments
+            }
+            _lineHasComments = reactions && reactions.comments && reactions.comments.length > 0;
+            return _lineHasComments
+        };
+
+        $scope.displayLineControls = function(reactions) {
+            if(angular.isUndefined(reactions)) {
+                return false;
+            }
+            var lineHasComments = $scope.lineHasComments(reactions);
+            var isCurrentFollowup = $scope.isCurrentFollowup(reactions);
             return lineHasComments || isCurrentFollowup;
         };
 
-        $scope.lineHasComments = function(lineReactions) {
-            return lineReactions.comments && lineReactions.comments.length > 0;
+        $scope.displayEntireCommitControls = function(reactions) {
+            if(angular.isUndefined(reactions)) {
+                return false;
+            }
+            return $scope.isCurrentFollowup(reactions);
         };
 
     })
