@@ -266,7 +266,7 @@
         {"id": "51acbed4e4b00ef6d5383f66", "authorName": "Michal Ostruszka", "message": "Sweet chupa chups chocolate cake gummies drag&eacute;e pudding faworki gummies. Applicake macaroon ice cream cookie gingerbread topping jelly. Tart pastry cheesecake chocolate bar bonbon jelly apple pie. Macaroon cotton candy wafer cake macaroon gummi bears candy. Souffl&eacute; lemon drops candy tiramisu. Tart sesame snaps sesame snaps danish souffl&eacute; oat cake jelly jelly beans. Jelly beans muffin brownie dessert. Marzipan jelly beans bear claw lollipop tootsie roll cake topping biscuit chocolate cake.", "time": "2013-06-03T16:05:40Z"}
     ], "lineReactions": {"codebrag-ui/src/main/webapp/scripts/app.js": {"25": {
         "likes": [
-            {"id": "51acbec9e4b00ef6d5383f56", "authorName": "Michal Ostruszka 1"},
+            {"id": "51deb248300413ead5f708c3", "authorName": "Michal Ostruszka 1"},
             {"id": "51acbecce4b00ef6d5383f5a", "authorName": "Michal Ostruszka 2"},
             {"id": "51acbecfe4b00ef6d5383f5e", "authorName": "Michal Ostruszka 3"}
         ],
