@@ -441,7 +441,6 @@ form .form-group span.text-error:after {
   display: inline-block;
   padding: 2px;
   position: absolute;
-  right: 0;
 }
 .demo-nav a {
   margin-right: 1em;
