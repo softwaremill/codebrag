@@ -117,11 +117,18 @@
                 <li><a id="followups-btn" href="#/followups" class="button" active-for-states="followups,followups.list,followups.details"><span class="number">{{counters.followups}} </span>follow-ups</a></li>
             </ul>
         </nav>
-        <div class="user-info" ng-show="isLogged()"><span class="logout"><a  ng-click="logout()">Logout</a></span></div>
-        <div class="user-info" ng-show="isLogged()"><span class="username">Signed in as {{loggedInUser().fullName}}</span><logged-in-user-avatar></logged-in-user-avatar></div>
-        <!-- Uservoice link start -->
-        <a href="javascript:void(0)" class="uservoice-btn" data-uv-lightbox="classic_widget" data-uv-mode="full" data-uv-primary-color="#320a0b" data-uv-link-color="#819511" data-uv-default-mode="support" data-uv-forum-id="202607">Feedback</a>
-        <!-- Uservoice link end -->
+        <div class="demo-nav">
+            <a href="http://codebrag.com/">Home</a>
+            <a href="http://blog.codebrag.com/">Blog</a>
+            <a href="http://demo.codebrag.com/">Demo</a>
+        </div>
+        <div class="header-user-info">
+            <div class="user-info" ng-show="isLogged()"><span class="logout"><a  ng-click="logout()">Logout</a></span></div>
+            <div class="user-info" ng-show="isLogged()"><span class="username">Signed in as {{loggedInUser().fullName}}</span><logged-in-user-avatar></logged-in-user-avatar></div>
+            <!-- Uservoice link start -->
+            <a href="javascript:void(0)" class="uservoice-btn" data-uv-lightbox="classic_widget" data-uv-mode="full" data-uv-primary-color="#320a0b" data-uv-link-color="#819511" data-uv-default-mode="support" data-uv-forum-id="202607">Feedback</a>
+            <!-- Uservoice link end -->
+        </div>
     </header>
     <a class="ribbon">Early version</a>
     <login-form></login-form>

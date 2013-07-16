@@ -331,7 +331,7 @@ form
     width: 127px;
   & .user-info
     float: right;
-    margin: 1.54em 0.77em 0 1.54em;
+    margin: 0 0.77em 0 1.54em;
     vertical-align: top;
     & .username
       display: inline-block;
@@ -374,11 +374,27 @@ form
       color: $header-bg-color;
       padding-top: 0.77em;
 
+.demo-nav
+  background: rgba(255, 255, 255, 0.2);
+  display: inline-block;
+  padding: 2px;
+  position: absolute;
+  right: 0;
+  & a
+    margin-right: 1em;
+    padding: 0 1em;
+
+.header-user-info
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  top: 30px;
+
 a.uservoice-btn
   background: #99ab01;
   color: white;
   float: right;
-  margin: 1.54em 1.54em 0 0;
+  margin: 0 1.54em 0 0;
   padding: 0.77em 1.15em;
   text-transform: uppercase;
   vertical-align: top;
