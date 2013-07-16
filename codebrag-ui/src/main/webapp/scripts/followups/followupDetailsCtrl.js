@@ -1,12 +1,12 @@
 angular.module('codebrag.followups')
 
-    .controller('FollowupDetailsCtrl', function ($stateParams, $state, $scope, followupsListService, commitsListService) {
+    .controller('FollowupDetailsCtrl', function ($stateParams, $state, $scope, followupsService, commitsListService) {
 
         var followupId = $stateParams.followupId;
 
         $scope.scrollTo = $stateParams.commentId;
 
-        followupsListService.loadFollowupById(followupId).then(function(followup) {
+        followupsService.loadFollowupDetails(followupId).then(function(followup) {
             $scope.currentFollowup = followup;
             commitsListService.loadCommitById(followup.commit.commitId).then(function(commit) {
                 $scope.currentCommit = new codebrag.CurrentCommit(commit);
@@ -15,7 +15,7 @@ angular.module('codebrag.followups')
         });
 
         $scope.markCurrentFollowupAsDone = function() {
-            followupsListService.removeFollowupAndGetNext(followupId).then(function(nextFollowup) {
+            followupsService.removeAndGetNext(followupId).then(function(nextFollowup) {
                 goTo(nextFollowup);
             });
         };
@@ -24,7 +24,7 @@ angular.module('codebrag.followups')
             if (_.isNull(nextFollowup)) {
                 $state.transitionTo('followups.list');
             } else {
-                $state.transitionTo('followups.details', {followupId: nextFollowup.followupId, commentId: nextFollowup.reaction.reactionId});
+                $state.transitionTo('followups.details', {followupId: nextFollowup.followupId, commentId: nextFollowup.lastReaction.reactionId});
             }
         }
 

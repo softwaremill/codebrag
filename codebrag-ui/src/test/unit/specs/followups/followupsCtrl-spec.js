@@ -6,21 +6,21 @@ describe("Follow-ups Controller", function () {
 
     beforeEach(module('codebrag.followups'));
 
-    it('should fetch follow-ups from server', inject(function ($controller, followupsListService) {
+    it('should fetch follow-ups from server', inject(function ($controller, followupsService) {
         // Given
-        spyOn(followupsListService, 'loadFollowupGroupsFromServer');
+        spyOn(followupsService, 'allFollowups');
 
         // When
         $controller('FollowupsCtrl', {$scope: scope});
 
         //Then
-        expect(followupsListService.loadFollowupGroupsFromServer).toHaveBeenCalled();
+        expect(followupsService.allFollowups).toHaveBeenCalled();
     }));
 
-    it('should make loaded followups available in scope', inject(function ($controller, followupsListService) {
+    it('should make loaded followups available in scope', inject(function ($controller, followupsService) {
         // Given
         var followups = 'some followups';
-        spyOn(followupsListService, 'loadFollowupGroupsFromServer').andReturn(followups);
+        spyOn(followupsService, 'allFollowups').andReturn(followups);
 
         // When
         $controller('FollowupsCtrl', {$scope: scope});

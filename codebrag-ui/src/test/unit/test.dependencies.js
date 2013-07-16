@@ -52,7 +52,7 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "commits/comments/commentable.js");
 <!-- follow-ups -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "followups/followupsCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "followups/followupListItemCtrl.js");
-EnvJasmine.loadGlobal(EnvJasmine.rootDir + "followups/followupsListService.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "followups/followupsService.js");
 
 <!--commons -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "common/events.js");

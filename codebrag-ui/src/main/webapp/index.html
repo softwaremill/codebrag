@@ -81,7 +81,7 @@
     <script type="text/javascript" src="scripts/followups/followupsCtrl.js"></script>
     <script type="text/javascript" src="scripts/followups/followupListItemCtrl.js"></script>
     <script type="text/javascript" src="scripts/followups/followupDetailsCtrl.js"></script>
-    <script type="text/javascript" src="scripts/followups/followupsListService.js"></script>
+    <script type="text/javascript" src="scripts/followups/followupsService.js"></script>
 
     <!--commons -->
     <script type="text/javascript" src="scripts/common/events.js"></script>
@@ -166,17 +166,6 @@
                 </div>
             </td>
         </tr>
-        <tr class="comments-container" data-inline-reactions-container ng-controller="ThreadControlCtrl" ng-show="ifCurrentFollowup(lineReactions.likes)">
-            <td colspan="3">
-                <div data-resize-to-view="true">
-                    <div class="comment write active">
-                        <ul class="comment-action-btns button-group">
-                            <li><a class="button primary kthxbye" ng-click="markCurrentFollowupAsDone()"><i class="icon-ok-circle"> </i>KTHXBYE</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </td>
-        </tr>
         <tr class="comments-container" ng-show="lineReactions.comments.length > 0" data-inline-reactions-container>
             <td colspan="3">
                 <!--inline comment start-->
@@ -196,14 +185,14 @@
                 <!--inline comment end-->
             </td>
         </tr>
-        <tr class="comments-container" ng-show="lineReactions.comments.length > 0" data-inline-reactions-container data-thread-controls>
+        <tr class="comments-container" data-inline-reactions-container data-thread-controls>
             <td colspan="3">
                 <!--inline comment start-->
                 <div data-resize-to-view="true">
                     <div class="comment write active" ng-controller="ThreadControlCtrl">
                         <ul class="comment-action-btns button-group">
-                            <li data-commentable><a class="button primary reply">Reply</a></li>
-                            <li ng-show="ifCurrentFollowup(lineReactions.comments)"><a class="button primary kthxbye" ng-click="markCurrentFollowupAsDone()"><i class="icon-ok-circle"> </i>KTHXBYE</a></li>
+                            <li data-commentable ng-show="lineReactions.comments.length > 0"><a class="button primary reply">Reply</a></li>
+                            <li><a class="button primary kthxbye" ng-click="markCurrentFollowupAsDone()"><i class="icon-ok-circle"> </i>KTHXBYE</a></li>
                         </ul>
                     </div>
                 </div>

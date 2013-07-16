@@ -2,8 +2,10 @@
 
 angular.module('codebrag.followups')
 
-    .controller('FollowupsCtrl', function ($scope, $http, followupsListService) {
+    .controller('FollowupsCtrl', function ($scope, $http, followupsService) {
 
-        $scope.followupCommits = followupsListService.loadFollowupGroupsFromServer();
+        $scope.followupCommits = followupsService.allFollowups();
+
+        $scope.hasFollowupsAvailable = followupsService.hasFollowups;
 
     });

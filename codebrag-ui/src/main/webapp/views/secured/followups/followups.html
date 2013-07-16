@@ -18,7 +18,7 @@
                 </div>
             </div>
 
-            <div class="no-more-items" ng-show="followups && followups.length == 0">
+            <div class="no-more-items" ng-hide="hasFollowupsAvailable()">
                 Yay!<br> No follow-ups!
             </div>
 
