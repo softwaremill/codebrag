@@ -2,9 +2,15 @@
 
 angular.module('codebrag.commits.comments')
     .factory('Comments', function ($resource) {
-        return $resource('rest/commits/:id/comments', {id: '@commitId'}, {'query': {method: 'GET', isArray: false}});
+        return $resource('rest/commits/:id/comments', {id: '@commitId'}, {
+            'query': {method: 'GET', isArray: false},
+            'save': {method: 'POST', unique: true, requestId: 'postReaction'}
+        });
     })
 
     .factory('Likes', function ($resource) {
-        return $resource('rest/commits/:id/likes', {id: '@commitId'}, {'query': {method: 'GET', isArray: false}});
+        return $resource('rest/commits/:id/likes', {id: '@commitId'}, {
+            'query': {method: 'GET', isArray: false},
+            'save': {method: 'POST', unique: true, requestId: 'postReaction'}
+        });
     });
