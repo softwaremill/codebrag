@@ -67,4 +67,17 @@ describe("Http service wrapper with unique requests handling", function () {
         expect(responseReceived.status).toEqual(499);
         expect(responseReceived.config).toEqual(requestConfig);
     });
+
+    it('should use decorated version for shortcut methods', function() {
+        // given
+        httpMock.pendingRequests = [{requestId: 'dummy'}];
+        var httpWrapper = codebrag.uniqueRequestsAwareHttpService(httpMock, q);
+
+        // when
+        httpWrapper.get('/someUrl', {unique: true, requestId: 'dummy'});
+
+        // then
+        expect(httpMock).not.toHaveBeenCalled();
+
+    });
 });

@@ -37,13 +37,33 @@ codebrag.uniqueRequestsAwareHttpService = function($http, $q) {
         return dfd.promise;
     }
 
+
+    function registerShortcutMethods(modifiedService) {
+        ['get', 'delete', 'head', 'jsonp'].forEach(function (name) {
+            modifiedService[name] = function (url, config) {
+                return modifiedService(extend(config || {}, {
+                    method: name,
+                    url: url
+                }));
+            };
+        });
+        ['post', 'put'].forEach(function (name) {
+            modifiedService[name] = function (url, data, config) {
+                return modifiedService(extend(config || {}, {
+                    method: name,
+                    url: url,
+                    data: data
+                }));
+            };
+        });
+    }
+
     var modifiedHttpService = function(requestConfig) {
         if(checkForDuplicates(requestConfig) && checkIfDuplicated(requestConfig)) {
             return buildRejectedRequestPromise(requestConfig);
         }
         return $http(requestConfig);
     };
-
-    angular.extend(modifiedHttpService, $http);
+    registerShortcutMethods(modifiedHttpService);
     return modifiedHttpService;
 };
