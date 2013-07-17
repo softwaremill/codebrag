@@ -13,7 +13,7 @@ angular.module('codebrag.followups')
         }
 
         function removeAndGetNext(followupId, commitId) {
-            return _httpRequest('DELETE', followupId).then(function() {
+            return _httpRequest('DELETE', followupId, {unique: true, requestId: 'removeFollowup_' + followupId}).then(function() {
                 var nextFollowup = followupsListLocal.removeOneAndGetNext(followupId, commitId);
                 _broadcastNewFollowupCountEvent();
                 return nextFollowup;
@@ -31,9 +31,10 @@ angular.module('codebrag.followups')
             return followupsListLocal.hasFollowups();
         }
 
-        function _httpRequest(method, id) {
+        function _httpRequest(method, id, config) {
             var followupsUrl = 'rest/followups/' + (id || '');
-            return $http({method: method, url: followupsUrl});
+            var reqConfig = angular.extend(config || {}, {method: method, url: followupsUrl});
+            return $http(reqConfig);
         }
 
         function _broadcastNewFollowupCountEvent() {
