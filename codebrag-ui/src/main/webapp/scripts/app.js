@@ -25,6 +25,11 @@ angular.module('codebrag', [
     'codebrag.notifications']);
 
 angular.module('codebrag')
+    .config(function($provide) {
+        $provide.decorator('$http', function($delegate, $q) {
+            return codebrag.uniqueRequestsAwareHttpService($delegate, $q);
+        });
+    })
     .run(function(authService) {
         authService.requestCurrentUser();
     });
@@ -97,5 +102,3 @@ angular.module('codebrag.followups')
                 templateUrl: 'views/secured/followups/followupDetails.html'
             })
     });
-
-
