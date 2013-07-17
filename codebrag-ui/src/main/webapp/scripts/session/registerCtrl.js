@@ -42,8 +42,10 @@ angular.module('codebrag.session')
                 clearForm();
                 flash.set("Registration was successful! You can now log in.");
             }, function (errorResponse) {
-                $scope.registerFailed = true;
-                $scope.registerFailedMessage = errorResponse.data;
+                if(errorResponse.status !== 499) {
+                    $scope.registerFailed = true;
+                    $scope.registerFailedMessage = errorResponse.data;
+                }
             });
         }
     });
