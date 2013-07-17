@@ -28,10 +28,11 @@ object FollowupRecord extends FollowupRecord with MongoMetaRecord[FollowupRecord
   override def collectionName = "follow_ups_new"
 
   def ensureIndexes() {
+    val receivingUserIdField = receivingUserId.name
     val commitIdField = threadId.subfield(_.commitId).name
     val fileNameField = threadId.subfield(_.fileName).name
     val lineNumberField = threadId.subfield(_.lineNumber).name
-    this.ensureIndex(keys = (commitIdField -> 1) ~ (fileNameField -> 1) ~ (lineNumberField -> 1), unique = true)
+    this.ensureIndex(keys = (receivingUserIdField -> 1) ~ (commitIdField -> 1) ~ (fileNameField -> 1) ~ (lineNumberField -> 1), unique = true)
   }
 
 }
