@@ -25,7 +25,7 @@ class FollowupRecord extends MongoRecord[FollowupRecord] with ObjectIdPk[Followu
 
 object FollowupRecord extends FollowupRecord with MongoMetaRecord[FollowupRecord] {
 
-  override def collectionName = "follow_ups_new"
+  override def collectionName = "follow_ups"
 
   def ensureIndexes() {
     val receivingUserIdField = receivingUserId.name
