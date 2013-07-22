@@ -5,18 +5,20 @@ import net.liftweb.mongodb.record.field.ObjectIdPk
 import net.liftweb.json.JsonDSL._
 import com.foursquare.rogue.LiftRogue._
 import com.mongodb.DBObject
+import com.typesafe.scalalogging.slf4j.Logging
 
 trait RepositoryHeadDao {
   def update(repoName: String, newSha: String)
   def get(repoName: String): Option[String]
 }
 
-class MongoRepositoryHeadDao extends RepositoryHeadDao {
+class MongoRepositoryHeadDao extends RepositoryHeadDao with Logging {
 
   def update(repoName: String, newSha: String) {
     val query = RepositoryHeadRecord.where(_.repoName eqs repoName)
     val updated = createUpdatedVersion(newSha, repoName)
     RepositoryHeadRecord.upsert(query.asDBObject, updated)
+    logger.debug(s"Saving $newSha as a HEAD of $repoName repo")
   }
 
 

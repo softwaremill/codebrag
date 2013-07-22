@@ -40,6 +40,7 @@ trait Beans extends ActorSystemSupport with CommitsModule {
   lazy val likeDao = new MongoLikeDAO
   lazy val likeValidator = new LikeValidator(commitInfoDao, likeDao, userDao)
   lazy val userReactionService = new UserReactionService(commentDao, likeDao, likeValidator, eventBus)
+  lazy val repoHeadDao = new MongoRepositoryHeadDao
 
   lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {
       val userDao = self.userDao
