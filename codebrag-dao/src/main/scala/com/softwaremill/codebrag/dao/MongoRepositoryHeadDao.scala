@@ -6,7 +6,12 @@ import net.liftweb.json.JsonDSL._
 import com.foursquare.rogue.LiftRogue._
 import com.mongodb.DBObject
 
-class MongoRepositoryHeadDao {
+trait RepositoryHeadDao {
+  def update(repoName: String, newSha: String)
+  def get(repoName: String): Option[String]
+}
+
+class MongoRepositoryHeadDao extends RepositoryHeadDao {
 
   def update(repoName: String, newSha: String) {
     val query = RepositoryHeadRecord.where(_.repoName eqs repoName)
