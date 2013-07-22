@@ -4,11 +4,11 @@ import com.softwaremill.codebrag.service.commits.{RepoData, CommitsLoader}
 import com.softwaremill.codebrag.domain.CommitInfo
 import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.JavaConversions._
-import com.softwaremill.codebrag.dao.RepositoryHeadDao
+import com.softwaremill.codebrag.dao.RepositoryHeadStore
 import org.eclipse.jgit.lib.ObjectId
 
 class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirTree, converter: JgitLogConverter,
-                              repoHeadDao: RepositoryHeadDao) extends CommitsLoader with Logging {
+                              repoHeadDao: RepositoryHeadStore) extends CommitsLoader with Logging {
 
   def loadMissingCommits(repoData: RepoData): List[CommitInfo] = {
 

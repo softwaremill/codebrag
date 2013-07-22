@@ -3,9 +3,9 @@ package com.softwaremill.codebrag.dao
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import org.scalatest.matchers.ShouldMatchers
 
-class MongoRepositoryHeadRecordSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
+class MongoRepositoryHeadStoreSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 
-  var repoHeadDao = new MongoRepositoryHeadDao
+  var repoHeadDao = new MongoRepositoryHeadStore
 
   it should "store repository HEAD reference if no record for given repo exists" in {
     // given

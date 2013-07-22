@@ -7,12 +7,12 @@ import com.foursquare.rogue.LiftRogue._
 import com.mongodb.DBObject
 import com.typesafe.scalalogging.slf4j.Logging
 
-trait RepositoryHeadDao {
+trait RepositoryHeadStore {
   def update(repoName: String, newSha: String)
   def get(repoName: String): Option[String]
 }
 
-class MongoRepositoryHeadDao extends RepositoryHeadDao with Logging {
+class MongoRepositoryHeadStore extends RepositoryHeadStore with Logging {
 
   def update(repoName: String, newSha: String) {
     val query = RepositoryHeadRecord.where(_.repoName eqs repoName)
