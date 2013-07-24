@@ -28,6 +28,8 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")
     context.mount(new DebugServlet(repoDataProducer, commitImportService, config), Prefix + DebugServlet.MappingPath)
 
+    context.mount(new RefreshRepoDataServlet(repoDataProducer, actorSystem), RefreshRepoDataServlet.MappingPath)
+
     context.put("codebrag", this)
   }
 

@@ -11,7 +11,15 @@ class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirT
                               repoHeadDao: RepositoryHeadStore) extends CommitsLoader with Logging {
 
   def loadMissingCommits(repoData: RepoData): List[CommitInfo] = {
+    if(repoData.isValid) {
+      loadCommits(repoData)
+    } else {
+      dontLoadCommits
+    }
+  }
 
+
+  private def loadCommits(repoData: RepoData): List[CommitInfo] = {
     val remotePath = repoData.remoteUri
     val localPath = internalDirTree.getPath(repoData)
 
@@ -33,7 +41,12 @@ class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirT
     converter.toCommitInfos(logCommand.call().toList, logCommand.getRepository)
   }
 
-  def fetchPreviousHead(repoData: RepoData): Option[ObjectId] = {
+  private def dontLoadCommits = {
+    logger.warn("Invalid repository data, can't import commits")
+    List.empty
+  }
+
+  private def fetchPreviousHead(repoData: RepoData): Option[ObjectId] = {
     repoHeadDao.get(repoData.remoteUri).map(ObjectId.fromString(_))
   }
 

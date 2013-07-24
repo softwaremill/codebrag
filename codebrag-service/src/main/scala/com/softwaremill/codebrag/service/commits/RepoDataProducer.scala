@@ -42,7 +42,7 @@ class RepoDataProducer(userDao: UserDAO, config: RepositoryConfig) extends Loggi
       case Some(user) => user.authentication.token
       case None => {
         logger.warn(s"User $login not found in DB. Cannot properly initialize commit importer")
-        s"user-$login-not-found"
+        ""
       }
     }
 
