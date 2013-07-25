@@ -13,7 +13,7 @@ class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirT
                               repoHeadDao: RepositoryHeadStore) extends CommitsLoader with Logging {
 
   def loadMissingCommits(repoData: RepoData): List[CommitInfo] = {
-    if(repoData.isValid) {
+    if(repoData.credentialsValid) {
       loadCommits(repoData)
     } else {
       dontLoadCommits

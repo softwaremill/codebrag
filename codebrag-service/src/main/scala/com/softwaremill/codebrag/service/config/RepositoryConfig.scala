@@ -15,10 +15,16 @@ trait RepositoryConfig {
   lazy val githubRepositoryName = githubRepositoryConfig.getString("name")
   lazy val githubRepositorySyncUserLogin = githubRepositoryConfig.getString("sync-user-login")
 
-  private lazy val gitRepositoryConfig = repositoryConfig.getConfig("git")
+  private lazy val gitHttpsRepositoryConfig = repositoryConfig.getConfig("git-https")
 
-  lazy val gitRepositoryName = gitRepositoryConfig.getString("name")
-  lazy val gitRepositoryUri = gitRepositoryConfig.getString("uri")
-  lazy val gitRepositoryUsername = gitRepositoryConfig.getString("username")
-  lazy val gitRepositoryPassword = gitRepositoryConfig.getString("password")
+  lazy val gitHttpsRepositoryName = gitHttpsRepositoryConfig.getString("name")
+  lazy val gitHttpsRepositoryUri = gitHttpsRepositoryConfig.getString("uri")
+  lazy val gitHttpsRepositoryUsername = gitHttpsRepositoryConfig.getString("username")
+  lazy val gitHttpsRepositoryPassword = gitHttpsRepositoryConfig.getString("password")
+
+  private lazy val gitSshRepositoryConfig = repositoryConfig.getConfig("git-ssh")
+
+  lazy val gitSshRepositoryName = gitSshRepositoryConfig.getString("name")
+  lazy val gitSshRepositoryUri = gitSshRepositoryConfig.getString("uri")
+  lazy val gitSshPassphrase = gitSshRepositoryConfig.getString("passphrase")
 }
