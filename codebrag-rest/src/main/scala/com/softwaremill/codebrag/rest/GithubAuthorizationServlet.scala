@@ -82,9 +82,7 @@ GithubAuthorizationServlet(val authenticator: Authenticator,
   }
 
   private def getKeyFromRequest(key: String): String = {
-    val data = request.getAttribute(key).asInstanceOf[String]
-    logger.debug(s"Retrieved non-null data for $key")
-    data
+    request.getAttribute(key).asInstanceOf[String]
   }
 
   override protected def password: String = {
