@@ -1097,13 +1097,14 @@ tr:hover .diff-line-num .button i {
   text-transform: lowercase;
 }
 #loginform input[type="password"],
-#loginform input[type="text"] {
+#loginform input[type="text"],
+#loginform input[type="email"] {
   background: #f2ecd5;
   border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
   display: inline-block;
-  width: 16.8em;
+  width: 17.4em;
 }
 #loginform .checkbox {
   margin-bottom: 2.3em;
