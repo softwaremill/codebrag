@@ -1,4 +1,4 @@
-###Codebrag EA version installation guide
+###Codebrag Early Adopters version - installation guide
 
 
 ### Prerequisites
