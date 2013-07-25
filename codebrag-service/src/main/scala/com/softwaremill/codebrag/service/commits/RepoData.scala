@@ -21,14 +21,14 @@ case class GitRepoData(name: String, uri: String, username: String, password: St
   def remoteUri = uri
   def localPathRelativeTo(path: Path) = path.resolve(name)
   def credentials = new UsernamePasswordCredentialsProvider(username, password)
-  def credentialsValid = (password != null && password.nonEmpty)
+  def credentialsValid = true
 }
 
 case class GitSshRepoData(name: String, uri: String, passphrase: String) extends RepoData {
   def remoteUri = uri
   def localPathRelativeTo(path: Path) = path.resolve(name)
   def credentials = new SshPassphraseCredentialsProvider(passphrase)
-  def credentialsValid = (passphrase != null && passphrase.nonEmpty)
+  def credentialsValid = true
 
 }
 
@@ -36,7 +36,14 @@ class SshPassphraseCredentialsProvider(passphrase: String) extends CredentialsPr
   def isInteractive = false
   def supports(items: CredentialItem*) = true
   def get(uri: URIish, items: CredentialItem*) = {
-    items.foreach(_.asInstanceOf[CredentialItem.StringType].setValue(passphrase))
+    if(passphrase.nonEmpty) {
+      items.foreach { item => {
+        item match {
+          case i: CredentialItem.StringType => i.setValue(passphrase)
+          case _ => {}
+        }
+      }}
+    }
     true
   }
 }
