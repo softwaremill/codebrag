@@ -4,8 +4,8 @@ mongo {
 }
 
 repository {
-    // git or github
-    type = "github"
+    // git-https, git-ssh or github
+    type = "git-ssh"
 
     github {
         owner = "softwaremill"
@@ -13,14 +13,19 @@ repository {
         sync-user-login = ""
     }
 
-    git {
-        name = ""
-        uri = ""
+    git-https {
+        name = "codebrag"
+        uri = "https://github.com/softwaremill/codebrag.git"
         username = ""
         password = ""
     }
-}
 
+    git-ssh {
+        name = "codebrag"
+        uri = "git@github.com:softwaremill/codebrag.git"
+        passphrase = ""
+    }
+}
 aws {
     access-key-id = ""
     secret-access-key = ""
