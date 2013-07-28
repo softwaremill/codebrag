@@ -150,6 +150,7 @@ object Dependencies {
   val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "2.3.1.201302201838-r"
   val dispatch = "net.databinder.dispatch" %% "dispatch-core" % "0.9.5"
 
+  val svnKit = "org.tmatesoft.svnkit" % "svnkit" % "1.7.8"
 }
 
 object SmlCodebragBuild extends Build {
@@ -186,7 +187,7 @@ object SmlCodebragBuild extends Build {
     "codebrag-service",
     file("codebrag-service"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator, smlCommonSqs,
-      javaxMail, scalate, egitGithubApi, jGit, dispatch, json4s))
+      javaxMail, scalate, egitGithubApi, jGit, dispatch, json4s, svnKit))
   ) dependsOn(domain, common, dao % "test->test;compile->compile")
 
   lazy val rest: Project = Project(
@@ -237,7 +238,9 @@ object SmlCodebragBuild extends Build {
       // We need to include the whole webapp, hence replacing the resource directory
       resourceDirectory in Compile <<= baseDirectory { bd => {
         bd.getParentFile() / ui.base.getName / "src" / "main"
-      } }
+      } },
+      // TODO remove this. Can't figure out how to run the tests ;-)
+      test in assembly := {}
     )
   ) dependsOn (ui)
 

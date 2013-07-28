@@ -27,8 +27,16 @@ class RepoDataProducer(userDao: UserDAO, config: RepositoryConfig) extends Loggi
       case "github" => createGithubConfig()
       case "git-https" => createHttpsGitConfig()
       case "git-ssh" => createGitSshConfig()
+      case "svn" => createSvnConfig()
       case _ => throw new IllegalArgumentException(s"Unknown repository type: ${config.repositoryType}")
     }
+  }
+
+  private def createSvnConfig() = {
+    logger.info(s"Using repo config: svn, name: ${config.svnRepositoryName}, uri: ${config.svnRepositoryUri}")
+
+    Some(new SvnRepoData(config.svnRepositoryName, config.svnRepositoryUri,
+      config.svnRepositoryUsername, config.svnRepositoryPassword))
   }
 
   private def createHttpsGitConfig() = {

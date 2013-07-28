@@ -7,10 +7,10 @@ import com.softwaremill.codebrag.service.commits.{GitHubRepoData, TestCodebragAn
 
 class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter {
 
-  var dirTree: InternalGitDirTree = _
+  var dirTree: InternalDirTree = _
 
   before {
-    dirTree = new InternalGitDirTree(TestCodebragAndRepositoryConfig)
+    dirTree = new InternalDirTree(TestCodebragAndRepositoryConfig)
   }
 
   after {

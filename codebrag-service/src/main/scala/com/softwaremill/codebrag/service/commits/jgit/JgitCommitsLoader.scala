@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.service.commits.jgit
 
-import com.softwaremill.codebrag.service.commits.{RepoData, CommitsLoader}
+import com.softwaremill.codebrag.service.commits.{BaseGitRepoData, RepoData, CommitsLoader}
 import com.softwaremill.codebrag.domain.CommitInfo
 import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.JavaConversions._
@@ -9,19 +9,20 @@ import org.eclipse.jgit.lib.ObjectId
 import java.nio.file.Path
 import org.eclipse.jgit.api.LogCommand
 
-class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirTree, converter: JgitLogConverter,
+class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalDirTree, converter: JgitLogConverter,
                               repoHeadDao: RepositoryHeadStore) extends CommitsLoader with Logging {
 
   def loadMissingCommits(repoData: RepoData): List[CommitInfo] = {
     if(repoData.credentialsValid) {
-      loadCommits(repoData)
+      //TODO meh with the instanceOf. should be done "better way"
+      loadCommits(repoData.asInstanceOf[BaseGitRepoData])
     } else {
       dontLoadCommits
     }
   }
 
 
-  private def loadCommits(repoData: RepoData): List[CommitInfo] = {
+  private def loadCommits(repoData: BaseGitRepoData): List[CommitInfo] = {
     val localPath = internalDirTree.getPath(repoData)
     val logCommand = if (!internalDirTree.containsRepo(repoData)) {
       cloneFreshRepo(localPath, repoData)
@@ -32,7 +33,7 @@ class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirT
   }
 
 
-  def pullRepoChanges(localPath: Path, repoData: RepoData): LogCommand = {
+  def pullRepoChanges(localPath: Path, repoData: BaseGitRepoData): LogCommand = {
     val git = jGitFacade.pull(localPath, repoData.credentials)
     val headAfterPull = jGitFacade.getHeadId(localPath)
     repoHeadDao.update(repoData.remoteUri, ObjectId.toString(headAfterPull))
@@ -45,7 +46,7 @@ class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirT
     }
   }
 
-  def cloneFreshRepo(localPath: Path, repoData: RepoData): LogCommand = {
+  def cloneFreshRepo(localPath: Path, repoData: BaseGitRepoData): LogCommand = {
     val remotePath = repoData.remoteUri
     val git = jGitFacade.clone(remotePath, localPath, repoData.credentials)
     val headAfterPull = jGitFacade.getHeadId(localPath)
