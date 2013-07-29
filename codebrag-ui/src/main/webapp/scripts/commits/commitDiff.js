@@ -239,11 +239,22 @@ angular.module('codebrag.commits')
                 var fileDiffRoot = el.closest(fileDiffRootSelector);
                 fileDiffRoot.on('click', clickSelector, function(event) {
                     var codeLine = $(event.currentTarget).closest(lineDiffRootSelector);
-                    scope.$apply(function(scope) {
-                        scope.like(codeLine.data(fileNameDataAttr), codeLine.data(lineNumberDataAttr)).then(function() {
-                            codeLine.find(codeRowSelector).addClass('liked-by-user');
-                        });
+                    var codeRowEl = codeLine.find(codeRowSelector);
+                    var classesList = codeRowEl.attr('class').split(/\s+/);
+                    var alreadyLikedByUser = classesList.some(function(elClass) {
+                        return elClass === 'liked-by-user';
                     });
+
+                    if(alreadyLikedByUser) {
+                        codeRowEl.removeClass('liked-by-user');
+                    } else {
+                        alert('like');
+                        scope.$apply(function(scope) {
+                            scope.like(codeLine.data(fileNameDataAttr), codeLine.data(lineNumberDataAttr)).then(function() {
+                                codeLine.find(codeRowSelector).addClass('liked-by-user');
+                            });
+                        });
+                    }
                 });
             }
         }

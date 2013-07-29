@@ -1,11 +1,12 @@
 package com.softwaremill.codebrag.dao.reporting
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.{MongoLikeDAO, MongoCommitCommentDAO, UserRecord}
+import com.softwaremill.codebrag.dao.{LikeRecord, MongoLikeDAO, MongoCommitCommentDAO, UserRecord}
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.domain.{Like, UserReaction, Comment}
 import com.softwaremill.codebrag.dao.reporting.views._
 import scala.Some
+import com.typesafe.scalalogging.slf4j.Logging
 
 class ReactionFinder extends UserReactionToView {
 
@@ -28,6 +29,26 @@ class ReactionFinder extends UserReactionToView {
     val entireReactionsView = mapCommitReactionsToView(entireComments ++ entireLikes, reactionToView)
 
     CommitReactionsView(entireReactionsView, inlineReactionsView)
+  }
+
+}
+
+trait LikesFinder extends Logging {
+
+  def findLikeById(likeId: ObjectId): Option[LikeView] = {
+    LikeRecord.where(_.id eqs likeId).get() match {
+      case Some(like) => {
+        val author = UserRecord.where(_.id eqs like.authorId.get).get()
+        val likeView = if(author.isEmpty) {
+          logger.warn(s"Cannot find author with Id ${like.authorId.get} for like ${likeId}")
+          LikeView(like.id.get.toString, "", like.authorId.get.toString, like.fileName.get, like.lineNumber.get)
+        } else {
+          LikeView(like.id.get.toString, author.get.name.get, like.authorId.get.toString, like.fileName.get, like.lineNumber.get)
+        }
+        Some(likeView)
+      }
+      case None => None
+    }
   }
 
 }
