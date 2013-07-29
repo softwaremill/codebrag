@@ -13,7 +13,7 @@ import com.softwaremill.codebrag.service.comments.UserReactionService
 
 class CommitsServlet(val authenticator: Authenticator,
                      val commitListFinder: CommitFinder,
-                     val reactionFinder: MongoReactionFinder,
+                     val reactionFinder: ReactionFinder,
                      val commentActivity: AddCommentActivity,
                      val commitReviewTaksDao: CommitReviewTaskDAO,
                      val userReactionService: UserReactionService,

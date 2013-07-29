@@ -6,23 +6,28 @@ import com.softwaremill.codebrag.service.comments.command.IncomingLike
 import scala.Some
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import java.util.Date
+import com.softwaremill.codebrag.dao.reporting.{ReactionFinder, MongoReactionFinder}
+import com.softwaremill.codebrag.domain.Like
+import com.softwaremill.codebrag.dao.reporting.views.LikeView
 
 trait LikesEndpoint extends JsonServletWithAuthentication with UserReactionParametersReader {
 
   def userReactionService: UserReactionService
-  def userDao: UserDAO
+  def reactionFinder: ReactionFinder
 
   post("/:id/likes") {
     haltIfNotAuthenticated()
     val incomingLike = buildIncomingLike
     userReactionService.storeLike(incomingLike) match {
-      case Right(savedLike) => {
-        userDao.findById(savedLike.authorId) match {
-          case Some(user) => LikeResponse(savedLike.id.toString, user.name, savedLike.postingTime.toDate, user.avatarUrl)
-          case None => halt(400, s"Invalid user id $savedLike.authorId")
-        }
-      }
+      case Right(savedLike) => response(savedLike)
       case Left(errMessage) => halt(400, errMessage)
+    }
+  }
+
+  def response(savedLike: Like): LikeView = {
+    reactionFinder.findLikeById(savedLike.id) match {
+      case Some(likeView) => likeView
+      case None => halt(400, s"Invalid user id $savedLike.authorId")
     }
   }
 

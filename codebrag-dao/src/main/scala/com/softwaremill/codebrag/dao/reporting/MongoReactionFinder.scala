@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.dao.reporting.views._
 import scala.Some
 import com.typesafe.scalalogging.slf4j.Logging
 
-class MongoReactionFinder extends UserReactionToViewMapper {
+class MongoReactionFinder extends ReactionFinder with UserReactionToViewMapper with LikesFinder {
 
   def findReactionsForCommit(commitId: ObjectId) = {
 
