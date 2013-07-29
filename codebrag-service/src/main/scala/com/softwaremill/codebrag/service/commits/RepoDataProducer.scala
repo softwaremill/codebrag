@@ -6,17 +6,6 @@ import com.typesafe.scalalogging.slf4j.Logging
 import org.eclipse.jgit.util.StringUtils
 import org.eclipse.jgit.transport._
 import com.jcraft.jsch.Session
-import com.softwaremill.codebrag.service.commits.GitSshRepoData
-import com.softwaremill.codebrag.service.commits.GitHubRepoData
-import com.softwaremill.codebrag.service.commits.GitRepoData
-import scala.Some
-import com.softwaremill.codebrag.service.commits.GitSshRepoData
-import com.softwaremill.codebrag.service.commits.GitHubRepoData
-import com.softwaremill.codebrag.service.commits.GitRepoData
-import scala.Some
-import com.softwaremill.codebrag.service.commits.GitSshRepoData
-import com.softwaremill.codebrag.service.commits.GitHubRepoData
-import com.softwaremill.codebrag.service.commits.GitRepoData
 import scala.Some
 import com.typesafe.config.ConfigFactory
 
