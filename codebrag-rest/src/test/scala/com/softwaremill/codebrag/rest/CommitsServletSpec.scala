@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO, UserDAO, CommitInfoDAO}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import com.softwaremill.codebrag.dao.reporting.{ReactionFinder, CommitFinder}
+import com.softwaremill.codebrag.dao.reporting.{MongoReactionFinder, CommitFinder}
 import java.util.Date
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import com.softwaremill.codebrag.activities.AddCommentActivity
@@ -28,7 +28,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var commitsInfoDao = mock[CommitInfoDAO]
   var commitsListFinder = mock[CommitFinder]
   var diffService = mock[DiffWithCommentsService]
-  var userReactionFinder = mock[ReactionFinder]
+  var userReactionFinder = mock[MongoReactionFinder]
   var userDao = mock[UserDAO]
   var commitReviewTaskDao = mock[CommitReviewTaskDAO]
   val UserJson = someUser()

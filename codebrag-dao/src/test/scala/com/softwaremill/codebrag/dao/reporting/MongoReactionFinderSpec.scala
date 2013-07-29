@@ -14,7 +14,7 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
   val userDao = new MongoUserDAO
   val commentDao = new MongoCommitCommentDAO
   val likeDao = new MongoLikeDAO
-  var reactionsFinder: ReactionFinder = _
+  var reactionsFinder: MongoReactionFinder = _
 
   val CommitId = oid(1)
 
@@ -42,7 +42,7 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
 
   override def beforeEach() {
     super.beforeEach()
-    reactionsFinder = new ReactionFinder
+    reactionsFinder = new MongoReactionFinder
 
     StoredCommitComments.foreach(commentDao.save)
     StoredInlineComments.foreach(commentDao.save)

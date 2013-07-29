@@ -1,10 +1,10 @@
 package com.softwaremill.codebrag.service.diff
 
-import com.softwaremill.codebrag.dao.reporting.{ReactionFinder, CommitFinder}
+import com.softwaremill.codebrag.dao.reporting.{MongoReactionFinder, CommitFinder}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitDetailsView}
 
-class DiffWithCommentsService(commitListFinder: CommitFinder, reactionFinder: ReactionFinder, diffService: DiffService) {
+class DiffWithCommentsService(commitListFinder: CommitFinder, reactionFinder: MongoReactionFinder, diffService: DiffService) {
 
   def diffWithCommentsFor(commitId: ObjectId, userId: ObjectId): Either[String, CommitDetailsView] = {
 

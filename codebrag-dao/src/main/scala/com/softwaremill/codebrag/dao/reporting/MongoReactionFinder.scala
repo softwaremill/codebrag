@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.dao.reporting.views._
 import scala.Some
 import com.typesafe.scalalogging.slf4j.Logging
 
-class ReactionFinder extends UserReactionToView {
+class MongoReactionFinder extends UserReactionToViewMapper {
 
   def findReactionsForCommit(commitId: ObjectId) = {
 
@@ -53,7 +53,7 @@ trait LikesFinder extends Logging {
 
 }
 
-trait UserReactionToView {
+trait UserReactionToViewMapper {
 
   def mapInlineReactionsToView(reactions: List[UserReaction], domainToView: (UserReaction, AuthorData) => ReactionView): Map[String, Map[String, ReactionsView]] = {
     val usersCached = findAllUsersIn(reactions)

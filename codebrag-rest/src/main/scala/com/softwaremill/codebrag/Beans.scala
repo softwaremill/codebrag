@@ -30,7 +30,7 @@ trait Beans extends ActorSystemSupport with CommitsModule {
   lazy val commitInfoDao = new MongoCommitInfoDAO
   lazy val followupDao = new MongoFollowupDAO
   lazy val commitListFinder = new MongoCommitWithAuthorDetailsFinder(new MongoCommitFinder)
-  lazy val reactionFinder = new ReactionFinder
+  lazy val reactionFinder = new MongoReactionFinder
   lazy val swagger = new CodebragSwagger
   lazy val ghService = new GitHubAuthService(config)
   lazy val commentDao = new MongoCommitCommentDAO
