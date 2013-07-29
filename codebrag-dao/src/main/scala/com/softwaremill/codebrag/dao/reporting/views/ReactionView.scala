@@ -11,11 +11,12 @@ trait ReactionView {
   def authorName: String
   def authorId: String
   def reactionType: String
+  def time: Date
   def fileName: Option[String]
   def lineNumber: Option[Int]
 }
 
-case class LikeView(id: String, authorName: String, authorId: String, fileName: Option[String] = None, lineNumber: Option[Int] = None) extends ReactionView {
+case class LikeView(id: String, authorName: String, authorId: String, time: Date, fileName: Option[String] = None, lineNumber: Option[Int] = None) extends ReactionView {
   val reactionType = "like"
 }
 

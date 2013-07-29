@@ -15,7 +15,7 @@ class MongoReactionFinder extends ReactionFinder with UserReactionToViewMapper w
     def reactionToView(reaction: UserReaction, authorData: AuthorData) = {
       reaction match {
         case comment: Comment => CommentView(comment.id.toString, authorData.authorName, authorData.authorId, comment.message, comment.postingTime.toDate, authorData.avatarUrl)
-        case like: Like => LikeView(reaction.id.toString, authorData.authorName, authorData.authorId)
+        case like: Like => LikeView(reaction.id.toString, authorData.authorName, authorData.authorId, reaction.postingTime.toDate)
       }
     }
 
@@ -41,9 +41,9 @@ trait LikesFinder extends Logging {
         val author = UserRecord.where(_.id eqs like.authorId.get).get()
         val likeView = if(author.isEmpty) {
           logger.warn(s"Cannot find author with Id ${like.authorId.get} for like ${likeId}")
-          LikeView(like.id.get.toString, "", like.authorId.get.toString, like.fileName.get, like.lineNumber.get)
+          LikeView(like.id.get.toString, "", like.authorId.get.toString, like.date.get, like.fileName.get, like.lineNumber.get)
         } else {
-          LikeView(like.id.get.toString, author.get.name.get, like.authorId.get.toString, like.fileName.get, like.lineNumber.get)
+          LikeView(like.id.get.toString, author.get.name.get, like.authorId.get.toString, like.date.get, like.fileName.get, like.lineNumber.get)
         }
         Some(likeView)
       }
