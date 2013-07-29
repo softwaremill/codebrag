@@ -37,5 +37,3 @@ trait LikesEndpoint extends JsonServletWithAuthentication with UserReactionParam
   }
 
 }
-
-case class LikeResponse(id: String, authorName: String, time: Date, authorAvatarUrl: String = "")
