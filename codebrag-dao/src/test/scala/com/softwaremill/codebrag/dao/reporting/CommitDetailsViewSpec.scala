@@ -27,7 +27,7 @@ class CommitDetailsViewSpec extends FlatSpec with BeforeAndAfterEach with Should
 
   it should "have comments when commit has some general comments" in {
     // given
-    val generalComments = List(CommentView("123", "Mary Smith", "Comment for commit", DateTime.now.toDate))
+    val generalComments = List(CommentView("123", "Mary Smith", "1", "Comment for commit", DateTime.now.toDate))
     val reactions = CommitReactionsView(ReactionsView(Some(generalComments), None), Map())
 
     // when
@@ -40,8 +40,8 @@ class CommitDetailsViewSpec extends FlatSpec with BeforeAndAfterEach with Should
 
   it should "have inline comments when commit has some lines commented" in {
     // given
-    val lineCommentOne = CommentView("123", "John Doe", "Line comment one", DateTime.now.toDate)
-    val lineCommentTwo = CommentView("456", "Mary Smith", "Line comment two", DateTime.now.toDate)
+    val lineCommentOne = CommentView("123", "John Doe", "1", "Line comment one", DateTime.now.toDate)
+    val lineCommentTwo = CommentView("456", "Mary Smith", "2", "Line comment two", DateTime.now.toDate)
     val reactionsForLineZero = ReactionsView(Some(List(lineCommentOne)), None)
     val reactionsForLineOne = ReactionsView(Some(List(lineCommentTwo)), None)
     val fileComments = Map("test.txt" -> Map(0.toString -> reactionsForLineZero, 1.toString -> reactionsForLineOne))

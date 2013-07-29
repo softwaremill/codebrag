@@ -123,16 +123,16 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
     orderedCommentMessagesFor(fileComments, "Exception.scala", 10) should be(List("You'd better refactor that", "Man, it's Monday"))
   }
 
-  it should "return author avatar in comment" in {
-    // given
-    val johnComment = StoredCommitComments(0)
-
+  it should "return author avatar, full name and id in comment" in {
     // when
     val commentsView = reactionsFinder.findReactionsForCommit(CommitId)
 
     // then
     val Some(comments) = commentsView.entireCommitReactions.comments
-    comments(0).asInstanceOf[CommentView].authorAvatarUrl should equal(John.avatarUrl)
+    val comment = comments(0).asInstanceOf[CommentView]
+    comment.authorId should equal(John.id.toString)
+    comment.authorName should equal(John.name)
+    comment.authorAvatarUrl should equal(John.avatarUrl)
   }
 
   it should "return empty string as author avatar if author not registered in codebrag" in {

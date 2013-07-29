@@ -13,8 +13,8 @@ class ReactionFinder extends UserReactionToView {
 
     def reactionToView(reaction: UserReaction, authorData: AuthorData) = {
       reaction match {
-        case comment: Comment => CommentView(comment.id.toString, authorData.authorName, comment.message, comment.postingTime.toDate, authorData.avatarUrl)
-        case like: Like => LikeView(reaction.id.toString, authorData.authorName)
+        case comment: Comment => CommentView(comment.id.toString, authorData.authorName, authorData.authorId, comment.message, comment.postingTime.toDate, authorData.avatarUrl)
+        case like: Like => LikeView(reaction.id.toString, authorData.authorName, authorData.authorId)
       }
     }
 
@@ -71,12 +71,12 @@ trait UserReactionToView {
 
   private def findUserDetails(commenters: List[(ObjectId, String, String)], commenterId: ObjectId) = {
     commenters.find(_._1 == commenterId) match {
-      case Some(author) => AuthorData(author._2, author._3)
-      case None => AuthorData("Unknown author", "")
+      case Some(author) => AuthorData(author._2, author._1.toString, author._3)
+      case None => AuthorData("Unknown author", "", "")
     }
   }
 
-  case class AuthorData(authorName: String, avatarUrl: String)
+  case class AuthorData(authorName: String, authorId: String, avatarUrl: String)
 
 }
 

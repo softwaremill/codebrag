@@ -9,13 +9,14 @@ case class ReactionsView(comments: Option[List[ReactionView]], likes: Option[Lis
 trait ReactionView {
   def id: String
   def authorName: String
+  def authorId: String
   def reactionType: String
 }
 
-case class LikeView(id: String, authorName: String) extends ReactionView {
+case class LikeView(id: String, authorName: String, authorId: String) extends ReactionView {
   val reactionType = "like"
 }
 
-case class CommentView(id: String, authorName: String, message: String, time: Date, authorAvatarUrl: String = "") extends ReactionView {
+case class CommentView(id: String, authorName: String, authorId: String, message: String, time: Date, authorAvatarUrl: String = "") extends ReactionView {
   val reactionType = "comment"
 }
