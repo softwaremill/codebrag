@@ -62,7 +62,7 @@ If you prefer using Codebrag with plain git via ssh (keys) please configure repo
 	    
 	    type = "git-ssh"
 
-	    git-https {
+	    git-ssh {
 	        name = "REPOSITORY_NAME"
 	        uri = "REPOSITORY_URI"
 	        passphrase = "SSH_KEY_PASSPHRASE"
@@ -75,7 +75,7 @@ For example:
 
 	repository {
 	    
-	    type = "git-https"
+	    type = "git-ssh"
 
 	    github {
 	        name = "codebrag"
