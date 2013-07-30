@@ -18,6 +18,6 @@ class LocalRepositoryUpdater(var repoData: RepoData, importService: CommitImport
 }
 
 object LocalRepositoryUpdater {
-  val UpdateCommand = "UpdateCommand"
+  object UpdateCommand
   case class RefreshRepoData(newRepoData: RepoData)
 }
