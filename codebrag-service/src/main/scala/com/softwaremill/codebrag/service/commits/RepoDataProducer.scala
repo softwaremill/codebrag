@@ -27,7 +27,6 @@ class RepoDataProducer(userDao: UserDAO, config: RepositoryConfig) extends Loggi
   }
 
   private def createGitSshConfig() = {
-    ConfigFactory.invalidateCaches()
     logger.info(s"Using repo config: git-ssh, name: ${config.gitSshRepositoryName}, uri: ${config.gitSshRepositoryUri}")
     class MyJschConfigSessionFactory(sshPassphraseCredentialsProvider: CredentialsProvider) extends JschConfigSessionFactory {
       def configure(hc: OpenSshConfig.Host, session: Session) {
