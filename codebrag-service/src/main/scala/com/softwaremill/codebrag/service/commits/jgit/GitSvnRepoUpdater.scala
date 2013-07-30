@@ -25,7 +25,7 @@ class GitSvnRepoUpdater(jGitFacade: JgitFacade, repoHeadDao: RepositoryHeadStore
   def pullRepoChanges(localPath: Path, repoData: RepoData, previousHead: Option[ObjectId]): LogCommand = {
     val svnRepoData = repoData.asInstanceOf[SvnRepoData]
 
-    s"echo ${svnRepoData.password}" #| s"git svn rebase --quiet --username ${svnRepoData.username} ${localPath.toString}" !< ProcessLogger(logger info _)
+    s"echo ${svnRepoData.password}" #| Process(s"git svn rebase --quiet --username ${svnRepoData.username}", localPath.toFile) !< ProcessLogger(logger info _)
 
     logger info "SVN repo updated"
 
