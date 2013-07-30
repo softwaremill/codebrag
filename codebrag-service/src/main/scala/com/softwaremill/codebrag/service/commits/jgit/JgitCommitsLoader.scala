@@ -36,7 +36,7 @@ class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirT
     val git = jGitFacade.pull(localPath, repoData.credentials)
     val headAfterPull = jGitFacade.getHeadId(localPath)
     val previousHead = fetchPreviousHead(repoData)
-    repoHeadDao.update(repoData.remoteUri, ObjectId.toString(headAfterPull))
+    repoHeadDao.update(repoData.repositoryName, ObjectId.toString(headAfterPull))
     previousHead match {
       case Some(sha) => git.log.addRange(sha, headAfterPull)
       case None => {
@@ -50,7 +50,7 @@ class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirT
     val remotePath = repoData.remoteUri
     val git = jGitFacade.clone(remotePath, localPath, repoData.credentials)
     val headAfterPull = jGitFacade.getHeadId(localPath)
-    repoHeadDao.update(repoData.remoteUri, ObjectId.toString(headAfterPull))
+    repoHeadDao.update(repoData.repositoryName, ObjectId.toString(headAfterPull))
     git.log()
   }
 
@@ -60,7 +60,7 @@ class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirT
   }
 
   private def fetchPreviousHead(repoData: RepoData): Option[ObjectId] = {
-    repoHeadDao.get(repoData.remoteUri).map(ObjectId.fromString(_))
+    repoHeadDao.get(repoData.repositoryName).map(ObjectId.fromString(_))
   }
 
 }

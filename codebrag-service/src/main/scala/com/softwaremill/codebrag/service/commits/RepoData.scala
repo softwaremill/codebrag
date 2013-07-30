@@ -8,28 +8,28 @@ trait RepoData {
   def localPathRelativeTo(path: Path): Path
   def credentials: CredentialsProvider
   def credentialsValid: Boolean
+  def repositoryName: String
 }
 
-case class GitHubRepoData(repoOwner: String, repoName: String, token: String) extends RepoData {
-  def remoteUri = s"https://github.com/$repoOwner/$repoName.git"
-  def localPathRelativeTo(path: Path) = path.resolve(repoOwner).resolve(repoName)
+case class GitHubRepoData(repoOwner: String, repositoryName: String, token: String) extends RepoData {
+  def remoteUri = s"https://github.com/$repoOwner/$repositoryName.git"
+  def localPathRelativeTo(path: Path) = path.resolve(repoOwner).resolve(repositoryName)
   def credentials = new UsernamePasswordCredentialsProvider(token, "")
   def credentialsValid = token.nonEmpty
 }
 
-case class GitRepoData(name: String, uri: String, username: String, password: String) extends RepoData {
+case class GitRepoData(repositoryName: String, uri: String, username: String, password: String) extends RepoData {
   def remoteUri = uri
-  def localPathRelativeTo(path: Path) = path.resolve(name)
+  def localPathRelativeTo(path: Path) = path.resolve(repositoryName)
   def credentials = new UsernamePasswordCredentialsProvider(username, password)
   def credentialsValid = true
 }
 
-case class GitSshRepoData(name: String, uri: String, passphrase: String) extends RepoData {
+case class GitSshRepoData(repositoryName: String, uri: String, passphrase: String) extends RepoData {
   def remoteUri = uri
-  def localPathRelativeTo(path: Path) = path.resolve(name)
+  def localPathRelativeTo(path: Path) = path.resolve(repositoryName)
   def credentials = new SshPassphraseCredentialsProvider(passphrase)
   def credentialsValid = true
-
 }
 
 class SshPassphraseCredentialsProvider(passphrase: String) extends CredentialsProvider {

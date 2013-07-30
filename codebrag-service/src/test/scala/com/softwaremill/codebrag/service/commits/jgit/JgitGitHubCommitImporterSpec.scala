@@ -118,7 +118,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
     givenInitialCommit()
     val lastCommit = givenCommit("file.txt", "file content update", "commit2 msg")
     givenAlreadyCalledImport()
-    given(repoHeadStoreMock.get(TestRepoData.remoteUri)).willReturn(Some(lastCommit.getId.name))
+    given(repoHeadStoreMock.get(TestRepoData.repositoryName)).willReturn(Some(lastCommit.getId.name))
     givenCommit("file.txt", "third update content", "third update message")
     givenCommit("file.txt", "fourth update content", "fourth update message")
 

@@ -67,5 +67,6 @@ trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
     def localPathRelativeTo(path: Path) = path.resolve("something")
     def credentials = new UsernamePasswordCredentialsProvider("codebrag-user", "")
     def credentialsValid = true
+    def repositoryName = "something"
   }
 }
