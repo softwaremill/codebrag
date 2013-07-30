@@ -12,13 +12,3 @@ trait CommitCommentDAO {
   def findAllCommentsInThreadWith(comment: Comment): List[Comment]
 
 }
-
-trait LikeDAO {
-
-  def save(like: Like)
-
-  def findLikesForCommit(commitId: ObjectId): List[Like]
-
-  def findAllLikesInThreadWith(comment: Like): List[Like]
-
-}

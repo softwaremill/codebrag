@@ -46,6 +46,18 @@ class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with Sh
     savedLike.lineNumber.get should equal(lineLike.lineNumber)
   }
 
+  it should "load like by id if one exists" taggedAs (RequiresDb) in {
+    //given
+    val like = likeFor(CommitId).get
+    likeDao.save(like)
+
+    // when
+    val Some(found) = likeDao.findById(like.id)
+
+    // then
+    found should equal(like)
+  }
+
   it should "load only likes for commit id" taggedAs (RequiresDb) in {
     // given
     val fixtureLikesList = createLikesFor(CommitId, 3)
