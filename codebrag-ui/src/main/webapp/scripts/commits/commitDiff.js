@@ -246,9 +246,8 @@ angular.module('codebrag.commits')
                     });
 
                     if(alreadyLikedByUser) {
-                        codeRowEl.removeClass('liked-by-user');
+//                        codeRowEl.removeClass('liked-by-user');
                     } else {
-                        alert('like');
                         scope.$apply(function(scope) {
                             scope.like(codeLine.data(fileNameDataAttr), codeLine.data(lineNumberDataAttr)).then(function() {
                                 codeLine.find(codeRowSelector).addClass('liked-by-user');
