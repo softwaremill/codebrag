@@ -12,7 +12,9 @@ class GitSvnRepoUpdater(jGitFacade: JgitFacade, repoHeadDao: RepositoryHeadStore
   def cloneFreshRepo(localPath: Path, repoData: RepoData): LogCommand = {
     val svnRepoData = repoData.asInstanceOf[SvnRepoData]
 
-    s"echo ${svnRepoData.password}" #| s"git svn clone ${svnRepoData.remoteUri} --quiet --username ${svnRepoData.username} ${localPath.toString}" !
+    s"echo ${svnRepoData.password}" #| s"git svn clone ${svnRepoData.remoteUri} --quiet --username ${svnRepoData.username} ${localPath.toString}" !< ProcessLogger(logger info _)
+
+    logger info "SVN repo checked out"
 
     val headAfterPull = jGitFacade.getHeadId(localPath)
     repoHeadDao.update(repoData.remoteUri, ObjectId.toString(headAfterPull))
@@ -23,7 +25,9 @@ class GitSvnRepoUpdater(jGitFacade: JgitFacade, repoHeadDao: RepositoryHeadStore
   def pullRepoChanges(localPath: Path, repoData: RepoData, previousHead: Option[ObjectId]): LogCommand = {
     val svnRepoData = repoData.asInstanceOf[SvnRepoData]
 
-    s"echo ${svnRepoData.password}" #| s"git svn rebase --quiet --username ${svnRepoData.username} ${localPath.toString}" !
+    s"echo ${svnRepoData.password}" #| s"git svn rebase --quiet --username ${svnRepoData.username} ${localPath.toString}" !< ProcessLogger(logger info _)
+
+    logger info "SVN repo updated"
 
     val headAfterPull = jGitFacade.getHeadId(localPath)
     repoHeadDao.update(repoData.remoteUri, ObjectId.toString(headAfterPull))
