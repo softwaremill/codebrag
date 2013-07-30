@@ -4,14 +4,13 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
-import com.softwaremill.codebrag.domain.reactions.CommitLiked
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.{CommitInfoDAO, UserDAO, FollowupDAO}
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
 import org.mockito.BDDMockito._
-import com.softwaremill.codebrag.domain.reactions.CommitLiked
+import com.softwaremill.codebrag.domain.reactions.LikeEvent
 import scala.Some
 import com.softwaremill.codebrag.domain.Like
 
@@ -33,7 +32,7 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
   val likeFileName = "file.txt"
   val likeLineNumber = 27
   val like = Like(likeId, commitId, likeSenderId, likeDate, Some(likeFileName), Some(likeLineNumber))
-  val event = CommitLiked(like)
+  val event = LikeEvent(like)
 
   override def beforeEach() {
     followupDaoMock = mock[FollowupDAO]

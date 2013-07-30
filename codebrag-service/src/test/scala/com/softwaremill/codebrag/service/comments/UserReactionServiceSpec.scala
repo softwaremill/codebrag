@@ -10,7 +10,7 @@ import org.mockito.Matchers._
 import com.softwaremill.codebrag.domain._
 import com.softwaremill.codebrag.service.comments.command.{IncomingLike, IncomingComment}
 import com.softwaremill.codebrag.service.events.MockEventBus
-import com.softwaremill.codebrag.domain.reactions.CommitLiked
+import com.softwaremill.codebrag.domain.reactions.LikeEvent
 import org.mockito.ArgumentCaptor
 
 class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with MockEventBus {
@@ -104,7 +104,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
     val Right(savedLike) = userReactionService.storeLike(InlineLikeForCommit)
 
     // then
-    eventBus.getEvents.head should equal(CommitLiked(savedLike))
+    eventBus.getEvents.head should equal(LikeEvent(savedLike))
   }
 
   it should "not save another like for the same user and line of code" in {

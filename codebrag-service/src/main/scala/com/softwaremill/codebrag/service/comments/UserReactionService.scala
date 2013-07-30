@@ -1,13 +1,12 @@
 package com.softwaremill.codebrag.service.comments
 
-import com.softwaremill.codebrag.dao.{UserDAO, CommitInfoDAO, LikeDAO, CommitCommentDAO}
-import com.softwaremill.codebrag.domain.{CommitInfo, UserReaction, Like, Comment}
+import com.softwaremill.codebrag.dao.{LikeDAO, CommitCommentDAO}
+import com.softwaremill.codebrag.domain.{UserReaction, Like, Comment}
 import pl.softwaremill.common.util.time.Clock
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.service.comments.command.{IncomingUserReaction, IncomingLike, IncomingComment}
+import com.softwaremill.codebrag.service.comments.command.{IncomingLike, IncomingComment}
 import com.softwaremill.codebrag.common.EventBus
-import com.softwaremill.codebrag.domain.reactions.CommitLiked
-import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.domain.reactions.LikeEvent
 
 class UserReactionService(commentDao: CommitCommentDAO, likeDao: LikeDAO, likeValidator: LikeValidator, eventBus: EventBus)(implicit clock: Clock) {
 
@@ -31,7 +30,7 @@ class UserReactionService(commentDao: CommitCommentDAO, likeDao: LikeDAO, likeVa
       case comment: Comment => commentDao.save(comment)
       case like: Like => {
         likeDao.save(like)
-        eventBus.publish(CommitLiked(like))
+        eventBus.publish(LikeEvent(like))
       }
     }
   }
