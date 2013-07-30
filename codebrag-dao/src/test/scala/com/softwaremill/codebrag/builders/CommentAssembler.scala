@@ -7,8 +7,7 @@ import com.softwaremill.codebrag.domain.{Like, Comment}
 object CommentAssembler {
 
   def commentFor(commitId: ObjectId) = {
-    val dummyComment = Comment(new ObjectId, new ObjectId, new ObjectId, DateTime.now, "Comment message")
-    new Assembler(dummyComment.copy(commitId = commitId))
+    new Assembler(Comment(new ObjectId, commitId, new ObjectId, DateTime.now, "Comment message"))
   }
 
   class Assembler(var base: Comment) {
@@ -56,10 +55,9 @@ object CommentAssembler {
 
 object LikeAssembler {
 
-  private val dummyLike = Like(new ObjectId, new ObjectId, new ObjectId, DateTime.now)
 
   def likeFor(commitId: ObjectId) = {
-    new Assembler(dummyLike.copy(commitId = commitId))
+    new Assembler(Like(new ObjectId, commitId, new ObjectId, DateTime.now))
   }
 
   class Assembler(var base: Like) {

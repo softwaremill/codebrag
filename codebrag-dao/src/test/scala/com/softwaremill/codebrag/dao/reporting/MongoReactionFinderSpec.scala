@@ -108,10 +108,9 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
   it should "have comments ordered by date starting from the oldest" taggedAs (RequiresDb) in {
     // given
     val baseDate = DateTime.now
-    val commentBase = CommentAssembler.commentFor(CommitId).withFileNameAndLineNumber("Exception.scala", 10)
     val inlineComments = List(
-      commentBase.withMessage("You'd better refactor that").withAuthorId(John.id).postedAt(baseDate.plusHours(1)).get,
-      commentBase.withMessage("Man, it's Monday").withAuthorId(Mary.id).postedAt(baseDate.plusHours(2)).get
+      CommentAssembler.commentFor(CommitId).withFileNameAndLineNumber("Exception.scala", 10).withMessage("You'd better refactor that").withAuthorId(John.id).postedAt(baseDate.plusHours(1)).get,
+      CommentAssembler.commentFor(CommitId).withFileNameAndLineNumber("Exception.scala", 10).withMessage("Man, it's Monday").withAuthorId(Mary.id).postedAt(baseDate.plusHours(2)).get
     )
     inlineComments.foreach(commentDao.save)
 
