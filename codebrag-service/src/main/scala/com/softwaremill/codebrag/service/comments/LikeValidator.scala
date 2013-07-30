@@ -3,8 +3,12 @@ package com.softwaremill.codebrag.service.comments
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.{LikeDAO, CommitInfoDAO, UserDAO}
 import com.softwaremill.codebrag.domain.{CommitInfo, Like}
+import org.bson.types.ObjectId
 
-class LikeValidator(val commitDao: CommitInfoDAO, val likeDao: LikeDAO, val userDao: UserDAO) extends UserAlreadyLikedItCheck with UserIsCommitAuthorCheck {
+class LikeValidator(val commitDao: CommitInfoDAO, val likeDao: LikeDAO, val userDao: UserDAO)
+  extends UserAlreadyLikedItCheck
+  with UserIsCommitAuthorCheck
+  with UserIsLikeAuthor {
 
   import LikeValidator._
 
@@ -18,12 +22,21 @@ class LikeValidator(val commitDao: CommitInfoDAO, val likeDao: LikeDAO, val user
     }
   }
 
+  def canUserDoUnlike(userId: ObjectId, likeId: ObjectId): Either[String, Unit] = {
+    if(userIsLikeAuthor(userId, likeId)) {
+      Right()
+    } else {
+      Left(LikeValidator.UserIsNotLikeAuthor)
+    }
+  }
+
 }
 
 object LikeValidator {
 
   val UserCantLikeMultipleTimes = "User can't like the same code multiple times"
   val UserCantLikeOwnCode = "User can't like own code"
+  val UserIsNotLikeAuthor = "User is not like's author or like doesn't exist"
 
 }
 trait UserIsCommitAuthorCheck extends Logging {
@@ -52,4 +65,19 @@ trait UserAlreadyLikedItCheck {
     allForTheSameCode.find(_.authorId == like.authorId).nonEmpty
   }
 
+}
+
+trait UserIsLikeAuthor extends Logging {
+
+  def likeDao: LikeDAO
+
+  def userIsLikeAuthor(userId: ObjectId, likeId: ObjectId): Boolean = {
+    likeDao.findById(likeId) match {
+      case Some(like) => like.authorId.equals(userId)
+      case None => {
+        logger.warn(s"Can't find like with id ${likeId.toString}")
+        false
+      }
+    }
+  }
 }
