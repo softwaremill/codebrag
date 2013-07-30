@@ -58,6 +58,18 @@ class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with Sh
     found should equal(like)
   }
 
+  it should "remove like by given id" taggedAs(RequiresDb) in {
+    //given
+    val like = likeFor(CommitId).get
+    likeDao.save(like)
+
+    // when
+    likeDao.remove(like.id)
+
+    // then
+    likeDao.findById(like.id) should be('empty)
+  }
+
   it should "load only likes for commit id" taggedAs (RequiresDb) in {
     // given
     val fixtureLikesList = createLikesFor(CommitId, 3)

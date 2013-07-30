@@ -13,4 +13,6 @@ trait LikeDAO {
 
   def findById(likeId: ObjectId): Option[Like]
 
+  def remove(likeId: ObjectId)
+
 }

@@ -4,8 +4,9 @@ import com.softwaremill.codebrag.domain.Like
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
 import com.foursquare.rogue.LiftRogue._
+import com.typesafe.scalalogging.slf4j.Logging
 
-class MongoLikeDAO extends LikeDAO {
+class MongoLikeDAO extends LikeDAO with Logging {
 
   override def save(like: Like) {
     LikeToRecordBuilder.buildFrom(like).save
@@ -30,6 +31,14 @@ class MongoLikeDAO extends LikeDAO {
       }
     }
     query.fetch().map(RecordToLikeBuilder.buildFrom(_))
+  }
+
+  def remove(likeId: ObjectId) {
+    val likeOpt = LikeRecord.where(_.id eqs likeId).get()
+    likeOpt match {
+      case Some(like) => like.delete_!
+      case None => logger.warn(s"No like with id ${likeId.toString}. Cannot delete it.")
+    }
   }
 
   private object LikeToRecordBuilder {
