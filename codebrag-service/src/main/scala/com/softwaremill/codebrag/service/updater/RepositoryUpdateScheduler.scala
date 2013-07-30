@@ -7,11 +7,11 @@ import com.typesafe.scalalogging.slf4j.Logging
 
 object RepositoryUpdateScheduler extends Logging {
 
-  var actor: ActorRef = _
+  private var actor: ActorRef = _
 
   def initialize(actorSystem: ActorSystem,
                  repoDataProducer: RepoDataProducer,
-                 commitImportService: CommitImportService) {
+                 commitImportService: CommitImportService): ActorRef = {
 
     import actorSystem.dispatcher
 
@@ -26,5 +26,7 @@ object RepositoryUpdateScheduler extends Logging {
     repoDataProducer.createFromConfiguration().foreach { repoData =>
       actor ! LocalRepositoryUpdater.RefreshRepoData(repoData)
     }
+
+    actor
   }
 }

@@ -19,7 +19,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
 
     MongoInit.initialize(config)
 
-    RepositoryUpdateScheduler.initialize(actorSystem, repoDataProducer, commitImportService)
+    val repositoryUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, repoDataProducer, commitImportService)
     context.mount(new UsersServlet(authenticator, registerService, swagger), Prefix + "users")
     context.mount(new CommitsServlet(authenticator, commitListFinder, reactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, swagger, diffWithCommentsService), Prefix + CommitsServlet.MAPPING_PATH)
     context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")
@@ -27,8 +27,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new NotificationCountServlet(authenticator, swagger, notificationCountFinder), Prefix + NotificationCountServlet.MappingPath)
     context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")
     context.mount(new DebugServlet(repoDataProducer, commitImportService, config), Prefix + DebugServlet.MappingPath)
-
-    context.mount(new RefreshRepoDataServlet(repoDataProducer, actorSystem), RefreshRepoDataServlet.MappingPath)
+    context.mount(new RefreshRepoDataServlet(repoDataProducer, repositoryUpdateActor), RefreshRepoDataServlet.MappingPath)
 
     context.put("codebrag", this)
   }
