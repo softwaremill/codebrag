@@ -35,8 +35,9 @@ class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirT
   def pullRepoChanges(localPath: Path, repoData: RepoData): LogCommand = {
     val git = jGitFacade.pull(localPath, repoData.credentials)
     val headAfterPull = jGitFacade.getHeadId(localPath)
+    val previousHead = fetchPreviousHead(repoData)
     repoHeadDao.update(repoData.remoteUri, ObjectId.toString(headAfterPull))
-    fetchPreviousHead(repoData) match {
+    previousHead match {
       case Some(sha) => git.log.addRange(sha, headAfterPull)
       case None => {
         logger.warn("Incosistent repository state, cannot determine last commit in database. Rebuilding from local git log.")
