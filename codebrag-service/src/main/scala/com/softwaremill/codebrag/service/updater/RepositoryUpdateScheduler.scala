@@ -15,15 +15,16 @@ object RepositoryUpdateScheduler extends Logging {
 
     import actorSystem.dispatcher
 
+    actor = actorSystem.actorOf(Props(
+      new LocalRepositoryUpdater(commitImportService)), "repositoryUpdater")
+
+    actorSystem.scheduler.schedule(3 seconds,
+      45 seconds,
+      actor,
+      LocalRepositoryUpdater.UpdateCommand)
+
     repoDataProducer.createFromConfiguration().foreach { repoData =>
-
-      actor = actorSystem.actorOf(Props(
-        new LocalRepositoryUpdater(repoData, commitImportService)), "repositoryUpdater")
-
-      actorSystem.scheduler.schedule(3 seconds,
-        45 seconds,
-        actor,
-        LocalRepositoryUpdater.UpdateCommand)
+      actor ! LocalRepositoryUpdater.RefreshRepoData(repoData)
     }
   }
 }

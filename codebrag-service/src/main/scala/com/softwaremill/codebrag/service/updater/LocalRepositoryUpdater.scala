@@ -4,15 +4,17 @@ import akka.actor.Actor
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.commits.{RepoData, CommitImportService}
 
-class LocalRepositoryUpdater(var repoData: RepoData, importService: CommitImportService) extends Actor with Logging {
+class LocalRepositoryUpdater(importService: CommitImportService) extends Actor with Logging {
+
+  private var repoData: Option[RepoData] = None
 
   def receive = {
-    case msg: LocalRepositoryUpdater.RefreshRepoData => {
-      repoData = msg.newRepoData
+    case LocalRepositoryUpdater.RefreshRepoData(newRepoData)  => {
+      repoData = Some(newRepoData)
       logger.debug("Repository credentials refreshed")
     }
     case LocalRepositoryUpdater.UpdateCommand => {
-      importService.importRepoCommits(repoData)
+      repoData.foreach(importService.importRepoCommits)
     }
   }
 }
