@@ -23,4 +23,4 @@ Each migration name together with run-date is stored in this collection upon suc
 Run
 --
 
-In `run_migration.js` script there is a `config` variable defined. Modify those settings according to your needs and just run migrations with `/path/to/mongo run_migration.js`.
+Just run migrations with `/path/to/mongo <HOST:PORT>/<DATABASE> run_migration.js`.

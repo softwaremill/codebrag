@@ -1,11 +1,9 @@
 // needs to be global so that scripts can access it
 var migrations = [];
 
-var MigrationsEngine = function(config) {
-
+var MigrationsEngine = function() {
+    var migrationsDir = './scripts/';
     var migrationsLogCollection = 'migrations_log';
-    var db = new Mongo(config.serverUrl).getDB(config.dbName);
-
     loadAllMigrations();
     discardAlreadyExecutedMigrations();
 
@@ -53,7 +51,7 @@ var MigrationsEngine = function(config) {
     }
 
     function loadAllMigrations() {
-        listFiles(config.srcDir).map(function(migrationFile) {
+        listFiles(migrationsDir).map(function(migrationFile) {
             return migrationFile.name;
         }).sort().forEach(function(migrationFile) {
                 load(migrationFile);
