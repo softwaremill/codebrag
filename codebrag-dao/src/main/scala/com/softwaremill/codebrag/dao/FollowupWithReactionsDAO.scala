@@ -1,10 +1,11 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{ThreadDetails, FollowupWithReactions}
+import com.softwaremill.codebrag.domain.{UserReaction, ThreadDetails, FollowupWithReactions}
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
+import com.typesafe.scalalogging.slf4j.Logging
 
-trait FollowupWithReactionsDAO {
+trait FollowupWithReactionsDAO extends Logging {
 
   def findById(followupId: ObjectId): Option[FollowupWithReactions]
 
@@ -23,8 +24,15 @@ class MongoFollowupWithReactionsDAO(commentsDao: CommitCommentDAO, likeDao: Like
     val threadRecord = followup.threadId.get
     val thread = ThreadDetails(threadRecord.commitId.get, threadRecord.lineNumber.get, threadRecord.fileName.get)
     val allReactions = commentsDao.findAllCommentsForThread(thread) ++ likeDao.findAllLikesForThread(thread)
-    val Some(lastReaction) = allReactions.find(_.id == followup.lastReaction.get.reactionId.get)
+    val lastReaction = determineLastReaction(allReactions)
     FollowupWithReactions(followup.id.get, followup.receivingUserId.get, thread, lastReaction, allReactions)
+  }
+
+
+  def determineLastReaction(allReactions: List[UserReaction with Product with Serializable]): UserReaction with Product with Serializable = {
+    allReactions.max(new Ordering[UserReaction] {
+      def compare(x: UserReaction, y: UserReaction): Int = x.postingTime.compareTo(y.postingTime)
+    })
   }
 
   def findAllContainingReaction(reactionId: ObjectId) = {
