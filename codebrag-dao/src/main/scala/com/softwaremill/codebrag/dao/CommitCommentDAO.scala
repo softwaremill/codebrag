@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{Like, Comment}
+import com.softwaremill.codebrag.domain.{ThreadDetails, Like, Comment}
 import org.bson.types.ObjectId
 
 trait CommitCommentDAO {
@@ -9,6 +9,6 @@ trait CommitCommentDAO {
 
   def findCommentsForCommit(commitId: ObjectId): List[Comment]
 
-  def findAllCommentsInThreadWith(comment: Comment): List[Comment]
+  def findAllCommentsForThread(thread: ThreadDetails): List[Comment]
 
 }

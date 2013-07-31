@@ -91,8 +91,8 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTes
       commentDao.save(anotherInlineComment)
 
       // when
-      val inlineCommentsRelated = commentDao.findAllCommentsInThreadWith(firstInlineComment)
-      val generalCommentsRelated = commentDao.findAllCommentsInThreadWith(commitComments.head)
+      val inlineCommentsRelated = commentDao.findAllCommentsForThread(firstInlineComment.threadId)
+      val generalCommentsRelated = commentDao.findAllCommentsForThread(commitComments.head.threadId)
 
       // then
       println(inlineCommentsRelated)

@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.Comment
+import com.softwaremill.codebrag.domain.{ThreadDetails, Comment}
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
@@ -16,9 +16,9 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
     comments.map(RecordToCommentBuilder.buildFrom(_))
   }
 
-  def findAllCommentsInThreadWith(comment: Comment) = {
-    val baseQuery = CommentRecord.where(_.commitId eqs comment.commitId)
-    val query = (comment.fileName, comment.lineNumber) match {
+  def findAllCommentsForThread(thread: ThreadDetails) = {
+    val baseQuery = CommentRecord.where(_.commitId eqs thread.commitId)
+    val query = (thread.fileName, thread.lineNumber) match {
       case (Some(fileName), Some(lineNumber)) => {
         baseQuery.and(_.fileName eqs fileName).and(_.lineNumber eqs lineNumber)
       }

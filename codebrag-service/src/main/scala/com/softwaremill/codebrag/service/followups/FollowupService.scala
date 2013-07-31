@@ -41,7 +41,7 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
   }
 
   private def findCommitWithCommentsRelatedTo(comment: Comment): (Option[CommitInfo], List[Comment]) = {
-    (commitInfoDao.findByCommitId(comment.commitId), commitCommentDao.findAllCommentsInThreadWith(comment))
+    (commitInfoDao.findByCommitId(comment.commitId), commitCommentDao.findAllCommentsForThread(comment.threadId))
   }
 
   def usersToGenerateFollowUpsFor(commit: CommitInfo, comments: List[Comment], currentComment: Comment): Set[ObjectId] = {

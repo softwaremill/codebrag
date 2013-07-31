@@ -40,7 +40,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
   it should "generate follow-ups for commit for commit author and all commenters except of current commenter" in {
     // Given
-    given(commitCommentDao.findAllCommentsInThreadWith(JohnComment)).willReturn(JohnAndMaryComments)
+    given(commitCommentDao.findAllCommentsForThread(JohnComment.threadId)).willReturn(JohnAndMaryComments)
 
     // When
     followupService.generateFollowupsForComment(JohnComment)
@@ -52,7 +52,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
   it should "generate follow-ups for commit if the commit author has only a matching e-mail" in {
     // Given
-    given(commitCommentDao.findAllCommentsInThreadWith(JohnComment2)).willReturn(List(JohnComment2))
+    given(commitCommentDao.findAllCommentsForThread(JohnComment2.threadId)).willReturn(List(JohnComment2))
 
     // When
     followupService.generateFollowupsForComment(JohnComment2)
@@ -64,7 +64,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
   it should "generate follow-ups for each user only once" in {
     // Given
-    given(commitCommentDao.findAllCommentsInThreadWith(JohnComment)).willReturn(JohnAndTwoMaryComments)
+    given(commitCommentDao.findAllCommentsForThread(JohnComment.threadId)).willReturn(JohnAndTwoMaryComments)
 
     // When
     followupService.generateFollowupsForComment(JohnComment)
@@ -76,8 +76,8 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
   it should "generate followups for all user in thread" in {
     // Given
-    given(commitCommentDao.findAllCommentsInThreadWith(JohnComment)).willReturn(JohnAndTwoMaryComments)
-    given(commitCommentDao.findAllCommentsInThreadWith(JohnInlineComment)).willReturn(JohnMaryAndBobInlineComments)
+    given(commitCommentDao.findAllCommentsForThread(JohnComment.threadId)).willReturn(JohnAndTwoMaryComments)
+    given(commitCommentDao.findAllCommentsForThread(JohnInlineComment.threadId)).willReturn(JohnMaryAndBobInlineComments)
 
     // When
     followupService.generateFollowupsForComment(JohnComment)  // should generate for mary and betty
@@ -104,7 +104,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
   it should "not generate follow-up for commit author if he does not exist in system" in {
     // Given
-    given(commitCommentDao.findAllCommentsInThreadWith(JohnComment)).willReturn(JohnAndMaryComments)
+    given(commitCommentDao.findAllCommentsForThread(JohnComment.threadId)).willReturn(JohnAndMaryComments)
     given(userDao.findByUserNameOrEmail(Commit.authorName, Commit.authorEmail)).willReturn(None)
 
     // When
@@ -115,7 +115,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 
   it should "throw exception and not generate follow-ups for comments when no comments found" in {
     // Given
-    given(commitCommentDao.findAllCommentsInThreadWith(JohnComment)).willReturn(List.empty)
+    given(commitCommentDao.findAllCommentsForThread(JohnComment.threadId)).willReturn(List.empty)
 
     // When
     val thrown = intercept[RuntimeException] {
