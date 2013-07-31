@@ -58,6 +58,22 @@ class MongoFollowupWithUpdateableReactionsDAOSpec extends FlatSpecWithMongo with
     allWithReaction.map(_.followupId).toSet should be(Set(userFollowup, anotherUserFollowup))
   }
 
+  it should "update followup when reaction is removed" in {
+    // given
+    val followupId = persistReactionsWithFollowup
+    val Some(followup) = followupWithReactionsDao.findById(followupId)
+
+    // when
+    likeDao.remove(secondLike.id)
+    val Some(modified) = followup.removeReaction(secondLike.id)
+    followupWithReactionsDao.update(modified)
+
+    //then
+    val Some(fetched) = followupWithReactionsDao.findById(followupId)
+    fetched.allReactions.map(_.id).toSet should be(Set(firstLike.id, comment.id))
+    fetched.lastReaction should be(firstLike)
+  }
+
 
   def persistFollowupForAnotherUser = {
     followupDao.createOrUpdateExisting(Followup(anotherUserId, comment))
