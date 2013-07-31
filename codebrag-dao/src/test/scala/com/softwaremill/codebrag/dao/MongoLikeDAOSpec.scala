@@ -113,8 +113,8 @@ class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with Sh
     likeDao.save(anotherInlineLike)
 
     // when
-    val inlineLikesRelated = likeDao.findAllLikesInThreadWith(firstInlineLike)
-    val generalLikesRelated = likeDao.findAllLikesInThreadWith(commitLikes.head)
+    val inlineLikesRelated = likeDao.findAllLikesForThread(firstInlineLike.threadId)
+    val generalLikesRelated = likeDao.findAllLikesForThread(commitLikes.head.threadId)
 
     // then
     inlineLikesRelated.toSet should be(Set(firstInlineLike, secondInlineLike))

@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.Like
+import com.softwaremill.codebrag.domain.{ThreadDetails, Like}
 import org.bson.types.ObjectId
 
 trait LikeDAO {
@@ -9,7 +9,7 @@ trait LikeDAO {
 
   def findLikesForCommit(commitId: ObjectId): List[Like]
 
-  def findAllLikesInThreadWith(comment: Like): List[Like]
+  def findAllLikesForThread(thread: ThreadDetails): List[Like]
 
   def findById(likeId: ObjectId): Option[Like]
 

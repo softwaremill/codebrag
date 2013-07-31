@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.Like
+import com.softwaremill.codebrag.domain.{ThreadDetails, Like}
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
 import com.foursquare.rogue.LiftRogue._
@@ -21,13 +21,13 @@ class MongoLikeDAO extends LikeDAO with Logging {
     likes.map(RecordToLikeBuilder.buildFrom(_))
   }
 
-  def findAllLikesInThreadWith(like: Like) = {
-    val query = (like.fileName, like.lineNumber) match {
+  def findAllLikesForThread(thread: ThreadDetails) = {
+    val query = (thread.fileName, thread.lineNumber) match {
       case (Some(fileName), Some(lineNumber)) => {
-        LikeRecord.where(_.commitId eqs like.commitId).and(_.fileName eqs fileName).and(_.lineNumber eqs lineNumber)
+        LikeRecord.where(_.commitId eqs thread.commitId).and(_.fileName eqs fileName).and(_.lineNumber eqs lineNumber)
       }
       case _ => {
-        LikeRecord.where(_.commitId eqs like.commitId).and(_.fileName exists false).and(_.lineNumber exists false)
+        LikeRecord.where(_.commitId eqs thread.commitId).and(_.fileName exists false).and(_.lineNumber exists false)
       }
     }
     query.fetch().map(RecordToLikeBuilder.buildFrom(_))

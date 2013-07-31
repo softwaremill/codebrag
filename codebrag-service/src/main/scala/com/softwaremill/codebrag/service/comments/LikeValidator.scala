@@ -61,7 +61,7 @@ trait UserAlreadyLikedItCheck {
   def likeDao: LikeDAO
 
   def userAlreadyLikedThat(like: Like): Boolean = {
-    val allForTheSameCode = likeDao.findAllLikesInThreadWith(like)
+    val allForTheSameCode = likeDao.findAllLikesForThread(like.threadId)
     allForTheSameCode.find(_.authorId == like.authorId).nonEmpty
   }
 
