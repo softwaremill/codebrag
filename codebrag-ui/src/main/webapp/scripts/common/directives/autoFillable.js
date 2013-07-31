@@ -12,7 +12,7 @@ angular.module('codebrag.common.directives')
             restrict: 'A',
             link: function(scope, element, attrs, ngModel) {
                 $timeout(function() {
-                    if (ngModel.$viewValue !== element.val()) {
+                    if (element.val() && ngModel.$viewValue !== element.val()) {
                         ngModel.$setViewValue(element.val());
                     }
                 }, 500);
