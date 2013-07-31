@@ -13,16 +13,11 @@ case class Followup(receivingUserId: ObjectId, reaction: UserReaction) {
 
 case class FollowupWithUpdateableReactions(followupId: ObjectId, ownerId: ObjectId, thread: ThreadDetails, lastReaction: UserReaction, allReactions: List[UserReaction]) {
 
-  def removeReaction(reactionId: ObjectId) = {
+  def removeReaction(reactionId: ObjectId): Option[FollowupWithUpdateableReactions] = {
     val modifiedReactions = allReactions.filterNot(_.id == reactionId)
-    recalculateLastReaction(modifiedReactions) match {
-      case Some(newLastReaction) => this.copy(allReactions = modifiedReactions, lastReaction = newLastReaction)
-      case None => this.copy(allReactions = modifiedReactions, lastReaction = null)
+    recalculateLastReaction(modifiedReactions).map { lastReaction =>
+      this.copy(allReactions = modifiedReactions, lastReaction = lastReaction)
     }
-  }
-
-  def isEmpty = {
-    allReactions.isEmpty || lastReaction == null
   }
 
   private def recalculateLastReaction(modifiedReactions: List[UserReaction]) = {
