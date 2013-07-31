@@ -5,7 +5,7 @@ import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.{CommitInfoDAO, UserDAO, FollowupDAO}
+import com.softwaremill.codebrag.dao.{FollowupWithReactionsDAO, CommitInfoDAO, UserDAO, FollowupDAO}
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
@@ -22,6 +22,7 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
   var followupDaoMock: FollowupDAO = _
   var userDaoMock: UserDAO = _
   var commitDaoMock: CommitInfoDAO = _
+  var followupWithReactionsDaoMock: FollowupWithReactionsDAO = _
 
   val commitId = new ObjectId
   val likeId = new ObjectId
@@ -38,11 +39,13 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
     followupDaoMock = mock[FollowupDAO]
     userDaoMock = mock[UserDAO]
     commitDaoMock = mock[CommitInfoDAO]
+    followupWithReactionsDaoMock = mock[FollowupWithReactionsDAO]
 
     generator = new FollowupsGeneratorActions {
       override def followupDao = followupDaoMock
       override def userDao = userDaoMock
       override def commitDao = commitDaoMock
+      override def followupWithReactionsDao = followupWithReactionsDaoMock
     }
   }
 
