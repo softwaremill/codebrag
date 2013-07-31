@@ -6,7 +6,8 @@ import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
-import com.softwaremill.codebrag.builders.LikeAssembler._
+import com.softwaremill.codebrag.domain.builder.LikeAssembler
+import LikeAssembler._
 
 class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 

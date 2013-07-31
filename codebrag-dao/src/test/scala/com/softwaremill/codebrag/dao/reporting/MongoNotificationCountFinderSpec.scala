@@ -5,13 +5,12 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import com.softwaremill.codebrag.domain.builder.{CommentAssembler, CommitInfoAssembler}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.ThreadDetails
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import scala.util.Random
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
-import com.softwaremill.codebrag.builders.CommentAssembler
 
 class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with MongoNotificationCountFinderSpecFixture {
 

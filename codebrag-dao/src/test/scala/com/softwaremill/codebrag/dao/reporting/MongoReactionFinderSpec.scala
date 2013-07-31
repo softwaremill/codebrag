@@ -5,9 +5,9 @@ import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.builders.{LikeAssembler, CommentAssembler}
 import com.softwaremill.codebrag.dao.reporting.views.{CommitReactionsView, ReactionsView, CommentView, ReactionView}
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler}
 
 class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with ReactionFinderVerifyHelpers {
 

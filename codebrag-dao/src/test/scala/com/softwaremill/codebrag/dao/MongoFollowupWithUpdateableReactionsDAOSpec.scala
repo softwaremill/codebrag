@@ -2,9 +2,9 @@ package com.softwaremill.codebrag.dao
 
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.builders.{LikeAssembler, CommentAssembler}
 import com.softwaremill.codebrag.domain.{ThreadDetails, Followup}
 import org.joda.time.DateTime
+import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler}
 
 class MongoFollowupWithUpdateableReactionsDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 

@@ -5,10 +5,9 @@ import com.softwaremill.codebrag.domain.Followup
 import org.joda.time.DateTime
 import ObjectIdTestUtils._
 import com.foursquare.rogue.LiftRogue._
-import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler, CommitInfoAssembler}
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.builders.{LikeAssembler, CommentAssembler}
 
 class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 

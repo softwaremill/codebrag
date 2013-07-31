@@ -5,9 +5,9 @@ import com.softwaremill.codebrag.domain.Comment
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
-import com.softwaremill.codebrag.builders.CommentAssembler._
+import com.softwaremill.codebrag.domain.builder.CommentAssembler
+import CommentAssembler._
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
-import com.softwaremill.codebrag.builders.CommentAssembler
 
 class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 

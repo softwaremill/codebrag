@@ -3,12 +3,11 @@ package com.softwaremill.codebrag.dao.reporting
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
+import com.softwaremill.codebrag.domain.builder.{CommentAssembler, UserAssembler, CommitInfoAssembler}
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import scala.Some
 import com.softwaremill.codebrag.dao._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.builders.CommentAssembler
 import com.softwaremill.codebrag.dao.reporting.views.{FollowupLastLikeView, FollowupLastCommentView}
 
 class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
