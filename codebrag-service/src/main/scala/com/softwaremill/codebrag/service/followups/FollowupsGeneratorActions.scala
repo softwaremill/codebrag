@@ -1,9 +1,11 @@
 package com.softwaremill.codebrag.service.followups
 
-import com.softwaremill.codebrag.domain.reactions.{UnlikeEvent, LikeEvent}
-import com.softwaremill.codebrag.domain.Followup
-import com.softwaremill.codebrag.dao.{CommitInfoDAO, UserDAO, FollowupDAO}
+import com.softwaremill.codebrag.dao._
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.domain.Followup
+import scala.Some
+import com.softwaremill.codebrag.domain.reactions.LikeEvent
+import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
 
 trait FollowupsGeneratorActions extends Logging {
 
@@ -12,6 +14,8 @@ trait FollowupsGeneratorActions extends Logging {
   def userDao: UserDAO
 
   def commitDao: CommitInfoDAO
+
+  def followupWithReactionsDao: FollowupWithUpdateableReactionsDAO
 
   def handleCommitLiked(event: LikeEvent) {
     val like = event.like
@@ -28,6 +32,6 @@ trait FollowupsGeneratorActions extends Logging {
   }
 
   def handleUnlikeEvent(event: UnlikeEvent) {
-    logger.debug(s"Processing unlike of ${event.likeId}")
+    logger.debug(s"Removing like ${event.likeId}")
   }
 }
