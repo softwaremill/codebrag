@@ -15,6 +15,7 @@ class MongoFollowupWithUpdateableReactionsDAOSpec extends FlatSpecWithMongo with
 
   val commitId = ObjectIdTestUtils.oid(100)
   val userId = ObjectIdTestUtils.oid(200)
+  val anotherUserId = ObjectIdTestUtils.oid(300)
 
   val baseDate = DateTime.now
   val comment = CommentAssembler.commentFor(commitId).withFileNameAndLineNumber("file.txt", 10).withDate(baseDate).get
@@ -43,6 +44,23 @@ class MongoFollowupWithUpdateableReactionsDAOSpec extends FlatSpecWithMongo with
 
     // then
     followup.lastReaction should equal(secondLike)
+  }
+
+  it should "load all followups containing given reaction" in {
+    // given
+    val userFollowup = persistReactionsWithFollowup
+    val anotherUserFollowup = persistFollowupForAnotherUser
+
+    // when
+    val allWithReaction = followupWithReactionsDao.findAllContainingReaction(comment.id)
+
+    // then
+    allWithReaction.map(_.followupId).toSet should be(Set(userFollowup, anotherUserFollowup))
+  }
+
+
+  def persistFollowupForAnotherUser = {
+    followupDao.createOrUpdateExisting(Followup(anotherUserId, comment))
   }
 
   private def persistReactionsWithFollowup = {

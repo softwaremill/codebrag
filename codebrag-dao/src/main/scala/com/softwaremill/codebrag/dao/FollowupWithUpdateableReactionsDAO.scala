@@ -8,6 +8,7 @@ trait FollowupWithUpdateableReactionsDAO {
 
   def findById(followupId: ObjectId): Option[FollowupWithUpdateableReactions]
 
+  def findAllContainingReaction(reactionId: ObjectId): List[FollowupWithUpdateableReactions]
 }
 
 class MongoFollowupWithUpdateableReactionsDAO(commentsDao: CommitCommentDAO, likeDao: LikeDAO) extends FollowupWithUpdateableReactionsDAO {
@@ -21,7 +22,11 @@ class MongoFollowupWithUpdateableReactionsDAO(commentsDao: CommitCommentDAO, lik
     val thread = ThreadDetails(threadRecord.commitId.get, threadRecord.lineNumber.get, threadRecord.fileName.get)
     val allReactions = commentsDao.findAllCommentsForThread(thread) ++ likeDao.findAllLikesForThread(thread)
     val Some(lastReaction) = allReactions.find(_.id == followup.lastReaction.get.reactionId.get)
-    FollowupWithUpdateableReactions(followup.receivingUserId.get, thread, lastReaction, allReactions)
+    FollowupWithUpdateableReactions(followup.id.get, followup.receivingUserId.get, thread, lastReaction, allReactions)
+  }
+
+  def findAllContainingReaction(reactionId: ObjectId) = {
+    FollowupRecord.where(_.reactions contains reactionId).fetch().map(buildDomainObject(_))
   }
 
 }
