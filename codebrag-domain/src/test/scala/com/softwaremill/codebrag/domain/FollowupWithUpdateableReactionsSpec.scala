@@ -19,7 +19,7 @@ class FollowupWithUpdateableReactionsSpec extends FlatSpec with ShouldMatchers {
 
   it should "remove given reaction from followup" in {
     // given
-    val followup = FollowupWithUpdateableReactions(followupId, userId, thread, like, List(comment, like))
+    val followup = FollowupWithReactions(followupId, userId, thread, like, List(comment, like))
 
     // when
     val Some(modifiedFollowup) = followup.removeReaction(like.id)
@@ -31,7 +31,7 @@ class FollowupWithUpdateableReactionsSpec extends FlatSpec with ShouldMatchers {
 
   it should "be None if last reaction was removed" in {
     // given
-    val followup = FollowupWithUpdateableReactions(followupId, userId, thread, like, List(comment, like))
+    val followup = FollowupWithReactions(followupId, userId, thread, like, List(comment, like))
 
     // when
     val Some(afterFirstRemoval) = followup.removeReaction(like.id)
@@ -44,7 +44,7 @@ class FollowupWithUpdateableReactionsSpec extends FlatSpec with ShouldMatchers {
   it should "set last reaction to the newest one when any reaction is removed " in {
     // given
     val veryFirstComment = CommentAssembler.commentFor(commitId).withDate(baseDate.minusHours(3)).get
-    val followup = FollowupWithUpdateableReactions(followupId, userId, thread, like, List(veryFirstComment, comment, like))
+    val followup = FollowupWithReactions(followupId, userId, thread, like, List(veryFirstComment, comment, like))
 
     // when
     val Some(modifiedFollowup) = followup.removeReaction(veryFirstComment.id)

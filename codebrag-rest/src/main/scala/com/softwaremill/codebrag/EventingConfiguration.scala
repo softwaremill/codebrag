@@ -18,11 +18,11 @@ trait EventingConfiguration extends ActorSystemSupport {
   def commitReviewTaskDao: CommitReviewTaskDAO
   def commitInfoDao: CommitInfoDAO
   def followupDao: FollowupDAO
-  def followupWithReactionsDao: FollowupWithUpdateableReactionsDAO
+  def followupWithReactionsDao: FollowupWithReactionsDAO
 
   val eventLogger = actorSystem.actorOf(Props(classOf[EventLogger]))
   val reviewTaskGeneratorActor = actorSystem.actorOf(Props(new CommitReviewTaskGenerator(userDao, commitReviewTaskDao, commitInfoDao)))
-  val followupGeneratorActor = actorSystem.actorOf(Props(new FollowupsGenerator(followupDao, userDao, commitInfoDao, followupWithReactionsDao: FollowupWithUpdateableReactionsDAO)))
+  val followupGeneratorActor = actorSystem.actorOf(Props(new FollowupsGenerator(followupDao, userDao, commitInfoDao, followupWithReactionsDao: FollowupWithReactionsDAO)))
 
   actorSystem.eventStream.subscribe(eventLogger, classOf[Event])
   actorSystem.eventStream.subscribe(reviewTaskGeneratorActor, classOf[CommitsUpdatedEvent])

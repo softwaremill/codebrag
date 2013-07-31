@@ -6,12 +6,12 @@ import com.softwaremill.codebrag.domain.{ThreadDetails, Followup}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler}
 
-class MongoFollowupWithUpdateableReactionsDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
+class MongoFollowupWithReactionsDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 
   val commentDao = new MongoCommitCommentDAO
   val likeDao = new MongoLikeDAO
   val followupDao = new MongoFollowupDAO
-  val followupWithReactionsDao = new MongoFollowupWithUpdateableReactionsDAO(commentDao, likeDao)
+  val followupWithReactionsDao = new MongoFollowupWithReactionsDAO(commentDao, likeDao)
 
   val commitId = ObjectIdTestUtils.oid(100)
   val userId = ObjectIdTestUtils.oid(200)

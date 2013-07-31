@@ -15,7 +15,7 @@ trait FollowupsGeneratorActions extends Logging {
 
   def commitDao: CommitInfoDAO
 
-  def followupWithReactionsDao: FollowupWithUpdateableReactionsDAO
+  def followupWithReactionsDao: FollowupWithReactionsDAO
 
   def handleCommitLiked(event: LikeEvent) {
     val like = event.like
