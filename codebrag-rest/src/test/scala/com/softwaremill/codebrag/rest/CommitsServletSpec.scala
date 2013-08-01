@@ -18,6 +18,7 @@ import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView
 import org.mockito.Matchers
 import com.softwaremill.codebrag.common.PagingCriteria
 import com.softwaremill.codebrag.service.comments.UserReactionService
+import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
@@ -33,6 +34,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var commitReviewTaskDao = mock[CommitReviewTaskDAO]
   val UserJson = someUser()
   val userReactionService = mock[UserReactionService]
+  val unlikeUseCaseFactory = mock[UnlikeUseCaseFactory]
 
   def bindServlet {
     addServlet(new TestableCommitsServlet(fakeAuthenticator, fakeScentry), "/*")
@@ -135,7 +137,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends CommitsServlet(fakeAuthenticator, commitsListFinder, userReactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, new CodebragSwagger, diffService) {
+    extends CommitsServlet(fakeAuthenticator, commitsListFinder, userReactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, new CodebragSwagger, diffService, unlikeUseCaseFactory) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

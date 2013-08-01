@@ -10,6 +10,7 @@ import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO, UserDAO}
 import com.softwaremill.codebrag.service.comments.UserReactionService
+import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
 
 class CommitsServlet(val authenticator: Authenticator,
                      val commitListFinder: CommitFinder,
@@ -18,7 +19,8 @@ class CommitsServlet(val authenticator: Authenticator,
                      val commitReviewTaksDao: CommitReviewTaskDAO,
                      val userReactionService: UserReactionService,
                      val userDao: UserDAO, val swagger: Swagger,
-                     val diffService: DiffWithCommentsService)
+                     val diffService: DiffWithCommentsService,
+                     val unlikeUseCaseFactory: UnlikeUseCaseFactory)
   extends JsonServletWithAuthentication with JacksonJsonSupport with SwaggerSupport with CommitsEndpoint with CommentsEndpoint with LikesEndpoint {
 
   override protected val applicationName = Some(CommitsServlet.MAPPING_PATH)
