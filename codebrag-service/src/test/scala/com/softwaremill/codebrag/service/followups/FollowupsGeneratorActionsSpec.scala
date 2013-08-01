@@ -5,14 +5,20 @@ import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.{FollowupWithReactionsDAO, CommitInfoDAO, UserDAO, FollowupDAO}
+import com.softwaremill.codebrag.dao._
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
 import org.mockito.BDDMockito._
-import com.softwaremill.codebrag.domain.reactions.LikeEvent
+import com.softwaremill.codebrag.domain.reactions.{UnlikeEvent, LikeEvent}
 import scala.Some
 import com.softwaremill.codebrag.domain.Like
+import com.softwaremill.codebrag.domain.reactions.LikeEvent
+import com.softwaremill.codebrag.domain.Followup
+import scala.Some
+import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
+import com.softwaremill.codebrag.domain.Like
+import com.softwaremill.codebrag.domain.builder.{CommentAssembler, LikeAssembler}
 
 class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterEach with MockitoSugar {
 
@@ -90,6 +96,38 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
 
     // then
     verifyZeroInteractions(followupDaoMock)
+  }
+
+  it should "remove followup for given thread if removed like was the only reaction" in {
+    // given
+    val likeToUnlike = LikeAssembler.likeFor(commitId).get
+    val followup = FollowupWithReactions(new ObjectId, new ObjectId, ThreadDetails(commitId), likeToUnlike, List(likeToUnlike))
+    given(followupWithReactionsDaoMock.findAllContainingReaction(likeToUnlike.id)).willReturn(List(followup))
+
+    // when
+    generator.handleUnlikeEvent(UnlikeEvent(likeToUnlike.id))
+
+    // then
+    verify(followupDaoMock).delete(followup.followupId)
+  }
+
+  it should "update followup for given thread if removed like was not the only reaction" in {
+    // given
+    val likeToUnlike = LikeAssembler.likeFor(commitId).get
+    val comment = CommentAssembler.commentFor(commitId).get
+    val followup = FollowupWithReactions(new ObjectId, new ObjectId, ThreadDetails(commitId), likeToUnlike, List(likeToUnlike, comment))
+    given(followupWithReactionsDaoMock.findAllContainingReaction(likeToUnlike.id)).willReturn(List(followup))
+
+    // when
+    generator.handleUnlikeEvent(UnlikeEvent(likeToUnlike.id))
+
+    // then
+    val captor = ArgumentCaptor.forClass(classOf[FollowupWithReactions])
+    verify(followupWithReactionsDaoMock).update(captor.capture())
+    val modifiedFollowup = captor.getValue
+    modifiedFollowup.allReactions should be(List(comment))
+    modifiedFollowup.lastReaction should be(comment)
+    modifiedFollowup.followupId should be(followup.followupId)
   }
 
 }

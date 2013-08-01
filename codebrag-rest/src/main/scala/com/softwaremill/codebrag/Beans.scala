@@ -4,7 +4,7 @@ import activities.AddCommentActivity
 import com.softwaremill.codebrag.common.{ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.dao.reporting._
 import dao._
-import rest.CodebragSwagger
+import com.softwaremill.codebrag.rest.CodebragSwagger
 import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
 import service.followups.FollowupService
@@ -15,6 +15,7 @@ import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig, GithubConfig}
 import com.typesafe.config.ConfigFactory
+import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
 
 trait Beans extends ActorSystemSupport with CommitsModule {
 
@@ -58,4 +59,6 @@ trait Beans extends ActorSystemSupport with CommitsModule {
   lazy val registerService = new RegisterService(userDao, newUserAdder)
 
   lazy val diffWithCommentsService = new DiffWithCommentsService(commitListFinder, reactionFinder, new DiffService(commitInfoDao))
+
+  lazy val unlikeUseCaseFactory = new UnlikeUseCaseFactory(likeValidator, userReactionService)
 }

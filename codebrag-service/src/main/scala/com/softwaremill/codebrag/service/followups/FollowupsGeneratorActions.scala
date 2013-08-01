@@ -33,5 +33,18 @@ trait FollowupsGeneratorActions extends Logging {
 
   def handleUnlikeEvent(event: UnlikeEvent) {
     logger.debug(s"Removing like ${event.likeId}")
+    val followupsContainingReaction = followupWithReactionsDao.findAllContainingReaction(event.likeId)
+    followupsContainingReaction.foreach {followup =>
+      followup.removeReaction(event.likeId) match {
+        case Some(modified) => {
+          logger.debug(s"Updating followup ${followup.followupId} due to unlike ${event.likeId}")
+          followupWithReactionsDao.update(modified)
+        }
+        case None => {
+          logger.debug(s"Removing followup ${followup.followupId} due to unlike ${event.likeId}. It was the only reaction")
+          followupDao.delete(followup.followupId)
+        }
+      }
+    }
   }
 }
