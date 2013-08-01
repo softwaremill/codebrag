@@ -6,7 +6,7 @@ import pl.softwaremill.common.util.time.Clock
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.comments.command.{IncomingLike, IncomingComment}
 import com.softwaremill.codebrag.common.EventBus
-import com.softwaremill.codebrag.domain.reactions.LikeEvent
+import com.softwaremill.codebrag.domain.reactions.{UnlikeEvent, LikeEvent}
 
 class UserReactionService(commentDao: CommitCommentDAO, likeDao: LikeDAO, likeValidator: LikeValidator, eventBus: EventBus)(implicit clock: Clock) {
 
@@ -23,6 +23,11 @@ class UserReactionService(commentDao: CommitCommentDAO, likeDao: LikeDAO, likeVa
     val commentDomainObject = Comment(new ObjectId, comment.commitId, comment.authorId, clock.currentDateTimeUTC(), comment.message, comment.fileName, comment.lineNumber)
     save(commentDomainObject)
     commentDomainObject
+  }
+
+  def removeLike(likeId: ObjectId) = {
+    likeDao.remove(likeId)
+    eventBus.publish(UnlikeEvent(likeId))
   }
 
   private def save(reaction: UserReaction) {
