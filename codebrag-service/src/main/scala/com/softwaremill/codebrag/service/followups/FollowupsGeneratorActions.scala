@@ -2,10 +2,11 @@ package com.softwaremill.codebrag.service.followups
 
 import com.softwaremill.codebrag.dao._
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.domain.Followup
+import com.softwaremill.codebrag.domain.{FollowupWithNoReactions, FollowupWithReactions, Followup}
 import scala.Some
 import com.softwaremill.codebrag.domain.reactions.LikeEvent
 import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
+import org.bson.types.ObjectId
 
 trait FollowupsGeneratorActions extends Logging {
 
@@ -34,15 +35,25 @@ trait FollowupsGeneratorActions extends Logging {
   def handleUnlikeEvent(event: UnlikeEvent) {
     logger.debug(s"Removing like ${event.likeId}")
     val followupsContainingReaction = followupWithReactionsDao.findAllContainingReaction(event.likeId)
-    followupsContainingReaction.foreach {followup =>
-      followup.removeReaction(event.likeId) match {
-        case Some(modified) => {
-          logger.debug(s"Updating followup ${followup.followupId} due to unlike ${event.likeId}")
-          followupWithReactionsDao.update(modified)
-        }
-        case None => {
-          logger.debug(s"Removing followup ${followup.followupId} due to unlike ${event.likeId}. It was the only reaction")
-          followupDao.delete(followup.followupId)
+    followupsContainingReaction.foreach(followup => updateOrDeleteFollowup(followup, event.likeId))
+  }
+
+  def updateOrDeleteFollowup(followup: Either[FollowupWithNoReactions, FollowupWithReactions], likeId: ObjectId) {
+    followup match {
+      case Left(withNoReactions) => {
+        logger.debug(s"Removing followup ${withNoReactions.followupId} due to unlike ${likeId}. It was the only reaction")
+        followupDao.delete(withNoReactions.followupId)
+      }
+      case Right(withReactions) => {
+        withReactions.removeReaction(likeId) match {
+          case Some(modified) => {
+            logger.debug(s"Updating followup ${withReactions.followupId} due to unlike ${likeId}")
+            followupWithReactionsDao.update(modified)
+          }
+          case None => {
+            logger.debug(s"Removing followup ${withReactions.followupId} due to unlike ${likeId}. It was the only reaction")
+            followupDao.delete(withReactions.followupId)
+          }
         }
       }
     }

@@ -23,3 +23,6 @@ case class FollowupWithReactions(followupId: ObjectId, ownerId: ObjectId, thread
     modifiedReactions.reduceOption((r1, r2) => if(r1.postingTime.isBefore(r2.postingTime)) r2 else r1)
   }
 }
+
+// for cases when all reactions for followup were removed and followup needs to be fetched in order to remove it
+case class FollowupWithNoReactions(followupId: ObjectId, ownerId: ObjectId, thread: ThreadDetails)

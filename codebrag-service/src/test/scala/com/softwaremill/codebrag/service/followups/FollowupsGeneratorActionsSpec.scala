@@ -98,11 +98,24 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
     verifyZeroInteractions(followupDaoMock)
   }
 
+  it should "remove followup for given thread if loaded followup has no reactions already (like was already removed)" in {
+    // given
+    val likeToUnlike = LikeAssembler.likeFor(commitId).get
+    val followup = FollowupWithNoReactions(new ObjectId, new ObjectId, ThreadDetails(commitId))
+    given(followupWithReactionsDaoMock.findAllContainingReaction(likeToUnlike.id)).willReturn(List(Left(followup)))
+
+    // when
+    generator.handleUnlikeEvent(UnlikeEvent(likeToUnlike.id))
+
+    // then
+    verify(followupDaoMock).delete(followup.followupId)
+  }
+
   it should "remove followup for given thread if removed like was the only reaction" in {
     // given
     val likeToUnlike = LikeAssembler.likeFor(commitId).get
     val followup = FollowupWithReactions(new ObjectId, new ObjectId, ThreadDetails(commitId), likeToUnlike, List(likeToUnlike))
-    given(followupWithReactionsDaoMock.findAllContainingReaction(likeToUnlike.id)).willReturn(List(followup))
+    given(followupWithReactionsDaoMock.findAllContainingReaction(likeToUnlike.id)).willReturn(List(Right(followup)))
 
     // when
     generator.handleUnlikeEvent(UnlikeEvent(likeToUnlike.id))
@@ -116,7 +129,7 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
     val likeToUnlike = LikeAssembler.likeFor(commitId).get
     val comment = CommentAssembler.commentFor(commitId).get
     val followup = FollowupWithReactions(new ObjectId, new ObjectId, ThreadDetails(commitId), likeToUnlike, List(likeToUnlike, comment))
-    given(followupWithReactionsDaoMock.findAllContainingReaction(likeToUnlike.id)).willReturn(List(followup))
+    given(followupWithReactionsDaoMock.findAllContainingReaction(likeToUnlike.id)).willReturn(List(Right(followup)))
 
     // when
     generator.handleUnlikeEvent(UnlikeEvent(likeToUnlike.id))

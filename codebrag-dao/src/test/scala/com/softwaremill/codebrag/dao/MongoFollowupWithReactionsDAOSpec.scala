@@ -27,7 +27,7 @@ class MongoFollowupWithReactionsDAOSpec extends FlatSpecWithMongo with ClearData
     val followupId = persistReactionsWithFollowup
 
     // when
-    val Some(followup) = followupWithReactionsDao.findById(followupId)
+    val Some(Right(followup)) = followupWithReactionsDao.findById(followupId)
 
     // then
     followup.allReactions.size should be(3)
@@ -40,7 +40,7 @@ class MongoFollowupWithReactionsDAOSpec extends FlatSpecWithMongo with ClearData
     val followupId = persistReactionsWithFollowup
 
     // when
-    val Some(followup) = followupWithReactionsDao.findById(followupId)
+    val Some(Right(followup)) = followupWithReactionsDao.findById(followupId)
 
     // then
     followup.lastReaction should equal(secondLike)
@@ -55,13 +55,18 @@ class MongoFollowupWithReactionsDAOSpec extends FlatSpecWithMongo with ClearData
     val allWithReaction = followupWithReactionsDao.findAllContainingReaction(comment.id)
 
     // then
-    allWithReaction.map(_.followupId).toSet should be(Set(userFollowup, anotherUserFollowup))
+    allWithReaction.map(_.right.get.followupId).toSet should be(Set(userFollowup, anotherUserFollowup))
+  }
+
+  // it handles a moment when like is already removed and followups are fetched in order to modify it accordingly
+  it should "load followup even if one has no reactions" in {
+
   }
 
   it should "update followup when reaction is removed" in {
     // given
     val followupId = persistReactionsWithFollowup
-    val Some(followup) = followupWithReactionsDao.findById(followupId)
+    val Some(Right(followup)) = followupWithReactionsDao.findById(followupId)
 
     // when
     likeDao.remove(secondLike.id)
@@ -69,7 +74,7 @@ class MongoFollowupWithReactionsDAOSpec extends FlatSpecWithMongo with ClearData
     followupWithReactionsDao.update(modified)
 
     //then
-    val Some(fetched) = followupWithReactionsDao.findById(followupId)
+    val Some(Right(fetched)) = followupWithReactionsDao.findById(followupId)
     fetched.allReactions.map(_.id).toSet should be(Set(firstLike.id, comment.id))
     fetched.lastReaction should be(firstLike)
   }
