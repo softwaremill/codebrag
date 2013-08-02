@@ -945,6 +945,20 @@ a.ribbon:hover {
 .diff-file-container tr.comments-container td {
   padding: 1.15em 1.15em 0;
 }
+.diff-file-container tr.liked-by-others .like.button {
+  background: #f3720b;
+}
+.diff-file-container tr.liked-by-others .like.button .icon-heart {
+  color: #fff;
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+}
+.diff-file-container tr.liked-by-others .like.button .diff-line-num-content {
+  opacity: 0;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
+}
 .diff-file-container tr.liked-by-user .like.button {
   background: #f3720b;
 }
@@ -1025,6 +1039,12 @@ tr:hover .diff-line-num .button i {
   display: inline-block;
   margin-top: 0.2em;
   vertical-align: top;
+}
+.like-commit.liked-by-others .like.button {
+  background: #f3720b;
+}
+.like-commit.liked-by-others .like.button .icon-heart {
+  color: #fff;
 }
 .like-commit.liked-by-user .like.button {
   background: #f3720b;

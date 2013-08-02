@@ -156,7 +156,7 @@ angular.module('codebrag.commits')
     })
 
 
-    .directive('lineReactions', function($compile, $templateCache) {
+    .directive('lineReactions', function($compile, $templateCache, authService) {
 
         var lineReactionsTemplate = $templateCache.get('lineReactions');
 
@@ -184,7 +184,17 @@ angular.module('codebrag.commits')
 
             function _markLineAsLikedWhenRequired(codeRow, lineReactions) {
                 if(lineReactions.likes && lineReactions.likes.length > 0) {
-                    codeRow.addClass('liked-by-user');
+                    if(lineLikedByCurrentUser()) {
+                        codeRow.addClass('liked-by-user');
+                    } else {
+                        codeRow.addClass('liked-by-others');
+                    }
+                }
+
+                function lineLikedByCurrentUser() {
+                    return lineReactions.likes.filter(function(like) {
+                        return like.authorId === authService.loggedInUser.id;
+                    }).length > 0;
                 }
             }
 
@@ -246,7 +256,11 @@ angular.module('codebrag.commits')
                     });
 
                     if(alreadyLikedByUser) {
-//                        codeRowEl.removeClass('liked-by-user');
+                        scope.$apply(function(scope) {
+                            scope.unlike(codeLine.data(fileNameDataAttr), codeLine.data(lineNumberDataAttr)).then(function() {
+                                codeRowEl.removeClass('liked-by-user');
+                            });
+                        });
                     } else {
                         scope.$apply(function(scope) {
                             scope.like(codeLine.data(fileNameDataAttr), codeLine.data(lineNumberDataAttr)).then(function() {

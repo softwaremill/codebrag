@@ -28,6 +28,29 @@ codebrag.CurrentCommit.prototype = {
         this.lineReactions[fileName][lineNumber][reactionType].push(reaction);
     },
 
+    removeLike: function(fileName, lineNumber, likeId) {
+        this._ensureReactionsCollectionExists(fileName, lineNumber, 'likes');
+        var lineLikes = this.lineReactions[fileName][lineNumber]['likes'];
+        var likeToRemove = _.find(lineLikes, function(like) {
+            return like.id === likeId;
+        });
+        lineLikes.splice(lineLikes.indexOf(likeToRemove), 1);
+    },
+
+    findLikeFor: function(userName, fileName, lineNumber) {
+        if(fileName && lineNumber) {
+            this._ensureReactionsCollectionExists(fileName, lineNumber, 'likes');
+            var lineLikes = this.lineReactions[fileName][lineNumber]['likes'];
+            return _.find(lineLikes, function(like) {
+                return like.authorName === userName;
+            });
+        } else {
+            return _.find(this.reactions.likes, function(like) {
+                return like.authorName === userName;
+            })
+        }
+    },
+
     addComment: function(comment) {
         this._addReaction('comments', comment);
     },
