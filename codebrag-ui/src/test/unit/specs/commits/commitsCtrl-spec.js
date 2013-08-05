@@ -12,13 +12,26 @@ describe("Commits Controller", function () {
         scope = $rootScope;
     }));
 
+    it('should have initial list mode set to pending', inject(function($controller, commitsListService) {
+        // given
+        var spy = spyOn(commitsListService, 'loadCommitsPendingReview');
+
+        // when
+       $controller('CommitsCtrl', {$scope: scope});
+
+        // then
+        expect(scope.listViewMode).toBe('pending');
+        expect(spy.callCount).toBe(1);
+    }));
+
     it('should transition to commit list state after switching to "all" mode', inject(function ($controller, commitsListService, $state) {
         // Given
         spyOn($state, "transitionTo");
         $controller('CommitsCtrl', {$scope: scope});
 
         // When
-        scope.switchToAll();
+        scope.listViewMode = 'all';
+        scope.switchListView();
 
         //Then
         expect($state.transitionTo).toHaveBeenCalledWith('commits.list');
@@ -30,7 +43,8 @@ describe("Commits Controller", function () {
         $controller('CommitsCtrl', {$scope: scope});
 
         // When
-        scope.switchToPending();
+        scope.listViewMode = 'pending';
+        scope.switchListView();
 
         //Then
         expect($state.transitionTo).toHaveBeenCalledWith('commits.list');
