@@ -58,6 +58,10 @@ codebrag.uniqueRequestsAwareHttpService = function($http, $q) {
         });
     }
 
+    function delegatePendingRequestsCollection(modifiedHttpService) {
+        modifiedHttpService.pendingRequests = $http.pendingRequests;
+    }
+
     var modifiedHttpService = function(requestConfig) {
         if(checkForDuplicates(requestConfig) && checkIfDuplicated(requestConfig)) {
             return buildRejectedRequestPromise(requestConfig);
@@ -65,5 +69,7 @@ codebrag.uniqueRequestsAwareHttpService = function($http, $q) {
         return $http(requestConfig);
     };
     registerShortcutMethods(modifiedHttpService);
+    delegatePendingRequestsCollection(modifiedHttpService);
+
     return modifiedHttpService;
 };
