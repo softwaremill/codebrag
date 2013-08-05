@@ -4,6 +4,9 @@
             <input type="radio" id="pending" ng-change="switchListView()" ng-model="listViewMode" value="pending"><label class="button" ng-class="{'link': listViewMode != 'pending'}" for="pending">To review</label>
             <input type="radio" id="all" ng-change="switchListView()" ng-model="listViewMode" value="all"><label class="button" ng-class="{'link': listViewMode != 'all'}" for="all">All</label>
         </div>
+        <div class="list-loader" http-request-tracker="commitsList">
+            <span class="info">Loading commits...</span>
+        </div>
         <div class="items-container" scroll-commits-list>
             <!--commit info start-->
             <div class="commit-container" ng-repeat="commit in commits" ng-controller="CommitsListItemCtrl"  mark-current="commit.id"

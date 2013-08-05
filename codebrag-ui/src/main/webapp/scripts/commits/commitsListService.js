@@ -25,7 +25,7 @@ angular.module('codebrag.commits')
                 skip: commits.elements.length,
                 limit: limit
             };
-            return Commits.get(request).$then(function(response) {
+            return Commits.query(request).$then(function(response) {
                 commits.appendElements(response.data.commits);
                 _broadcastNewCommitCountEvent(response.data.totalCount);
                 return commits.elements;
@@ -37,7 +37,7 @@ angular.module('codebrag.commits')
         }
 
         function _loadCommits() {
-            return Commits.get({filter: commitLoadFilter.current}).$then(function (response) {
+            return Commits.query({filter: commitLoadFilter.current}).$then(function (response) {
                 commits.replaceWith(response.data.commits);
                 _broadcastNewCommitCountEvent(response.data.totalCount);
                 return commits.elements;
