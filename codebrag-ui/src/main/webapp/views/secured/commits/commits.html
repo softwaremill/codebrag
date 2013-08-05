@@ -1,11 +1,5 @@
 <div id="commits-tab-content" class="row" ng-controller="CommitsCtrl" auto-fit-height>
     <div class="commits items-list small-3 large-3 columns">
-        <style>
-            div.sorting input[type=radio] {
-                display:none;
-                margin:10px;
-            }
-        </style>
         <div class="sorting">
             <input type="radio" id="pending" ng-change="switchListView()" ng-model="listViewMode" value="pending"><label class="button" ng-class="{'link': listViewMode != 'pending'}" for="pending">To review</label>
             <input type="radio" id="all" ng-change="switchListView()" ng-model="listViewMode" value="all"><label class="button" ng-class="{'link': listViewMode != 'all'}" for="all">All</label>

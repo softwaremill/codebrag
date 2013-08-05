@@ -565,6 +565,10 @@ a.ribbon:hover {
   padding: 1.15em;
   text-align: center;
 }
+.sorting input[type=radio] {
+  display: none;
+  margin: 10px;
+}
 .sorting .button.link {
   color: $body-text-color;
   text-transform: uppercase;
