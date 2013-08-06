@@ -6,9 +6,12 @@ import java.util.Date
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.CommitListView
 import com.softwaremill.codebrag.dao.reporting.views.CommitView
-import com.softwaremill.codebrag.common.PagingCriteria
+import com.softwaremill.codebrag.common.{LoadSurroundingsCriteria, PagingCriteria}
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 import com.softwaremill.codebrag.domain.UserLike
+import com.foursquare.rogue.Query
+import scala.reflect.reify.States
+import com.foursquare.rogue
 
 class MongoCommitFinder extends CommitFinder with CommitReviewedByUserMarker {
 
@@ -39,6 +42,20 @@ class MongoCommitFinder extends CommitFinder with CommitReviewedByUserMarker {
     markAsReviewed(toCommitViews(commits), userId)
   }
 
+  def findSurroundings(criteria: LoadSurroundingsCriteria, userId: ObjectId) = {
+    val allCommitsIds = CommitInfoRecord.select(_.id).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
+    val indexOfGivenCommit = allCommitsIds.indexOf(criteria.commitId)
+    if(indexOfGivenCommit > -1) {
+      val lowerBound = indexOfGivenCommit - criteria.loadLimit
+      val upperBound = indexOfGivenCommit + criteria.loadLimit
+      val surroundingsIds = allCommitsIds.slice(lowerBound, upperBound + 1)
+      val commits = projectionQuery.where(_.id in surroundingsIds).orderAsc(_.committerDate).andAsc(_.authorDate).fetch().map(commit => (PartialCommitDetails.apply _).tupled(commit))
+      Right(markAsReviewed(toCommitViews(commits), userId))
+    } else {
+      Left(s"No such commit ${criteria.commitId.toString}")
+    }
+  }
+  
   private def findCommitsToReview(userId: ObjectId, paging: PagingCriteria) = {
     val commitIds = commitsToReviewForUser(userId).map(_.commitId.get).toSet
     val commitsFromDB = projectionQuery.where(_.id in commitIds).skip(paging.skip).limit(paging.limit)
@@ -112,9 +129,12 @@ class MongoCommitWithAuthorDetailsFinder(baseCommitFinder: CommitFinder) extends
   }
 
   def findCommitInfoById(commitIdStr: String, userId: ObjectId): Either[String, CommitView] = {
-    baseCommitFinder.findCommitInfoById(commitIdStr, userId).right.map(enhanceWithUserData(_))
+    baseCommitFinder.findCommitInfoById(commitIdStr, userId).right.map(enhanceWithUserData)
   }
 
+  def findSurroundings(criteria: LoadSurroundingsCriteria, userId: ObjectId) = {
+    baseCommitFinder.findSurroundings(criteria, userId).right.map(enhanceWithUserData)
+  }
 }
 
 trait CommitViewWithUserDataEnhancer {

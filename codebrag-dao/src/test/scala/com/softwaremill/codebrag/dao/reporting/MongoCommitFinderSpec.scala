@@ -8,7 +8,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
-import com.softwaremill.codebrag.common.PagingCriteria
+import com.softwaremill.codebrag.common.{LoadSurroundingsCriteria, PagingCriteria}
 
 
 class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
@@ -250,15 +250,75 @@ class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wi
     errorMsg should be (s"No such commit $nonExistingCommitId")
   }
 
+  it should "load commit together with its siblings" in {
+    // given
+    val baseDate = DateTime.now
+    val commits = (1 to 10).map { i => CommitInfoAssembler.randomCommit.withCommitDate(baseDate.plusMinutes(i)).get}
+    commits.foreach(commitInfoDao.storeCommit)
+
+    // when
+    val thirdCommit = commits(2)
+    val Right(foundCommits) = commitListFinder.findSurroundings(LoadSurroundingsCriteria(thirdCommit.id, 2), userId)
+
+    // then
+    foundCommits.commits.map(_.id) should be(commitsIdsAsStrings(commits(0), commits(1), commits(2), commits(3), commits(4)))
+  }
+
+  it should "load only next siblings when asked in context of first commit" in {
+    // given
+    val baseDate = DateTime.now
+    val commits = (1 to 10).map { i => CommitInfoAssembler.randomCommit.withCommitDate(baseDate.plusMinutes(i)).get}
+    commits.foreach(commitInfoDao.storeCommit)
+
+    // when
+    val Right(foundCommits) = commitListFinder.findSurroundings(LoadSurroundingsCriteria(commits.head.id, 2), userId)
+
+    // then
+    foundCommits.commits.map(_.id) should be(commitsIdsAsStrings(commits(0), commits(1), commits(2)))
+  }
+
+  it should "load only next/previous siblings when asked in context of first/last commit" in {
+    // given
+    val baseDate = DateTime.now
+    val commits = (1 to 10).map { i => CommitInfoAssembler.randomCommit.withCommitDate(baseDate.plusMinutes(i)).get}
+    commits.foreach(commitInfoDao.storeCommit)
+
+    // when
+    val Right(foundCommitsForFirst) = commitListFinder.findSurroundings(LoadSurroundingsCriteria(commits.head.id, 2), userId)
+    val Right(foundCommitsForLast) = commitListFinder.findSurroundings(LoadSurroundingsCriteria(commits.last.id, 2), userId)
+
+    // then
+    foundCommitsForFirst.commits.map(_.id) should be(commitsIdsAsStrings(commits(0), commits(1), commits(2)))
+    foundCommitsForLast.commits.map(_.id) should be(commitsIdsAsStrings(commits(7), commits(8), commits(9)))
+  }
+
+  it should "return error message when given commit not found" in {
+    // given
+    val baseDate = DateTime.now
+    val commits = (1 to 10).map { i => CommitInfoAssembler.randomCommit.withCommitDate(baseDate.plusMinutes(i)).get}
+    commits.foreach(commitInfoDao.storeCommit)
+
+    // when
+    val nonExistingCommitId = new ObjectId
+    val result = commitListFinder.findSurroundings(LoadSurroundingsCriteria(new ObjectId, 2), userId)
+
+    // then
+    result.isLeft should be(true)
+  }
+
+  def commitsIdsAsStrings(commits: CommitInfo*) = {
+    commits.map(_.id.toString).toList
+  }
+
   def prepareAndStoreSomeCommits(howMany: Int) = {
     val commitsPrepared = (1 to howMany).map{ i => CommitInfoAssembler.randomCommit.withSha(i.toString).withMessage(s"Commit message $i").get }
-    commitsPrepared.foreach{ commitInfoDao.storeCommit(_) }
+    commitsPrepared.foreach(commitInfoDao.storeCommit)
     commitsPrepared.toList
   }
 
 
   def storeCommitReviewTasksFor(userId: ObjectId, commits: CommitInfo*) {
-    commits map { commit => CommitReviewTask(commit.id, user.id) } foreach { commitReviewTaskDao.save(_) }
+    commits map { commit => CommitReviewTask(commit.id, user.id) } foreach { commitReviewTaskDao.save }
   }
 
   def foundCommitView(commitsFound: CommitListView, storedCommits: List[CommitInfo], index: Int): CommitView = {
