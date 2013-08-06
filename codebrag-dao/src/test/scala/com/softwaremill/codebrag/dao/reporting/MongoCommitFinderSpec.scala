@@ -133,7 +133,7 @@ class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wi
     pendingCommitList.commits(1).sha should equal(newerCommit.sha)
   }
 
-  it should "find non-reviewable commits starting from oldest commit date" taggedAs(RequiresDb) in {
+  it should "find all commits starting from oldest commit date" taggedAs(RequiresDb) in {
     // given
     val baseDate = DateTime.now()
     val olderCommit = CommitInfoAssembler.randomCommit.withSha("111").
@@ -178,7 +178,7 @@ class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wi
     pendingCommitList.commits(2).sha should equal(commits(1).sha)
   }
 
-  it should "sort non-pending commits with same commit date by author date" taggedAs(RequiresDb) in {
+  it should "sort all commits with same commit date by author date" taggedAs(RequiresDb) in {
     // given
     val commitDate = DateTime.now()
     val commits = List(
