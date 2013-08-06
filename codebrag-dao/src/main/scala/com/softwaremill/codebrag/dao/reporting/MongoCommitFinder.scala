@@ -10,27 +10,15 @@ import com.softwaremill.codebrag.common.PagingCriteria
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 import com.softwaremill.codebrag.domain.UserLike
 
-class MongoCommitFinder extends CommitFinder {
+class MongoCommitFinder extends CommitFinder with CommitReviewedByUserMarker {
 
   private case class PartialCommitDetails(id: ObjectId, sha: String, message: String, authorName: String,
                                           authorEmail: String, date: Date)
 
-  private def totalReviewTaskCount(userId: ObjectId): Int = {
-    CommitReviewTaskRecord.where(_.userId eqs userId).count().toInt
-  }
-
   override def findCommitsToReviewForUser(userId: ObjectId, paging: PagingCriteria) = {
     val commits = findCommitsToReview(userId, paging)
-    val count = totalReviewTaskCount(userId)
-    CommitListView(toCommitViews(commits), count.toInt)
-  }
-
-  private def findCommitsToReview(userId: ObjectId, paging: PagingCriteria) = {
-    val commitIds = findPendingCommitsIds(userId)
-    val commitsFromDB = projectionQuery.where(_.id in commitIds).skip(paging.skip).limit(paging.limit)
-      .orderAsc(_.committerDate)
-      .andAsc(_.authorDate).fetch()
-    commitsFromDB.map(commit => (PartialCommitDetails.apply _).tupled(commit))
+    val count = commitsCountToReviewForUser(userId)
+    CommitListView(toCommitViews(commits), count)
   }
 
   override def findCommitInfoById(commitIdStr: String, userId: ObjectId) = {
@@ -38,39 +26,45 @@ class MongoCommitFinder extends CommitFinder {
     val commitInfoOption = projectionQuery.where(_.id eqs commitId).get()
     commitInfoOption match {
       case Some(record) => {
-        val commit = (PartialCommitDetails.apply _).tupled(record)
-        Right(markNotPendingReview(toCommitView(commit), findPendingCommitsIds(userId)))
+        val commit = tupleToCommitDetails(record)
+        Right(markAsReviewed(toCommitView(commit), userId))
       }
-      case None => Left(s"No such commit $commitIdStr")
+      case None => Left(s"No such commit ${commitId.toString}")
     }
   }
 
-  private def findPendingCommitsIds(userId: ObjectId) = {
-    val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
-    userReviewTasks.map(_.commitId.get).toSet
+  override def findAll(userId: ObjectId) = {
+    val commitsFromDB = projectionQuery.orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
+    val commits = commitsFromDB.map(commit => tupleToCommitDetails(commit))
+    markAsReviewed(toCommitViews(commits), userId)
+  }
+
+  private def findCommitsToReview(userId: ObjectId, paging: PagingCriteria) = {
+    val commitIds = commitsToReviewForUser(userId).map(_.commitId.get).toSet
+    val commitsFromDB = projectionQuery.where(_.id in commitIds).skip(paging.skip).limit(paging.limit)
+      .orderAsc(_.committerDate)
+      .andAsc(_.authorDate).fetch()
+    commitsFromDB.map(commit => tupleToCommitDetails(commit))
+  }
+
+  private def commitsToReviewForUser(userId: ObjectId) = {
+    CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
+  }
+
+  private def commitsCountToReviewForUser(userId: ObjectId) = {
+    CommitReviewTaskRecord.where(_.userId eqs userId).count().toInt
+  }
+
+  private def tupleToCommitDetails(record: (ObjectId, String, String, String, String, Date)): MongoCommitFinder.this.type#PartialCommitDetails = {
+    (PartialCommitDetails.apply _).tupled(record)
   }
 
   private def projectionQuery = {
     CommitInfoRecord.select(_.id, _.sha, _.message, _.authorName, _.authorEmail, _.authorDate)
   }
 
-  override def findAll(userId: ObjectId) = {
-    val commitsFromDB = projectionQuery.orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
-    val commits = commitsFromDB.map(commit => (PartialCommitDetails.apply _).tupled(commit))
-    val pendingCommitsIds = findPendingCommitsIds(userId)
-    val count = if (pendingCommitsIds.isEmpty) 0 else totalReviewTaskCount(userId)
-    CommitListView(toCommitViews(commits).map(markNotPendingReview(_, pendingCommitsIds)), count)
-  }
-
-  private def markNotPendingReview(commitView: CommitView, commitIdsPendingReview: Set[ObjectId]): CommitView = {
-    if (commitIdsPendingReview.contains(new ObjectId(commitView.id)))
-      commitView
-    else
-      commitView.copy(pendingReview = false)
-  }
-
   private def toCommitViews(commits: List[PartialCommitDetails]) = {
-    commits.map(toCommitView(_))
+    commits.map(toCommitView)
   }
 
   private def toCommitView(commit: PartialCommitDetails) = {
@@ -79,9 +73,51 @@ class MongoCommitFinder extends CommitFinder {
 
 }
 
+trait CommitReviewedByUserMarker {
+
+  def markAsReviewed(commitsViews: List[CommitView], userId: ObjectId) = {
+    val remainingToReview = commitsPendingReviewFor(userId)
+    val marked = commitsViews.map(markIfReviewed(_, remainingToReview))
+    CommitListView(marked, remainingToReview.size)
+  }
+
+  def markAsReviewed(commitView: CommitView, userId: ObjectId) = {
+    val remainingToReview = commitsPendingReviewFor(userId)
+    markIfReviewed(commitView, remainingToReview)
+  }
+
+  private def markIfReviewed(commitView: CommitView, remainingToReview: Set[ObjectId]) = {
+    if (remainingToReview.contains(new ObjectId(commitView.id)))
+      commitView
+    else
+      commitView.copy(pendingReview = false)
+  }
+
+  private def commitsPendingReviewFor(userId: ObjectId) = {
+    val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
+    userReviewTasks.map(_.commitId.get).toSet
+  }
+
+}
 
 
-class MongoCommitWithAuthorDetailsFinder(baseCommitFinder: CommitFinder) extends CommitFinder {
+class MongoCommitWithAuthorDetailsFinder(baseCommitFinder: CommitFinder) extends CommitFinder with CommitViewWithUserDataEnhancer {
+
+  def findCommitsToReviewForUser(userId: ObjectId, paging: PagingCriteria): CommitListView = {
+    enhanceWithUserData(baseCommitFinder.findCommitsToReviewForUser(userId, paging))
+  }
+
+  def findAll(userId: ObjectId): CommitListView = {
+    enhanceWithUserData(baseCommitFinder.findAll(userId))
+  }
+
+  def findCommitInfoById(commitIdStr: String, userId: ObjectId): Either[String, CommitView] = {
+    baseCommitFinder.findCommitInfoById(commitIdStr, userId).right.map(enhanceWithUserData(_))
+  }
+
+}
+
+trait CommitViewWithUserDataEnhancer {
 
   private case class PartialUserDetails(name: String, email: String, avatarUrl: String)
 
@@ -92,31 +128,19 @@ class MongoCommitWithAuthorDetailsFinder(baseCommitFinder: CommitFinder) extends
     }
   }
 
-  def findCommitsToReviewForUser(userId: ObjectId, paging: PagingCriteria): CommitListView = {
-    val commitsViews = baseCommitFinder.findCommitsToReviewForUser(userId, paging)
-    val commitsAuthors = findCommitsAuthors(commitsViews)
-    buildCommitsViewList(commitsViews, commitsAuthors)
-  }
-
-  def findAll(userId: ObjectId): CommitListView = {
-    val commitsViews = baseCommitFinder.findAll(userId)
-    val commitsAuthors = findCommitsAuthors(commitsViews)
-    buildCommitsViewList(commitsViews, commitsAuthors)
-  }
-
-  def findCommitInfoById(commitIdStr: String, userId: ObjectId): Either[String, CommitView] = {
-    baseCommitFinder.findCommitInfoById(commitIdStr, userId) match {
-      case Right(commitView) => {
-        val commitAuthor = findCommitAuthor(commitView)
-        Right(buildCommitView(commitView, commitAuthor))
-      }
-      case Left(msg) => Left(msg)
-    }
-  }
-
-  private def buildCommitView(commit: CommitView, authorOpt: Option[PartialUserDetails]) = {
-    val commitAuthorAvatarUrl = authorAvatar(authorOpt)
+  def enhanceWithUserData(commit: CommitView) = {
+    val commitAuthorOpt = findCommitAuthor(commit)
+    val commitAuthorAvatarUrl = authorAvatar(commitAuthorOpt)
     commit.copy(authorAvatarUrl = commitAuthorAvatarUrl)
+  }
+
+  def enhanceWithUserData(commitsList: CommitListView) = {
+    val authors = findCommitsAuthors(commitsList)
+    val commitsWithAvatars = commitsList.commits.map(commit => {
+      val commitAuthorAvatarUrl = authorAvatar(authors.find(commitAuthoredByUser(commit, _)))
+      commit.copy(authorAvatarUrl = commitAuthorAvatarUrl)
+    })
+    commitsList.copy(commits = commitsWithAvatars)
   }
 
   private def findCommitAuthor(commit: CommitView): Option[PartialUserDetails] = findCommitsAuthors(List(commit)).headOption
@@ -128,14 +152,6 @@ class MongoCommitWithAuthorDetailsFinder(baseCommitFinder: CommitFinder) extends
     val userEmails = commits.map(_.authorEmail).toSet
     val usersFromDB = userProjectionQuery.or(_.where(_.name in userNames), _.where(_.email in userEmails)).fetch()
     usersFromDB.map(user => (PartialUserDetails.apply _).tupled(user))
-  }
-
-  private def buildCommitsViewList(commitsList: CommitListView, authors: List[PartialUserDetails]) = {
-    val commitsWithAvatars = commitsList.commits.map(commit => {
-      val commitAuthorAvatarUrl = authorAvatar(authors.find(commitAuthoredByUser(commit, _)))
-      commit.copy(authorAvatarUrl = commitAuthorAvatarUrl)
-    })
-    commitsList.copy(commits = commitsWithAvatars)
   }
 
   private def userProjectionQuery = UserRecord.select(_.name, _.email, _.avatarUrl)
