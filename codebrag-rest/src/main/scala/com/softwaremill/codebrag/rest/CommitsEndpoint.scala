@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.common.PagingCriteria
+import com.softwaremill.codebrag.common.{LoadSurroundingsCriteria, PagingCriteria}
 import org.scalatra.NotFound
 import com.softwaremill.codebrag.dao.reporting._
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
@@ -15,6 +15,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   def commitReviewTaksDao: CommitReviewTaskDAO
 
   val DefaultPaging = PagingCriteria(0, 7)
+  val DefaultSurroundingsCount = 7
 
   before() {
     haltIfNotAuthenticated
@@ -28,6 +29,15 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     filterOpt match {
       case Some("all") => fetchAllCommits()
       case _ => fetchCommitsPendingReview(PagingCriteria(skip, limit))
+    }
+  }
+
+  get("/:id/context") {
+    val commitId = new ObjectId(params("id"))
+    val limit = params.getOrElse("limit", DefaultSurroundingsCount.toString)
+    commitListFinder.findSurroundings(LoadSurroundingsCriteria(commitId, limit.toInt), new ObjectId(user.id)) match {
+      case Right(commits) => commits
+      case Left(error) => NotFound(error)
     }
   }
 
