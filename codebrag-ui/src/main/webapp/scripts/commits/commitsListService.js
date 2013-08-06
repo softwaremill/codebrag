@@ -5,6 +5,15 @@ angular.module('codebrag.commits')
         var commits = new codebrag.AsyncCollection();
         var totalCount = 0;
 
+        function loadSurroundings(commitId) {
+            commitLoadFilter.setAllMode();
+            return $http.get('/rest/commits/' + commitId + '/context', {requestType: 'commitsList'}).then(function(response) {
+                commits.replaceWith(response.data.commits);
+                _broadcastNewCommitCountEvent(response.data.totalCount);
+                return commits.elements;
+            })
+        }
+
         function loadCommitsPendingReview() {
             commitLoadFilter.setPendingMode();
             return _loadCommits();
@@ -124,7 +133,8 @@ angular.module('codebrag.commits')
             loadAllCommits: loadAllCommits,
             allCommits: allCommits,
             removeCommitAndGetNext: removeCommitAndGetNext,
-            loadCommitById: loadCommitById
+            loadCommitById: loadCommitById,
+            loadSurroundings: loadSurroundings
 		};
 
     });

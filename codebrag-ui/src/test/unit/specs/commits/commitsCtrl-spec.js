@@ -24,32 +24,6 @@ describe("Commits Controller", function () {
         expect(spy.callCount).toBe(1);
     }));
 
-    it('should transition to commit list state after switching to "all" mode', inject(function ($controller, commitsListService, $state) {
-        // Given
-        spyOn($state, "transitionTo");
-        $controller('CommitsCtrl', {$scope: scope});
-
-        // When
-        scope.listViewMode = 'all';
-        scope.switchListView();
-
-        //Then
-        expect($state.transitionTo).toHaveBeenCalledWith('commits.list');
-    }));
-
-    it('should transition to commit list state after switching to "pending" mode', inject(function ($controller, commitsListService, $state) {
-        // Given
-        spyOn($state, "transitionTo");
-        $controller('CommitsCtrl', {$scope: scope});
-
-        // When
-        scope.listViewMode = 'pending';
-        scope.switchListView();
-
-        //Then
-        expect($state.transitionTo).toHaveBeenCalledWith('commits.list');
-    }));
-
     it('should fetch pending commits', inject(function ($controller, commitsListService) {
         // Given
         var spy = spyOn(commitsListService, 'loadCommitsPendingReview').andReturn(pendingCommits);
@@ -62,16 +36,30 @@ describe("Commits Controller", function () {
         expect(spy.callCount).toBe(1);
     }));
 
-    it('should fetch all commits', inject(function ($controller, commitsListService, $q) {
+    it('should fetch all commits when not in commit context', inject(function ($controller, commitsListService, $stateParams) {
         // Given
         spyOn(commitsListService, 'loadCommitsPendingReview'); // called on controller start
         spyOn(commitsListService, 'loadAllCommits');
+        delete $stateParams.id; // make sure $stateParams has no "id" property
 
         // When
         $controller('CommitsCtrl', {$scope: scope});
         scope.loadAllCommits();
 
         expect(commitsListService.loadAllCommits).toHaveBeenCalled();
+    }));
+
+    it('should fetch current commit with surroundings when context', inject(function ($controller, commitsListService, $stateParams) {
+        // Given
+        spyOn(commitsListService, 'loadCommitsPendingReview'); // called on controller start
+        spyOn(commitsListService, 'loadSurroundings');
+        $stateParams.id = '123';
+
+        // When
+        $controller('CommitsCtrl', {$scope: scope});
+        scope.loadAllCommits();
+
+        expect(commitsListService.loadSurroundings).toHaveBeenCalledWith('123');
     }));
 
     it('should fetch commits pending review when controller starts', inject(function ($controller, commitsListService) {
