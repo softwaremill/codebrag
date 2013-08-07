@@ -64,6 +64,7 @@ trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
 
   object TestRepoData extends RepoData {
     override def remoteUri = testRepoPath
+    def branch = "refs/heads/master"
     def localPathRelativeTo(path: Path) = path.resolve("something")
     def credentials = new UsernamePasswordCredentialsProvider("codebrag-user", "")
     def credentialsValid = true

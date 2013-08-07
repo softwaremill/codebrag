@@ -8,8 +8,8 @@ import org.eclipse.jgit.transport.CredentialsProvider
 
 class JgitFacade {
 
-  def clone(remote: String, localPath: Path, credentials: CredentialsProvider): Git =
-    new CloneCommand().setURI(remote).setCredentialsProvider(credentials).setDirectory(localPath.toFile).call()
+  def clone(remote: String, branch: String, localPath: Path, credentials: CredentialsProvider): Git =
+    new CloneCommand().setURI(remote).setCredentialsProvider(credentials).setDirectory(localPath.toFile).setBranch(branch).call()
 
   def pull(localPath: Path, credentials: CredentialsProvider): Git = {
 

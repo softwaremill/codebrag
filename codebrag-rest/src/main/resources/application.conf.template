@@ -10,12 +10,14 @@ repository {
     github {
         owner = "softwaremill"
         name = "codebrag"
+        branch = "refs/heads/master"
         sync-user-login = ""
     }
 
     git-https {
         name = "codebrag"
         uri = "https://github.com/softwaremill/codebrag.git"
+        branch = "refs/heads/master"
         username = ""
         password = ""
     }
@@ -23,6 +25,7 @@ repository {
     git-ssh {
         name = "codebrag"
         uri = "git@github.com:softwaremill/codebrag.git"
+        branch = "refs/heads/master"
         passphrase = ""
     }
 }

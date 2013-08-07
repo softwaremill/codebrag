@@ -48,7 +48,7 @@ class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalGitDirT
 
   def cloneFreshRepo(localPath: Path, repoData: RepoData): LogCommand = {
     val remotePath = repoData.remoteUri
-    val git = jGitFacade.clone(remotePath, localPath, repoData.credentials)
+    val git = jGitFacade.clone(remotePath, repoData.branch, localPath, repoData.credentials)
     val headAfterPull = jGitFacade.getHeadId(localPath)
     repoHeadDao.update(repoData.repositoryName, ObjectId.toString(headAfterPull))
     git.log()

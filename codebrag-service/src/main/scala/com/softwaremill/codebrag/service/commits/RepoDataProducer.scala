@@ -20,27 +20,27 @@ class RepoDataProducer(userDao: UserDAO, config: RepositoryConfig) extends Loggi
   }
 
   private def createHttpsGitConfig() = {
-    logger.info(s"Using repo config: git-https, name: ${config.gitHttpsRepositoryName}, uri: ${config.gitHttpsRepositoryUri}")
+    logger.info(s"Using repo config: git-https, name: ${config.gitHttpsRepositoryName}, uri: ${config.gitHttpsRepositoryUri}, branch: ${config.gitHttpsRepositoryBranch}")
 
-    Some(new GitRepoData(config.gitHttpsRepositoryName, config.gitHttpsRepositoryUri,
+    Some(new GitRepoData(config.gitHttpsRepositoryName, config.gitHttpsRepositoryUri, config.gitHttpsRepositoryBranch,
       config.gitHttpsRepositoryUsername, config.gitHttpsRepositoryPassword))
   }
 
   private def createGitSshConfig() = {
-    logger.info(s"Using repo config: git-ssh, name: ${config.gitSshRepositoryName}, uri: ${config.gitSshRepositoryUri}")
+    logger.info(s"Using repo config: git-ssh, name: ${config.gitSshRepositoryName}, uri: ${config.gitSshRepositoryUri}, branch: ${config.gitSshRepositoryBranch}")
     class MyJschConfigSessionFactory(sshPassphraseCredentialsProvider: CredentialsProvider) extends JschConfigSessionFactory {
       def configure(hc: OpenSshConfig.Host, session: Session) {
         val userInfo = new CredentialsProviderUserInfo(session, sshPassphraseCredentialsProvider)
         session.setUserInfo(userInfo)
       }
     }
-    val sshGitRepoData = new GitSshRepoData(config.gitSshRepositoryName, config.gitSshRepositoryUri, config.gitSshPassphrase)
+    val sshGitRepoData = new GitSshRepoData(config.gitSshRepositoryName, config.gitSshRepositoryUri, config.gitSshRepositoryBranch, config.gitSshPassphrase)
     SshSessionFactory.setInstance(new MyJschConfigSessionFactory(sshGitRepoData.credentials))
     Some(sshGitRepoData)
   }
 
   private def createGithubConfig() = {
-    logger.info(s"Using repo config: github, owner: ${config.githubRepositoryOwner}, name: ${config.githubRepositoryName}")
+    logger.info(s"Using repo config: github, owner: ${config.githubRepositoryOwner}, name: ${config.githubRepositoryName}, branch: ${config.githubRepositoryBranch}")
 
     val authorizedLogin = config.githubRepositorySyncUserLogin
     if (StringUtils.isEmptyOrNull(authorizedLogin)) {
@@ -48,7 +48,7 @@ class RepoDataProducer(userDao: UserDAO, config: RepositoryConfig) extends Loggi
       None
     } else {
       val token = fetchGitHubToken(authorizedLogin)
-      Some(new GitHubRepoData(config.githubRepositoryOwner, config.githubRepositoryName, token))
+      Some(new GitHubRepoData(config.githubRepositoryOwner, config.githubRepositoryName, config.githubRepositoryBranch, token))
     }
   }
 

@@ -31,6 +31,7 @@ To use Codebrag with plain git via https (user/password) please configure reposi
 	    git-https {
 	        name = "REPOSITORY_NAME"
 	        uri = "REPOSITORY_URI"
+	        branch = "BRANCH"
 	        username = "USER_NAME"
 	        password = "PASSWORD"
 	    }
@@ -47,6 +48,7 @@ For example:
 	    github {
 	        name = "codebrag"
 	        uri = "https://github.com/softwaremill/codebrag.git"
+	        branch = "refs/heads/master"
 	        username = "secretuser"
 	        password = "secretpassword"
 	    }
@@ -65,6 +67,7 @@ If you prefer using Codebrag with plain git via ssh (keys) please configure repo
 	    git-ssh {
 	        name = "REPOSITORY_NAME"
 	        uri = "REPOSITORY_URI"
+	        branch = "BRANCH"
 	        passphrase = "SSH_KEY_PASSPHRASE"
 	    }
 	    
@@ -80,6 +83,7 @@ For example:
 	    github {
 	        name = "codebrag"
 	        uri = "git@github.com:softwaremill/codebrag.git"
+	        branch = "refs/heads/master"
 	        passphrase = "secretpassphrase"
 	    }
 	    
@@ -134,6 +138,7 @@ Please configure repository section as follows:
 	    github {
 	        owner = "REPOSITORY_OWNER_USER"
 	        name = "REPOSITORY_NAME"
+	        branch = "BRANCH"
 	        sync-user-login = "SYNC_USER_NAME"
 	    }
 	    
@@ -149,6 +154,7 @@ For example:
 	    github {
 	        owner = "softwaremill"
 	        name = "codebrag"
+	        branch = "refs/heads/master"
 	        sync-user-login = "codebrag"
 	    }
 	    
