@@ -1,10 +1,10 @@
 angular.module('codebrag.common.directives')
 
-    .directive('reactionMessageSummary', function() {
+    .directive('reactionMessageSummary', function($filter) {
 
         return {
             restrict: 'E',
-            template: '<span>{{reactionMessage | truncate:50}}</span>',
+            template: '<span ng-bind-html-unsafe="reactionMessage"></span>',
             replace: true,
             scope: {
                 reaction: '='
@@ -12,7 +12,7 @@ angular.module('codebrag.common.directives')
             link: function(scope, el, attrs) {
                 var reaction = scope.reaction;
                 if(reaction.message) {
-                    scope.reactionMessage = reaction.message;
+                    scope.reactionMessage = $filter('truncate')(reaction.message, 50);
                 } else {
                     scope.reactionMessage = reaction.reactionAuthor + ' liked your code.';
                 }
