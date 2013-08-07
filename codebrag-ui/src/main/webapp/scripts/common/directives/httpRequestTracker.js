@@ -1,5 +1,11 @@
 angular.module('codebrag.common.directives')
 
+    /**
+     * Makes element with this directive visible when there are http requests pending
+     * and hides it with fadeOut when all requests are completed.
+     * If you need to track only certain requests (e.g. only those for loading commits list) provide desired requestType as value of "http-request-tracker" attribute.
+     * Request type provided must match one specified on $http call e.g. $http({method:..., requestType: 'list'}) should be used with http-request-tracker="list"
+     */
 	.directive('httpRequestTracker', function($http) {
 		return {
 			restricted: 'A',
