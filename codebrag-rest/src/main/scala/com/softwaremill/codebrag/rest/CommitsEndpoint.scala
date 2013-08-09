@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.common.{LoadSurroundingsCriteria, PagingCriteria}
+import com.softwaremill.codebrag.common.{LoadMoreCriteria, LoadSurroundingsCriteria}
 import org.scalatra.NotFound
 import com.softwaremill.codebrag.dao.reporting._
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
@@ -14,27 +14,29 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   def commitListFinder: CommitFinder
   def commitReviewTaksDao: CommitReviewTaskDAO
 
-  val DefaultPaging = PagingCriteria(0, 7)
-  val DefaultSurroundingsCount = 7
-
   before() {
     haltIfNotAuthenticated
   }
 
   get("/") {
     val filterOpt = params.get("filter")
-    val skip = extractPathIntOrHalt("skip", DefaultPaging.skip, "skip value must be non-negative", (_ >= 0))
-    val limit = extractPathIntOrHalt("limit", DefaultPaging.limit, "limit value must be positive", (_ > 0))
-
+    val limit = extractPathIntOrHalt("limit", CommitsEndpoint.DefaultPageLimit, "limit value must be positive", (_ > 0))
     filterOpt match {
       case Some("all") => fetchAllCommits()
-      case _ => fetchCommitsPendingReview(PagingCriteria(skip, limit))
+      case _ => {
+        val lastIdOpt = params.get("lastId") match {
+          case Some(id) => Some(new ObjectId(id))
+          case None => None
+        }
+        val criteria = LoadMoreCriteria(lastIdOpt, limit)
+        commitListFinder.findCommitsToReviewForUser(new ObjectId(user.id), criteria)
+      }
     }
   }
 
   get("/:id/context") {
     val commitId = new ObjectId(params("id"))
-    val limit = params.getOrElse("limit", DefaultSurroundingsCount.toString)
+    val limit = params.getOrElse("limit", CommitsEndpoint.DefaultSurroundingsCount.toString)
     commitListFinder.findSurroundings(LoadSurroundingsCriteria(commitId, limit.toInt), new ObjectId(user.id)) match {
       case Right(commits) => commits
       case Left(error) => NotFound(error)
@@ -56,6 +58,12 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     commitReviewTaksDao.delete(reviewTask)
   }
 
-  private def fetchCommitsPendingReview(paging: PagingCriteria) = commitListFinder.findCommitsToReviewForUser(new ObjectId(user.id), paging)
   private def fetchAllCommits() = commitListFinder.findAll(new ObjectId(user.id))
+}
+
+object CommitsEndpoint {
+
+  val DefaultSurroundingsCount = 7
+  val DefaultPageLimit = 7
+
 }

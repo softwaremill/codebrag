@@ -8,7 +8,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
-import com.softwaremill.codebrag.common.{LoadSurroundingsCriteria, PagingCriteria}
+import com.softwaremill.codebrag.common.{LoadMoreCriteria, LoadSurroundingsCriteria}
 
 
 class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
@@ -19,9 +19,9 @@ class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wi
 
   val userId = ObjectIdTestUtils.oid(123)
   val user = User(userId, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "123", "avatarUrl")
-  val DefaultFixturePaging = PagingCriteria(0, 5)
+  val DefaultFixturePaging = LoadMoreCriteria(None, 5)
 
-  it should "find all commits to review for given user only" taggedAs(RequiresDb) in {
+  it should "find page of commits to review for given user only" taggedAs(RequiresDb) in {
     // given
     val storedCommits = prepareAndStoreSomeCommits(howMany = 5)
     storeCommitReviewTasksFor(userId, storedCommits(0), storedCommits(1))
@@ -45,55 +45,32 @@ class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wi
     commitsFound.totalCount should equal(14)
   }
 
-  it should "return correct items for skip 3, limit 2" taggedAs(RequiresDb) in {
+  it should "return next commits after given id" taggedAs(RequiresDb) in {
     // given
     val storedCommits = prepareAndStoreSomeCommits(howMany = 15)
     storeCommitReviewTasksFor(userId, storedCommits.take(14) : _*)
 
     // when
-    val commitsFound = commitListFinder.findCommitsToReviewForUser(userId, PagingCriteria(3, 2))
+    val lastKnownId = storedCommits(3).id
+    val commitsFound = commitListFinder.findCommitsToReviewForUser(userId, LoadMoreCriteria(Some(lastKnownId), 2))
 
     // then
     commitsFound.commits.size should equal(2)
-    commitsFound.commits(0).id should equal(storedCommits(3).id.toString)
-    commitsFound.commits(1).id should equal(storedCommits(4).id.toString)
+    commitsFound.commits(0).id should equal(storedCommits(4).id.toString)
+    commitsFound.commits(1).id should equal(storedCommits(5).id.toString)
   }
 
-  it should "return no items for paging criteria beyond actual collection bounds" taggedAs(RequiresDb) in {
+  it should "return no items when last id provided doesn't exist collection" taggedAs(RequiresDb) in {
     // given
     val storedCommits = prepareAndStoreSomeCommits(howMany = 15)
     storeCommitReviewTasksFor(userId, storedCommits.take(14) : _*)
 
     // when
-    val commitsFound = commitListFinder.findCommitsToReviewForUser(userId, PagingCriteria(113, 2))
+    val nonExistingLastId = new ObjectId
+    val commitsFound = commitListFinder.findCommitsToReviewForUser(userId, LoadMoreCriteria(Some(nonExistingLastId), 2))
 
     // then
     commitsFound.commits should be('empty)
-  }
-
-  it should "find all commits for all users" taggedAs(RequiresDb) in {
-    // given
-    val storedCommits = prepareAndStoreSomeCommits(howMany = 5)
-    storeCommitReviewTasksFor(userId, storedCommits(0), storedCommits(1))
-
-    // when
-    val commitsFound = commitListFinder.findAll(userId)
-
-    // then
-    commitsFound.commits should have size(5)
-  }
-
-  it should "return correct total number of reviewable commits when fetching all" taggedAs(RequiresDb) in {
-    // given
-    val storedCommits = prepareAndStoreSomeCommits(howMany = 5)
-    val commitsToReview = storedCommits.take(2)
-    storeCommitReviewTasksFor(userId, commitsToReview : _*)
-
-    // when
-    val commitsFound = commitListFinder.findAll(userId)
-
-    // then
-    commitsFound.totalCount should equal(commitsToReview.size)
   }
 
   it should "mark commits that are not pending review" taggedAs(RequiresDb) in {
@@ -133,27 +110,6 @@ class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wi
     pendingCommitList.commits(1).sha should equal(newerCommit.sha)
   }
 
-  it should "find all commits starting from oldest commit date" taggedAs(RequiresDb) in {
-    // given
-    val baseDate = DateTime.now()
-    val olderCommit = CommitInfoAssembler.randomCommit.withSha("111").
-      withCommitDate(baseDate).
-      withAuthorDate(baseDate.plusSeconds(11)).get
-    val newerCommit = CommitInfoAssembler.randomCommit.withSha("222").
-      withCommitDate(baseDate.plusSeconds(10)).
-      withAuthorDate(baseDate.plusSeconds(10)).get
-    commitInfoDao.storeCommit(newerCommit)
-    commitInfoDao.storeCommit(olderCommit)
-
-    // when
-    val pendingCommitList = commitListFinder.findAll(userId)
-
-    //then
-    pendingCommitList.commits.length should equal (2)
-    pendingCommitList.commits(0).sha should equal(olderCommit.sha)
-    pendingCommitList.commits(1).sha should equal(newerCommit.sha)
-  }
-
   it should "sort pending commits with same commit date by author date" taggedAs(RequiresDb) in {
     // given
     val commitDate = DateTime.now()
@@ -169,7 +125,7 @@ class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wi
     storeCommitReviewTasksFor(userId, commits : _*)
 
     // when
-    val pendingCommitList = commitListFinder.findCommitsToReviewForUser(userId, DefaultFixturePaging)
+    val pendingCommitList = commitListFinder.findCommitsToReviewForUser(userId, LoadMoreCriteria(None, 3))
 
     //then
     pendingCommitList.commits.length should equal (3)
@@ -178,7 +134,7 @@ class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wi
     pendingCommitList.commits(2).sha should equal(commits(1).sha)
   }
 
-  it should "sort all commits with same commit date by author date" taggedAs(RequiresDb) in {
+  it should "sort commits with surroundings with the same commit date by author date" taggedAs(RequiresDb) in {
     // given
     val commitDate = DateTime.now()
     val commits = List(
@@ -191,9 +147,11 @@ class MongoCommitFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wi
     commits.foreach({commitInfoDao.storeCommit(_)})
 
     // when
-    val pendingCommitList = commitListFinder.findAll(userId)
+    val centralCommitId = commits(1).id
+    val Right(pendingCommitList) = commitListFinder.findSurroundings(LoadSurroundingsCriteria(centralCommitId, 3), userId)
 
     //then
+
     pendingCommitList.commits.length should equal (3)
     pendingCommitList.commits(0).sha should equal(commits(2).sha)
     pendingCommitList.commits(1).sha should equal(commits(0).sha)

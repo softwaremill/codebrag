@@ -16,7 +16,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
 import org.mockito.Matchers
-import com.softwaremill.codebrag.common.PagingCriteria
+import com.softwaremill.codebrag.common.{LoadSurroundingsCriteria, LoadMoreCriteria}
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
 
@@ -47,25 +47,25 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     }
   }
 
-  "GET /commits" should "should return commits pending review" in {
+  "GET /commits" should "return commits pending review" in {
     val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(0, 7))).thenReturn(SamplePendingCommits)
+    when(commitsListFinder.findCommitsToReviewForUser(userId, LoadMoreCriteria(None, CommitsEndpoint.DefaultPageLimit))).thenReturn(SamplePendingCommits)
     get("/") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
     }
   }
 
-  "GET /commits?skip=-1" should "should return error status with message" in {
+  "GET /commits?limit=-1" should "return error status with message" in {
     givenStandardAuthenticatedUser()
     // when
-    get("/?skip=-1") {
+    get("/?limit=-1") {
       status should be(400)
-      body should equal("skip value must be non-negative")
+      body should equal("limit value must be positive")
     }
   }
 
-  "GET /commits?limit=0" should "should return error status with message" in {
+  "GET /commits?limit=0" should "return error status with message" in {
     givenStandardAuthenticatedUser()
     // when
     get("/?limit=0") {
@@ -74,38 +74,21 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     }
   }
 
-    "GET /commits?skip=5" should "should query for commits with proper skip value" in {
+    "GET /commits?lastId=5203a1383004c520de95ee76" should "query for commits with proper skip value" in {
     val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(5, 7))).thenReturn(SamplePendingCommits)
-    get("/?skip=5") {
+    val expectedLastId = new ObjectId("5203a1383004c520de95ee76")
+    when(commitsListFinder.findCommitsToReviewForUser(userId, LoadMoreCriteria(Some(expectedLastId), CommitsEndpoint.DefaultPageLimit))).thenReturn(SamplePendingCommits)
+    get("/?skip=5203a1383004c520de95ee76") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
     }
   }
 
-  "GET /commits?limit=22" should "should query for commits with proper limit value" in {
+  "GET /commits?lastId=5203a1383004c520de95ee76&limit=2" should "query for commits with proper limit value" in {
     val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(0, 22))).thenReturn(SamplePendingCommits)
-    get("/?limit=22") {
-      status should be(200)
-      body should equal(asJson(SamplePendingCommits))
-    }
-  }
-
-  "GET /commits?limit=22&skip=21" should "should query for commits with proper limit and skip values" in {
-    val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(21, 22))).thenReturn(SamplePendingCommits)
-    get("/?limit=22&skip=21") {
-      status should be(200)
-      body should equal(asJson(SamplePendingCommits))
-    }
-  }
-
-  "GET /commits?filter=pending" should "should return commits pending review" in {
-    val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(0, 7))).thenReturn(SamplePendingCommits)
-
-    get("/?filter=pending") {
+    val expectedLastId = new ObjectId("5203a1383004c520de95ee76")
+    when(commitsListFinder.findCommitsToReviewForUser(userId, LoadMoreCriteria(Some(expectedLastId), 2))).thenReturn(SamplePendingCommits)
+    get("/?lastId=5203a1383004c520de95ee76&limit=2") {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
     }
@@ -118,6 +101,15 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
       status should be(200)
       body should equal(asJson(SamplePendingCommits))
       verify(commitsListFinder, never()).findCommitInfoById(anyString(), Matchers.eq(userId))
+    }
+  }
+
+  "GET /commits/5203a1383004c520de95ee76/context" should "should return commit with its surrounding" in {
+    val userId = givenStandardAuthenticatedUser()
+    when(commitsListFinder.findSurroundings(LoadSurroundingsCriteria(new ObjectId("5203a1383004c520de95ee76"), CommitsEndpoint.DefaultSurroundingsCount), userId)).thenReturn(Right(SamplePendingCommits))
+    get("/5203a1383004c520de95ee76/context") {
+      status should be(200)
+      body should equal(asJson(SamplePendingCommits))
     }
   }
 

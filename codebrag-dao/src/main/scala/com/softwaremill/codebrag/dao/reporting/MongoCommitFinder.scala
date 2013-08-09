@@ -6,19 +6,17 @@ import java.util.Date
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.CommitListView
 import com.softwaremill.codebrag.dao.reporting.views.CommitView
-import com.softwaremill.codebrag.common.{LoadSurroundingsCriteria, PagingCriteria}
+import com.softwaremill.codebrag.common.{LoadMoreCriteria, LoadSurroundingsCriteria}
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 import com.softwaremill.codebrag.domain.UserLike
-import com.foursquare.rogue.Query
-import scala.reflect.reify.States
-import com.foursquare.rogue
+import com.typesafe.scalalogging.slf4j.Logging
 
-class MongoCommitFinder extends CommitFinder with CommitReviewedByUserMarker {
+class MongoCommitFinder extends CommitFinder with CommitReviewedByUserMarker with Logging {
 
   private case class PartialCommitDetails(id: ObjectId, sha: String, message: String, authorName: String,
                                           authorEmail: String, date: Date)
 
-  override def findCommitsToReviewForUser(userId: ObjectId, paging: PagingCriteria) = {
+  override def findCommitsToReviewForUser(userId: ObjectId, paging: LoadMoreCriteria) = {
     val commits = findCommitsToReview(userId, paging)
     val count = commitsCountToReviewForUser(userId)
     CommitListView(toCommitViews(commits), count)
@@ -55,12 +53,23 @@ class MongoCommitFinder extends CommitFinder with CommitReviewedByUserMarker {
       Left(s"No such commit ${criteria.commitId.toString}")
     }
   }
-  
-  private def findCommitsToReview(userId: ObjectId, paging: PagingCriteria) = {
+
+  private def findCommitsToReview(userId: ObjectId, paging: LoadMoreCriteria) = {
     val commitIds = commitsToReviewForUser(userId).map(_.commitId.get).toSet
-    val commitsFromDB = projectionQuery.where(_.id in commitIds).skip(paging.skip).limit(paging.limit)
-      .orderAsc(_.committerDate)
-      .andAsc(_.authorDate).fetch()
+    val ids = CommitInfoRecord.select(_.id).where(_.id in commitIds).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
+    paging.lastCommitId match {
+      case Some(id) => {
+        val indexOfLast = ids.indexOf(id)
+        if(indexOfLast > -1) commitsSlice(indexOfLast + 1, paging.limit, ids) else List.empty
+      }
+      case _ => commitsSlice(0, paging.limit, ids)
+    }
+  }
+
+  private def commitsSlice(startingIndex: Int, limit: Int, ids: List[ObjectId]) = {
+    val maxIndex = startingIndex + limit
+    val newList = ids.slice(startingIndex, maxIndex)
+    val commitsFromDB = projectionQuery.where(_.id in newList).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
     commitsFromDB.map(commit => tupleToCommitDetails(commit))
   }
 
@@ -120,7 +129,7 @@ trait CommitReviewedByUserMarker {
 
 class MongoCommitWithAuthorDetailsFinder(baseCommitFinder: CommitFinder) extends CommitFinder with CommitViewWithUserDataEnhancer {
 
-  def findCommitsToReviewForUser(userId: ObjectId, paging: PagingCriteria): CommitListView = {
+  def findCommitsToReviewForUser(userId: ObjectId, paging: LoadMoreCriteria) = {
     enhanceWithUserData(baseCommitFinder.findCommitsToReviewForUser(userId, paging))
   }
 
@@ -135,6 +144,7 @@ class MongoCommitWithAuthorDetailsFinder(baseCommitFinder: CommitFinder) extends
   def findSurroundings(criteria: LoadSurroundingsCriteria, userId: ObjectId) = {
     baseCommitFinder.findSurroundings(criteria, userId).right.map(enhanceWithUserData)
   }
+
 }
 
 trait CommitViewWithUserDataEnhancer {
