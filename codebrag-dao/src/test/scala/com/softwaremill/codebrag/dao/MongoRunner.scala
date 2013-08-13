@@ -56,7 +56,7 @@ object MongoRunner extends Logging {
       throw new Exception("Mongo pidfile (with content) already present:\n   '" + pidFile + "'.\nStop the mongo process and it should empty the file:\n\n   kill `cat " + pidFile +"`\n")
     }
     val command = mongoExecutable+" --dbpath="+temporaryDataDir.getAbsolutePath+
-      " --port="+port+" --nojournal" +
+      " --port="+port+" --nojournal --smallfiles" +
       " --pidfilepath " + pidFile
     val killableProcess = new KillableProcess(command, "'port="+port+"'")
     killableProcess.start()
