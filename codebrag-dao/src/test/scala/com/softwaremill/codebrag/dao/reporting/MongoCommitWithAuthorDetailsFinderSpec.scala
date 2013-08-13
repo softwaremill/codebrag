@@ -5,7 +5,7 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
-import com.softwaremill.codebrag.common.LoadMoreCriteria
+import com.softwaremill.codebrag.common.PagingCriteria
 import org.scalatest.mock.MockitoSugar
 import java.util.Date
 import org.mockito.Mockito
@@ -29,7 +29,7 @@ class MongoCommitWithAuthorDetailsFinderSpec extends FlatSpecWithMongo with Clea
   val bobsCommit = CommitView(ObjectIdTestUtils.oid(20).toString, "sha", "this is commit message", "Bob Nonexisting", "bob@doe.com", new Date())
   val aliceCommit = CommitView(ObjectIdTestUtils.oid(30).toString, "sha", "this is commit message", "Alice Doe", "alice@doe.com", new Date())
 
-  val page = LoadMoreCriteria(None, 10)
+  val page = PagingCriteria(None, None, 10)
 
   it should "add author avatar to commit" taggedAs(RequiresDb) in {
     testAddAuthorAvatorToCommit(John)

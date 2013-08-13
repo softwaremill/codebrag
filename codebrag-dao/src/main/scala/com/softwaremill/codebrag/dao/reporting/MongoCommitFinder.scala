@@ -6,7 +6,7 @@ import java.util.Date
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.CommitListView
 import com.softwaremill.codebrag.dao.reporting.views.CommitView
-import com.softwaremill.codebrag.common.{LoadMoreCriteria, LoadSurroundingsCriteria}
+import com.softwaremill.codebrag.common.{PagingCriteria, SurroundingsCriteria}
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 import com.softwaremill.codebrag.domain.UserLike
 import com.typesafe.scalalogging.slf4j.Logging
@@ -16,13 +16,21 @@ class MongoCommitFinder extends CommitFinder with CommitReviewedByUserMarker wit
   private case class PartialCommitDetails(id: ObjectId, sha: String, message: String, authorName: String,
                                           authorEmail: String, date: Date)
 
-  override def findCommitsToReviewForUser(userId: ObjectId, paging: LoadMoreCriteria) = {
-    val commits = findCommitsToReview(userId, paging)
-    val count = commitsCountToReviewForUser(userId)
-    CommitListView(toCommitViews(commits), count)
+  def findAllCommits(paging: PagingCriteria, userId: ObjectId) = {
+    val allCommitsIds = CommitInfoRecord.select(_.id).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
+    val commitsSlice = slicePageUsingCriteria(allCommitsIds, paging)
+    markAsReviewed(toCommitViews(commitsSlice), userId)
   }
 
-  override def findCommitInfoById(commitIdStr: String, userId: ObjectId) = {
+  def findCommitsToReviewForUser(userId: ObjectId, paging: PagingCriteria) = {
+    val commitsIdsToReview =  commitsToReviewForUser(userId).map(_.commitId.get).toSet
+    val commitsIdsSorted = CommitInfoRecord.select(_.id).where(_.id in commitsIdsToReview).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
+    val commitsSlice = slicePageUsingCriteria(commitsIdsSorted, paging)
+    val count = commitsCountToReviewForUser(userId)
+    CommitListView(toCommitViews(commitsSlice), count)
+  }
+
+  def findCommitInfoById(commitIdStr: String, userId: ObjectId) = {
     val commitId = new ObjectId(commitIdStr)
     val commitInfoOption = projectionQuery.where(_.id eqs commitId).get()
     commitInfoOption match {
@@ -34,43 +42,41 @@ class MongoCommitFinder extends CommitFinder with CommitReviewedByUserMarker wit
     }
   }
 
-  override def findAll(userId: ObjectId) = {
-    val commitsFromDB = projectionQuery.orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
-    val commits = commitsFromDB.map(commit => tupleToCommitDetails(commit))
+  def findSurroundings(criteria: SurroundingsCriteria, userId: ObjectId) = {
+    val allCommitsIds = CommitInfoRecord.select(_.id).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
+    def boundsForSurroundings(givenIndex: Int) = (givenIndex - criteria.loadLimit, givenIndex + criteria.loadLimit + 1)
+    val commits = loadCommitsWithinBounds(allCommitsIds, Some(criteria.commitId), criteria.loadLimit, boundsForSurroundings)
     markAsReviewed(toCommitViews(commits), userId)
   }
 
-  def findSurroundings(criteria: LoadSurroundingsCriteria, userId: ObjectId) = {
-    val allCommitsIds = CommitInfoRecord.select(_.id).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
-    val indexOfGivenCommit = allCommitsIds.indexOf(criteria.commitId)
-    if(indexOfGivenCommit > -1) {
-      val lowerBound = indexOfGivenCommit - criteria.loadLimit
-      val upperBound = indexOfGivenCommit + criteria.loadLimit
-      val surroundingsIds = allCommitsIds.slice(lowerBound, upperBound + 1)
-      val commits = projectionQuery.where(_.id in surroundingsIds).orderAsc(_.committerDate).andAsc(_.authorDate).fetch().map(commit => (PartialCommitDetails.apply _).tupled(commit))
-      Right(markAsReviewed(toCommitViews(commits), userId))
-    } else {
-      Left(s"No such commit ${criteria.commitId.toString}")
-    }
-  }
+  private def loadCommitsWithinBounds(allCommitsIds: List[ObjectId], commitId: Option[ObjectId], limit: Int, boundsFn: (Int => (Int, Int))) = {
 
-  private def findCommitsToReview(userId: ObjectId, paging: LoadMoreCriteria) = {
-    val commitIds = commitsToReviewForUser(userId).map(_.commitId.get).toSet
-    val ids = CommitInfoRecord.select(_.id).where(_.id in commitIds).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
-    paging.lastCommitId match {
+    def loadCommits(boundsFn: (Int) => (Int, Int), indexOfGivenCommit: Int, allCommitsIds: List[ObjectId]): List[MongoCommitFinder.this.type#PartialCommitDetails] = {
+      val bounds = boundsFn(indexOfGivenCommit)
+      val commitsToLoad = allCommitsIds.slice(bounds._1, bounds._2)
+      projectionQuery.where(_.id in commitsToLoad).orderAsc(_.committerDate).andAsc(_.authorDate).fetch().map(commit => (PartialCommitDetails.apply _).tupled(commit))
+    }
+
+    commitId match {
       case Some(id) => {
-        val indexOfLast = ids.indexOf(id)
-        if(indexOfLast > -1) commitsSlice(indexOfLast + 1, paging.limit, ids) else List.empty
+        val indexOfCommitId = allCommitsIds.indexOf(id)
+        if(indexOfCommitId > -1) loadCommits(boundsFn, indexOfCommitId, allCommitsIds) else List.empty
       }
-      case _ => commitsSlice(0, paging.limit, ids)
+      case None => loadCommits(boundsFn, -1, allCommitsIds)
     }
   }
 
-  private def commitsSlice(startingIndex: Int, limit: Int, ids: List[ObjectId]) = {
-    val maxIndex = startingIndex + limit
-    val newList = ids.slice(startingIndex, maxIndex)
-    val commitsFromDB = projectionQuery.where(_.id in newList).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
-    commitsFromDB.map(commit => tupleToCommitDetails(commit))
+  private def slicePageUsingCriteria(commitsIds: List[ObjectId], criteria: PagingCriteria): List[PartialCommitDetails] = {
+    if(criteria.maxCommitId.isDefined) {
+      def boundsForPreviousCommits(givenIndex: Int) = (givenIndex - criteria.limit, givenIndex)
+      loadCommitsWithinBounds(commitsIds, criteria.maxCommitId, criteria.limit, boundsForPreviousCommits)
+    } else if(criteria.minCommitId.isDefined) {
+      def boundsForNextCommits(givenIndex: Int) = (givenIndex + 1, givenIndex + criteria.limit + 1)
+      loadCommitsWithinBounds(commitsIds, criteria.minCommitId, criteria.limit, boundsForNextCommits)
+    } else {
+      def boundsForNextCommits(givenIndex: Int) = (givenIndex + 1, givenIndex + criteria.limit + 1)
+      loadCommitsWithinBounds(commitsIds, None, criteria.limit, boundsForNextCommits)
+    }
   }
 
   private def commitsToReviewForUser(userId: ObjectId) = {
@@ -129,22 +135,21 @@ trait CommitReviewedByUserMarker {
 
 class MongoCommitWithAuthorDetailsFinder(baseCommitFinder: CommitFinder) extends CommitFinder with CommitViewWithUserDataEnhancer {
 
-  def findCommitsToReviewForUser(userId: ObjectId, paging: LoadMoreCriteria) = {
+  def findCommitsToReviewForUser(userId: ObjectId, paging: PagingCriteria) = {
     enhanceWithUserData(baseCommitFinder.findCommitsToReviewForUser(userId, paging))
-  }
-
-  def findAll(userId: ObjectId): CommitListView = {
-    enhanceWithUserData(baseCommitFinder.findAll(userId))
   }
 
   def findCommitInfoById(commitIdStr: String, userId: ObjectId): Either[String, CommitView] = {
     baseCommitFinder.findCommitInfoById(commitIdStr, userId).right.map(enhanceWithUserData)
   }
 
-  def findSurroundings(criteria: LoadSurroundingsCriteria, userId: ObjectId) = {
-    baseCommitFinder.findSurroundings(criteria, userId).right.map(enhanceWithUserData)
+  def findSurroundings(criteria: SurroundingsCriteria, userId: ObjectId) = {
+    enhanceWithUserData(baseCommitFinder.findSurroundings(criteria, userId))
   }
 
+  def findAllCommits(paging: PagingCriteria, userId: ObjectId) = {
+    enhanceWithUserData(baseCommitFinder.findAllCommits(paging, userId))
+  }
 }
 
 trait CommitViewWithUserDataEnhancer {
