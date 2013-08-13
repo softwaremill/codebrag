@@ -49,7 +49,7 @@ class MongoCommitFinder extends CommitFinder with CommitReviewedByUserMarker wit
     markAsReviewed(toCommitViews(commits), userId)
   }
 
-  private def loadCommitsWithinBounds(allCommitsIds: List[ObjectId], commitId: Option[ObjectId], limit: Int, boundsFn: (Int => (Int, Int))) = {
+  private def loadCommitsWithinBounds(allCommitsIds: List[ObjectId], startingCommitId: Option[ObjectId], limit: Int, boundsFn: (Int => (Int, Int))) = {
 
     def loadCommits(boundsFn: (Int) => (Int, Int), indexOfGivenCommit: Int, allCommitsIds: List[ObjectId]): List[MongoCommitFinder.this.type#PartialCommitDetails] = {
       val bounds = boundsFn(indexOfGivenCommit)
@@ -57,7 +57,7 @@ class MongoCommitFinder extends CommitFinder with CommitReviewedByUserMarker wit
       projectionQuery.where(_.id in commitsToLoad).orderAsc(_.committerDate).andAsc(_.authorDate).fetch().map(commit => (PartialCommitDetails.apply _).tupled(commit))
     }
 
-    commitId match {
+    startingCommitId match {
       case Some(id) => {
         val indexOfCommitId = allCommitsIds.indexOf(id)
         if(indexOfCommitId > -1) loadCommits(boundsFn, indexOfCommitId, allCommitsIds) else List.empty
