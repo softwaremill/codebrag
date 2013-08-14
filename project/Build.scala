@@ -37,7 +37,7 @@ object BuildSettings {
     libraryDependencies ++= Dependencies.logging,
     libraryDependencies ++= Seq(Dependencies.guava, Dependencies.googleJsr305),
 
-    parallelExecution := false, // We are starting mongo in tests.
+    concurrentRestrictions in Global += Tags.limit(Tags.Test, 1), // no parallel execution of tests, because we are starting mongo in tests
 
     testOptions in Test <+= mongoDirectory map {
       md: File => Tests.Setup {
