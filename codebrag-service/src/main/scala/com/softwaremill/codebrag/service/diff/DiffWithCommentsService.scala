@@ -3,8 +3,9 @@ package com.softwaremill.codebrag.service.diff
 import com.softwaremill.codebrag.dao.reporting.{MongoReactionFinder, CommitFinder}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitDetailsView}
+import com.softwaremill.codebrag.dao.finders.commit.AllCommitsFinder
 
-class DiffWithCommentsService(commitListFinder: CommitFinder, reactionFinder: MongoReactionFinder, diffService: DiffService) {
+class DiffWithCommentsService(commitsFinder: AllCommitsFinder, reactionFinder: MongoReactionFinder, diffService: DiffService) {
 
   def diffWithCommentsFor(commitId: ObjectId, userId: ObjectId): Either[String, CommitDetailsView] = {
 
@@ -14,7 +15,7 @@ class DiffWithCommentsService(commitListFinder: CommitFinder, reactionFinder: Mo
       CommitDetailsView.buildFrom(commit, reactions, diff)
     }
 
-    commitListFinder.findCommitInfoById(commitId.toString, userId) match {
+    commitsFinder.findCommitById(commitId, userId) match {
       case Right(commit) => Right(buildDiffWithComments(commit))
       case Left(msg) => Left(msg)
     }

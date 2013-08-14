@@ -16,8 +16,9 @@ import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig, GithubConfig}
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
+import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
 
-trait Beans extends ActorSystemSupport with CommitsModule {
+trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos{
 
   lazy val config = new MongoConfig with RepositoryConfig with GithubConfig with CodebragConfig {
     def rootConfig = ConfigFactory.load()
@@ -27,22 +28,13 @@ trait Beans extends ActorSystemSupport with CommitsModule {
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator
   val self = this
   lazy val eventBus = new AkkaEventBus(actorSystem)
-  lazy val userDao = new MongoUserDAO
-  lazy val commitInfoDao = new MongoCommitInfoDAO
-  lazy val followupDao = new MongoFollowupDAO
-  lazy val followupWithReactionsDao = new MongoFollowupWithReactionsDAO(commentDao, likeDao)
-  lazy val commitListFinder = new MongoCommitWithAuthorDetailsFinder(new MongoCommitFinder)
-  lazy val reactionFinder = new MongoReactionFinder
   lazy val swagger = new CodebragSwagger
   lazy val ghService = new GitHubAuthService(config)
-  lazy val commentDao = new MongoCommitCommentDAO
-  lazy val notificationCountFinder = new MongoNotificationCountFinder
-  lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
-  lazy val likeDao = new MongoLikeDAO
   lazy val likeValidator = new LikeValidator(commitInfoDao, likeDao, userDao)
   lazy val userReactionService = new UserReactionService(commentDao, likeDao, likeValidator, eventBus)
   lazy val repoHeadStore = new MongoRepositoryHeadStore
+
 
   lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {
       val userDao = self.userDao
@@ -52,13 +44,39 @@ trait Beans extends ActorSystemSupport with CommitsModule {
 
   lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus, reviewTaskGenerator)
   lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
-  lazy val followupFinder = new MongoFollowupFinder
   lazy val commentActivity = new AddCommentActivity(userReactionService, followupService)
 
   lazy val newUserAdder = new NewUserAdder(userDao, eventBus, reviewTaskGenerator)
   lazy val registerService = new RegisterService(userDao, newUserAdder)
 
-  lazy val diffWithCommentsService = new DiffWithCommentsService(commitListFinder, reactionFinder, new DiffService(commitInfoDao))
+  lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder, new DiffService(commitInfoDao))
 
   lazy val unlikeUseCaseFactory = new UnlikeUseCaseFactory(likeValidator, userReactionService)
+}
+
+trait Daos {
+
+  lazy val userDao = new MongoUserDAO
+  lazy val commitInfoDao = new MongoCommitInfoDAO
+  lazy val followupDao = new MongoFollowupDAO
+  lazy val followupWithReactionsDao = new MongoFollowupWithReactionsDAO(commentDao, likeDao)
+
+  lazy val likeDao = new MongoLikeDAO
+  lazy val commentDao = new MongoCommitCommentDAO
+
+  lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
+
+}
+
+trait Finders {
+
+  lazy val notificationCountFinder = new MongoNotificationCountFinder
+
+  lazy val reactionFinder = new MongoReactionFinder
+
+  lazy val allCommitsFinder = new AllCommitsFinder
+  lazy val reviewableCommitsFinder = new ReviewableCommitsListFinder
+
+  lazy val followupFinder = new MongoFollowupFinder
+
 }
