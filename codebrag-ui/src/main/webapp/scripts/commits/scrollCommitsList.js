@@ -2,17 +2,14 @@ angular.module('codebrag.commits')
 
     .directive('scrollCommitsList', function(events) {
 
-        var idToScrollTo = '#commits-list-end';
-
         return {
             restrict: 'A',
             link: function(scope, el) {
-                scope.$on(events.moreCommitsLoaded, function() {
-                    var options = {
-                        duration: 1000,
-                        easing:'easeOutCirc'
-                    };
-                    el.scrollTo(el.find(idToScrollTo), options);
+                scope.$on(events.nextCommitsLoaded, function() {
+                    el.animate({scrollTop: el[0].scrollHeight});
+                });
+                scope.$on(events.previousCommitsLoaded, function() {
+                    el.animate({scrollTop: 0});
                 })
             }
         }
