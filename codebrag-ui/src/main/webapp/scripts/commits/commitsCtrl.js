@@ -1,32 +1,72 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, commitsListService, $stateParams) {
+    .controller('CommitsCtrl', function ($scope, commitsListService, $stateParams, $state) {
 
         $scope.switchListView = function() {
-            if($scope.listViewMode && $scope.listViewMode == 'all') {
-                $scope.loadAllCommits();
+            if($scope.listViewMode === 'all') {
+                loadAllCommits();
             } else {
-                $scope.loadPendingCommits();
+                loadPendingCommits();
             }
         };
 
-        $scope.loadAllCommits = function () {
+        $scope.hasNextCommits = function() {
+            return commitsListService.hasNextCommits();
+        };
+
+        $scope.hasPreviousCommits = function() {
+            return commitsListService.hasPreviousCommits();
+        };
+
+        $scope.loadNextCommits = function() {
+            commitsListService.loadNextCommits();
+        };
+
+        $scope.loadPreviousCommits = function() {
+            commitsListService.loadPreviousCommits();
+        };
+
+        $scope.openCommitDetails = function(commitId) {
+            $state.transitionTo('commits.details', {id: commitId});
+        };
+
+        $scope.markAsReviewed = function(commitId) {
+            commitsListService.makeReviewedAndGetNext(commitId).then(function(next) {
+                if (next) {
+                    $state.transitionTo('commits.details', {id: next.id});
+                } else {
+                    $state.transitionTo('commits.list');
+                }
+            });
+        };
+
+        $scope.allCommitsReviewed = function() {
+            var emptyList = ($scope.commits && $scope.commits.length == 0);
+            var noMoreCommitsOnServer = !commitsListService.hasNextCommits();
+            return emptyList && noMoreCommitsOnServer;
+        };
+
+
+
+        function loadAllCommits() {
             if($stateParams.id) {
-                $scope.commits = commitsListService.loadSurroundings($stateParams.id);
+                $scope.commits = commitsListService.loadCommitsInContext($stateParams.id);
             } else {
-                $scope.commits = commitsListService.loadAllCommits();
+                $scope.commits = commitsListService.loadCommitsInContext();
             }
-        };
-
-        $scope.loadPendingCommits = function () {
-            $scope.commits = commitsListService.loadCommitsPendingReview();
-        };
-
-        function initCtrl() {
-            $scope.listViewMode = 'pending';
-            $scope.loadPendingCommits();
         }
 
-        initCtrl();
+        function loadPendingCommits() {
+            commitsListService.loadCommitsToReview().then(function(commits) {
+                $scope.commits = commits;
+            })
+        }
+
+        $scope.initCtrl = function() {
+            $scope.listViewMode = 'pending';
+            loadPendingCommits();
+        };
+
+        $scope.initCtrl();
 
     });

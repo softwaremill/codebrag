@@ -8,25 +8,27 @@
             <span class="info">Loading commits...</span>
         </div>
         <div class="items-container" scroll-commits-list>
+            <div style="width: 100%; background: rgba(211,196,160, 0.3); text-transform: uppercase; text-align:center; padding:10px; color:#70493e" ng-show="hasPreviousCommits()" ng-click="loadPreviousCommits()">
+                <i class="icon-circle-arrow-up"></i> previous commits
+            </div>
             <!--commit info start-->
-            <div class="commit-container" ng-repeat="commit in commits" ng-controller="CommitsListItemCtrl"  mark-current="commit.id"
-                 state-param-name="id" ng-click="openCommitDetails(commit)">
+            <div class="commit-container" ng-repeat="commit in commits" mark-current="commit.id"
+                 state-param-name="id" ng-click="openCommitDetails(commit.id)">
                 <div class="authored-box">
                     <div class="author-box"><user-avatar url="commit.authorAvatarUrl"></user-avatar></div>
                     <div class="info-box">
                         <div class="commit-name" ng-bind-html-unsafe="commit.message"></div>
                         <div class="info-line"><span class="username">{{commit.authorName}}</span><span class="time">{{commit.date | relativeDate}}</span></div>
                     </div>
-                </div ><i class="icon-ok-circle" ng-show="commit.pendingReview" ng-click="markAsReviewed(commit)" isolate-click></i>
+                </div ><i class="icon-ok-circle" ng-show="commit.pendingReview" ng-click="markAsReviewed(commit.id)" isolate-click></i>
             </div>
-            <div class="no-more-items" ng-show="commits && commits.length == 0">
-                Yay!<br> Nothing to review!
+            <div style="width: 100%; background: rgba(211,196,160, 0.3); text-transform: uppercase; text-align:center; padding:10px; color:#70493e" ng-show="hasNextCommits()" ng-click="loadNextCommits()">
+                <i class="icon-circle-arrow-down"></i> next commits
             </div>
             <!--commit info end-->
-            <div id="commits-list-end"></div>
-        </div>
-        <div class="commits-count" ng-controller="LoadMoreCommitsCtrl" ng-show="moreCommitsAvailable">
-            <div ng-click="loadMoreCommits()">load more</div>
+            <div class="no-more-items" ng-show="allCommitsReviewed()">
+                Yay!<br> Nothing to review!
+            </div>
         </div>
     </div>
     <div class="diff small-9 large-9 columns" ui-view>
