@@ -14,7 +14,8 @@ class UsersServletSpec extends AuthenticatableServletSpec {
 
   val registerService = mock[RegisterService]
 
-  def bindServlet {
+  override def beforeEach {
+    super.beforeEach
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
   }
 

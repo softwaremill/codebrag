@@ -27,12 +27,10 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
   val user = currentUser(new ObjectId)
   val commitId = new ObjectId
 
-  override def beforeEach() {
+  override def beforeEach {
+    super.beforeEach
     commentActivity = mock[AddCommentActivity]
     userDao = mock[UserDAO]
-  }
-
-  def bindServlet {
     addServlet(new TestableCommentsEndpoint(fakeAuthenticator, fakeScentry, commentActivity, userDao), "/*")
   }
 
