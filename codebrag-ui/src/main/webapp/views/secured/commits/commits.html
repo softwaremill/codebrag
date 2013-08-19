@@ -17,7 +17,7 @@
                 <div class="authored-box">
                     <div class="author-box"><user-avatar url="commit.authorAvatarUrl"></user-avatar></div>
                     <div class="info-box">
-                        <div class="commit-name" ng-bind-html-unsafe="commit.message"></div>
+                        <div class="commit-name"><commit-msg-headline message="commit.message"/></div>
                         <div class="info-line"><span class="username">{{commit.authorName}}</span><span class="time">{{commit.date | relativeDate}}</span></div>
                     </div>
                 </div ><i class="icon-ok-circle" ng-show="commit.pendingReview" ng-click="markAsReviewed(commit.id)" isolate-click></i>
