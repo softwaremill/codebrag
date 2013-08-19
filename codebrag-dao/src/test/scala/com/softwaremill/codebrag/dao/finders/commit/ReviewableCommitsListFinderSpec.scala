@@ -18,7 +18,7 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearDataAf
   val userDao = new MongoUserDAO
 
   val reviewingUserId = ObjectIdTestUtils.oid(100)
-  val paging = LoadMoreCriteria(None, PagingDirection.Right, 2)
+  val paging = LoadMoreCriteria.fromBeginning(2)
 
   val commitAuthor = UserAssembler.randomUser.withAvatarUrl("http://avatar.com").withFullName("John Doe").get
 
@@ -58,7 +58,7 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearDataAf
     storeReviewTasksFor(reviewingUserId, commitOne, commitTwo, commitThree)
 
     // when
-    val twoCommitsOnPage = LoadMoreCriteria(None, PagingDirection.Right, 2)
+    val twoCommitsOnPage = LoadMoreCriteria.fromBeginning(2)
     val commitsView = finder.findCommitsToReviewFor(reviewingUserId, twoCommitsOnPage)
 
     // then
@@ -71,7 +71,7 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearDataAf
     storeReviewTasksFor(reviewingUserId, commitOne, commitTwo, commitThree)
 
     // when
-    val nextAfterSecondCommit = LoadMoreCriteria(Some(commitTwo.id), PagingDirection.Right, 2)
+    val nextAfterSecondCommit = LoadMoreCriteria(commitTwo.id, PagingDirection.Right, 2)
     val commitsView = finder.findCommitsToReviewFor(reviewingUserId, nextAfterSecondCommit)
 
     // then

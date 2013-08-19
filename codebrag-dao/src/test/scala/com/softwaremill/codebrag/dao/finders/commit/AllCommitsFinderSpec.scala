@@ -3,8 +3,7 @@ package com.softwaremill.codebrag.dao.finders.commit
 import com.softwaremill.codebrag.dao._
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import org.scalatest.matchers.ShouldMatchers
-import scala.Some
-import com.softwaremill.codebrag.common.{LoadMoreCriteria}
+import com.softwaremill.codebrag.common.LoadMoreCriteria
 import com.softwaremill.codebrag.domain.builder.{CommitInfoAssembler, UserAssembler}
 import com.softwaremill.codebrag.domain.{CommitReviewTask, CommitInfo, User}
 import org.bson.types.ObjectId
@@ -19,7 +18,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
   val userDao = new MongoUserDAO
 
   val reviewingUserId = ObjectIdTestUtils.oid(100)
-  val threeFromStart = LoadMoreCriteria(None, PagingDirection.Right, 3)
+  val threeFromStart = LoadMoreCriteria.fromBeginning(3)
 
   val commitAuthor = UserAssembler.randomUser.withAvatarUrl("http://avatar.com").withFullName("John Doe").get
 
@@ -59,7 +58,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     storeReviewTasksFor(reviewingUserId, commitOne)
 
     // when
-    val nextTwoAfterFirst = LoadMoreCriteria(Some(commitOne.id), PagingDirection.Right, 2)
+    val nextTwoAfterFirst = LoadMoreCriteria(commitOne.id, PagingDirection.Right, 2)
     val commitsView = finder.findAllCommits(nextTwoAfterFirst, reviewingUserId)
 
     // then
@@ -73,7 +72,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     storeReviewTasksFor(reviewingUserId, commitOne)
 
     // when
-    val previousTwoFromLast = LoadMoreCriteria(Some(commitThree.id), PagingDirection.Left, 2)
+    val previousTwoFromLast = LoadMoreCriteria(commitThree.id, PagingDirection.Left, 2)
     val commitsView = finder.findAllCommits(previousTwoFromLast, reviewingUserId)
 
     // then
@@ -116,7 +115,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     storeCommits(commitOne, commitTwo, commitThree)
 
     // when
-    val twoInContext = LoadMoreCriteria(Some(commitThree.id), PagingDirection.Radial, 2)
+    val twoInContext = LoadMoreCriteria(commitThree.id, PagingDirection.Radial, 2)
     val commitsView = finder.findAllCommits(twoInContext, reviewingUserId)
 
     // then
@@ -128,7 +127,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     storeCommits(commitOne, commitTwo, commitThree)
 
     // when
-    val oneInContext = LoadMoreCriteria(Some(commitOne.id), PagingDirection.Radial, 1)
+    val oneInContext = LoadMoreCriteria(commitOne.id, PagingDirection.Radial, 1)
     val commitsView = finder.findAllCommits(oneInContext, reviewingUserId)
 
     // then

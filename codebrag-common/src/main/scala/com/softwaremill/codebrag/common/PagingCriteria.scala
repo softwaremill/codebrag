@@ -11,6 +11,10 @@ object LoadMoreCriteria {
     new LoadMoreCriteria(Some(baseId), direction, limit)
   }
 
+  def fromBeginning(limit: Int) = {
+    new LoadMoreCriteria(None, PagingDirection.Right, limit)
+  }
+
   object PagingDirection extends Enumeration {
     type PagingDirection = Value
     val Left, Right, Radial = Value

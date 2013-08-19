@@ -64,7 +64,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET / with filter=all" should "load all commits" in {
     val userId = givenStandardAuthenticatedUser()
-    val criteria = LoadMoreCriteria(None, PagingDirection.Right, CommitsEndpoint.DefaultPageLimit)
+    val criteria = LoadMoreCriteria.fromBeginning(CommitsEndpoint.DefaultPageLimit)
 
     get("/?filter=all") {
       verify(allCommitsFinder).findAllCommits(criteria, userId)
@@ -73,7 +73,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET / with filter=to_review" should "load commits to review" in {
     val userId = givenStandardAuthenticatedUser()
-    val criteria = LoadMoreCriteria(None, PagingDirection.Right, CommitsEndpoint.DefaultPageLimit)
+    val criteria = LoadMoreCriteria.fromBeginning(CommitsEndpoint.DefaultPageLimit)
 
     get("/?filter=to_review") {
       verify(reviewableCommitsFinder).findCommitsToReviewFor(userId, criteria)
@@ -85,7 +85,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val commitId = new ObjectId
 
     get("/?context=true&id=" + commitId.toString) {
-      val criteria = LoadMoreCriteria(Some(commitId), PagingDirection.Radial, CommitsEndpoint.DefaultPageLimit)
+      val criteria = LoadMoreCriteria(commitId, PagingDirection.Radial, CommitsEndpoint.DefaultPageLimit)
       verify(allCommitsFinder).findAllCommits(criteria, userId)
     }
   }
@@ -94,7 +94,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
       val userId = givenStandardAuthenticatedUser()
 
       get("/?context=true") {
-        val criteria = LoadMoreCriteria(None, PagingDirection.Right, CommitsEndpoint.DefaultPageLimit)
+        val criteria = LoadMoreCriteria.fromBeginning(CommitsEndpoint.DefaultPageLimit)
         verify(allCommitsFinder).findAllCommits(criteria, userId)
       }
   }
@@ -103,11 +103,11 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val userId = givenStandardAuthenticatedUser()
     val lastKnownCommitId = new ObjectId
     get("/?filter=to_review&limit=10&min_id=" + lastKnownCommitId.toString) {
-      val criteria = LoadMoreCriteria(Some(lastKnownCommitId), PagingDirection.Right, 10)
+      val criteria = LoadMoreCriteria(lastKnownCommitId, PagingDirection.Right, 10)
       verify(reviewableCommitsFinder).findCommitsToReviewFor(userId, criteria)
     }
     get("/?filter=to_review&limit=10&max_id=" + lastKnownCommitId.toString) {
-      val criteria = LoadMoreCriteria(Some(lastKnownCommitId), PagingDirection.Left, 10)
+      val criteria = LoadMoreCriteria(lastKnownCommitId, PagingDirection.Left, 10)
       verify(reviewableCommitsFinder).findCommitsToReviewFor(userId, criteria)
     }
   }

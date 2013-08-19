@@ -16,7 +16,7 @@ class ListSliceLoaderSpec extends FlatSpec with BeforeAndAfterEach with ShouldMa
 
   it should "load next elements using provided criteria" in {
     // given
-    val criteria = LoadMoreCriteria(Some(oid(2)), PagingDirection.Right, 3)
+    val criteria = LoadMoreCriteria(oid(2), PagingDirection.Right, 3)
 
     // when
     val result = ListSliceLoader.loadSliceUsing(criteria, elements, loadElementsFn)
@@ -27,7 +27,7 @@ class ListSliceLoaderSpec extends FlatSpec with BeforeAndAfterEach with ShouldMa
 
   it should "load previous elements using provided criteria" in {
     // given
-    val criteria = LoadMoreCriteria(Some(oid(6)), PagingDirection.Left, 2)
+    val criteria = LoadMoreCriteria(oid(6), PagingDirection.Left, 2)
 
     // when
     val result = ListSliceLoader.loadSliceUsing(criteria, elements, loadElementsFn)
@@ -38,7 +38,7 @@ class ListSliceLoaderSpec extends FlatSpec with BeforeAndAfterEach with ShouldMa
 
   it should "load first elements when no starting ID provided" in {
     // given
-    val criteria = LoadMoreCriteria(None, PagingDirection.Right, 2)
+    val criteria = LoadMoreCriteria.fromBeginning(2)
 
     // when
     val result = ListSliceLoader.loadSliceUsing(criteria, elements, loadElementsFn)
@@ -49,7 +49,7 @@ class ListSliceLoaderSpec extends FlatSpec with BeforeAndAfterEach with ShouldMa
 
   it should "load empty list when starting ID doesn't exist in elements" in {
     // given
-    val criteria = LoadMoreCriteria(Some(new ObjectId), PagingDirection.Left, 2)
+    val criteria = LoadMoreCriteria(new ObjectId, PagingDirection.Left, 2)
 
     // when
     val result = ListSliceLoader.loadSliceUsing(criteria, elements, loadElementsFn)
