@@ -86,7 +86,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
     get("/?context=true&id=" + commitId.toString) {
       val criteria = LoadMoreCriteria(Some(commitId), PagingDirection.Radial, CommitsEndpoint.DefaultPageLimit)
-      verify(allCommitsFinder).findWithSurroundings(criteria, userId)
+      verify(allCommitsFinder).findAllCommits(criteria, userId)
     }
   }
 

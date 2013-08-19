@@ -54,18 +54,11 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     logger.debug("Attempting to fetch commits in context")
     val limit = params.getOrElse(LimitParamName, DefaultPageLimit.toString).toInt
     val currentUserId = new ObjectId(user.id)
-    params.get("id") match {
-      case Some(commitId) => {
-        logger.debug(s"Commit id provided $commitId")
-        val criteria = LoadMoreCriteria(Some(new ObjectId(commitId)), PagingDirection.Radial, limit)
-        allCommitsFinder.findWithSurroundings(criteria, currentUserId)
-      }
-      case None => {
-        logger.debug(s"Commit id not provided fetching first commits")
-        val criteria = LoadMoreCriteria(None, PagingDirection.Right, DefaultSurroundingsCount)
-        allCommitsFinder.findAllCommits(criteria, currentUserId)
-      }
+    val criteria = params.get("id") match {
+      case Some(commitId) => LoadMoreCriteria(Some(new ObjectId(commitId)), PagingDirection.Radial, limit)
+      case None => LoadMoreCriteria(None, PagingDirection.Right, DefaultSurroundingsCount)
     }
+    allCommitsFinder.findAllCommits(criteria, currentUserId)
   }
 
   private def contextualCommits = params.get(ContextParamName).isDefined

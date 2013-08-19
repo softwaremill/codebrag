@@ -17,13 +17,6 @@ class AllCommitsFinder extends CommitByIdFinder with UserDataEnhancer with Commi
     enhanceWithUserData(markAsReviewed(toCommitViews(commitsSlice), userId))
   }
 
-  def findWithSurroundings(criteria: LoadMoreCriteria, userId: ObjectId) = {
-    val allCommits = CommitInfoRecord.select(_.id).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
-    val commitsSlice = loadSliceUsing(criteria, allCommits, loadCommitsFn)
-    val commits = toCommitViews(commitsSlice)
-    enhanceWithUserData(markAsReviewed(commits, userId))
-  }
-
   private def loadCommitsFn(ids: List[ObjectId]) = {
     partialCommitDetailsQuery.where(_.id in ids).orderAsc(_.committerDate).andAsc(_.authorDate).fetch().map(tupleToCommitDetails)
   }

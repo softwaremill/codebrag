@@ -117,7 +117,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // when
     val twoInContext = LoadMoreCriteria(Some(commitThree.id), PagingDirection.Radial, 2)
-    val commitsView = finder.findWithSurroundings(twoInContext, reviewingUserId)
+    val commitsView = finder.findAllCommits(twoInContext, reviewingUserId)
 
     // then
     commitsView.commits.map(_.id) should be(List(commitOne.id.toString, commitTwo.id.toString, commitThree.id.toString))
@@ -129,7 +129,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // when
     val oneInContext = LoadMoreCriteria(Some(commitOne.id), PagingDirection.Radial, 1)
-    val commitsView = finder.findWithSurroundings(oneInContext, reviewingUserId)
+    val commitsView = finder.findAllCommits(oneInContext, reviewingUserId)
 
     // then
     commitsView.commits.map(_.id) should be(List(commitOne.id.toString, commitTwo.id.toString))
