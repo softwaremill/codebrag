@@ -8,17 +8,15 @@ import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO, UserDAO, CommitInfoDAO}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.reporting.MongoReactionFinder
-import java.util.Date
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitReviewTask
-import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
-import com.softwaremill.codebrag.common.{PagingCriteria, SurroundingsCriteria}
+import com.softwaremill.codebrag.common.LoadMoreCriteria
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
 import com.softwaremill.codebrag.dao.finders.commit.{AllCommitsFinder, ReviewableCommitsListFinder}
-import org.scalatra.Ok
+import com.softwaremill.codebrag.common.LoadMoreCriteria.PagingDirection
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
@@ -66,7 +64,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET / with filter=all" should "load all commits" in {
     val userId = givenStandardAuthenticatedUser()
-    val criteria = PagingCriteria(None, None, CommitsEndpoint.DefaultPageLimit)
+    val criteria = LoadMoreCriteria(None, PagingDirection.Right, CommitsEndpoint.DefaultPageLimit)
 
     get("/?filter=all") {
       verify(allCommitsFinder).findAllCommits(criteria, userId)
@@ -75,7 +73,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET / with filter=to_review" should "load commits to review" in {
     val userId = givenStandardAuthenticatedUser()
-    val criteria = PagingCriteria(None, None, CommitsEndpoint.DefaultPageLimit)
+    val criteria = LoadMoreCriteria(None, PagingDirection.Right, CommitsEndpoint.DefaultPageLimit)
 
     get("/?filter=to_review") {
       verify(reviewableCommitsFinder).findCommitsToReviewFor(userId, criteria)
@@ -87,7 +85,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val commitId = new ObjectId
 
     get("/?context=true&id=" + commitId.toString) {
-      val criteria = SurroundingsCriteria(commitId, CommitsEndpoint.DefaultPageLimit)
+      val criteria = LoadMoreCriteria(Some(commitId), PagingDirection.Radial, CommitsEndpoint.DefaultPageLimit)
       verify(allCommitsFinder).findWithSurroundings(criteria, userId)
     }
   }
@@ -96,7 +94,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
       val userId = givenStandardAuthenticatedUser()
 
       get("/?context=true") {
-        val criteria = PagingCriteria(None, None, CommitsEndpoint.DefaultPageLimit)
+        val criteria = LoadMoreCriteria(None, PagingDirection.Right, CommitsEndpoint.DefaultPageLimit)
         verify(allCommitsFinder).findAllCommits(criteria, userId)
       }
   }
@@ -105,11 +103,11 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val userId = givenStandardAuthenticatedUser()
     val lastKnownCommitId = new ObjectId
     get("/?filter=to_review&limit=10&min_id=" + lastKnownCommitId.toString) {
-      val criteria = PagingCriteria(None, Some(lastKnownCommitId), 10)
+      val criteria = LoadMoreCriteria(Some(lastKnownCommitId), PagingDirection.Right, 10)
       verify(reviewableCommitsFinder).findCommitsToReviewFor(userId, criteria)
     }
     get("/?filter=to_review&limit=10&max_id=" + lastKnownCommitId.toString) {
-      val criteria = PagingCriteria(Some(lastKnownCommitId), None, 10)
+      val criteria = LoadMoreCriteria(Some(lastKnownCommitId), PagingDirection.Left, 10)
       verify(reviewableCommitsFinder).findCommitsToReviewFor(userId, criteria)
     }
   }

@@ -4,7 +4,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.{CommitInfoRecord, CommitReviewTaskRecord}
 import com.softwaremill.codebrag.dao.reporting.views.CommitListView
-import com.softwaremill.codebrag.common.PagingCriteria
+import com.softwaremill.codebrag.common.{LoadMoreCriteria}
 import com.foursquare.rogue.LiftRogue._
 
 class ReviewableCommitsListFinder extends CommitByIdFinder with UserDataEnhancer with CommitReviewedByUserMarker with Logging {
@@ -12,7 +12,7 @@ class ReviewableCommitsListFinder extends CommitByIdFinder with UserDataEnhancer
   import CommitInfoToViewConverter._
   import ListSliceLoader._
 
-  def findCommitsToReviewFor(userId: ObjectId, paging: PagingCriteria) = {
+  def findCommitsToReviewFor(userId: ObjectId, paging: LoadMoreCriteria) = {
     val commitsIdsToReview =  reviewableCommitsIds(userId)
     val commitsSlice = loadSliceUsing(paging, commitsIdsToReview, loadCommitsFn)
     val commits = toCommitViews(commitsSlice)

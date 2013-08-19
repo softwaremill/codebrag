@@ -2,10 +2,11 @@ package com.softwaremill.codebrag.dao.finders.commit
 
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.common.{SurroundingsCriteria, PagingCriteria}
+import com.softwaremill.codebrag.common.{LoadMoreCriteria}
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils
+import LoadMoreCriteria.PagingDirection
 
 class ListSliceLoaderSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers {
 
@@ -15,7 +16,7 @@ class ListSliceLoaderSpec extends FlatSpec with BeforeAndAfterEach with ShouldMa
 
   it should "load next elements using provided criteria" in {
     // given
-    val criteria = PagingCriteria(None, Some(oid(2)), 3)
+    val criteria = LoadMoreCriteria(Some(oid(2)), PagingDirection.Right, 3)
 
     // when
     val result = ListSliceLoader.loadSliceUsing(criteria, elements, loadElementsFn)
@@ -26,7 +27,7 @@ class ListSliceLoaderSpec extends FlatSpec with BeforeAndAfterEach with ShouldMa
 
   it should "load previous elements using provided criteria" in {
     // given
-    val criteria = PagingCriteria(Some(oid(6)), None, 2)
+    val criteria = LoadMoreCriteria(Some(oid(6)), PagingDirection.Left, 2)
 
     // when
     val result = ListSliceLoader.loadSliceUsing(criteria, elements, loadElementsFn)
@@ -37,7 +38,7 @@ class ListSliceLoaderSpec extends FlatSpec with BeforeAndAfterEach with ShouldMa
 
   it should "load first elements when no starting ID provided" in {
     // given
-    val criteria = PagingCriteria(None, None, 2)
+    val criteria = LoadMoreCriteria(None, PagingDirection.Right, 2)
 
     // when
     val result = ListSliceLoader.loadSliceUsing(criteria, elements, loadElementsFn)
@@ -48,7 +49,7 @@ class ListSliceLoaderSpec extends FlatSpec with BeforeAndAfterEach with ShouldMa
 
   it should "load empty list when starting ID doesn't exist in elements" in {
     // given
-    val criteria = PagingCriteria(Some(new ObjectId), None, 2)
+    val criteria = LoadMoreCriteria(Some(new ObjectId), PagingDirection.Left, 2)
 
     // when
     val result = ListSliceLoader.loadSliceUsing(criteria, elements, loadElementsFn)
@@ -59,10 +60,10 @@ class ListSliceLoaderSpec extends FlatSpec with BeforeAndAfterEach with ShouldMa
 
   it should "load element with surroundings" in {
     // given
-    val criteria = SurroundingsCriteria(oid(4), 3)
+    val criteria = LoadMoreCriteria(oid(4), PagingDirection.Radial, 3)
 
     // when
-    val result = ListSliceLoader.loadSurroundingSliceUsing(criteria, elements, loadElementsFn)
+    val result = ListSliceLoader.loadSliceUsing(criteria, elements, loadElementsFn)
 
     // then
     result should be(listOfObjectId(1, 2, 3, 4, 5, 6, 7))
@@ -70,10 +71,10 @@ class ListSliceLoaderSpec extends FlatSpec with BeforeAndAfterEach with ShouldMa
 
   it should "load surroundings of first element" in {
     // given
-    val criteria = SurroundingsCriteria(oid(0), 3)
+    val criteria = LoadMoreCriteria(oid(0), PagingDirection.Radial, 3)
 
     // when
-    val result = ListSliceLoader.loadSurroundingSliceUsing(criteria, elements, loadElementsFn)
+    val result = ListSliceLoader.loadSliceUsing(criteria, elements, loadElementsFn)
 
     // then
     result should be(listOfObjectId(0, 1, 2, 3))
@@ -81,10 +82,10 @@ class ListSliceLoaderSpec extends FlatSpec with BeforeAndAfterEach with ShouldMa
 
   it should "load surroundings of last element" in {
     // given
-    val criteria = SurroundingsCriteria(oid(9), 3)
+    val criteria = LoadMoreCriteria(oid(9), PagingDirection.Radial, 3)
 
     // when
-    val result = ListSliceLoader.loadSurroundingSliceUsing(criteria, elements, loadElementsFn)
+    val result = ListSliceLoader.loadSliceUsing(criteria, elements, loadElementsFn)
 
     // then
     result should be(listOfObjectId(6, 7, 8, 9))

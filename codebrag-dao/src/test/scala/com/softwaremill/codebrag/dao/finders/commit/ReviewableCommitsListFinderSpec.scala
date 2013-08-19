@@ -4,9 +4,10 @@ import com.softwaremill.codebrag.dao._
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
-import com.softwaremill.codebrag.common.PagingCriteria
+import com.softwaremill.codebrag.common.{LoadMoreCriteria}
 import com.softwaremill.codebrag.domain.{User, CommitInfo, CommitReviewTask}
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.common.LoadMoreCriteria.PagingDirection
 
 class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 
@@ -17,7 +18,7 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearDataAf
   val userDao = new MongoUserDAO
 
   val reviewingUserId = ObjectIdTestUtils.oid(100)
-  val paging = PagingCriteria(None, None, 2)
+  val paging = LoadMoreCriteria(None, PagingDirection.Right, 2)
 
   val commitAuthor = UserAssembler.randomUser.withAvatarUrl("http://avatar.com").withFullName("John Doe").get
 
@@ -57,7 +58,7 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearDataAf
     storeReviewTasksFor(reviewingUserId, commitOne, commitTwo, commitThree)
 
     // when
-    val twoCommitsOnPage = PagingCriteria(None, None, 2)
+    val twoCommitsOnPage = LoadMoreCriteria(None, PagingDirection.Right, 2)
     val commitsView = finder.findCommitsToReviewFor(reviewingUserId, twoCommitsOnPage)
 
     // then
@@ -70,7 +71,7 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearDataAf
     storeReviewTasksFor(reviewingUserId, commitOne, commitTwo, commitThree)
 
     // when
-    val nextAfterSecondCommit = PagingCriteria(None, Some(commitTwo.id), 2)
+    val nextAfterSecondCommit = LoadMoreCriteria(Some(commitTwo.id), PagingDirection.Right, 2)
     val commitsView = finder.findCommitsToReviewFor(reviewingUserId, nextAfterSecondCommit)
 
     // then
