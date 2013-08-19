@@ -1,14 +1,14 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.common.{PagingCriteria, SurroundingsCriteria}
+import com.softwaremill.codebrag.common.LoadMoreCriteria
 import org.scalatra.NotFound
-import com.softwaremill.codebrag.dao.reporting._
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.CommitReviewTaskDAO
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import CommitsEndpoint._
 import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
+import LoadMoreCriteria.PagingDirection
 
 trait CommitsEndpoint extends JsonServletWithAuthentication {
 
@@ -54,18 +54,11 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     logger.debug("Attempting to fetch commits in context")
     val limit = params.getOrElse(LimitParamName, DefaultPageLimit.toString).toInt
     val currentUserId = new ObjectId(user.id)
-    params.get("id") match {
-      case Some(commitId) => {
-        logger.debug(s"Commit id provided $commitId")
-        val criteria = SurroundingsCriteria(new ObjectId(commitId), limit)
-        allCommitsFinder.findWithSurroundings(criteria, currentUserId)
-      }
-      case None => {
-        logger.debug(s"Commit id not provided fetching first commits")
-        val criteria = PagingCriteria(None, None, DefaultSurroundingsCount)
-        allCommitsFinder.findAllCommits(criteria, currentUserId)
-      }
+    val criteria = params.get("id") match {
+      case Some(commitId) => LoadMoreCriteria(new ObjectId(commitId), PagingDirection.Radial, limit)
+      case None => LoadMoreCriteria.fromBeginning(DefaultSurroundingsCount)
     }
+    allCommitsFinder.findAllCommits(criteria, currentUserId)
   }
 
   private def contextualCommits = params.get(ContextParamName).isDefined
@@ -76,7 +69,14 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     val minId = params.get(MinIdParamName).map(new ObjectId(_))
     val maxId = params.get(MaxIdParamName).map(new ObjectId(_))
     val limit = params.getOrElse(LimitParamName, CommitsEndpoint.DefaultPageLimit.toString).toInt
-    PagingCriteria(maxId, minId, limit)
+
+    if(maxId.isDefined) {
+      LoadMoreCriteria(maxId, PagingDirection.Left, limit)
+    } else if(minId.isDefined) {
+      LoadMoreCriteria(minId, PagingDirection.Right, limit)
+    } else {
+      LoadMoreCriteria.fromBeginning(limit)
+    }
   }
 
 }

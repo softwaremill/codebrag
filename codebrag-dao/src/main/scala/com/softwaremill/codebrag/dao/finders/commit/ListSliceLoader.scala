@@ -1,30 +1,22 @@
 package com.softwaremill.codebrag.dao.finders.commit
 
-import com.softwaremill.codebrag.common.{PagingCriteria, SurroundingsCriteria}
+import com.softwaremill.codebrag.common.{LoadMoreCriteria}
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.common.LoadMoreCriteria.PagingDirection
 
 object ListSliceLoader {
 
-  def loadSurroundingSliceUsing[T](criteria: SurroundingsCriteria, idsList: List[ObjectId], loadFn: (List[ObjectId] => List[T])) = {
+  def loadSliceUsing[T](criteria: LoadMoreCriteria, idsList: List[ObjectId], loadFn: (List[ObjectId] => List[T])) = {
 
-    def boundsForSurroundings(givenIndex: Int) = (givenIndex - criteria.loadLimit, givenIndex + criteria.loadLimit + 1)
-    loadWithBounds(idsList, Some(criteria.commitId), criteria.loadLimit, boundsForSurroundings, loadFn)
-  }
+    def boundsForPrevious(givenIndex: Int) = (givenIndex - criteria.limit, givenIndex)
+    def boundsForNext(givenIndex: Int) = (givenIndex + 1, givenIndex + criteria.limit + 1)
+    def boundsForSurroundings(givenIndex: Int) = (givenIndex - criteria.limit, givenIndex + criteria.limit + 1)
 
-  def loadSliceUsing[T](criteria: PagingCriteria, idsList: List[ObjectId], loadFn: (List[ObjectId] => List[T])) = {
-
-    def boundsForPreviousCommits(givenIndex: Int) = (givenIndex - criteria.limit, givenIndex)
-    def boundsForNextCommits(givenIndex: Int) = (givenIndex + 1, givenIndex + criteria.limit + 1)
-
-    if(criteria.maxCommitId.isDefined) {
-      loadWithBounds(idsList, criteria.maxCommitId, criteria.limit, boundsForPreviousCommits, loadFn)
-    } else if(criteria.minCommitId.isDefined) {
-      loadWithBounds(idsList, criteria.minCommitId, criteria.limit, boundsForNextCommits, loadFn)
-    } else {
-      val noPivotId = None
-      loadWithBounds(idsList, noPivotId, criteria.limit, boundsForNextCommits, loadFn)
+    criteria.direction match {
+      case PagingDirection.Left => loadWithBounds(idsList, criteria.baseId, criteria.limit, boundsForPrevious, loadFn)
+      case PagingDirection.Right => loadWithBounds(idsList, criteria.baseId, criteria.limit, boundsForNext, loadFn)
+      case PagingDirection.Radial => loadWithBounds(idsList, criteria.baseId, criteria.limit, boundsForSurroundings, loadFn)
     }
-
   }
 
   private def loadWithBounds[T](idsList: List[ObjectId], pivotId: Option[ObjectId], limit: Int, boundsFn: (Int => (Int, Int)), loadFn: (List[ObjectId] => List[T])): List[T] = {

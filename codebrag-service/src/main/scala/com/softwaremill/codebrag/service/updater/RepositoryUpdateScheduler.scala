@@ -9,24 +9,11 @@ object RepositoryUpdateScheduler extends Logging {
 
   private var actor: ActorRef = _
 
-  def initialize(actorSystem: ActorSystem,
-                 repoDataProducer: RepoDataProducer,
-                 commitImportService: CommitImportService): ActorRef = {
-
+  def initialize(actorSystem: ActorSystem, repoDataProducer: RepoDataProducer, commitImportService: CommitImportService): ActorRef = {
     import actorSystem.dispatcher
-
-    actor = actorSystem.actorOf(Props(
-      new LocalRepositoryUpdater(commitImportService)), "repositoryUpdater")
-
-    actorSystem.scheduler.schedule(3 seconds,
-      45 seconds,
-      actor,
-      LocalRepositoryUpdater.UpdateCommand)
-
-    repoDataProducer.createFromConfiguration().foreach { repoData =>
-      actor ! LocalRepositoryUpdater.RefreshRepoData(repoData)
-    }
-
+    actor = actorSystem.actorOf(Props(new LocalRepositoryUpdater(commitImportService)), "repositoryUpdater")
+    actorSystem.scheduler.schedule(3 seconds, 45 seconds, actor, LocalRepositoryUpdater.UpdateCommand)
+    repoDataProducer.createFromConfiguration().foreach { repoData => actor ! LocalRepositoryUpdater.RefreshRepoData(repoData) }
     actor
   }
 }
