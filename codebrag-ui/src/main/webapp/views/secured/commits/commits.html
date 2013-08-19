@@ -22,8 +22,10 @@
                     </div>
                 </div ><i class="icon-ok-circle" ng-show="commit.pendingReview" ng-click="markAsReviewed(commit.id)" isolate-click></i>
             </div>
-            <div style="width: 100%; background: rgba(211,196,160, 0.3); text-transform: uppercase; text-align:center; padding:10px; color:#70493e" ng-show="hasNextCommits()" ng-click="loadNextCommits()">
-                <i class="icon-circle-arrow-down"></i> next commits
+            <div class="load-next-wrapper" ng-show="hasNextCommits()" ng-click="loadNextCommits()">
+                <span class="button link">
+                    <i class="icon-circle-arrow-down"></i> next commits
+                </span>
             </div>
             <!--commit info end-->
             <div class="no-more-items" ng-show="allCommitsReviewed()">
@@ -32,5 +34,6 @@
         </div>
     </div>
     <div class="diff small-9 large-9 columns" ui-view>
+
     </div>
 </div>
