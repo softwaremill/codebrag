@@ -13,16 +13,16 @@ object ListSliceLoader {
 
   def loadSliceUsing[T](criteria: PagingCriteria, idsList: List[ObjectId], loadFn: (List[ObjectId] => List[T])) = {
 
-    def boundsForPreviousCommits(givenIndex: Int) = (givenIndex - criteria.limit, givenIndex)
-    def boundsForNextCommits(givenIndex: Int) = (givenIndex + 1, givenIndex + criteria.limit + 1)
+    def boundsForPrevious(givenIndex: Int) = (givenIndex - criteria.limit, givenIndex)
+    def boundsForNext(givenIndex: Int) = (givenIndex + 1, givenIndex + criteria.limit + 1)
 
     if(criteria.maxCommitId.isDefined) {
-      loadWithBounds(idsList, criteria.maxCommitId, criteria.limit, boundsForPreviousCommits, loadFn)
+      loadWithBounds(idsList, criteria.maxCommitId, criteria.limit, boundsForPrevious, loadFn)
     } else if(criteria.minCommitId.isDefined) {
-      loadWithBounds(idsList, criteria.minCommitId, criteria.limit, boundsForNextCommits, loadFn)
+      loadWithBounds(idsList, criteria.minCommitId, criteria.limit, boundsForNext, loadFn)
     } else {
       val noPivotId = None
-      loadWithBounds(idsList, noPivotId, criteria.limit, boundsForNextCommits, loadFn)
+      loadWithBounds(idsList, noPivotId, criteria.limit, boundsForNext, loadFn)
     }
 
   }
