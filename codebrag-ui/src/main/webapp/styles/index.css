@@ -555,6 +555,49 @@ a.ribbon:hover {
   font-style: normal;
   margin-top: 0.5em;
 }
+.popup-page.uservoice .popup-box {
+  width: 500px;
+  top: 20%;
+}
+.popup-page.uservoice .uv-success {
+  display: none;
+}
+.popup-page.uservoice .uv-success p {
+  text-align: center;
+}
+.popup-page.uservoice .uv-success.opened {
+  display: block;
+}
+.popup-page.uservoice .uv-error {
+  display: none;
+}
+.popup-page.uservoice .uv-error p {
+  text-align: center;
+}
+.popup-page.uservoice .uv-error.opened {
+  display: block;
+}
+.popup-page.uservoice label {
+  margin-bottom: 0.38em;
+}
+.popup-page.uservoice input,
+.popup-page.uservoice textarea {
+  width: 100%;
+  margin-bottom: 1.15em;
+  padding: 7px;
+  border: 1px solid #ccc;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.popup-page.uservoice input {
+  height: 32px;
+}
+.popup-page.uservoice textarea {
+  resize: vertical;
+}
+.popup-page.uservoice .form-group span.text-error {
+  bottom: -16px;
+}
 .btn-centered-wrapper {
   text-align: center;
 }
