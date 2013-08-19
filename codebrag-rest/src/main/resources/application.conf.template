@@ -28,6 +28,13 @@ repository {
         branch = "refs/heads/master"
         passphrase = ""
     }
+
+    svn {
+        name = "codebrag"
+        uri = ""
+        username = ""
+        password = ""
+    }
 }
 aws {
     access-key-id = ""

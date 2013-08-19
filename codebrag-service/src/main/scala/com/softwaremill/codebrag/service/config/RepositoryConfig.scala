@@ -30,4 +30,11 @@ trait RepositoryConfig {
   lazy val gitSshRepositoryUri = gitSshRepositoryConfig.getString("uri")
   lazy val gitSshRepositoryBranch = gitSshRepositoryConfig.getString("branch")
   lazy val gitSshPassphrase = gitSshRepositoryConfig.getString("passphrase")
+
+  private lazy val svnRepositoryConfig = repositoryConfig.getConfig("svn")
+
+  lazy val svnRepositoryName = svnRepositoryConfig.getString("name")
+  lazy val svnRepositoryUri = svnRepositoryConfig.getString("uri")
+  lazy val svnRepositoryUsername = svnRepositoryConfig.getString("username")
+  lazy val svnRepositoryPassword = svnRepositoryConfig.getString("password")
 }

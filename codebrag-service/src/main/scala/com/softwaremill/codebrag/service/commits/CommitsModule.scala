@@ -9,9 +9,15 @@ trait CommitsModule {
   lazy val commitImportService = new CommitImportService(
     new JgitCommitsLoader(
       new JgitFacade,
-      new InternalGitDirTree(config),
+      new InternalDirTree(config),
       new JgitLogConverter,
-      repoHeadStore),
+      repoHeadStore,
+      repoDataProducer.createFromConfiguration() match {
+        case Some(svn: SvnRepoData) => new GitSvnRepoUpdater(new JgitFacade, repoHeadStore)
+        case Some(git: RepoData) => new JgitRepoUpdater(new JgitFacade, repoHeadStore)
+        case None => throw new RuntimeException("Unknown repository config");
+      }
+    ),
     commitInfoDao,
     eventBus)
 

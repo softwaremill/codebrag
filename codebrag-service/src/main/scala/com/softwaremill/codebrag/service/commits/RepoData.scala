@@ -33,6 +33,14 @@ case class GitSshRepoData(repositoryName: String, uri: String, branch: String, p
   def credentialsValid = true
 }
 
+case class SvnRepoData(repositoryName: String, uri: String, username: String, password: String) extends RepoData {
+  def branch = ""
+  def remoteUri = uri
+  def localPathRelativeTo(path: Path) = path.resolve(repositoryName)
+  def credentialsValid = true
+  def credentials = null
+}
+
 class SshPassphraseCredentialsProvider(passphrase: String) extends CredentialsProvider {
   def isInteractive = false
   def supports(items: CredentialItem*) = true
@@ -48,4 +56,5 @@ class SshPassphraseCredentialsProvider(passphrase: String) extends CredentialsPr
     true
   }
 }
+
 

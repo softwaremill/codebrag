@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.service.config.CodebragConfig
 import org.eclipse.jgit.util.StringUtils._
 import com.softwaremill.codebrag.service.commits.RepoData
 
-class InternalGitDirTree(codebragConfig: CodebragConfig) {
+class InternalDirTree(codebragConfig: CodebragConfig) {
   val root = {
     val baseDir = if (!isEmptyOrNull(codebragConfig.localGitStoragePath))
       codebragConfig.localGitStoragePath

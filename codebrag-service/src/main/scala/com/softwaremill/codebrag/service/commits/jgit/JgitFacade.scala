@@ -21,6 +21,11 @@ class JgitFacade {
     git
   }
 
+  def gitRepo(localPath : Path) : Git = {
+    val repository = getRepository(localPath)
+    new Git(repository)
+  }
+
   def getHeadId(localPath: Path): ObjectId = {
     val repository = getRepository(localPath)
     repository.resolve(Constants.HEAD)

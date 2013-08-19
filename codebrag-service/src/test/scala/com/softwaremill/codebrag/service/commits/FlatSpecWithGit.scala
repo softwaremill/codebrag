@@ -8,7 +8,7 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.{PersonIdent, Constants}
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.util.FileUtils
-import com.softwaremill.codebrag.service.commits.jgit.InternalGitDirTree
+import com.softwaremill.codebrag.service.commits.jgit.InternalDirTree
 import com.google.common.io.Files
 import java.nio.file.Path
 
@@ -59,7 +59,7 @@ trait FlatSpecWithGit extends FlatSpec with BeforeAndAfter with ShouldMatchers {
   }
 
   def deleteRootDirectoryRecursively() {
-    FileUtils.delete(new InternalGitDirTree(TestCodebragAndRepositoryConfig).root.toFile, FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
+    FileUtils.delete(new InternalDirTree(TestCodebragAndRepositoryConfig).root.toFile, FileUtils.RECURSIVE | FileUtils.SKIP_MISSING)
   }
 
   object TestRepoData extends RepoData {
