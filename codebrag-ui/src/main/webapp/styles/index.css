@@ -173,14 +173,14 @@ p {
 ::-webkit-scrollbar-track {
   background-color: rgba(216,198,158,0.6);
   opacity: 0.6;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
   filter: alpha(opacity=60);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
 }
 ::-webkit-scrollbar-thumb {
   background-color: rgba(197,172,124,0.6);
   opacity: 0.6;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
   filter: alpha(opacity=60);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
 }
 i {
   font-family: 'FontAwesome';
@@ -472,8 +472,8 @@ a.ribbon {
   display: inline-block;
   left: -44px;
   opacity: 0.9;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
   filter: alpha(opacity=90);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
   padding: 0.5em;
   position: fixed;
   text-align: center;
@@ -554,6 +554,52 @@ a.ribbon:hover {
 .popup-page .popup-box blockquote footer {
   font-style: normal;
   margin-top: 0.5em;
+}
+.popup-page.uservoice .popup-box {
+  width: 500px;
+  top: 20%;
+}
+.popup-page.uservoice .uv-success {
+  display: none;
+}
+.popup-page.uservoice .uv-success p {
+  text-align: center;
+}
+.popup-page.uservoice .uv-success.opened {
+  display: block;
+}
+.popup-page.uservoice .uv-error {
+  display: none;
+}
+.popup-page.uservoice .uv-error p {
+  text-align: center;
+}
+.popup-page.uservoice .uv-error.opened {
+  display: block;
+}
+.popup-page.uservoice label {
+  margin-bottom: 0.38em;
+}
+.popup-page.uservoice input,
+.popup-page.uservoice textarea {
+  width: 100%;
+  margin-bottom: 1.15em;
+  padding: 7px;
+  border: 1px solid #ccc;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.popup-page.uservoice input {
+  height: 32px;
+}
+.popup-page.uservoice textarea {
+  resize: vertical;
+}
+.popup-page.uservoice .form-group span.text-error {
+  bottom: -16px;
+}
+.btn-centered-wrapper {
+  text-align: center;
 }
 .items-list {
   height: 700px;
@@ -636,13 +682,13 @@ a.ribbon:hover {
 }
 .commit-container.reviewed .author-box {
   opacity: 0.4;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
   filter: alpha(opacity=40);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
 }
 .commit-container.reviewed .info-box {
   opacity: 0.4;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
   filter: alpha(opacity=40);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
 }
 .commit-container.active {
   background: #fff;
@@ -708,8 +754,8 @@ a.ribbon:hover {
   font-weight: bold;
   margin-bottom: 0.4em;
   opacity: 0.75;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
   filter: alpha(opacity=75);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
   overflow: hidden;
   -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
@@ -820,8 +866,8 @@ a.ribbon:hover {
   cursor: pointer;
   left: 0;
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   filter: alpha(opacity=0);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   position: absolute;
   top: 0.77em;
   width: 2.2em;
@@ -918,8 +964,8 @@ a.ribbon:hover {
 }
 .diff-file-container .diff-line-num i {
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   filter: alpha(opacity=0);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   position: absolute;
   left: 50%;
   margin-left: -0.5em;
@@ -974,8 +1020,8 @@ a.ribbon:hover {
 }
 .diff-file-container tr.liked-by-others .like.button .diff-line-num-content {
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   filter: alpha(opacity=0);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
 }
 .diff-file-container tr.liked-by-user .like.button {
   background: #f3720b;
@@ -988,8 +1034,8 @@ a.ribbon:hover {
 }
 .diff-file-container tr.liked-by-user .like.button .diff-line-num-content {
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   filter: alpha(opacity=0);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
 }
 tbody tr.comments-container:last-child {
   border-bottom: 1px solid #d1cbb9;
@@ -1008,8 +1054,8 @@ tr:hover .diff-line-num .button.comment:hover {
 }
 tr:hover .diff-line-num .button .diff-line-num-content {
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   filter: alpha(opacity=0);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
 }
 tr:hover .diff-line-num .button i {
   opacity: 1;
