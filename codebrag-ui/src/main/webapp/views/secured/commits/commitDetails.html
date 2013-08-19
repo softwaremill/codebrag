@@ -8,7 +8,12 @@
         <div class="authored-box">
             <div class="author-box"><user-avatar url="currentCommit.info.authorAvatarUrl"></user-avatar></div>
             <div class="info-box">
-                <div class="commit-name" ng-bind-html-unsafe="currentCommit.info.message"></div>
+                <div class="commit-name">
+                    <commit-msg-headline message="currentCommit.info.message"></commit-msg-headline>
+                </div>
+                <div>
+                    <commit-msg-detailed message="currentCommit.info.message"></commit-msg-detailed>
+                </div>
                 <div class="info-line"><span class="username">{{currentCommit.info.authorName}}</span><span class="time">{{currentCommit.info.date | relativeDate}}</span></div>
             </div>
         </div>

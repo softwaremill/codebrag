@@ -4,177 +4,104 @@ describe("Commits Controller", function () {
 
     var pendingCommits = ['commit1', 'commit2'];
 
-    var scope;
+    var $scope,
+        $q,
+        commitsListService;
 
     beforeEach(module('codebrag.commits'));
 
-    beforeEach(inject(function ($rootScope) {
-        scope = $rootScope;
+    beforeEach(inject(function($rootScope, _$q_, $controller, _commitsListService_) {
+        $scope = $rootScope.$new();
+        $q = _$q_;
+        commitsListService = _commitsListService_;
     }));
 
-    it('should have initial list mode set to pending', inject(function($controller, commitsListService) {
-        // given
-        var spy = spyOn(commitsListService, 'loadCommitsPendingReview');
+    beforeEach(inject(function($controller) {
+        spyOn(commitsListService, 'loadCommitsToReview').andReturn($q.defer().promise);
+        $controller('CommitsCtrl', {$scope: $scope, commitsListService: commitsListService});
+    }));
 
-        // when
-       $controller('CommitsCtrl', {$scope: scope});
+    it('should have initial list mode set to pending', function() {
+        expect($scope.listViewMode).toBe('pending');
+        expect(commitsListService.loadCommitsToReview).toHaveBeenCalled();
+    });
+
+    it('should load pending commits when view switched to pending', function() {
+        // given
+        commitsListService.loadCommitsToReview.reset(); // reset spy call counter
+
+        // When
+        $scope.listViewMode = 'pending';
+        $scope.switchListView();
+        $scope.$apply();
 
         // then
-        expect(scope.listViewMode).toBe('pending');
-        expect(spy.callCount).toBe(1);
-    }));
+        expect(commitsListService.loadCommitsToReview.callCount).toBe(1);
+    });
 
-    it('should fetch pending commits', inject(function ($controller, commitsListService) {
+    it('should expose loaded commits to scope', function() {
         // Given
-        var spy = spyOn(commitsListService, 'loadCommitsPendingReview').andReturn(pendingCommits);
-        $controller('CommitsCtrl', {$scope: scope});
-        resetSpyCounter(commitsListService, 'loadCommitsPendingReview'); // reset spy after ctrl initialization
+        var commits = $q.defer();
+        commits.resolve(pendingCommits);
+        commitsListService.loadCommitsToReview.andReturn(commits.promise);
 
         // When
-        scope.loadPendingCommits();
-
-        expect(spy.callCount).toBe(1);
-    }));
-
-    it('should fetch all commits when not in commit context', inject(function ($controller, commitsListService, $stateParams) {
-        // Given
-        spyOn(commitsListService, 'loadCommitsPendingReview'); // called on controller start
-        spyOn(commitsListService, 'loadAllCommits');
-        delete $stateParams.id; // make sure $stateParams has no "id" property
-
-        // When
-        $controller('CommitsCtrl', {$scope: scope});
-        scope.loadAllCommits();
-
-        expect(commitsListService.loadAllCommits).toHaveBeenCalled();
-    }));
-
-    it('should fetch current commit with surroundings when context', inject(function ($controller, commitsListService, $stateParams) {
-        // Given
-        spyOn(commitsListService, 'loadCommitsPendingReview'); // called on controller start
-        spyOn(commitsListService, 'loadSurroundings');
-        $stateParams.id = '123';
-
-        // When
-        $controller('CommitsCtrl', {$scope: scope});
-        scope.loadAllCommits();
-
-        expect(commitsListService.loadSurroundings).toHaveBeenCalledWith('123');
-    }));
-
-    it('should fetch commits pending review when controller starts', inject(function ($controller, commitsListService) {
-        // Given
-        spyOn(commitsListService, 'loadCommitsPendingReview');
-
-        // When
-        $controller('CommitsCtrl', {$scope: scope});
+        $scope.listViewMode = 'pending';
+        $scope.switchListView();
+        $scope.$apply();
 
         //Then
-        expect(commitsListService.loadCommitsPendingReview).toHaveBeenCalled();
-    }));
+        expect($scope.commits).toBe(pendingCommits);
+    });
 
-    it('should expose loaded commits to scope', inject(function ($controller, commitsListService) {
+    it('should indicate when all commits were reviewed', function() {
         // Given
-        spyOn(commitsListService, 'loadCommitsPendingReview').andReturn(pendingCommits);
+        $scope.commits = [];
+        spyOn(commitsListService, 'hasNextCommits').andReturn(false);
 
         // When
-        $controller('CommitsCtrl', {$scope: scope});
+        var result = $scope.allCommitsReviewed();
 
-        //Then
-        expect(scope.commits).toBe(pendingCommits);
+        expect(result).toBeTruthy();
+    });
+
+    it('should indicate when there is more commits to review on server', function() {
+        // Given
+        spyOn(commitsListService, 'hasNextCommits').andReturn(true);
+
+        // When
+        var result = $scope.hasNextCommits();
+
+        expect(result).toBeTruthy();
+    });
+
+    it('should mark commit as reviewed and go to next if exists', inject(function($state) {
+        // Given
+        var data = {id: '123'};
+        var nextCommit = $q.defer();
+        nextCommit.resolve(data);
+        spyOn(commitsListService, 'makeReviewedAndGetNext').andReturn(nextCommit.promise);
+        spyOn($state, 'transitionTo');
+
+        // When
+        var result = $scope.markAsReviewed();
+        $scope.$apply();
+
+        expect($state.transitionTo).toHaveBeenCalledWith('commits.details', data);
     }));
 
-    function resetSpyCounter(target, methodName) {
-        target[methodName].reset();
-    }
+    it('should mark commit as reviewed and go to empty details screen if no next commit found', inject(function($state) {
+        // Given
+        var noNextCommit = $q.defer();
+        noNextCommit.resolve(undefined);
+        spyOn(commitsListService, 'makeReviewedAndGetNext').andReturn(noNextCommit.promise);
+        spyOn($state, 'transitionTo');
 
-//    it('should fetch additional commits', inject(function ($controller, commitsListService) {
-//        // Given
-//        var loadPendingSpy = spyOn(commitsListService, 'loadCommitsPendingReview').andReturn(pendingCommits);
-//        var loadMoreSpy = spyOn(commitsListService, 'loadMoreCommits').andReturn(irrelevantPromise($q));
-//        $controller('CommitsCtrl', {$scope: scope});
-//
-//        // When
-//        scope.loadMoreCommits();
-//
-//        expect(loadPendingSpy.callCount).toBe(1);
-//        expect(loadMoreSpy.callCount).toBe(1);
-//    }));
-//
-//    it('should allow loading more in pending mode when there is more elements than loaded',
-//        inject(function ($controller, commitLoadFilter, commitsListService, $q) {
-//
-//        // Given
-//        var loadedElementCount = 2;
-//        spyOn(commitsListService, 'loadCommitsPendingReview').andReturn(['commit one', 'commit two']);
-//        spyOn(commitLoadFilter, 'isAll').andReturn(false);
-//
-//        $controller('CommitsCtrl', {$scope: scope});
-//
-//        // When
-//        scope.toReviewCount = loadedElementCount + 2;
-//
-//        // Then
-//        expect(scope.canLoadMore()).toBeTruthy();
-//    }));
-//
-//    it('should not allow loading more in pending mode when loaded commit list size is equal to total size',
-//        inject(function ($controller, commitLoadFilter, commitsListService, $q) {
-//            // Given
-//            var loadedElementCount = 16;
-//            spyOn(commitsListService, 'loadCommitsPendingReview').andReturn(
-//                promiseOfArray($q, commitArrayOfSize(loadedElementCount)));
-//            $controller('CommitsCtrl', {$scope: scope});
-//            spyOn(commitLoadFilter, 'isAll').andReturn(false);
-//
-//            // When
-//            scope.toReviewCount = loadedElementCount;
-//            scope.$apply();
-//
-//            // Then
-//            expect(scope.canLoadMore()).toBeFalsy();
-//        }));
-//
-//    it('should not allow loading more commits in "all" mode', inject(function ($controller, commitLoadFilter) {
-//        // Given
-//        spyOn(commitLoadFilter, 'isAll').andReturn(true);
-//        $controller('CommitsCtrl', {$scope: scope});
-//
-//        // When
-//        var canLoad = scope.canLoadMore();
-//
-//        // Then
-//        expect(canLoad).toBeFalsy();
-//    }));
-//
-//    it('should update total commit count on event', inject(function ($controller, events, $rootScope) {
-//        // Given
-//        var newCommitCount = 20;
-//        $controller('CommitsCtrl', {$scope: scope});
-//
-//        // When
-//        $rootScope.$broadcast(events.commitCountChanged, {commitCount: newCommitCount});
-//
-//        // Then
-//        expect(scope.toReviewCount).toEqual(newCommitCount);
-//    }));
-//
-//    function commitArrayOfSize(size) {
-//        var array = [];
-//        for (var i = 0; i< size; i++) array[i] = 'dummyCommit';
-//        return array;
-//    }
-//
-//    function irrelevantPromise($q) {
-//        var deferred = $q.defer();
-//        deferred.resolve();
-//        return deferred.promise;
-//    }
-//
-//    function promiseOfArray($q, array) {
-//        var deferred = $q.defer();
-//        deferred.resolve(array);
-//        return deferred.promise;
-//    }
+        // When
+        var result = $scope.markAsReviewed();
+        $scope.$apply();
+
+        expect($state.transitionTo).toHaveBeenCalledWith('commits.list');
+    }));
 
 });

@@ -2,313 +2,218 @@
 
 describe("CommitsListService", function () {
 
-    var $httpBackend;
-    var rootScope;
+    var $httpBackend,
+        $rootScope,
+        events,
+        commitsListService;
 
     beforeEach(module('codebrag.commits'));
 
-    beforeEach(inject(function (_$httpBackend_, $rootScope) {
+    beforeEach(inject(function (_$httpBackend_, _$rootScope_, _commitsListService_, _events_) {
         $httpBackend = _$httpBackend_;
-        rootScope = $rootScope;
-    }));
+        $rootScope = _$rootScope_;
+        events = _events_;
+        commitsListService = _commitsListService_;
 
-    afterEach(inject(function (_$httpBackend_) {
-        _$httpBackend_.verifyNoOutstandingExpectation();
-        _$httpBackend_.verifyNoOutstandingRequest();
-    }));
-
-    it('should delete reviewed commit, load one more and then select next', inject(function (commitsListService, commitLoadFilter) {
-        // Given
-        var loadedCommits = commitArrayOfSize(3);
-        var commitIdToRemove = 2;
-        commitLoadFilter.MAX_COMMITS_ON_LIST = 3;
-        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits, totalCount: 4});
-        commitsListService.loadCommitsPendingReview();
-        $httpBackend.flush();
-        $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
-        $httpBackend.whenGET('rest/commits?filter=pending&limit=1&skip=2').respond({commits: [commit(4)], totalCount: 3});
-        var returnedNext = {};
-
-        // When
-        commitsListService.removeCommitAndGetNext(commitIdToRemove).then(function (nextElement) {
-            returnedNext = nextElement;
-        });
-        $httpBackend.flush();
-
-        // Then
-        expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
-        expect(commitsListService.allCommits()[0].id).toBe('1');
-        expect(commitsListService.allCommits()[1].id).toBe('3');
-        expect(commitsListService.allCommits()[2].id).toBe('4');
-        expect(returnedNext.id).toBe('3');
-    }));
-
-    it('not load one more commit if there is no more than on the current list', inject(function (commitsListService, commitLoadFilter) {
-        // Given
-        var loadedCommits = commitArrayOfSize(3);
-        var commitIdToRemove = 2;
-        commitLoadFilter.MAX_COMMITS_ON_LIST = 3;
-        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits, totalCount: 3});
-        commitsListService.loadCommitsPendingReview();
-        $httpBackend.flush();
-        $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
-        var returnedNext = {};
-
-        // When
-        commitsListService.removeCommitAndGetNext(commitIdToRemove).then(function (nextElement) {
-            returnedNext = nextElement;
-        });
-        $httpBackend.flush();
-
-        // Then
-        expect(commitsListService.allCommits().length).toBe(loadedCommits.length - 1);
-        expect(commitsListService.allCommits()[0].id).toBe('1');
-        expect(commitsListService.allCommits()[1].id).toBe('3');
-        expect(returnedNext.id).toBe('3');
-    }));
-
-    it('should broadcast correct total count after deleting element from list without loading one more', inject(function (commitsListService, commitLoadFilter, events) {
-        // Given
-        var loadedCommits = commitArrayOfSize(3);
-        commitLoadFilter.MAX_COMMITS_ON_LIST = 3;
-        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits, totalCount: 3});
-        commitsListService.loadCommitsPendingReview();
-        $httpBackend.flush();
-        var commitIdToRemove = 2;
-        $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
-        var listener = jasmine.createSpy('listener');
-        rootScope.$on(events.commitCountChanged, listener);
-
-        // When
-        commitsListService.removeCommitAndGetNext(commitIdToRemove);
-        $httpBackend.flush();
-
-        // Then
-        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 2});
-    }));
-
-    it('should not remove commit locally if filter is set to all', inject(function (commitsListService) {
-        // Given
-        var loadedCommits = commitArrayOfSize(3);
-        var commitIdToRemove = 2;
-        _givenServerReturnsAllCommits(commitsListService, loadedCommits);
-        $httpBackend.flush();
-
-        // When
-        $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
-        commitsListService.removeCommitAndGetNext(commitIdToRemove);
-        $httpBackend.flush();
-
-        // Then
-        expect(commitsListService.allCommits()[1].pendingReview).toBe(false);
-        expect(commitsListService.allCommits()[0].pendingReview).toBe(true);
-    }));
-
-    it('should keep current commit index as next after removing in pending mode', inject(function (commitsListService) {
-        // Given
-        var nextCommit = {};
-        var loadedCommits = commitArrayOfSize(4);
-        var commitIdToRemove = 2;
-        _givenServerReturnsPendingCommits(commitsListService, loadedCommits);
-        $httpBackend.flush();
-        $httpBackend.whenGET('rest/commits?filter=pending&limit=1&skip=3').respond({commits: []});
-
-        // When
-        $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
-        commitsListService.removeCommitAndGetNext(commitIdToRemove).then(
-            function(returnedNext) {
-                nextCommit = returnedNext
+        this.addMatchers({
+            toEqualProps: function(expected) {
+                return angular.equals(this.actual, expected);
             }
-        );
-        $httpBackend.flush();
-
-        // Then
-        expect(nextCommit.id).toBe('3');
-    }));
-
-    it('should mark local commit as not pending', inject(function (commitsListService) {
-        // Given
-        var nextCommit = {};
-        var loadedCommits = commitArrayOfSize(3);
-        var commitIdToRemove = 2;
-        _givenServerReturnsAllCommits(commitsListService, loadedCommits);
-        $httpBackend.flush();
-
-        // When
-        $httpBackend.expectDELETE(commitUrl(commitIdToRemove)).respond(200);
-        commitsListService.removeCommitAndGetNext(commitIdToRemove).then(
-            function(returnedNext) {
-                nextCommit = returnedNext
-            }
-        );
-        $httpBackend.flush();
-
-        // Then
-        expect(commitsListService.allCommits()[1].pendingReview).toBe(false);
-        expect(commitsListService.allCommits()[0].pendingReview).toBe(true);
-    }));
-
-    it('should load reviewable commits from server', inject(function (commitsListService) {
-        // Given
-        var loadedCommits = commitArrayOfSize(3);
-        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
-
-        // When
-        commitsListService.loadCommitsPendingReview();
-        $httpBackend.flush();
-
-        // Then
-        expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
-    }));
-
-    it('should load additional commits from server', inject(function (commitsListService, commitLoadFilter) {
-        // Given
-        spyOn(commitLoadFilter, 'maxCommitsOnList').andReturn(7);
-        var loadedCommits = commitArrayOfSize(3);
-        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
-        commitsListService.loadCommitsPendingReview();
-        var additionalCommits = commitArrayOfSize(2);
-        $httpBackend.flush();
-        $httpBackend.whenGET('rest/commits?filter=pending&limit=7&skip=3').respond({commits:additionalCommits});
-
-        // When
-        commitsListService.loadMoreCommits();
-        $httpBackend.flush();
-
-        // Then
-        expect(commitsListService.allCommits().length).toBe(loadedCommits.length + additionalCommits.length);
-    }));
-
-    it('should broadcast an event after loading pending commits', inject(function (commitsListService, events) {
-        // Given
-        var loadedCommits = commitArrayOfSize(3);
-        $httpBackend.whenGET('rest/commits?filter=pending').respond({totalCount: 3, commits:loadedCommits});
-        var listener = jasmine.createSpy('listener');
-        rootScope.$on(events.commitCountChanged, listener);
-
-        // When
-        commitsListService.loadCommitsPendingReview();
-        $httpBackend.flush();
-
-        // Then
-        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 3})
-    }));
-
-    it('should broadcast an event after loading all commits', inject(function (commitsListService, events) {
-        // Given
-        var loadedCommits = commitArrayOfSize(3);
-        $httpBackend.whenGET('rest/commits?filter=all').respond({totalCount: 13, commits:loadedCommits});
-        var listener = jasmine.createSpy('listener');
-        rootScope.$on(events.commitCountChanged, listener);
-
-        // When
-        commitsListService.loadAllCommits();
-        $httpBackend.flush();
-
-        // Then
-        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 13});
-    }));
-
-    it('should broadcast an event after loading additional commits', inject(function (commitsListService, events, commitLoadFilter) {
-        // Given
-        spyOn(commitLoadFilter, 'maxCommitsOnList').andReturn(7);
-        var loadedCommits = commitArrayOfSize(3);
-        $httpBackend.whenGET('rest/commits?filter=pending').respond({totalCount: 13, commits:loadedCommits});
-        commitsListService.loadCommitsPendingReview();
-        $httpBackend.flush();
-        var moreCommits = commitArrayOfSize(4);
-        $httpBackend.whenGET('rest/commits?filter=pending&limit=7&skip=3').respond({totalCount: 9, commits:moreCommits});
-        var listener = jasmine.createSpy('listener');
-        rootScope.$on(events.commitCountChanged, listener);
-
-        // When
-        commitsListService.loadMoreCommits();
-        $httpBackend.flush();
-
-        // Then
-        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {commitCount: 9});
-    }));
-
-    it('should not change current commits when no additional commits are returned', inject(function (commitsListService, commitLoadFilter) {
-        // Given
-        spyOn(commitLoadFilter, 'maxCommitsOnList').andReturn(7);
-        var loadedCommits = commitArrayOfSize(3);
-        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
-        commitsListService.loadCommitsPendingReview();
-        var additionalCommits = [];
-        $httpBackend.flush();
-        $httpBackend.whenGET('rest/commits?filter=pending&limit=7&skip=3').respond({commits:additionalCommits});
-
-        // When
-        commitsListService.loadMoreCommits();
-        $httpBackend.flush();
-
-        // Then
-        expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
-    }));
-
-    it('should load all commits from server', inject(function (commitsListService) {
-        // Given
-        var loadedCommits = [commit(1), commit(2), notReviewable(commit(3))];
-        $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
-
-        // When
-        commitsListService.loadAllCommits();
-        $httpBackend.flush();
-
-        // Then
-        expect(commitsListService.allCommits().length).toBe(loadedCommits.length);
-    }));
-
-    it('should load commit by id', inject(function (commitsListService) {
-        // Given
-        var loadedCommit = {};
-        var expectedCommit = {commit: {}};
-        $httpBackend.whenGET('rest/commits/123').respond(expectedCommit);
-
-        // When
-        commitsListService.loadCommitById(123).then(function(data) {
-            loadedCommit = data;
         });
-
-        $httpBackend.flush();
-        rootScope.$apply();
-
-        // Then
-        expect(loadedCommit).toBe(expectedCommit);
     }));
 
+    afterEach(function() {
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+    });
 
-    function commitUrl(id) {
-        return 'rest/commits/' + id;
-    }
+    it('should load pending commits and update next/prev status', function() {
+        // given
+        var commits;
+        var pendingCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 10);
+        $httpBackend.expectGET('rest/commits?filter=to_review&limit=7').respond(pendingCommitsResponse);
 
-    function commit(id) {
-        var idStr = id.toString();
-        return {id: idStr, sha: 'sha' + idStr, msg: 'message' + idStr, pendingReview: true}
-    }
+        // when
+        commitsListService.loadCommitsToReview().then(function(list) {
+            commits = list;
+        });
+        $httpBackend.flush();
 
-    function notReviewable(commit) {
-        commit.pendingReview = false;
-        return commit;
-    }
+        // then
+        expect(commits).toEqualProps(pendingCommitsResponse.commits);
+        expect(commitsListService.hasNextCommits()).toBeTruthy();
+        expect(commitsListService.hasPreviousCommits()).toBeFalsy();
+    });
 
-    function commitArrayOfSize(size) {
-        var array = [];
-        for (var i = 1; i < size + 1; i++) {
-            array.push(commit(i))
-        }
-        return array;
-    }
+    it('should load commits in context and update next/prev status', function() {
+        // given
+        var commits;
+        var pivotCommitId = 2;
+        var contextCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8, 9], 20);
+        $httpBackend.expectGET('rest/commits?context=true&id=2&limit=7').respond(contextCommitsResponse);
 
-    function _givenServerReturnsAllCommits(commitsListService, loadedCommits) {
-        $httpBackend.whenGET('rest/commits?filter=all').respond({commits:loadedCommits});
-        commitsListService.loadAllCommits();
-    }
+        // when
+        commitsListService.loadCommitsInContext(pivotCommitId).then(function(list) {
+            commits = list;
+        });
+        $httpBackend.flush();
 
-    function _givenServerReturnsPendingCommits(commitsListService, loadedCommits) {
-        $httpBackend.whenGET('rest/commits?filter=pending').respond({commits:loadedCommits});
-        commitsListService.loadCommitsPendingReview();
+        // then
+        expect(commits).toEqualProps(contextCommitsResponse.commits);
+        expect(commitsListService.hasNextCommits()).toBeTruthy();
+        expect(commitsListService.hasPreviousCommits()).toBeFalsy();
+    });
+
+    it('should replace commits list when loading pending and then all', function() {
+        // given
+        var pendingCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 10);
+        $httpBackend.expectGET('rest/commits?filter=to_review&limit=7').respond(pendingCommitsResponse);
+
+        var contextCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8, 9], 20);
+        $httpBackend.expectGET('rest/commits?context=true&id=2&limit=7').respond(contextCommitsResponse);
+
+        var pivotCommitId = 2;
+
+        // when
+        var commits;
+        commitsListService.loadCommitsToReview();
+        commitsListService.loadCommitsInContext(pivotCommitId).then(function(list) {
+            commits = list;
+        });
+        $httpBackend.flush();
+
+        // then
+        expect(commits).toEqualProps(contextCommitsResponse.commits);
+    });
+
+    it('should load next commits in all mode', function() {
+        // given
+        var pivotCommitId = 1;
+        var firstCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8], 30);
+        var nextCommitsResponse = buildCommitsResponse([9, 10, 11, 12, 13, 14, 15], 30);
+        $httpBackend.expectGET('rest/commits?context=true&id=1&limit=7').respond(firstCommitsResponse);
+        $httpBackend.expectGET('rest/commits?filter=all&limit=7&min_id=8').respond(nextCommitsResponse);
+
+        // when
+        var commitsList;
+        commitsListService.loadCommitsInContext(pivotCommitId).then(function(commits) {
+            commitsList = commits;
+            commitsListService.loadNextCommits();
+        });
+        $httpBackend.flush();
+
+        // then
+        var allLoadedCommitsCount = firstCommitsResponse.commits.length + nextCommitsResponse.commits.length;
+        expect(commitsList.length).toBe(allLoadedCommitsCount);
+    });
+
+    it('should load next commits in to_review mode', function() {
+        // given
+        var firstCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 30);
+        var nextCommitsResponse = buildCommitsResponse([9, 10, 11, 12, 13, 14, 15], 30);
+        $httpBackend.expectGET('rest/commits?filter=to_review&limit=7').respond(firstCommitsResponse);
+        $httpBackend.expectGET('rest/commits?filter=to_review&limit=7&min_id=7').respond(nextCommitsResponse);
+
+        // when
+        var commitsList;
+        commitsListService.loadCommitsToReview().then(function(commits) {
+            commitsList = commits;
+            commitsListService.loadNextCommits();
+        });
+        $httpBackend.flush();
+
+        // then
+        var allLoadedCommitsCount = firstCommitsResponse.commits.length + nextCommitsResponse.commits.length;
+        expect(commitsList.length).toBe(allLoadedCommitsCount);
+    });
+
+    it('should load previous commits in all mode', function() {
+        // given
+        var firstCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8], 30);
+        var previousCommitsResponse = buildCommitsResponse([-1, -2 , -3], 30);
+        $httpBackend.expectGET('rest/commits?context=true&id=8&limit=7').respond(firstCommitsResponse);
+        $httpBackend.expectGET('rest/commits?filter=all&limit=7&max_id=1').respond(previousCommitsResponse);
+
+        // when
+        var commitsList;
+        var pivotCommitId = 8;
+        commitsListService.loadCommitsInContext(pivotCommitId).then(function(commits) {
+            commitsList = commits;
+            commitsListService.loadPreviousCommits();
+        });
+        $httpBackend.flush();
+
+        // then
+        var allLoadedCommitsCount = firstCommitsResponse.commits.length + previousCommitsResponse.commits.length;
+        expect(commitsList.length).toBe(allLoadedCommitsCount);
+    });
+
+    it('should not call server to load next/previous commits when no next/previous available', function() {
+        // given
+        var commitsResponseWithNoNextPrev = buildCommitsResponse([4, 5, 6], 30);
+        $httpBackend.expectGET('rest/commits?context=true&id=5&limit=7').respond(commitsResponseWithNoNextPrev);
+
+        // when
+        var pivotCommitId = 5;
+        commitsListService.loadCommitsInContext(pivotCommitId).then(function(commits) {
+            commitsListService.loadNextCommits();
+            commitsListService.loadPreviousCommits();
+        });
+        $httpBackend.flush();
+
+        // then
+        $httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it('should mark commit as reviewed and not delete from local list when in all mode', function() {
+        // given
+        var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8], 30);
+        $httpBackend.expectGET('rest/commits?context=true&limit=7').respond(commitsResponse);
+        $httpBackend.expectDELETE('rest/commits/3').respond(commitsResponse);
+        var commitIdToReview = 3;
+
+        // when
+        var commits;
+        commitsListService.loadCommitsInContext().then(function(list) {
+            commits = list;
+            return commitsListService.makeReviewedAndGetNext(commitIdToReview);
+        }).then(function() {
+            expect(commits.length).toBe(commitsResponse.commits.length);
+            var reviewed = commits.filter(function(commit) {
+                return commit.pendingReview == false;
+            });
+            expect(reviewed.length).toBe(1);
+            expect(reviewed[0].id).toBe(3);
+        });
+        $httpBackend.flush();
+    });
+
+    it('should mark commit as reviewed and delete from local list when in to_revoew mode', function() {
+        var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8], 30);
+        $httpBackend.expectGET('rest/commits?filter=to_review&limit=7').respond(commitsResponse);
+        $httpBackend.expectDELETE('rest/commits/3').respond(commitsResponse);
+        var commitIdToReview = 3;
+
+        // when
+        var commits;
+        commitsListService.loadCommitsToReview().then(function(list) {
+            commits = list;
+            return commitsListService.makeReviewedAndGetNext(commitIdToReview);
+        }).then(function() {
+            expect(commits.length).toBe(commitsResponse.commits.length - 1);
+            var reviewed = commits.filter(function(commit) {
+                return commit.pendingReview == false;
+            });
+            expect(reviewed.length).toBe(0);
+        });
+        $httpBackend.flush();
+    });
+
+    function buildCommitsResponse(commitsIds, totalCount) {
+        var commits = commitsIds.map(function(id) {
+            return {id: id, msg: 'Commit ' + id, pendingReview: true};
+        });
+        return {commits: commits, totalCount: totalCount};
     }
 
 });

@@ -16,7 +16,8 @@ class FollowupsServletSpec extends AuthenticatableServletSpec {
   var followupFinder = mock[FollowupFinder]
   var followupService = mock[FollowupService]
 
-  def bindServlet {
+  override def beforeEach {
+    super.beforeEach
     addServlet(new TestableFollowupsServlet(fakeAuthenticator, fakeScentry, followupFinder, followupService), "/*")
   }
 

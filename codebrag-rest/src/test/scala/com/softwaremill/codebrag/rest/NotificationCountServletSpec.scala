@@ -10,12 +10,13 @@ import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.domain.{Authentication, User}
 
-class NotificationCountServletSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {
+class NotificationCountServletSpec extends AuthenticatableServletSpec {
 
   val countersFinderMock: NotificationCountFinder = mock[NotificationCountFinder]
   val user = currentUser(new ObjectId)
 
-  def bindServlet {
+  override def beforeEach {
+    super.beforeEach
     addServlet(new TestableNotificationCountServlet(countersFinderMock), "/*")
   }
 

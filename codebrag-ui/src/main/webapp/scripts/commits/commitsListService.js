@@ -1,141 +1,157 @@
 angular.module('codebrag.commits')
 
-    .factory('commitsListService', function($resource, $q, $http, Commits, $rootScope, commitLoadFilter, events) {
+    .service('commitsListService', function(Commits, $rootScope, events, $q) {
 
-        var commits = new codebrag.AsyncCollection();
-        var totalCount = 0;
+        var self = this;
 
-        function loadSurroundings(commitId) {
-            commitLoadFilter.setAllMode();
-            return $http.get('/rest/commits/' + commitId + '/context', {requestType: 'commitsList'}).then(function(response) {
+        var pageLimit = 7;
+
+        var totalCommitsToReviewCount = 0;
+
+        var commitsListLoadFilter = {
+            values: {all: 'all', toReview: 'to_review'},
+            current: null,
+            setAll: function() {this.current = this.values.all},
+            setToReview: function() {this.current = this.values.toReview},
+            isAll: function() {return this.current === this.values.all},
+            isToReview: function() {return this.current === this.values.toReview}
+        };
+
+        var commits = [];
+        codebrag.commitsList.mixin.withBulkElementsManipulation.call(commits);
+        codebrag.commitsList.mixin.withMarkingAsReviewed.call(commits);
+        codebrag.commitsList.mixin.withIndexOperations.call(commits);
+
+
+        var nextCommitsAvailable = false;
+        var previousCommitsAvailable = false;
+
+        this.hasNextCommits = function() {
+            return nextCommitsAvailable;
+        };
+
+        this.hasPreviousCommits = function() {
+            return previousCommitsAvailable;
+        };
+
+        this.loadCommitsToReview = function() {
+            commitsListLoadFilter.setToReview();
+            return Commits.queryReviewable({limit: pageLimit}).$then(function(response) {
                 commits.replaceWith(response.data.commits);
-                _broadcastNewCommitCountEvent(response.data.totalCount);
-                return commits.elements;
-            })
-        }
+                updatePreviousCommitsAvailability(0); // no previous commits loaded
+                updateNextCommitsAvailability(response.data.commits.length);
+                updatePendingCommitsCounter(response.data.totalCount);
+                return commits;
+            });
+        };
 
-        function loadCommitsPendingReview() {
-            commitLoadFilter.setPendingMode();
-            return _loadCommits();
-        }
+        this.loadCommitsInContext = function(commitId) {
+            commitsListLoadFilter.setAll();
+            var options = {id: commitId, limit: pageLimit};
+            return Commits.queryWithSurroundings(options).$then(function(response) {
+                commits.replaceWith(response.data.commits);
+                var loadedCommitsCount = howManyNextCommitsLoadedOnBothSides(response.data.commits);
+                updatePreviousCommitsAvailability(loadedCommitsCount.prevCommitsLoaded);
+                updateNextCommitsAvailability(loadedCommitsCount.nextCommitsLoaded);
+                updatePendingCommitsCounter(response.data.totalCount);
+                return commits;
+            });
 
-        function loadAllCommits() {
-            commitLoadFilter.setAllMode();
-            return _loadCommits();
-        }
+            function howManyNextCommitsLoadedOnBothSides(loadedCommits) {
+                var centralCommit = _.find(loadedCommits, function(commit) {
+                    return commit.id === commitId;
+                });
+                var indexOfCentral = loadedCommits.indexOf(centralCommit);
+                return {
+                    prevCommitsLoaded: loadedCommits.slice(0, indexOfCentral).length,
+                    nextCommitsLoaded: loadedCommits.slice(indexOfCentral + 1).length
+                };
+            }
+        };
 
-        function loadOneMore() {
-            return loadMore(1)
-        }
-
-        function loadMore(limit) {
-            var request = {
-                filter: commitLoadFilter.current,
-                skip: commits.elements.length,
-                limit: limit
+        this.loadCommitDetails = function(commitId) {
+            var options = {
+                commitId: commitId
             };
-            return Commits.query(request).$then(function(response) {
-                commits.appendElements(response.data.commits);
-                _broadcastNewCommitCountEvent(response.data.totalCount);
-                return commits.elements;
-            });
-        }
-
-        function loadMoreCommits() {
-            return loadMore(commitLoadFilter.maxCommitsOnList());
-        }
-
-        function _loadCommits() {
-            return Commits.query({filter: commitLoadFilter.current}).$then(function (response) {
-                commits.replaceWith(response.data.commits);
-                _broadcastNewCommitCountEvent(response.data.totalCount);
-                return commits.elements;
-            });
-        }
-
-        function allCommits() {
-            return commits.elements;
-        }
-
-        function markAsNotReviewable(commitId) {
-            commits.elements.some(function (commit) {
-                if (commit.id == commitId) {
-                    commit.pendingReview = false;
-                    return true;
-                }
-                return false;
-            });
-        }
-
-        function _matchingId(id) {
-            return function(element) {
-                return element.id == id;
-            }
-        }
-
-        /**
-         * Removes commit with given identifier, loads one more from server (if there are more)
-         * and returns promise of next element.
-         * Broadcasts a global event with new commit count.
-         * @param commitId identifier of commit to remove.
-         * @returns a promise of successful commit removal. Callback function passes next available commit for review or
-         * null if removed commit was last.
-         */
-        function removeCommitAndGetNext(commitId) {
-
-            var removePromise = _removeCommitFromServer(commitId);
-
-            if (commitLoadFilter.isAll()) {
-                markAsNotReviewable(commitId);
-                return commits.getNextAfter(_matchingId(commitId), removePromise);
-            }
-            else {
-                var indexRemoved = {};
-                 return commits.removeElement(_matchingId(commitId), removePromise)
-                     .then(function(index) {
-                         indexRemoved = index;
-                     })
-                     .then(_loadOneMoreIfAvailable)
-                     .then(function () {
-                        return commits.getElementOrNull(indexRemoved);
-                    });
-            }
-        }
-
-        function _removeCommitFromServer(commitId) {
-            return Commits.remove({id: commitId}).$then();
-        }
-
-        function _loadOneMoreIfAvailable() {
-            if (totalCount > commitLoadFilter.MAX_COMMITS_ON_LIST)
-                return loadOneMore();
-            else {
-                totalCount--;
-                _broadcastNewCommitCountEvent(totalCount);
-                return $q.defer().resolve();
-            }
-        }
-
-        function loadCommitById(commitId) {
-            return Commits.get({id: commitId}).$then(function(response) {
+            return Commits.get(options).$then(function(response) {
                 return response.data;
+            })
+        };
+
+        this.makeReviewedAndGetNext = function(commitId) {
+            if(commitsListLoadFilter.isToReview()) {
+                return makeReviewedAndGetNextInToReviewMode(commitId);
+            } else {
+                return makeReviewedAndGetNextInAllMode(commitId);
+            }
+        };
+
+        this.loadNextCommits = function(limit) {
+            if(!this.hasNextCommits()) {
+                return $q.when();
+            }
+            var options = {min_id: commits.last().id, limit: limit || pageLimit};
+            options = angular.extend(options, {filter: commitsListLoadFilter.current});
+            return Commits.query(options).$then(function(response) {
+                commits.appendAll(response.data.commits);
+                updatePendingCommitsCounter(response.data.totalCount);
+                updateNextCommitsAvailability(response.data.commits.length, options.limit);
+                notifyIfNextCommitsLoaded(response.data.commits.length);
+            });
+        };
+
+        this.loadPreviousCommits = function(limit) {
+            if(!this.hasPreviousCommits()) {
+                return $q.when();
+            }
+            var options = {max_id: commits.first().id, limit: limit || pageLimit};
+            options = angular.extend(options, {filter: commitsListLoadFilter.current});
+            return Commits.query(options).$then(function(response) {
+                commits.prependAll(response.data.commits);
+                updatePendingCommitsCounter(response.data.totalCount);
+                updatePreviousCommitsAvailability(response.data.commits.length, options.limit);
+                notifyIfPreviousCommitsLoaded(response.data.commits.length);
+            });
+        };
+
+        function makeReviewedAndGetNextInToReviewMode(commitId) {
+            var removedAtIndex;
+            return Commits.remove({commitId: commitId}).$then(function() {
+                removedAtIndex = commits.removeFromListBy(commitId);
+                updatePendingCommitsCounter(totalCommitsToReviewCount - 1);
+                return self.loadNextCommits(1);
+            }).then(function() {
+                return commits.elementAtIndexOrLast(removedAtIndex);
             });
         }
 
-        function _broadcastNewCommitCountEvent(newTotalCount) {
-            totalCount = newTotalCount;
-            $rootScope.$broadcast(events.commitCountChanged, {commitCount: newTotalCount})
+        function makeReviewedAndGetNextInAllMode(commitId) {
+            return Commits.remove({commitId: commitId}).$then(function() {
+                var atIndex = commits.markAsReviewedOnly(commitId);
+                updatePendingCommitsCounter(totalCommitsToReviewCount - 1);
+                return $q.when(commits.elementAtIndexOrLast(atIndex + 1));
+            });
         }
 
-        return {
-            loadCommitsPendingReview: loadCommitsPendingReview,
-            loadMoreCommits: loadMoreCommits,
-            loadAllCommits: loadAllCommits,
-            allCommits: allCommits,
-            removeCommitAndGetNext: removeCommitAndGetNext,
-            loadCommitById: loadCommitById,
-            loadSurroundings: loadSurroundings
-		};
+        function notifyIfNextCommitsLoaded(count) {
+            count && $rootScope.$broadcast(events.nextCommitsLoaded);
+        }
+
+        function notifyIfPreviousCommitsLoaded(count) {
+            count && $rootScope.$broadcast(events.previousCommitsLoaded);
+        }
+
+        function updatePendingCommitsCounter(newCount) {
+            totalCommitsToReviewCount = newCount;
+            $rootScope.$broadcast(events.commitCountChanged, {commitCount: newCount});
+        }
+
+        function updateNextCommitsAvailability(nextCommitsLoadedCount, loadLimit) {
+            nextCommitsAvailable = (nextCommitsLoadedCount === (loadLimit || pageLimit));
+        }
+
+        function updatePreviousCommitsAvailability(previousCommitsLoadedCount, loadLimit) {
+            previousCommitsAvailable = (previousCommitsLoadedCount === (loadLimit || pageLimit));
+        }
 
     });
-

@@ -149,7 +149,6 @@ object Dependencies {
   val egitGithubApi = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.3"
   val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "2.3.1.201302201838-r"
   val dispatch = "net.databinder.dispatch" %% "dispatch-core" % "0.9.5"
-
 }
 
 object SmlCodebragBuild extends Build {
@@ -237,7 +236,9 @@ object SmlCodebragBuild extends Build {
       // We need to include the whole webapp, hence replacing the resource directory
       resourceDirectory in Compile <<= baseDirectory { bd => {
         bd.getParentFile() / ui.base.getName / "src" / "main"
-      } }
+      } },
+      // TODO remove this. Can't figure out how to run the tests ;-)
+      test in assembly := {}
     )
   ) dependsOn (ui)
 

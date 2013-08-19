@@ -7,27 +7,28 @@ import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO, UserDAO, CommitInfoDAO}
 import org.mockito.Mockito._
-import org.mockito.Matchers._
-import com.softwaremill.codebrag.dao.reporting.{MongoReactionFinder, CommitFinder}
+import com.softwaremill.codebrag.dao.reporting.MongoReactionFinder
 import java.util.Date
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import com.softwaremill.codebrag.activities.AddCommentActivity
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
-import org.mockito.Matchers
-import com.softwaremill.codebrag.common.PagingCriteria
+import com.softwaremill.codebrag.common.{PagingCriteria, SurroundingsCriteria}
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
+import com.softwaremill.codebrag.dao.finders.commit.{AllCommitsFinder, ReviewableCommitsListFinder}
+import org.scalatra.Ok
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
-  val SamplePendingCommits = CommitListView(List(CommitView("id", "abcd0123", "this is commit message", "mostr",
-    "mostr@sml.com", new Date())), 1)
   var commentActivity = mock[AddCommentActivity]
   var commitsInfoDao = mock[CommitInfoDAO]
-  var commitsListFinder = mock[CommitFinder]
+
+  var reviewableCommitsFinder = mock[ReviewableCommitsListFinder]
+  var allCommitsFinder = mock[AllCommitsFinder]
+
   var diffService = mock[DiffWithCommentsService]
   var userReactionFinder = mock[MongoReactionFinder]
   var userDao = mock[UserDAO]
@@ -36,97 +37,80 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   val userReactionService = mock[UserReactionService]
   val unlikeUseCaseFactory = mock[UnlikeUseCaseFactory]
 
-  def bindServlet {
+  override def beforeEach {
+    super.beforeEach
+    diffService = mock[DiffWithCommentsService]
+    allCommitsFinder = mock[AllCommitsFinder]
+    reviewableCommitsFinder = mock[ReviewableCommitsListFinder]
     addServlet(new TestableCommitsServlet(fakeAuthenticator, fakeScentry), "/*")
   }
 
-  "GET /commits" should "respond with HTTP 401 when user is not authenticated" in {
-    userIsNotAuthenticated
-    get("/") {
-      status should be(401)
-    }
-  }
-
-  "GET /commits" should "should return commits pending review" in {
-    val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(0, 7))).thenReturn(SamplePendingCommits)
-    get("/") {
-      status should be(200)
-      body should equal(asJson(SamplePendingCommits))
-    }
-  }
-
-  "GET /commits?skip=-1" should "should return error status with message" in {
-    givenStandardAuthenticatedUser()
-    // when
-    get("/?skip=-1") {
-      status should be(400)
-      body should equal("skip value must be non-negative")
-    }
-  }
-
-  "GET /commits?limit=0" should "should return error status with message" in {
-    givenStandardAuthenticatedUser()
-    // when
-    get("/?limit=0") {
-      status should be(400)
-      body should equal("limit value must be positive")
-    }
-  }
-
-    "GET /commits?skip=5" should "should query for commits with proper skip value" in {
-    val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(5, 7))).thenReturn(SamplePendingCommits)
-    get("/?skip=5") {
-      status should be(200)
-      body should equal(asJson(SamplePendingCommits))
-    }
-  }
-
-  "GET /commits?limit=22" should "should query for commits with proper limit value" in {
-    val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(0, 22))).thenReturn(SamplePendingCommits)
-    get("/?limit=22") {
-      status should be(200)
-      body should equal(asJson(SamplePendingCommits))
-    }
-  }
-
-  "GET /commits?limit=22&skip=21" should "should query for commits with proper limit and skip values" in {
-    val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(21, 22))).thenReturn(SamplePendingCommits)
-    get("/?limit=22&skip=21") {
-      status should be(200)
-      body should equal(asJson(SamplePendingCommits))
-    }
-  }
-
-  "GET /commits?filter=pending" should "should return commits pending review" in {
-    val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findCommitsToReviewForUser(userId, PagingCriteria(0, 7))).thenReturn(SamplePendingCommits)
-
-    get("/?filter=pending") {
-      status should be(200)
-      body should equal(asJson(SamplePendingCommits))
-    }
-  }
-
-  "GET /commits?filter=all" should "should return all commits" in {
-    val userId = givenStandardAuthenticatedUser()
-    when(commitsListFinder.findAll(userId)).thenReturn(SamplePendingCommits)
-    get("/?filter=all") {
-      status should be(200)
-      body should equal(asJson(SamplePendingCommits))
-      verify(commitsListFinder, never()).findCommitInfoById(anyString(), Matchers.eq(userId))
-    }
-  }
-
-  "DELETE /commits/:id" should "should remove commits from review list" in {
+  "GET /:id" should "load given commit details" in {
     val userId = givenStandardAuthenticatedUser()
     val commitId = new ObjectId
-    delete(s"/$commitId") {
-      verify(commitReviewTaskDao).delete(CommitReviewTask(commitId, userId))
-      status should be(200)
+
+    get("/" + commitId.toString) {
+      verify(diffService).diffWithCommentsFor(commitId, userId)
+    }
+  }
+
+  "DELETE /:id" should "remove given commit from to review tasks" in {
+    val userId = givenStandardAuthenticatedUser()
+    val commitId = new ObjectId
+    val reviewTaskToRemove = CommitReviewTask(commitId, userId)
+
+    delete("/" + commitId.toString) {
+      verify(commitReviewTaskDao).delete(reviewTaskToRemove)
+    }
+  }
+
+  "GET / with filter=all" should "load all commits" in {
+    val userId = givenStandardAuthenticatedUser()
+    val criteria = PagingCriteria(None, None, CommitsEndpoint.DefaultPageLimit)
+
+    get("/?filter=all") {
+      verify(allCommitsFinder).findAllCommits(criteria, userId)
+    }
+  }
+
+  "GET / with filter=to_review" should "load commits to review" in {
+    val userId = givenStandardAuthenticatedUser()
+    val criteria = PagingCriteria(None, None, CommitsEndpoint.DefaultPageLimit)
+
+    get("/?filter=to_review") {
+      verify(reviewableCommitsFinder).findCommitsToReviewFor(userId, criteria)
+    }
+  }
+
+  "GET / with context=true" should "load commits with surroundings" in {
+    val userId = givenStandardAuthenticatedUser()
+    val commitId = new ObjectId
+
+    get("/?context=true&id=" + commitId.toString) {
+      val criteria = SurroundingsCriteria(commitId, CommitsEndpoint.DefaultPageLimit)
+      verify(allCommitsFinder).findWithSurroundings(criteria, userId)
+    }
+  }
+
+  "GET / with context=true and no id provided" should "load first commits" in {
+      val userId = givenStandardAuthenticatedUser()
+
+      get("/?context=true") {
+        val criteria = PagingCriteria(None, None, CommitsEndpoint.DefaultPageLimit)
+        verify(allCommitsFinder).findAllCommits(criteria, userId)
+      }
+  }
+
+  "GET / with paging criteria" should "call service with proper criteria object" in {
+    val userId = givenStandardAuthenticatedUser()
+    val lastKnownCommitId = new ObjectId
+    get("/?filter=to_review&limit=10&min_id=" + lastKnownCommitId.toString) {
+      val criteria = PagingCriteria(None, Some(lastKnownCommitId), 10)
+      verify(reviewableCommitsFinder).findCommitsToReviewFor(userId, criteria)
+    }
+    get("/?filter=to_review&limit=10&max_id=" + lastKnownCommitId.toString) {
+      val criteria = PagingCriteria(Some(lastKnownCommitId), None, 10)
+      verify(reviewableCommitsFinder).findCommitsToReviewFor(userId, criteria)
     }
   }
 
@@ -137,7 +121,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends CommitsServlet(fakeAuthenticator, commitsListFinder, userReactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, new CodebragSwagger, diffService, unlikeUseCaseFactory) {
+    extends CommitsServlet(fakeAuthenticator, reviewableCommitsFinder, allCommitsFinder, userReactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, new CodebragSwagger, diffService, unlikeUseCaseFactory) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag
 
-import org.scalatest.BeforeAndAfter
+import org.scalatest.{BeforeAndAfterEach, BeforeAndAfter}
 import service.data.UserJson
 import service.user.Authenticator
 import org.scalatra.auth.Scentry
@@ -12,21 +12,15 @@ import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
  * Exposes fake authenticator and fake Scentry to specs so that it is possible to
  * do given test in context of authenticated or not authenticated user
  */
-trait AuthenticatableServletSpec extends CodebragServletSpec with BeforeAndAfter {
+trait AuthenticatableServletSpec extends CodebragServletSpec with BeforeAndAfterEach {
 
   var fakeAuthenticator: Authenticator = null
   var fakeScentry: Scentry[UserJson] = null
 
-  before {
+  override def beforeEach {
     fakeAuthenticator = mock[Authenticator]
     fakeScentry = mock[Scentry[UserJson]]
-    bindServlet
-    beforeSpec
   }
-
-  def bindServlet: Unit
-
-  def beforeSpec: Unit = { /* noop by default */ }
 
   def userIsAuthenticated = when(fakeScentry.isAuthenticated(any[HttpServletRequest], any[HttpServletResponse])).thenReturn(true)
 
