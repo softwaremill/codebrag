@@ -111,7 +111,7 @@
 </head>
 
 <body ng-app="codebrag">
-    <div class="uservoice popup-page">
+    <div class="uservoice popup-page" id="uservoice-form-popup">
         <form class="popup-box">
             <fieldset class="uv-contact">
                 <h1>Contact us</h1>
@@ -171,7 +171,7 @@
             <div class="user-info" ng-show="isLogged()"><span class="logout"><a  ng-click="logout()">Logout</a></span></div>
             <div class="user-info" ng-show="isLogged()"><span class="username">Signed in as {{loggedInUser().fullName}}</span><logged-in-user-avatar></logged-in-user-avatar></div>
             <!-- Uservoice link start -->
-            <a href="javascript:void(0)" class="uservoice-btn" data-uv-lightbox="classic_widget" data-uv-mode="full" data-uv-primary-color="#320a0b" data-uv-link-color="#819511" data-uv-default-mode="support" data-uv-forum-id="202607">Feedback</a>
+            <a href="javascript:void(0)" id="uservoice-feedback-btn" class="uservoice-btn" data-uv-lightbox="classic_widget" data-uv-mode="full" data-uv-primary-color="#320a0b" data-uv-link-color="#819511" data-uv-default-mode="support" data-uv-forum-id="202607">Feedback</a>
             <!-- Uservoice link end -->
         </div>
     </header>
@@ -180,7 +180,7 @@
     <section ui-view></section>
     <div message-popup></div>
 
-    <div class="popup-page">
+    <div class="popup-page" id="early-version-popup">
         <div class="popup-box">
             <h1>This is a very early version of Codebrag.</h1>
             <p>It may contain bugs and for sure it does not contain all the features<br>we would wish it had.</p>

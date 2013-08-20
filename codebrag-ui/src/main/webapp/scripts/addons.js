@@ -28,8 +28,30 @@ codebrag.addons.betaRibbon = (function() {
 
 }());
 
+codebrag.addons.feedbackForm = (function() {
+
+    var feedbackBtn = $('#uservoice-feedback-btn');
+    var formPopup = $('#uservoice-form-popup');
+    var closeFormBtn = formPopup.find('.close-btn');
+
+    function togglePopupDisplay() {
+        [feedbackBtn, closeFormBtn].forEach(function(e) {
+            e.on('click', function() {
+                console.log('aa');
+                formPopup.toggleClass('opened');
+            });
+        });
+    }
+
+    return {
+        init: togglePopupDisplay
+    }
+
+}());
+
 $(document).ready(function() {
 
     codebrag.addons.betaRibbon.init();
+    codebrag.addons.feedbackForm.init();
 
 });
