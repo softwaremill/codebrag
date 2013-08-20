@@ -8,9 +8,9 @@ codebrag.addons = {};
 codebrag.addons.betaRibbon = (function() {
 
     var ribbon = $('.ribbon');
-    var infoPopup = $('.popup-page');
+    var infoPopup = $('#early-version-popup');
     var popupCloseBtn = infoPopup.find('.close-btn');
-    var link = infoPopup.find('a[data-uv-lightbox="classic_widget"]');
+    var link = infoPopup.find('a');
 
     var openedPopupClass = 'opened';
 
