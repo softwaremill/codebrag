@@ -1,3 +1,4 @@
+import java.io.PrintWriter
 import sbt._
 import Keys._
 import com.gu.SbtJasminePlugin._
@@ -157,6 +158,34 @@ object SmlCodebragBuild extends Build {
   import BuildSettings._
   import com.github.siasia.WebPlugin.webSettings
 
+  val genCommitSHAFile = TaskKey[Unit](
+    "gen-commit-file",
+    "Generates a file in target/classes containing SHA of current git commit"
+  )
+
+  val gitCommitGenSettings = Seq[Setting[_]](genCommitSHAFile <<= SHAFile)
+
+  lazy val SHAFile = {
+    (scalaVersion, baseDirectory, projectID) map { (sv, bd, pid) =>
+      val targetProperties: File = bd / "target" / "scala-2.10" / "classes" / "commit.sha"
+      replaceFileContent(targetProperties, currentGitCommitSHA)
+      println("Generated version file in: " + targetProperties.getPath)
+    }
+  }
+
+  def currentGitCommitSHA = Process("git rev-parse HEAD")!!
+
+  def replaceFileContent(file: File, content: String) {
+    println("Writing commit SHA to " + file)
+    if(file.exists) file.delete()
+    file.createNewFile()
+    val writer = new PrintWriter(file)
+    writer print content
+    writer.close()
+  }
+
+
+
   lazy val parent: Project = Project(
     "codebrag-root",
     file("."),
@@ -191,7 +220,8 @@ object SmlCodebragBuild extends Build {
   lazy val rest: Project = Project(
     "codebrag-rest",
     file("codebrag-rest"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig))
+    settings = buildSettings ++ gitCommitGenSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig)) ++ Seq(
+      (copyResources in Compile) <<= (copyResources in Compile) dependsOn (genCommitSHAFile))
   ) dependsOn(service % "test->test;compile->compile", domain, common)
 
 
@@ -204,7 +234,7 @@ object SmlCodebragBuild extends Build {
   lazy val ui: Project = Project(
     "codebrag-ui",
     file("codebrag-ui"),
-    settings = buildSettings ++ jasmineSettings ++ graphSettings ++ webSettings ++ lintCustomSettings ++ Seq(
+    settings = buildSettings ++ gitCommitGenSettings ++ jasmineSettings ++ graphSettings ++ webSettings ++ lintCustomSettings ++ Seq(
       artifactName := { (config: ScalaVersion, module: ModuleID, artifact: Artifact) =>
         "codebrag." + artifact.extension // produces nice war name -> http://stackoverflow.com/questions/8288859/how-do-you-remove-the-scala-version-postfix-from-artifacts-builtpublished-wi
       },
@@ -237,7 +267,7 @@ object SmlCodebragBuild extends Build {
       resourceDirectory in Compile <<= baseDirectory { bd => {
         bd.getParentFile() / ui.base.getName / "src" / "main"
       } },
-      // TODO remove this. Can't figure out how to run the tests ;-)
+      // TODO remove this. Can't figure out how to run the tests ;-)                                                                                                                                                  
       test in assembly := {}
     )
   ) dependsOn (ui)
@@ -254,4 +284,5 @@ object SmlCodebragBuild extends Build {
   // To run the embedded container, we need to provide the path to the configuration. To make things easier, we assume
   // that the local conf is in the current dir in the local.conf file.
   System.setProperty("config.file", "local.conf")
+
 }
