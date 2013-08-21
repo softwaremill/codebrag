@@ -13,14 +13,11 @@ codebrag.addons.betaRibbon = (function() {
 
     var openedPopupClass = 'opened';
 
-    function bindClicks(feedbackForm) {
+    function bindClicks() {
         [ribbon, popupCloseBtn, link].forEach(function(el) {
             el.on('click', function() {
                 infoPopup.toggleClass(openedPopupClass);
             });
-        });
-        link.on('click', function() {
-            feedbackForm.togglePopup();
         });
     }
 
@@ -30,32 +27,7 @@ codebrag.addons.betaRibbon = (function() {
 
 }());
 
-codebrag.addons.feedbackForm = (function() {
-
-    var feedbackBtn = $('#uservoice-feedback-btn');
-    var formPopup = $('#uservoice-form-popup');
-    var closeFormBtn = formPopup.find('.close-btn');
-
-    function openFormPopup() {
-        formPopup.toggleClass('opened');
-    }
-
-    function togglePopupDisplay() {
-        [feedbackBtn, closeFormBtn].forEach(function(e) {
-            e.on('click', function() {
-                openFormPopup();
-            });
-        });
-    }
-
-    return {
-        init: togglePopupDisplay,
-        togglePopup: openFormPopup
-    }
-}());
 
 $(document).ready(function() {
-    codebrag.addons.feedbackForm.init();
-    codebrag.addons.betaRibbon.init(codebrag.addons.feedbackForm);
-
+    codebrag.addons.betaRibbon.init();
 });

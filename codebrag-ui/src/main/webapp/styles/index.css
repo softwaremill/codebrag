@@ -453,7 +453,7 @@ form .form-group span.text-error:after {
   right: 0;
   top: 30px;
 }
-a.uservoice-btn {
+.uservoice-btn {
   background: #99ab01;
   color: #fff;
   float: right;
@@ -462,7 +462,7 @@ a.uservoice-btn {
   text-transform: uppercase;
   vertical-align: top;
 }
-a.uservoice-btn:hover {
+.uservoice-btn:hover {
   background: #8a9b00;
 }
 a.ribbon {

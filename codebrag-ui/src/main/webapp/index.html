@@ -95,6 +95,7 @@
     <script type="text/javascript" src="scripts/common/directives/activeForStates.js"></script>
     <script type="text/javascript" src="scripts/common/directives/expandCollapseList.js"></script>
     <script type="text/javascript" src="scripts/common/directives/reactionMessageSummary.js"></script>
+    <script type="text/javascript" src="scripts/common/directives/contactFormPopup.js"></script>
 
     <script type="text/javascript" src="scripts/common/directives/markdownToHtml.js"></script>
     <script type="text/javascript" src="scripts/common/directives/markCurrent.js"></script>
@@ -111,51 +112,7 @@
 </head>
 
 <body ng-app="codebrag">
-    <div class="uservoice popup-page" id="uservoice-form-popup">
-        <form class="popup-box">
-            <fieldset class="uv-contact">
-                <h1>Contact us</h1>
-                <div class="form-group">
-                    <label for="uv-msg-subject">Message subject</label>
-                    <input id="uv-msg-subject" type="text">
-                    <span class="text-error">
-                        <i class="icon-remove"></i>
-                        Subject is required</span>
-                </div>
-                <div class="form-group">
-                    <label for="uv-msg-body">How can we help you today?</label>
-                    <textarea id="uv-msg-body" rows="6"></textarea>
-                    <span class="text-error">
-                        <i class="icon-remove"></i>
-                        Meassage is required</span>
-                </div>
-                <div class="form-group">
-                    <label for="uv-email">Your email address</label>
-                    <input id="uv-email" type="email">
-                    <span class="text-error">
-                        <i class="icon-remove"></i>
-                        Email is required</span>
-                </div>
-                <div class="btn-centered-wrapper">
-                    <button class="button centered">Send message</button>
-                </div>
-            </fieldset>
-            <fieldset class="uv-success">
-                <h1>Thanks!</h1>
-                <p>We really appreciate your effort to make Codebrag better!</p>
-            </fieldset>
-            <fieldset class="uv-error">
-                <h1>Ooops!</h1>
-                <p>Something went wrong... Do you want to try again?</p>
-                <div class="btn-centered-wrapper">
-                    <button class="button centered">Sure, let's try again</button>
-                </div>
-            </fieldset>
-            <span class="close-btn">
-                <i class="icon-remove"></i>
-            </span>
-        </form>
-    </div>
+    <contact-form-popup></contact-form-popup>
     <header class="main-header" ng-controller="SessionCtrl">
         <div class="demo-nav">
             <a href="http://codebrag.com/">back to codebrag.com</a>
@@ -171,7 +128,7 @@
             <div class="user-info" ng-show="isLogged()"><span class="logout"><a  ng-click="logout()">Logout</a></span></div>
             <div class="user-info" ng-show="isLogged()"><span class="username">Signed in as {{loggedInUser().fullName}}</span><logged-in-user-avatar></logged-in-user-avatar></div>
             <!-- Uservoice link start -->
-            <a href="javascript:void(0)" id="uservoice-feedback-btn" class="uservoice-btn" data-uv-lightbox="classic_widget" data-uv-mode="full" data-uv-primary-color="#320a0b" data-uv-link-color="#819511" data-uv-default-mode="support" data-uv-forum-id="202607">Feedback</a>
+            <button class="uservoice-btn" ng-click="openContactFormPopup()">Feedback</button>
             <!-- Uservoice link end -->
         </div>
     </header>
@@ -191,10 +148,6 @@
             <span class="close-btn"><i class="icon-remove"></i></span>
         </div>
     </div>
-    <!-- User voice start -->
-    <!-- UserVoice JavaScript SDK (only needed once on a page) -->
-    <script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/0Qk3E43TdecsPPPczuhrw.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>
-    <!-- User voice end -->
 
     <script type="text/ng-template" id="inlineCommentForm">
         <tr class="comments-container comment-form">
@@ -266,6 +219,54 @@
                         </ul>
                     </span><span class="likes">like(s)&nbsp;this&nbsp;commit</span>
                 </span>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="contactForm">
+        <div class="uservoice popup-page opened" id="uservoice-form-popup" ng-show="isVisible">
+            <form class="popup-box" name="contactForm" novalidate>
+                <fieldset class="uv-contact">
+                    <h1>Contact us</h1>
+                    <div class="form-group">
+                        <label for="uv-msg-subject">Message subject</label>
+                        <input id="uv-msg-subject" type="text" ng-model="msg.subject" name="subject" required>
+                    <span class="text-error" ng-show="contactForm.subject.$dirty && contactForm.subject.$invalid">
+                        <i class="icon-remove"></i>
+                        Subject is required</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="uv-msg-body">How can we help you today?</label>
+                        <textarea id="uv-msg-body" rows="6" ng-model="msg.body" name="body" required></textarea>
+                    <span class="text-error" ng-show="contactForm.body.$dirty && contactForm.body.$invalid">
+                        <i class="icon-remove"></i>
+                        Meassage is required</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="uv-email">Your email address</label>
+                        <input id="uv-email" type="email" ng-model="msg.email" name="email" required>
+                    <span class="text-error" ng-show="contactForm.email.$dirty && contactForm.email.$invalid">
+                        <i class="icon-remove"></i>
+                        Valid email address is required</span>
+                    </div>
+                    <div class="btn-centered-wrapper" ng-hide="failure">
+                        <button class="button centered" ng-click="submit()" ng-disabled="contactForm.$invalid">Send message</button>
+                    </div>
+                </fieldset>
+                <fieldset class="uv-success" ng-class="{opened: success}">
+                    <h1>Thanks!</h1>
+                    <p>We really appreciate your effort to make Codebrag better!</p>
+                </fieldset>
+                <fieldset class="uv-error" ng-class="{opened: failure}">
+                    <h1>Ooops!</h1>
+                    <p>Something went wrong... Do you want to try again?</p>
+                    <div class="btn-centered-wrapper">
+                        <button class="button centered" ng-click="submit()">Sure, let's try again</button>
+                    </div>
+                </fieldset>
+            <span class="close-btn" ng-click="close()">
+                <i class="icon-remove"></i>
+            </span>
+            </form>
         </div>
     </script>
 
