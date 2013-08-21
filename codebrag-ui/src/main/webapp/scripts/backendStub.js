@@ -19,14 +19,26 @@
             {"id": "519b3365e4b0dff2992c9be8", "sha": "1c983f42a8e1e52ccf1247550549b90051c5c42c", "message": "Fix specs path in jsTestDriver configuration\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T12:26:12Z", "pendingReview": true},
             {"id": "519b3365e4b0dff2992c9be9", "sha": "af1688bf365cf3dfe34e340c5d80ba053b155b2f", "message": "Implement frontend for pending commit counter\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T07:41:45Z", "pendingReview": true},
             {"id": "519b3365e4b0dff2992c9bea", "sha": "055bc2915e951261dc88ee80503d6e6a5d41abde", "message": "Fix test dependencies\n- remove reference to non-existing files which was causing fails\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T12:02:08Z", "pendingReview": true},
-            {"id": "519b3365e4b0dff2992c9beb", "sha": "3a335098dd49ea0cf1f53dfaa563db02df780596", "message": "Frontend service for loading and updating notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T11:42:30Z", "pendingReview": true},
-            {"id": "519b3365e4b0dff2992c9bec", "sha": "7fea045446165cbaf90c4f24e4d440d65afe3c41", "message": "ReST API for notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-13T12:38:18Z", "pendingReview": true}
+            {"id": "519b3365e4b0dff2992c9beb", "sha": "3a335098dd49ea0cf1f53dfaa563db02df780596", "message": "Frontend service for loading and updating notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T11:42:30Z", "pendingReview": true}
         ]
     };
 
+    var additionalCommits = {
+        "commits": [
+            {"id": "119b3365e4b0dff2992c9be9", "sha": "af1688bf365cf3dfe34e340c5d80ba053b155b2f", "message": "Implement frontend for pending commit counter\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-20T07:41:45Z", "pendingReview": true},
+            {"id": "219b3365e4b0dff2992c9bea", "sha": "055bc2915e951261dc88ee80503d6e6a5d41abde", "message": "Fix test dependencies\n- remove reference to non-existing files which was causing fails\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T12:02:08Z", "pendingReview": true},
+            {"id": "319b3365e4b0dff2992c9beb", "sha": "3a335098dd49ea0cf1f53dfaa563db02df780596", "message": "Frontend service for loading and updating notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T11:42:30Z", "pendingReview": true}
+        ]
+    }
+
     var allCommits = {
         "commits": [
-            {"id": "51a31ee3e4b025f047aa0941", "sha": "08793a80d7e267daed16b397518d48c56d4f6c7b", "message": "Add directive for activating elements on specified states\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T14:03:18Z", "pendingReview": false},
+            {"id": "5aa31ee3e4b025f047aa0941", "sha": "08793a80d7e267daed16b397518d48c56d4f6c7b", "message": "Add directive for activating elements on specified states\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T14:03:18Z", "pendingReview": false},
+            {"id": "5ba31ee3e4b025f047aa0942", "sha": "cdae3e9f5e4741926188c0ce853ba30e57cfd84a", "message": "Adjust new UI to support autoscroll on follow-ups\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T12:59:05Z", "pendingReview": false},
+            {"id": "5ca31ee3e4b025f047aa0943", "sha": "02e095b6a462ffd2d73c7f484430489edb247aa7", "message": "Apply new styles to follow-up details\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T12:11:26Z", "pendingReview": false},
+            {"id": "5da31ee3e4b025f047aa0948", "sha": "83aa5ce0f5bf6047bc6fb210abe1b5e15d8617e4", "message": "Merge branch 'master' into pretty_ui\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T11:24:09Z", "pendingReview": false},
+            {"id": "5ea31ee3e4b025f047aa0949", "sha": "1e1ad2f30e9efc24b984f5d3c2e5d6ffb8de13d9", "message": "Add a parameter to markCurrent directive for selecting which state param should be used\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T11:23:42Z", "pendingReview": false},
+            {"id": "aaa31ee3e4b025f047aa0941", "sha": "08793a80d7e267daed16b397518d48c56d4f6c7b", "message": "Add directive for activating elements on specified states\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T14:03:18Z", "pendingReview": false},
             {"id": "51a31ee3e4b025f047aa0942", "sha": "cdae3e9f5e4741926188c0ce853ba30e57cfd84a", "message": "Adjust new UI to support autoscroll on follow-ups\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T12:59:05Z", "pendingReview": false},
             {"id": "51a31ee3e4b025f047aa0943", "sha": "02e095b6a462ffd2d73c7f484430489edb247aa7", "message": "Apply new styles to follow-up details\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T12:11:26Z", "pendingReview": false},
             {"id": "51a31ee3e4b025f047aa0948", "sha": "83aa5ce0f5bf6047bc6fb210abe1b5e15d8617e4", "message": "Merge branch 'master' into pretty_ui\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-23T11:24:09Z", "pendingReview": false},
@@ -4493,8 +4505,11 @@
 
                 $httpBackend.whenGET('rest/notificationCounts').respond(counters);
 
-                $httpBackend.whenGET('rest/commits?filter=pending').respond(pendingCommits);
+                $httpBackend.whenGET('rest/commits?filter=to_review&limit=7').respond(pendingCommits);
+                $httpBackend.whenGET(/rest\/commits\?filter=to_review&limit=7&min_id=[a-z0-9]{12}/).respond(additionalCommits);
+
                 $httpBackend.whenGET('rest/commits?filter=all').respond(allCommits);
+                $httpBackend.whenGET(/rest\/commits\?context=true&id=[a-z0-9]{12}/).respond(allCommits);
 
                 $httpBackend.whenGET(/rest\/commits\/[a-z0-9]{12}/).respond(commitDiff);
                 $httpBackend.whenGET(/rest\/commits\/large/).respond(largeDiff);
