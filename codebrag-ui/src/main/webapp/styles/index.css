@@ -644,6 +644,14 @@ a.ribbon:hover {
 .items-container:hover {
   overflow-y: auto;
 }
+.load-previous-wrapper {
+  border-top: none;
+  text-align: center;
+}
+.load-next-wrapper {
+  border-top: 1px solid #d1cbb9;
+  text-align: center;
+}
 .commit-container {
   border-top: 1px solid #d1cbb9;
   padding: 1.15em 2.3em 1.15em 0.77em;
