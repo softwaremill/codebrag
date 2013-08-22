@@ -5,11 +5,22 @@ import java.nio.file.{Paths, Path}
 import org.eclipse.jgit.storage.file.FileRepository
 import org.eclipse.jgit.lib.{Constants, ObjectId}
 import org.eclipse.jgit.transport.CredentialsProvider
+import com.typesafe.scalalogging.slf4j.Logging
+import org.eclipse.jgit.util.FileUtils
 
-class JgitFacade {
+class JgitFacade extends Logging {
 
-  def clone(remote: String, branch: String, localPath: Path, credentials: CredentialsProvider): Git =
-    new CloneCommand().setURI(remote).setCredentialsProvider(credentials).setDirectory(localPath.toFile).setBranch(branch).call()
+  def clone(remote: String, branch: String, localPath: Path, credentials: CredentialsProvider): Git = {
+    try {
+      new CloneCommand().setURI(remote).setCredentialsProvider(credentials).setDirectory(localPath.toFile).setBranch(branch).call()
+    } catch {
+      case e: Exception => {
+        logger.error("Could not clone. Cleanning up - removing partially initialized repository.")
+        FileUtils.delete(localPath.toFile, FileUtils.RECURSIVE)
+        throw e
+      }
+    }
+  }
 
   def pull(localPath: Path, credentials: CredentialsProvider): Git = {
 
