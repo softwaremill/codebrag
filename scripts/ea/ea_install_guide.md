@@ -21,6 +21,7 @@ Codebrag can work with git repositories in three modes. You need to set one usin
 * `git-https` - plain git via https (with user/password provided)
 * `git-ssh` - plain git via ssh (with keys)
 * `github` - using github (authentication via Github) - optional and described later
+* `svn` - experimental
 
 To use Codebrag with plain git via https (user/password) please configure repository section as follows (leave username and password empty for public repositories):
 
@@ -31,7 +32,7 @@ To use Codebrag with plain git via https (user/password) please configure reposi
 	    git-https {
 	        name = "REPOSITORY_NAME"
 	        uri = "REPOSITORY_URI"
-	        branch = "BRANCH"
+	        branch = "BRANCH" (in format "refs/heads/NAME")
 	        username = "USER_NAME"
 	        password = "PASSWORD"
 	    }
@@ -45,7 +46,7 @@ For example:
 	    
 	    type = "git-https"
 
-	    github {
+	    git-https {
 	        name = "codebrag"
 	        uri = "https://github.com/softwaremill/codebrag.git"
 	        branch = "refs/heads/master"
@@ -67,7 +68,7 @@ If you prefer using Codebrag with plain git via ssh (keys) please configure repo
 	    git-ssh {
 	        name = "REPOSITORY_NAME"
 	        uri = "REPOSITORY_URI"
-	        branch = "BRANCH"
+	        branch = "BRANCH" (in format "refs/heads/NAME")
 	        passphrase = "SSH_KEY_PASSPHRASE"
 	    }
 	    
@@ -80,7 +81,7 @@ For example:
 	    
 	    type = "git-ssh"
 
-	    github {
+	    git-ssh {
 	        name = "codebrag"
 	        uri = "git@github.com:softwaremill/codebrag.git"
 	        branch = "refs/heads/master"
@@ -89,6 +90,29 @@ For example:
 	    
 	    ...
 	}
+
+You can also use Codebrag with SVN repositories although *** this is experimental feature *** still in development. To do that, please change your repository configuration section to this:
+
+	repository {
+
+	    type = "svn"
+
+	    svn {
+	        name = "REPOSITORY_NAME"
+	        uri = "REPOSITORY_URI"
+	        username = "USERNAME"
+	        password = "PASSWORD"
+	    }
+
+	    ...
+	}
+
+    svn {
+        name = "yourrepo"
+        uri = "http://yourrepo.com/svn"
+        username = "secretuser"
+        password = "secretpassword"
+    }
 	
 ##### codebrag
 
@@ -138,7 +162,7 @@ Please configure repository section as follows:
 	    github {
 	        owner = "REPOSITORY_OWNER_USER"
 	        name = "REPOSITORY_NAME"
-	        branch = "BRANCH"
+	        branch = "BRANCH" (in format "refs/heads/NAME")
 	        sync-user-login = "SYNC_USER_NAME"
 	    }
 	    
