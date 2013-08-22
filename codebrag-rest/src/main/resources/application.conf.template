@@ -4,7 +4,7 @@ mongo {
 }
 
 repository {
-    // git-https, git-ssh or github
+    // git-https, git-ssh, github or svn (experimental)
     type = "git-ssh"
 
     github {
