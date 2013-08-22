@@ -14,7 +14,11 @@ class LocalRepositoryUpdater(importService: CommitImportService) extends Actor w
       logger.debug("Repository credentials refreshed")
     }
     case LocalRepositoryUpdater.UpdateCommand => {
-      repoData.foreach(importService.importRepoCommits)
+      try {
+        repoData.foreach(importService.importRepoCommits)
+      } catch {
+        case e: Exception => logger.error("Exception while importing commits", e)
+      }
     }
   }
 }
