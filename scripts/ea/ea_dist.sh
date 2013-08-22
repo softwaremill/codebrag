@@ -2,7 +2,7 @@
 
 CODEBRAG_ROOT=../..
 DIST_DIR=codebrag
-DIST_ARCHIVE=codebrag.tar
+DIST_ARCHIVE=codebrag.zip
 WAR_FILE=$CODEBRAG_ROOT/codebrag-dist/target/scala-2.10/codebrag-dist-assembly*.jar
 GUIDE_FILE=$CODEBRAG_ROOT/scripts/ea/ea_install_guide.pdf
 CONF_FILE=$CODEBRAG_ROOT/codebrag-rest/src/main/resources/application.conf.template
@@ -37,7 +37,7 @@ cp $LOG_CONF $DIST_DIR/logback.xml
 echo "Done"
 
 echo "Packaging"
-tar -cvf codebrag.tar codebrag
+zip -r $DIST_ARCHIVE $DIST_DIR
 echo "Done"
 
 echo "All done!"

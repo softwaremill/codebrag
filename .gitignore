@@ -8,4 +8,4 @@ repos
 .DS_Store
 local.conf
 scripts/ea/codebrag/*
-scripts/ea/codebrag.tar
+scripts/ea/codebrag.zip
