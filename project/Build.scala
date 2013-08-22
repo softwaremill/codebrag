@@ -234,7 +234,7 @@ object SmlCodebragBuild extends Build {
   lazy val ui: Project = Project(
     "codebrag-ui",
     file("codebrag-ui"),
-    settings = buildSettings ++ gitCommitGenSettings ++ jasmineSettings ++ graphSettings ++ webSettings ++ lintCustomSettings ++ Seq(
+    settings = buildSettings ++ jasmineSettings ++ graphSettings ++ webSettings ++ lintCustomSettings ++ Seq(
       artifactName := { (config: ScalaVersion, module: ModuleID, artifact: Artifact) =>
         "codebrag." + artifact.extension // produces nice war name -> http://stackoverflow.com/questions/8288859/how-do-you-remove-the-scala-version-postfix-from-artifacts-builtpublished-wi
       },
