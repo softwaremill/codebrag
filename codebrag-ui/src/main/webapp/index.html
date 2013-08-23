@@ -214,8 +214,8 @@
     </script>
     <script type="text/ng-template" id="generalLikes">
         <div class="like-commit" data-scrollable-reaction ng-class="{'liked-by-user': userCannotLike()}">
-            <a class="like button" ng-click="likeCommit()"><i class="icon-heart"></i></a>
-            <span>{{likeText()}}</span>
+            <a class="like button" ng-click="likeOrUnlike()"><i class="icon-heart"></i></a>
+            <span>{{listUsersWhoLike()}}</span>
         </div>
     </script>
 
