@@ -46,45 +46,6 @@ angular.module('codebrag.commits')
             return !$scope.currentCommit.userAlreadyLikedLine(currentUserName, fileName, lineNumber);
         }
 
-        $scope.likeEntireDiff = function () {
-            var currentUserName = authService.loggedInUser.fullName;
-            if (_userCannotLikeThisCommit(currentUserName)) {
-                return;
-            }
-            var newLike = {
-                commitId: $scope.currentCommit.info.id
-            };
-            return Likes.save(newLike).$then(function (likeResponse) {
-                var like = likeResponse.data;
-                $scope.currentCommit.addGeneralLike(like);
-            });
-        };
-
-        function unlikeCommit() {
-            var currentUserName = authService.loggedInUser.fullName;
-            if($scope.currentCommit.userAlreadyLikedCommit(currentUserName)) {
-                var likeToRemove = $scope.currentCommit.findLikeFor(currentUserName);
-                if(likeToRemove) {
-                    var like = {
-                        commitId: $scope.currentCommit.info.id,
-                        likeId: likeToRemove.id
-                    };
-                    return Likes.delete(like).$then(function (likeResponse) {
-                        var like = likeResponse.data;
-                        $scope.currentCommit.addGeneralLike(like);
-                    });
-                } else {
-                    return $q.reject();
-                }
-            } else {
-                return $q.reject();
-            }
-        }
-
-        function _userCannotLikeThisCommit(currentUserName) {
-            return $scope.currentCommit.isUserAuthorOfCommit(currentUserName) || $scope.currentCommit.userAlreadyLikedCommit(currentUserName);
-        }
-
         $scope.submitInlineComment = function(content, commentData) {
             var newComment = {
                 commitId: $scope.currentCommit.info.id,
