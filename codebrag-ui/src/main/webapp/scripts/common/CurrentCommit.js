@@ -3,6 +3,8 @@ var codebrag = codebrag || {};
 codebrag.CurrentCommit = function(commitData) {
 
     this.reactions = commitData.reactions;
+    this.reactions.comments = this.reactions.comments || [];
+    this.reactions.likes = this.reactions.likes || [];
     this.lineReactions = commitData.lineReactions;
 
     this.info = commitData.commit;

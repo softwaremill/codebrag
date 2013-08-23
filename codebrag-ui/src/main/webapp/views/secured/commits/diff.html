@@ -51,7 +51,7 @@
         {{/if}}
     </commit-diff>
 
-    <general-likes submit-like="likeEntireDiff()" likes-collection="currentCommit.reactions.likes" commit="currentCommit" author="currentCommit.info.authorName"></general-likes>
+    <general-likes commit="currentCommit"></general-likes>
     <div id="commit-comments-area" class="comments-container">
         <div class="comment" data-scrollable-reaction id="{{comment.id}}" ng-repeat="comment in currentCommit.reactions.comments">
             <div class="authored-box">

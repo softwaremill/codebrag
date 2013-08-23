@@ -213,16 +213,9 @@
         <div class="username" data-scrollable-reaction><ul class="likes-list"><li ng-repeat="like in collection" id="{{like.id}}">{{like.authorName}}</li></ul>like(s) this line</div>
     </script>
     <script type="text/ng-template" id="generalLikes">
-        <div class="like-commit" data-scrollable-reaction>
-            <a class="like button" ng-click="submitLike()"><i class="icon-heart"></i></a>
-                <span ng-show="noLikes()">Be the first to like this commit</span>
-                <span ng-hide="noLikes()">
-                    <span class="likes">
-                        <ul class="likes-list">
-                            <li ng-repeat="like in likesCollection" id="{{like.id}}">{{like.authorName}}</li>
-                        </ul>
-                    </span><span class="likes">like(s)&nbsp;this&nbsp;commit</span>
-                </span>
+        <div class="like-commit" data-scrollable-reaction ng-class="{'liked-by-user': userCannotLike()}">
+            <a class="like button" ng-click="likeCommit()"><i class="icon-heart"></i></a>
+            <span>{{likeText()}}</span>
         </div>
     </script>
 
