@@ -594,6 +594,7 @@ a.ribbon:hover {
 }
 .popup-page.uservoice textarea {
   resize: vertical;
+  height: auto;
 }
 .popup-page.uservoice .form-group span.text-error {
   bottom: -16px;
