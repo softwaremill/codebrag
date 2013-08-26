@@ -6,18 +6,24 @@ import com.typesafe.scalalogging.slf4j.Logging
 import org.eclipse.jgit.util.StringUtils
 import org.eclipse.jgit.transport._
 import com.jcraft.jsch.Session
-import scala.Some
-import com.typesafe.config.ConfigFactory
 
 class RepoDataProducer(userDao: UserDAO, config: RepositoryConfig) extends Logging {
+  def getRepoTypeFromConfiguration: RepoType = {
+    config.repositoryType match {
+      case GithubRepoType.configRepoType => GithubRepoType
+      case GitHttpsRepoType.configRepoType => GitHttpsRepoType
+      case GitSshRepoType.configRepoType => GitSshRepoType
+      case SvnRepoType.configRepoType => SvnRepoType
+      case _ => throw new IllegalArgumentException(s"Unknown repository type: ${config.repositoryType}")
+    }
+  }
 
   def createFromConfiguration(): Option[RepoData] = {
-    config.repositoryType match {
-      case "github" => createGithubConfig()
-      case "git-https" => createHttpsGitConfig()
-      case "git-ssh" => createGitSshConfig()
-      case "svn" => createSvnConfig()
-      case _ => throw new IllegalArgumentException(s"Unknown repository type: ${config.repositoryType}")
+    getRepoTypeFromConfiguration match {
+      case GithubRepoType => createGithubConfig()
+      case GitHttpsRepoType => createHttpsGitConfig()
+      case GitSshRepoType => createGitSshConfig()
+      case SvnRepoType => createSvnConfig()
     }
   }
 

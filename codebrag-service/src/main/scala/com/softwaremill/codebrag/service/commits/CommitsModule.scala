@@ -12,10 +12,9 @@ trait CommitsModule {
       new InternalDirTree(config),
       new JgitLogConverter,
       repoHeadStore,
-      repoDataProducer.createFromConfiguration() match {
-        case Some(svn: SvnRepoData) => new GitSvnRepoUpdater(new JgitFacade, repoHeadStore)
-        case Some(git: RepoData) => new JgitRepoUpdater(new JgitFacade, repoHeadStore)
-        case None => throw new RuntimeException("Unknown repository config");
+      repoDataProducer.getRepoTypeFromConfiguration match {
+        case SvnRepoType  => new GitSvnRepoUpdater(new JgitFacade, repoHeadStore)
+        case _            => new JgitRepoUpdater(new JgitFacade, repoHeadStore)
       }
     ),
     commitInfoDao,
