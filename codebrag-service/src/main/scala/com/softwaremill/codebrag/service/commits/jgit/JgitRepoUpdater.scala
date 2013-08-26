@@ -24,7 +24,7 @@ class JgitRepoUpdater(jGitFacade: JgitFacade, repoHeadDao: RepositoryHeadStore) 
     previousHead match {
       case Some(sha) => git.log.addRange(sha, headAfterPull)
       case None => {
-        logger.warn("Incosistent repository state, cannot determine last commit in database. Rebuilding from local git log.")
+        logger.warn("Inconsistent repository state, cannot determine last commit in database. Rebuilding from local git log.")
         git.log
       }
     }

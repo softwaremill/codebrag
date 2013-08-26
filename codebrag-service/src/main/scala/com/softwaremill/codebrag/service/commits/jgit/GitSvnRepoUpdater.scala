@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.service.commits.{SvnRepoData, RepoData}
 import org.eclipse.jgit.lib.ObjectId
 import scala.sys.process._
 import com.softwaremill.codebrag.dao.RepositoryHeadStore
-import org.eclipse.jgit.api.{LogCommand}
+import org.eclipse.jgit.api.LogCommand
 import com.typesafe.scalalogging.slf4j.Logging
 
 class GitSvnRepoUpdater(jGitFacade: JgitFacade, repoHeadDao: RepositoryHeadStore) extends RepoUpdater with Logging {
@@ -23,7 +23,7 @@ class GitSvnRepoUpdater(jGitFacade: JgitFacade, repoHeadDao: RepositoryHeadStore
     } else {
       s"echo ${svnRepoData.password}" #| s"git svn clone ${svnRepoData.remoteUri} --quiet --username ${svnRepoData.username} ${localPath.toString}" !< ProcessLogger(logger info _)
     }
-    logger info "SVN repo checked out"
+    logger.debug("SVN repo checked out")
   }
 
   def pullRepoChanges(localPath: Path, repoData: RepoData, previousHead: Option[ObjectId]): LogCommand = {
@@ -31,7 +31,7 @@ class GitSvnRepoUpdater(jGitFacade: JgitFacade, repoHeadDao: RepositoryHeadStore
 
     s"echo ${svnRepoData.password}" #| Process(s"git svn rebase --quiet --username ${svnRepoData.username}", localPath.toFile) !< ProcessLogger(logger info _)
 
-    logger info "SVN repo updated"
+    logger.debug("SVN repo updated")
 
     val headAfterPull = jGitFacade.getHeadId(localPath)
     repoHeadDao.update(repoData.repositoryName, ObjectId.toString(headAfterPull))
@@ -41,7 +41,7 @@ class GitSvnRepoUpdater(jGitFacade: JgitFacade, repoHeadDao: RepositoryHeadStore
     previousHead match {
       case Some(sha) => git.log.addRange(sha, headAfterPull)
       case None => {
-        logger.warn("Incosistent repository state, cannot determine last commit in database. Rebuilding from local git log.")
+        logger.warn("Inconsistent repository state, cannot determine last commit in database. Rebuilding from local git log.")
         git.log
       }
     }
