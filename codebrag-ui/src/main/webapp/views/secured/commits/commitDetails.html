@@ -1,4 +1,10 @@
-<div class="diff-header"></div>
+<div class="diff-header">
+    <select class="diff-file-select">
+        <option value="diff.scala">diff.scala</option>
+        <option value="MongoCommitFinder.scala">MongoCommitFinder.scala</option>
+    </select>
+    <a class="reviewed big button"><i class="icon-ok-circle"> </i>Mark commit as reviewed</a>
+</div>
 <div class="diff-wrapper" ng-controller="CommitDetailsCtrl">
     <div class="diff-container" ng-hide="currentCommit">
         <div class="diff-loading">
