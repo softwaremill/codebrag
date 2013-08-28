@@ -60,6 +60,7 @@ codebrag {
     local-git-storage-path = "."
     debug-services-login = "codebrag"
     debug-services-password = "codebrag"
+    demo = false
 }
 
 web-server {

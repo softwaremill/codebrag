@@ -4,15 +4,11 @@ describe("Session Controller", function () {
 
     beforeEach(module('codebrag.session'), module('codebrag.common.services'));
 
-    afterEach(inject(function(_$httpBackend_) {
-        _$httpBackend_.verifyNoOutstandingExpectation();
-        _$httpBackend_.verifyNoOutstandingRequest();
-    }));
-
     var scope, $httpBackend, ctrl, authSrv, q;
 
-    beforeEach(inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, authService, $q) {
+    beforeEach(inject(function (_$httpBackend_, $rootScope, $routeParams, viewConfigService, $controller, authService, $q) {
         $httpBackend = _$httpBackend_;
+        $httpBackend.expect("GET", "rest/view-config/").respond({demo: true});
 
         scope = $rootScope.$new();
         authSrv = authService;
@@ -100,7 +96,7 @@ describe("Session Controller", function () {
         expect(scope.isLogged()).toBe(true);
     }));
 
-    it ('Should clear password after receiving error response from server', inject(function ($state, $q) {
+    it('Should clear password after receiving error response from server', inject(function ($state, $q) {
         // Given
         var defer = $q.defer();
         defer.reject({status: 401});
@@ -118,7 +114,7 @@ describe("Session Controller", function () {
         expect(scope.user.login).toBe('login')
     }));
 
-    it ('Should clear login and password after receiving success response from server', inject(function ($state, $q) {
+    it('Should clear login and password after receiving success response from server', inject(function ($state, $q) {
         // Given
         var defer = $q.defer();
         defer.resolve();

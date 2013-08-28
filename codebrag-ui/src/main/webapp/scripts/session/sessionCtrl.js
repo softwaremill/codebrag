@@ -1,6 +1,6 @@
 angular.module('codebrag.session')
 
-    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, $state, events, $window, $location, flash) {
+    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, viewConfigService, $state, events, $window, $location, flash) {
 
         $scope.user = {
             login: '',
@@ -9,6 +9,10 @@ angular.module('codebrag.session')
         };
 
         $scope.flash = flash;
+
+        viewConfigService.fetchConfig().success(function (response) {
+            $scope.demo = response.demo;
+        });
 
         $scope.login = function () {
             if (loginFormValid()) {
@@ -42,7 +46,7 @@ angular.module('codebrag.session')
             });
         };
 
-        $scope.openContactFormPopup = function() {
+        $scope.openContactFormPopup = function () {
             $rootScope.$broadcast('openContactFormPopup');
         };
 
@@ -66,7 +70,7 @@ angular.module('codebrag.session')
         function logInUser() {
             delete $scope.loginFailed;
             delete $rootScope.registerSuccessful;
-            authService.login($scope.user).then(function() {
+            authService.login($scope.user).then(function () {
                 clearLoginField();
                 clearPasswordField();
             }, function (errorResponse) {
