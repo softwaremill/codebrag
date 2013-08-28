@@ -2,16 +2,14 @@ package com.softwaremill.codebrag.service.config
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{ConfigParseOptions, ConfigResolveOptions, ConfigFactory}
 
 class ConfigWithDefaultSpec extends FlatSpec with ShouldMatchers {
 
-  class Spec[T](val path: String, val default: T, val expectedValue: T,val get: (String, T) => T) {
-
-  }
+  case class Spec[T](path: String, default: T, expectedValue: T, get: (String, T) => T)
 
   val config = new ConfigWithDefault {
-    def rootConfig = ConfigFactory.load()
+    def rootConfig = ConfigFactory.load("test.conf", ConfigParseOptions.defaults.setAllowMissing(false), ConfigResolveOptions.defaults)
   }
 
   val booleans = List(
