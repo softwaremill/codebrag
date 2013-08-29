@@ -8,8 +8,11 @@ class ConfigWithDefaultSpec extends FlatSpec with ShouldMatchers {
 
   case class Spec[T](path: String, default: T, expectedValue: T, get: (String, T) => T)
 
+  val configName: String = "test.conf"
   val config = new ConfigWithDefault {
-    def rootConfig = ConfigFactory.load("test.conf", ConfigParseOptions.defaults.setAllowMissing(false), ConfigResolveOptions.defaults)
+    def rootConfig = {
+      ConfigFactory.load(configName, ConfigParseOptions.defaults.setAllowMissing(false), ConfigResolveOptions.defaults)
+    }
   }
 
   val booleans = List(
@@ -43,7 +46,7 @@ class ConfigWithDefaultSpec extends FlatSpec with ShouldMatchers {
 
 
   def doTest[T](spec: Spec[T]) {
-    it should s"value load from application.conf (path:${spec.path}) be ${spec.expectedValue}" in {
+    s"Value from from $configName (path:${spec.path})" should s"be ${spec.expectedValue} (with default as ${spec.default})" in {
       //given (spec)
 
       //when
