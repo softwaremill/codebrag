@@ -114,6 +114,7 @@ object Dependencies {
   val scalatraStack = Seq(scalatra, scalatraScalatest, scalatraJson, json4s, scalatraAuth, commonsLang, swaggerCore, scalatraSwagger)
 
   val akka = "com.typesafe.akka" %% "akka-actor" % akkaVersion
+  val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % akkaVersion
   val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test"
   val typesafeConfig = "com.typesafe" % "config" % "1.0.1"
 
@@ -195,7 +196,7 @@ object SmlCodebragBuild extends Build {
   lazy val common: Project = Project(
     "codebrag-common",
     file("codebrag-common"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies ++ Seq(akka))
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies ++ Seq(akka) ++ Seq(akkaSlf4j))
   )
 
   lazy val domain: Project = Project(
