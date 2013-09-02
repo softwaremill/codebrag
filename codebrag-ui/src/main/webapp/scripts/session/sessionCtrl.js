@@ -10,10 +10,6 @@ angular.module('codebrag.session')
 
         $scope.flash = flash;
 
-        configService.fetchConfig().success(function (response) {
-            $scope.demo = response.demo;
-        });
-
         $scope.login = function () {
             if (loginFormValid()) {
                 logInUser();
