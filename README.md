@@ -44,3 +44,20 @@ Create distribution
 ````
 java -Dconfig.file=[path to .conf file] -Dlogback.configurationFile=logback.xml -jar codebrag-dist-assembly-[version].jar
 ````
+
+Developer guide
+---
+
+Prerequisites:
+1. MongoDB (2.4.6 or newer) - installed from package. Not from Brew, there are problems with tests.
+2. Setup `mongo-directory` property. In file `~/.sbt/local.sbt` insert (change path to your local path) `SettingKey[File]("mongo-directory") := file("/path/to/mongo")`
+3. OS X 10.8 (mongodb tests are hanging on version 10.7)
+4. Sbt version 12.3
+5. Add sbt-idea plugin. In file `~/.sbt/plugins/build.sbt` insert line `addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.5.1")`
+
+Working with application:
+1. Go to project dir
+2. start sbt with `sbt`
+3. Generate Intellij Idea project files with `gen-idea` command
+4. Open project in Idea
+5. run project on jetty with `~;container:start; container:reload /`. Project will be recompiled & redeployed every time sources will be changed.
