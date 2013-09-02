@@ -6,9 +6,9 @@ describe("Session Controller", function () {
 
     var scope, $httpBackend, ctrl, authSrv, q;
 
-    beforeEach(inject(function (_$httpBackend_, $rootScope, $routeParams, viewConfigService, $controller, authService, $q) {
+    beforeEach(inject(function (_$httpBackend_, $rootScope, $routeParams, configService, $controller, authService, $q) {
         $httpBackend = _$httpBackend_;
-        $httpBackend.expect("GET", "rest/view-config/").respond({demo: true});
+        $httpBackend.expect("GET", "rest/config/").respond({demo: true});
 
         scope = $rootScope.$new();
         authSrv = authService;

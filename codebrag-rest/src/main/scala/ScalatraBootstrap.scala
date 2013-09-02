@@ -29,7 +29,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new DebugServlet(repoDataProducer, commitImportService, config), Prefix + DebugServlet.MappingPath)
     context.mount(new RefreshRepoDataServlet(repoDataProducer, repositoryUpdateActor), RefreshRepoDataServlet.MappingPath)
     context.mount(new VersionServlet, Prefix + "version")
-    context.mount(new ViewConfigServlet(config), Prefix + "view-config")
+    context.mount(new ConfigServlet(config), Prefix + "config")
 
     context.put("codebrag", this)
   }

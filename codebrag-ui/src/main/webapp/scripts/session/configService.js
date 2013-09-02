@@ -1,10 +1,10 @@
 angular.module('codebrag.session')
 
-    .factory('viewConfigService', function ($http) {
+    .factory('configService', function ($http) {
 
         return {
             fetchConfig: function () {
-                return $http.get('rest/view-config/');
+                return $http.get('rest/config/');
             }
         };
 

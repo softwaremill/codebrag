@@ -7,13 +7,13 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfterEach
 
 
-class ViewConfigServletSpec extends CodebragServletSpec with BeforeAndAfterEach  {
+class ConfigServletSpec extends CodebragServletSpec with BeforeAndAfterEach  {
 
   override def beforeEach {
     val config = new CodebragConfig {
       def rootConfig = ConfigFactory.load();
     }
-    addServlet(new ViewConfigServlet(config), "/*")
+    addServlet(new ConfigServlet(config), "/*")
   }
 
   "GET /" should "return demo flag" in {

@@ -1,6 +1,6 @@
 angular.module('codebrag.session')
 
-    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, viewConfigService, $state, events, $window, $location, flash) {
+    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, configService, $state, events, $window, $location, flash) {
 
         $scope.user = {
             login: '',
@@ -10,7 +10,7 @@ angular.module('codebrag.session')
 
         $scope.flash = flash;
 
-        viewConfigService.fetchConfig().success(function (response) {
+        configService.fetchConfig().success(function (response) {
             $scope.demo = response.demo;
         });
 
