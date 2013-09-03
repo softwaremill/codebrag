@@ -56,7 +56,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     val currentUserId = new ObjectId(user.id)
     val criteria = params.get("id") match {
       case Some(commitId) => LoadMoreCriteria(new ObjectId(commitId), PagingDirection.Radial, limit)
-      case None => LoadMoreCriteria.fromBeginning(DefaultSurroundingsCount)
+      case None => LoadMoreCriteria.fromEnd(limit)
     }
     allCommitsFinder.findAllCommits(criteria, currentUserId)
   }

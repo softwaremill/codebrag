@@ -62,11 +62,15 @@ angular.module('codebrag.commits')
                     return commit.id === commitId;
                 });
                 var indexOfCentral = loadedCommits.indexOf(centralCommit);
-                return {
-                    prevCommitsLoaded: loadedCommits.slice(0, indexOfCentral).length,
-                    nextCommitsLoaded: loadedCommits.slice(indexOfCentral + 1).length
+                var result = {
+                    prevCommitsLoaded: loadedCommits.length,
+                    nextCommitsLoaded: loadedCommits.length
                 };
-            }
+                if (indexOfCentral !== -1) {
+                    result.prevCommitsLoaded = loadedCommits.slice(0, indexOfCentral).length,
+                        result.nextCommitsLoaded = loadedCommits.slice(indexOfCentral + 1).length
+                }
+                return result;            }
         };
 
         this.loadCommitDetails = function(commitId) {

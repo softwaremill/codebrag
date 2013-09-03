@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao.finders.commit
 
-import com.softwaremill.codebrag.common.{LoadMoreCriteria}
+import com.softwaremill.codebrag.common.LoadMoreCriteria
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.LoadMoreCriteria.PagingDirection
 
@@ -12,21 +12,17 @@ object ListSliceLoader {
     def boundsForNext(givenIndex: Int) = (givenIndex + 1, givenIndex + criteria.limit + 1)
     def boundsForSurroundings(givenIndex: Int) = (givenIndex - criteria.limit, givenIndex + criteria.limit + 1)
 
-    criteria.direction match {
-      case PagingDirection.Left => loadWithBounds(idsList, criteria.baseId, criteria.limit, boundsForPrevious, loadFn)
-      case PagingDirection.Right => loadWithBounds(idsList, criteria.baseId, criteria.limit, boundsForNext, loadFn)
-      case PagingDirection.Radial => loadWithBounds(idsList, criteria.baseId, criteria.limit, boundsForSurroundings, loadFn)
+    criteria match {
+      case LoadMoreCriteria(idOption@None, PagingDirection.Left, limit) => loadWithBounds(idsList, idsList.length, boundsForPrevious, loadFn)
+      case LoadMoreCriteria(idOption@None, PagingDirection.Right, limit) => loadWithBounds(idsList, -1, boundsForNext, loadFn)
+      case LoadMoreCriteria(Some(id), PagingDirection.Right, limit) => loadWithBounds(idsList, idsList.indexOf(id), boundsForNext, loadFn)
+      case LoadMoreCriteria(Some(id), PagingDirection.Left, limit) => loadWithBounds(idsList, idsList.indexOf(id), boundsForPrevious, loadFn)
+      case LoadMoreCriteria(Some(id), PagingDirection.Radial, limit) => loadWithBounds(idsList, idsList.indexOf(id), boundsForSurroundings, loadFn)
     }
   }
 
-  private def loadWithBounds[T](idsList: List[ObjectId], pivotId: Option[ObjectId], limit: Int, boundsFn: (Int => (Int, Int)), loadFn: (List[ObjectId] => List[T])): List[T] = {
-    val bounds = pivotId match {
-      case Some(id) => {
-        val indexOfPivot = idsList.indexOf(id)
-        if(indexOfPivot > -1) boundsFn(indexOfPivot) else (0, 0)
-      }
-      case None => boundsFn(-1)
-    }
+  private def loadWithBounds[T](idsList: List[ObjectId], indexOfPivot: Int, boundsFn: (Int => (Int, Int)), loadFn: (List[ObjectId] => List[T])): List[T] = {
+    val bounds: (Int, Int) = boundsFn(indexOfPivot)
     loadFn(idsList.slice(bounds._1, bounds._2))
   }
 
