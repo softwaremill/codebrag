@@ -30,6 +30,7 @@ EnvJasmine.loadGlobal(EnvJasmine.rootDir + "auth/loginForm.js");
 
 <!-- session -->
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/configService.js");
+EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/showOnDemoDirective.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/sessionCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/registerCtrl.js");
 EnvJasmine.loadGlobal(EnvJasmine.rootDir + "session/profileCtrl.js");
