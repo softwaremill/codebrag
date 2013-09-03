@@ -12,12 +12,22 @@ object ListSliceLoader {
     def boundsForNext(givenIndex: Int) = (givenIndex + 1, givenIndex + criteria.limit + 1)
     def boundsForSurroundings(givenIndex: Int) = (givenIndex - criteria.limit, givenIndex + criteria.limit + 1)
 
+    def loadLast: List[T] = {
+      loadWithBounds(idsList, idsList.length, boundsForPrevious, loadFn)
+    }
+    def loadFirst: List[T] = {
+      loadWithBounds(idsList, -1, boundsForNext, loadFn)
+    }
+
+    def loadContextual(id: ObjectId, boundsFn: (Int => (Int, Int))): List[T] = {
+      loadWithBounds(idsList, idsList.indexOf(id), boundsFn, loadFn)
+    }
     criteria match {
-      case LoadMoreCriteria(idOption@None, PagingDirection.Left, limit) => loadWithBounds(idsList, idsList.length, boundsForPrevious, loadFn)
-      case LoadMoreCriteria(idOption@None, PagingDirection.Right, limit) => loadWithBounds(idsList, -1, boundsForNext, loadFn)
-      case LoadMoreCriteria(Some(id), PagingDirection.Right, limit) => loadWithBounds(idsList, idsList.indexOf(id), boundsForNext, loadFn)
-      case LoadMoreCriteria(Some(id), PagingDirection.Left, limit) => loadWithBounds(idsList, idsList.indexOf(id), boundsForPrevious, loadFn)
-      case LoadMoreCriteria(Some(id), PagingDirection.Radial, limit) => loadWithBounds(idsList, idsList.indexOf(id), boundsForSurroundings, loadFn)
+      case LoadMoreCriteria(idOption@None, PagingDirection.Left, limit) => loadLast
+      case LoadMoreCriteria(idOption@None, PagingDirection.Right, limit) => loadFirst
+      case LoadMoreCriteria(Some(id), PagingDirection.Right, limit) => loadContextual(id, boundsForNext)
+      case LoadMoreCriteria(Some(id), PagingDirection.Left, limit) => loadContextual(id, boundsForPrevious)
+      case LoadMoreCriteria(Some(id), PagingDirection.Radial, limit) => loadContextual(id, boundsForSurroundings)
     }
   }
 
