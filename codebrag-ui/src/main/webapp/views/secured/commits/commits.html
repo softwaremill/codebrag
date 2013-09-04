@@ -8,8 +8,8 @@
                 </div>
             </div>
             <div class="small-9 large-9 columns">
-                <div class="diff-header clearfix" style="padding-top: 0.77em; padding-right: 0.77em" ng-controller="DiffNavbarCtrl" ng-show="currentCommit">
-                    <span style="display:block; float: left; margin: 0.77em">Files in this commit: </span><diff-file-chooser></diff-file-chooser>
+                <div class="diff-header clearfix" ng-controller="DiffNavbarCtrl" ng-show="currentCommit">
+                    <span class="file-changer-label">Files in this commit: </span><diff-file-chooser></diff-file-chooser>
                     <a class="reviewed big button" ng-show="currentCommit.info.pendingReview" ng-click="markCurrentCommitAsReviewed()"><i class="icon-ok-circle"> </i>Mark commit as reviewed</a>
                 </div>
             </div>
