@@ -17,6 +17,12 @@ codebrag.CurrentCommit = function(commitData) {
 
 codebrag.CurrentCommit.prototype = {
 
+    diffFileNames: function() {
+        return this.diff.map(function(file) {
+            return file.filename;
+        })
+    },
+
     addLike: function(like, fileName, lineNumber) {
         this._addLineReaction(like, 'likes', fileName, lineNumber)
     },

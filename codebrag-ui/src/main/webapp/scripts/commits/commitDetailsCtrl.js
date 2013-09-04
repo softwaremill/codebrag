@@ -1,26 +1,29 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitDetailsCtrl', function ($stateParams, $state, $scope, commitsListService) {
+    .factory('currentCommit', function () {
+        var currentCommit;
+        return {
+            set: function (newCommit) {
+                currentCommit = newCommit
+            },
+            get: function () {
+                return currentCommit;
+            },
+            empty: function() {
+                currentCommit = null;
+            }
+        }
+    })
+
+    .controller('CommitDetailsCtrl', function ($stateParams, $state, $scope, commitsListService, currentCommit) {
 
         var commitId = $stateParams.id;
 
-        commitsListService.loadCommitDetails(commitId).then(function(commit) {
-            $scope.currentCommit = new codebrag.CurrentCommit(commit);
+        commitsListService.loadCommitDetails(commitId).then(function (commit) {
+            var current = new codebrag.CurrentCommit(commit);
+            $scope.currentCommit = current;
+            currentCommit.set(current);
         });
-
-        $scope.markCurrentCommitAsReviewed = function() {
-            commitsListService.makeReviewedAndGetNext(commitId).then(function(nextCommit) {
-                goTo(nextCommit);
-            })
-        };
-
-        function goTo(nextCommit) {
-            if (_.isNull(nextCommit)) {
-                $state.transitionTo('commits.list');
-            } else {
-                $state.transitionTo('commits.details', {id: nextCommit.id});
-            }
-        }
 
     });
 

@@ -3,7 +3,7 @@
     <commit-diff data="currentCommit" compile="tfoot">
         {{#each currentCommit.diff}}
         <div class="diff-table-wrapper">
-            <table class="diff-file-container">
+            <table class="diff-file-container" data-file-name="{{filename}}">
                 <thead class="diff-file-name">
                     <tr>
                         <th colspan="3">{{filename}}</th>

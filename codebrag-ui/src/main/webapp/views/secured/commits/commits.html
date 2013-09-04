@@ -1,41 +1,53 @@
 <div id="commits-tab-content" class="row" ng-controller="CommitsCtrl" auto-fit-height>
-    <div class="commits items-list small-3 large-3 columns">
-        <div class="sorting">
-            <input type="radio" id="pending" ng-change="switchListView()" ng-model="listViewMode" value="pending"><label class="button" ng-class="{'link': listViewMode != 'pending'}" for="pending">To review</label>
-            <input type="radio" id="all" ng-change="switchListView()" ng-model="listViewMode" value="all"><label class="button" ng-class="{'link': listViewMode != 'all'}" for="all">All</label>
-        </div>
-        <div class="list-loader" http-request-tracker="commitsList">
-            <span class="info">Loading commits...</span>
-        </div>
-        <div class="items-container" scroll-commits-list>
-            <div class="load-previous-wrapper" ng-show="hasPreviousCommits()" ng-click="loadPreviousCommits()">
-                <span class="button link">
-                    <i class="icon-circle-arrow-up"></i> load more
-                </span>
+    <div class="small-12 large-12 columns">
+        <div class="commit-tab-header row">
+            <div class="small-3 large-3 columns">
+                <div class="sorting">
+                    <input type="radio" id="pending" ng-change="switchListView()" ng-model="listViewMode" value="pending"><label class="button" ng-class="{'link': listViewMode != 'pending'}" for="pending">To review</label>
+                    <input type="radio" id="all" ng-change="switchListView()" ng-model="listViewMode" value="all"><label class="button" ng-class="{'link': listViewMode != 'all'}" for="all">All</label>
+                </div>
             </div>
-            <!--commit info start-->
-            <div class="commit-container" ng-repeat="commit in commits" mark-current="commit.id"
-                 state-param-name="id" ng-click="openCommitDetails(commit.id)">
-                <div class="authored-box">
-                    <div class="author-box"><user-avatar url="commit.authorAvatarUrl"></user-avatar></div>
-                    <div class="info-box">
-                        <div class="commit-name"><commit-msg-headline message="commit.message"/></div>
-                        <div class="info-line"><span class="username">{{commit.authorName}}</span><span class="time">{{commit.date | relativeDate}}</span></div>
+            <div class="small-9 large-9 columns">
+                <div class="diff-header clearfix" style="padding-top: 0.77em; padding-right: 0.77em" ng-controller="DiffNavbarCtrl" ng-show="currentCommit">
+                    <span style="display:block; float: left; margin: 0.77em">Files in this commit: </span><diff-file-chooser></diff-file-chooser>
+                    <a class="reviewed big button" ng-show="currentCommit.info.pendingReview" ng-click="markCurrentCommitAsReviewed()"><i class="icon-ok-circle"> </i>Mark commit as reviewed</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="commits items-list small-3 large-3 columns">
+                <div class="list-loader" http-request-tracker="commitsList">
+                    <span class="info">Loading commits...</span>
+                </div>
+                <div class="items-container" scroll-commits-list>
+                    <div class="load-previous-wrapper" ng-show="hasPreviousCommits()" ng-click="loadPreviousCommits()">
+                        <span class="button link">
+                            <i class="icon-circle-arrow-up"></i> load more
+                        </span>
                     </div>
-                </div ><i class="icon-ok-circle" ng-show="commit.pendingReview" ng-click="markAsReviewed(commit.id)" isolate-click></i>
+                    <!--commit info start-->
+                    <div class="commit-container" ng-repeat="commit in commits" mark-current="commit.id"
+                         state-param-name="id" ng-click="openCommitDetails(commit.id)">
+                        <div class="authored-box">
+                            <div class="author-box"><user-avatar url="commit.authorAvatarUrl"></user-avatar></div>
+                            <div class="info-box">
+                                <div class="commit-name"><commit-msg-headline message="commit.message"/></div>
+                                <div class="info-line"><span class="username">{{commit.authorName}}</span><span class="time">{{commit.date | relativeDate}}</span></div>
+                            </div>
+                        </div ><i class="icon-ok-circle" ng-show="commit.pendingReview" ng-click="markAsReviewed(commit.id)" isolate-click></i>
+                    </div>
+                    <div class="load-next-wrapper" ng-show="hasNextCommits()" ng-click="loadNextCommits()">
+                        <span class="button link">
+                            <i class="icon-circle-arrow-down"></i> load more
+                        </span>
+                    </div>
+                    <!--commit info end-->
+                    <div class="no-more-items" ng-show="allCommitsReviewed()">
+                        Yay!<br> Nothing to review!
+                    </div>
+                </div>
             </div>
-            <div class="load-next-wrapper" ng-show="hasNextCommits()" ng-click="loadNextCommits()">
-                <span class="button link">
-                    <i class="icon-circle-arrow-down"></i> load more
-                </span>
-            </div>
-            <!--commit info end-->
-            <div class="no-more-items" ng-show="allCommitsReviewed()">
-                Yay!<br> Nothing to review!
-            </div>
+            <div class="diff small-9 large-9 columns" ui-view></div>
         </div>
-    </div>
-    <div class="diff small-9 large-9 columns" ui-view>
-
     </div>
 </div>

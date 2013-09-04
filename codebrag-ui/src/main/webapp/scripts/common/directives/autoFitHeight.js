@@ -6,7 +6,7 @@ angular.module('codebrag.common.directives')
 
             var windowArea = $(window);
             var headerArea = $('header');
-            var sortingArea = $('.sorting');
+            var sortingArea = $('.commit-tab-header');
 
             function recalculateHeights() {
 
@@ -22,8 +22,7 @@ angular.module('codebrag.common.directives')
             }
 
             function resizeDiffHeight(diffArea, newHeights) {
-                var diffTopPadding = parseInt(diffArea.css('padding-top'), 10);
-                var newDiffAreaHeight = newHeights.windowHeight - newHeights.headerHeight - newHeights.sortingHeight - diffTopPadding;
+                var newDiffAreaHeight = newHeights.windowHeight - newHeights.headerHeight - newHeights.sortingHeight;
                 diffArea.height(newDiffAreaHeight);
             }
 

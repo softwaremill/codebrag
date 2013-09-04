@@ -1,11 +1,4 @@
-<div class="diff-header">
-    <select class="diff-file-select">
-        <option value="diff.scala">diff.scala</option>
-        <option value="MongoCommitFinder.scala">MongoCommitFinder.scala</option>
-    </select>
-    <a class="reviewed big button"><i class="icon-ok-circle"> </i>Mark commit as reviewed</a>
-</div>
-<div class="diff-wrapper" ng-controller="CommitDetailsCtrl">
+<div class="diff-wrapper" ng-controller="CommitDetailsCtrl" diff-scroll-spy>
     <div class="diff-container" ng-hide="currentCommit">
         <div class="diff-loading">
             <img src="images/loader-v2.gif"/>
@@ -26,7 +19,6 @@
         </div>
 
         <ng-include src="'views/secured/commits/diff.html'"></ng-include>
-        <a class="reviewed big button" ng-show="currentCommit.info.pendingReview" ng-click="markCurrentCommitAsReviewed()"><i class="icon-ok-circle"> </i>Reviewed</a>
     </div>
     <div expand-collapse-list class="toggle-diff-container-btn"><i class="icon-chevron-left"></i></div>
 </div>
