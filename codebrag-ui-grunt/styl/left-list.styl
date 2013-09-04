@@ -1,0 +1,188 @@
+// commits
+.items-list
+  // height calculated in JS = windowHeight - headerHeight
+  height: 700px;
+  padding-bottom: 3.3em;
+  position: relative;
+
+.sorting
+  border-bottom: 1px solid $main-border-color; 
+  padding: 1.15em;
+  text-align: center;
+  & input[type=radio]
+    display:none;
+    margin:10px;
+  & .button.link
+    color: $body-text-color;
+    text-transform: uppercase;
+    &:hover
+      color: $main-orange-color;
+      text-decoration: none;
+
+.list-loader
+  position: relative;
+  display:none;
+  & .info
+    position:absolute;
+    width: 100%;
+    padding: 10px;
+    background: rgba(211,196,160,0.9);
+    color: #fff;
+    text-align: center;
+    font-weight: bold;
+    z-index: 10;
+.items-container
+  overflow-x: hidden;
+  overflow-y: hidden;
+  &:hover
+    overflow-y: auto;
+
+.load-previous-wrapper
+  border-top: none;
+  text-align: center;
+
+.load-next-wrapper
+  border-top: 1px solid #d1cbb9;
+  text-align: center;
+
+.commit-container
+  border-top: 1px solid $main-border-color;
+  padding: 1.15em 2.3em 1.15em 0.77em;
+  position: relative;
+  width: 100%;
+  &:hover
+    background: white;
+    cursor: pointer;
+    & i
+      display: inherit;
+  & i
+    color: #c1b28b;
+    display: none;
+    font-size: 1.2em;
+    margin-top: -0.5em;
+    position: absolute;
+    right: 0.6em;
+    top: 50%;
+  & .author-box img
+    height: 2.3em;
+    margin-right: 0.77em;
+    width: 2.3em;
+  & .commit-name
+    color: #70493e;
+    font-weight: bold;
+    margin-bottom: 0.4em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  &.reviewed .author-box
+    opacity: 0.4;
+  &.reviewed .info-box
+    opacity: 0.4;
+  &.active
+    background: white;
+    z-index:2;
+    &:before
+      background: $main-orange-color;
+      content: "";
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0px;
+      width: .38em;
+      z-index: 1;
+    & i
+      display: block;
+
+.items-container .commit-container:first-child
+  margin-top: -1px;
+
+.items-container .commit-container:last-child
+  border-bottom: 1px solid $main-border-color;
+
+.commits-count
+  background: $body-bg-color;
+  border-top: 1px solid $main-border-color;
+  bottom: 0;
+  color: $second-body-text-color;
+  margin-top: -1px;
+  padding: 1.15em 0;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  & span
+    margin-right: 3px;
+
+.no-more-items
+  color: rgb(173, 130, 69);
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 3em;
+  min-height: 154px;
+  min-width: 156px;
+  padding-top: 132px;
+  text-align: center;
+  text-transform: uppercase;
+
+
+// followups
+#followups-tab-content .items-container
+  padding-right: 2.3em;  
+
+.followups-container
+  background: #eee8d7;
+  margin-bottom: 0.77em;
+  padding: 0.77em 0.38em 0.38em;
+  & .info-line
+    margin-bottom: 0.77em;
+  & .commit-name
+    color: #70493e;
+    font-weight: bold;
+    margin-bottom: 0.4em;
+    opacity: 0.75;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+.followup-container
+  background: #faf8ed;
+  border: 1px solid #e2d8bf;
+  margin-top: -1px;
+  padding: 0.77em 2.3em 0.77em 0.77em;
+  position: relative;
+  &:hover
+    background: white;
+    cursor: pointer;
+    & i
+      display: inherit;
+  & i
+    color: #c1b28b;
+    display: none;
+    font-size: 1.2em;
+    margin-top: -0.5em;
+    position: absolute;
+    right: 0.6em;
+    top: 50%;
+  & .author-box img
+    height: 1.54em;
+    margin-right: 0.77em;
+    width: 1.54em;
+  & .comment
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  &.active
+    background: white;
+    width: 480px;
+    z-index: 2;
+    &:before
+      background: #f3720b;
+      content: "";
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0px;
+      width: 0.38em;
+      z-index: 1;
+
+#followups-tab-content .items-container .commmit-container:first-child
+  margin-top: 0.77em;

@@ -1,0 +1,106 @@
+.main-header
+  background: $header-bg-color;
+  color: $header-text-color;
+  overflow: visible;
+  & .logo
+    display: inline-block;
+    vertical-align: top;
+    margin: 0.38em 5em;
+    width: 128px;
+  & .pull-right-wrapper
+    padding: 0.98em 0;
+
+.main-nav
+  display: inline-block;
+  margin-bottom: -1px;
+  & .button
+    background: transparent;
+    border-top: none;
+    color: $header-text-color;
+    font-size: 0.93em;
+    font-weight: bold;
+    margin: 0 0 -1px;
+    padding: 0.85em 0;
+    text-transform: uppercase;
+    width: 11.15em;
+    &:hover
+      color: $main-orange-color;
+    & .number
+      display: block;
+      font-size: 2.15em;
+      font-weight: normal;
+    &.active
+      background: $body-bg-color;
+      border-top: 0.39em solid $main-orange-color;
+      color: $header-bg-color;
+      padding-top: 0.47em;
+
+.demo-nav
+  background: rgba(255, 255, 255, 0.2);
+  display: inline-block;
+  padding: 2px;
+  position: relative;
+  float: left;
+  & a
+    margin-right: 1em;
+    padding: 0 1em;
+
+.uservoice-btn
+  background: #99ab01;
+  vertical-align: top;
+  margin-right: 4em;
+  &:hover
+    background: #8a9b00;
+
+.header-user-info
+  cursor: pointer;
+  display: inline-block;
+  margin-right: 2em;
+  overflow: visible;
+  position: relative;
+  &:hover .arrow-down
+     border-top-color: $main-orange-color;
+  & img
+    float: left;
+    margin-right: 0.38em;
+    width: 2.3em;
+  & .arrow-down
+    float: right;
+    margin-top: 0.77em;
+  & a
+    color: inherit;
+    text-decoration: none;
+
+.user-info-dropdown
+  background: $header-bg-color;
+  display: none;
+  list-style: none;
+  margin: 2.4em 0 0;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 15em;
+  z-index: 3;
+  & li
+    padding: 0.77em;
+    &:hover
+      background: $header-bg-color-darker;
+      color: $main-orange-color;
+  // margin: 0;
+  // padding: 0.77em;
+  // position: absolute;
+  // & .user-info
+  //   float: right;
+  //   margin: 0 0.77em 0 1.54em;
+  //   vertical-align: top;
+  //   & .username
+  //     display: inline-block;
+  //     margin-top: 0.77em;
+  //     vertical-align: middle;
+  //   & .logout
+  //     display: inline-block;
+  //     margin-top: 0.77em;
+  //     vertical-align: middle;
+  //     &:hover
+  //       color: $main-orange-color;

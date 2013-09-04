@@ -1,0 +1,48 @@
+// for small screens
+@media all and (max-width: 1000px) {
+  .main-header .logo {
+    margin: 1em 1em 0;
+    width: 110px;
+  }
+  .main-nav .button {
+    width: 7.15em;
+  }
+
+  .main-header .user-info .username {
+    max-width: 10em;
+    margin-top: 0;
+    text-align: right;
+  }
+  .main-header .user-info .logout {
+    max-width: 10em;
+    margin-top: 0;
+    text-align: right;
+  }
+}
+
+// for medium screens
+@media all and (max-width: 1279px) {
+  html {
+    font-size: 13px;
+  }
+  .diff-file-container tr.comments-container {
+    font-size: 13px;
+  }
+}
+
+// for super-big screens
+@media all and (min-width: 1280px) {
+  html {
+    font-size: 14px;
+  }
+  #loginform fieldset {
+    padding: 2.3em;
+  }
+  #loginform input[type="text"],
+  #loginform input[type="password"] {
+    width: 17.4em
+  }
+  .diff-file-container tr.comments-container {
+    font-size: 14px;
+  }
+}

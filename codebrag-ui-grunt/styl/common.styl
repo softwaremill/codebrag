@@ -1,0 +1,155 @@
+// rewriting foundaton styles
+.row
+  max-width: 100%;
+
+.button,
+.button[disabled],
+button
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: none;
+  font-weight: normal;
+  margin: 0 1.15em 0 0;
+  padding: 0.66em 1.15em;
+  text-transform: uppercase;
+  &.secondary
+    color: white;
+    &:hover
+      color: white;
+    &:focus
+      background: #998d68;
+      color: white;
+  &.kthxbye
+    background: #41a388;
+    &:hover
+      background: #5abfa3;
+  &.link
+    background: transparent;
+    color: $second-body-text-color;
+    text-transform: none;
+    transition: color 250ms;
+    &:hover
+      background: transparent;
+      color: $main-orange-color;
+    &:active
+      background: #ece7d9;
+    &:focus
+      background: #e4dece;
+      color: $second-body-text-color;
+  &.big
+    padding: 1.15em 2.3em;
+    &.reviewed
+      background: $green-button-bg-color;
+      float: right;
+      margin-right: 0;
+      margin-top: 1.15em;
+      &:hover
+        background: $green-button-bg-hover;
+  &:active
+    box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
+  &:focus
+    background: #a14700;
+    color: white;
+    outline: 0;
+
+.button-group
+  padding-left: 0;
+
+.button-group li:last-child .button,
+li:last-child .button
+  margin-right: 0;
+
+table tr:nth-of-type(even)
+  background: white;
+
+table tr th,
+table tr td
+  font-size: 1em;
+  color: $body-text-color;
+  padding: 0.23em 0.77em;
+
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="time"],
+input[type="url"],
+label,
+textarea,
+select
+  font-size: 1em;
+  margin-bottom: 1.15em;
+
+input[type="checkbox"]
+  margin-bottom: 0;
+
+label
+  color: $second-body-text-color;
+
+
+// general styles
+html,
+body
+  height: 100%;
+
+body
+  background: $body-bg-color;
+  font-family: 'PT Sans', Tahoma, sans-serif;
+  line-height: 1.2;
+  overflow: hidden;
+
+h1, 
+h2, 
+h3, 
+h4, 
+h5, 
+h6
+  font-family: 'PT Sans', Tahoma, sans-serif;
+
+p
+  line-height: 1.4;
+
+::selection
+  background-color: #fcd01a;
+  color: $body-text-color;
+
+::-webkit-scrollbar
+  width: 13px;
+  height: 13px;
+ 
+::-webkit-scrollbar-track
+  background-color: rgba(216, 198, 158, 0.6);
+  opacity: 0.6;
+ 
+::-webkit-scrollbar-thumb
+  background-color: rgba(197, 172, 124, 0.6);
+  opacity: 0.6;
+
+i
+  font-family: 'FontAwesome';
+  cursor: pointer;
+
+.pull-right-wrapper
+  float: right;
+
+.clearfix:after
+  content: "."; 
+  visibility: hidden; 
+  display: block; 
+  height: 0; 
+  clear: right;
+
+// small arrows (next to user avatar in header)
+.arrow-down 
+  border-left: 0.38em solid transparent;
+  border-right: 0.38em solid transparent;
+  border-top: 0.38em solid $header-text-color;
+  height: 0;
+  width: 0;
