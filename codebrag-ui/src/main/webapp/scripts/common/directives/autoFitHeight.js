@@ -7,7 +7,6 @@ angular.module('codebrag.common.directives')
             var windowArea = $(window);
             var headerArea = $('header');
             var sortingArea = $('.sorting');
-            var loadMoreArea = $('.commits-count');
 
             function recalculateHeights() {
 
@@ -18,19 +17,18 @@ angular.module('codebrag.common.directives')
                 return {
                     windowHeight: getHeightOrDefault(windowArea),
                     headerHeight: getHeightOrDefault(headerArea),
-                    sortingHeight:  getHeightOrDefault(sortingArea),
-                    loadMoreHeight: getHeightOrDefault(loadMoreArea)
+                    sortingHeight:  getHeightOrDefault(sortingArea)
                 }
             }
 
             function resizeDiffHeight(diffArea, newHeights) {
                 var diffTopPadding = parseInt(diffArea.css('padding-top'), 10);
-                var newDiffAreaHeight = newHeights.windowHeight - newHeights.headerHeight - 2 * diffTopPadding;
+                var newDiffAreaHeight = newHeights.windowHeight - newHeights.headerHeight - newHeights.sortingHeight - diffTopPadding;
                 diffArea.height(newDiffAreaHeight);
             }
 
             function resizeListAreaHeight(listArea, newHeights) {
-                var newListAreaHeight = newHeights.windowHeight - newHeights.headerHeight - newHeights.sortingHeight - newHeights.loadMoreHeight;
+                var newListAreaHeight = newHeights.windowHeight - newHeights.headerHeight - newHeights.sortingHeight;
                 listArea.height(newListAreaHeight)
             }
 
