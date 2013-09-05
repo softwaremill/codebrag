@@ -500,17 +500,11 @@ form .form-group span.text-error:after {
   overflow: visible;
   position: relative;
 }
-
-.header-user-info .user-info-dropdown {
-    display: none;
-}
-
-.header-user-info:hover .user-info-dropdown {
-    display: block;
-}
-
 .header-user-info:hover .arrow-down {
   border-top-color: #f3720b;
+}
+.header-user-info:hover .user-info-dropdown {
+  display: block;
 }
 .header-user-info img {
   float: left;
@@ -932,7 +926,7 @@ a.ribbon:hover {
 .diff-header .file-changer {
   float: left;
   margin: 0.77em;
-  width: auto;
+  width: 300px;
 }
 .diff-header .reviewed.big.button,
 .diff-header .to-review.big.button {
