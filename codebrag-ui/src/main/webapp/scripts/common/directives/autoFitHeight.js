@@ -6,7 +6,7 @@ angular.module('codebrag.common.directives')
 
             var windowArea = $(window);
             var headerArea = $('header');
-            var sortingArea = $('.commit-tab-header');
+            var sortingArea = $('.commits-tab-header');
 
             function recalculateHeights() {
 

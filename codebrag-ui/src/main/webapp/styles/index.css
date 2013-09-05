@@ -75,27 +75,31 @@ button.link:focus {
 button.big {
   padding: 1.15em 2.3em;
 }
+.button.big.reviewed,
+.button[disabled].big.reviewed,
+button.big.reviewed,
 .button.big.to-review,
 .button[disabled].big.to-review,
 button.big.to-review {
-  background: #5abfa3;
   float: right;
   margin-right: 0;
   margin-top: 1.15em;
-}
-.button.big.to-review:hover,
-.button[disabled].big.to-review:hover,
-button.big.to-review:hover {
-  background: #41a388;
 }
 .button.big.reviewed,
 .button[disabled].big.reviewed,
 button.big.reviewed {
   background: #d1cdc2;
-  float: right;
-  margin-right: 0;
-  margin-top: 1.15em;
   cursor: default;
+}
+.button.big.to-review,
+.button[disabled].big.to-review,
+button.big.to-review {
+  background: #5abfa3;
+}
+.button.big.to-review:hover,
+.button[disabled].big.to-review:hover,
+button.big.to-review:hover {
+  background: #41a388;
 }
 .button:active,
 .button[disabled]:active,
@@ -183,14 +187,14 @@ p {
 ::-webkit-scrollbar-track {
   background-color: rgba(216,198,158,0.6);
   opacity: 0.6;
-  filter: alpha(opacity=60);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+  filter: alpha(opacity=60);
 }
 ::-webkit-scrollbar-thumb {
   background-color: rgba(197,172,124,0.6);
   opacity: 0.6;
-  filter: alpha(opacity=60);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+  filter: alpha(opacity=60);
 }
 i {
   font-family: 'FontAwesome';
@@ -479,6 +483,7 @@ form .form-group span.text-error:after {
 .demo-nav a {
   margin-right: 1em;
   padding: 0 1em;
+  color: inherit;
 }
 .uservoice-btn {
   background: #99ab01;
@@ -537,8 +542,8 @@ a.ribbon {
   display: inline-block;
   left: -44px;
   opacity: 0.9;
-  filter: alpha(opacity=90);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+  filter: alpha(opacity=90);
   padding: 0.5em;
   position: fixed;
   text-align: center;
@@ -672,8 +677,10 @@ a.ribbon:hover {
   padding-bottom: 3.3em;
   position: relative;
 }
-.sorting {
+.commits-tab-header {
   border-bottom: 1px solid #d1cbb9;
+}
+.sorting {
   padding: 1.15em;
   text-align: center;
 }
@@ -756,13 +763,13 @@ a.ribbon:hover {
 }
 .commit-container.reviewed .author-box {
   opacity: 0.4;
-  filter: alpha(opacity=40);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+  filter: alpha(opacity=40);
 }
 .commit-container.reviewed .info-box {
   opacity: 0.4;
-  filter: alpha(opacity=40);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+  filter: alpha(opacity=40);
 }
 .commit-container.active {
   background: #fff;
@@ -828,8 +835,8 @@ a.ribbon:hover {
   font-weight: bold;
   margin-bottom: 0.4em;
   opacity: 0.75;
-  filter: alpha(opacity=75);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
+  filter: alpha(opacity=75);
   overflow: hidden;
   -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
@@ -918,8 +925,8 @@ a.ribbon:hover {
   margin: 0.77em;
   width: auto;
 }
-.diff-header .to-review.big.button,
-.diff-header .reviewed.big.button {
+.diff-header .reviewed.big.button,
+.diff-header .to-review.big.button {
   float: right;
   margin-top: 0;
   margin-bottom: 0.77em;
@@ -957,8 +964,8 @@ a.ribbon:hover {
   cursor: pointer;
   left: 0;
   opacity: 0;
-  filter: alpha(opacity=0);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
   position: absolute;
   top: 0.77em;
   width: 2.2em;
@@ -1055,8 +1062,8 @@ a.ribbon:hover {
 }
 .diff-file-container .diff-line-num i {
   opacity: 0;
-  filter: alpha(opacity=0);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
   position: absolute;
   left: 50%;
   margin-left: -0.5em;
@@ -1111,8 +1118,8 @@ a.ribbon:hover {
 }
 .diff-file-container tr.liked-by-others .like.button .diff-line-num-content {
   opacity: 0;
-  filter: alpha(opacity=0);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
 }
 .diff-file-container tr.liked-by-user .like.button {
   background: #f3720b;
@@ -1125,8 +1132,8 @@ a.ribbon:hover {
 }
 .diff-file-container tr.liked-by-user .like.button .diff-line-num-content {
   opacity: 0;
-  filter: alpha(opacity=0);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
 }
 tbody tr.comments-container:last-child {
   border-bottom: 1px solid #d1cbb9;
@@ -1145,8 +1152,8 @@ tr:hover .diff-line-num .button.comment:hover {
 }
 tr:hover .diff-line-num .button .diff-line-num-content {
   opacity: 0;
-  filter: alpha(opacity=0);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
 }
 tr:hover .diff-line-num .button i {
   opacity: 1;
