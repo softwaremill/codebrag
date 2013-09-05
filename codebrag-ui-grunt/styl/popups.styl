@@ -1,28 +1,30 @@
+// Stucture for pop-up
+// Popup should have additional class - ribbon, uservoice
+// Popup has popup-box inside
+// Popup-box has close-btn at top right corner
+// Popup-box shouldn't have any paddings
+// Give class popup-content to form or div inside of popup box to have a padding
+
 .popup-page
   background-color: rgba(0,0,0,0.7);
   bottom: 0;
-  display: none;
+  display: block;
   height: 100%;
   left: 0;
   position: absolute;
   right: 0;
+  text-align: center;
   top: 0;
   width: 100%;
   z-index: 1000;
-  &.opened
-    display: block;
+
   & .popup-box
     background-color: $body-bg-color;
-    left: 50%;
-    margin-left: -250px;
+    display: inline-block;
     max-width: 500px;
-    padding: 2.3em;
-    position: fixed;
-    top: 35%;
-    & h1
-      font-size: 1.17em;
-      margin-top: 0;
-      text-align: center;
+    position: relative;
+    top: 25%;
+
     & .close-btn
       background: $form-input-bg-color;
       color: $error-red-color;
@@ -35,48 +37,64 @@
       &:hover
         background: $error-red-color;
         color: white;
-    & a
-      color: $main-orange-color;
-      text-decoration: none;
-    & blockquote
-      background: $form-input-bg-color;
-      border-left: 0.38em solid $main-orange-color;
-      color: $second-body-text-color;
-      font-style: italic;
-      line-height: 1.4;
-      margin: 1.5em 0 0;
-      padding: 0.77em 1em 0.77em 2.3em;
-      & footer
-        font-style: normal;
-        margin-top: 0.5em;
+
+    & .popup-content
+      padding: 2.3em;
+
+      & h1
+        font-size: 1.17em;
+        margin-top: 0;
+        text-align: center;
+
+      & a
+        color: $main-orange-color;
+        text-decoration: none;
+
+      & blockquote
+        background: $form-input-bg-color;
+        border-left: 0.38em solid $main-orange-color;
+        color: $second-body-text-color;
+        font-style: italic;
+        line-height: 1.4;
+        margin: 1.5em 0 0;
+        padding: 0.77em 1em 0.77em 2.3em;
+        & footer
+          font-style: normal;
+          margin-top: 0.5em;
+
+      & label
+        margin-bottom: 0.38em;
+        text-align: left;
+
+      & input, textarea
+        border: 1px solid #ccc;
+        box-shadow: none;
+        min-width: 400px;
+        margin-bottom: 1.15em;
+        padding: 7px;
+        width: 100%;
+
+      & input
+        height: 32px;
+
+      & textarea
+        resize: vertical;
+        height: auto;
+
+      & .form-group span.text-error
+        bottom: -16px;
+
   &.uservoice
-    & .popup-box
-      width: 500px;
-      top: 20%;
     & .uv-success
       display: none;
       & p
         text-align: center;
       &.opened
         display: block;
+
     & .uv-error
       display: none;
       & p
         text-align: center;
       &.opened
         display: block;
-    & label
-      margin-bottom: 0.38em;
-    & input, textarea
-      width: 100%;
-      margin-bottom: 1.15em;
-      padding: 7px;
-      border: 1px solid #ccc;
-      box-shadow: none;
-    & input
-      height: 32px;
-    & textarea
-      resize: vertical;
-      height: auto;
-    & .form-group span.text-error
-      bottom: -16px;

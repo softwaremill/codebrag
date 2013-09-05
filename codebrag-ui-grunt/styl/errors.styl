@@ -1,3 +1,17 @@
+// error wich is shown at the top right corner
+.popup-error
+  background: $error-red-color;
+  color: $error-text-color;
+  padding: 0.77em 1.15em;
+  text-align: center;
+  display: inline-block;
+  position: fixed;
+  top: 0.77em;
+  right: 1.54em;
+  z-index: 1000;
+  & i
+    margin-right: 5px;
+
 .login-error
     background: #f3720b;
     color: #ffd8cf;
@@ -13,18 +27,7 @@
 .text-error
   color: $error-red-color;
 
-.popup-error
-  background: $error-red-color;
-  color: $error-text-color;
-  padding: 0.77em 1.15em;
-  text-align: center;
-  display: inline-block;
-  position: fixed;
-  top: 1.54em;
-  right: 1.54em;
-  z-index: 1000;
-  & i
-    margin-right: 5px;
+
 
 .spinner 
   display: none;

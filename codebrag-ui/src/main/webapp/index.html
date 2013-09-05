@@ -115,6 +115,39 @@
 </head>
 
 <body ng-app="codebrag">
+    <div class="send-invite popup-page">
+        <div class="popup-box">
+            <form class="popup-content">
+                <fieldset>
+                    <h1>Invite friends</h1>
+                    <p>Review the code together</p>
+                    <div class="form-group">
+                        <label for="invite-email">Email address</label>
+                        <input id="invite-email" type="email" ng-model="msg.email" name="email" required>
+                        <span class="text-error" ng-show="contactForm.email.$dirty && contactForm.email.$invalid">
+                            <i class="icon-remove"></i> Valid email address is required</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="invite-msg-body">You can change text body, but be careful with register link</label>
+                        <textarea id="invite-msg-body" rows="6" ng-model="msg.body" name="body" required></textarea>
+                        <span class="text-error" ng-show="contactForm.body.$dirty && contactForm.body.$invalid">
+                            <i class="icon-remove"></i> At least register link is required</span>
+                    </div>
+                    <div class="btn-centered-wrapper" ng-hide="failure">
+                        <button class="button centered" ng-click="submit()" ng-disabled="contactForm.$invalid">Invite</button>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <h1>Invite friends</h1>
+                    <p>Invitation has been sent!</p>
+                    <div class="btn-centered-wrapper" ng-hide="failure">
+                        <button class="button centered" ng-click="submit()" ng-disabled="contactForm.$invalid">Invite more friends</button>
+                    </div>
+                </fieldset>
+            </form>
+            <span class="close-btn" ng-click="close()"><i class="icon-remove"></i></span>
+        </div>
+    </div>
     <contact-form-popup></contact-form-popup>
     <header class="main-header" ng-controller="SessionCtrl">
         <div class="demo-nav" show-on-demo>
@@ -152,14 +185,16 @@
     <script type="text/ng-template" id="earlyVersionPopup">
         <div>
             <a class="ribbon">Early version</a>
-            <div class="popup-page opened" ng-show="isVisible">
+            <div class="ribbon popup-page" ng-show="isVisible">
                 <div class="popup-box">
-                    <h1>This is a very early version of Codebrag.</h1>
-                    <p>It may contain bugs and for sure it does not contain all the features<br>we would wish it had.</p>
-                    <p>We would love to hear your opinion on how it works.<br>Feel free to leave your feedback <a ng-click="openContactFormPopup()">here</a>.</p>
-                    <blockquote>If you are not ashamed of your product when you launch it,<br>you launched too late.
-                        <footer> — Reid Hoffman</footer>
-                    </blockquote>
+                    <div class="popup-content">
+                        <h1>This is a very early version of Codebrag.</h1>
+                        <p>It may contain bugs and for sure it does not contain all the features<br>we would wish it had.</p>
+                        <p>We would love to hear your opinion on how it works.<br>Feel free to leave your feedback <a ng-click="openContactFormPopup()">here</a>.</p>
+                        <blockquote>If you are not ashamed of your product when you launch it,<br>you launched too late.
+                            <footer> — Reid Hoffman</footer>
+                        </blockquote>
+                    </div>
                     <span class="close-btn" ng-click="close()"><i class="icon-remove"></i></span>
                 </div>
             </div>
@@ -233,50 +268,52 @@
     </script>
 
     <script type="text/ng-template" id="contactForm">
-        <div class="uservoice popup-page opened" id="uservoice-form-popup" ng-show="isVisible">
-            <form class="popup-box" name="contactForm" novalidate>
-                <fieldset class="uv-contact">
-                    <h1>Contact us</h1>
-                    <div class="form-group">
-                        <label for="uv-msg-subject">Message subject</label>
-                        <input id="uv-msg-subject" type="text" ng-model="msg.subject" name="subject" required>
-                    <span class="text-error" ng-show="contactForm.subject.$dirty && contactForm.subject.$invalid">
-                        <i class="icon-remove"></i>
-                        Subject is required</span>
-                    </div>
-                    <div class="form-group">
-                        <label for="uv-msg-body">How can we help you today?</label>
-                        <textarea id="uv-msg-body" rows="6" ng-model="msg.body" name="body" required></textarea>
-                    <span class="text-error" ng-show="contactForm.body.$dirty && contactForm.body.$invalid">
-                        <i class="icon-remove"></i>
-                        Meassage is required</span>
-                    </div>
-                    <div class="form-group">
-                        <label for="uv-email">Your email address</label>
-                        <input id="uv-email" type="email" ng-model="msg.email" name="email" required>
-                    <span class="text-error" ng-show="contactForm.email.$dirty && contactForm.email.$invalid">
-                        <i class="icon-remove"></i>
-                        Valid email address is required</span>
-                    </div>
-                    <div class="btn-centered-wrapper" ng-hide="failure">
-                        <button class="button centered" ng-click="submit()" ng-disabled="contactForm.$invalid">Send message</button>
-                    </div>
-                </fieldset>
-                <fieldset class="uv-success" ng-class="{opened: success}">
-                    <h1>Thanks!</h1>
-                    <p>We really appreciate your effort to make Codebrag better!</p>
-                </fieldset>
-                <fieldset class="uv-error" ng-class="{opened: failure}">
-                    <h1>Ooops!</h1>
-                    <p>Something went wrong... Do you want to try again?</p>
-                    <div class="btn-centered-wrapper">
-                        <button class="button centered" ng-click="submit()">Sure, let's try again</button>
-                    </div>
-                </fieldset>
-            <span class="close-btn" ng-click="close()">
-                <i class="icon-remove"></i>
-            </span>
-            </form>
+        <div class="uservoice popup-page" id="uservoice-form-popup" ng-show="isVisible">
+            <div class="popup-box">
+                <form class="popup-content" name="contactForm" novalidate>
+                    <fieldset class="uv-contact">
+                        <h1>Contact us</h1>
+                        <div class="form-group">
+                            <label for="uv-msg-subject">Message subject</label>
+                            <input id="uv-msg-subject" type="text" ng-model="msg.subject" name="subject" required>
+                        <span class="text-error" ng-show="contactForm.subject.$dirty && contactForm.subject.$invalid">
+                            <i class="icon-remove"></i>
+                            Subject is required</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="uv-msg-body">How can we help you today?</label>
+                            <textarea id="uv-msg-body" rows="6" ng-model="msg.body" name="body" required></textarea>
+                        <span class="text-error" ng-show="contactForm.body.$dirty && contactForm.body.$invalid">
+                            <i class="icon-remove"></i>
+                            Meassage is required</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="uv-email">Your email address</label>
+                            <input id="uv-email" type="email" ng-model="msg.email" name="email" required>
+                        <span class="text-error" ng-show="contactForm.email.$dirty && contactForm.email.$invalid">
+                            <i class="icon-remove"></i>
+                            Valid email address is required</span>
+                        </div>
+                        <div class="btn-centered-wrapper" ng-hide="failure">
+                            <button class="button centered" ng-click="submit()" ng-disabled="contactForm.$invalid">Send message</button>
+                        </div>
+                    </fieldset>
+                    <fieldset class="uv-success" ng-class="{opened: success}">
+                        <h1>Thanks!</h1>
+                        <p>We really appreciate your effort to make Codebrag better!</p>
+                    </fieldset>
+                    <fieldset class="uv-error" ng-class="{opened: failure}">
+                        <h1>Ooops!</h1>
+                        <p>Something went wrong... Do you want to try again?</p>
+                        <div class="btn-centered-wrapper">
+                            <button class="button centered" ng-click="submit()">Sure, let's try again</button>
+                        </div>
+                    </fieldset>
+                </form>
+                <span class="close-btn" ng-click="close()">
+                    <i class="icon-remove"></i>
+                </span>
+            </div>
         </div>
     </script>
 
