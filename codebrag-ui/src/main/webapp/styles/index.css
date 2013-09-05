@@ -500,6 +500,15 @@ form .form-group span.text-error:after {
   overflow: visible;
   position: relative;
 }
+
+.header-user-info .user-info-dropdown {
+    display: none;
+}
+
+.header-user-info:hover .user-info-dropdown {
+    display: block;
+}
+
 .header-user-info:hover .arrow-down {
   border-top-color: #f3720b;
 }
