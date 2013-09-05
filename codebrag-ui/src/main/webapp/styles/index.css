@@ -584,10 +584,13 @@ a.ribbon:hover {
 }
 .popup-page .popup-box {
   background-color: #f7f5ef;
+  border: 1px solid #fff;
+  -webkit-box-shadow: 0 0 7px 0 rgba(0,0,0,0.5);
+  box-shadow: 0 0 7px 0 rgba(0,0,0,0.5);
   display: inline-block;
   max-width: 500px;
   position: relative;
-  top: 25%;
+  top: 20%;
 }
 .popup-page .popup-box .close-btn {
   background: #f2ecd5;
