@@ -30,16 +30,6 @@ angular.module('codebrag.commits')
             $state.transitionTo('commits.details', {id: commitId});
         };
 
-        $scope.markAsReviewed = function(commitId) {
-            commitsListService.makeReviewedAndGetNext(commitId).then(function(next) {
-                if (next) {
-                    $state.transitionTo('commits.details', {id: next.id});
-                } else {
-                    $state.transitionTo('commits.list');
-                }
-            });
-        };
-
         $scope.allCommitsReviewed = function() {
             var emptyList = ($scope.commits && $scope.commits.length == 0);
             var noMoreCommitsOnServer = !commitsListService.hasNextCommits();

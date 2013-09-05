@@ -75,33 +75,4 @@ describe("Commits Controller", function () {
         expect(result).toBeTruthy();
     });
 
-    it('should mark commit as reviewed and go to next if exists', inject(function($state) {
-        // Given
-        var data = {id: '123'};
-        var nextCommit = $q.defer();
-        nextCommit.resolve(data);
-        spyOn(commitsListService, 'makeReviewedAndGetNext').andReturn(nextCommit.promise);
-        spyOn($state, 'transitionTo');
-
-        // When
-        var result = $scope.markAsReviewed();
-        $scope.$apply();
-
-        expect($state.transitionTo).toHaveBeenCalledWith('commits.details', data);
-    }));
-
-    it('should mark commit as reviewed and go to empty details screen if no next commit found', inject(function($state) {
-        // Given
-        var noNextCommit = $q.defer();
-        noNextCommit.resolve(undefined);
-        spyOn(commitsListService, 'makeReviewedAndGetNext').andReturn(noNextCommit.promise);
-        spyOn($state, 'transitionTo');
-
-        // When
-        var result = $scope.markAsReviewed();
-        $scope.$apply();
-
-        expect($state.transitionTo).toHaveBeenCalledWith('commits.list');
-    }));
-
 });
