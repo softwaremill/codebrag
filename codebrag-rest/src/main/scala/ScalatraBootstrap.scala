@@ -1,11 +1,13 @@
 import com.softwaremill.codebrag.dao.MongoInit
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.rest.debug.DebugServlet
+import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.{EventingConfiguration, Beans}
 import java.util.Locale
 import org.scalatra._
 import javax.servlet.ServletContext
+
 /**
  * This is the ScalatraBootstrap codebrag file. You can use it to mount servlets or
  * filters. It's also a good place to put initialization code which needs to

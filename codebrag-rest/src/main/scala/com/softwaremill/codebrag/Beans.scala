@@ -13,14 +13,14 @@ import com.softwaremill.codebrag.service.user._
 import pl.softwaremill.common.util.time.RealTimeClock
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
-import com.softwaremill.codebrag.service.config.{CodebragConfig, RepositoryConfig, GithubConfig}
+import com.softwaremill.codebrag.service.config.{EmailConfig, CodebragConfig, RepositoryConfig, GithubConfig}
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
 import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos{
 
-  lazy val config = new MongoConfig with RepositoryConfig with GithubConfig with CodebragConfig {
+  lazy val config = new MongoConfig with RepositoryConfig with GithubConfig with CodebragConfig with EmailConfig {
     def rootConfig = ConfigFactory.load()
   }
 

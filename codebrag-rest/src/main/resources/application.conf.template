@@ -67,3 +67,12 @@ web-server {
     host = "0.0.0.0"
     port = 8080
 }
+
+email {
+    smtp-host = "smtp.gmail.com"
+    smtp-port = "465"
+    smtp-username = "email@softwaremill.pl"
+    smtp-password = "password"
+    from = "email@softwaremill.pl"
+    encoding = "UTF-8"
+}
