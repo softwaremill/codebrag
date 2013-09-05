@@ -75,18 +75,27 @@ button.link:focus {
 button.big {
   padding: 1.15em 2.3em;
 }
-.button.big.reviewed,
-.button[disabled].big.reviewed,
-button.big.reviewed {
+.button.big.to-review,
+.button[disabled].big.to-review,
+button.big.to-review {
   background: #5abfa3;
   float: right;
   margin-right: 0;
   margin-top: 1.15em;
 }
-.button.big.reviewed:hover,
-.button[disabled].big.reviewed:hover,
-button.big.reviewed:hover {
+.button.big.to-review:hover,
+.button[disabled].big.to-review:hover,
+button.big.to-review:hover {
   background: #41a388;
+}
+.button.big.reviewed,
+.button[disabled].big.reviewed,
+button.big.reviewed {
+  background: #d1cdc2;
+  float: right;
+  margin-right: 0;
+  margin-top: 1.15em;
+  cursor: default;
 }
 .button:active,
 .button[disabled]:active,
@@ -909,6 +918,7 @@ a.ribbon:hover {
   margin: 0.77em;
   width: auto;
 }
+.diff-header .to-review.big.button,
 .diff-header .reviewed.big.button {
   float: right;
   margin-top: 0;
