@@ -25,25 +25,17 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
   }
 
 
-  it should "not contain a repository if root directory exists but there's no owner directory" in {
+  it should "not contain a repository if root directory exists but there's no repo directory" in {
     // given
     givenExistingRootDirectory()
     // when
     dirTree.containsRepo(new GitHubRepoData("someOwner", "someRepo", "refs/heads/master", "token")) should be(false)
   }
 
-  it should "not contain a repository if there's owner directory but no repository directory" in {
-    // given
-    givenExistingRootDirectory()
-    givenExistingRepository("softwaremill", "someOtherProject")
-    // when
-    dirTree.containsRepo(new GitHubRepoData("softwaremill", "codebrag", "refs/heads/master", "token")) should be(false)
-  }
-
   it should "contain a repository if its directory exists" in {
     // given
     givenExistingRootDirectory()
-    givenExistingRepository("softwaremill", "codebrag")
+    givenExistingRepository("codebrag")
     // when
     dirTree.containsRepo(new GitHubRepoData("softwaremill", "codebrag", "refs/heads/master", "token")) should be(true)
   }
@@ -56,7 +48,7 @@ class InternalGitDirTreeSpec extends FlatSpec with ShouldMatchers with BeforeAnd
     FileUtils.mkdirs(dirTree.root.toFile)
   }
 
-  def givenExistingRepository(owner: String, repository: String) {
-    FileUtils.mkdirs(dirTree.root.resolve(owner).resolve(repository).toFile)
+  def givenExistingRepository(repository: String) {
+    FileUtils.mkdirs(dirTree.root.resolve(repository).toFile)
   }
 }

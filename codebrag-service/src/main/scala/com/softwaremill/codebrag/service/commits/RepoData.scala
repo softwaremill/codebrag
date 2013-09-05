@@ -6,7 +6,7 @@ import org.eclipse.jgit.transport.{URIish, CredentialItem, UsernamePasswordCrede
 trait RepoData {
   def remoteUri: String
   def branch: String
-  def localPathRelativeTo(path: Path): Path
+  def localPathRelativeTo(path: Path): Path = path.resolve(repositoryName)
   def credentials: CredentialsProvider
   def credentialsValid: Boolean
   def repositoryName: String
@@ -14,21 +14,18 @@ trait RepoData {
 
 case class GitHubRepoData(repoOwner: String, repositoryName: String, branch: String, token: String) extends RepoData {
   def remoteUri = s"https://github.com/$repoOwner/$repositoryName.git"
-  def localPathRelativeTo(path: Path) = path.resolve(repoOwner).resolve(repositoryName)
   def credentials = new UsernamePasswordCredentialsProvider(token, "")
   def credentialsValid = token.nonEmpty
 }
 
 case class GitRepoData(repositoryName: String, uri: String, branch: String, username: String, password: String) extends RepoData {
   def remoteUri = uri
-  def localPathRelativeTo(path: Path) = path.resolve(repositoryName)
   def credentials = new UsernamePasswordCredentialsProvider(username, password)
   def credentialsValid = true
 }
 
 case class GitSshRepoData(repositoryName: String, uri: String, branch: String, passphrase: String) extends RepoData {
   def remoteUri = uri
-  def localPathRelativeTo(path: Path) = path.resolve(repositoryName)
   def credentials = new SshPassphraseCredentialsProvider(passphrase)
   def credentialsValid = true
 }
@@ -36,7 +33,6 @@ case class GitSshRepoData(repositoryName: String, uri: String, branch: String, p
 case class SvnRepoData(repositoryName: String, uri: String, username: String, password: String) extends RepoData {
   def branch = ""
   def remoteUri = uri
-  def localPathRelativeTo(path: Path) = path.resolve(repositoryName)
   def credentialsValid = true
   def credentials = null
 }
