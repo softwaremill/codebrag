@@ -4,6 +4,7 @@
 // Popup-box has close-btn at top right corner
 // Popup-box shouldn't have any paddings
 // Give class popup-content to form or div inside of popup box to have a padding
+// When form, wrap different states - initial, success, error - in filedsets 
 
 .popup-page
   background-color: rgba(0,0,0,0.7);
@@ -60,9 +61,13 @@
         line-height: 1.4;
         margin: 1.5em 0 0;
         padding: 0.77em 1em 0.77em 2.3em;
+        text-align: left;
         & footer
           font-style: normal;
           margin-top: 0.5em;
+
+      & fieldset
+        padding: 0;
 
       & label
         margin-bottom: 0.38em;

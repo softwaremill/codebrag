@@ -1,7 +1,6 @@
 // diff
 .diff
-  // height calculated in JS (same as commitsHeight)
-  height: 700px;
+  margin-top: -1px;
   padding: 0em 0.77em 2.3em 0;
   &.opened
     position: absolute;
@@ -13,20 +12,28 @@
       margin-left: 12px;
 
 .diff-header
-  padding-top: 0.77em;
-  padding-right: 0.77em
-  & .file-changer-label
+  padding: 0.19em 3em 0 2.3em;
+  & label[for="file-changer"]
+    background: $main-orange-color;
+    color: white;
+    display: inline-block;
     float: left;
-    margin: 0.77em
+    margin: 0.6em 0 0;
+    padding: 0.6em;
+    text-transform: uppercase;
   & .file-changer
+    background: #e7e0ce;
+    border: 1px solid #e7e0ce;
+    color: $second-body-text-color;
     float: left;
-    margin: 0.77em;
-    width: 300px;
-  & .reviewed.big.button, .to-review.big.button
-    float: right;
-    margin-top: 0;
-    margin-bottom: 0.77em;
-    vertical-align: top;
+    max-width: 20em;
+    margin: 0.6em 0 0;
+    padding: 0.38em;
+    & option
+      background: white;
+  & .reviewed.big.button, 
+  .to-review.big.button
+    margin: 0;
 
 .diff-wrapper
   height: 100%;
@@ -57,7 +64,7 @@
   left: 0;
   opacity: 0;
   position: absolute;
-  top: 0.77em;
+  top: 0;
   width: 2.2em;
   z-index: 5;
   transition: opacity 250ms, width 500ms, left 500ms;

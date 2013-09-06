@@ -9,9 +9,20 @@ button
   border-top: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow: none;
   font-weight: normal;
-  margin: 0 1.15em 0 0;
+  margin: 0 0.77em 0;
   padding: 0.66em 1.15em;
   text-transform: uppercase;
+  &:first-child
+    margin-left: 0;
+  &:last-child
+    margin-right: 0;
+  &:active
+    box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
+  &:focus
+    background: #a14700;
+    color: white;
+    outline: 0;
+
   &.secondary
     color: white;
     &:hover
@@ -19,10 +30,12 @@ button
     &:focus
       background: #998d68;
       color: white;
+
   &.kthxbye
     background: #41a388;
     &:hover
       background: #5abfa3;
+
   &.link
     background: transparent;
     color: $second-body-text-color;
@@ -36,6 +49,7 @@ button
     &:focus
       background: #e4dece;
       color: $second-body-text-color;
+
   &.big
     padding: 1.15em 2.3em;
     &.reviewed, &.to-review
@@ -49,12 +63,6 @@ button
       background: $green-button-bg-color;
       &:hover
         background: $green-button-bg-hover;
-  &:active
-    box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
-  &:focus
-    background: #a14700;
-    color: white;
-    outline: 0;
 
 .button-group
   padding-left: 0;
@@ -72,32 +80,6 @@ table tr td
   color: $body-text-color;
   padding: 0.23em 0.77em;
 
-input[type="text"],
-input[type="password"],
-input[type="date"],
-input[type="datetime"],
-input[type="datetime-local"],
-input[type="month"],
-input[type="week"],
-input[type="email"],
-input[type="number"],
-input[type="search"],
-input[type="tel"],
-input[type="time"],
-input[type="url"],
-label,
-textarea,
-select
-  font-size: 1em;
-  margin-bottom: 1.15em;
-
-input[type="checkbox"]
-  margin-bottom: 0;
-
-label
-  color: $second-body-text-color;
-
-
 // general styles
 html,
 body
@@ -105,6 +87,7 @@ body
 
 body
   background: $body-bg-color;
+  color: $body-text-color;
   font-family: 'PT Sans', Tahoma, sans-serif;
   line-height: 1.2;
   overflow: hidden;

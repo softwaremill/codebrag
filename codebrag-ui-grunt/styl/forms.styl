@@ -1,3 +1,32 @@
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="time"],
+input[type="url"],
+label,
+textarea,
+select
+  font-size: 1em;
+  margin-bottom: 1.15em;
+
+select:focus
+  border: 1px solid $main-orange-color;
+  box-shadow: 0 0 5px rgba(243, 114, 11, 0.7);
+
+input[type="checkbox"]
+  margin-bottom: 0;
+
+label
+  color: $second-body-text-color;
+
 form
   margin: 0;
   padding: 0;
@@ -75,7 +104,8 @@ form
   & .checkbox
     margin-bottom: 2.3em;
 
-.button,
-button
-  &:last-child
-    margin-right: 0;
+.demo-login-info
+  background: #f2ecd5;
+  color: #a27d69;
+  padding: 0.77em 1.15em;
+  text-align: center;
