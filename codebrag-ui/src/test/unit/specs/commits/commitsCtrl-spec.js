@@ -6,19 +6,21 @@ describe("Commits Controller", function () {
 
     var $scope,
         $q,
-        commitsListService;
+        commitsListService,
+        $stateParams;
 
     beforeEach(module('codebrag.commits'));
 
-    beforeEach(inject(function($rootScope, _$q_, $controller, _commitsListService_) {
+    beforeEach(inject(function($rootScope, _$q_, $controller, _commitsListService_, _$stateParams_) {
         $scope = $rootScope.$new();
         $q = _$q_;
         commitsListService = _commitsListService_;
+        $stateParams = _$stateParams_;
     }));
 
     beforeEach(inject(function($controller) {
         spyOn(commitsListService, 'loadCommitsToReview').andReturn($q.defer().promise);
-        $controller('CommitsCtrl', {$scope: $scope, commitsListService: commitsListService});
+        $controller('CommitsCtrl', {$scope: $scope, commitsListService: commitsListService, $stateParams: $stateParams});
     }));
 
     it('should have initial list mode set to pending', function() {
@@ -52,6 +54,32 @@ describe("Commits Controller", function () {
 
         //Then
         expect($scope.commits).toBe(pendingCommits);
+    });
+
+    it('should load newest commits in all mode when no commit is selected', function() {
+        // given
+        $stateParams.id = null;
+        spyOn(commitsListService, 'loadNewestCommits');
+
+        // when
+        $scope.listViewMode = 'all';
+        $scope.switchListView();
+
+        // then
+        expect(commitsListService.loadNewestCommits).toHaveBeenCalled();
+    });
+
+    it('should load commits in all context when commit is selected', function() {
+        // given
+        $stateParams.id = '123';
+        spyOn(commitsListService, 'loadCommitsInContext');
+
+        // when
+        $scope.listViewMode = 'all';
+        $scope.switchListView();
+
+        // then
+        expect(commitsListService.loadCommitsInContext).toHaveBeenCalled();
     });
 
     it('should indicate when all commits were reviewed', function() {

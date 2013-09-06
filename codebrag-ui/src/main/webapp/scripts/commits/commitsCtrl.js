@@ -42,7 +42,7 @@ angular.module('codebrag.commits')
             if($stateParams.id) {
                 $scope.commits = commitsListService.loadCommitsInContext($stateParams.id);
             } else {
-                $scope.commits = commitsListService.loadCommitsInContext();
+                $scope.commits = commitsListService.loadNewestCommits();
             }
         }
 

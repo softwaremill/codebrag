@@ -73,6 +73,18 @@ angular.module('codebrag.commits')
                 return result;            }
         };
 
+        this.loadNewestCommits = function() {
+            commitsListLoadFilter.setAll();
+            var options = {limit: pageLimit};
+            return Commits.queryWithSurroundings(options).$then(function(response) {
+                commits.replaceWith(response.data.commits);
+                updatePreviousCommitsAvailability(response.data.commits.length);
+                updateNextCommitsAvailability(0);
+                updatePendingCommitsCounter(response.data.totalCount);
+                return commits;
+            });
+        };
+
         this.loadCommitDetails = function(commitId) {
             var options = {
                 commitId: commitId

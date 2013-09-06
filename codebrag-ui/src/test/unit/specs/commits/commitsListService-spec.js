@@ -209,6 +209,19 @@ describe("CommitsListService", function () {
         $httpBackend.flush();
     });
 
+    it('should load newest commits and mark only previous commits are available', function() {
+        // given
+        var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 30);
+        $httpBackend.expectGET('rest/commits?context=true&limit=7').respond(commitsResponse);
+
+        // when
+        commitsListService.loadNewestCommits().then(function(list) {
+            expect(commitsListService.hasNextCommits()).toBe(false);
+            expect(commitsListService.hasPreviousCommits()).toBe(true);
+        });
+        $httpBackend.flush();
+    });
+
     function buildCommitsResponse(commitsIds, totalCount) {
         var commits = commitsIds.map(function(id) {
             return {id: id, msg: 'Commit ' + id, pendingReview: true};
