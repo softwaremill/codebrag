@@ -53,11 +53,12 @@ angular.module('codebrag.commits')
 
         function collectScrollTargets(rootContainer) {
             var scrollTargets = [];
+            var pixelsAlreadyScrolled = rootContainer.scrollTop();
             rootContainer.find(scrollTargetSelector).each(function () {
                 var $el = $(this);
                 var targetData = {
                     filename: $el.data('file-name'),
-                    offset: $el.offset().top
+                    offset: $el.offset().top + pixelsAlreadyScrolled
                 };
                 scrollTargets.push(targetData);
             });
@@ -82,6 +83,11 @@ angular.module('codebrag.commits')
                     scrollTargets = scrollTargets || collectScrollTargets(scrollableContainer);
                     var targetOffset = findTargetOffset(data.filename);
                     scrollableContainer.animate({scrollTop: targetOffset - containerOffset});
+                });
+
+                scope.$on(events.diffDOMHeightChanged, function() {
+                    // invalidate cached offsets, let them to be recalculated when user scrolls or changes file in dropdown
+                    scrollTargets = null;
                 });
 
                 function findTargetOffset(target) {

@@ -78,7 +78,7 @@ angular.module('codebrag.commits')
         }
     })
 
-    .directive('lineCommentForm', function($compile, events, $templateCache) {
+    .directive('lineCommentForm', function($compile, events, $templateCache, $rootScope) {
 
         var inlineCommentFormTemplate = $templateCache.get('inlineCommentForm');
 
@@ -139,11 +139,13 @@ angular.module('codebrag.commits')
                     var commentFormScope = scope.$new();
                     commentFormScope.commentParams = commentForm.commentParams();
                     $compile(createdElement)(commentFormScope);
+                    $rootScope.$broadcast(events.diffDOMHeightChanged);
                     commentFormScope.$apply();
                     commentFormScope.$on(events.closeForm, function() {
                         commentForm.destroy(function destroyScope() {
                             commentFormScope.$destroy();
                         });
+                        $rootScope.$broadcast(events.diffDOMHeightChanged);
                     });
                 });
             });
@@ -156,7 +158,7 @@ angular.module('codebrag.commits')
     })
 
 
-    .directive('lineReactions', function($compile, $templateCache, authService) {
+    .directive('lineReactions', function($compile, $templateCache, authService, events, $rootScope) {
 
         var lineReactionsTemplate = $templateCache.get('lineReactions');
 
@@ -222,6 +224,7 @@ angular.module('codebrag.commits')
                     var newScope = scope.$new();
                     newScope.lineReactions = lineReactions;
                     $compile(line.find(lineReactionsSelector))(newScope);
+                    $rootScope.$broadcast(events.diffDOMHeightChanged);
                 });
             }, true);
         }
@@ -233,7 +236,7 @@ angular.module('codebrag.commits')
 
     })
 
-    .directive('lineLike', function() {
+    .directive('lineLike', function($rootScope, events) {
 
         var fileDiffRootSelector = 'table';
         var lineDiffRootSelector = 'tbody';
@@ -268,6 +271,8 @@ angular.module('codebrag.commits')
                             });
                         });
                     }
+                    $rootScope.$broadcast(events.diffDOMHeightChanged);
+                    scope.$apply();
                 });
             }
         }

@@ -15,5 +15,6 @@ angular.module('codebrag.events', []).constant('events', {
     previousCommitsLoaded: 'codebrag:previousCommitsLoaded',
 
     diffScrolledWithFileChange: 'codebrag:diffScrolledWithFileChange',
-    diffFileSelected: 'codebrag:diffFileSelected'
+    diffFileSelected: 'codebrag:diffFileSelected',
+    diffDOMHeightChanged: 'codebrag:diffDOMHeightChanged'
 });
