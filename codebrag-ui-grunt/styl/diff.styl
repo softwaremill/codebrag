@@ -95,6 +95,7 @@
   font-family: Consolas, "Liberation Mono", Courier, monospace;
   margin: 0;
   width: 100%;
+
   & thead
     background: $body-bg-color;
     border-bottom: 1px solid $main-border-color;
@@ -104,11 +105,14 @@
       font-weight: normal;
       padding: 0.77em 1.15em;
       text-align: left;
+
   & tbody
     font-size: 13px;
+
   & .diff-line-code
     white-space: pre;
     cursor: pointer;
+
   & .diff-line-num
     border-right: 1px solid #d6d6d6;
     line-height: 1.125em;
@@ -118,6 +122,7 @@
     padding: 0;
     text-align: right;
     width: 50px;
+
     & .button
       background: transparent;
       border: none;
@@ -129,6 +134,7 @@
       width: 100%;
       &.comment
         background: transparent;
+
     & .diff-line-num-content
       color: #aaaaaa;
       display: inline-block;
@@ -139,6 +145,7 @@
       & span
         display: inline-block;
         min-height: 14px;
+
     & i
       opacity: 0;
       position: absolute;
@@ -146,6 +153,7 @@
       margin-left: -0.5em;
       top: 50%;
       margin-top: -0.5em;
+
   & tr.removed
     background: #ffdddd;
     & .diff-line-num
@@ -153,6 +161,7 @@
       border-color: #e9aeae;
     & .diff-line-num-content
       color: #bd8f8f;
+
   & tr.added
     background: #d4f7c1;
     & .diff-line-num
@@ -160,12 +169,14 @@
       border-color: #b0cfa3;
     & .diff-line-num-content
       color: #95a88d;
+
   & tr.header
     background: #efefef;
     & .diff-line-num
       background: #ededed;
       border-color: #cdcdcd;
       color: #ababab;
+      
   & tr.comments-container
     background: $body-bg-color;
     border-left: none;
@@ -175,22 +186,22 @@
       padding: 1.15em 1.15em 0;
 
 .diff-file-container tr.liked-by-others
-    & .like.button
-      background: #f3720b;
-      & .icon-heart
-        color: rgb(255, 255, 255);
-        opacity: 1;
-      & .diff-line-num-content
-        opacity: 0;
+  & .like.button
+    background: #f3720b;
+    & .icon-heart
+      color: rgb(255, 255, 255);
+      opacity: 1;
+    & .diff-line-num-content
+      opacity: 0;
 
 .diff-file-container tr.liked-by-user
-    & .like.button
-      background: #f3720b;
-      & .icon-heart
-        color: rgb(185, 80, 21);
-        opacity: 1;
-      & .diff-line-num-content
-        opacity: 0;
+  & .like.button
+    background: #f3720b;
+    & .icon-heart
+      color: rgb(185, 80, 21);
+      opacity: 1;
+    & .diff-line-num-content
+      opacity: 0;
 
 tbody tr.comments-container:last-child
   border-bottom: 1px solid $main-border-color;

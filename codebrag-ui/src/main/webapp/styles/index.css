@@ -306,6 +306,15 @@ i {
   display: none;
   float: right;
 }
+.comments-container .comment.write .comment-action-btns li {
+  margin: 0 0.77em;
+}
+.comments-container .comment.write .comment-action-btns li:first-child {
+  margin-left: 0;
+}
+.comments-container .comment.write .comment-action-btns li:last-child {
+  margin-right: 0;
+}
 .comments-container .comment.write.active {
   overflow-y: hidden;
   position: relative;
@@ -707,7 +716,7 @@ a.ribbon:hover {
 }
 .sorting {
   border-bottom: 1px solid #d1cbb9;
-  padding: 0.77em;
+  padding: 0.77em 0;
   position: relative;
   text-align: center;
   z-index: 3;
@@ -756,7 +765,7 @@ a.ribbon:hover {
 }
 .commit-container {
   border-top: 1px solid #d1cbb9;
-  padding: 1.15em 2.3em 1.15em 0.77em;
+  padding: 1.15em 2.3em 0.77em 0.77em;
   position: relative;
   width: 100%;
 }
