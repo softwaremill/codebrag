@@ -25,23 +25,27 @@ angular.module('codebrag', [
     'codebrag.notifications']);
 
 angular.module('codebrag')
-    .config(function($provide) {
-        $provide.decorator('$http', function($delegate, $q) {
+    .config(function ($provide) {
+        $provide.decorator('$http', function ($delegate, $q) {
             return codebrag.uniqueRequestsAwareHttpService($delegate, $q);
         });
     })
-    .run(function(authService) {
-        authService.requestCurrentUser();
+    .run(function (authService) {
+        authService.isFirstRegistration().then(function (firstRegistration) {
+            if (firstRegistration === false) {
+                authService.requestCurrentUser();
+            }
+        });
     });
 
 angular.module('codebrag.auth')
-    .config(function($httpProvider) {
+    .config(function ($httpProvider) {
         $httpProvider.responseInterceptors.push('httpAuthInterceptor');
         $httpProvider.responseInterceptors.push('httpErrorsInterceptor');
     });
 
 angular.module('codebrag.session')
-    .config(function($stateProvider, $urlRouterProvider, authenticatedUser) {
+    .config(function ($stateProvider, $urlRouterProvider, authenticatedUser) {
         $urlRouterProvider.when('', '/');
         $stateProvider
             .state('home', {
@@ -49,7 +53,7 @@ angular.module('codebrag.session')
                 templateUrl: 'views/main.html'
             })
             .state('register', {
-                url: '/register',
+                url: '/register/{invitationId}',
                 templateUrl: 'views/register.html',
                 noLogin: true
             })
@@ -66,7 +70,7 @@ angular.module('codebrag.session')
     });
 
 angular.module('codebrag.commits')
-    .config(function($stateProvider, authenticatedUser) {
+    .config(function ($stateProvider, authenticatedUser) {
         $stateProvider
             .state('commits', {
                 url: '/commits',
@@ -85,7 +89,7 @@ angular.module('codebrag.commits')
     });
 
 angular.module('codebrag.followups')
-    .config(function($stateProvider, authenticatedUser) {
+    .config(function ($stateProvider, authenticatedUser) {
         $stateProvider
             .state('followups', {
                 url: '/followups',

@@ -1,7 +1,6 @@
 import com.softwaremill.codebrag.dao.MongoInit
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.rest.debug.DebugServlet
-import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.{EventingConfiguration, Beans}
 import java.util.Locale
@@ -32,6 +31,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new RefreshRepoDataServlet(repoDataProducer, repositoryUpdateActor), RefreshRepoDataServlet.MappingPath)
     context.mount(new VersionServlet, Prefix + "version")
     context.mount(new ConfigServlet(config), Prefix + "config")
+    context.mount(new InvitationServlet(authenticator, invitationsService), Prefix + "invitation")
 
     context.put("codebrag", this)
   }

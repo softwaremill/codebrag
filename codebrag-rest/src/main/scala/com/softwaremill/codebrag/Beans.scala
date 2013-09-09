@@ -17,8 +17,10 @@ import com.softwaremill.codebrag.service.config.{EmailConfig, CodebragConfig, Re
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
 import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
+import com.softwaremill.codebrag.service.invitations.InvitationService
+import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
 
-trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos{
+trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 
   lazy val config = new MongoConfig with RepositoryConfig with GithubConfig with CodebragConfig with EmailConfig {
     def rootConfig = ConfigFactory.load()
@@ -34,20 +36,23 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
   lazy val likeValidator = new LikeValidator(commitInfoDao, likeDao, userDao)
   lazy val userReactionService = new UserReactionService(commentDao, likeDao, likeValidator, eventBus)
   lazy val repoHeadStore = new MongoRepositoryHeadStore
+  lazy val emailService = new EmailService(config)
+  lazy val emailScheduler = new EmailScheduler(actorSystem, EmailScheduler.createActor(actorSystem, emailService))
+  lazy val invitationsService = new InvitationService(invitationDao, userDao, emailService)
 
 
   lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {
-      val userDao = self.userDao
-      val commitInfoDao = self.commitInfoDao
-      val commitToReviewDao = self.commitReviewTaskDao
-    }
+    val userDao = self.userDao
+    val commitInfoDao = self.commitInfoDao
+    val commitToReviewDao = self.commitReviewTaskDao
+  }
 
   lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus, reviewTaskGenerator)
   lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
   lazy val commentActivity = new AddCommentActivity(userReactionService, followupService)
 
   lazy val newUserAdder = new NewUserAdder(userDao, eventBus, reviewTaskGenerator)
-  lazy val registerService = new RegisterService(userDao, newUserAdder)
+  lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService)
 
   lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder, new DiffService(commitInfoDao))
 
@@ -65,6 +70,8 @@ trait Daos {
   lazy val commentDao = new MongoCommitCommentDAO
 
   lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
+
+  lazy val invitationDao = new MongoInvitationDAO
 
 }
 

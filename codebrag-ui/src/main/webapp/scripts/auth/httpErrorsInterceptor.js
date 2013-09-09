@@ -6,12 +6,16 @@ angular.module("codebrag.auth")
             return response;
         }
 
+        function shouldBeIntercepted(response) {
+            return response.status !== 401 && response.status !== 403 && angular.isUndefined(response.config.bypassInterceptors);
+        }
+
         function error(response) {
             var errorMessage = {
                 status: response.status,
                 text: "Something is seriously wrong, officer."
-            }
-            if (response.status !== 401 && response.status !== 403) {
+            };
+            if (shouldBeIntercepted(response)) {
                 $rootScope.$broadcast(events.httpError, errorMessage);
             }
             return $q.reject(response);

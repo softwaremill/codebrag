@@ -6,8 +6,12 @@ angular.module("codebrag.auth")
             return response;
         }
 
+        function shouldBeIntercepted(response) {
+            return response.status === 401 && angular.isUndefined(response.config.bypassInterceptors);
+        }
+
         function error(response) {
-            if (response.status === 401 && angular.isUndefined(response.config.bypassQueue)) {
+            if (shouldBeIntercepted(response)) {
                 var deferred = $q.defer();
                 httpRequestsBuffer.append(response.config, deferred);
                 $rootScope.$broadcast(events.loginRequired);

@@ -31,14 +31,24 @@ class UsersServlet(val authenticator: Authenticator, registerService: RegisterSe
   }
 
   post("/register", operation(registerOperation)) {
-    registerService.register(login, email, password) match {
+    registerService.register(login, email, password, invitationCode) match {
       case Left(error) => halt(403, error)
       case Right(()) => true
     }
   }
 
+  get("/first-registration") {
+    {
+      Map("firstRegistration" -> registerService.firstRegistration)
+    }
+  }
+
   override def login: String = {
     (parsedBody \ "login").extractOpt[String].getOrElse("")
+  }
+
+  def invitationCode: String = {
+    (parsedBody \ "invitationCode").extractOpt[String].getOrElse("")
   }
 
   override def password: String = {

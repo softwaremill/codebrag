@@ -46,6 +46,10 @@ angular.module('codebrag.session')
             $rootScope.$broadcast('openContactFormPopup');
         };
 
+        $scope.openInviteFormPopup = function () {
+            $rootScope.$broadcast('openInviteFormPopup');
+        };
+
         function clearPasswordField() {
             $scope.loginForm.password.$dirty = false;
             $scope.user.password = '';
