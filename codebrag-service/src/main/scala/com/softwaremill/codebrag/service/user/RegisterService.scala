@@ -10,19 +10,18 @@ class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationSe
 
   def firstRegistration: Boolean = {
     userDao.findAll() match {
-      case Nil => true
+      case x if x.isEmpty => true
       case _ => false
     }
-
-
   }
 
   def register(login: String, email: String, password: String, invitationCode: String): Either[String, Unit] = {
     logger.info(s"Trying to register $login")
     val emailLowerCase = email.toLowerCase
-    userDao.findAll() match {
-      case Nil => registerUser(login, emailLowerCase, password)
-      case _ => registerUserWithInvitation(login, emailLowerCase, password, invitationCode)
+    if (firstRegistration) {
+      registerUser(login, emailLowerCase, password)
+    } else {
+      registerUserWithInvitation(login, emailLowerCase, password, invitationCode)
     }
   }
 
@@ -33,7 +32,7 @@ class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationSe
       _ <- leftIfSome(userDao.findByLowerCasedLogin(login), "User with the given login already exists").right
       _ <- leftIfSome(userDao.findByEmail(emailLowerCase), "User with the given email already exists").right
     } yield {
-      registerUser(login,emailLowerCase,password)
+      registerUser(login, emailLowerCase, password)
       invitationService.expire(invitationCode)
     }
   }
