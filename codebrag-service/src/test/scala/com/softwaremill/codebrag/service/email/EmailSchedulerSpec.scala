@@ -12,47 +12,58 @@ class EmailSchedulerSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
 
   implicit val system = ActorSystem("testsystem")
 
+  override def afterAll {
+    system.shutdown()
+  }
+
   val delay: FiniteDuration = 5.seconds
   val overhead: Int = 500
 
   val memo = system.actorOf(Props[MemoActor])
   val scheduler: EmailScheduler = new EmailScheduler(system, memo)
 
-  val email: Email = new Email("test@test.pl","subject", "content")
+  val email: Email = new Email("test@test.pl", "subject", "content")
 
   it should " schedule and send message to actor instantly" in {
     import EmailSchedulerSpec._
     //given
+    message = None
 
     //when
     scheduler.scheduleInstant(email)
     Thread.sleep(overhead)
 
     //then
-    message should be(SendEmail(email, scheduler))
+    message should be(Some(SendEmail(email, scheduler)))
 
   }
 
   it should s" reschedule and send message to actor (in $delay)" in {
     import EmailSchedulerSpec._
     //given
+    message = None
     val scheduler: EmailScheduler = new EmailScheduler(system, memo)
 
     //when
     scheduler.schedule(email, delay)
-    Thread.sleep(delay.toMillis + overhead)
 
     //then
-    message should be(SendEmail(email, scheduler))
+    message should be(None)
+    Thread.sleep(delay.toMillis/2 + overhead)
+    message should be(None)
+    Thread.sleep(delay.toMillis/2 + overhead)
+
+    message should be(Some(SendEmail(email, scheduler)))
   }
+
 }
 
 object EmailSchedulerSpec {
-  var message: SendEmail = _
+  var message: Option[SendEmail] = None
 
   class MemoActor extends Actor {
     def receive = {
-      case y: SendEmail ⇒ message = y
+      case y: SendEmail ⇒ message = Some(y)
     }
   }
 

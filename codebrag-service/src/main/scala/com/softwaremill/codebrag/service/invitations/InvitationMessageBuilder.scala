@@ -10,7 +10,7 @@ object InvitationMessageBuilder {
    s"Use this link to register:\n$url"
   }
 
-  def buildSubjest(userName:String):String = {
+  def buildSubject(userName:String):String = {
     s"You have been invited to use codebrag by $userName";
   }
 

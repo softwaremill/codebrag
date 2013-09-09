@@ -137,8 +137,13 @@
                 <logged-in-user-avatar></logged-in-user-avatar>
                 <span class="arrow-down"></span>
                 <ul class="user-info-dropdown">
+<<<<<<< HEAD
                     <li><span class="username"><strong>Signed in as {{loggedInUser().fullName}}</strong></span></li>
                     <li><span><a>Invite friends</a></span></li>
+=======
+                    <li><span class="username">Signed in as {{loggedInUser().fullName}}</span></li>
+                    <li><span class="invite"><a ng-click="openInviteFormPopup()">Invite friends</a></span></li>
+>>>>>>> e54b254d5cccf9c40570612637be26cf2cd38e8b
                     <li><span class="logout"><a ng-click="logout()">Logout</a></span></li>
                 </ul>
                 <!--<div class="user-info" ng-show="isLogged()"><span class="logout"><a ng-click="logout()">Logout</a></span></div>
@@ -328,7 +333,7 @@
                         <p>An invitation has been sent!</p>
 
                         <div class="btn-centered-wrapper">
-                            <button class="button centered" ng-click="more()">Invite more friends</button>
+                            <button class="button centered" ng-click="inviteMore()">Invite more friends</button>
                             <button class="button centered" ng-click="close()">Close</button>
                         </div>
                     </fieldset>

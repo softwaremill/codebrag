@@ -24,7 +24,7 @@ angular.module('codebrag.common.directives').directive('inviteFormPopup', functi
             createInvitation();
         });
 
-        $scope.more = function () {
+        $scope.inviteMore = function () {
             $scope.invite = true;
             $scope.success = false;
             $scope.invitation.email = "";

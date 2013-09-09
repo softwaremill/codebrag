@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.service.templates.EmailContentWithSubject
 import pl.softwaremill.common.sqs.email.EmailSender
 import pl.softwaremill.common.sqs.util.EmailDescription
 
-class EmailService(val config: EmailConfig) {
+class EmailService(config: EmailConfig) {
 
   def send(email:Email) = {
     try {

@@ -6,6 +6,7 @@ trait CodebragConfig extends ConfigWithDefault {
   lazy val debugServicesLogin: String = rootConfig.getString("codebrag.debug-services-login")
   lazy val debugServicesPassword: String = rootConfig.getString("codebrag.debug-services-password")
   lazy val demo: Boolean = getBoolean("codebrag.demo", default = false)
+  lazy val applicationUrl: String = rootConfig.getString("codebrag.applicationUrl")
 }
 
 

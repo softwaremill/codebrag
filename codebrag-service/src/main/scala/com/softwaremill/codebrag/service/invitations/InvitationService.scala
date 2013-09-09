@@ -5,8 +5,11 @@ import com.softwaremill.codebrag.common.Utils
 import com.softwaremill.codebrag.domain.{User, Invitation}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.email.{EmailService, Email}
+import com.softwaremill.codebrag.service.config.CodebragConfig
 
-class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailService: EmailService) {
+class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailService: EmailService, config: CodebragConfig, uniqueHashGenerator: UniqueHashGenerator) {
+
+  val registrationUrl = buildRegistrationUrl()
 
   def sendInvitation(emailAddress: String, message: String, invitationSenderId: ObjectId) {
     val option: Option[User] = userDAO.findById(invitationSenderId)
@@ -18,12 +21,12 @@ class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailSer
     }
   }
 
-  def createInvitation(invitationSenderId: ObjectId, url: String): String = {
+  def createInvitation(invitationSenderId: ObjectId): String = {
     userDAO.findById(invitationSenderId) match {
       case Some(user) => {
-        val hash: String = calculateHashForInvitation(new ObjectId().toString)
-        saveToDb(hash, invitationSenderId)
-        InvitationMessageBuilder.buildMessage(user, url + hash)
+        val invitationCode: String = uniqueHashGenerator.generateUniqueHashCode()
+        saveToDb(invitationCode, invitationSenderId)
+        InvitationMessageBuilder.buildMessage(user, registrationUrl.urlForCode(invitationCode))
       }
       case None => throw new IllegalStateException
     }
@@ -37,25 +40,42 @@ class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailSer
   }
 
   def expire(code: String) {
-    invitationDAO.findByCode(code) match {
-      case Some(inv) => {
-        invitationDAO.removeByCode(code)
-      }
-      case None => throw new IllegalStateException
-    }
+    invitationDAO.removeByCode(code)
   }
 
 
-  def sendEmail(address: String, message: String, userName: String) {
-    emailService.send(Email(address, InvitationMessageBuilder.buildSubjest(userName), message))
+  private def sendEmail(address: String, message: String, userName: String) {
+    emailService.send(Email(address, InvitationMessageBuilder.buildSubject(userName), message))
   }
 
-  def saveToDb(hash: String, invitationSenderId: ObjectId) {
+  private def saveToDb(hash: String, invitationSenderId: ObjectId) {
     invitationDAO.save(Invitation(hash, invitationSenderId))
   }
 
-  private def calculateHashForInvitation(s: String) = {
-    Utils.sha1(s + System.currentTimeMillis())
+  private def buildRegistrationUrl(): RegistrationUrl = {
+    val url = new StringBuilder(config.applicationUrl)
+    if (!url.endsWith("/")) {
+      url.append("/")
+    }
+    url.append("#/register/{invitationCode}")
+    new RegistrationUrl(url.toString())
   }
 
+  class RegistrationUrl(url: String) {
+    def urlForCode(invitationCode: String): String = {
+      url.replace("{invitationCode}", invitationCode)
+    }
+  }
 }
+
+trait UniqueHashGenerator {
+  def generateUniqueHashCode(): String
+}
+
+object DefaultUniqueHashGenerator extends UniqueHashGenerator {
+  override def generateUniqueHashCode(): String = {
+    //TODO make sure that's the best way to generate unique hash
+    Utils.sha1(new ObjectId().toString + System.currentTimeMillis())
+  }
+}
+

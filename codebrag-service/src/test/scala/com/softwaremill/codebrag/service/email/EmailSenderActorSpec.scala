@@ -1,18 +1,23 @@
 package com.softwaremill.codebrag.service.email
 
-import org.scalatest.FlatSpec
+import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.service.config.EmailConfig
 import com.softwaremill.codebrag.service.email.EmailSenderActor.SendEmail
 import akka.actor.{Actor, ActorSystem}
-import akka.testkit.TestActorRef
+import akka.testkit.{TestKit, TestActorRef}
 import org.scalatest.matchers.ShouldMatchers
 import org.mockito.Mockito._
 
-class EmailSenderActorSpec extends FlatSpec with ShouldMatchers with MockitoSugar {
+class EmailSenderActorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfterAll {
 
   val mockConfig = mock[EmailConfig]
   implicit val system = ActorSystem("testsystem")
+
+  override def afterAll {
+    system.shutdown()
+  }
+
 
   val email: Email = new Email("address@email.com","subject", "content")
 
