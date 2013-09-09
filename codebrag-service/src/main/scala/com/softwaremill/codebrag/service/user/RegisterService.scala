@@ -19,9 +19,10 @@ class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationSe
 
   def register(login: String, email: String, password: String, invitationCode: String): Either[String, Unit] = {
     logger.info(s"Trying to register $login")
+    val emailLowerCase = email.toLowerCase
     userDao.findAll() match {
-      case Nil => registerUser(login, email, password)
-      case _ => registerUserWithInvitation(login, email, password, invitationCode)
+      case Nil => registerUser(login, emailLowerCase, password)
+      case _ => registerUserWithInvitation(login, emailLowerCase, password, invitationCode)
     }
   }
 
@@ -32,16 +33,12 @@ class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationSe
       _ <- leftIfSome(userDao.findByLowerCasedLogin(login), "User with the given login already exists").right
       _ <- leftIfSome(userDao.findByEmail(emailLowerCase), "User with the given email already exists").right
     } yield {
-      val user = User(Authentication.basic(login, password), login, emailLowerCase,
-        UUID.randomUUID().toString, User.defaultAvatarUrl(emailLowerCase))
-
-      newUserAdder.add(user)
+      registerUser(login,emailLowerCase,password)
       invitationService.expire(invitationCode)
     }
   }
 
-  private def registerUser(login: String, email: String, password: String): Either[String, Unit] = {
-    val emailLowerCase = email.toLowerCase
+  private def registerUser(login: String, emailLowerCase: String, password: String): Either[String, Unit] = {
     val user = User(Authentication.basic(login, password), login, emailLowerCase,
       UUID.randomUUID().toString, User.defaultAvatarUrl(emailLowerCase))
     newUserAdder.add(user)

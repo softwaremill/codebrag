@@ -38,28 +38,28 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     val currentUser = someUser()
     userIsAuthenticatedAs(currentUser)
     get("/") {
-      status should be (200)
-      body should be (asJson(currentUser))
+      status should be(200)
+      body should be(asJson(currentUser))
     }
   }
 
   "POST /register" should "call the register service and return 200 if registration is successful" in {
-    when(registerService.register("adamw", "adam@example.org", "123456")).thenReturn(Right(()))
+    when(registerService.register("adamw", "adam@example.org", "123456", "code")).thenReturn(Right(()))
 
     post("/register",
-      mapToJson(Map("login" -> "adamw", "email" -> "adam@example.org", "password" -> "123456")),
+      mapToJson(Map("login" -> "adamw", "email" -> "adam@example.org", "password" -> "123456", "invitationCode" -> "code")),
       defaultJsonHeaders) {
-      status should be (200)
+      status should be(200)
     }
   }
 
   "POST /register" should "call the register service and return 403 if registration is unsuccessful" in {
-    when(registerService.register("adamw", "adam@example.org", "123456")).thenReturn(Left("error"))
+    when(registerService.register("adamw", "adam@example.org", "123456", "code")).thenReturn(Left("error"))
 
     post("/register",
-      mapToJson(Map("login" -> "adamw", "email" -> "adam@example.org", "password" -> "123456")),
+      mapToJson(Map("login" -> "adamw", "email" -> "adam@example.org", "password" -> "123456", "invitationCode" -> "code")),
       defaultJsonHeaders) {
-      status should be (403)
+      status should be(403)
     }
   }
 
@@ -67,4 +67,5 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     extends UsersServlet(fakeAuthenticator, registerService, new CodebragSwagger) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
+
 }
