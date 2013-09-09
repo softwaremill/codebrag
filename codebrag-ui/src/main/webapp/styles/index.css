@@ -6,14 +6,32 @@
 .button,
 .button[disabled],
 button {
-  border: none;
-  border-top: 1px solid rgba(255,255,255,0.6);
+  border: 1px solid #f55902;
   -webkit-box-shadow: none;
   box-shadow: none;
   font-weight: normal;
   margin: 0 0.77em 0;
   padding: 0.66em 1.15em;
   text-transform: uppercase;
+}
+.button:hover,
+.button[disabled]:hover,
+button:hover {
+  background: #d85f00;
+}
+.button:active,
+.button[disabled]:active,
+button:active {
+  background: #d85f00;
+  -webkit-box-shadow: inset 0 0 0px 1px rgba(255,255,255,0.5);
+  box-shadow: inset 0 0 0px 1px rgba(255,255,255,0.5);
+}
+.button:focus,
+.button[disabled]:focus,
+button:focus {
+  background: #a14700;
+  color: #fff;
+  outline: 0;
 }
 .button:first-child,
 .button[disabled]:first-child,
@@ -24,19 +42,6 @@ button:first-child {
 .button[disabled]:last-child,
 button:last-child {
   margin-right: 0;
-}
-.button:active,
-.button[disabled]:active,
-button:active {
-  -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.05) inset;
-}
-.button:focus,
-.button[disabled]:focus,
-button:focus {
-  background: #a14700;
-  color: #fff;
-  outline: 0;
 }
 .button.secondary,
 .button[disabled].secondary,
@@ -68,6 +73,7 @@ button.kthxbye:hover {
 .button[disabled].link,
 button.link {
   background: transparent;
+  border: none;
   color: #a27d69;
   text-transform: none;
   -webkit-transition: color 250ms;
@@ -93,35 +99,30 @@ button.link:focus {
   background: #e4dece;
   color: #a27d69;
 }
-.button.big,
-.button[disabled].big,
-button.big {
-  padding: 1.15em 2.3em;
-}
-.button.big.reviewed,
-.button[disabled].big.reviewed,
-button.big.reviewed,
-.button.big.to-review,
-.button[disabled].big.to-review,
-button.big.to-review {
+.button.reviewed,
+.button[disabled].reviewed,
+button.reviewed,
+.button.to-review,
+.button[disabled].to-review,
+button.to-review {
   float: right;
   margin-right: 0;
   margin-top: 1.15em;
 }
-.button.big.reviewed,
-.button[disabled].big.reviewed,
-button.big.reviewed {
+.button.reviewed,
+.button[disabled].reviewed,
+button.reviewed {
   background: #d1cdc2;
   cursor: default;
 }
-.button.big.to-review,
-.button[disabled].big.to-review,
-button.big.to-review {
+.button.to-review,
+.button[disabled].to-review,
+button.to-review {
   background: #5abfa3;
 }
-.button.big.to-review:hover,
-.button[disabled].big.to-review:hover,
-button.big.to-review:hover {
+.button.to-review:hover,
+.button[disabled].to-review:hover,
+button.to-review:hover {
   background: #41a388;
 }
 .button-group {
@@ -482,7 +483,7 @@ form .form-group span.text-error:after {
 }
 .main-nav .button {
   background: transparent;
-  border-top: none;
+  border: none;
   color: #ad8245;
   font-size: 0.93em;
   font-weight: bold;
@@ -519,10 +520,14 @@ form .form-group span.text-error:after {
 }
 .uservoice-btn {
   background: #99ab01;
+  border-color: #788600;
   vertical-align: top;
   margin-right: 4em;
 }
 .uservoice-btn:hover {
+  background: #99ab01;
+}
+.uservoice-btn:active {
   background: #8a9b00;
 }
 .header-user-info {
@@ -685,32 +690,20 @@ a.ribbon:hover {
 }
 .popup-page .popup-box .popup-content textarea {
   resize: vertical;
-  height: 200px;
+  height: auto;
 }
 .popup-page .popup-box .popup-content .form-group span.text-error {
   bottom: -16px;
 }
-.popup-page.invite .invitation {
+.popup-page.uservoice .uv-success {
   display: none;
 }
-
-.popup-page.invite .invitation.opened {
-    display: block;
-}
-
-.popup-page.uservoice .uv-success,
-.popup-page.invite .invite-success {
-  display: none;
-}
-.popup-page.uservoice .uv-success p,
-.popup-page.invite .invite-success p {
+.popup-page.uservoice .uv-success p {
   text-align: center;
 }
-.popup-page.uservoice .uv-success.opened,
-.popup-page.invite .invite-success.opened {
+.popup-page.uservoice .uv-success.opened {
   display: block;
 }
-
 .popup-page.uservoice .uv-error {
   display: none;
 }
@@ -966,8 +959,6 @@ a.ribbon:hover {
   padding: 0.19em 3em 0 2.3em;
 }
 .diff-header label[for="file-changer"] {
-  background: #f3720b;
-  color: #fff;
   display: inline-block;
   float: left;
   margin: 0.6em 0 0;
@@ -975,19 +966,20 @@ a.ribbon:hover {
   text-transform: uppercase;
 }
 .diff-header .file-changer {
-  background: #e7e0ce;
+  background: #e7e0ce url("/images/arrow-down.png") no-repeat right center;
   border: 1px solid #e7e0ce;
   color: #a27d69;
   float: left;
   max-width: 20em;
   margin: 0.6em 0 0;
-  padding: 0.38em;
+  padding: 0.38em 1.5em 0.38em 0.38em;
+  -webkit-appearance: none;
 }
 .diff-header .file-changer option {
   background: #fff;
 }
-.diff-header .reviewed.big.button,
-.diff-header .to-review.big.button {
+.diff-header .reviewed.button,
+.diff-header .to-review.button {
   margin: 0;
 }
 .diff-wrapper {

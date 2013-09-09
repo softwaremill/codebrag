@@ -14,25 +14,24 @@
 .diff-header
   padding: 0.19em 3em 0 2.3em;
   & label[for="file-changer"]
-    background: $main-orange-color;
-    color: white;
     display: inline-block;
     float: left;
     margin: 0.6em 0 0;
     padding: 0.6em;
     text-transform: uppercase;
   & .file-changer
-    background: #e7e0ce;
+    background: #e7e0ce url('/images/arrow-down.png') no-repeat right center;
     border: 1px solid #e7e0ce;
     color: $second-body-text-color;
     float: left;
     max-width: 20em;
     margin: 0.6em 0 0;
-    padding: 0.38em;
+    padding: 0.38em 1.5em 0.38em 0.38em;
+    -webkit-appearance: none;
     & option
       background: white;
-  & .reviewed.big.button, 
-  .to-review.big.button
+  & .reviewed.button, 
+  .to-review.button
     margin: 0;
 
 .diff-wrapper
