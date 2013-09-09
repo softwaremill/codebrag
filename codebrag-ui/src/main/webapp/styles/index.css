@@ -113,7 +113,6 @@ button.to-review {
 .button.reviewed,
 .button[disabled].reviewed,
 button.reviewed {
-  background: #d1cdc2;
   cursor: default;
 }
 .button.to-review,
