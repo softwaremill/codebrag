@@ -46,11 +46,11 @@ class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailSer
   }
 
 
-  def sendEmail(address: String, message: String, userName: String) {
+  private def sendEmail(address: String, message: String, userName: String) {
     emailService.send(Email(address, InvitationMessageBuilder.buildSubjest(userName), message))
   }
 
-  def saveToDb(hash: String, invitationSenderId: ObjectId) {
+  private def saveToDb(hash: String, invitationSenderId: ObjectId) {
     invitationDAO.save(Invitation(hash, invitationSenderId))
   }
 
