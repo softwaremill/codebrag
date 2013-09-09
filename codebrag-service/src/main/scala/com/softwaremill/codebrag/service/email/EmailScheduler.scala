@@ -35,7 +35,7 @@ case class Email(address:String,subject:String,content:String)
 
 object EmailScheduler {
   def createActor(actorSystem: ActorSystem, emailService: EmailService) = {
-    actorSystem.actorOf(Props(new EmailSenderActor(emailService)), "emailScheduler")
+    actorSystem.actorOf(Props(new EmailSenderActor(emailService)), "emailSender")
 
   }
 }

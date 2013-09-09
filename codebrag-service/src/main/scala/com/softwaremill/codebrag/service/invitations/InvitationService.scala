@@ -37,17 +37,12 @@ class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailSer
   }
 
   def expire(code: String) {
-    invitationDAO.findByCode(code) match {
-      case Some(inv) => {
-        invitationDAO.removeByCode(code)
-      }
-      case None => throw new IllegalStateException
-    }
+    invitationDAO.removeByCode(code)
   }
 
 
   private def sendEmail(address: String, message: String, userName: String) {
-    emailService.send(Email(address, InvitationMessageBuilder.buildSubjest(userName), message))
+    emailService.send(Email(address, InvitationMessageBuilder.buildSubject(userName), message))
   }
 
   private def saveToDb(hash: String, invitationSenderId: ObjectId) {

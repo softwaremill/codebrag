@@ -8,15 +8,15 @@ import com.foursquare.rogue.LiftRogue._
 
 class MongoInvitationDAO extends InvitationDAO with Logging {
 
-  def save(invitation: Invitation) {
+  override def save(invitation: Invitation) {
     InvitationToRecordBuilder.buildFrom(invitation).save
   }
 
-  override def findByCode(code: String):Option[Invitation] = {
+  override def findByCode(code: String): Option[Invitation] = {
     (InvitationRecord where (_.code.eqs(code))).get().map(RecordToInvitationBuilder.buildFrom(_))
   }
 
-  override def removeByCode(code:String) {
+  override def removeByCode(code: String) {
     val invitationOpt = (InvitationRecord where (_.code.eqs(code))).get()
     invitationOpt match {
       case Some(invitationRecord) => invitationRecord.delete_!

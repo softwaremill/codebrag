@@ -23,8 +23,8 @@ object ListSliceLoader {
       loadWithBounds(idsList, idsList.indexOf(id), boundsFn, loadFn)
     }
     criteria match {
-      case LoadMoreCriteria(idOption@None, PagingDirection.Left, limit) => loadLast
-      case LoadMoreCriteria(idOption@None, PagingDirection.Right, limit) => loadFirst
+      case LoadMoreCriteria(None, PagingDirection.Left, limit) => loadLast
+      case LoadMoreCriteria(None, PagingDirection.Right, limit) => loadFirst
       case LoadMoreCriteria(Some(id), PagingDirection.Right, limit) => loadContextual(id, boundsForNext)
       case LoadMoreCriteria(Some(id), PagingDirection.Left, limit) => loadContextual(id, boundsForPrevious)
       case LoadMoreCriteria(Some(id), PagingDirection.Radial, limit) => loadContextual(id, boundsForSurroundings)

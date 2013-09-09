@@ -54,7 +54,6 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
   it should "removed expired invitation code from DAO" in {
     //given
     val invitationDAO = mock[InvitationDAO]
-    when(invitationDAO.findByCode(code)).thenReturn(Some(Invitation(code, new ObjectId())))
     val userDAO = mock[UserDAO]
     val emailService = mock[EmailService]
 
