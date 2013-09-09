@@ -61,6 +61,7 @@ codebrag {
     debug-services-login = "codebrag"
     debug-services-password = "codebrag"
     demo = false
+    applicationUrl = "http://codebrag:8080"
 }
 
 web-server {
