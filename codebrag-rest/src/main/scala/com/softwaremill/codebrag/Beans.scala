@@ -17,7 +17,7 @@ import com.softwaremill.codebrag.service.config.{EmailConfig, CodebragConfig, Re
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
 import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
-import com.softwaremill.codebrag.service.invitations.InvitationService
+import com.softwaremill.codebrag.service.invitations.{DefaultUniqueHashGenerator, InvitationService}
 import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
@@ -38,7 +38,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
   lazy val repoHeadStore = new MongoRepositoryHeadStore
   lazy val emailService = new EmailService(config)
   lazy val emailScheduler = new EmailScheduler(actorSystem, EmailScheduler.createActor(actorSystem, emailService))
-  lazy val invitationsService = new InvitationService(invitationDao, userDao, emailService)
+  lazy val invitationsService = new InvitationService(invitationDao, userDao, emailService, config, DefaultUniqueHashGenerator)
 
 
   lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {

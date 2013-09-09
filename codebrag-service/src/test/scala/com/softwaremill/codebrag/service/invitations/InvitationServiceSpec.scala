@@ -9,6 +9,7 @@ import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.{User, Invitation}
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
+import com.softwaremill.codebrag.service.config.CodebragConfig
 
 class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers {
 
@@ -17,7 +18,9 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
   val id = new ObjectId()
   val userName = "zuchos"
   val user = User(id, null, userName, null, null, null)
-
+  val config = mock[CodebragConfig]
+  private val appPath = "http://localhost:8080"
+  when(config.applicationUrl).thenReturn(appPath)
 
   it should " verify invitation" in {
     //given
@@ -26,7 +29,7 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     val userDAO = mock[UserDAO]
     val emailService = mock[EmailService]
 
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService)
+    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator)
 
     //when
     val verify = invitationService.verify(code)
@@ -42,7 +45,7 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     val userDAO = mock[UserDAO]
     val emailService = mock[EmailService]
 
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService)
+    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator)
 
     //when
     val verify = invitationService.verify(code)
@@ -57,7 +60,7 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     val userDAO = mock[UserDAO]
     val emailService = mock[EmailService]
 
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService)
+    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator)
 
     //when
     invitationService.expire(code)
@@ -72,18 +75,19 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     val userDAO = mock[UserDAO]
     val emailService = mock[EmailService]
 
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService)
+    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator)
 
     when(userDAO.findById(id)).thenReturn(Some(user))
-    val url = "http://super-duper-url/"
-    //when
-    val invitation = invitationService.createInvitation(id, url)
+
+     //when
+    val invitation = invitationService.createInvitation(id)
 
     //then
     val argumentCaptor = ArgumentCaptor.forClass(classOf[Invitation])
     verify(invitationDAO).save(argumentCaptor.capture())
     argumentCaptor.getValue.invitationSender should be(id)
-    invitation should include(url)
+    val registerPath = appPath + "/#/register/"
+    invitation should include(registerPath)
     invitation should include(userName)
   }
 
@@ -100,7 +104,7 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     val message = "some message"
 
 
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService)
+    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator)
     //when
     invitationService.sendInvitation(email, message, id)
 

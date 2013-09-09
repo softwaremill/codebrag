@@ -3,20 +3,9 @@ package com.softwaremill.codebrag.rest
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.invitations.InvitationService
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.service.user.Authenticator
+import com.softwaremill.codebrag.service.user.{RegisterService, Authenticator}
 
 class InvitationServlet(val authenticator: Authenticator, invitationService: InvitationService) extends JsonServletWithAuthentication with Logging {
-
-  lazy val registrationUrl = buildRegistrationUrl()
-
-  def buildRegistrationUrl(): String = {
-    val port = request.getServerPort match {
-      case 80 => ""
-      case x => s":$x"
-    }
-    s"${request.getScheme}://${request.getServerName}$port${request.getContextPath}#/register/"
-  }
-
 
   before() {
     haltIfNotAuthenticated
@@ -29,7 +18,7 @@ class InvitationServlet(val authenticator: Authenticator, invitationService: Inv
   }
 
   get("/") {
-    val invitation = invitationService.createInvitation(new ObjectId(user.id), registrationUrl)
+    val invitation = invitationService.createInvitation(new ObjectId(user.id))
     Map("invitation" -> invitation)
   }
 
