@@ -17,6 +17,7 @@
   & .button
     background: transparent;
     border: none;
+    box-shadow: none;
     color: $header-text-color;
     font-size: 0.93em;
     font-weight: bold;
@@ -26,15 +27,19 @@
     width: 11.15em;
     &:hover
       color: $main-orange-color;
-    & .number
-      display: block;
-      font-size: 2.15em;
-      font-weight: normal;
+    &:active
+      box-shadow: none;
+
     &.active
       background: $body-bg-color;
       border-top: 0.39em solid $main-orange-color;
       color: $header-bg-color;
       padding-top: 0.47em;
+
+    & .number
+      display: block;
+      font-size: 2.15em;
+      font-weight: normal;
 
 .demo-nav
   background: rgba(255, 255, 255, 0.2);
@@ -63,10 +68,6 @@
   margin-right: 2em;
   overflow: visible;
   position: relative;
-  &:hover .arrow-down
-     border-top-color: $main-orange-color;
-  &:hover .user-info-dropdown
-     display: block
   & img
     float: left;
     margin-right: 0.38em;
@@ -78,36 +79,28 @@
     color: inherit;
     text-decoration: none;
 
+  &:hover .arrow-down
+    border-top-color: $main-orange-color;
+
+  &:hover .user-info-dropdown
+    opacity: 1;
+    z-index: 3;
+    transition: opacity 300ms;
+
 .user-info-dropdown
   background: $header-bg-color;
-  display: none;
   list-style: none;
   margin: 2.4em 0 0;
+  opacity: 0;
   padding: 0;
   position: absolute;
   right: 0;
   top: 0;
   width: 15em;
-  z-index: 3;
+  z-index: -1;
   & li
     padding: 0.77em;
     &:hover
       background: $header-bg-color-darker;
-      color: $main-orange-color;
-  // margin: 0;
-  // padding: 0.77em;
-  // position: absolute;
-  // & .user-info
-  //   float: right;
-  //   margin: 0 0.77em 0 1.54em;
-  //   vertical-align: top;
-  //   & .username
-  //     display: inline-block;
-  //     margin-top: 0.77em;
-  //     vertical-align: middle;
-  //   & .logout
-  //     display: inline-block;
-  //     margin-top: 0.77em;
-  //     vertical-align: middle;
-  //     &:hover
-  //       color: $main-orange-color;
+      & a
+        color: $main-orange-color;

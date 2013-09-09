@@ -10,21 +10,21 @@ button {
   -webkit-box-shadow: none;
   box-shadow: none;
   font-weight: normal;
-  margin: 0 0.77em 0;
+  margin: 0 0.77em 1px;
   padding: 0.66em 1.15em;
   text-transform: uppercase;
 }
 .button:hover,
 .button[disabled]:hover,
 button:hover {
-  background: #d85f00;
+  background: #f3720b;
+  -webkit-box-shadow: inset 0 0 0px 1px rgba(255,255,255,0.5);
+  box-shadow: inset 0 0 0px 1px rgba(255,255,255,0.5);
 }
 .button:active,
 .button[disabled]:active,
 button:active {
   background: #d85f00;
-  -webkit-box-shadow: inset 0 0 0px 1px rgba(255,255,255,0.5);
-  box-shadow: inset 0 0 0px 1px rgba(255,255,255,0.5);
 }
 .button:focus,
 .button[disabled]:focus,
@@ -73,7 +73,7 @@ button.kthxbye:hover {
 .button[disabled].link,
 button.link {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: #a27d69;
   text-transform: none;
   -webkit-transition: color 250ms;
@@ -85,7 +85,8 @@ button.link {
 .button.link:hover,
 .button[disabled].link:hover,
 button.link:hover {
-  background: transparent;
+  background: #ece7d9;
+  border: 1px solid #dad1b9;
   color: #f3720b;
 }
 .button.link:active,
@@ -119,14 +120,26 @@ button.reviewed {
 .button[disabled].to-review,
 button.to-review {
   background: #5abfa3;
+  border: 1px solid #3cad8e;
 }
 .button.to-review:hover,
 .button[disabled].to-review:hover,
 button.to-review:hover {
+  background: #5abfa3;
+}
+.button.to-review:active,
+.button[disabled].to-review:active,
+button.to-review:active {
   background: #41a388;
 }
 .button-group {
   padding-left: 0;
+}
+.button-group li:last-child {
+  margin-right: 0;
+}
+.button-group li:first-child {
+  margin-left: 0;
 }
 .button-group li:last-child .button,
 li:last-child .button {
@@ -484,6 +497,8 @@ form .form-group span.text-error:after {
 .main-nav .button {
   background: transparent;
   border: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
   color: #ad8245;
   font-size: 0.93em;
   font-weight: bold;
@@ -495,16 +510,20 @@ form .form-group span.text-error:after {
 .main-nav .button:hover {
   color: #f3720b;
 }
-.main-nav .button .number {
-  display: block;
-  font-size: 2.15em;
-  font-weight: normal;
+.main-nav .button:active {
+  -webkit-box-shadow: none;
+  box-shadow: none;
 }
 .main-nav .button.active {
   background: #f7f5ef;
   border-top: 0.39em solid #f3720b;
   color: #300300;
   padding-top: 0.47em;
+}
+.main-nav .button .number {
+  display: block;
+  font-size: 2.15em;
+  font-weight: normal;
 }
 .demo-nav {
   background: rgba(255,255,255,0.2);
@@ -537,12 +556,6 @@ form .form-group span.text-error:after {
   overflow: visible;
   position: relative;
 }
-.header-user-info:hover .arrow-down {
-  border-top-color: #f3720b;
-}
-.header-user-info:hover .user-info-dropdown {
-  display: block;
-}
 .header-user-info img {
   float: left;
   margin-right: 0.38em;
@@ -556,23 +569,41 @@ form .form-group span.text-error:after {
   color: inherit;
   text-decoration: none;
 }
+.header-user-info:hover .arrow-down {
+  border-top-color: #f3720b;
+}
+.header-user-info:hover .user-info-dropdown {
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+  z-index: 3;
+  -webkit-transition: opacity 300ms;
+  -moz-transition: opacity 300ms;
+  -o-transition: opacity 300ms;
+  -ms-transition: opacity 300ms;
+  transition: opacity 300ms;
+}
 .user-info-dropdown {
   background: #300300;
-  display: none;
   list-style: none;
   margin: 2.4em 0 0;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   padding: 0;
   position: absolute;
   right: 0;
   top: 0;
   width: 15em;
-  z-index: 3;
+  z-index: -1;
 }
 .user-info-dropdown li {
   padding: 0.77em;
 }
 .user-info-dropdown li:hover {
   background: #280200;
+}
+.user-info-dropdown li:hover a {
   color: #f3720b;
 }
 a.ribbon {
@@ -956,12 +987,12 @@ a.ribbon:hover {
   margin-left: 12px;
 }
 .diff-header {
-  padding: 0.19em 3em 0 2.3em;
+  padding: 0.77em 3em 0.77em 2.3em;
 }
 .diff-header label[for="file-changer"] {
   display: inline-block;
   float: left;
-  margin: 0.6em 0 0;
+  margin: 1px 0 0;
   padding: 0.6em;
   text-transform: uppercase;
 }
@@ -971,7 +1002,7 @@ a.ribbon:hover {
   color: #a27d69;
   float: left;
   max-width: 20em;
-  margin: 0.6em 0 0;
+  margin: 1px 0 0;
   padding: 0.38em 1.5em 0.38em 0.38em;
   -webkit-appearance: none;
 }
@@ -1088,6 +1119,8 @@ a.ribbon:hover {
 .diff-file-container .diff-line-num .button {
   background: transparent;
   border: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
   height: 100%;
   line-height: inherit;
   margin: 0;
@@ -1356,8 +1389,10 @@ tr:hover .diff-line-num .button i {
     margin-top: 0;
     text-align: right;
   }
-  .diff-header .reviewed.big.button span,
-  .diff-header .to-review.big.button span {
+  .diff-header {
+    padding-right: 0.77em;
+  }
+  .diff-header label[for="file-changer"] {
     display: none;
   }
 }

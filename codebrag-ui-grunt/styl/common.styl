@@ -8,14 +8,14 @@ button
   border: 1px solid #F55902;
   box-shadow: none;
   font-weight: normal;
-  margin: 0 0.77em 0;
+  margin: 0 0.77em 1px;
   padding: 0.66em 1.15em;
   text-transform: uppercase;
   &:hover
-    background: #d85f00;
+    background: #f3720b;
+    box-shadow: inset 0 0 0px 1px rgba(255, 255, 255, 0.5);
   &:active
     background: #d85f00;
-    box-shadow: inset 0 0 0px 1px rgba(255, 255, 255, 0.5);
   &:focus
     background: #a14700;
     color: white;
@@ -40,12 +40,13 @@ button
 
   &.link
     background: transparent;
-    border: none;
+    border: 1px solid transparent;
     color: $second-body-text-color;
     text-transform: none;
     transition: color 250ms;
     &:hover
-      background: transparent;
+      background: #ece7d9;
+      border: 1px solid #dad1b9;
       color: $main-orange-color;
     &:active
       background: #ece7d9;
@@ -53,7 +54,8 @@ button
       background: #e4dece;
       color: $second-body-text-color;
 
-  &.reviewed, &.to-review
+  &.reviewed,
+  &.to-review
     float: right;
     margin-right: 0;
     margin-top: 1.15em;
@@ -62,11 +64,18 @@ button
     cursor: default
   &.to-review
     background: $green-button-bg-color;
+    border: 1px solid #3CAD8E;
     &:hover
+      background: $green-button-bg-color;
+    &:active
       background: $green-button-bg-hover;
 
 .button-group
   padding-left: 0;
+  & li:last-child
+    margin-right: 0;
+  & li:first-child
+    margin-left: 0;
 
 .button-group li:last-child .button,
 li:last-child .button
