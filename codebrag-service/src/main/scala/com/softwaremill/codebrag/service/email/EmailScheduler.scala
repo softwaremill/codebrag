@@ -8,6 +8,9 @@ import com.typesafe.scalalogging.slf4j.Logging
 
 class EmailScheduler(actorSystem: ActorSystem, emailSenderActor: ActorRef) extends Logging {
 
+  import scala.concurrent.duration._
+  val NextAttemptAfterFailure = 60.seconds
+
 
   def scheduleInstant(email:Email): Any = {
     logger.info(s"Email (subject:${email.subject}, address:${email.address} is scheduled to send instantly")
@@ -15,7 +18,7 @@ class EmailScheduler(actorSystem: ActorSystem, emailSenderActor: ActorRef) exten
   }
 
   def scheduleIn60Seconds(email:Email): Any = {
-    schedule(email, EmailSenderActor.NextAttemptAfterFailure)
+    schedule(email, NextAttemptAfterFailure)
   }
 
   def schedule(email:Email, delay: FiniteDuration): Any = {

@@ -24,10 +24,6 @@ class EmailSenderActor(emailService: EmailService) extends Actor with Logging {
 
 object EmailSenderActor {
 
-  import scala.concurrent.duration._
-
-  val NextAttemptAfterFailure = 60.seconds
-
   case class SendEmail(email:Email, emailScheduler: EmailScheduler)
 
 }
