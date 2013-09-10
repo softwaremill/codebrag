@@ -605,6 +605,7 @@ form .form-group span.text-error:after {
 }
 .user-info-dropdown li:hover a {
   color: #f3720b;
+  display: block;
 }
 .user-info-dropdown li.username {
   cursor: default;
