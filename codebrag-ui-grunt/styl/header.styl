@@ -98,9 +98,14 @@
   top: 0;
   width: 15em;
   z-index: -1;
+
   & li
     padding: 0.77em;
     &:hover
       background: $header-bg-color-darker;
+
       & a
         color: $main-orange-color;
+
+    &.username
+      cursor: default;
