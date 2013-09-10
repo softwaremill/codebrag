@@ -38,9 +38,7 @@ class UsersServlet(val authenticator: Authenticator, registerService: RegisterSe
   }
 
   get("/first-registration") {
-    {
-      Map("firstRegistration" -> registerService.firstRegistration)
-    }
+    Map("firstRegistration" -> registerService.firstRegistration)
   }
 
   override def login: String = {
