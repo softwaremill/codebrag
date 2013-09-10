@@ -43,6 +43,19 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     }
   }
 
+  "GET /first-registration" should "return firstRegistration flag" in {
+    //given
+    val currentUser = someUser()
+    userIsAuthenticatedAs(currentUser)
+    when(registerService.firstRegistration).thenReturn(true)
+    //when
+    get("/first-registration") {
+      //then
+      status should be(200)
+      body should be("{\"firstRegistration\":true}")
+    }
+  }
+
   "POST /register" should "call the register service and return 200 if registration is successful" in {
     when(registerService.register("adamw", "adam@example.org", "123456", "code")).thenReturn(Right(()))
 
