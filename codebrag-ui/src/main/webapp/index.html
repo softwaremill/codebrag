@@ -293,9 +293,9 @@
                     <fieldset class="invitation" ng-class="{opened: invite}">
                         <h1>Invite friends</h1>
 
-                        <p>Review the code together</p>
+                        <p>Review the code together and learn from each other!</p>
 
-                        <p class="text-error" ng-show="invitation.invitationNotSend">Ooops, ending failed... You can copy register
+                        <p class="text-error" ng-show="invitation.invitationNotSend">Ooops, sending failed... You can copy register
                             link and send it via email.</p>
                         <p class="text-error" ng-show="invitation.invitationNotCreated">Error occurred during creating invitation.
                             Please contact your Codebrag administrator.</p>
@@ -309,8 +309,7 @@
                         Valid email address is required</span>
                         </div>
                         <div class="form-group">
-                            <label for="invitation-body">You can change text body, but be careful with register
-                                link</label>
+                            <label for="invitation-body">Message text</label>
                             <textarea id="invitation-body" rows="6" ng-model="invitation.body" name="body"
                                       required></textarea>
                     <span class="text-error" ng-show="inviteForm.body.$dirty && inviteForm.body.$invalid">
