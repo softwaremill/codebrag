@@ -120,7 +120,34 @@ You can also use Codebrag with SVN repositories although *** this is experimenta
         username = "secretuser"
         password = "secretpassword"
     }
-	
+
+##### Email server
+
+It's **important** to setup your email server/account. Otherwise Codebrag will not be able to send e.g. invitations.
+
+**e.g.**
+
+    email {
+        smtp-host = "smtp.gmail.com"
+        smtp-port = "465"
+        smtp-username = "user@mydomain.com"
+        smtp-password = "myPassword"
+        from = "user@mydomain.com"
+        encoding = "UTF-8"
+    }
+
+##### Application Url
+
+In config please specify `codebrag.applicationUrl` property. It's used e.g. to generate registration link.
+
+**e.g.**
+
+    codebrag {
+        (…)
+        applicationUrl = "http://codebrag.mydomain.com:8080"
+        (…)
+    }
+
 ##### repository data
 
 Codebrag needs to store repository data somewhere on your server. Edit `local-git-storage-path` accordingly. Codebrag will create directory called `repos` under provided location. Remember to set access rights accordingly so that Codebrag can read and write to this location.
