@@ -1,4 +1,5 @@
-###Codebrag Early Adopters version - installation guide
+#Codebrag Early Adopters version
+## Installation Guide
 
 
 ### Prerequisites
@@ -10,11 +11,11 @@
 
 Codebrag has one configuration file `codebrag.conf`provided with distribution. Edit the following settings accordingly.
 
-##### mongo
+#### mongo
 
 Set `servers` and `database` properties to point your MongoDB installation.
 
-##### repository
+#### repository
 
 Codebrag can work with git repositories in three modes. You need to set one using `type` property:
 
@@ -22,7 +23,7 @@ Codebrag can work with git repositories in three modes. You need to set one usin
 * `git-ssh` - plain git via ssh (with keys)
 * `svn` - experimental
 
-###### git-https
+##### git-https
 
 To use Codebrag with plain git via https (user/password) please configure repository section as follows (leave username and password empty for public repositories):
 
@@ -59,7 +60,7 @@ For example:
 	}
 
 
-###### git-ssh
+##### git-ssh
 
 If you prefer using Codebrag with plain git via ssh (keys) please configure repository section as follows. Also remember to have ssh keys properly configured (leave passphrase empty if there is no passphrase for your keystore). 
 
@@ -95,7 +96,7 @@ For example:
 	    ...
 	}
 
-###### SVN (experimental)
+##### SVN (experimental)
 
 You can also use Codebrag with SVN repositories although *** this is experimental feature *** still in development. To do that, please change your repository configuration section to this:
 
