@@ -16,12 +16,13 @@ Set `servers` and `database` properties to point your MongoDB installation.
 
 ##### repository
 
-Codebrag can work with git repositories in three modes. You need to set one using `type` property):
+Codebrag can work with git repositories in three modes. You need to set one using `type` property:
 
 * `git-https` - plain git via https (with user/password provided)
 * `git-ssh` - plain git via ssh (with keys)
-* `github` - using github (authentication via Github) - optional and described later
 * `svn` - experimental
+
+###### git-https
 
 To use Codebrag with plain git via https (user/password) please configure repository section as follows (leave username and password empty for public repositories):
 
@@ -57,6 +58,9 @@ For example:
 	    ...
 	}
 
+
+###### git-ssh
+
 If you prefer using Codebrag with plain git via ssh (keys) please configure repository section as follows. Also remember to have ssh keys properly configured (leave passphrase empty if there is no passphrase for your keystore). 
 
 *** NOTE: *** Test you repository ssh connection and add host to `known-hosts` otherwise Codebrag will not be able to authenticate. 
@@ -91,6 +95,8 @@ For example:
 	    ...
 	}
 
+###### SVN (experimental)
+
 You can also use Codebrag with SVN repositories although *** this is experimental feature *** still in development. To do that, please change your repository configuration section to this:
 
 	repository {
@@ -114,7 +120,7 @@ You can also use Codebrag with SVN repositories although *** this is experimenta
         password = "secretpassword"
     }
 	
-##### codebrag
+##### repository data
 
 Codebrag needs to store repository data somewhere on your server. Edit `local-git-storage-path` accordingly. Codebrag will create directory called `repos` under provided location. Remember to set access rights accordingly so that Codebrag can read and write to this location.
 
@@ -134,7 +140,7 @@ Logs will be written to `codebrag.log`
 
 ### Logging into codebrag
 
-As our user management is very basic you can register your account in Codebragby going to `http://<YOUR_CODEBRAG>/#/register` and submitting the form. Remember that your email must match the one in git log so that Codebrag can recognize your commits. After doing that you can login to Codebrag at `http://<YOUR_CODEBRAG>`. If you are using Github integration described below you can use Github Sign In.
+As our user management is very basic you can register your account in Codebrag by going to `http://localhost:8080/#/register` and submitting the form. Remember that your email must match the one in git log so that Codebrag can recognize your commits. After doing that you can login to Codebrag at `http://localhost:8080`. If you are using Github integration described below you can use Github Sign In.
 
 ### Troubleshooting
 
@@ -142,54 +148,6 @@ If you encounter a problem with repository synchronization (e.g. message like "N
 
 In case of any questions feel free to contact us at `ask@codebrag.com`.
 If you have issues with installing/using codebrag please contact Michał Ostruszka via email: `michal.ostruszka@softwaremill.com` or via Skype `michal.ostruszka`.  
-
-
-### Github integration (optional)
-
-If you want to use Codebrag integration with Github there are two sections of configuration file to edit:
-
-#### github 
-You need to create Github application for your Codebrag installation on `http://github.com`. As a callback please provide URL in form `http://<YOUR_CODEBRAG>/rest/github/auth_callback` (public IP is required for it to work). Edit `github` section of configuration file and fill `client-id` and `client-secret` with values from created application.
-
-
-#### repository 
-Please configure repository section as follows:
-
-	repository {
-	    
-	    type = "github"
-
-	    github {
-	        owner = "REPOSITORY_OWNER_USER"
-	        name = "REPOSITORY_NAME"
-	        branch = "BRANCH" (in format "refs/heads/NAME")
-	        sync-user-login = "SYNC_USER_NAME"
-	    }
-	    
-	    ...
-	}
-
-For example: 
-
-	repository {
-	    
-	    type = "github"
-
-	    github {
-	        owner = "softwaremill"
-	        name = "codebrag"
-	        branch = "refs/heads/master"
-	        sync-user-login = "codebrag"
-	    }
-	    
-	    ...
-	}
-	
-The `sync-user-login` property should contain name of Github user that is allowed to access repository configured.
-
-*** NOTE: ***You need to login to Codebrag as this user first so that Codebrag can collect tokens required to authenticate this user in order to synchronize with repository. After logging in as this user hit `http://<YOUR_CODEBRAG>/refresh` to reload user's credentials. 
-
-
 
 
 
