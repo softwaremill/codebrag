@@ -7,7 +7,7 @@ Quick Start
 2. Configure `local.conf` in the `codebrag` home directory basing on `codebrag-rest/src/main/resources/application.conf.template`
 Important elements to fill:
     * `codebrag.sync-user-login`: login of Codebrag user who will be used for synchronization with GitHub
-    * `github.client-id` and `github.client-sercret`: keys copied from GitHub settings of your Codebrag instance.
+    * `github.client-id` and `github.client-secret`: keys copied from GitHub settings of your Codebrag instance.
     * `codebrag.local-git-storage-path` (Optional): path to directory where local git repositories should be stored. Useful for developers to avoid having these repositories in same directory as source files.
 3. Navigate to the `codebrag` home directory
 4. Execute `./run.sh` script
