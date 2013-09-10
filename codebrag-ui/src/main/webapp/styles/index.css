@@ -725,13 +725,26 @@ a.ribbon:hover {
 .popup-page .popup-box .popup-content .form-group span.text-error {
   bottom: -16px;
 }
-.popup-page.uservoice .uv-success {
+
+.popup-page.invite .invitation {
+    display: none;
+}
+
+.popup-page.invite .invitation.opened {
+    display: block;
+}
+
+.popup-page.uservoice .uv-success,
+.popup-page.invite .invite-success {
   display: none;
 }
-.popup-page.uservoice .uv-success p {
+.popup-page.uservoice .uv-success p,
+.popup-page.invite .invite-success p {
+
   text-align: center;
 }
-.popup-page.uservoice .uv-success.opened {
+.popup-page.uservoice .uv-success.opened,
+.popup-page.invite .invite-success.opened {
   display: block;
 }
 .popup-page.uservoice .uv-error {
