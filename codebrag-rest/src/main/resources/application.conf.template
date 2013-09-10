@@ -4,15 +4,8 @@ mongo {
 }
 
 repository {
-    // git-https, git-ssh, github or svn (experimental)
+    // git-https, git-ssh or svn (experimental)
     type = "git-ssh"
-
-    github {
-        owner = "softwaremill"
-        name = "codebrag"
-        branch = "refs/heads/master"
-        sync-user-login = ""
-    }
 
     git-https {
         name = "codebrag"
@@ -39,11 +32,6 @@ repository {
 aws {
     access-key-id = ""
     secret-access-key = ""
-}
-
-github {
-    client-id = ""
-    client-secret = ""
 }
 
 email {
