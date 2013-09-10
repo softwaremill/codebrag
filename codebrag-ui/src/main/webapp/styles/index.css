@@ -576,16 +576,11 @@ form .form-group span.text-error:after {
   -ms-filter: none;
   filter: none;
   z-index: 3;
-  -webkit-transition: opacity 300ms;
-  -moz-transition: opacity 300ms;
-  -o-transition: opacity 300ms;
-  -ms-transition: opacity 300ms;
-  transition: opacity 300ms;
 }
 .user-info-dropdown {
   background: #300300;
   list-style: none;
-  margin: 2.4em 0 0;
+  margin: 2.3em 0 0;
   opacity: 0;
   filter: alpha(opacity=0);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
@@ -595,6 +590,12 @@ form .form-group span.text-error:after {
   top: 0;
   width: 15em;
   z-index: -1;
+  -webkit-transition: opacity 300ms;
+  -moz-transition: opacity 300ms;
+  -o-transition: opacity 300ms;
+  -ms-transition: opacity 300ms;
+  transition: opacity 300ms;
+  -webkit-backface-visibility: hidden;
 }
 .user-info-dropdown li {
   padding: 0.77em;

@@ -85,12 +85,11 @@
   &:hover .user-info-dropdown
     opacity: 1;
     z-index: 3;
-    transition: opacity 300ms;
 
 .user-info-dropdown
   background: $header-bg-color;
   list-style: none;
-  margin: 2.4em 0 0;
+  margin: 2.3em 0 0;
   opacity: 0;
   padding: 0;
   position: absolute;
@@ -98,6 +97,8 @@
   top: 0;
   width: 15em;
   z-index: -1;
+  transition: opacity 300ms;
+  -webkit-backface-visibility: hidden;
 
   & li
     padding: 0.77em;
