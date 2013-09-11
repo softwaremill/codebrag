@@ -1,0 +1,51 @@
+<div class="invite popup-page opened" id="invite-form-popup" ng-show="isVisible">
+    <div class="popup-box">
+        <form class="popup-content" name="inviteForm" novalidate>
+            <fieldset class="invitation" ng-class="{opened: invite}">
+                <h1>Invite friends</h1>
+
+                <p>Review the code together</p>
+
+                <p class="text-error" ng-show="invitation.invitationNotSend">Ooops, ending failed... You can copy register
+                    link and send it via email.</p>
+                <p class="text-error" ng-show="invitation.invitationNotCreated">Error occurred during creating invitation.
+                    Please contact your Codebrag administrator.</p>
+
+                <div class="form-group">
+                    <label for="invitation-email">Email address</label>
+                    <input id="invitation-email" type="text" ng-model="invitation.email" name="email"
+                           placeholder="Email" required>
+                <span class="text-error" ng-show="inviteForm.email.$dirty && inviteForm.email.$invalid">
+                    <i class="icon-remove"></i>
+                    Valid email address is required</span>
+                </div>
+                <div class="form-group">
+                    <label for="invitation-body">You can change text body, but be careful with register
+                        link</label>
+                    <textarea id="invitation-body" rows="6" ng-model="invitation.body" name="body"
+                              required></textarea>
+                <span class="text-error" ng-show="inviteForm.body.$dirty && inviteForm.body.$invalid">
+                        <i class="icon-remove"></i> At least register link is required</span>
+                </div>
+                <div class="btn-centered-wrapper">
+                    <button class="button centered" ng-click="submit()" ng-disabled="inviteForm.$invalid">
+                        Invite
+                    </button>
+                </div>
+            </fieldset>
+            <fieldset class="invite-success" ng-class="{opened: success}">
+                <h1>Invite friends</h1>
+
+                <p>An invitation has been sent!</p>
+
+                <div class="btn-centered-wrapper">
+                    <button class="button centered" ng-click="inviteMore()">Invite more friends</button>
+                    <button class="button centered" ng-click="close()">Close</button>
+                </div>
+            </fieldset>
+        <span class="close-btn" ng-click="close()">
+            <i class="icon-remove"></i>
+        </span>
+        </form>
+    </div>
+</div>
