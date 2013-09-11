@@ -185,6 +185,30 @@ object SmlCodebragBuild extends Build {
     writer.close()
   }
 
+  val buildWebClient = TaskKey[Unit](
+    "build-web-client",
+    "Builds browser client using Grunt.js"
+  )
+
+  val webClientBuildSettings = Seq[Setting[_]](buildWebClient <<= {
+    (scalaVersion, baseDirectory, projectID) map {
+      (sv, bd, pid) => {
+        def updateDeps(cwd: File) = Process("npm install", cwd) !
+        def runGrunt(cwd: File) = Process("grunt build", cwd) !
+        def haltOnError(result: Int) {
+          if(result != 0) {
+            throw new Exception("Building web client failed")
+          }
+        }
+        println("Updating NPM dependencies")
+        haltOnError(updateDeps(bd))
+        println("Building with Grunt.js")
+        haltOnError(runGrunt(bd))
+
+      }
+    }
+  })
+
 
 
   lazy val parent: Project = Project(
@@ -221,33 +245,13 @@ object SmlCodebragBuild extends Build {
   lazy val rest: Project = Project(
     "codebrag-rest",
     file("codebrag-rest"),
-    settings = buildSettings ++ gitCommitGenSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig)) ++ Seq(
-      (copyResources in Compile) <<= (copyResources in Compile) dependsOn (genCommitSHAFile))
-  ) dependsOn(service % "test->test;compile->compile", domain, common)
-
-
-  val lintCustomSettings = lintSettingsFor(Test) ++ inConfig(Test)(Seq(
-    sourceDirectory in jslint <<= (baseDirectory)(_ / "src/main/webapp/app"),
-    flags in jslint ++= Seq("undef", "vars", "browser"),
-    compile in Test <<= (compile in Test) dependsOn (jslint)
-  ))
-
-  lazy val ui: Project = Project(
-    "codebrag-ui",
-    file("codebrag-ui"),
-    settings = buildSettings ++ jasmineSettings ++ graphSettings ++ webSettings ++ lintCustomSettings ++ Seq(
+    settings = buildSettings ++ graphSettings ++ webSettings ++ gitCommitGenSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig, jettyContainer)) ++ Seq(
       artifactName := { (config: ScalaVersion, module: ModuleID, artifact: Artifact) =>
         "codebrag." + artifact.extension // produces nice war name -> http://stackoverflow.com/questions/8288859/how-do-you-remove-the-scala-version-postfix-from-artifacts-builtpublished-wi
       },
-      libraryDependencies ++= Seq(jettyContainer, servletApiProvided),
-      appJsDir <+= sourceDirectory { src => src / "main" / "webapp" / "scripts" },
-      appJsLibDir <+= sourceDirectory { src => src / "main" / "webapp" / "scripts" / "vendor" },
-      jasmineTestDir <+= sourceDirectory { src => src / "test" / "unit" },
-      jasmineConfFile <+= sourceDirectory { src => src / "test" / "unit" / "test.dependencies.js" },
-      jasmineRequireJsFile <+= sourceDirectory { src => src / "test" / "lib" / "require" / "require-2.0.6.js" },
-      jasmineRequireConfFile <+= sourceDirectory { src => src / "test" / "unit" / "require.conf.js" },
-      (test in Test) <<= (test in Test) dependsOn (jasmine))
-  ) dependsOn (rest)
+      (copyResources in Compile) <<= (copyResources in Compile) dependsOn (genCommitSHAFile))
+  ) dependsOn(service % "test->test;compile->compile", domain, common)
+
 
   lazy val dist = Project(
     "codebrag-dist",
@@ -265,11 +269,20 @@ object SmlCodebragBuild extends Build {
         case x => old(x)
       } },
       // We need to include the whole webapp, hence replacing the resource directory
-      resourceDirectory in Compile <<= baseDirectory { bd => {
-        bd.getParentFile() / ui.base.getName / "src" / "main"
-      } }
+      unmanagedResourceDirectories in Compile <<= baseDirectory { bd => {
+        List(bd.getParentFile() / rest.base.getName / "src" / "main", bd.getParentFile() / ui.base.getName / "dist")
+        }
+      }
     )
-  ) dependsOn (ui)
+  ) dependsOn (ui, rest)
+
+  lazy val ui = Project(
+    "codebrag-ui",
+    file("codebrag-ui"),
+    settings = buildSettings ++ webClientBuildSettings ++ Seq(
+      (compile in Compile) <<= (compile in Compile) dependsOn (buildWebClient)
+    )
+  )
 
   lazy val uiTests = Project(
     "codebrag-ui-tests",
