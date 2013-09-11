@@ -193,8 +193,9 @@ object SmlCodebragBuild extends Build {
   val webClientBuildSettings = Seq[Setting[_]](buildWebClient <<= {
     (scalaVersion, baseDirectory, projectID) map {
       (sv, bd, pid) => {
-        def updateDeps(cwd: File) = Process("npm install", cwd) !
-        def runGrunt(cwd: File) = Process("grunt build", cwd) !
+        val localGruntCommand = "./node_modules/.bin/grunt build"
+        def updateDeps(cwd: File) = Process("npm install", cwd)!
+        def runGrunt(cwd: File) = Process(localGruntCommand, cwd)!
         def haltOnError(result: Int) {
           if(result != 0) {
             throw new Exception("Building web client failed")
