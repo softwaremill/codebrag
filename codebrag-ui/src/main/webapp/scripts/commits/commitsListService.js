@@ -11,10 +11,10 @@ angular.module('codebrag.commits')
         var commitsListLoadFilter = {
             values: {all: 'all', toReview: 'to_review'},
             current: null,
-            setAll: function() {this.current = this.values.all},
-            setToReview: function() {this.current = this.values.toReview},
-            isAll: function() {return this.current === this.values.all},
-            isToReview: function() {return this.current === this.values.toReview}
+            setAll: function() {this.current = this.values.all;},
+            setToReview: function() {this.current = this.values.toReview;},
+            isAll: function() {return this.current === this.values.all;},
+            isToReview: function() {return this.current === this.values.toReview;}
         };
 
         var commits = [];
@@ -67,10 +67,11 @@ angular.module('codebrag.commits')
                     nextCommitsLoaded: loadedCommits.length
                 };
                 if (indexOfCentral !== -1) {
-                    result.prevCommitsLoaded = loadedCommits.slice(0, indexOfCentral).length,
-                        result.nextCommitsLoaded = loadedCommits.slice(indexOfCentral + 1).length
+                    result.prevCommitsLoaded = loadedCommits.slice(0, indexOfCentral).length;
+                    result.nextCommitsLoaded = loadedCommits.slice(indexOfCentral + 1).length;
                 }
-                return result;            }
+                return result;
+            }
         };
 
         this.loadNewestCommits = function() {
@@ -91,7 +92,7 @@ angular.module('codebrag.commits')
             };
             return Commits.get(options).$then(function(response) {
                 return response.data;
-            })
+            });
         };
 
         this.makeReviewedAndGetNext = function(commitId) {

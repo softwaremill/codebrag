@@ -1,3 +1,4 @@
+
 angular.module('codebrag.commits')
 
     .directive('generalLikes', function(authService, Likes) {
@@ -70,7 +71,7 @@ angular.module('codebrag.commits')
             scope: {
                 commit: '='
             },
-            templateUrl: 'generalLikes',
+            templateUrl: 'views/generalLikes.html',
             controller: GeneralLikesController
-        }
+        };
     });

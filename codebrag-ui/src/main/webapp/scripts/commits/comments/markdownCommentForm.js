@@ -17,7 +17,7 @@ angular.module('codebrag.commits.comments')
                         scope.preview = mdConverter.makeHtml(scope.content || 'Nothing to preview');
                     } else {
                         setTimeout(function() {
-                            element.find('textarea').focus()
+                            element.find('textarea').focus();
                         }, 0);
                     }
                 };
@@ -50,7 +50,7 @@ angular.module('codebrag.commits.comments')
                 };
 
             }
-        }
+        };
     })
 
     .directive('focusAndTabLoop', function() {
@@ -89,5 +89,5 @@ angular.module('codebrag.commits.comments')
                     }
                 });
             }
-        }
+        };
     });

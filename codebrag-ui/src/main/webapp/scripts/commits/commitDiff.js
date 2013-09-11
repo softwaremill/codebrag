@@ -38,7 +38,7 @@ codebrag.diffReactionsDOMReferenceCacheAndResizer = {
         var self = this;
         _.forEach(this.collection, function(el) {
             $(el).width(self.targetWidth);
-        })
+        });
     },
 
     recalculateWidthAndResizeAll: function(exampleElement) {
@@ -73,14 +73,14 @@ angular.module('codebrag.commits')
                         $compile(el.find(attrs.compile))(scope);
                         removeWatcher();
                     });
-                }
+                };
             }
-        }
+        };
     })
 
     .directive('lineCommentForm', function($compile, events, $templateCache, $rootScope) {
 
-        var inlineCommentFormTemplate = $templateCache.get('inlineCommentForm');
+        var inlineCommentFormTemplate = $templateCache.get('views/inlineCommentForm.html');
 
         var fileDiffRootSelector = 'table';
         var fileDiffLineSelector = 'tbody';
@@ -118,12 +118,12 @@ angular.module('codebrag.commits')
                 return {
                     fileName: fileDiffLine.data(fileNameDataAttr),
                     lineNumber: fileDiffLine.data(lineNumberDataAttr)
-                }
+                };
             };
 
             this.isAlreadyPresent = function() {
                 return fileDiffLine.find(inlineCommentFormRootSelector).length > 0;
-            }
+            };
 
         }
 
@@ -154,13 +154,13 @@ angular.module('codebrag.commits')
         return {
             restrict: 'A',
             link: linkFn
-        }
+        };
     })
 
 
     .directive('lineReactions', function($compile, $templateCache, authService, events, $rootScope) {
 
-        var lineReactionsTemplate = $templateCache.get('lineReactions');
+        var lineReactionsTemplate = $templateCache.get('views/lineReactions.html');
 
         var fileDiffRootSelector = 'table';
         var lineReactionsSelector = '[data-inline-reactions-container]';
@@ -232,7 +232,7 @@ angular.module('codebrag.commits')
         return {
             restrict: 'A',
             link: linkFn
-        }
+        };
 
     })
 
@@ -275,7 +275,7 @@ angular.module('codebrag.commits')
                     scope.$apply();
                 });
             }
-        }
+        };
 
     })
 
@@ -283,13 +283,13 @@ angular.module('codebrag.commits')
 
         return {
             restrict: 'E',
-            templateUrl: 'likesLine',
+            templateUrl: 'views/likesLine.html',
             replace: true,
             transclude: true,
             scope: {
                 collection: '='
             }
-        }
+        };
 
     })
 
@@ -315,10 +315,10 @@ angular.module('codebrag.commits')
 
         $scope.lineHasComments = function(reactions) {
             if(_lineHasComments) {
-                return _lineHasComments
+                return _lineHasComments;
             }
             _lineHasComments = reactions && reactions.comments && reactions.comments.length > 0;
-            return _lineHasComments
+            return _lineHasComments;
         };
 
         $scope.displayLineControls = function(reactions) {
@@ -373,7 +373,7 @@ angular.module('codebrag.commits')
                     },50));
                 });
             }
-        }
+        };
 
     });
 

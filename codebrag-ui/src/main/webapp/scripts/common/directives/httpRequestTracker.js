@@ -25,7 +25,7 @@ angular.module('codebrag.common.directives')
                 }
 
                 scope.$watch(function() {
-                    return $http.pendingRequests.length
+                    return $http.pendingRequests.length;
                 }, function() {
                     if(observedRequestsCount()) {
                         element.show();

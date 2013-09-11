@@ -10,7 +10,7 @@ angular.module('codebrag.commits')
                 });
                 scope.$on(events.previousCommitsLoaded, function() {
                     el.animate({scrollTop: 0});
-                })
+                });
             }
-        }
+        };
     });

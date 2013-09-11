@@ -18,7 +18,7 @@ angular.module('codebrag.common.directives')
                     windowHeight: getHeightOrDefault(windowArea),
                     headerHeight: getHeightOrDefault(headerArea),
                     sortingHeight:  getHeightOrDefault(sortingArea)
-                }
+                };
             }
 
             function resizeDiffHeight(diffArea, newHeights) {
@@ -28,14 +28,14 @@ angular.module('codebrag.common.directives')
 
             function resizeListAreaHeight(listArea, newHeights) {
                 var newListAreaHeight = newHeights.windowHeight - newHeights.headerHeight - newHeights.sortingHeight;
-                listArea.height(newListAreaHeight)
+                listArea.height(newListAreaHeight);
             }
 
             this.resize = function(listArea, diffArea) {
                 var newHeights = recalculateHeights();
                 resizeListAreaHeight(listArea, newHeights);
                 resizeDiffHeight(diffArea, newHeights);
-            }
+            };
 
         }
 
@@ -58,7 +58,7 @@ angular.module('codebrag.common.directives')
                     }, 50);
                 }
             }
-        }
+        };
 
     });
 

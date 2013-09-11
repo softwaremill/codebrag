@@ -5,7 +5,7 @@ angular.module('codebrag.commits')
         $scope.markCurrentCommitAsReviewed = function () {
             commitsListService.makeReviewedAndGetNext($scope.currentCommit.info.id).then(function (nextCommit) {
                 goTo(nextCommit);
-            })
+            });
         };
 
         var commitAvailable = function() {

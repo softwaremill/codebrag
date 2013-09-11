@@ -38,7 +38,7 @@ codebrag.AsyncCollection.prototype = {
         return promise.then(function(receivedCollection) {
             self.replaceWith(receivedCollection);
             return self.elements;
-        })
+        });
     },
 
     replaceWith: function(receivedCollection) {
@@ -70,7 +70,10 @@ codebrag.AsyncCollection.prototype = {
      * @returns a promise of removing matching element and returning element on same index after removing.
      */
     removeElementAndGetNext: function(matchFn, promise) {
-        return this.removeElement(matchFn, promise).then(this.getElementOrNull.bind(this));
+        var self = this;
+        return this.removeElement(matchFn, promise).then(function(indexRemoved) {
+            return self.getElementOrNull(indexRemoved);
+        });
     },
 
     _indexOf: function(matchFn) {

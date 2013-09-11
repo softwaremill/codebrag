@@ -9,5 +9,5 @@ angular.module('codebrag.session')
                     !!config.demo ? el.show() : el.hide();
                 });
             }
-        }
+        };
     });

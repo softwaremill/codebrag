@@ -18,6 +18,6 @@ angular.module('codebrag.commits').directive('commitMsgDetailed', function() {
                 }
             });
         }
-    }
+    };
 });
 

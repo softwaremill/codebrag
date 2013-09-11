@@ -8,13 +8,13 @@ angular.module('codebrag.common.directives')
             link: function(scope, el, attrs) {
                 scope.$watch(attrs.url, function(val, old) {
                     if(!val || !val.length) {
-                        scope.avatarUrl = '/images/avatar.png';
+                        scope.avatarUrl = 'assets/images/avatar.png';
                     } else {
                         scope.avatarUrl = val;
                     }
                 });
             }
-        }
+        };
     })
 
     .directive('loggedInUserAvatar', function(authService, events) {
@@ -27,12 +27,12 @@ angular.module('codebrag.common.directives')
                 scope.$on(events.loggedIn, function() {
                     authService.requestCurrentUser().then(function(user) {
                         if(!user.avatarUrl || !user.avatarUrl.length) {
-                            scope.avatarUrl = '/images/avatar.png';
+                            scope.avatarUrl = 'assets/images/avatar.png';
                         } else {
                             scope.avatarUrl = user.avatarUrl;
                         }
                     });
-                })
+                });
             }
-        }
+        };
     });

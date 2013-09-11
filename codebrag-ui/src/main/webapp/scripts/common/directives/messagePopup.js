@@ -1,14 +1,12 @@
 angular.module('codebrag.common.directives')
 
-    .directive("messagePopup", function ($rootScope, events) {
+    .directive("messagePopup", function ($rootScope, events, $templateCache) {
 
-        var template = $('#errorPopup').html();
 
         function displayPopupHandler(scope, element, data) {
-
             scope.errorMsg = data;
             element.empty();
-            element.append(template);
+            element.append($templateCache.get('views/errorPopup.html'));
             element.fadeIn(500, function() {
                 setTimeout(function () {
                     element.fadeOut('slow');

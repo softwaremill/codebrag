@@ -14,5 +14,5 @@ angular.module('codebrag.commits').directive('commitMsgHeadline', function() {
                 }
             });
         }
-    }
+    };
 });

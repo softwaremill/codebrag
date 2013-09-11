@@ -8,5 +8,5 @@ angular.module('codebrag.common.directives')
             $(element).click(function(event) {
                 event.stopPropagation();
             });
-        }
+        };
     });

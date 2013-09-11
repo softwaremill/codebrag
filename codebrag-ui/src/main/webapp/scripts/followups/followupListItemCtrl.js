@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('codebrag.followups')
 
     .controller('FollowupListItemCtrl', function ($scope, $state, $stateParams, followupsService, $rootScope, events) {
@@ -8,7 +6,7 @@ angular.module('codebrag.followups')
             if(_thisFollowupOpened(followup)) {
                 $rootScope.$broadcast(events.scrollOnly);
             } else {
-                $state.transitionTo('followups.details', {followupId: followup.followupId, commentId: followup.lastReaction.reactionId})
+                $state.transitionTo('followups.details', {followupId: followup.followupId, commentId: followup.lastReaction.reactionId});
             }
         };
 

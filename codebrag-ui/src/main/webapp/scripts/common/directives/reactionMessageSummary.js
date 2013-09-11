@@ -17,5 +17,5 @@ angular.module('codebrag.common.directives')
                     scope.reactionMessage = reaction.reactionAuthor + ' liked your code.';
                 }
             }
-        }
+        };
     });

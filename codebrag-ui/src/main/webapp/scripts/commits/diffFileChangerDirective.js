@@ -43,7 +43,7 @@ angular.module('codebrag.commits')
                 });
 
             }
-        }
+        };
     })
 
     .directive('diffScrollSpy', function ($rootScope, events) {
@@ -113,7 +113,7 @@ angular.module('codebrag.commits')
                 }
 
             }
-        }
+        };
 
     });
 

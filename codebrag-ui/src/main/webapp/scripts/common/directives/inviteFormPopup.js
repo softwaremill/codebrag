@@ -50,7 +50,7 @@ angular.module('codebrag.common.directives').directive('inviteFormPopup', functi
             function failure() {
                 $scope.invitation = {
                     invitationNotCreated: true
-                }
+                };
             }
         }
 
@@ -68,8 +68,8 @@ angular.module('codebrag.common.directives').directive('inviteFormPopup', functi
         restrict: 'E',
         replace: true,
         scope: {},
-        templateUrl: 'inviteForm',
+        templateUrl: 'views/inviteForm.html',
         controller: InviteFormPopup
-    }
+    };
 
 });

@@ -10,8 +10,8 @@ angular.module('codebrag.common.directives').directive('earlyVersionPopup', func
 
         $scope.openContactFormPopup = function() {
             $scope.close();
-            $rootScope.$broadcast('openContactFormPopup')
-        }
+            $rootScope.$broadcast('openContactFormPopup');
+        };
 
     }
 
@@ -19,7 +19,7 @@ angular.module('codebrag.common.directives').directive('earlyVersionPopup', func
         restrict: 'E',
         replace: true,
         scope: {},
-        templateUrl: 'earlyVersionPopup',
+        templateUrl: 'views/earlyVersionPopup.html',
         controller: EarlyVersionPopup,
         link: function(scope, el, attrs) {
             var $ribbon = el.find('a.ribbon');
@@ -28,7 +28,7 @@ angular.module('codebrag.common.directives').directive('earlyVersionPopup', func
                 scope.$digest();
             });
         }
-    }
+    };
 
 });
 

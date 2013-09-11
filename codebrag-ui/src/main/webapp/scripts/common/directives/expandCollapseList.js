@@ -15,7 +15,7 @@ angular.module('codebrag.common.directives')
                         commitsList.animate({opacity: 0}, 500);
                         setTimeout(function() {
                             triggerWindowResizeToLetCommentsFormAutoFit();
-                            el.find('i').removeClass().addClass('icon-chevron-right')
+                            el.find('i').removeClass().addClass('icon-chevron-right');
                         }, 1000);
                     } else {
                         commitsList.animate({opacity: 1}, 500);
@@ -23,7 +23,7 @@ angular.module('codebrag.common.directives')
                         triggerWindowResizeToLetCommentsFormAutoFit();
                     }
 
-                })
+                });
             }
-        }
+        };
     });

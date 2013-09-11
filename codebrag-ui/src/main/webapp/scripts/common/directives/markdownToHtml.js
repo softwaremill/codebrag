@@ -10,6 +10,6 @@ angular.module('codebrag.common.directives')
             link: function(scope, element) {
                 element.html(converter.makeHtml(scope.content || ''));
             }
-        }
+        };
     });
 

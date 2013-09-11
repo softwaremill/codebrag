@@ -3,15 +3,15 @@ angular.module('codebrag.notifications')
     .service('notificationCountersService', function ($http, $rootScope, events) {
 
         $rootScope.$on(events.commitCountChanged, function(event, data) {
-            _updateCommits(data.commitCount)
+            _updateCommits(data.commitCount);
         });
 
         $rootScope.$on(events.followupCountChanged, function(event, data) {
-            _updateFollowups(data.followupCount)
+            _updateFollowups(data.followupCount);
         });
 
         $rootScope.$on(events.loggedIn, function() {
-            _loadCountersFromServer()
+            _loadCountersFromServer();
         });
 
         var counterValues = {
@@ -40,5 +40,5 @@ angular.module('codebrag.notifications')
 
         return {
             counters: counters
-        }
+        };
     });

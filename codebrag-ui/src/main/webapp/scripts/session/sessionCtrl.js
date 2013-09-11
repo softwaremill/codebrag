@@ -64,7 +64,7 @@ angular.module('codebrag.session')
             // set dirty to show error messages on empty fields when submit is clicked
             $scope.loginForm.login.$dirty = true;
             $scope.loginForm.password.$dirty = true;
-            return $scope.loginForm.$invalid === false
+            return $scope.loginForm.$invalid === false;
         }
 
         function logInUser() {

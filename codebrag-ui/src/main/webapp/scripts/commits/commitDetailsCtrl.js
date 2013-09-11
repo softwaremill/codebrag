@@ -4,7 +4,7 @@ angular.module('codebrag.commits')
         var currentCommit;
         return {
             set: function (newCommit) {
-                currentCommit = newCommit
+                currentCommit = newCommit;
             },
             get: function () {
                 return currentCommit;
@@ -12,7 +12,7 @@ angular.module('codebrag.commits')
             empty: function() {
                 currentCommit = null;
             }
-        }
+        };
     })
 
     .controller('CommitDetailsCtrl', function ($stateParams, $state, $scope, commitsListService, currentCommit) {

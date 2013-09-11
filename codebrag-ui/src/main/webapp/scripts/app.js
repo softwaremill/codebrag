@@ -1,4 +1,3 @@
-"use strict";
 angular.module('codebrag.events', []);
 
 angular.module('codebrag.common.services', []);
@@ -17,6 +16,7 @@ angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.com
 angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events']);
 
 angular.module('codebrag', [
+    'codebrag.templates',
     'codebrag.auth',
     'codebrag.common',
     'codebrag.session',
@@ -68,7 +68,7 @@ angular.module('codebrag.session')
                 url: '/error',
                 templateUrl: 'views/errorpages/error500.html',
                 noLogin: true
-            })
+            });
     });
 
 angular.module('codebrag.commits')
@@ -87,7 +87,7 @@ angular.module('codebrag.commits')
             .state('commits.details', {
                 url: '/{id}',
                 templateUrl: 'views/secured/commits/commitDetails.html'
-            })
+            });
     });
 
 angular.module('codebrag.followups')
@@ -106,5 +106,5 @@ angular.module('codebrag.followups')
             .state('followups.details', {
                 url: '/{followupId}/comments/{commentId}',
                 templateUrl: 'views/secured/followups/followupDetails.html'
-            })
+            });
     });

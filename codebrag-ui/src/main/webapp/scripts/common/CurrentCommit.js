@@ -20,15 +20,15 @@ codebrag.CurrentCommit.prototype = {
     diffFileNames: function() {
         return this.diff.map(function(file) {
             return file.filename;
-        })
+        });
     },
 
     addLike: function(like, fileName, lineNumber) {
-        this._addLineReaction(like, 'likes', fileName, lineNumber)
+        this._addLineReaction(like, 'likes', fileName, lineNumber);
     },
 
     addInlineComment: function(comment, fileName, lineNumber) {
-        this._addLineReaction(comment, 'comments', fileName, lineNumber)
+        this._addLineReaction(comment, 'comments', fileName, lineNumber);
     },
 
     _addLineReaction: function(reaction, reactionType, fileName, lineNumber) {
@@ -55,7 +55,7 @@ codebrag.CurrentCommit.prototype = {
         } else {
             return _.find(this.reactions.likes, function(like) {
                 return like.authorName === userName;
-            })
+            });
         }
     },
 
@@ -71,7 +71,7 @@ codebrag.CurrentCommit.prototype = {
     },
 
     isUserAuthorOfCommit: function(userName) {
-         return this.info.authorName === userName
+         return this.info.authorName === userName;
     },
 
     userAlreadyLikedLine: function (userName, fileName, lineNumber) {

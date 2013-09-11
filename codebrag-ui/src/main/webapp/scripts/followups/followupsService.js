@@ -38,7 +38,7 @@ angular.module('codebrag.followups')
         }
 
         function _broadcastNewFollowupCountEvent() {
-            $rootScope.$broadcast(events.followupCountChanged, {followupCount: followupsListLocal.followupsCount()})
+            $rootScope.$broadcast(events.followupCountChanged, {followupCount: followupsListLocal.followupsCount()});
         }
 
         return {
@@ -46,7 +46,7 @@ angular.module('codebrag.followups')
             removeAndGetNext: removeAndGetNext,
             loadFollowupDetails: loadFollowupDetails,
             hasFollowups: hasFollowups
-        }
+        };
 
     });
 
@@ -106,7 +106,7 @@ codebrag.followups.LocalFollowupsList = function(collection) {
         return _.reduce(this.collection, function(sum, followupsGroup) {
             return sum + followupsGroup.followups.length;
         }, 0);
-    }
+    };
 
 };
 

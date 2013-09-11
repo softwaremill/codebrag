@@ -32,5 +32,5 @@ angular.module('codebrag.commits.comments')
                     return element.find('tr.comment-form');
                 }
             }
-        }
+        };
     });

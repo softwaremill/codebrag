@@ -31,7 +31,7 @@ angular.module('codebrag.commits')
         };
 
         $scope.allCommitsReviewed = function() {
-            var emptyList = ($scope.commits && $scope.commits.length == 0);
+            var emptyList = ($scope.commits && $scope.commits.length === 0);
             var noMoreCommitsOnServer = !commitsListService.hasNextCommits();
             return emptyList && noMoreCommitsOnServer;
         };
@@ -49,7 +49,7 @@ angular.module('codebrag.commits')
         function loadPendingCommits() {
             commitsListService.loadCommitsToReview().then(function(commits) {
                 $scope.commits = commits;
-            })
+            });
         }
 
         $scope.initCtrl = function() {

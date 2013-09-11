@@ -53,6 +53,6 @@ angular.module('codebrag.common.directives')
                     scrollIfElementPresent();
                 });
             }
-        }
+        };
     });
 

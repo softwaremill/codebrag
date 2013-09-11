@@ -67,7 +67,7 @@ codebrag.commitsList.mixin.withIndexOperations = function() {
     };
 
     this.empty = function() {
-        return this.length == 0;
-    }
+        return this.length === 0;
+    };
 
 };
