@@ -49,9 +49,6 @@ angular.module('codebrag.auth')
                 } else {
                     return $http.get('rest/users/first-registration').then(function (response) {
                         var firstRegistration = response.data.firstRegistration;
-                        if (firstRegistration === true) {
-                            $state.transitionTo('register',{});
-                        }
                         return $q.when(firstRegistration)
                     })
                 }

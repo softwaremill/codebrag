@@ -30,9 +30,11 @@ angular.module('codebrag')
             return codebrag.uniqueRequestsAwareHttpService($delegate, $q);
         });
     })
-    .run(function (authService) {
+    .run(function (authService, $state) {
         authService.isFirstRegistration().then(function (firstRegistration) {
-            if (firstRegistration === false) {
+            if (firstRegistration === true) {
+                $state.transitionTo('register', {});
+            } else {
                 authService.requestCurrentUser();
             }
         });
