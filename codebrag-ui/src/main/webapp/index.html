@@ -5,38 +5,46 @@
     <title>Codebrag</title>
 
     <link href="http://fonts.googleapis.com/css?family=PT+Sans:400,700|PT+Sans+Caption&amp;subset=cyrillic,latin-ext,latin" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="/fonts/font-awesome/css/font-awesome.min.css">
-    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/styles/index.css">
+    <link rel="stylesheet" href="assets/fonts/font-awesome/css/font-awesome.min.css">
+    <link rel="shortcut icon" href="assets/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+
+    <!-- build:css({tmp,app}) styles/index-all.css -->
+    <link rel="stylesheet" href="styles/index.css">
+    <!-- endbuild -->
 
     <!-- TODO: enable IE workarounds later -->
 
-    <script type="text/javascript" src="scripts/vendor/jquery-1.8.2-min.js"></script>
-    <script type="text/javascript" src="scripts/vendor/lodash.js"></script>
+    <!-- build:js({tmp,app}) scripts/vendor-all.js -->
+    <script type="text/javascript" src="vendor/jquery-1.8.2-min.js"></script>
+    <script type="text/javascript" src="vendor/lodash.js"></script>
 
-    <script type="text/javascript" src="scripts/vendor/handlebars.js"></script>
+    <script type="text/javascript" src="vendor/handlebars.js"></script>
 
-    <script type="text/javascript" src="scripts/vendor/bootstrap.js"></script>
-    <script type="text/javascript" src="scripts/vendor/moment.js"></script>
+    <script type="text/javascript" src="vendor/bootstrap.js"></script>
+    <script type="text/javascript" src="vendor/moment.js"></script>
 
     <!-- angular stuff -->
-    <script type="text/javascript" src="scripts/vendor/angular.js"></script>
-    <script type="text/javascript" src="scripts/vendor/angular-resource.js"></script>
-    <script type="text/javascript" src="scripts/vendor/angular-sanitize.js"></script>
-    <script type="text/javascript" src="scripts/vendor/angular-cookies.js"></script>
-    <script type="text/javascript" src="scripts/vendor/angular-ui-states.js"></script>
+    <script type="text/javascript" src="vendor/angular.js"></script>
+    <script type="text/javascript" src="vendor/angular-resource.js"></script>
+    <script type="text/javascript" src="vendor/angular-sanitize.js"></script>
+    <script type="text/javascript" src="vendor/angular-ui-states.js"></script>
 
     <!-- for stubbed backend -->
-    <script type="text/javascript" src="scripts/vendor/angular-mocks.js"></script>
+    <script type="text/javascript" src="vendor/angular-mocks.js"></script>
 
-    <script type="text/javascript" src="scripts/vendor/markdown/Markdown.Converter.js"></script>
-    <script type="text/javascript" src="scripts/vendor/markdown/Markdown.Sanitizer.js"></script>
-    <script type="text/javascript" src="scripts/vendor/jquery-scrollto.js"></script>
-    <script type="text/javascript" src="scripts/vendor/jquery-ui-effects.js"></script>
+    <script type="text/javascript" src="vendor/markdown/Markdown.Converter.js"></script>
+    <script type="text/javascript" src="vendor/markdown/Markdown.Sanitizer.js"></script>
+    <script type="text/javascript" src="vendor/jquery-scrollto.js"></script>
+    <script type="text/javascript" src="vendor/jquery-ui-effects.js"></script>
+    <!-- endbuild -->
 
+    <!-- build:js({tmp,app}) scripts/codebrag-all.js -->
     <!-- main module -->
     <script type="text/javascript" src="scripts/app.js"></script>
+
+    <!-- templates module -->
+    <script type="text/javascript" src="scripts/templates.js"></script>
 
     <!-- stubbed backend definition -->
     <script type="text/javascript" src="scripts/backendStub.js"></script>
@@ -112,6 +120,7 @@
     <script type="text/javascript" src="scripts/common/AsyncCollection.js"></script>
     <script type="text/javascript" src="scripts/common/CurrentCommit.js"></script>
     <script type="text/javascript" src="scripts/common/uniqueRequestsAwareHttpService.js"></script>
+    <!-- endbuild -->
 
 </head>
 
@@ -149,194 +158,5 @@
     <section ui-view></section>
     <div message-popup></div>
     <early-version-popup></early-version-popup>
-
-    <script type="text/ng-template" id="earlyVersionPopup">
-        <div>
-            <a class="ribbon">Early version</a>
-            <div class="ribbon popup-page" ng-show="isVisible">
-                <div class="popup-box">
-                    <div class="popup-content">
-                        <h1>This is a very early version of Codebrag.</h1>
-                        <p>It may contain bugs and for sure it does not contain all the features<br>we would wish it had.</p>
-                        <p>We would love to hear your opinion on how it works.<br>Feel free to leave your feedback <a ng-click="openContactFormPopup()">here</a>.</p>
-                        <blockquote>If you are not ashamed of your product when you launch it,<br>you launched too late.
-                            <footer> — Reid Hoffman</footer>
-                        </blockquote>
-                    </div>
-                    <span class="close-btn" ng-click="close()"><i class="icon-remove"></i></span>
-                </div>
-            </div>
-        </div>
-    </script>
-
-    <script type="text/ng-template" id="inlineCommentForm">
-        <tr class="comments-container comment-form">
-            <td colspan="3">
-                <div data-resize-to-view="true">
-                    <markdown-comment-form action="submitInlineComment" extra-args="commentParams" closeable="true"></markdown-comment-form>
-                </div>
-            </td>
-        </tr>
-    </script>
-
-    <script type="text/ng-template" id="errorPopup">
-        <div class="popup-error"><i class="icon-warning-sign"></i>Communication error occured...</div>
-    </script>
-
-    <script type="text/ng-template" id="lineReactions">
-        <tr class="inline-likes comments-container" ng-show="lineReactions.likes.length > 0" data-inline-reactions-container>
-            <td colspan="3">
-                <div class="comment" data-resize-to-view="true" data-scrollable-reaction>
-                    <likes collection="lineReactions.likes"></likes>
-                </div>
-            </td>
-        </tr>
-        <tr class="comments-container" ng-show="lineReactions.comments.length > 0" data-inline-reactions-container>
-            <td colspan="3">
-                <!--inline comment start-->
-                <div data-resize-to-view="true">
-                    <div class="comment" data-scrollable-reaction ng-repeat="comment in lineReactions.comments" id="{{comment.id}}">
-                        <div class="authored-box">
-                            <div class="author-box"><user-avatar url="comment.authorAvatarUrl"></user-avatar></div>
-                            <div class="info-box">
-                                <div class="info-line"><span class="username">{{comment.authorName}}</span><span class="time">{{comment.time | relativeDate}}</span></div>
-                                <div class="comment-body">
-                                    <markdown-to-html content="comment.message"></markdown-to-html>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--inline comment end-->
-            </td>
-        </tr>
-        <tr class="comments-container" data-inline-reactions-container data-thread-controls ng-controller="ReactionControlsCtrl" ng-show="displayLineControls(lineReactions)">
-            <td colspan="3">
-                <!--inline comment start-->
-                <div data-resize-to-view="true">
-                    <div class="comment write active">
-                        <ul class="comment-action-btns button-group">
-                            <li ng-show="lineHasComments(lineReactions)" data-commentable><a class="button primary reply">Reply</a></li>
-                            <li><a ng-show="isCurrentFollowup(lineReactions)" class="button primary kthxbye" ng-click="markCurrentFollowupAsDone()"><i class="icon-ok-circle"> </i>OK THX</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </td>
-        </tr>
-    </script>
-
-    <script type="text/ng-template" id="likesLine">
-        <div class="username" data-scrollable-reaction><ul class="likes-list"><li ng-repeat="like in collection" id="{{like.id}}">{{like.authorName}}</li></ul>like(s) this line</div>
-    </script>
-    <script type="text/ng-template" id="generalLikes">
-        <div class="like-commit" data-scrollable-reaction ng-class="{'liked-by-user': userCannotLike()}">
-            <a class="like button" ng-click="likeOrUnlike()"><i class="icon-heart"></i></a>
-            <span>{{listUsersWhoLike()}}</span>
-        </div>
-    </script>
-
-    <script type="text/ng-template" id="contactForm">
-        <div class="uservoice popup-page" id="uservoice-form-popup" ng-show="isVisible">
-            <div class="popup-box">
-                <form class="popup-content" name="contactForm" novalidate>
-                    <fieldset class="uv-contact">
-                        <h1>Contact us</h1>
-                        <div class="form-group">
-                            <label for="uv-msg-subject">Message subject</label>
-                            <input id="uv-msg-subject" type="text" ng-model="msg.subject" name="subject" required>
-                        <span class="text-error" ng-show="contactForm.subject.$dirty && contactForm.subject.$invalid">
-                            <i class="icon-remove"></i>
-                            Subject is required</span>
-                        </div>
-                        <div class="form-group">
-                            <label for="uv-msg-body">How can we help you today?</label>
-                            <textarea id="uv-msg-body" rows="6" ng-model="msg.body" name="body" required></textarea>
-                        <span class="text-error" ng-show="contactForm.body.$dirty && contactForm.body.$invalid">
-                            <i class="icon-remove"></i>
-                            Meassage is required</span>
-                        </div>
-                        <div class="form-group">
-                            <label for="uv-email">Your email address</label>
-                            <input id="uv-email" type="email" ng-model="msg.email" name="email" required>
-                        <span class="text-error" ng-show="contactForm.email.$dirty && contactForm.email.$invalid">
-                            <i class="icon-remove"></i>
-                            Valid email address is required</span>
-                        </div>
-                        <div class="btn-centered-wrapper" ng-hide="failure">
-                            <button class="button centered" ng-click="submit()" ng-disabled="contactForm.$invalid">Send message</button>
-                        </div>
-                    </fieldset>
-                    <fieldset class="uv-success" ng-class="{opened: success}">
-                        <h1>Thanks!</h1>
-                        <p>We really appreciate your effort to make Codebrag better!</p>
-                    </fieldset>
-                    <fieldset class="uv-error" ng-class="{opened: failure}">
-                        <h1>Ooops!</h1>
-                        <p>Something went wrong... Do you want to try again?</p>
-                        <div class="btn-centered-wrapper">
-                            <button class="button centered" ng-click="submit()">Sure, let's try again</button>
-                        </div>
-                    </fieldset>
-                </form>
-                <span class="close-btn" ng-click="close()">
-                    <i class="icon-remove"></i>
-                </span>
-            </div>
-        </div>
-    </script>
-
-    <script type="text/ng-template" id="inviteForm">
-        <div class="invite popup-page opened" id="invite-form-popup" ng-show="isVisible">
-            <div class="popup-box">
-                <form class="popup-content" name="inviteForm" novalidate>
-                    <fieldset class="invitation" ng-class="{opened: invite}">
-                        <h1>Invite friends</h1>
-
-                        <p>Review the code together and learn from each other!</p>
-
-                        <p class="text-error" ng-show="invitation.invitationNotSend">Ooops, sending failed... You can copy register
-                            link and send it via email.</p>
-                        <p class="text-error" ng-show="invitation.invitationNotCreated">Error occurred during creating invitation.
-                            Please contact your Codebrag administrator.</p>
-
-                        <div class="form-group">
-                            <label for="invitation-email">Email address</label>
-                            <input id="invitation-email" type="email" ng-model="invitation.email" name="email"
-                                   placeholder="Email" required>
-                    <span class="text-error" ng-show="inviteForm.email.$dirty && inviteForm.email.$invalid">
-                        <i class="icon-remove"></i>
-                        Valid email address is required</span>
-                        </div>
-                        <div class="form-group">
-                            <label for="invitation-body">Message text</label>
-                            <textarea id="invitation-body" rows="6" ng-model="invitation.body" name="body"
-                                      required></textarea>
-                    <span class="text-error" ng-show="inviteForm.body.$dirty && inviteForm.body.$invalid">
-                            <i class="icon-remove"></i> At least register link is required</span>
-                        </div>
-                        <div class="btn-centered-wrapper">
-                            <button class="button centered" ng-click="submit()" ng-disabled="inviteForm.$invalid">
-                                Invite
-                            </button>
-                        </div>
-                    </fieldset>
-                    <fieldset class="invite-success" ng-class="{opened: success}">
-                        <h1>Invite friends</h1>
-
-                        <p>An invitation has been sent!</p>
-
-                        <div class="btn-centered-wrapper">
-                            <button class="button centered" ng-click="inviteMore()">Invite more friends</button>
-                            <button class="button centered" ng-click="close()">Close</button>
-                        </div>
-                    </fieldset>
-            <span class="close-btn" ng-click="close()">
-                <i class="icon-remove"></i>
-            </span>
-                </form>
-            </div>
-        </div>
-    </script>
-
 </body>
 </html>
