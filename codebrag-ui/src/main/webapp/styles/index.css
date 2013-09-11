@@ -434,11 +434,12 @@ form .form-group span.text-error:after {
   top: -8px;
 }
 #loginform {
-  margin-left: -11.61em;
+  margin-left: -12em;
   margin-top: -10.42em;
+  max-width: 24em;
   left: 50%;
   position: absolute;
-  top: 45%;
+  top: 35%;
 }
 #loginform form {
   background: #fff;
@@ -1373,7 +1374,7 @@ tr:hover .diff-line-num .button i {
   margin-right: 5px;
 }
 .login-error {
-  background: #f3720b;
+  background: #f0552f;
   color: #ffd8cf;
   padding: 0.77em 1.15em;
   text-align: center;
