@@ -26,7 +26,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")
     context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupService), Prefix + FollowupsServlet.MappingPath)
     context.mount(new NotificationCountServlet(authenticator, swagger, notificationCountFinder), Prefix + NotificationCountServlet.MappingPath)
-    context.mount(new SwaggerApiDoc(swagger), Prefix + "api-docs/*")
+    context.mount(new SwaggerApiDoc(swagger), "/api-docs/*")
     context.mount(new DebugServlet(repoDataProducer, commitImportService, config), Prefix + DebugServlet.MappingPath)
     context.mount(new RefreshRepoDataServlet(repoDataProducer, repositoryUpdateActor), RefreshRepoDataServlet.MappingPath)
     context.mount(new VersionServlet, Prefix + "version")
