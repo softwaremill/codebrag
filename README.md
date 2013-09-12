@@ -11,7 +11,7 @@ Important elements to fill:
     * `codebrag.local-git-storage-path` (Optional): path to directory where local git repositories should be stored. Useful for developers to avoid having these repositories in same directory as source files.
 3. Navigate to the `codebrag` home directory
 4. Execute `./run.sh` script
-5. Navigate to `localhost:8080` and use it (enter any user/pass to log in, an account will be created automatically)
+5. Default browser should open at `localhost:9090`
 
 Run Codebrag with stubbed backend
 ---
@@ -55,6 +55,7 @@ Prerequisites:
 3. OS X 10.8 (mongodb tests are hanging on version 10.7)
 4. Sbt version 12.3
 5. Add sbt-idea plugin. In file `~/.sbt/plugins/build.sbt` insert line `addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.5.1")`
+6. Install nodejs (0.10.13 or newer) and make sure `node` and `npm` are available on `PATH`
 
 Working with application:
 
@@ -62,4 +63,9 @@ Working with application:
 2. start sbt with `sbt`
 3. Generate Intellij Idea project files with `gen-idea` command
 4. Open project in Idea
-5. run project on jetty with `~;container:start; container:reload /`. Project will be recompiled & redeployed every time sources will be changed.
+5. run backend server on jetty with `~;container:start; container:reload /`. Project will be recompiled & redeployed every time Scala sources will be changed.
+6. Go to `codebrag-ui` project. If this is your first attempt, run `npm install`. This will install all the dependencies required to start UI Codebrag application. Then run `grunt serve`
+
+Default browser should open at [http://localhost:9090](http://localhost:9090)
+
+For more information about UI application build please consult [README in codebrag-ui project](codebrag-ui/)
