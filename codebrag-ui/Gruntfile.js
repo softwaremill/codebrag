@@ -31,6 +31,13 @@ module.exports = function (grunt) {
             }
         },
 
+        preprocess: {
+            nobackend: {
+                src: 'dist/webapp/index.html',
+                dest: 'dist/webapp/index.html'
+            }
+        },
+
         connect: {
             proxies: [{context: '/rest/', host: 'localhost', port: 8080}],
             options: {
@@ -176,7 +183,8 @@ module.exports = function (grunt) {
         'copy:index',
         'useminPrepare',
         'concat',
-        'usemin'
+        'usemin',
+        'preprocess:nobackend'
     ]);
 
     grunt.registerTask('test', [

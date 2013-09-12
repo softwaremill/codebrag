@@ -30,9 +30,6 @@
     <script type="text/javascript" src="vendor/angular-sanitize.js"></script>
     <script type="text/javascript" src="vendor/angular-ui-states.js"></script>
 
-    <!-- for stubbed backend -->
-    <script type="text/javascript" src="vendor/angular-mocks.js"></script>
-
     <script type="text/javascript" src="vendor/markdown/Markdown.Converter.js"></script>
     <script type="text/javascript" src="vendor/markdown/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="vendor/jquery-scrollto.js"></script>
@@ -45,9 +42,6 @@
 
     <!-- templates module -->
     <script type="text/javascript" src="scripts/templates.js"></script>
-
-    <!-- stubbed backend definition -->
-    <script type="text/javascript" src="scripts/backendStub.js"></script>
 
     <!-- security -->
     <script type="text/javascript" src="scripts/auth/httpAuthInterceptor.js"></script>
@@ -121,6 +115,12 @@
     <script type="text/javascript" src="scripts/common/CurrentCommit.js"></script>
     <script type="text/javascript" src="scripts/common/uniqueRequestsAwareHttpService.js"></script>
     <!-- endbuild -->
+
+    <!-- @exclude -->
+    <!-- for stubbed backend -  excluded when built for production -->
+    <script type="text/javascript" src="vendor/angular-mocks.js"></script>
+    <script type="text/javascript" src="scripts/backendStub.js"></script>
+    <!-- @endexclude-->
 
 </head>
 
