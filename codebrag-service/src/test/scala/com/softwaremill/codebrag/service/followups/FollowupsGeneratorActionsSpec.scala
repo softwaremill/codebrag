@@ -8,21 +8,14 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao._
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.domain._
-import org.joda.time.DateTime
-import org.mockito.BDDMockito._
-import com.softwaremill.codebrag.domain.reactions.{UnlikeEvent, LikeEvent}
-import scala.Some
-import com.softwaremill.codebrag.domain.Like
+import com.softwaremill.codebrag.domain.builder.{CommentAssembler, CommitInfoAssembler, UserAssembler, LikeAssembler}
 import com.softwaremill.codebrag.domain.reactions.LikeEvent
 import com.softwaremill.codebrag.domain.Followup
 import scala.Some
+import com.softwaremill.codebrag.domain.FollowupWithNoReactions
 import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
-import com.softwaremill.codebrag.domain.Like
-import com.softwaremill.codebrag.domain.builder.{CommentAssembler, LikeAssembler}
 
 class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterEach with MockitoSugar {
-
-  behavior of "FollowupsGeneratorActions"
 
   var generator: FollowupsGeneratorActions = _
   var followupDaoMock: FollowupDAO = _
@@ -30,16 +23,11 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
   var commitDaoMock: CommitInfoDAO = _
   var followupWithReactionsDaoMock: FollowupWithReactionsDAO = _
 
-  val commitId = new ObjectId
-  val likeId = new ObjectId
-  val likeSenderId = new ObjectId
-  val likeDate = new DateTime
-  val likeAuthorName = "Like Author Name"
-  val commitAuthorName = "Lazy Val"
-  val likeFileName = "file.txt"
-  val likeLineNumber = 27
-  val like = Like(likeId, commitId, likeSenderId, likeDate, Some(likeFileName), Some(likeLineNumber))
-  val event = LikeEvent(like)
+  val bob = UserAssembler.randomUser.withEmail("bob@smith.com").get
+  val john = UserAssembler.randomUser.withEmail("john@doe.com").get
+  val bobsCommit = CommitInfoAssembler.randomCommit.withAuthorEmail(bob.email).withAuthorName(bob.name).get
+  val johnsLike = LikeAssembler.likeFor(bobsCommit.id).withAuthorId(john.id).get
+  val johnsLikeEvent = LikeEvent(johnsLike)
 
   override def beforeEach() {
     followupDaoMock = mock[FollowupDAO]
@@ -57,39 +45,32 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
 
   it should "generate a followup for author of liked commit" in {
     // given
-    val likeAuthor = mock[User]
-    val commitAuthor = mock[User]
-    given(userDaoMock.findById(likeSenderId)).willReturn(Some(likeAuthor))
-    given(likeAuthor.name).willReturn(likeAuthorName)
-    val commitMock = mock[CommitInfo]
-    given(commitDaoMock.findByCommitId(commitId)).willReturn(Some(commitMock))
-    given(commitMock.authorName).willReturn(commitAuthorName)
-    given(userDaoMock.findByUserName(commitAuthorName)).willReturn(Some(commitAuthor))
+    when(commitDaoMock.findByCommitId(bobsCommit.id)).thenReturn(Some(bobsCommit))
+    when(userDaoMock.findByUserNameOrEmail(bob.name, bob.email)).thenReturn(Some(bob))
 
     // when
-    generator.handleCommitLiked(event)
+    generator.handleCommitLiked(johnsLikeEvent)
 
     // then
     val followupArgument = ArgumentCaptor.forClass(classOf[Followup])
-
     verify(followupDaoMock).createOrUpdateExisting(followupArgument.capture())
-    val resultFollowup: Followup = followupArgument.getValue
-    resultFollowup.reaction.id should equal(likeId)
-    resultFollowup.reaction.postingTime should equal(likeDate)
-    resultFollowup.reaction.commitId should equal(commitId)
-    resultFollowup.reaction.fileName.get should equal(likeFileName)
-    resultFollowup.reaction.lineNumber.get should equal(likeLineNumber)
+    val resultFollowup = followupArgument.getValue
+    resultFollowup.receivingUserId should equal(bob.id)
+    resultFollowup.reaction.id should equal(johnsLike.id)
+    resultFollowup.reaction.commitId should equal(bobsCommit.id)
+    resultFollowup.reaction.fileName should equal(johnsLike.fileName)
+    resultFollowup.reaction.lineNumber should equal(johnsLike.lineNumber)
   }
 
   it should "not generate a follow-up if commit author doesn't exist" in {
     // given
-    val userMock = mock[User]
-    given(userDaoMock.findById(likeSenderId)).willReturn(Some(userMock))
-    given(userMock.name).willReturn(likeAuthorName)
-    val commitMock = mock[CommitInfo]
-    given(commitDaoMock.findByCommitId(commitId)).willReturn(Some(commitMock))
-    given(commitMock.authorName).willReturn(commitAuthorName)
-    given(userDaoMock.findByUserName(commitAuthorName)).willReturn(None)
+    val nonExistingCommitAuthor = UserAssembler.randomUser.withEmail("bob@smith.com").get
+    val likeAuthor = UserAssembler.randomUser.withEmail("john@doe.com").get
+    val commit = CommitInfoAssembler.randomCommit.withAuthorEmail(nonExistingCommitAuthor.email).withAuthorName(nonExistingCommitAuthor.name).get
+    val like = LikeAssembler.likeFor(commit.id).withAuthorId(likeAuthor.id).get
+    val event = LikeEvent(like)
+    when(commitDaoMock.findByCommitId(commit.id)).thenReturn(Some(commit))
+    when(userDaoMock.findByUserNameOrEmail(nonExistingCommitAuthor.name, nonExistingCommitAuthor.email)).thenReturn(None)
 
     // when
     generator.handleCommitLiked(event)
@@ -98,14 +79,13 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
     verifyZeroInteractions(followupDaoMock)
   }
 
-  it should "remove followup for given thread if loaded followup has no reactions already (like was already removed)" in {
+  it should "remove followup for given thread if loaded followup has no reactions (like was unliked)" in {
     // given
-    val likeToUnlike = LikeAssembler.likeFor(commitId).get
-    val followup = FollowupWithNoReactions(new ObjectId, new ObjectId, ThreadDetails(commitId))
-    given(followupWithReactionsDaoMock.findAllContainingReaction(likeToUnlike.id)).willReturn(List(Left(followup)))
+    val followup = FollowupWithNoReactions(new ObjectId, new ObjectId, ThreadDetails(bobsCommit.id))
+    when(followupWithReactionsDaoMock.findAllContainingReaction(johnsLike.id)).thenReturn(List(Left(followup)))
 
     // when
-    generator.handleUnlikeEvent(UnlikeEvent(likeToUnlike.id))
+    generator.handleUnlikeEvent(UnlikeEvent(johnsLike.id))
 
     // then
     verify(followupDaoMock).delete(followup.followupId)
@@ -113,12 +93,11 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
 
   it should "remove followup for given thread if removed like was the only reaction" in {
     // given
-    val likeToUnlike = LikeAssembler.likeFor(commitId).get
-    val followup = FollowupWithReactions(new ObjectId, new ObjectId, ThreadDetails(commitId), likeToUnlike, List(likeToUnlike))
-    given(followupWithReactionsDaoMock.findAllContainingReaction(likeToUnlike.id)).willReturn(List(Right(followup)))
+    val followup = FollowupWithReactions(new ObjectId, new ObjectId, ThreadDetails(bobsCommit.id), johnsLike, List(johnsLike))
+    when(followupWithReactionsDaoMock.findAllContainingReaction(johnsLike.id)).thenReturn(List(Right(followup)))
 
     // when
-    generator.handleUnlikeEvent(UnlikeEvent(likeToUnlike.id))
+    generator.handleUnlikeEvent(UnlikeEvent(johnsLike.id))
 
     // then
     verify(followupDaoMock).delete(followup.followupId)
@@ -126,13 +105,12 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
 
   it should "update followup for given thread if removed like was not the only reaction" in {
     // given
-    val likeToUnlike = LikeAssembler.likeFor(commitId).get
-    val comment = CommentAssembler.commentFor(commitId).get
-    val followup = FollowupWithReactions(new ObjectId, new ObjectId, ThreadDetails(commitId), likeToUnlike, List(likeToUnlike, comment))
-    given(followupWithReactionsDaoMock.findAllContainingReaction(likeToUnlike.id)).willReturn(List(Right(followup)))
+    val comment = CommentAssembler.commentFor(bobsCommit.id).get
+    val followup = FollowupWithReactions(new ObjectId, new ObjectId, ThreadDetails(bobsCommit.id), johnsLike, List(johnsLike, comment))
+    when(followupWithReactionsDaoMock.findAllContainingReaction(johnsLike.id)).thenReturn(List(Right(followup)))
 
     // when
-    generator.handleUnlikeEvent(UnlikeEvent(likeToUnlike.id))
+    generator.handleUnlikeEvent(UnlikeEvent(johnsLike.id))
 
     // then
     val captor = ArgumentCaptor.forClass(classOf[FollowupWithReactions])

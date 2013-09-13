@@ -1,10 +1,9 @@
 package com.softwaremill.codebrag.domain.builder
 
 import pl.softwaremill.common.util.RichString
-import com.softwaremill.codebrag.domain.CommitInfo
+import com.softwaremill.codebrag.domain.{CommitInfo, CommitFileInfo}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.CommitFileInfo
 
 class CommitInfoAssembler(var commit: CommitInfo) {
 

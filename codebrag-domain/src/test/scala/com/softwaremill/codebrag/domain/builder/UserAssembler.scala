@@ -20,6 +20,11 @@ class UserAssembler(var user: User) {
     this
   }
 
+  def withEmail(email: String) = {
+    user = user.copy(email = email)
+    this
+  }
+
   def get = user
 }
 
