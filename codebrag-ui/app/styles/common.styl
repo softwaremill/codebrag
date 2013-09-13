@@ -5,6 +5,7 @@
 .button,
 .button[disabled],
 button
+  // All standard orange buttons.
   border: 1px solid #F55902;
   box-shadow: none;
   font-weight: normal;
@@ -20,10 +21,6 @@ button
     background: #a14700;
     color: white;
     outline: 0;
-  &:first-child
-    margin-left: 0;
-  &:last-child
-    margin-right: 0;
 
   &.secondary
     color: white;
@@ -33,12 +30,17 @@ button
       background: #998d68;
       color: white;
 
-  &.kthxbye
-    background: #41a388;
+  &.accept
+    // General style for green buttons (mark commit as reviewed, ok thx, etc.)
+    background: $green-button-bg-color;
+    border: 1px solid #3CAD8E;
     &:hover
-      background: #5abfa3;
+      background: $green-button-bg-color;
+    &:active
+      background: $green-button-bg-hover;
 
   &.link
+    //Buttons that look like a link (see commits sorting for example)
     background: transparent;
     border: 1px solid transparent;
     color: $second-body-text-color;
@@ -54,31 +56,8 @@ button
       background: #e4dece;
       color: $second-body-text-color;
 
-  &.reviewed
-  &.to-review
-    float: right;
-    margin-right: 0;
-    margin-top: 1.15em;
-  &.reviewed
-    cursor: default;
-  &.to-review
-    background: $green-button-bg-color;
-    border: 1px solid #3CAD8E;
-    &:hover
-      background: $green-button-bg-color;
-    &:active
-      background: $green-button-bg-hover;
-
 .button-group
   padding-left: 0;
-  & li:last-child
-    margin-right: 0;
-  & li:first-child
-    margin-left: 0;
-
-.button-group li:last-child .button,
-li:last-child .button
-  margin-right: 0;
 
 table tr:nth-of-type(even)
   background: white;
@@ -89,7 +68,7 @@ table tr td
   color: $body-text-color;
   padding: 0.23em 0.77em;
 
-// general styles
+// General styles
 html,
 body
   height: 100%;
@@ -141,6 +120,105 @@ i
   display: block; 
   height: 0; 
   clear: right;
+
+
+
+// CONSTRUCTIONS
+.authored-box
+  overflow: hidden;
+
+  & .author-box
+    float: left;
+    vertical-align: top;
+
+
+.info-box
+  overflow-y: hidden;
+
+  & .info-line
+    color: $second-body-text-color;
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+  & .time
+    margin-left: 0.3em;
+
+
+.comments-container
+  background: $body-bg-color;
+  border: 1px solid $main-border-color;
+  font-family: 'PT Sans', Tahoma, sans-serif;
+  padding: 1.15em 1.15em 0;
+
+  & .comment
+    margin-bottom: 1.15em;
+
+    & .authored-box
+      margin-bottom: 0;
+
+      & .author-box img
+        height: 2.3em;
+        width: 2.3em;
+
+      & .info-line
+        line-height: 1.2;
+        margin-bottom: 0.2em;
+
+      & p:last-child
+        margin-bottom: 0;
+      & p:first-child
+        margin-top: 0;
+
+    // .comment.write block
+    &.write
+      & .icon-info-sign
+        color: #d4c195;
+        font-size: 1.08em;
+        position: absolute;
+        right: 0;
+        top: -1px;
+        visibility: hidden;
+
+      & .comment-body
+        padding: 0;
+
+        & textarea.comment-text
+          border: none;
+          box-shadow: none;
+          color: $body-text-color;
+          cursor: text;
+          font-size: 1em;
+          height: auto;
+          margin: 0;
+          overflow: auto;
+          padding: 0.77em;
+          resize: vertical;
+          transition: min-height 500ms;
+
+      & .comment-action-btns
+        display: none;
+        float: right;
+
+      &.active
+        overflow-y: hidden;
+        position: relative;
+
+        & .icon-info-sign
+          visibility: visible;
+
+        & .comment-body
+          border: 1px solid $main-orange-color;
+          margin-bottom: 0.77em;
+
+          & textarea.comment-text
+            min-height: 57px;
+            visibility: visible;
+
+        & .comment-action-btns
+          display: block;
+
 
 // small arrows (next to user avatar in header)
 .arrow-down 

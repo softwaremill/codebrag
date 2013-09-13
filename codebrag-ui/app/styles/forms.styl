@@ -52,8 +52,10 @@ form
       width: 2.3125em;
   & .form-group
     position: relative;
+    padding: 0 0.77em;
     &.inline
       display: inline-block;
+
     & span.text-error
       background: $error-red-color;
       bottom: 0.1em;
@@ -76,24 +78,31 @@ form
         top: -8px;
 
 
+.btn-centered-wrapper
+  text-align: center;
+
+
 // login form
-#loginform
-  margin-left: -12em;
+.entrance-form
+  margin-left: -12.2em;
+  // don't fix this one! It should be 12.2, not a half of width
   margin-top: -10.42em;
-  max-width: 24em;
+  max-width: 26.8em;
   left: 50%;
   position: absolute;
   top: 35%;
+
   & form
     background: white;
     border: 1px solid #e4d9b8;
     box-shadow: 0px 0px 7px 0px rgba(211, 196, 160, 0.7);
+
     & fieldset
-      padding: 2em;
-      & button:last-child
-        margin-right: 0;
-        & span
-          text-transform: lowercase;
+      padding: 2em 1.23em;
+
+    & button.gh span
+      text-transform: lowercase;
+
   & input[type="password"],
     input[type="text"],
     input[type="email"]
@@ -101,9 +110,13 @@ form
     border: none;
     box-shadow: none;
     display: inline-block;
-    width: 17.4em;
+    width: 18em;
+
   & .checkbox
-    margin-bottom: 2.3em;
+    padding: 0 0.77em;
+
+  & .btn-centered-wrapper button
+    margin-top: 1em;
 
 .demo-login-info
   background: #f2ecd5;

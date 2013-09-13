@@ -1,6 +1,6 @@
 @import "normalize.min.css"
 @import "foundation.min.css"
-@import "nib"
+@import "nib";
 
 // VARIABLES:
 // COLORS:
@@ -13,9 +13,13 @@ $header-bg-color = #300300
 $header-bg-color-darker = #280200
 $header-text-color = #ad8245
 
+$followups-container-bg = #ece8d9
+$followup-commit-name-color = #70554D
+$followup-infoline-color = #9E8B80
+
 $main-orange-color = #f3720b
 $green-button-bg-color = #5abfa3
-$green-button-bg-hover = #41a388
+$green-button-bg-hover = #4AB194
 $gray-button-bg-color = #D1CDC2
 
 $lime-green-color = #99ab01
@@ -30,121 +34,8 @@ $main-border-color = #d1cbb9
 
 @import "common.styl"
 
-
-
-.diff-loading
-    text-align: center;
-    padding-top: 1em;
-    padding-bottom: 1em;
-
-.no-items-trophy
-    background-image: url("/assets/images/trophy.png");
-    background-position: center center;
-    background-repeat: no-repeat;
-    min-height: 550px;
-
-.pick-commit
-  background-image: url("/assets/images/pick-commit.png");
-  background-position: center center;
-  background-repeat: no-repeat;
-  min-height: 550px;
-
-.pick-followup
-  background-image: url("/assets/images/pick-followup.png");
-  background-position: center center;
-  background-repeat: no-repeat;
-  min-height: 550px;
-
-// constructions
-.authored-box
-  overflow: hidden;
-  & .author-box
-    float: left;
-    vertical-align: top;
-
-.info-box
-  overflow-y: hidden;
-  & .info-line
-    color: $second-body-text-color;
-    font-size: 11px;
-    // font-size: 0.7em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  & .time
-    margin-left: 0.3em;
-
-.comments-container
-  background: $body-bg-color;
-  border: 1px solid $main-border-color;
-  font-family: 'PT Sans', Tahoma, sans-serif;
-  padding: 1.15em 1.15em 0;
-  & .comment
-    margin-bottom: 1.15em;
-    & .authored-box
-      margin-bottom: 0;
-      & .author-box img
-        height: 2.3em;
-        width: 2.3em;
-      & .info-line
-        line-height: 1.2;
-        margin-bottom: 0.2em;
-      & p:last-child
-        margin-bottom: 0;
-      & p:first-child
-        margin-top: 0;
-    // .comment.write block
-    &.write
-      & .icon-info-sign
-        color: #d4c195;
-        font-size: 1.08em;
-        position: absolute;
-        right: 0;
-        top: -1px;
-        visibility: hidden;
-      & .comment-body
-        padding: 0;
-        & textarea.comment-text
-          border: none;
-          box-shadow: none;
-          color: $body-text-color;
-          cursor: text;
-          font-size: 1em;
-          height: auto;
-          margin: 0;
-          overflow: auto;
-          padding: 0.77em;
-          resize: vertical;
-          transition: min-height 500ms;
-      & .comment-action-btns
-        display: none;
-        float: right;
-        & li
-          margin: 0 0.77em;
-          &:first-child
-            margin-left: 0;
-          &:last-child
-            margin-right: 0;
-      &.active
-        overflow-y: hidden;
-        position: relative;
-        & .icon-info-sign
-          visibility: visible;
-        & .comment-body
-          border: 1px solid $main-orange-color;
-          margin-bottom: 0.77em;
-          & textarea.comment-text
-            min-height: 57px;
-            visibility: visible;
-        & .comment-action-btns
-          display: block;
-
-
-///form was here
 @import "forms.styl"
 
-
-// header styles
 @import "header.styl"
 
 a.ribbon
@@ -164,29 +55,17 @@ a.ribbon
   &:hover
     opacity: 1;
 
-//popups was here
+
 @import "popups.styl"
 
-.btn-centered-wrapper
-  text-align: center;
-  .btn:first-child
-    margin-right: 0
-  .btn:last-child
-    margin-left: 0
 
-// left list was here
 @import "left-list.styl"
 
 
-//diff was here
 @import "diff.styl"
 
-//login form was here
 
-
-//errors
 @import "errors.styl"
 
 
-//media-queries are here
 @import "responsive.styl"

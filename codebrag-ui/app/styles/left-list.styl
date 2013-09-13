@@ -126,17 +126,24 @@
 
 
 // followups
-#followups-tab-content .items-container
-  padding-right: 2.3em;  
+#followups-tab-content
+  padding-top: 1.15em;
+
+  & .items-container
+    padding: 0 0.77em 0 0.38em;
+
 
 .followups-container
-  background: #eee8d7;
-  margin-bottom: 0.77em;
+  background: $followups-container-bg;
+  margin-bottom: 1.15em;
   padding: 0.77em 0.38em 0.38em;
+
   & .info-line
+    color: $followup-infoline-color;
     margin-bottom: 0.77em;
+
   & .commit-name
-    color: #70493e;
+    color: $followup-commit-name-color;
     font-weight: bold;
     margin-bottom: 0.4em;
     opacity: 0.75;
@@ -145,7 +152,7 @@
     white-space: nowrap;
 
 .followup-container
-  background: #faf8ed;
+  background: $body-bg-color;
   border: 1px solid #e2d8bf;
   margin-top: -1px;
   padding: 0.77em 2.3em 0.77em 0.77em;
@@ -155,6 +162,7 @@
     cursor: pointer;
     & i
       display: inherit;
+
   & i
     color: #c1b28b;
     display: none;
@@ -184,6 +192,7 @@
       top: 0px;
       width: 0.38em;
       z-index: 1;
+
 
 #followups-tab-content .items-container .commmit-container:first-child
   margin-top: 0.77em;
