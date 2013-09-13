@@ -2,7 +2,6 @@
 
 # Variables
 
-FOX_ID="51c0bbdf30044fa106947635"
 BASE_URL="http://localhost:8080"
 USERS_URL="$BASE_URL/rest/users"
 COMMITS_URL="$BASE_URL/rest/commits"
@@ -69,6 +68,18 @@ function like_line {
     like $sha "{\"user\":\"$user\",\"fileName\":\"$fileName\",\"lineNumber\":$lineNumber}"
 }
 
+function login {
+    local user=$1
+    local pass=$2
+
+    local response=$(curl -v -c cookies.txt -H "$CONTENT_TYPE_HEADER" -H "$ACCEPT_HEADER" -X POST -d "{\"login\":\"$user\",\"password\":\"$pass\"}" $USERS_URL)
+    echo "$response" | head -c 31 | tail -c 24
+}
+
+function logout {
+    curl -v -b cookies.txt "$USERS_URL/logout"
+}
+
 ###############################################################################
 
 # clear everything before start
@@ -81,12 +92,14 @@ mongoimport -d codebrag -c users demo_users.json
 # wait for next synchronization
 sleep 45
 
-curl -v -c cookies.txt -H "$CONTENT_TYPE_HEADER" -H "$ACCEPT_HEADER" -X POST -d '{"login":"fox","password":"codebrag"}' $USERS_URL
+user=$(login "fox" "codebrag")
 
-comment_commit d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$FOX_ID" "Test comment"
-comment_line "d7ac6aadb937e6eca61df53a0016fb2c019ebe1c" "$FOX_ID" "src/test/scala/com/softwaremill/gameoflife/BoardTest.scala" 57 "You could use 'should equal(...)' instead of 'should be ===' for more readability"
-like_commit d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$FOX_ID"
-like_line d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$FOX_ID" "src/test/scala/com/softwaremill/gameoflife/BoardTest.scala" 57
+comment_commit d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$user" "Test comment"
+comment_line "d7ac6aadb937e6eca61df53a0016fb2c019ebe1c" "$user" "src/test/scala/com/softwaremill/gameoflife/BoardTest.scala" 57 "You could use 'should equal(...)' instead of 'should be ===' for more readability"
+like_commit d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$user"
+like_line d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$user" "src/test/scala/com/softwaremill/gameoflife/BoardTest.scala" 57
+
+logout
 
 
 
