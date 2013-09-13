@@ -5,7 +5,7 @@
 FOX_ID="51c0bbdf30044fa106947635"
 BASE_URL="http://localhost:8080"
 USERS_URL="$BASE_URL/rest/users"
-COMMENTS_URL="$BASE_URL/rest/commits"
+COMMITS_URL="$BASE_URL/rest/commits"
 CONTENT_TYPE_HEADER="Content-type: application/json"
 ACCEPT_HEADER="Accept: application/json"
 
@@ -23,7 +23,7 @@ function comment {
     local data=$2
     curl -v -b cookies.txt -H "$CONTENT_TYPE_HEADER" -H "$ACCEPT_HEADER" -X POST \
         -d "$data" \
-        "$COMMENTS_URL/$commitId/comments"
+        "$COMMITS_URL/$commitId/comments"
 }
 
 function comment_commit {
@@ -44,19 +44,43 @@ function comment_line {
     comment $sha "{\"userId\":\"$user\",\"body\":\"$message\",\"fileName\":\"$fileName\",\"lineNumber\":$lineNumber}"
 }
 
+function like {
+    local sha=$1
+    local commitId=$(sha_to_commitId $sha)
+    local data=$2
+    curl -v -b cookies.txt -H "$CONTENT_TYPE_HEADER" -H "$ACCEPT_HEADER" -X POST \
+          -d "$data" \
+          "$COMMITS_URL/$commitId/likes"
+}
+
+function like_commit {
+    local sha=$1
+    local user=$2
+
+    like $sha "{\"userId\":\"$user\"}"
+}
+
+#function like_line {
+
+#}
+
 ###############################################################################
 
 # clear everything before start
-#rm cookies.txt
-#mongo codebrag --eval "db.dropDatabase()"
+rm cookies.txt
+mongo codebrag --eval "db.dropDatabase()"
 
 # add demo users
-#mongoimport -d codebrag -c users demo_users.json
+mongoimport -d codebrag -c users demo_users.json
 
 # wait for next synchronization
-#sleep 45
+sleep 45
 
-#curl -v -c cookies.txt -H "$CONTENT_TYPE_HEADER" -H "$ACCEPT_HEADER" -X POST -d '{"login":"fox","password":"codebrag"}' $USERS_URL
+curl -v -c cookies.txt -H "$CONTENT_TYPE_HEADER" -H "$ACCEPT_HEADER" -X POST -d '{"login":"fox","password":"codebrag"}' $USERS_URL
 
-#comment_commit d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$FOX_ID" "Test comment"
-#comment_line "d7ac6aadb937e6eca61df53a0016fb2c019ebe1c" "$FOX_ID" "src/test/scala/com/softwaremill/gameoflife/BoardTest.scala" 57 "You could use 'should equal(...)' instead of 'should be ===' for more readability"
+comment_commit d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$FOX_ID" "Test comment"
+comment_line "d7ac6aadb937e6eca61df53a0016fb2c019ebe1c" "$FOX_ID" "src/test/scala/com/softwaremill/gameoflife/BoardTest.scala" 57 "You could use 'should equal(...)' instead of 'should be ===' for more readability"
+like_commit d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$FOX_ID"
+
+
+
