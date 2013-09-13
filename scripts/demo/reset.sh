@@ -60,9 +60,14 @@ function like_commit {
     like $sha "{\"userId\":\"$user\"}"
 }
 
-#function like_line {
+function like_line {
+    local sha=$1
+    local user=$2
+    local fileName=$3
+    local lineNumber=$4
 
-#}
+    like $sha "{\"user\":\"$user\",\"fileName\":\"$fileName\",\"lineNumber\":$lineNumber}"
+}
 
 ###############################################################################
 
@@ -81,6 +86,7 @@ curl -v -c cookies.txt -H "$CONTENT_TYPE_HEADER" -H "$ACCEPT_HEADER" -X POST -d 
 comment_commit d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$FOX_ID" "Test comment"
 comment_line "d7ac6aadb937e6eca61df53a0016fb2c019ebe1c" "$FOX_ID" "src/test/scala/com/softwaremill/gameoflife/BoardTest.scala" 57 "You could use 'should equal(...)' instead of 'should be ===' for more readability"
 like_commit d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$FOX_ID"
+like_line d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$FOX_ID" "src/test/scala/com/softwaremill/gameoflife/BoardTest.scala" 57
 
 
 
