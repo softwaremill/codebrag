@@ -71,82 +71,86 @@ describe("DiffCtrl", function () {
 
     it('should call server to submit inline like and save this like locally', inject(function ($controller, authService) {
         // Given
-        authService.loggedInUser = {fullName: 'irrelevantName'};
-        scope.currentCommit = {
-            data: {},
-            info: {
-                id: 15
-            },
-            addLike: function (like, fileName, lineNumber) {
-                this.data.like = like;
-                this.data.fileName = fileName;
-                this.data.lineNumber = lineNumber;
-            },
-            isUserAuthorOfCommit: function () {
-                return false;
-            },
-            userAlreadyLikedLine: function () {
-                return false;
+        var currentUser = authService.loggedInUser = {id: '123', fullName: 'Bob Smith', email: 'bob@smith.com'};
+        var commit = {
+            commit: {
+                id: '123',
+                authorName: 'John Doe',
+                authorEmail: 'john@doe.com'
             }
-
         };
-        var returnedLikeData = {likeData: 'data'};
-        var likeLineNumber = 13;
-        var likeFileName = 'filename';
+        scope.currentCommit = new codebrag.CurrentCommit(commit);
+        var likeData = {
+            commitId: commit.commit.id,
+            fileName: 'file.txt',
+            lineNumber: 13
+        };
         $controller('DiffCtrl', {$scope: scope});
-        $httpBackend.expectPOST('rest/commits/15/likes',
-            '{"commitId":15,"fileName":"filename","lineNumber":13}').respond(201, returnedLikeData);
+        var serverReturnedLikeData = angular.copy(likeData);
+        angular.extend(serverReturnedLikeData, {id: '456', authorId: currentUser.id});
+        $httpBackend.expectPOST('rest/commits/123/likes', likeData).respond(200, serverReturnedLikeData);
 
         // When
-        scope.like(likeFileName, likeLineNumber);
+        scope.like(likeData.fileName, likeData.lineNumber);
         $httpBackend.flush();
 
         // Then
-        expect(scope.currentCommit.data.like).toEqual(returnedLikeData);
-        expect(scope.currentCommit.data.fileName).toEqual(likeFileName);
-        expect(scope.currentCommit.data.lineNumber).toEqual(likeLineNumber);
+        var savedLike = scope.currentCommit.findLikeFor(currentUser, likeData.fileName, likeData.lineNumber);
+        expect(savedLike).toEqual(serverReturnedLikeData);
     }));
 
     it('should not send anything when user is author of the commit', inject(function ($controller, authService) {
         // Given
-        var userName = 'user name';
-        authService.loggedInUser = {fullName: userName};
-        scope.currentCommit = {
-            isUserAuthorOfCommit: function (name) {
-                return name == userName;
-            },
-            userAlreadyLikedLine: function () {
-                return false;
+        authService.loggedInUser = {id: '123', fullName: 'John Doe', email: 'john@doe.com'};
+        var commit = {
+            commit: {
+                id: '123',
+                authorName: 'John Doe',
+                authorEmail: 'john@doe.com'
             }
         };
-        var likeLineNumber = 13;
-        var likeFileName = 'filename';
+        scope.currentCommit = new codebrag.CurrentCommit(commit);
         $controller('DiffCtrl', {$scope: scope});
 
         // When
-        scope.like(likeFileName, likeLineNumber);
+        scope.like('test.txt', 123);
 
         // Then server not called
     }));
 
     it('should not allow posting more than one like for a line by same user', inject(function ($controller, authService) {
         // Given
-        var userName = 'user name';
-        authService.loggedInUser = {fullName: userName};
-        scope.currentCommit = {
-            isUserAuthorOfCommit: function () {
-                return false;
+        authService.loggedInUser = {id: '123', fullName: 'John Doe', email: 'john@doe.com'};
+        var commitId = '456';
+        var fileName = 'test.txt';
+        var lineNumber = 33;
+        var commit = {
+            commit: {
+                id: commitId,
+                authorName: 'Bob Smith',
+                authorEmail: 'bob@smith.com'
             },
-            userAlreadyLikedLine: function (name) {
-                return userName == name;
+            lineReactions: {
+                'test.txt': {
+                    33: {
+                        likes: [
+                            {
+                                commitId: commitId,
+                                fileName: fileName,
+                                lineNumber: lineNumber,
+                                authorId: authService.loggedInUser.id,
+                                authorEmail: authService.loggedInUser.email
+                            }
+                        ]
+                    }
+                }
             }
         };
-        var likeLineNumber = 13;
-        var likeFileName = 'filename';
+        scope.currentCommit = new codebrag.CurrentCommit(commit);
         $controller('DiffCtrl', {$scope: scope});
 
         // When
-        scope.like(likeFileName, likeLineNumber);
+        scope.like(fileName, lineNumber);
 
         // Then server not called
     }));

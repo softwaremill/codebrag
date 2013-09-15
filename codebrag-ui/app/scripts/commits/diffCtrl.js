@@ -3,8 +3,8 @@ angular.module('codebrag.commits')
     .controller('DiffCtrl', function ($scope, Comments, Likes, authService, $q) {
 
         $scope.like = function(fileName, lineNumber) {
-            var currentUserName = authService.loggedInUser.fullName;
-            if(_userCannotLikeThisLine(currentUserName, fileName, lineNumber)) {
+            var currentUser = authService.loggedInUser;
+            if(_userCannotLikeThisLine(currentUser, fileName, lineNumber)) {
                 return $q.reject();
             }
             var newLike = {
@@ -19,18 +19,17 @@ angular.module('codebrag.commits')
         };
 
         $scope.unlike = function(fileName, lineNumber) {
-            var currentUserName = authService.loggedInUser.fullName;
-            if(_userCannotUnlikeThisLine(currentUserName, fileName, lineNumber)) {
+            var currentUser = authService.loggedInUser;
+            if(_userCannotUnlikeThisLine(currentUser, fileName, lineNumber)) {
                 return $q.reject();
             }
-            var userId = authService.loggedInUser.id;
-            var likeToRemove = $scope.currentCommit.findLikeFor(currentUserName, fileName, lineNumber);
+            var likeToRemove = $scope.currentCommit.findLikeFor(currentUser, fileName, lineNumber);
             if(likeToRemove) {
                 var requestData = {
                     commitId: $scope.currentCommit.info.id,
                     likeId: likeToRemove.id
                 };
-                return Likes.delete(requestData).$then(function(resp) {
+                return Likes.delete(requestData).$then(function() {
                     $scope.currentCommit.removeLike(fileName, lineNumber, likeToRemove.id);
                 });
             } else {
@@ -38,12 +37,12 @@ angular.module('codebrag.commits')
             }
         };
 
-        function _userCannotLikeThisLine(currentUserName, fileName, lineNumber) {
-            return $scope.currentCommit.isUserAuthorOfCommit(currentUserName) || $scope.currentCommit.userAlreadyLikedLine(currentUserName, fileName, lineNumber);
+        function _userCannotLikeThisLine(user, fileName, lineNumber) {
+            return $scope.currentCommit.isUserAuthorOfCommit(user) || $scope.currentCommit.userAlreadyLikedLine(user, fileName, lineNumber);
         }
 
-        function _userCannotUnlikeThisLine(currentUserName, fileName, lineNumber) {
-            return !$scope.currentCommit.userAlreadyLikedLine(currentUserName, fileName, lineNumber);
+        function _userCannotUnlikeThisLine(user, fileName, lineNumber) {
+            return !$scope.currentCommit.userAlreadyLikedLine(user, fileName, lineNumber);
         }
 
         $scope.submitInlineComment = function(content, commentData) {
