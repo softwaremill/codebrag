@@ -1,4 +1,5 @@
-<div class="like-commit" data-scrollable-reaction ng-class="{'liked-by-user': userCannotLike()}" ng-click="likeOrUnlike()">
+<div class="like-commit" data-scrollable-reaction ng-class="{'liked-by-user': userCannotLike}" ng-click="likeOrUnlike()">
     <a class="like button"><i class="icon-heart"></i></a>
-    <span>{{listUsersWhoLike()}}</span>
+    <span class="user-who-like" ng-repeat="like in usersWhoLike" id="{{like.id}}" ng-show="likesAvailable">{{like.authorName}}</span>
+    <span id="likesLabel">{{likesLabel}}</span>
 </div>

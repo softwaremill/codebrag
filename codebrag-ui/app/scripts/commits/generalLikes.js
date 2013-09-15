@@ -5,39 +5,67 @@ angular.module('codebrag.commits')
 
         function GeneralLikesController($scope) {
 
-            var currentUserName = authService.loggedInUser.fullName;
-
-            $scope.userCannotLike = function() {
-                if(_.isUndefined($scope.commit)) {
-                    return false;
-                }
-                return $scope.commit.userAlreadyLikedCommit(currentUserName) || $scope.commit.isUserAuthorOfCommit(currentUserName);
-            };
+            var currentUser = authService.loggedInUser;
 
             $scope.likeOrUnlike = function() {
-                if($scope.commit.isUserAuthorOfCommit(currentUserName)) {
+                if($scope.commit.isUserAuthorOfCommit(currentUser)) {
                     return;
                 }
-                if($scope.commit.userAlreadyLikedCommit(currentUserName)) {
+                if($scope.commit.userAlreadyLikedCommit(currentUser)) {
                     unlikeCommit($scope.commit.reactions.likes);
                 } else {
                     likeCommit($scope.commit.reactions.likes);
                 }
             };
 
-            $scope.listUsersWhoLike = function() {
-                if(_.isUndefined($scope.commit)) {
-                    return '';
+            mix();
+
+            var removeInitialWatcher = $scope.$watch('commit', function(newVal) {
+                if(newVal) {
+                    $scope.$watch('commit.reactions.likes.length', function(newLength) {
+                        if(angular.isUndefined(newLength)) {
+                            return;
+                        }
+                        mix();
+                    }, true);
+                    removeInitialWatcher();
                 }
-                return $scope.commit.reactions.likes.length ? usersWhoLikeText() : noLikesYetText();
-            };
+            });
+
+            function mix() {
+                if($scope.commit) {
+                    $scope.usersWhoLike = usersWhoLikeText();
+                    $scope.likesAvailable = ($scope.usersWhoLike.length > 0);
+                    $scope.likesCount = $scope.usersWhoLike.length;
+                    $scope.userCannotLike = userCannotLikeCommit();
+                    $scope.noLikesYetText = noLikesYetText();
+                    $scope.likesLabel = getCorrectLabel();
+                }
+            }
+
+            function getCorrectLabel() {
+                var likesCount = $scope.commit.reactions.likes.length;
+                var text;
+                switch(likesCount) {
+                    case 0:
+                        text = noLikesYetText();
+                        break;
+                    case 1:
+                        text = 'likes this commit';
+                        break;
+                    default:
+                        text = 'like this commit';
+                        break;
+                }
+                return text;
+            }
 
             function unlikeCommit(likes) {
                 var userLike = _.find(likes, function (like) {
-                    return like.authorId === authService.loggedInUser.id;
+                    return like.authorId === currentUser.id;
                 });
                 var like = {commitId: $scope.commit.info.id, likeId: userLike.id};
-                Likes.delete(like).$then(function (resp) {
+                Likes.delete(like).$then(function () {
                     likes.splice(likes.indexOf(userLike), 1);
                 });
                 return like;
@@ -51,16 +79,18 @@ angular.module('codebrag.commits')
                 return like;
             }
 
+            function userCannotLikeCommit() {
+                return $scope.commit.userAlreadyLikedCommit(currentUser) || $scope.commit.isUserAuthorOfCommit(currentUser);
+            }
+
             function usersWhoLikeText() {
-                var userNames = $scope.commit.reactions.likes.map(function(like) {
-                    return like.authorName;
+                return $scope.commit.reactions.likes.map(function(like) {
+                    return {id: like.id, authorName: like.authorName};
                 });
-                var namesJoined = userNames.join(', ');
-                return userNames.length == 1 ? (namesJoined + ' likes this commit') : (namesJoined + ' like this commit');
             }
 
             function noLikesYetText() {
-                return $scope.commit.isUserAuthorOfCommit(currentUserName) ? "No likes for this commit yet" : "Be the first to like this commit";
+                return $scope.commit.isUserAuthorOfCommit(currentUser) ? "No likes for this commit yet" : "Be the first to like this commit";
             }
 
         }
