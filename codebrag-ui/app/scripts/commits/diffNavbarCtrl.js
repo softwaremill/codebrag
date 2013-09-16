@@ -20,6 +20,7 @@ angular.module('codebrag.commits')
             if (nextCommit) {
                 return $state.transitionTo('commits.details', {id: nextCommit.id});
             }
+            currentCommit.empty();
             $state.transitionTo('commits.list');
         }
 

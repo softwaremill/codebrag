@@ -64,6 +64,7 @@ describe("DiffNavbarController", function () {
 
         // Then
         expect($state.transitionTo).toHaveBeenCalledWith('commits.list');
+        expect(currentCommit.get()).toBeNull();
     }));
 
 });
