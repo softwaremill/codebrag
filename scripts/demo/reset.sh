@@ -93,8 +93,7 @@ function synchronize {
 ###############################################################################
 
 # clear everything before start
-echo "Cleaning up"
-rm cookies.txt
+echo "Cleaning up database"
 mongo codebrag --eval "db.dropDatabase()"
 
 # add demo users
@@ -115,6 +114,9 @@ then
 
     echo "Logging fox out"
     logout
+
+    # clear left overs
+    rm cookies.txt
 else
     echo "Synchronization not successful"
 fi
