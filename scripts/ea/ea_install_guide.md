@@ -108,13 +108,8 @@ Logs will be written to `codebrag.log`
 
 First user that access Codebrag after installation will be asked to register his account. Either email address or name provided have to match corresponding fields in `git log` in order to match commits with given user. Codebrag uses [Gravatar](http://gravatar.com) to display user avatars in application.
 
-
-
-### Inviting other users
-
 Other users can be invited to Codebrag by choosing "Invite friends" link from menu in upper left corner.
-
 
 ## Contact us if you want
 
-If you experience any issues with Codebrag, do not hesitate to contact us via (email/forum/uservoice/irc). Also if want to let us know your feelings about Codebrag, drop us a line too. Happy code reviewing!
+If you experience any issues with Codebrag, do not hesitate to contact us via (email/forum/uservoice/irc). Also if want to let us know your feelings about Codebrag, drop us a line too. 
