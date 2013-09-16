@@ -17,11 +17,10 @@ angular.module('codebrag.commits')
         });
 
         function goTo(nextCommit) {
-            if (_.isNull(nextCommit)) {
-                $state.transitionTo('commits.list');
-            } else {
-                $state.transitionTo('commits.details', {id: nextCommit.id});
+            if (nextCommit) {
+                return $state.transitionTo('commits.details', {id: nextCommit.id});
             }
+            $state.transitionTo('commits.list');
         }
 
     });

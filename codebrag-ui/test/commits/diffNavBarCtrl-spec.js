@@ -51,7 +51,7 @@ describe("DiffNavbarController", function () {
     it('should go to commits list when no next commit available', inject(function($controller, $state, currentCommit) {
         // Given
         var nextCommitDeferred = $q.defer();
-        nextCommitDeferred.resolve(null);
+        nextCommitDeferred.resolve(undefined);
         spyOn(commitsListService, 'makeReviewedAndGetNext').andReturn(nextCommitDeferred.promise);
         spyOn($state, 'transitionTo');
         currentCommit.set(commit);
