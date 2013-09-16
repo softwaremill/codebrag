@@ -25,7 +25,8 @@ object BuildSettings {
 
   val mongoDirectory = SettingKey[File]("mongo-directory", "The home directory of MongoDB datastore")
 
-  val buildSettings = Defaults.defaultSettings ++ Seq(mongoDirectory := file("")) ++ defaultScalariformSettings ++ Seq(
+  val buildSettings = Defaults.defaultSettings ++ net.virtualvoid.sbt.graph.Plugin.graphSettings ++
+    Seq(mongoDirectory := file("")) ++ defaultScalariformSettings ++ Seq(
 
     organization := "pl.softwaremill",
     version := "0.0.1-SNAPSHOT",
