@@ -143,7 +143,7 @@
         <div class="pull-right-wrapper">
             <button class="uservoice-btn button" ng-click="openContactFormPopup()">Feedback</button>
             <div class="header-user-info" ng-show="isLogged()">
-                <logged-in-user-avatar></logged-in-user-avatar>
+                <user-avatar logged-in-user="true"></user-avatar>
                 <span class="arrow-down"></span>
                 <ul class="user-info-dropdown">
                     <li class="username"><strong>Signed in as {{loggedInUser().fullName}}</strong></li>
