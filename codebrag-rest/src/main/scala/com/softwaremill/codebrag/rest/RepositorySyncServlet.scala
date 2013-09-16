@@ -6,6 +6,7 @@ import com.softwaremill.codebrag.service.updater.LocalRepositoryUpdater
 import org.scalatra.{AsyncResult, FutureSupport}
 import scala.concurrent.ExecutionContext
 import akka.util.Timeout
+import scala.concurrent.duration._
 
 class RepositorySyncServlet(system: ActorSystem, repositoryUpdateActor: ActorRef) extends JsonServlet with Logging with FutureSupport {
 
@@ -13,7 +14,7 @@ class RepositorySyncServlet(system: ActorSystem, repositoryUpdateActor: ActorRef
 
   import akka.pattern.ask
 
-  implicit val timeout2 = Timeout(10000)
+  implicit val askTimeout = Timeout(10 seconds)
 
   get("/") {
     new AsyncResult() {
