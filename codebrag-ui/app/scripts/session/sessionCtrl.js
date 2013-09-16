@@ -11,6 +11,9 @@ angular.module('codebrag.session')
         $scope.flash = flash;
 
         $scope.login = function () {
+            if ($scope.registrationSuccess) {
+                $scope.registrationSuccess = false;
+            }
             if (loginFormValid()) {
                 logInUser();
             }

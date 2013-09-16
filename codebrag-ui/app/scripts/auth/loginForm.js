@@ -1,6 +1,6 @@
 angular.module("codebrag.auth")
 
-    .directive("loginForm", function (authService, events, $state) {
+    .directive("loginForm", function (authService, events, $state, flash) {
 
         return {
             restrict: "E",
@@ -21,6 +21,8 @@ angular.module("codebrag.auth")
                 });
                 scope.$on("$stateChangeSuccess", function() {
                     updateShouldDisplayLogin();
+                    scope.registrationSuccess = flash.get().length > 0;
+                    scope.registrationSuccessMessage = flash.get();
                 });
                 function ifLoginRequired() {
                     return authService.isNotAuthenticated();
