@@ -1,19 +1,19 @@
 package com.softwaremill.codebrag.dao
 
 import java.io.File
-import pl.softwaremill.common.util.io.KillableProcess
 import com.mongodb.ServerAddress
 import java.util.Scanner
 import java.util.regex.Pattern
 import com.google.common.io.Files
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.test.KillableProcess
 
 class MongoRunner(process: KillableProcess, temporaryDataDir: File, port: Int, pidFile: String, verbose: Boolean) extends Logging {
 
   def serverAddress() = new ServerAddress("localhost", port)
 
   def stop() {
-    val scanner = processOutputScannerForMessage(process.getProcess, "dbexit: really exiting now")
+    val scanner = processOutputScannerForMessage(process.process, "dbexit: really exiting now")
     process.sendSigInt()
     try {
       scanner.next()
@@ -68,7 +68,7 @@ object MongoRunner extends Logging {
 
     try {
       mongoRunner
-        .processOutputScannerForMessage(killableProcess.getProcess, "waiting for connections on port "+port)
+        .processOutputScannerForMessage(killableProcess.process, "waiting for connections on port "+port)
         .next()
     } catch {
       case element:NoSuchElementException =>

@@ -2,6 +2,7 @@ package com.softwaremill.codebrag.common
 
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
+import java.util.Random
 
 object Utils {
 
@@ -38,5 +39,16 @@ object Utils {
 
   def format(dateTime: DateTime): String = {
     DateFormat.print(dateTime)
+  }
+
+  def randomString(length: Int) = {
+    val sb = new StringBuffer()
+    val r = new Random()
+
+    for (i <- 1 to length) {
+      sb.append((r.nextInt(25) + 65).toChar) // A - Z
+    }
+
+    sb.toString
   }
 }

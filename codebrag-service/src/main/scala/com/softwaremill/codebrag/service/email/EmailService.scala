@@ -1,9 +1,7 @@
 package com.softwaremill.codebrag.service.email
 
 import com.softwaremill.codebrag.service.config.EmailConfig
-import com.softwaremill.codebrag.service.templates.EmailContentWithSubject
-import pl.softwaremill.common.sqs.email.EmailSender
-import pl.softwaremill.common.sqs.util.EmailDescription
+import com.softwaremill.codebrag.service.email.sender.{EmailSender, EmailDescription}
 
 class EmailService(config: EmailConfig) {
 

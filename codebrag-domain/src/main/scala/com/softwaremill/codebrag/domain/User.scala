@@ -2,7 +2,6 @@ package com.softwaremill.codebrag.domain
 
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.Utils
-import pl.softwaremill.common.util.RichString
 
 case class User(id: ObjectId, authentication: Authentication, name: String, email: String, token: String, avatarUrl: String)
 
@@ -34,7 +33,7 @@ object Authentication {
   }
 
   def basic(username: String, password: String) = {
-    val salt = RichString.generateRandom(16)
+    val salt = Utils.randomString(16)
     Authentication("Basic", username, username.toLowerCase, encryptPassword(password, salt), salt)
   }
 

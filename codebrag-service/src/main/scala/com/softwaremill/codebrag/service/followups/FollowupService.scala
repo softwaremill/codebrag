@@ -3,11 +3,9 @@ package com.softwaremill.codebrag.service.followups
 import com.softwaremill.codebrag.dao._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain._
-import pl.softwaremill.common.util.time.Clock
-import scala.Some
 import com.typesafe.scalalogging.slf4j.Logging
 
-class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, commitCommentDao: CommitCommentDAO, userDao: UserDAO)(implicit clock: Clock)
+class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, commitCommentDao: CommitCommentDAO, userDao: UserDAO)
   extends Logging {
 
   def deleteUserFollowup(userId: ObjectId, followupId: ObjectId): Either[String, Unit] = {

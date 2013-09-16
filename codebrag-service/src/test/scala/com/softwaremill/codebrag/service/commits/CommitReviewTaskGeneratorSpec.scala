@@ -13,9 +13,9 @@ import org.mockito.Mockito._
 import org.mockito.Matchers._
 import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
-import pl.softwaremill.common.util.time.FixtureTimeClock
 import org.joda.time.DateTime
 import scala.util.Random
+import com.softwaremill.codebrag.common.FixtureTimeClock
 
 class CommitReviewTaskGeneratorSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with
 BeforeAndAfterAll with MockitoSugar {

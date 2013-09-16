@@ -72,7 +72,6 @@ object Dependencies {
 
   val slf4jVersion = "1.7.2"
   val logBackVersion = "1.0.9"
-  val smlCommonVersion = "72"
   val scalatraVersion = "2.2.1"
   val rogueVersion = "2.1.0"
   val scalaLoggingVersion = "1.0.1"
@@ -121,9 +120,6 @@ object Dependencies {
   val testingDependencies = Seq(mockito, scalatest, akkaTestkit)
 
   val javaxMail = "javax.mail" % "mail" % "1.4.5"
-
-  val smlCommonUtil = "pl.softwaremill.common" % "softwaremill-util" % smlCommonVersion
-  val smlCommonSqs = "pl.softwaremill.common" % "softwaremill-sqs" % smlCommonVersion
 
   val scalate = "org.fusesource.scalate" %% "scalate-core" % "1.6.0"
 
@@ -227,19 +223,19 @@ object SmlCodebragBuild extends Build {
   lazy val domain: Project = Project(
     "codebrag-domain",
     file("codebrag-domain"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson, smlCommonUtil))
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson))
   ) dependsOn (common)
 
   lazy val dao: Project = Project(
     "codebrag-dao",
     file("codebrag-dao"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(smlCommonUtil, typesafeConfig))
+    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(typesafeConfig))
   ) dependsOn(domain % "test->test;compile->compile", common)
 
   lazy val service: Project = Project(
     "codebrag-service",
     file("codebrag-service"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator, smlCommonSqs,
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator,
       javaxMail, scalate, egitGithubApi, jGit, dispatch, json4s))
   ) dependsOn(domain, common, dao % "test->test;compile->compile")
 
