@@ -18,27 +18,28 @@ angular.module('codebrag.commits')
                 }
             };
 
-            mix();
+            updateLikesInfo();
+            setupWatcherOnLikes();
 
-            var removeInitialWatcher = $scope.$watch('commit', function(newVal) {
-                if(newVal) {
-                    $scope.$watch('commit.reactions.likes.length', function(newLength) {
-                        if(angular.isUndefined(newLength)) {
-                            return;
-                        }
-                        mix();
-                    }, true);
-                    removeInitialWatcher();
-                }
-            });
+            function setupWatcherOnLikes() {
+                var removeInitialWatcher = $scope.$watch('commit', function (newVal) {
+                    if (newVal) {
+                        $scope.$watch('commit.reactions.likes.length', function (newLength) {
+                            if (angular.isUndefined(newLength)) {
+                                return;
+                            }
+                            updateLikesInfo();
+                        }, true);
+                        removeInitialWatcher();
+                    }
+                });
+            }
 
-            function mix() {
+            function updateLikesInfo() {
                 if($scope.commit) {
                     $scope.usersWhoLike = usersWhoLikeText();
-                    $scope.likesAvailable = ($scope.usersWhoLike.length > 0);
-                    $scope.likesCount = $scope.usersWhoLike.length;
                     $scope.userCannotLike = userCannotLikeCommit();
-                    $scope.noLikesYetText = noLikesYetText();
+                    $scope.likesAvailable = ($scope.usersWhoLike.length > 0);
                     $scope.likesLabel = getCorrectLabel();
                 }
             }

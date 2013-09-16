@@ -1,131 +1,75 @@
-#Codebrag Early Adopters version
-## Installation Guide
+#Codebrag Installation Guide
 
 
-### Prerequisites
+## Prerequisites
 
 * Java 1.7 installed. [Download here](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html) or install package for your server's OS.
 * MongoDB version 2.4.x installed. [Download here](http://www.mongodb.org/downloads) or install package for your server's OS.
 
-### Configuring Codebrag 
+## Configuring Codebrag 
 
 Codebrag has one configuration file `codebrag.conf`provided with distribution. Edit the following settings accordingly.
 
-#### mongo
+### "mongo" section
 
 Set `servers` and `database` properties to point your MongoDB installation.
 
-#### repository
+### "repository" section
 
-Codebrag can work with git repositories in three modes. You need to set one using `type` property:
+Codebrag can work with VCS repositories in three modes. You need to set one using `type` property:
 
-* `git-https` - plain git via https (with user/password provided)
-* `git-ssh` - plain git via ssh (with keys)
+* `git-https` - git via https (with user/password provided)
+* `git-ssh` - git via ssh (with keys)
 * `svn` - experimental
 
-##### git-https
+##### Git repository via SSH
 
-To use Codebrag with plain git via https (user/password) please configure repository section as follows (leave username and password empty for public repositories):
+To use Codebrag with git repository with authentication via ssh (keys) please configure repository section as follows. Also remember to have ssh keys properly configured (leave passphrase empty if there is no passphrase for your keystore). 
 
-	repository {
-	    
-	    type = "git-https"
-
-	    git-https {
-	        name = "REPOSITORY_NAME"
-	        uri = "REPOSITORY_URI"
-	        branch = "BRANCH" (in format "refs/heads/NAME")
-	        username = "USER_NAME"
-	        password = "PASSWORD"
-	    }
-	    
-	    ...
-	}
-
-For example: 
+*** NOTE: *** Test you repository ssh connection and add host to `known-hosts` otherwise Codebrag will not be able to authenticate. You may also want to create ssh configuration in `~/.ssh/config` file.
 
 	repository {
-	    
-	    type = "git-https"
-
-	    git-https {
-	        name = "codebrag"
-	        uri = "https://github.com/softwaremill/codebrag.git"
-	        branch = "refs/heads/master"
-	        username = "secretuser"
-	        password = "secretpassword"
-	    }
-	    
-	    ...
-	}
-
-
-##### git-ssh
-
-If you prefer using Codebrag with plain git via ssh (keys) please configure repository section as follows. Also remember to have ssh keys properly configured (leave passphrase empty if there is no passphrase for your keystore). 
-
-*** NOTE: *** Test you repository ssh connection and add host to `known-hosts` otherwise Codebrag will not be able to authenticate. 
-
-	repository {
-	    
 	    type = "git-ssh"
-
 	    git-ssh {
-	        name = "REPOSITORY_NAME"
-	        uri = "REPOSITORY_URI"
-	        branch = "BRANCH" (in format "refs/heads/NAME")
-	        passphrase = "SSH_KEY_PASSPHRASE"
+	        name = "..."			// e.g. codebrag"
+	        uri ="..." 				// e.g.	git@github.com:sml/codebrag.git
+	        branch ="..."  			// e.g. "refs/heads/master"
+	        passphrase ="..." 		// or "" if no passphrase required
 	    }
-	    
-	    ...
 	}
 
-For example: 
+##### Git repository via HTTPS
+
+To use Codebrag with git via https (user/password required) please configure repository section as follows (leave username and password empty for public repositories):
 
 	repository {
-	    
-	    type = "git-ssh"
-
-	    git-ssh {
-	        name = "codebrag"
-	        uri = "git@github.com:softwaremill/codebrag.git"
-	        branch = "refs/heads/master"
-	        passphrase = "secretpassphrase"
+	    type = "git-https"
+	    git-https {
+	        name = "..."		
+	        uri = "..."				// e.g. https://github.com/sml/codebrag.git
+	        branch = "..." 	
+	        username = "..."
+	        password = "..."
 	    }
-	    
-	    ...
 	}
 
-##### SVN (experimental)
+##### SVN repository (experimental)
 
 You can also use Codebrag with SVN repositories although *** this is experimental feature *** still in development. To do that, please change your repository configuration section to this:
 
 	repository {
-
 	    type = "svn"
-
 	    svn {
-	        name = "REPOSITORY_NAME"
-	        uri = "REPOSITORY_URI"
-	        username = "USERNAME"
-	        password = "PASSWORD"
+	        name = "..." 
+	        uri = "..."				// e.g. http://codebrag.com/svn
+	        username = "..."
+	        password = "..."
 	    }
-
-	    ...
 	}
 
-    svn {
-        name = "yourrepo"
-        uri = "http://yourrepo.com/svn"
-        username = "secretuser"
-        password = "secretpassword"
-    }
+### "email" section
 
-##### Email server
-
-It's **important** to setup your email server/account. Otherwise Codebrag will not be able to send e.g. invitations.
-
-**e.g.**
+Setup your email server/account so Codebrag can send emails with invitations and other notificaitons to users.
 
     email {
         smtp-host = "smtp.gmail.com"
@@ -136,29 +80,23 @@ It's **important** to setup your email server/account. Otherwise Codebrag will n
         encoding = "UTF-8"
     }
 
-##### Application Url
+### "codebrag" section
 
-In config please specify `codebrag.applicationUrl` property. It's used e.g. to generate registration link.
+##### applicationUrl
 
-**e.g.**
+Please specify `codebrag.applicationUrl` property. It should indicate URL that users would access to use Codebrag. It is used to create registration link.
 
-    codebrag {
-        (…)
-        applicationUrl = "http://codebrag.mydomain.com:8080"
-        (…)
-    }
-
-##### repository data
+	applicationUrl = "http://codebrag.mydomain.com:8080"
+		
+##### local-git-storage-path
 
 Codebrag needs to store repository data somewhere on your server. Edit `local-git-storage-path` accordingly. Codebrag will create directory called `repos` under provided location. Remember to set access rights accordingly so that Codebrag can read and write to this location.
 
-##### web-server
+### "web-server" section
 
 By default Codebrag starts on port 8080. If you want to change that, edit `port` property accordingly.
 
-
-
-### Running Codebrag
+## Running Codebrag
 
 Assuming your MongoDB is working and java is installed Codebrag can be run with 
 
@@ -166,16 +104,17 @@ Assuming your MongoDB is working and java is installed Codebrag can be run with
 	
 Logs will be written to `codebrag.log`
 
-### Logging into codebrag
+## Logging into codebrag
 
-As our user management is very basic you can register your account in Codebrag by going to `http://localhost:8080/#/register` and submitting the form. Remember that your email must match the one in git log so that Codebrag can recognize your commits. After doing that you can login to Codebrag at `http://localhost:8080`. If you are using Github integration described below you can use Github Sign In.
-
-### Troubleshooting
-
-If you encounter a problem with repository synchronization (e.g. message like "No value for key branch.master.merge found in configuration") please remove `repos` directory located at `local-git-storage-path` you configured and restart Codebrag.
-
-In case of any questions feel free to contact us at `ask@codebrag.com`.
-If you have issues with installing/using codebrag please contact Michał Ostruszka via email: `michal.ostruszka@softwaremill.com` or via Skype `michal.ostruszka`.  
+First user that access Codebrag after installation will be asked to register his account. Either email address or name provided have to match corresponding fields in `git log` in order to match commits with given user. Codebrag uses [Gravatar](http://gravatar.com) to display user avatars in application.
 
 
 
+### Inviting other users
+
+Other users can be invited to Codebrag by choosing "Invite friends" link from menu in upper left corner.
+
+
+## Contact us if you want
+
+If you experience any issues with Codebrag, do not hesitate to contact us via (email/forum/uservoice/irc). Also if want to let us know your feelings about Codebrag, drop us a line too. Happy code reviewing!

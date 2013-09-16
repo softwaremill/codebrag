@@ -4,7 +4,6 @@ import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao.{LikeDAO, ObjectIdTestUtils, CommitCommentDAO}
-import pl.softwaremill.common.util.time.FixtureTimeClock
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import com.softwaremill.codebrag.domain._
@@ -12,6 +11,7 @@ import com.softwaremill.codebrag.service.comments.command.{IncomingLike, Incomin
 import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.domain.reactions.LikeEvent
 import org.mockito.ArgumentCaptor
+import com.softwaremill.codebrag.common.FixtureTimeClock
 
 class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with MockEventBus {
 
@@ -59,7 +59,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
     savedComment.commitId should equal(CommentForCommit.commitId)
     savedComment.authorId should equal(CommentForCommit.authorId)
     savedComment.message should equal(CommentForCommit.message)
-    savedComment.postingTime should equal(FixedClock.currentDateTimeUTC())
+    savedComment.postingTime should equal(FixedClock.currentDateTimeUTC)
   }
 
   it should "return created inline comment as a result" in {

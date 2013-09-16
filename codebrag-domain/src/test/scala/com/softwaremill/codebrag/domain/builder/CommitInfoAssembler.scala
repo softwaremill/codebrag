@@ -1,9 +1,9 @@
 package com.softwaremill.codebrag.domain.builder
 
-import pl.softwaremill.common.util.RichString
 import com.softwaremill.codebrag.domain.{CommitInfo, CommitFileInfo}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.common.Utils
 
 class CommitInfoAssembler(var commit: CommitInfo) {
 
@@ -59,13 +59,13 @@ object CommitInfoAssembler {
   def randomCommit = new CommitInfoAssembler(createRandomCommit)
 
   private def createRandomCommit = {
-    val sha = RichString.generateRandom(10)
-    val message = RichString.generateRandom(10)
-    val authorName = RichString.generateRandom(10)
-    val authorEmail = RichString.generateRandom(10)
-    val committerName = RichString.generateRandom(10)
-    val committerEmail = RichString.generateRandom(10)
-    val parent = RichString.generateRandom(10)
+    val sha = Utils.randomString(10)
+    val message = Utils.randomString(10)
+    val authorName = Utils.randomString(10)
+    val authorEmail = Utils.randomString(10)
+    val committerName = Utils.randomString(10)
+    val committerEmail = Utils.randomString(10)
+    val parent = Utils.randomString(10)
     CommitInfo(new ObjectId, sha, message, authorName, authorEmail, committerName, committerEmail,
       new DateTime(), new DateTime(), List(parent), List())
   }

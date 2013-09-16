@@ -7,7 +7,6 @@ import org.mockito.Mockito._
 import org.mockito.Matchers
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao._
-import pl.softwaremill.common.util.time.FixtureTimeClock
 import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
@@ -27,7 +26,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     commitInfoDao = mock[CommitInfoDAO]
     commitCommentDao = mock[CommitCommentDAO]
     userDao = mock[UserDAO]
-    followupService = new FollowupService(followupDao, commitInfoDao, commitCommentDao, userDao)(TestClock)
+    followupService = new FollowupService(followupDao, commitInfoDao, commitCommentDao, userDao)
 
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(commitInfoDao.findByCommitId(Commit2.id)).willReturn(Some(Commit2))
@@ -137,9 +136,6 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
 trait FollowupServiceSpecFixture {
 
   val CommentDateTime = new DateTime()
-
-  implicit val TestClock = new FixtureTimeClock(12345)
-  val FollowupCreationDateTime = TestClock.currentDateTimeUTC()
 
   val BettyCommitAuthorId = ObjectIdTestUtils.oid(000)
   val JackCommitAuthorId = ObjectIdTestUtils.oid(124)

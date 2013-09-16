@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag
 
 import activities.AddCommentActivity
-import com.softwaremill.codebrag.common.{ObjectIdGenerator, IdGenerator}
+import com.softwaremill.codebrag.common.{RealTimeClock, ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.dao.reporting._
 import dao._
 import com.softwaremill.codebrag.rest.CodebragSwagger
@@ -10,7 +10,6 @@ import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffServ
 import service.followups.FollowupService
 import service.commits._
 import com.softwaremill.codebrag.service.user._
-import pl.softwaremill.common.util.time.RealTimeClock
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.config.{EmailConfig, CodebragConfig, RepositoryConfig, GithubConfig}
@@ -26,7 +25,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
     def rootConfig = ConfigFactory.load()
   }
 
-  implicit lazy val clock = new RealTimeClock
+  implicit lazy val clock = RealTimeClock
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator
   val self = this
   lazy val eventBus = new AkkaEventBus(actorSystem)
