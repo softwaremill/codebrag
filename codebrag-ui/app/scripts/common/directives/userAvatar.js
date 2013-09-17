@@ -37,12 +37,12 @@ angular.module('codebrag.common.directives')
         return {
             template: '<img ng-src="{{avatarUrl}}"></img>',
             restrict: 'E',
-            scope: true,
+            scope: {url: '='},
             link: function (scope, el, attrs) {
                 if (attrs.loggedInUser === "true") {
                     scope.$on(events.loggedIn, on(scope));
                 } else {
-                    scope.$watch(attrs.url, watch(scope));
+                    scope.$watch('url', watch(scope));
                 }
             }
         };
