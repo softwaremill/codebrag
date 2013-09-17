@@ -106,13 +106,36 @@ if [[ $(synchronize) =~ "Repository synchronized" ]]
 then
     echo "Logging in as user 'fox'"
     user=$(login "fox" "codebrag")
+    comment_line 0644648add101cfaa78b029b6418f6f6ba8faa40 ${user} "src/main/scala/com/softwaremill/gameoflife/examples/Toad.scala" 17 "There is too much noise in this line for me. Especially those magic numbers at the end. Maybe extract this Rectangle() thing somehow?"
+    comment_commit 058feadef36e583108b6da4b3f9913f3c126e037 ${user} "Nice and simple way to present board. I like it."
+    comment_line 4efad7b08f519dcd8bb301ce72c166d77b245647 ${user} "src/main/scala/com/softwaremill/gameoflife/BoardReader.scala" 12 "I'd extract those comment characters list to some constant for better visibility."
+    comment_line 4efad7b08f519dcd8bb301ce72c166d77b245647 ${user} "src/main/scala/com/softwaremill/gameoflife/BoardReader.scala" 18 "Why not add more descriptive names instead of s and i?"
+    logout
 
-    comment_commit d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$user" "Test comment"
-    comment_line d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$user" "src/test/scala/com/softwaremill/gameoflife/BoardTest.scala" 57 "You could use 'should equal(...)' instead of 'should be ===' for more readability"
-    like_commit d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$user"
-    like_line d7ac6aadb937e6eca61df53a0016fb2c019ebe1c "$user" "src/test/scala/com/softwaremill/gameoflife/BoardTest.scala" 57
+    user=$(login "scully" "codebrag")
+    comment_line e775bb86da84a9d283849969e7e090d58832c59a ${user} "src/main/scala/com/softwaremill/gameoflife/Board.scala" 27 "This on method name doesn't sound good enough for me. What about putOn or setOn?"
+    comment_commit 4efad7b08f519dcd8bb301ce72c166d77b245647 ${user} "Extract commonly used cells (in tests) to some named things?"
+    comment_commit cbdac3863700935500e390899a1733114a866d50 ${user} "Those s, j, i names... Why not name it better?"
+    comment_commit e7c6c4dc6721397b5102535d8da901fd72085f73 ${user} "Love this ExampleRunner idea!"
+    logout
 
-    echo "Logging fox out"
+    user=$(login "skinner" "codebrag")
+    comment_line e775bb86da84a9d283849969e7e090d58832c59a ${user} "src/main/scala/com/softwaremill/gameoflife/Board.scala" 27 "I agree. putOn sounds much better :)"
+    comment_commit e775bb86da84a9d283849969e7e090d58832c59a ${user} "There are many places where you name your values like b or c. It would be much more readable if you chose some more descriptive names, like just board or cell."
+    comment_line e7c6c4dc6721397b5102535d8da901fd72085f73 ${user} "src/main/scala/com/softwaremill/gameoflife/examples/ExampleRunner.scala" 15 "I really like this zipWithIndex technique :)"
+    logout
+
+    user=$(login "fox" "codebrag")
+    comment_commit e775bb86da84a9d283849969e7e090d58832c59a ${user} "You are right, I'll change it."
+    comment_commit d7ac6aadb937e6eca61df53a0016fb2c019ebe1c ${user} "There is a lot of repetition of Cell(0, 0). Why not extracting it to well-named constant for all tests?"
+    logout
+
+    user=$(login "skinner" "codebrag")
+    comment_line d7ac6aadb937e6eca61df53a0016fb2c019ebe1c ${user} "src/test/scala/com/softwaremill/gameoflife/BoardPrinterTest.scala" 20 "I guess that === is not needed here. Simply should be(...) works fine."
+    logout
+
+    user=$(login "fox" "codebrag")
+    comment_line d7ac6aadb937e6eca61df53a0016fb2c019ebe1c ${user} "src/test/scala/com/softwaremill/gameoflife/BoardPrinterTest.scala" 20 "Or just should equal(...). I guess they are two alternative ways."
     logout
 
     # clear left overs
