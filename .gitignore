@@ -7,5 +7,5 @@ target/
 repos
 .DS_Store
 local.conf
-scripts/ea/codebrag/*
-scripts/ea/codebrag.zip
+scripts/dist/codebrag/*
+scripts/dist/codebrag.zip

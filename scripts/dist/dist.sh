@@ -4,10 +4,10 @@ CODEBRAG_ROOT=../..
 DIST_DIR=codebrag
 DIST_ARCHIVE=codebrag.zip
 WAR_FILE=$CODEBRAG_ROOT/codebrag-dist/target/scala-2.10/codebrag-dist-assembly*.jar
-GUIDE_FILE=$CODEBRAG_ROOT/scripts/ea/ea_install_guide.pdf
+GUIDE_FILE=$CODEBRAG_ROOT/scripts/dist/install_guide.pdf
 CONF_FILE=$CODEBRAG_ROOT/codebrag-rest/src/main/resources/application.conf.template
 LOG_CONF=$CODEBRAG_ROOT/scripts/logback-example.xml
-RUN_SCRIPT=$CODEBRAG_ROOT/scripts/ea/run.sh
+RUN_SCRIPT=$CODEBRAG_ROOT/scripts/dist/run.sh
 
 
 echo "Preparing EA distribution of Codebrag"

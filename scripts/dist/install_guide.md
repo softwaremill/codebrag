@@ -82,11 +82,11 @@ Setup your email server/account so Codebrag can send emails with invitations and
 
 ### "codebrag" section
 
-##### applicationUrl
+##### application-url
 
-Please specify `codebrag.applicationUrl` property. It should indicate URL that users would access to use Codebrag. It is used to create registration link.
+`application-url` property should indicate URL that users would access to use Codebrag. It is used to create registration link.
 
-	applicationUrl = "http://codebrag.mydomain.com:8080"
+	application-url = "http://codebrag.mydomain.com:8080"
 		
 ##### local-git-storage-path
 

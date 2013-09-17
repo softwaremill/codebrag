@@ -12,6 +12,5 @@ trait EmailConfig {
   lazy val emailSmtpUserName: String = emailConfig.getString("smtp-username")
   lazy val emailSmtpPassword: String = emailConfig.getString("smtp-password")
   lazy val emailFrom: String = emailConfig.getString("from")
-  lazy val emailTaskSQSQueue: String = emailConfig.getString("sqs-task-queue")
   lazy val emailEncoding: String = emailConfig.getString("encoding")
 }

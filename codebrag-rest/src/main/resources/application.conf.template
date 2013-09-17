@@ -4,8 +4,7 @@ mongo {
 }
 
 repository {
-    // git-https, git-ssh or svn (experimental)
-    type = "git-ssh"
+    type = "git-ssh"    // git-https, git-ssh or svn (experimental)
 
     git-https {
         name = "codebrag"
@@ -29,27 +28,13 @@ repository {
         password = ""
     }
 }
-aws {
-    access-key-id = ""
-    secret-access-key = ""
-}
-
-email {
-    smtp-host = ""
-    smtp-port = ""
-    smtp-username = ""
-    smtp-password = ""
-    from = ""
-    sqs-task-queue = ""
-    encoding = "UTF-8"
-}
 
 codebrag {
     local-git-storage-path = "."
     debug-services-login = "codebrag"
     debug-services-password = "codebrag"
     demo = false
-    applicationUrl = "http://codebrag:8080"
+    application-url = "http://codebrag:8080"
 }
 
 web-server {
