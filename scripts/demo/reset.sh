@@ -110,6 +110,8 @@ then
     comment_commit 058feadef36e583108b6da4b3f9913f3c126e037 ${user} "Nice and simple way to present board. I like it."
     comment_line 4efad7b08f519dcd8bb301ce72c166d77b245647 ${user} "src/main/scala/com/softwaremill/gameoflife/BoardReader.scala" 12 "I'd extract those comment characters list to some constant for better visibility."
     comment_line 4efad7b08f519dcd8bb301ce72c166d77b245647 ${user} "src/main/scala/com/softwaremill/gameoflife/BoardReader.scala" 18 "Why not add more descriptive names instead of s and i?"
+    like_commit 62dfc47c177f942dde6afc45f378f92a77fc77a6 ${user}
+    like_line 058feadef36e583108b6da4b3f9913f3c126e037 ${user} "src/main/scala/com/softwaremill/gameoflife/Board.scala" 8
     logout
 
     user=$(login "scully" "codebrag")
@@ -117,12 +119,15 @@ then
     comment_commit 4efad7b08f519dcd8bb301ce72c166d77b245647 ${user} "Extract commonly used cells (in tests) to some named things?"
     comment_commit cbdac3863700935500e390899a1733114a866d50 ${user} "Those s, j, i names... Why not name it better?"
     comment_commit e7c6c4dc6721397b5102535d8da901fd72085f73 ${user} "Love this ExampleRunner idea!"
+    like_commit e7c6c4dc6721397b5102535d8da901fd72085f73 ${user}
     logout
 
     user=$(login "skinner" "codebrag")
     comment_line e775bb86da84a9d283849969e7e090d58832c59a ${user} "src/main/scala/com/softwaremill/gameoflife/Board.scala" 27 "I agree. putOn sounds much better :)"
     comment_commit e775bb86da84a9d283849969e7e090d58832c59a ${user} "There are many places where you name your values like b or c. It would be much more readable if you chose some more descriptive names, like just board or cell."
     comment_line e7c6c4dc6721397b5102535d8da901fd72085f73 ${user} "src/main/scala/com/softwaremill/gameoflife/examples/ExampleRunner.scala" 15 "I really like this zipWithIndex technique :)"
+    like_commit cbdac3863700935500e390899a1733114a866d50 ${user}
+    like_line e7c6c4dc6721397b5102535d8da901fd72085f73 ${user} "src/main/scala/com/softwaremill/gameoflife/examples/ExampleRunner.scala" 15
     logout
 
     user=$(login "fox" "codebrag")
