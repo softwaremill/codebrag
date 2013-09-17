@@ -60,7 +60,13 @@ angular.module('codebrag.common.directives').directive('inviteFormPopup', functi
         }
 
         function sendInvitation() {
-            return $http.post('rest/invitation/', {email: $scope.invitation.email, invitation: $scope.invitation.body}, {bypassInterceptors: true});
+            return _sendHttpRequest({email: $scope.invitation.email, invitation: $scope.invitation.body});
+        }
+
+        function _sendHttpRequest(data) {
+            var invitationUrl = 'rest/invitation/';
+            var reqConfig = {method: 'POST', url: invitationUrl, unique: true, data: data, requestId: 'sendInvitation', bypassInterceptors: true};
+            return $http(reqConfig);
         }
     }
 
