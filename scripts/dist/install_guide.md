@@ -24,7 +24,7 @@ Codebrag can work with VCS repositories in three modes. You need to set one usin
 
 ##### Git repository via SSH
 
-To use Codebrag with git repository with authentication via ssh (keys) please configure repository section as follows. Also remember to have ssh keys properly configured (leave passphrase empty if there is no passphrase for your keystore). 
+To use Codebrag with git repository with authentication via ssh (keys) please configure repository section as follows. Please remember to have ssh keys properly configured (leave passphrase empty if there is no passphrase for your keystore).
 
 *** NOTE: *** Test you repository ssh connection and add host to `known-hosts` otherwise Codebrag will not be able to authenticate. You may also want to create ssh configuration in `~/.ssh/config` file.
 
@@ -40,7 +40,7 @@ To use Codebrag with git repository with authentication via ssh (keys) please co
 
 ##### Git repository via HTTPS
 
-To use Codebrag with git via https (user/password required) please configure repository section as follows (leave username and password empty for public repositories):
+To use Codebrag with git via https please configure repository section as follows (leave username and password empty for public repositories):
 
 	repository {
 	    type = "git-https"
@@ -55,7 +55,7 @@ To use Codebrag with git via https (user/password required) please configure rep
 
 ##### SVN repository (experimental)
 
-You can also use Codebrag with SVN repositories although *** this is experimental feature *** still in development. To do that, please change your repository configuration section to this:
+You can also use Codebrag with SVN repositories although *** this is an experimental feature *** still in development. To use SVN, please change your repository configuration section to this:
 
 	repository {
 	    type = "svn"
@@ -69,7 +69,7 @@ You can also use Codebrag with SVN repositories although *** this is experimenta
 
 ### "email" section
 
-Setup your email server/account so Codebrag can send emails with invitations and other notificaitons to users.
+Setup your email server/account so that Codebrag can send emails with invitations and other notifications to users.
 
     email {
         smtp-host = "smtp.gmail.com"
@@ -112,4 +112,4 @@ Other users can be invited to join Codebrag by choosing "Invite friends" link fr
 
 ## Contact us if you need assistance
 
-If you experience any issues with Codebrag, do not hesitate to contact us via (email/forum/uservoice/irc). Also if want to let us know your feelings about Codebrag, drop us a line too. 
+If you experience any issues with Codebrag, do not hesitate to contact us via (email/forum/uservoice/irc). Also if want to let us know your feelings about Codebrag, drop us a line too.
