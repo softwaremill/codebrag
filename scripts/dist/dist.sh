@@ -56,10 +56,16 @@ echo "Done"
 # Upload build to S3 if required
 if [ -f $DIST_ARCHIVE ] && [ $# -eq 1 ] && [ $1 = $UPLOAD_ARG ]; then
   DATE_DAY=`date +"%Y-%m-%d"`
+
   TARGET_PATH="s3://codebrag-dist/$DATE_DAY/$DIST_ARCHIVE"
   echo "Uploading package to $TARGET_PATH"
   CMD="$S3CMD_PATH -c $S3CMD_CONFIG put $DIST_ARCHIVE $TARGET_PATH"
   `$CMD > s3upload.log`
+
+  LATEST_PATH="s3://codebrag-dist/latest/$DIST_ARCHIVE"
+  echo "Uploading package to $LATEST_PATH"
+  CMD="$S3CMD_PATH -c $S3CMD_CONFIG put --acl-public $DIST_ARCHIVE $LATEST_PATH"
+  `$CMD >> s3upload.log`
   echo "Done"
 fi
 
