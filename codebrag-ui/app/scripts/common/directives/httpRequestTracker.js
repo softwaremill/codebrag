@@ -30,12 +30,10 @@ angular.module('codebrag.common.directives')
                 }, function() {
                     if(observedRequestsCount()) {
                         element.show();
-                        console.log('addClass', activeClass);
                         element.addClass(activeClass);
                         return;
                     }
                     element.fadeOut();
-                    console.log('removeClass', activeClass);
                     element.removeClass(activeClass);
                 });
 			}
