@@ -5,7 +5,7 @@ angular.module('codebrag.commits').directive('commitMsgHeadline', function() {
             message: '='
         },
         replace: true,
-        template: '<span ng-bind-html-unsafe="messageHeadline"></span>',
+        template: '<span ng-bind="messageHeadline"></span>',
         link: function(scope, el, attrs) {
             var removeWatcher = scope.$watch('message', function(val) {
                 if(val) {
