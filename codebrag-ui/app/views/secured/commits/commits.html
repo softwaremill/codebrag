@@ -11,7 +11,7 @@
                 <div class="diff-header clearfix" ng-controller="DiffNavbarCtrl" ng-show="currentCommit">
                     <label for="file-changer">Files in this commit:</label><diff-file-chooser></diff-file-chooser>
                     <a class="to-review accept button" title="Mark commit as reviewed" ng-show="currentCommit.info.pendingReview" ng-click="markCurrentCommitAsReviewed()"><i class="icon-ok-circle"> </i>Mark commit as reviewed</a>
-                    <span class="reviewed secondary button" ng-hide="currentCommit.info.pendingReview"><i class="icon-ok-circle"> </i>Reviewed</span>
+                    <span class="reviewed-inactive secondary button" ng-hide="currentCommit.info.pendingReview"><i class="icon-ok-circle"> </i>Reviewed</span>
                 </div>
             </div>
         </div>
