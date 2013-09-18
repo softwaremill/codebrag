@@ -1,0 +1,22 @@
+Metadata-Version: 1.0
+Name: s3cmd
+Version: 1.5.0-alpha1
+Summary: Command line tool for managing Amazon S3 and CloudFront services
+Home-page: http://s3tools.org
+Author: Michal Ludvig
+Author-email: michal@logix.cz
+License: GPL version 2
+Description: 
+        
+        S3cmd lets you copy files from/to Amazon S3
+        (Simple Storage Service) using a simple to use
+        command line client. Supports rsync-like backup,
+        GPG encryption, and more. Also supports management
+        of Amazon's CloudFront content delivery network.
+        
+        
+        Authors:
+        --------
+            Michal Ludvig  <michal@logix.cz>
+        
+Platform: UNKNOWN

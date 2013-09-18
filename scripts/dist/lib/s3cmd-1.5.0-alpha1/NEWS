@@ -1,0 +1,221 @@
+s3cmd 1.5.0   -   ???
+===========
+* Server-side copy for hardlinks/softlinks to improve performance
+  (Matt Domsch)
+* New [signurl] command (Craig Ringer)
+* Improved symlink-loop detection (Michal Ludvig)
+* Add --delete-after option for sync (Matt Domsch)
+* Handle empty return bodies when processing S3 errors.
+  (Kelly McLaughlin)
+* Upload from STDIN (Eric Connell)
+* Updated bucket locations (Stefhen Hovland)
+* Support custom HTTP headers (Brendan O'Connor, Karl Matthias)
+* Improved MIME support (Karsten Sperling, Christopher Noyes)
+* Added support for --acl-grant/--acl-revoke to 'sync' command
+  (Michael Tyson)
+* CloudFront: Support default index and default root invalidation
+  (Josep del Rio)
+* Command line options for access/secret keys (Matt Sweeney)
+* Support [setpolicy] for setting bucket policies (Joe Fiorini)
+* Respect the $TZ environment variable (James Brown)
+* Reduce memory consumption for [s3cmd du] (Charlie Schluting)
+* Rate limit progress updates (Steven Noonan)
+* Download from S3 to a temp file first (Sumit Kumar)
+* Reuse a single connection when doing a bucket list (Kelly McLaughlin)
+* Delete empty files if object_get() failed (Oren Held)
+
+s3cmd 1.1.0   -   (never released)
+===========
+* MultiPart upload enabled for both [put] and [sync]. Default chunk
+  size is 15MB.
+* CloudFront invalidation via [sync --cf-invalidate] and [cfinvalinfo].
+* Increased socket_timeout from 10 secs to 5 mins.
+* Added "Static WebSite" support [ws-create / ws-delete / ws-info]
+  (contributed by Jens Braeuer)
+* Force MIME type with --mime-type=abc/xyz, also --guess-mime-type 
+  is now on by default, -M is no longer shorthand for --guess-mime-type
+* Allow parameters in MIME types, for example:
+  --mime-type="text/plain; charset=utf-8"
+* MIME type can be guessed by python-magic which is a lot better than
+  relying on the extension. Contributed by Karsten Sperling.
+* Support for environment variables as config values. For instance
+  in ~/.s3cmd put "access_key=$S3_ACCESS_KEY". Contributed by Ori Bar.
+* Support for --configure checking access to a specific bucket instead
+  of listing all buckets.
+  Listing buckets requires the S3 ListAllMyBuckets permission which
+  is typically not available to delegated IAM accounts. With this change,
+  s3cmd --configure accepts an (optional) bucket uri as a parameter
+  and if it's provided, the access check will just verify access to this
+  bucket individually. Contributed by Mike Repass.
+* Allow STDOUT as a destination even for downloading multiple files.
+  They will be output one after another without any delimiters!
+  Contributed by Rob Wills.
+
+s3cmd 1.0.0   -   2011-01-18
+===========
+* [sync] now supports --no-check-md5
+* Network connections now have 10s timeout
+* [sync] now supports bucket-to-bucket synchronisation
+* Added [accesslog] command.
+* Added access logging for CloudFront distributions 
+  using [cfmodify --log]
+* Added --acl-grant and --acl-revoke [Timothee Groleau]
+* Allow s3:// URI as well as cf:// URI as a distribution
+  name for most CloudFront related commands.
+* Support for Reduced Redundancy Storage (--reduced-redundancy)
+* Follow symlinks in [put] and [sync] with --follow-symlinks
+* Support for CloudFront DefaultRootObject [Luke Andrew]
+
+s3cmd 0.9.9.91 -  2009-10-08
+==============
+* Fixed invalid reference to a variable in failed upload handling.
+
+s3cmd 0.9.9.90 -  2009-10-06
+==============
+* New command 'sign' for signing e.g. POST upload policies.
+* Fixed handling of filenames that differ only in 
+  capitalisation (eg blah.txt vs Blah.TXT).
+* Added --verbatim mode, preventing most filenames 
+  pre-processing. Good for fixing unreadable buckets.
+* Added --recursive support for [cp] and [mv], including
+  multiple-source arguments, --include/--exclude, --dry-run, etc.
+* Added --exclude/--include and --dry-run for [del], [setacl].
+* Neutralise characters that are invalid in XML to avoid ExpatErrors.
+  http://boodebr.org/main/python/all-about-python-and-unicode
+* New command [fixbucket] for for fixing invalid object names
+  in a given Bucket. For instance names with &#x08; in them
+  (not sure how people manage to upload them but they do).
+
+s3cmd 0.9.9   -   2009-02-17
+===========
+New commands:
+* Commands for copying and moving objects, within or 
+  between buckets: [cp] and [mv] (Andrew Ryan)
+* CloudFront support through [cfcreate], [cfdelete], 
+  [cfmodify] and [cfinfo] commands. (sponsored by Joseph Denne)
+* New command [setacl] for setting ACL on existing objects, 
+  use together with --acl-public/--acl-private (sponsored by
+  Joseph Denne)
+
+Other major features:
+* Improved source dirname handling for [put], [get] and [sync].
+* Recursive and wildcard support for [put], [get] and [del].
+* Support for non-recursive [ls].
+* Enabled --dry-run for [put], [get] and [sync].
+* Allowed removal of non-empty buckets with [rb --force].
+* Implemented progress meter (--progress / --no-progress)
+* Added --include / --rinclude / --(r)include-from 
+  options to override --exclude exclusions.
+* Added --add-header option for [put], [sync], [cp] and [mv]. 
+  Good for setting e.g. Expires or Cache-control headers.
+* Added --list-md5 option for [ls].
+* Continue [get] partially downloaded files with --continue
+* New option --skip-existing for [get] and [sync].
+
+Minor features and bugfixes:
+* Fixed GPG (--encrypt) compatibility with Python 2.6.
+* Always send Content-Length header to satisfy some http proxies.
+* Fixed installation on Windows and Mac OS X.
+* Don't print nasty backtrace on KeyboardInterrupt.
+* Should work fine on non-UTF8 systems, provided all
+  the files are in current system encoding.
+* System encoding can be overriden using --encoding.
+* Improved resistance to communication errors (Connection 
+  reset by peer, etc.)
+
+s3cmd 0.9.8.4 -   2008-11-07
+=============
+* Stabilisation / bugfix release:
+* Restored access to upper-case named buckets.
+* Improved handling of filenames with Unicode characters.
+* Avoid ZeroDivisionError on ultrafast links (for instance
+  on Amazon EC2)
+* Re-issue failed requests (e.g. connection errors, internal
+  server errors, etc).
+* Sync skips over files that can't be open instead of 
+  terminating the sync completely.
+* Doesn't run out of open files quota on sync with lots of 
+  files.
+
+s3cmd 0.9.8.3 -   2008-07-29
+=============
+* Bugfix release. Avoid running out-of-memory in MD5'ing
+  large files.
+
+s3cmd 0.9.8.2 -   2008-06-27
+=============
+* Bugfix release. Re-upload file if Amazon doesn't send ETag 
+  back.
+
+s3cmd 0.9.8.1 -   2008-06-27
+=============
+* Bugfix release. Fixed 'mb' and 'rb' commands again.
+
+s3cmd 0.9.8   -   2008-06-23
+===========
+* Added --exclude / --rexclude options for sync command.
+* Doesn't require $HOME env variable to be set anymore.
+* Better checking of bucket names to Amazon S3 rules.
+
+s3cmd 0.9.7   -   2008-06-05
+===========
+* Implemented 'sync' from S3 back to local folder, including
+  file attribute restoration.
+* Failed uploads are retried on lower speed to improve error
+  resilience.
+* Compare MD5 of the uploaded file, compare with checksum
+  reported by S3 and re-upload on mismatch.
+
+s3cmd 0.9.6   -   2008-02-28
+===========
+* Support for setting / guessing MIME-type of uploaded file
+* Correctly follow redirects when accessing buckets created
+  in Europe.
+* Introduced 'info' command both for buckets and objects
+* Correctly display public URL on uploads
+* Updated TODO list for everyone to see where we're heading
+* Various small fixes. See ChangeLog for details.
+
+s3cmd 0.9.5   -   2007-11-13
+===========
+* Support for buckets created in Europe
+* Initial 'sync' support, for now local to s3 direction only
+* Much better handling of multiple args to put, get and del
+* Tries to use ElementTree from any available module
+* Support for buckets with over 1000 objects.
+
+s3cmd 0.9.4   -   2007-08-13
+===========
+* Support for transparent GPG encryption of uploaded files
+* HTTP proxy support
+* HTTPS protocol support
+* Support for non-ASCII characters in uploaded filenames
+
+s3cmd 0.9.3   -   2007-05-26
+===========
+* New command "du" for displaying size of your data in S3.
+  (Basil Shubin)
+
+s3cmd 0.9.2   -   2007-04-09
+===========
+* Lots of new documentation
+* Allow "get" to stdout (use "-" in place of destination file
+  to get the file contents on stdout)
+* Better compatibility with Python 2.4
+* Output public HTTP URL for objects stored with Public ACL
+* Various bugfixes and improvements
+
+s3cmd 0.9.1   -   2007-02-06
+===========
+* All commands now use S3-URIs
+* Removed hard dependency on Python 2.5
+* Experimental support for Python 2.4 
+  (requires external ElementTree module)
+
+
+s3cmd 0.9.0   -   2007-01-18
+===========
+* First public release brings support for all basic Amazon S3
+  operations: Creation and Removal of buckets, Upload (put),
+  Download (get) and Removal (del) of files/objects.
+
