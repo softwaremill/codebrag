@@ -3,7 +3,6 @@ package com.softwaremill.codebrag.service.updater
 import akka.actor.{ActorRef, Props, ActorSystem}
 import com.softwaremill.codebrag.service.commits.{RepoDataProducer, CommitImportService}
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.service.updater.LocalRepositoryUpdater.UpdateCommand
 
 object RepositoryUpdateScheduler extends Logging {
 
@@ -25,6 +24,6 @@ object RepositoryUpdateScheduler extends Logging {
 
   def scheduleRepositorySynchronization(actorSystem: ActorSystem) {
     import actorSystem.dispatcher
-    actorSystem.scheduler.scheduleOnce(UpdateCommand.InitialDelay, actor, LocalRepositoryUpdater.UpdateCommand)
+    actorSystem.scheduler.scheduleOnce(LocalRepositoryUpdater.InitialDelay, actor, LocalRepositoryUpdater.UpdateCommand(schedule = true))
   }
 }

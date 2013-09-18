@@ -4,7 +4,7 @@ import akka.actor._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.commits.{RepoData, CommitImportService}
 import scala.Some
-import com.softwaremill.codebrag.service.updater.LocalRepositoryUpdater.{RepositoryUpdateFailed, UpdateCommand}
+import com.softwaremill.codebrag.service.updater.LocalRepositoryUpdater.RepositoryUpdateFailed
 
 class LocalRepositoryUpdater(importService: CommitImportService, actorSystem: ActorSystem) extends Actor with Logging {
 
@@ -15,7 +15,7 @@ class LocalRepositoryUpdater(importService: CommitImportService, actorSystem: Ac
       repoData = Some(newRepoData)
       logger.debug("Repository credentials refreshed")
     }
-    case LocalRepositoryUpdater.UpdateCommand => {
+    case LocalRepositoryUpdater.UpdateCommand(schedule) => {
       try {
         repoData.foreach(importService.importRepoCommits)
         sender ! LocalRepositoryUpdater.RepositoryUpdateSucceeded("Repository synchronized")
@@ -25,9 +25,11 @@ class LocalRepositoryUpdater(importService: CommitImportService, actorSystem: Ac
           sender ! RepositoryUpdateFailed(e)
         }
       } finally {
-        import actorSystem.dispatcher
-        logger.debug("Scheduling next update delay to " + UpdateCommand.NextUpdatesInterval.toString)
-        actorSystem.scheduler.scheduleOnce(UpdateCommand.NextUpdatesInterval, self, LocalRepositoryUpdater.UpdateCommand)
+        if (schedule) {
+          import actorSystem.dispatcher
+          logger.debug("Scheduling next update delay to " + LocalRepositoryUpdater.NextUpdatesInterval.toString)
+          actorSystem.scheduler.scheduleOnce(LocalRepositoryUpdater.NextUpdatesInterval, self, LocalRepositoryUpdater.UpdateCommand(schedule = true))
+        }
       }
     }
   }
@@ -35,11 +37,13 @@ class LocalRepositoryUpdater(importService: CommitImportService, actorSystem: Ac
 
 object LocalRepositoryUpdater {
 
-  object UpdateCommand {
-    import scala.concurrent.duration._
-    val InitialDelay = 3 seconds
-    val NextUpdatesInterval = 45 seconds
-  }
+  import scala.concurrent.duration._
+
+  val InitialDelay = 3 seconds
+  val NextUpdatesInterval = 45 seconds
+
+  case class UpdateCommand(schedule: Boolean)
+
   case class RefreshRepoData(newRepoData: RepoData)
 
   case class RepositoryUpdateSucceeded(message: String)
