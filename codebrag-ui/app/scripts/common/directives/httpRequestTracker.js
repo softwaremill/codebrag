@@ -12,6 +12,7 @@ angular.module('codebrag.common.directives')
 			scope: {},
 			link: function(scope, element, attrs) {
                 var requestType = attrs.httpRequestTracker;
+                var activeClass = attrs.activeClass || '';
 
                 function observedRequestsCount() {
                     var pendingRequests = $http.pendingRequests;
@@ -29,9 +30,13 @@ angular.module('codebrag.common.directives')
                 }, function() {
                     if(observedRequestsCount()) {
                         element.show();
+                        console.log('addClass', activeClass);
+                        element.addClass(activeClass);
                         return;
                     }
                     element.fadeOut();
+                    console.log('removeClass', activeClass);
+                    element.removeClass(activeClass);
                 });
 			}
 		};
