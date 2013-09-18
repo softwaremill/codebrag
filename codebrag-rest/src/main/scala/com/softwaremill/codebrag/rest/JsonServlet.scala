@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.rest
 
 import org.scalatra._
-import org.scalatra.json.{ JValueResult, JacksonJsonSupport }
+import org.scalatra.json.{JValueResult, JacksonJsonSupport}
 import org.json4s._
 import java.io.Writer
 import org.apache.commons.lang3.StringEscapeUtils._
-import org.json4s.{ DefaultFormats, Formats }
+import org.json4s.{DefaultFormats, Formats}
 import javax.servlet.http.HttpServletResponse
 import java.util.Date
 import com.typesafe.scalalogging.slf4j.Logging
@@ -19,23 +19,6 @@ class JsonServlet extends ScalatraServlet with JacksonJsonSupport with JValueRes
   before() {
     contentType = formats("json")
     applyNoCache(response)
-  }
-
-  override def writeJson(json: JValue, writer: Writer) {
-    (json \ "notEscapedData") match {
-      case JNothing => {
-        val escapedJson = json.map((x: JValue) =>
-          x match {
-            case JString(y) => JString(escapeHtml4(y))
-            case _ => x
-          }
-        )
-        mapper.writeValue(writer, escapedJson)
-      }
-      case _ => {
-        mapper.writeValue(writer, json \ "notEscapedData")
-      }
-    }
   }
 
   def extractPathIntOrHalt(key: String, default: Int, errorMsg: String, constraints: Int => Boolean): Int = {
@@ -67,7 +50,7 @@ class JsonServlet extends ScalatraServlet with JacksonJsonSupport with JValueRes
     case t: Exception => {
       logger.error("Exception during client request processing", t)
     }
-    halt(500, "Internal server exception")
+      halt(500, "Internal server exception")
   }
 
 }
