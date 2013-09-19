@@ -38,8 +38,8 @@ angular.module('codebrag.commits')
             commitsListLoadFilter.setToReview();
             return Commits.queryReviewable({limit: pageLimit}).$then(function(response) {
                 commits.replaceWith(response.data.commits);
-                updatePreviousCommitsAvailability(0); // no previous commits loaded
-                updateNextCommitsAvailability(response.data.commits.length);
+                updatePreviousCommitsAvailability(response.data.older);
+                updateNextCommitsAvailability(response.data.newer);
                 updatePendingCommitsCounter(response.data.totalCount);
                 return commits;
             });
@@ -79,8 +79,8 @@ angular.module('codebrag.commits')
             var options = {limit: pageLimit};
             return Commits.queryWithSurroundings(options).$then(function(response) {
                 commits.replaceWith(response.data.commits);
-                updatePreviousCommitsAvailability(response.data.commits.length);
-                updateNextCommitsAvailability(0);
+                updatePreviousCommitsAvailability(response.data.older);
+                updateNextCommitsAvailability(response.data.newer);
                 updatePendingCommitsCounter(response.data.totalCount);
                 return commits;
             });
@@ -112,7 +112,7 @@ angular.module('codebrag.commits')
             return Commits.query(options).$then(function(response) {
                 commits.appendAll(response.data.commits);
                 updatePendingCommitsCounter(response.data.totalCount);
-                updateNextCommitsAvailability(response.data.commits.length, options.limit);
+                updateNextCommitsAvailability(response.data.newer);
                 notifyIfNextCommitsLoaded(response.data.commits.length);
             });
         };
@@ -126,7 +126,7 @@ angular.module('codebrag.commits')
             return Commits.query(options).$then(function(response) {
                 commits.prependAll(response.data.commits);
                 updatePendingCommitsCounter(response.data.totalCount);
-                updatePreviousCommitsAvailability(response.data.commits.length, options.limit);
+                updatePreviousCommitsAvailability(response.data.older);
                 notifyIfPreviousCommitsLoaded(response.data.commits.length);
             });
         };
@@ -163,12 +163,12 @@ angular.module('codebrag.commits')
             $rootScope.$broadcast(events.commitCountChanged, {commitCount: newCount});
         }
 
-        function updateNextCommitsAvailability(nextCommitsLoadedCount, loadLimit) {
-            nextCommitsAvailable = (nextCommitsLoadedCount === (loadLimit || pageLimit));
+        function updateNextCommitsAvailability(newerCommits) {
+            nextCommitsAvailable = newerCommits > 0;
         }
 
-        function updatePreviousCommitsAvailability(previousCommitsLoadedCount, loadLimit) {
-            previousCommitsAvailable = (previousCommitsLoadedCount === (loadLimit || pageLimit));
+        function updatePreviousCommitsAvailability(olderCommits) {
+            previousCommitsAvailable = olderCommits > 0;
         }
 
     });
