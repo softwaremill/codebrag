@@ -26,7 +26,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
   val commitTwo = CommitInfoAssembler.randomCommit.withAuthorName(commitAuthor.name).get
   val commitThree = CommitInfoAssembler.randomCommit.withAuthorName(commitAuthor.name).get
 
-
+  val ThreeCommitIdsList = List(commitOne, commitTwo, commitThree).map(_.id.toString)
 
   it should "find all commits when user only subset of commits to review" taggedAs RequiresDb in {
     // given
@@ -37,7 +37,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     val allCommitsView = finder.findAllCommits(threeFromStart, reviewingUserId)
 
     // then
-    allCommitsView.commits.map(_.id) should be(List(commitOne.id.toString, commitTwo.id.toString, commitThree.id.toString))
+    allCommitsView.commits.map(_.id) should equal(ThreeCommitIdsList)
   }
 
   it should "return total number of commits to review" taggedAs RequiresDb in {
@@ -49,7 +49,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     val allCommitsView = finder.findAllCommits(threeFromStart, reviewingUserId)
 
     // then
-    allCommitsView.totalCount should be(1)
+    allCommitsView.totalCount should equal(1)
   }
 
   it should "return next page from all commits" taggedAs RequiresDb in {
@@ -62,8 +62,8 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     val commitsView = finder.findAllCommits(nextTwoAfterFirst, reviewingUserId)
 
     // then
-    commitsView.commits.map(_.id) should be(List(commitTwo.id.toString, commitThree.id.toString))
-    commitsView.totalCount should be(1)
+    commitsView.commits.map(_.id) should equal(List(commitTwo, commitThree).map(_.id.toString))
+    commitsView.totalCount should equal(1)
   }
 
   it should "return previous page from all commits" taggedAs RequiresDb in {
@@ -76,8 +76,8 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     val commitsView = finder.findAllCommits(previousTwoFromLast, reviewingUserId)
 
     // then
-    commitsView.commits.map(_.id) should be(List(commitOne.id.toString, commitTwo.id.toString))
-    commitsView.totalCount should be(1)
+    commitsView.commits.map(_.id) should equal(List(commitOne, commitTwo).map(_.id.toString))
+    commitsView.totalCount should equal(1)
   }
 
   it should "return commits view containing user data" taggedAs RequiresDb in {
@@ -90,8 +90,8 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // then
     val commitView = commitsView.commits.head
-    commitView.authorAvatarUrl should be(commitAuthor.avatarUrl)
-    commitView.authorName should be(commitAuthor.name)
+    commitView.authorAvatarUrl should equal(commitAuthor.avatarUrl)
+    commitView.authorName should equal(commitAuthor.name)
   }
 
   it should "mark commits as pending review if not reviewed by user" taggedAs RequiresDb in {
@@ -105,9 +105,9 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // then
     val commits = commitsView.commits
-    commits(0).pendingReview should be(false)
-    commits(1).pendingReview should be(true)
-    commits(2).pendingReview should be(true)
+    commits(0).pendingReview should equal(false)
+    commits(1).pendingReview should equal(true)
+    commits(2).pendingReview should equal(true)
   }
 
   it should "find commit with surroundings" taggedAs RequiresDb in {
@@ -119,7 +119,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     val commitsView = finder.findAllCommits(twoInContext, reviewingUserId)
 
     // then
-    commitsView.commits.map(_.id) should be(List(commitOne.id.toString, commitTwo.id.toString, commitThree.id.toString))
+    commitsView.commits.map(_.id) should equal(ThreeCommitIdsList)
   }
 
   it should "find first commit with surroundings" taggedAs RequiresDb in {
@@ -131,7 +131,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     val commitsView = finder.findAllCommits(oneInContext, reviewingUserId)
 
     // then
-    commitsView.commits.map(_.id) should be(List(commitOne.id.toString, commitTwo.id.toString))
+    commitsView.commits.map(_.id) should equal(List(commitOne, commitTwo).map(_.id.toString))
   }
 
   private def storeUser(user: User) = userDao.add(user)
@@ -139,6 +139,6 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
   private def storeCommits(commits: CommitInfo*) = commits.foreach(commitDao.storeCommit)
 
   private def storeReviewTasksFor(userId: ObjectId, commits: CommitInfo*) = {
-    commits.foreach( commit => reviewTaskDao.save(CommitReviewTask(commit.id, userId)))
+    commits.foreach(commit => reviewTaskDao.save(CommitReviewTask(commit.id, userId)))
   }
 }
