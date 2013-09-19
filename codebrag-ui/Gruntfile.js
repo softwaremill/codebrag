@@ -100,15 +100,18 @@ module.exports = function (grunt) {
 
 
         karma: {
+            options: {
+                configFile: 'karma-config.js'
+            },
             autotest: {
-                configFile: 'karma-config.js',
-                reporters: ['dots'],
                 singleRun: false,
                 autoWatch: true
             },
             test: {
-                configFile: 'karma-config.js',
-                reporters: ['progress'],
+                singleRun: true
+            },
+            teamcity: {
+                reporters: ['teamcity'],
                 singleRun: true
             }
         },
@@ -240,7 +243,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('build', [
         'clean:dist',
-        'test',
+        'test:teamcity',
         'copy:assets',
         'copy:index',
         'useminPrepare',
@@ -249,12 +252,19 @@ module.exports = function (grunt) {
         'preprocess:nobackend'
     ]);
 
-    grunt.registerTask('test', [
-        'clean:tmp',
-        'stylus:compile',
-        'html2js',
-        'karma:test'
-    ]);
+    grunt.registerTask('test', function(target) {
+        var tasks = [
+            'clean:tmp',
+            'stylus:compile',
+            'html2js'
+        ];
+        if(target === 'teamcity') {
+            tasks.push('karma:teamcity');
+        } else {
+            tasks.push('karma:test');
+        }
+        grunt.task.run(tasks);
+    });
 
     grunt.registerTask('autotest', [
         'clean:tmp',
