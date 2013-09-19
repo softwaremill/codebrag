@@ -41,7 +41,7 @@ class UserIsCommitAuthorCheckSpec extends FlatSpec with MockitoSugar with Should
   it should "return true when like user is also commit author" in {
     // given
     when(commitDaoMock.findByCommitId(CommitId)).thenReturn(Some(Commit))
-    when(userDaoMock.findByUserName(AuthorName)).thenReturn(Some(LikeUser))
+    when(userDaoMock.findCommitAuthor(Commit)).thenReturn(Some(LikeUser))
 
     // when
     val result = userIsCommitAuthorCheck.userIsCommitAuthor(LikeToValidate)
@@ -53,7 +53,7 @@ class UserIsCommitAuthorCheckSpec extends FlatSpec with MockitoSugar with Should
   it should "return false when like user is not commit author" in {
     // given
     when(commitDaoMock.findByCommitId(CommitId)).thenReturn(Some(Commit))
-    when(userDaoMock.findByUserName(AuthorName)).thenReturn(Some(AnotherUser))
+    when(userDaoMock.findCommitAuthor(Commit)).thenReturn(Some(AnotherUser))
 
     // when
     val result = userIsCommitAuthorCheck.userIsCommitAuthor(LikeToValidate)
@@ -65,7 +65,7 @@ class UserIsCommitAuthorCheckSpec extends FlatSpec with MockitoSugar with Should
   it should "return false when commit author cannot be found" in {
     // given
     when(commitDaoMock.findByCommitId(CommitId)).thenReturn(Some(Commit))
-    when(userDaoMock.findByUserName(AuthorName)).thenReturn(None)
+    when(userDaoMock.findCommitAuthor(Commit)).thenReturn(None)
 
     // when
     val result = userIsCommitAuthorCheck.userIsCommitAuthor(LikeToValidate)
