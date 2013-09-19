@@ -10,7 +10,7 @@ trait CommitReviewedByUserMarker {
 
   def markAsReviewed(commitsViews: List[CommitView], userId: ObjectId) = {
     val remainingToReview = commitsPendingReviewFor(userId)
-    commitsViews.map(markIfReviewed(_, remainingToReview))
+    CommitListView(commitsViews.map(markIfReviewed(_, remainingToReview)), remainingToReview.size, 0, 0)
   }
 
   def markAsReviewed(commitView: CommitView, userId: ObjectId) = {

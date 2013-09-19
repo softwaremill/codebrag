@@ -16,10 +16,10 @@ class AllCommitsFinder extends CommitByIdFinder with UserDataEnhancer with Commi
   def findAllCommits(paging: LoadMoreCriteria, userId: ObjectId) = {
     val allCommitsIds = CommitInfoRecord.select(_.id).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
     val commitsSlice = loadSliceUsing(paging, allCommitsIds, loadCommitsFn)
-    val commits = markAsReviewed(toCommitViews(commitsSlice), userId)
+    val commits = toCommitViews(commitsSlice)
     val numOlder = countOlderCommits(allCommitsIds.map(_.toString), commits)
     val numNewer = countNewerCommits(allCommitsIds.map(_.toString), commits)
-    CommitListView(enhanceWithUserData(commits), allCommitsIds.size, numOlder, numNewer)
+    enhanceWithUserData(markAsReviewed(commits, userId).copy(older = numOlder, newer = numNewer))
   }
 
   private def loadCommitsFn(ids: List[ObjectId]) = {
