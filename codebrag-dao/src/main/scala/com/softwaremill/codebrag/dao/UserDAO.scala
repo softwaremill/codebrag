@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{Authentication, User}
+import com.softwaremill.codebrag.domain.{CommitInfo, CommitLike, Authentication, User}
 import org.bson.types.ObjectId
 
 trait UserDAO {
@@ -21,12 +21,16 @@ trait UserDAO {
 
   def findByLoginOrEmail(login: String, email: String): Option[User]
 
+  // to remove
   def findByUserNameOrEmail(userName: String, email: String): Option[User]
 
   def findByToken(token: String): Option[User]
 
+  // to remove
   def findByUserName(userName: String): Option[User]
 
   def changeAuthentication(id: ObjectId, authentication: Authentication)
+
+  def findCommitAuthor(commit: CommitInfo): Option[User]
 
 }

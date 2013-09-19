@@ -5,6 +5,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 
 class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearDataAfterTest with Logging {
 
@@ -201,6 +202,34 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     // Then
     userOpt match {
       case Some(u) => u.email should be(email.toLowerCase())
+      case _ => fail("User option should be defined")
+    }
+  }
+
+  it should "find commit author by email" taggedAs (RequiresDb) in {
+    // Given
+    val commit = CommitInfoAssembler.randomCommit.withAuthorEmail("user1@sml.com").get
+
+    // When
+    val userOpt = userDAO.findCommitAuthor(commit)
+
+    // Then
+    userOpt match {
+      case Some(u) => u.email should be (commit.authorEmail)
+      case _ => fail("User option should be defined")
+    }
+  }
+
+  it should "find commit author by name" taggedAs (RequiresDb) in {
+    // Given
+    val commit = CommitInfoAssembler.randomCommit.withAuthorName("User Name 1").get
+
+    // When
+    val userOpt = userDAO.findCommitAuthor(commit)
+
+    // Then
+    userOpt match {
+      case Some(u) => u.name should be (commit.authorName)
       case _ => fail("User option should be defined")
     }
   }

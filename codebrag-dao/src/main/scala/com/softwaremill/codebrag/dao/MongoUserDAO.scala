@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{Authentication, User}
+import com.softwaremill.codebrag.domain.{CommitInfo, CommitLike, Authentication, User}
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{BsonRecordField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
@@ -54,6 +54,10 @@ class MongoUserDAO extends UserDAO {
 
   def changeAuthentication(id: ObjectId, authentication: Authentication) {
     UserRecord where (_.id eqs id) modify (_.authentication setTo (authentication)) updateOne()
+  }
+
+  def findCommitAuthor(commit: CommitInfo) = {
+    UserRecord or(_.where(_.name eqs commit.authorName), _.where(_.email eqs commit.authorEmail)) get()
   }
 
   private object UserImplicits {
