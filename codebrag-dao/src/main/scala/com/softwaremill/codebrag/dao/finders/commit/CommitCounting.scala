@@ -3,16 +3,16 @@ package com.softwaremill.codebrag.dao.finders.commit
 import com.softwaremill.codebrag.dao.reporting.views.CommitView
 
 object CommitCounting {
-  def countOlderCommits(allIdsToReview: List[String], pagedIdsToReview: List[CommitView]) = {
-    if (pagedIdsToReview.isEmpty) 0
-    else allIdsToReview.take(allIdsToReview.indexOf(pagedIdsToReview.head.id)).size
+  def countOlderCommits(commitIds: List[String], pagedCommitIds: List[CommitView]) = {
+    if (pagedCommitIds.isEmpty) 0
+    else commitIds.take(commitIds.indexOf(pagedCommitIds.head.id)).size
   }
 
-  def countNewerCommits(allIdsToReview: List[String], pagedIdsToReview: List[CommitView]) = {
-    if (pagedIdsToReview.isEmpty) 0
+  def countNewerCommits(commitIds: List[String], pagedCommitIds: List[CommitView]) = {
+    if (pagedCommitIds.isEmpty) 0
     else {
-      val lastId = pagedIdsToReview.reverse.head.id
-      allIdsToReview.takeRight(allIdsToReview.size - allIdsToReview.indexOf(lastId) - 1).size
+      val lastId = pagedCommitIds.reverse.head.id
+      commitIds.takeRight(commitIds.size - commitIds.indexOf(lastId) - 1).size
     }
   }
 
