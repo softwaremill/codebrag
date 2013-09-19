@@ -136,8 +136,22 @@
         </a>
         <nav class="main-nav">
             <ul class="button-group" ng-controller="NotificationCountersCtrl" ng-show="isLogged()">
-                <li><a id="commits-btn" href="#/commits" class="button" active-for-states="commits,commits.list,commits.details"><span class="number">{{counters.commits}} </span>commits</a></li>
-                <li><a id="followups-btn" href="#/followups" class="button" active-for-states="followups,followups.list,followups.details"><span class="number">{{counters.followups}} </span>follow-ups</a></li>
+                <li>
+                    <a id="commits-btn" href="#/commits" class="button" active-for-states="commits,commits.list,commits.details">
+                        <div>
+                            <span class="number">{{counters.commits}}<span class="ghost-notification"></span></span>
+                        </div>
+                        commits
+                    </a>
+                </li>
+                <li>
+                    <a id="followups-btn" href="#/followups" class="button" active-for-states="followups,followups.list,followups.details">
+                        <div>
+                            <span class="number">{{counters.followups}}<span class="ghost-notification"></span></span>
+                        </div>
+                        follow-ups
+                    </a>
+                </li>
             </ul>
         </nav>
         <div class="pull-right-wrapper">
