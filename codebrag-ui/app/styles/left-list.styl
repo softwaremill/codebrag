@@ -75,10 +75,24 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  &.reviewed .author-box
-    opacity: 0.4;
-  &.reviewed .info-box
-    opacity: 0.4;
+
+  &.reviewed
+    background: #ebe6d7;
+    &:hover
+      background: #f1eee4;
+
+    & .author-box
+      opacity: 0.7;
+
+    & .info-box
+      opacity: 0.8;
+      color: #023818;
+
+    &.active
+      & .author-box,
+      .info-box
+        opacity: 1;
+
   &.active
     background: white;
     z-index:2;
