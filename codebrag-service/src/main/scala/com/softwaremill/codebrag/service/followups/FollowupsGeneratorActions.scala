@@ -21,7 +21,7 @@ trait FollowupsGeneratorActions extends Logging {
   def handleCommitLiked(event: LikeEvent) {
     val like = event.like
     val commit = commitDao.findByCommitId(like.commitId).getOrElse(throw new IllegalStateException(s"Commit not found: ${like.commitId}"))
-    val commitAuthorOpt = userDao.findByUserNameOrEmail(commit.authorName, commit.authorEmail)
+    val commitAuthorOpt = userDao.findCommitAuthor(commit)
     commitAuthorOpt match {
       case Some(commitAuthor) => {
         val followup = Followup(commitAuthor.id, like)

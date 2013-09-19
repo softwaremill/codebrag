@@ -31,8 +31,8 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(Some(Commit))
     given(commitInfoDao.findByCommitId(Commit2.id)).willReturn(Some(Commit2))
 
-    given(userDao.findByUserNameOrEmail(Matchers.eq(BettyCommitAuthor.name), Matchers.any())).willReturn(Some(BettyCommitAuthor))
-    given(userDao.findByUserNameOrEmail(Matchers.any(), Matchers.eq(JackCommitAuthor.email))).willReturn(Some(JackCommitAuthor))
+    given(userDao.findCommitAuthor(Commit)).willReturn(Some(BettyCommitAuthor))
+    given(userDao.findCommitAuthor(Commit2)).willReturn(Some(JackCommitAuthor))
 
     given(userDao.findById(JohnId)).willReturn(Some(JohnCommenter))
   }
@@ -104,7 +104,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   it should "not generate follow-up for commit author if he does not exist in system" in {
     // Given
     given(commitCommentDao.findAllCommentsForThread(JohnComment.threadId)).willReturn(JohnAndMaryComments)
-    given(userDao.findByUserNameOrEmail(Commit.authorName, Commit.authorEmail)).willReturn(None)
+    given(userDao.findCommitAuthor(Commit)).willReturn(None)
 
     // When
     followupService.generateFollowupsForComment(JohnComment)

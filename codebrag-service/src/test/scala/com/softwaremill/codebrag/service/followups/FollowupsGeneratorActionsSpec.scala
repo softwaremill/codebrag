@@ -46,7 +46,7 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
   it should "generate a followup for author of liked commit" in {
     // given
     when(commitDaoMock.findByCommitId(bobsCommit.id)).thenReturn(Some(bobsCommit))
-    when(userDaoMock.findByUserNameOrEmail(bob.name, bob.email)).thenReturn(Some(bob))
+    when(userDaoMock.findCommitAuthor(bobsCommit)).thenReturn(Some(bob))
 
     // when
     generator.handleCommitLiked(johnsLikeEvent)
@@ -70,7 +70,7 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
     val like = LikeAssembler.likeFor(commit.id).withAuthorId(likeAuthor.id).get
     val event = LikeEvent(like)
     when(commitDaoMock.findByCommitId(commit.id)).thenReturn(Some(commit))
-    when(userDaoMock.findByUserNameOrEmail(nonExistingCommitAuthor.name, nonExistingCommitAuthor.email)).thenReturn(None)
+    when(userDaoMock.findCommitAuthor(commit)).thenReturn(None)
 
     // when
     generator.handleCommitLiked(event)
