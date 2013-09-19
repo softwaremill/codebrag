@@ -112,9 +112,6 @@ describe("Current Commit", function () {
         expect(commit.userAlreadyLikedCommit(oneUser)).toBeFalsy();
     });
 
-    function _emptyCommitData() {
-    }
-
     function createLike(user, fileName, lineNumber) {
         var like = {
             authorId: user ? user.id : '123',

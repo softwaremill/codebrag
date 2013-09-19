@@ -48,7 +48,7 @@ describe("Session Controller", function () {
         scope.login();
 
         // Then
-        expect(authSrv.login).not.toHaveBeenCalled()
+        expect(authSrv.login).not.toHaveBeenCalled();
 
     }));
 
@@ -111,7 +111,7 @@ describe("Session Controller", function () {
 
         // Then
         expect(scope.user.password).toBe('');
-        expect(scope.user.login).toBe('login')
+        expect(scope.user.login).toBe('login');
     }));
 
     it('Should clear login and password after receiving success response from server', inject(function ($state, $q) {

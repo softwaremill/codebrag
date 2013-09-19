@@ -53,7 +53,7 @@ describe("Local followups list", function () {
 
     it('should return null if no other commit and followup present', function() {
         // given
-        listWithOneFollowup = [
+        var listWithOneFollowup = [
             {"commit": {"commitId": "commit_1"}, "followups": [
                 {"followupId": "followup_1", "lastReaction": {"reactionId": "comment_1"}}
             ]}

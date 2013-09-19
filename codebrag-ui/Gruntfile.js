@@ -165,19 +165,55 @@ module.exports = function (grunt) {
                 "node": true,
                 "trailing": true,
                 "undef": true,
-                "unused": true,
-                "globals": {
-                    codebrag: false,
-                    angular: false,
-                    $: false,
-                    jQuery: false,
-                    Markdown: false,
-                    Handlebars: false,
-                    _: false,
-                    moment: false
+                "unused": true
+            },
+            app: {
+                options: {
+                    "globals": {
+                        codebrag: false,
+                        angular: false,
+                        $: false,
+                        jQuery: false,
+                        Markdown: false,
+                        Handlebars: false,
+                        _: false,
+                        moment: false
+                    }
+
+                },
+                files: {
+                    src: ['app/scripts/**/*.js']
                 }
             },
-            files: ['app/scripts/**/*.js']
+            tests: {
+                options: {
+                    "globals": {
+                        codebrag: false,
+                        angular: false,
+                        $: false,
+                        _: false,
+
+                        // Jasmine stuff
+                        jasmine: false,
+                        expect: false,
+                        spyOn: false,
+                        describe: false,
+                        it: false,
+                        beforeEach: false,
+                        afterEach: false,
+
+                        // Angular mock stuff
+                        inject: false,
+                        module: false
+
+                    }
+
+                },
+                files: {
+                    src: ['test/**/*.js']
+                }
+
+            }
         }
 
     });

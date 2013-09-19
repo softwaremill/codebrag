@@ -37,7 +37,7 @@ describe("DiffCtrl", function () {
         $httpBackend.flush();
 
         // Then
-        expect(scope.currentCommit.data).toEqual('data')
+        expect(scope.currentCommit.data).toEqual('data');
     }));
 
     it('should call server to submit inline comment and save this comment locally', inject(function ($controller) {

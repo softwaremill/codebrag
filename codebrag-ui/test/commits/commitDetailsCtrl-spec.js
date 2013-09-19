@@ -14,8 +14,6 @@ describe("CommitDetailsController", function () {
         commitsListService = _commitsListService_;
     }));
 
-    var singleStoredComment = {id: '123', authorName: "mostr", message: "this is comment", time: "2013-03-29T15:14:10Z"};
-
     it('should use commit id provided in $stateParams to load commit data', inject(function($stateParams, $controller) {
         // Given
         $stateParams.id = selectedCommitId;

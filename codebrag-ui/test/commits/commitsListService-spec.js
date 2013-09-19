@@ -155,7 +155,7 @@ describe("CommitsListService", function () {
 
         // when
         var pivotCommitId = 5;
-        commitsListService.loadCommitsInContext(pivotCommitId).then(function(commits) {
+        commitsListService.loadCommitsInContext(pivotCommitId).then(function() {
             commitsListService.loadNextCommits();
             commitsListService.loadPreviousCommits();
         });
@@ -180,7 +180,7 @@ describe("CommitsListService", function () {
         }).then(function() {
             expect(commits.length).toBe(commitsResponse.commits.length);
             var reviewed = commits.filter(function(commit) {
-                return commit.pendingReview == false;
+                return commit.pendingReview === false;
             });
             expect(reviewed.length).toBe(1);
             expect(reviewed[0].id).toBe(3);
@@ -202,7 +202,7 @@ describe("CommitsListService", function () {
         }).then(function() {
             expect(commits.length).toBe(commitsResponse.commits.length - 1);
             var reviewed = commits.filter(function(commit) {
-                return commit.pendingReview == false;
+                return commit.pendingReview === false;
             });
             expect(reviewed.length).toBe(0);
         });
@@ -215,7 +215,7 @@ describe("CommitsListService", function () {
         $httpBackend.expectGET('rest/commits?context=true&limit=7').respond(commitsResponse);
 
         // when
-        commitsListService.loadNewestCommits().then(function(list) {
+        commitsListService.loadNewestCommits().then(function() {
             expect(commitsListService.hasNextCommits()).toBe(false);
             expect(commitsListService.hasPreviousCommits()).toBe(true);
         });

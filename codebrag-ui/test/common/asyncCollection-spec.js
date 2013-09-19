@@ -10,8 +10,8 @@ describe("Async Collection", function () {
 
     it('should return null as next for empty collection', inject(function ($q, $rootScope) {
         // Given
+        var nextElement;
         var collection = new codebrag.AsyncCollection();
-        var nextElement = undefined;
         var elementIdToSearch = 1;
         var deferred = $q.defer();
         deferred.resolve();
@@ -34,8 +34,8 @@ describe("Async Collection", function () {
 
     it('should return first element as next for collection with one element', inject(function ($q, $rootScope) {
         // Given
+        var nextElement;
         var collection = new codebrag.AsyncCollection();
-        var nextElement = undefined;
         var addedElement = {id: 1};
         var elementIdToSearch = 1;
         _givenCollectionHasElements(collection, [addedElement]);
@@ -54,8 +54,8 @@ describe("Async Collection", function () {
 
     it('should return second element element as next for collection with two elements', inject(function ($q, $rootScope) {
         // Given
+        var nextElement;
         var collection = new codebrag.AsyncCollection();
-        var nextElement = undefined;
         var addedElements = [{id: 1}, {id: 2}];
         var elementIdToSearch = 1;
         _givenCollectionHasElements(collection, addedElements);
@@ -72,8 +72,8 @@ describe("Async Collection", function () {
 
     it('should return last element as next for element matching at last position', inject(function ($q, $rootScope) {
         // Given
+        var nextElement;
         var collection = new codebrag.AsyncCollection();
-        var nextElement = undefined;
         var addedElements = [{id: 1}, {id: 2}];
         var elementIdToSearch = 2;
         _givenCollectionHasElements(collection, addedElements);
@@ -90,8 +90,8 @@ describe("Async Collection", function () {
 
     it('should return null as next when removing last element', inject(function ($q, $rootScope) {
         // Given
+        var nextElement;
         var collection = new codebrag.AsyncCollection();
-        var nextElement = undefined;
         var addedElements = [{id: 1}];
         var elementIdToRemove = 1;
         _givenCollectionHasElements(collection, addedElements);
@@ -108,8 +108,8 @@ describe("Async Collection", function () {
 
     it('should return element on same position when removing and getting next', inject(function ($q, $rootScope) {
         // Given
+        var nextElement;
         var collection = new codebrag.AsyncCollection();
-        var nextElement = undefined;
         var addedElements = [{id: 1}, {id: 2}, {id: 3}, {id: 4}];
         var elementIdToRemove = 2;
         _givenCollectionHasElements(collection, addedElements);
@@ -131,8 +131,8 @@ describe("Async Collection", function () {
 
     function _matchingId(id) {
         return function(element) {
-            return element.id == id;
-        }
+            return element.id === id;
+        };
     }
 
 
