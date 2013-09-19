@@ -36,10 +36,6 @@ class MongoUserDAO extends UserDAO {
     UserRecord or(_.where(_.authentication.subfield(_.usernameLowerCase) eqs lowercasedLogin), _.where(_.email eqs lowercasedEmail)) get()
   }
 
-  def findByUserName(userName: String) = {
-    UserRecord where (_.name eqs userName) get()
-  }
-
   def findByUserNameOrEmail(userName: String, email: String) = {
     UserRecord or(_.where(_.name eqs userName), _.where(_.email eqs email)) get()
   }

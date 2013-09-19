@@ -26,9 +26,6 @@ trait UserDAO {
 
   def findByToken(token: String): Option[User]
 
-  // to remove
-  def findByUserName(userName: String): Option[User]
-
   def changeAuthentication(id: ObjectId, authentication: Authentication)
 
   def findCommitAuthor(commit: CommitInfo): Option[User]
