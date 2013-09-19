@@ -1,3 +1,5 @@
+
+/* global Option */
 angular.module('codebrag.commits')
 
     .directive('diffFileChooser', function (currentCommit, $rootScope, events) {

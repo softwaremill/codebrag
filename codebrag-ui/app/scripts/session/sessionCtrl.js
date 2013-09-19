@@ -76,7 +76,7 @@ angular.module('codebrag.session')
             authService.login($scope.user).then(function () {
                 clearLoginField();
                 clearPasswordField();
-            }, function (errorResponse) {
+            }, function () {
                 clearPasswordField();
                 $scope.loginFailed = true;
             });

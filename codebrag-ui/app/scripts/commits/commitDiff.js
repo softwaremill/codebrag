@@ -57,7 +57,7 @@ angular.module('codebrag.commits')
         return {
             restrict: 'E',
             replace: true,
-            compile: function(tEl, tAttrs, transclude) {
+            compile: function(tEl) {
                 var diffTemplate = Handlebars.compile(tEl.html());
                 tEl.html('');
                 return function(scope, el, attrs) {
@@ -127,7 +127,7 @@ angular.module('codebrag.commits')
 
         }
 
-        function linkFn(scope, el, attrs) {
+        function linkFn(scope, el) {
             var fileDiffRoot = el.parent(fileDiffRootSelector);
             fileDiffRoot.on('click', clickableSelector, function(event) {
                 var elementClicked = $(event.currentTarget);
@@ -248,7 +248,7 @@ angular.module('codebrag.commits')
 
         return {
             restrict: 'A',
-            link: function(scope, el, attrs) {
+            link: function(scope, el) {
                 var fileDiffRoot = el.closest(fileDiffRootSelector);
                 fileDiffRoot.on('click', clickSelector, function(event) {
                     var codeLine = $(event.currentTarget).closest(lineDiffRootSelector);
@@ -364,7 +364,7 @@ angular.module('codebrag.commits')
 
         return {
             restrict: 'A',
-            link: function(scope, el, attrs) {
+            link: function(scope, el) {
                 doWhenElementPresent(diffFileSelector, function() {
                     var exampleEl = el.find(exampleWidthElement);
                     codebrag.diffReactionsDOMReferenceCacheAndResizer.recalculateWidthAndResizeAll(exampleEl);

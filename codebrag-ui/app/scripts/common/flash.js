@@ -3,10 +3,11 @@ angular.module('codebrag.common')
         var queue = [], currentMessage = '';
 
         $rootScope.$on('$stateChangeSuccess', function() {
-            if (queue.length > 0)
+            if (queue.length > 0) {
                 currentMessage = queue.shift();
-            else
+            } else {
                 currentMessage = '';
+            }
         });
 
         return {

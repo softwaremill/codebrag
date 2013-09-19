@@ -4,7 +4,7 @@ angular.module('codebrag.common.directives')
         var converter = Markdown.getSanitizingConverter();
 
         function removeAllTags(message) {
-            return $(message).text()
+            return $(message).text();
         }
 
         return {
@@ -14,7 +14,7 @@ angular.module('codebrag.common.directives')
             scope: {
                 reaction: '='
             },
-            link: function (scope, el, attrs) {
+            link: function (scope) {
                 var reaction = scope.reaction;
                 if (reaction.message) {
                     var formattedMessage = converter.makeHtml(reaction.message);

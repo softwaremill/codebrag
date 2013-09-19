@@ -78,11 +78,11 @@ angular.module('codebrag.commits.comments')
 
         return {
             restrict: 'A',
-            link: function(scope, el, attrs) {
+            link: function(scope, el) {
                 var focusables = focusableElementsCollection();
                 el.find(findFirstEnabled(el, focusables)).focus();
                 el.on('keydown', function(event) {
-                    if (event.which == TAB_KEY) {
+                    if (event.which === TAB_KEY) {
                         event.preventDefault();
                         var nextEl = findFirstEnabled(el, focusables);
                         nextEl.focus();

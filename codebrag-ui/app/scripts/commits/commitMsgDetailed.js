@@ -6,7 +6,7 @@ angular.module('codebrag.commits').directive('commitMsgDetailed', function() {
         },
         replace: true,
         template: '<span ng-bind-html-unsafe="messageDetailed"></span>',
-        link: function(scope, el, attrs) {
+        link: function(scope) {
             var removeWatcherFn = scope.$watch('message', function(val) {
                 if(val) {
                     var parts = val.split(/\n+/);

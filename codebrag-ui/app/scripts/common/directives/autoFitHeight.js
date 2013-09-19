@@ -1,10 +1,10 @@
 angular.module('codebrag.common.directives')
 
-    .directive('autoFitHeight', function() {
+    .directive('autoFitHeight', function($window) {
 
         function HeightsResizer() {
 
-            var windowArea = $(window);
+            var windowArea = $($window);
             var headerArea = $('header');
             var sortingArea = $('.commits-tab-header');
 
@@ -45,12 +45,12 @@ angular.module('codebrag.common.directives')
 
         return {
             restrict: 'A',
-            link: function(scope, el, attrs) {
+            link: function(scope, el) {
                 var resizer = new HeightsResizer();
                 var listArea = el.find(listAreaSelector);
                 var diffArea = el.find(diffAreaSelector);
                 resizer.resize(listArea, diffArea);
-                $(window).on('resize', resizeWithDelay());
+                $($window).on('resize', resizeWithDelay());
 
                 function resizeWithDelay() {
                     return _.debounce(function() {

@@ -2,6 +2,8 @@
  *  THIS IS DEFINITION OF FAKE BACKEND FOR CODEBRAG. ENABLE IT BY ADDING "?nobackend" AT THE END OF URL
  **/
 
+
+/* global document */
 (function (angular) {
 
     if (!document.URL.match(/\?nobackend$/)) {
@@ -28,7 +30,7 @@
             {"id": "219b3365e4b0dff2992c9bea", "sha": "055bc2915e951261dc88ee80503d6e6a5d41abde", "message": "Fix test dependencies\n- remove reference to non-existing files which was causing fails\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T12:02:08Z", "pendingReview": true},
             {"id": "319b3365e4b0dff2992c9beb", "sha": "3a335098dd49ea0cf1f53dfaa563db02df780596", "message": "Frontend service for loading and updating notification counters\n", "authorName": "Krzysztof Ciesielski", "committerName": "Krzysztof Ciesielski", "date": "2013-05-14T11:42:30Z", "pendingReview": true}
         ]
-    }
+    };
 
     var allCommits = {
         "commits": [

@@ -6,7 +6,7 @@ angular.module('codebrag.common.directives')
         }
         return {
             restrict: 'A',
-            link: function(scope, el, attrs) {
+            link: function(scope, el) {
                 el.on('click', function() {
                     var diffArea = el.closest('.diff');
                     var commitsList = $('.commits');

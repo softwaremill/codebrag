@@ -1,3 +1,4 @@
+/* global document */
 angular.module('codebrag.common.directives')
 
     // quick and dirty implementation of scrolling to id
@@ -8,7 +9,6 @@ angular.module('codebrag.common.directives')
         var maxTimeoutCount = 50;
 
         var pollingInterval = 100;
-        var scrollDuration = 500;
 
         var scrollableReactionAttr = 'data-scrollable-reaction';
 

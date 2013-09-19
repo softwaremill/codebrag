@@ -21,7 +21,7 @@ angular.module('codebrag.common.directives').directive('earlyVersionPopup', func
         scope: {},
         templateUrl: 'views/earlyVersionPopup.html',
         controller: EarlyVersionPopup,
-        link: function(scope, el, attrs) {
+        link: function(scope, el) {
             var $ribbon = el.find('a.ribbon');
             $ribbon.on('click', function() {
                 scope.isVisible = true;

@@ -20,7 +20,7 @@ angular.module('codebrag.auth')
                 var logoutRequest = $http.get('rest/users/logout');
                 return logoutRequest.then(function () {
                     authService.loggedInUser = undefined;
-                })
+                });
             },
 
             isAuthenticated: function () {
@@ -49,8 +49,8 @@ angular.module('codebrag.auth')
                 } else {
                     return $http.get('rest/users/first-registration').then(function (response) {
                         var firstRegistration = response.data.firstRegistration;
-                        return $q.when(firstRegistration)
-                    })
+                        return $q.when(firstRegistration);
+                    });
                 }
             }
 

@@ -8,7 +8,7 @@ angular.module('codebrag.common.directives')
 
 
         function buildDefaultAvatarParam() {
-            return "?d=" + encodeURI(defaultPublicAvatar)
+            return "?d=" + encodeURI(defaultPublicAvatar);
         }
 
 
@@ -21,17 +21,17 @@ angular.module('codebrag.common.directives')
                         scope.avatarUrl = user.avatarUrl + buildDefaultAvatarParam();
                     }
                 });
-            }
+            };
         }
 
         function watch(scope) {
-            return function (val, old) {
+            return function (val) {
                 if (!val || !val.length) {
                     scope.avatarUrl = defaultAvatarUrl;
                 } else {
                     scope.avatarUrl = val + buildDefaultAvatarParam();
                 }
-            }
+            };
         }
 
         return {

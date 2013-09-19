@@ -41,7 +41,7 @@ codebrag.uniqueRequestsAwareHttpService = function($http, $q) {
     function registerShortcutMethods(modifiedService) {
         ['get', 'delete', 'head', 'jsonp'].forEach(function (name) {
             modifiedService[name] = function (url, config) {
-                return modifiedService(extend(config || {}, {
+                return modifiedService(angular.extend(config || {}, {
                     method: name,
                     url: url
                 }));
@@ -49,7 +49,7 @@ codebrag.uniqueRequestsAwareHttpService = function($http, $q) {
         });
         ['post', 'put'].forEach(function (name) {
             modifiedService[name] = function (url, data, config) {
-                return modifiedService(extend(config || {}, {
+                return modifiedService(angular.extend(config || {}, {
                     method: name,
                     url: url,
                     data: data

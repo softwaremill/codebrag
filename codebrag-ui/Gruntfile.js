@@ -152,6 +152,32 @@ module.exports = function (grunt) {
         clean: {
             dist: ['dist', 'tmp'],
             tmp: 'tmp'
+        },
+
+        jshint: {
+            options: {
+                "sub": true,
+                "curly": true,
+                "eqeqeq": true,
+                "eqnull": true,
+                "expr": true,
+                "noarg": true,
+                "node": true,
+                "trailing": true,
+                "undef": true,
+                "unused": true,
+                "globals": {
+                    codebrag: false,
+                    angular: false,
+                    $: false,
+                    jQuery: false,
+                    Markdown: false,
+                    Handlebars: false,
+                    _: false,
+                    moment: false
+                }
+            },
+            files: ['app/scripts/**/*.js']
         }
 
     });
