@@ -50,28 +50,11 @@ angular.module('codebrag.commits')
             var options = {id: commitId, limit: pageLimit};
             return Commits.queryWithSurroundings(options).$then(function(response) {
                 commits.replaceWith(response.data.commits);
-                var loadedCommitsCount = howManyNextCommitsLoadedOnBothSides(response.data.commits);
-                updatePreviousCommitsAvailability(loadedCommitsCount.prevCommitsLoaded);
-                updateNextCommitsAvailability(loadedCommitsCount.nextCommitsLoaded);
+                updatePreviousCommitsAvailability(response.data.older);
+                updateNextCommitsAvailability(response.data.newer);
                 updatePendingCommitsCounter(response.data.totalCount);
                 return commits;
             });
-
-            function howManyNextCommitsLoadedOnBothSides(loadedCommits) {
-                var centralCommit = _.find(loadedCommits, function(commit) {
-                    return commit.id === commitId;
-                });
-                var indexOfCentral = loadedCommits.indexOf(centralCommit);
-                var result = {
-                    prevCommitsLoaded: loadedCommits.length,
-                    nextCommitsLoaded: loadedCommits.length
-                };
-                if (indexOfCentral !== -1) {
-                    result.prevCommitsLoaded = loadedCommits.slice(0, indexOfCentral).length;
-                    result.nextCommitsLoaded = loadedCommits.slice(indexOfCentral + 1).length;
-                }
-                return result;
-            }
         };
 
         this.loadNewestCommits = function() {
