@@ -9,12 +9,13 @@ COMMITS_URL="$BASE_URL/rest/commits"
 SYNC_URL="$BASE_URL/sync"
 CONTENT_TYPE_HEADER="Content-type: application/json"
 ACCEPT_HEADER="Accept: application/json"
+MONGO="/home/ubuntu/mongo"
 
 # Functions
 
 function sha_to_commitId {
     local sha=$1
-    local commitId=$(mongo codebrag --eval "db.commit_infos.find({\"sha\":\"$sha\"},{\"sha\":1}).forEach(function(x){print(x._id);})" \
+    local commitId=$(${MONGO}/bin/mongo codebrag --eval "db.commit_infos.find({\"sha\":\"$sha\"},{\"sha\":1}).forEach(function(x){print(x._id);})" \
             | tail -c 27 | head -c 24)
     echo $commitId
 }
@@ -94,11 +95,11 @@ function synchronize {
 
 # clear everything before start
 echo "Cleaning up database"
-mongo codebrag --eval "db.dropDatabase()"
+${MONGO}/bin/mongo codebrag --eval "db.dropDatabase()"
 
 # add demo users
 echo "Importing demo users"
-mongoimport -d codebrag -c users demo_users.json
+${MONGO}/bin/mongoimport -d codebrag -c users demo_users.json
 
 # sync repository
 echo "Synchronizing repository"
