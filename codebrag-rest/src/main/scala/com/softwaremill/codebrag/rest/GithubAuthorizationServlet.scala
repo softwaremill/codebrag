@@ -7,16 +7,15 @@ import com.softwaremill.codebrag.domain.{User, Authentication}
 import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.auth.AuthenticationSupport
-import com.softwaremill.codebrag.service.config.GithubConfig
+import com.softwaremill.codebrag.service.config.{CodebragConfig, GithubConfig}
 import org.bson.types.ObjectId
 
 
-class
-GithubAuthorizationServlet(val authenticator: Authenticator,
-                                 ghAuthService: GitHubAuthService,
-                                 userDao: UserDAO,
-                                 newUserAdder: NewUserAdder,
-                                 githubConfig: GithubConfig)
+class GithubAuthorizationServlet(val authenticator: Authenticator,
+                           ghAuthService: GitHubAuthService,
+                           userDao: UserDAO,
+                           newUserAdder: NewUserAdder,
+                           config: GithubConfig with CodebragConfig)
   extends ScalatraServlet with AuthenticationSupport with Logging with CodebragErrorHandler {
 
   private val TempUserLogin = "tmpLogin"
@@ -25,18 +24,29 @@ GithubAuthorizationServlet(val authenticator: Authenticator,
 
   get("/authenticate") {
     request.getSession().put(RedirectToUrlParam, params.getOrElse(RedirectToUrlParam, "/commits"))
-    val clientId = Option(githubConfig.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
+    val clientId = Option(config.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
     SeeOther(s"https://github.com/login/oauth/authorize?client_id=$clientId&scope=user,repo")
   }
 
   def stopIfDeniedOnGithub {
-    if(params.get("code").isEmpty) {
-      request.getSession().invalidate()
-      redirect(contextPath)
+    if (params.get("code").isEmpty) {
+      invalidateAndRedirect
     }
   }
 
+  def stopIfNotInDemoMode {
+    if (!config.demo) {
+      invalidateAndRedirect
+    }
+  }
+
+  private def invalidateAndRedirect {
+    request.getSession().invalidate()
+    redirect(contextPath)
+  }
+
   get("/auth_callback") {
+    stopIfNotInDemoMode
     stopIfDeniedOnGithub
     val code = params.get("code").get
     logger.debug(s"Retrieved code $code")
