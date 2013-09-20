@@ -30,7 +30,7 @@ describe("CommitsListService", function () {
     it('should load pending commits and update next/prev status', function() {
         // given
         var commits;
-        var pendingCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 10);
+        var pendingCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 10, 0, 3);
         $httpBackend.expectGET('rest/commits?filter=to_review&limit=7').respond(pendingCommitsResponse);
 
         // when
@@ -49,7 +49,7 @@ describe("CommitsListService", function () {
         // given
         var commits;
         var pivotCommitId = 2;
-        var contextCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8, 9], 20);
+        var contextCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8, 9], 20, 0, 11);
         $httpBackend.expectGET('rest/commits?context=true&id=2&limit=7').respond(contextCommitsResponse);
 
         // when
@@ -66,10 +66,10 @@ describe("CommitsListService", function () {
 
     it('should replace commits list when loading pending and then all', function() {
         // given
-        var pendingCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 10);
+        var pendingCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 10, 0, 3);
         $httpBackend.expectGET('rest/commits?filter=to_review&limit=7').respond(pendingCommitsResponse);
 
-        var contextCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8, 9], 20);
+        var contextCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8, 9], 20, 0, 11);
         $httpBackend.expectGET('rest/commits?context=true&id=2&limit=7').respond(contextCommitsResponse);
 
         var pivotCommitId = 2;
@@ -89,8 +89,8 @@ describe("CommitsListService", function () {
     it('should load next commits in all mode', function() {
         // given
         var pivotCommitId = 1;
-        var firstCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8], 30);
-        var nextCommitsResponse = buildCommitsResponse([9, 10, 11, 12, 13, 14, 15], 30);
+        var firstCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8], 30, 0, 22);
+        var nextCommitsResponse = buildCommitsResponse([9, 10, 11, 12, 13, 14, 15], 30, 8, 15);
         $httpBackend.expectGET('rest/commits?context=true&id=1&limit=7').respond(firstCommitsResponse);
         $httpBackend.expectGET('rest/commits?filter=all&limit=7&min_id=8').respond(nextCommitsResponse);
 
@@ -109,8 +109,8 @@ describe("CommitsListService", function () {
 
     it('should load next commits in to_review mode', function() {
         // given
-        var firstCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 30);
-        var nextCommitsResponse = buildCommitsResponse([9, 10, 11, 12, 13, 14, 15], 30);
+        var firstCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 30, 0, 23);
+        var nextCommitsResponse = buildCommitsResponse([9, 10, 11, 12, 13, 14, 15], 30, 8, 15);
         $httpBackend.expectGET('rest/commits?filter=to_review&limit=7').respond(firstCommitsResponse);
         $httpBackend.expectGET('rest/commits?filter=to_review&limit=7&min_id=7').respond(nextCommitsResponse);
 
@@ -129,8 +129,8 @@ describe("CommitsListService", function () {
 
     it('should load previous commits in all mode', function() {
         // given
-        var firstCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8], 30);
-        var previousCommitsResponse = buildCommitsResponse([-1, -2 , -3], 30);
+        var firstCommitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8], 30, 3, 22);
+        var previousCommitsResponse = buildCommitsResponse([-1, -2 , -3], 30, 0, 33);
         $httpBackend.expectGET('rest/commits?context=true&id=8&limit=7').respond(firstCommitsResponse);
         $httpBackend.expectGET('rest/commits?filter=all&limit=7&max_id=1').respond(previousCommitsResponse);
 
@@ -150,7 +150,7 @@ describe("CommitsListService", function () {
 
     it('should not call server to load next/previous commits when no next/previous available', function() {
         // given
-        var commitsResponseWithNoNextPrev = buildCommitsResponse([4, 5, 6], 30);
+        var commitsResponseWithNoNextPrev = buildCommitsResponse([4, 5, 6], 3, 0, 0);
         $httpBackend.expectGET('rest/commits?context=true&id=5&limit=7').respond(commitsResponseWithNoNextPrev);
 
         // when
@@ -167,7 +167,7 @@ describe("CommitsListService", function () {
 
     it('should mark commit as reviewed and not delete from local list when in all mode', function() {
         // given
-        var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8], 30);
+        var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8], 30, 0, 22);
         $httpBackend.expectGET('rest/commits?context=true&limit=7').respond(commitsResponse);
         $httpBackend.expectDELETE('rest/commits/3').respond(commitsResponse);
         var commitIdToReview = 3;
@@ -188,8 +188,8 @@ describe("CommitsListService", function () {
         $httpBackend.flush();
     });
 
-    it('should mark commit as reviewed and delete from local list when in to_revoew mode', function() {
-        var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7, 8], 30);
+    it('should mark commit as reviewed and delete from local list when in to_review mode', function() {
+        var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 8, 0, 1);
         $httpBackend.expectGET('rest/commits?filter=to_review&limit=7').respond(commitsResponse);
         $httpBackend.expectDELETE('rest/commits/3').respond(commitsResponse);
         var commitIdToReview = 3;
@@ -211,7 +211,7 @@ describe("CommitsListService", function () {
 
     it('should load newest commits and mark only previous commits are available', function() {
         // given
-        var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 30);
+        var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 30, 1, 0);
         $httpBackend.expectGET('rest/commits?context=true&limit=7').respond(commitsResponse);
 
         // when
@@ -222,11 +222,11 @@ describe("CommitsListService", function () {
         $httpBackend.flush();
     });
 
-    function buildCommitsResponse(commitsIds, totalCount) {
+    function buildCommitsResponse(commitsIds, totalCount, older, newer) {
         var commits = commitsIds.map(function(id) {
             return {id: id, msg: 'Commit ' + id, pendingReview: true};
         });
-        return {commits: commits, totalCount: totalCount};
+        return {commits: commits, totalCount: totalCount, older: older, newer: newer};
     }
 
 });
