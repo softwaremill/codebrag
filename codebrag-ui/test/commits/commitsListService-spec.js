@@ -189,9 +189,11 @@ describe("CommitsListService", function () {
     });
 
     it('should mark commit as reviewed and delete from local list when in to_review mode', function() {
-        var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 8, 0, 1);
+        var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 8, 0, 5);
+        var nextCommitResponse = buildCommitsResponse([1], 8, 0, 0);
         $httpBackend.expectGET('rest/commits?filter=to_review&limit=7').respond(commitsResponse);
         $httpBackend.expectDELETE('rest/commits/3').respond(commitsResponse);
+        $httpBackend.expectGET('rest/commits?filter=to_review&limit=1&min_id=7').respond(nextCommitResponse);
         var commitIdToReview = 3;
 
         // when
@@ -200,11 +202,10 @@ describe("CommitsListService", function () {
             commits = list;
             return commitsListService.makeReviewedAndGetNext(commitIdToReview);
         }).then(function() {
-            expect(commits.length).toBe(commitsResponse.commits.length - 1);
-            var reviewed = commits.filter(function(commit) {
-                return commit.pendingReview === false;
-            });
-            expect(reviewed.length).toBe(0);
+              var removedExists = commits.some(function(commit) {
+                return commit.id == commitIdToReview;
+              });
+              expect(removedExists).toBeFalsy();
         });
         $httpBackend.flush();
     });
