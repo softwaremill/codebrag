@@ -66,6 +66,7 @@ describe("Http service wrapper with unique requests handling", function () {
         rootScope.$apply();
         expect(responseReceived.status).toEqual(499);
         expect(responseReceived.config).toEqual(requestConfig);
+        expect(responseReceived.dropped).toBeTruthy();
     });
 
     it('should use decorated version for shortcut methods', function() {

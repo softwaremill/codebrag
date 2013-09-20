@@ -1,7 +1,6 @@
 angular.module('codebrag.common.directives').directive('inviteFormPopup', function () {
 
     function InviteFormPopup($scope, $http) {
-        const REJECTED = 499;
         $scope.isVisible = false;
 
         $scope.submit = function () {
@@ -13,7 +12,7 @@ angular.module('codebrag.common.directives').directive('inviteFormPopup', functi
             }
 
             function failure(response) {
-                if (response.status !== REJECTED) {
+                if (!!!response.dropped) {
                     $scope.invite = true;
                     $scope.invitation.invitationNotSend = true;
                 }

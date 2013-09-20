@@ -31,7 +31,7 @@ codebrag.uniqueRequestsAwareHttpService = function($http, $q) {
 
     function buildRejectedRequestPromise(requestConfig) {
         var dfd = $q.defer();
-        var response = {data: EMPTY_BODY, headers: EMPTY_HEADERS, status: DUPLICATED_REQUEST_STATUS_CODE, config: requestConfig};
+        var response = {data: EMPTY_BODY, headers: EMPTY_HEADERS, status: DUPLICATED_REQUEST_STATUS_CODE, dropped: true, config: requestConfig};
         console.info('Such request is already in progres, rejecting this one with', response);
         dfd.reject(response);
         return dfd.promise;
