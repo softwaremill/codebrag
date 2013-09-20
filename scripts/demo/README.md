@@ -1,3 +1,12 @@
+# Resetting data
+
+In order to reset demo data to some initial state, simply run
+
+```
+    ./reset.sh
+```
+
+
 # Codebrag demo data
 
 Demo users
