@@ -37,6 +37,7 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
     val userCaptor = ArgumentCaptor.forClass(classOf[User])
     verify(newUserAdderMock).add(userCaptor.capture())
     val user = userCaptor.getValue
+    verify(notificationService).sendWelcomeNotification(user)
 
     user.authentication.username should be("Adamw")
     user.authentication.usernameLowerCase should be("adamw")
@@ -67,6 +68,7 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
     val userCaptor = ArgumentCaptor.forClass(classOf[User])
     verify(newUserAdderMock).add(userCaptor.capture())
     val user = userCaptor.getValue
+    verify(notificationService).sendWelcomeNotification(user)
 
     user.authentication.username should be("Adamw")
     user.authentication.usernameLowerCase should be("adamw")
