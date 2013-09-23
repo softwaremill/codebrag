@@ -9,6 +9,7 @@ import org.mockito.Matchers._
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.service.invitations.InvitationService
+import com.softwaremill.codebrag.service.notification.NotificationService
 
 class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers {
 
@@ -25,9 +26,10 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
     when(invitationService.verify(any())).thenReturn(true)
 
     val newUserAdderMock = mock[NewUserAdder]
+    val notificationService = mock[NotificationService]
 
     // When
-    val result = new RegisterService(userDaoMock, newUserAdderMock, invitationService).register("Adamw", "Adam@example.org", "123456", "code")
+    val result = new RegisterService(userDaoMock, newUserAdderMock, invitationService, notificationService).register("Adamw", "Adam@example.org", "123456", "code")
 
     // Then
     result should be('right)
@@ -54,9 +56,10 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
     val invitationService = mock[InvitationService]
 
     val newUserAdderMock = mock[NewUserAdder]
+    val notificationService = mock[NotificationService]
 
     // When
-    val result = new RegisterService(userDaoMock, newUserAdderMock, invitationService).register("Adamw", "Adam@example.org", "123456", "")
+    val result = new RegisterService(userDaoMock, newUserAdderMock, invitationService, notificationService).register("Adamw", "Adam@example.org", "123456", "")
 
     // Then
     result should be('right)
@@ -85,8 +88,10 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
     val invitationService = mock[InvitationService]
     when(invitationService.verify(any())).thenReturn(true)
 
+    val notificationService = mock[NotificationService]
+
     // When
-    val result = new RegisterService(userDaoMock, null, invitationService).register("adamw", "adam@example.org", "123456", "code")
+    val result = new RegisterService(userDaoMock, null, invitationService, notificationService).register("adamw", "adam@example.org", "123456", "code")
 
     // Then
     result should be('left)
@@ -103,8 +108,10 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
     val invitationService = mock[InvitationService]
     when(invitationService.verify(any())).thenReturn(true)
 
+    val notificationService = mock[NotificationService]
+
     // When
-    val result = new RegisterService(userDaoMock, null, invitationService).register("adamw", "adam@example.org", "123456", "code")
+    val result = new RegisterService(userDaoMock, null, invitationService, notificationService).register("adamw", "adam@example.org", "123456", "code")
 
     // Then
     result should be('left)
@@ -119,9 +126,10 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
     when(userDaoMock.findAll()).thenReturn(List(mockUser))
 
     val invitationService = mock[InvitationService]
+    val notificationService = mock[NotificationService]
 
     // When
-    val result = new RegisterService(userDaoMock, null, invitationService).register("adamw", "adam@example.org", "123456", "")
+    val result = new RegisterService(userDaoMock, null, invitationService, notificationService).register("adamw", "adam@example.org", "123456", "")
 
     // Then
     result should be('left)
@@ -138,8 +146,10 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
     val invitationService = mock[InvitationService]
     when(invitationService.verify("badCode")).thenReturn(false)
 
+    val notificationService = mock[NotificationService]
+
     // When
-    val result = new RegisterService(userDaoMock, null, invitationService).register("adamw", "adam@example.org", "123456", "badCode")
+    val result = new RegisterService(userDaoMock, null, invitationService, notificationService).register("adamw", "adam@example.org", "123456", "badCode")
 
     // Then
     result should be('left)

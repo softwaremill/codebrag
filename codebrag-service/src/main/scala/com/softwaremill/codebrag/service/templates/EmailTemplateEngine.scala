@@ -3,20 +3,18 @@ package com.softwaremill.codebrag.service.templates
 import org.fusesource.scalate._
 import java.io.File
 
-class EmailTemplatingEngine {
+class EmailTemplateEngine {
 
   val TemplatesDirectory = "com/softwaremill/codebrag/service/templates/"
 
   val scalateEngine = new TemplateEngine(List(new File(TemplatesDirectory)), "production")
 
-  def registrationConfirmation(userName: String): EmailContentWithSubject = {
-
-    val template = prepareEmailTemplate("registrationConfirmation", Map("userName" -> userName))
-    splitToContentAndSubject(template)
+  def getTemplate(template: Templates.Template, params: Map[String, Object]): EmailContentWithSubject = {
+    splitToContentAndSubject(prepareEmailTemplate(template, params))
   }
 
-  private def prepareEmailTemplate(templateNameWithoutExtension: String, params: Map[String, Object]): String = {
-    scalateEngine.layout(TemplatesDirectory + templateNameWithoutExtension + ".mustache", params)
+  private def prepareEmailTemplate(template: Templates.Template, params: Map[String, Object]): String = {
+    scalateEngine.layout(TemplatesDirectory + template + ".mustache", params)
   }
 
   private[templates] def splitToContentAndSubject(template: String): EmailContentWithSubject = {
@@ -26,10 +24,10 @@ class EmailTemplatingEngine {
 
     EmailContentWithSubject(emailLines.tail.mkString("\n"), emailLines.head)
   }
+}
 
-  def passwordReset(userName:String, resetLink:String) = {
-    val template = prepareEmailTemplate("resetPassword", Map("userName" -> userName, "resetLink" -> resetLink))
-    splitToContentAndSubject(template)
-  }
+object Templates extends Enumeration {
+  type Template = Value
+  val WelcomeToCodebrag,Invitation = Value
 
 }

@@ -6,10 +6,12 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao.{UserDAO, InvitationDAO}
 import com.softwaremill.codebrag.service.email.{Email, EmailService}
 import org.mockito.Mockito._
+import org.mockito.Matchers._
 import com.softwaremill.codebrag.domain.{User, Invitation}
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.service.config.CodebragConfig
+import com.softwaremill.codebrag.service.templates.{EmailContentWithSubject, Templates, EmailTemplateEngine}
 
 class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers {
 
@@ -28,8 +30,9 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     when(invitationDAO.findByCode(code)).thenReturn(Some(Invitation(code, new ObjectId())))
     val userDAO = mock[UserDAO]
     val emailService = mock[EmailService]
+    val emailTemplateEngine = mock[EmailTemplateEngine]
 
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator)
+    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator, emailTemplateEngine)
 
     //when
     val verify = invitationService.verify(code)
@@ -44,8 +47,9 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     when(invitationDAO.findByCode(code)).thenReturn(None)
     val userDAO = mock[UserDAO]
     val emailService = mock[EmailService]
+    val emailTemplateEngine = mock[EmailTemplateEngine]
 
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator)
+    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator, emailTemplateEngine)
 
     //when
     val verify = invitationService.verify(code)
@@ -59,8 +63,9 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     val invitationDAO = mock[InvitationDAO]
     val userDAO = mock[UserDAO]
     val emailService = mock[EmailService]
+    val emailTemplateEngine = mock[EmailTemplateEngine]
 
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator)
+    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator, emailTemplateEngine)
 
     //when
     invitationService.expire(code)
@@ -74,21 +79,22 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     val invitationDAO = mock[InvitationDAO]
     val userDAO = mock[UserDAO]
     val emailService = mock[EmailService]
+    val emailTemplateEngine = mock[EmailTemplateEngine]
+    val message = "some message"
+    when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject("subject", message))
 
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator)
+    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator, emailTemplateEngine)
 
     when(userDAO.findById(id)).thenReturn(Some(user))
 
-     //when
+    //when
     val invitation = invitationService.createInvitation(id)
 
     //then
     val argumentCaptor = ArgumentCaptor.forClass(classOf[Invitation])
     verify(invitationDAO).save(argumentCaptor.capture())
     argumentCaptor.getValue.invitationSender should be(id)
-    val registerPath = appPath + "/#/register/"
-    invitation should include(registerPath)
-    invitation should include(userName)
+    invitation should be eq message
   }
 
 
@@ -102,9 +108,10 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     val emailService = mock[EmailService]
 
     val message = "some message"
+    val emailTemplateEngine = mock[EmailTemplateEngine]
+    when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject("subject", "some message"))
 
-
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator)
+    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator, emailTemplateEngine)
     //when
     invitationService.sendInvitation(email, message, id)
 

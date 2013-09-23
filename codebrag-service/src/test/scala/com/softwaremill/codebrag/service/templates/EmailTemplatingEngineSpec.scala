@@ -6,7 +6,7 @@ import org.scalatest.FlatSpec
 class EmailTemplatingEngineSpec extends FlatSpec with ShouldMatchers {
   behavior of "splitToContentAndSubject"
 
-  val engine = new EmailTemplatingEngine
+  val engine = new EmailTemplateEngine
 
   it should "throw exception on invalid template" in {
     intercept[Exception] {

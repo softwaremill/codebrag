@@ -5,8 +5,9 @@ import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.domain.{User, Authentication}
 import java.util.UUID
 import com.softwaremill.codebrag.service.invitations.InvitationService
+import com.softwaremill.codebrag.service.notification.NotificationService
 
-class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationService: InvitationService) extends Logging {
+class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationService: InvitationService, notificationService: NotificationService) extends Logging {
 
   def firstRegistration: Boolean = {
     userDao.findAll() match {
@@ -41,6 +42,7 @@ class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationSe
     val user = User(Authentication.basic(login, password), login, emailLowerCase,
       UUID.randomUUID().toString, User.defaultAvatarUrl(emailLowerCase))
     newUserAdder.add(user)
+    notificationService.sendWelcomeNotification(user)
     Right()
   }
 

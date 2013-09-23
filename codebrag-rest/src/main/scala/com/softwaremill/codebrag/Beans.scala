@@ -18,6 +18,8 @@ import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
 import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
 import com.softwaremill.codebrag.service.invitations.{DefaultUniqueHashGenerator, InvitationService}
 import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
+import com.softwaremill.codebrag.service.notification.NotificationService
+import com.softwaremill.codebrag.service.templates.EmailTemplateEngine
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 
@@ -37,7 +39,9 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
   lazy val repoHeadStore = new MongoRepositoryHeadStore
   lazy val emailService = new EmailService(config)
   lazy val emailScheduler = new EmailScheduler(actorSystem, EmailScheduler.createActor(actorSystem, emailService))
-  lazy val invitationsService = new InvitationService(invitationDao, userDao, emailService, config, DefaultUniqueHashGenerator)
+  lazy val templateEngine = new EmailTemplateEngine()
+  lazy val invitationsService = new InvitationService(invitationDao, userDao, emailService, config, DefaultUniqueHashGenerator, templateEngine)
+  lazy val notificationService = new NotificationService(emailScheduler, templateEngine, config)
 
 
   lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {
@@ -51,7 +55,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
   lazy val commentActivity = new AddCommentActivity(userReactionService, followupService)
 
   lazy val newUserAdder = new NewUserAdder(userDao, eventBus, reviewTaskGenerator)
-  lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService)
+  lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService, notificationService)
 
   lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder, new DiffService(commitInfoDao))
 

@@ -11,7 +11,7 @@ class ConfigServletSpec extends CodebragServletSpec with BeforeAndAfterEach  {
 
   override def beforeEach {
     val config = new CodebragConfig {
-      def rootConfig = ConfigFactory.load();
+      def rootConfig = ConfigFactory.load("test.conf")
     }
     addServlet(new ConfigServlet(config), "/*")
   }
@@ -19,7 +19,7 @@ class ConfigServletSpec extends CodebragServletSpec with BeforeAndAfterEach  {
   "GET /" should "return demo flag" in {
     get("/") {
       status should be(200)
-      body should be("{\"demo\":false}")
+      body should be("{\"demo\":true}")
     }
   }
 

@@ -6,8 +6,9 @@ import com.softwaremill.codebrag.domain.{User, Invitation}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.email.{EmailService, Email}
 import com.softwaremill.codebrag.service.config.CodebragConfig
+import com.softwaremill.codebrag.service.templates.{Templates, EmailTemplateEngine}
 
-class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailService: EmailService, config: CodebragConfig, uniqueHashGenerator: UniqueHashGenerator) {
+class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailService: EmailService, config: CodebragConfig, uniqueHashGenerator: UniqueHashGenerator, templateEngine: EmailTemplateEngine) {
 
   val registrationUrl = buildRegistrationUrl()
 
@@ -26,10 +27,19 @@ class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailSer
       case Some(user) => {
         val invitationCode: String = uniqueHashGenerator.generateUniqueHashCode()
         saveToDb(invitationCode, invitationSenderId)
-        InvitationMessageBuilder.buildMessage(user, registrationUrl.urlForCode(invitationCode))
+        getInvitationMessage(user, invitationCode)
       }
       case None => throw new IllegalStateException
     }
+  }
+
+
+  private def getInvitationMessage(user: User, invitationCode: String): String = {
+    templateEngine.getTemplate(Templates.Invitation, Map("userName" -> user.name, "url" -> registrationUrl.urlForCode(invitationCode))).content
+  }
+
+  private def getInvitationSubject(userName: String): String = {
+    templateEngine.getTemplate(Templates.Invitation, Map("userName" -> userName)).subject
   }
 
   def verify(code: String): Boolean = {
@@ -45,7 +55,7 @@ class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailSer
 
 
   private def sendEmail(address: String, message: String, userName: String) {
-    emailService.send(Email(address, InvitationMessageBuilder.buildSubject(userName), message))
+    emailService.send(Email(address, getInvitationSubject(userName), message))
   }
 
   private def saveToDb(hash: String, invitationSenderId: ObjectId) {
@@ -66,6 +76,7 @@ class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailSer
       url.replace("{invitationCode}", invitationCode)
     }
   }
+
 }
 
 trait UniqueHashGenerator {
