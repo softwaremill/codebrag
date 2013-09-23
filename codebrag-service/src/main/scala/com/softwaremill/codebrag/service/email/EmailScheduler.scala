@@ -1,27 +1,26 @@
 package com.softwaremill.codebrag.service.email
 
 import akka.actor.{Props, ActorRef, ActorSystem}
-import com.softwaremill.codebrag.service.templates.EmailContentWithSubject
 import com.softwaremill.codebrag.service.email.EmailSenderActor.SendEmail
-import scala.concurrent.duration.FiniteDuration
 import com.typesafe.scalalogging.slf4j.Logging
 
 class EmailScheduler(actorSystem: ActorSystem, emailSenderActor: ActorRef) extends Logging {
 
   import scala.concurrent.duration._
-  val NextAttemptAfterFailure = 60.seconds
+
+  val NextAttemptAfterFailure = 10.minutes
 
 
-  def scheduleInstant(email:Email): Any = {
+  def scheduleInstant(email: Email): Any = {
     logger.info(s"Email (subject:${email.subject}, address:${email.address} is scheduled to send instantly")
     emailSenderActor ! SendEmail(email, this)
   }
 
-  def scheduleIn60Seconds(email:Email): Any = {
+  def schedule10Minutes(email: Email): Any = {
     schedule(email, NextAttemptAfterFailure)
   }
 
-  def schedule(email:Email, delay: FiniteDuration): Any = {
+  def schedule(email: Email, delay: FiniteDuration): Any = {
     logger.info(s"Email (subject:${email.subject}, address:${email.address}) is scheduled to send in $delay")
     scheduleForSender(SendEmail(email, this), actorSystem, delay)
   }
@@ -34,7 +33,11 @@ class EmailScheduler(actorSystem: ActorSystem, emailSenderActor: ActorRef) exten
 
 }
 
-case class Email(address:String,subject:String,content:String)
+case class Email(address: String, subject: String, content: String, var ttl: Int = 10) {
+  def decreaseTtl() = {
+    ttl = ttl - 1
+  }
+}
 
 object EmailScheduler {
   def createActor(actorSystem: ActorSystem, emailService: EmailService) = {
