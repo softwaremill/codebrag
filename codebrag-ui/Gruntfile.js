@@ -244,6 +244,8 @@ module.exports = function (grunt) {
     grunt.registerTask('build', [
         'clean:dist',
         'test:teamcity',
+        'stylus:compile',
+        'html2js',
         'copy:assets',
         'copy:index',
         'useminPrepare',
