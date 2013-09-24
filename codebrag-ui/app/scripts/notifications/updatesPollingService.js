@@ -16,8 +16,7 @@ angular.module('codebrag.notifications')
         function pollForStats() {
             var config = {};
             if(lastUpdateTimestamp) {
-                config.params = {};
-                config.params.since = lastUpdateTimestamp;
+                config.params = {since: lastUpdateTimestamp};
             }
             $http.get('/rest/updates', config).then(success, error);
         }

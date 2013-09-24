@@ -1,4 +1,4 @@
-ddescribe("Updates polling service", function () {
+describe("Updates polling service", function () {
 
     var updatesPollingService;
     var $timeout, $httpBackend, $rootScope;
