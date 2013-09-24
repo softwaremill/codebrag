@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="codebrag">
 <head>
     <meta charset="utf-8">
     <title>Codebrag</title>
 
     <link href="http://fonts.googleapis.com/css?family=PT+Sans:400,700|PT+Sans+Caption&amp;subset=cyrillic,latin-ext,latin" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="assets/fonts/font-awesome/css/font-awesome.min.css">
-    <link rel="shortcut icon" href="assets/images/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="assets/images/favicon.ico" type="image/x-icon" dynamic-favicon>
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" dynamic-favicon>
 
     <!-- build:css({tmp,app}) styles/index-all.css -->
     <link rel="stylesheet" href="styles/index.css">
@@ -62,6 +62,9 @@
     <!-- notifications -->
     <script type="text/javascript" src="scripts/notifications/notificationCountersCtrl.js"></script>
     <script type="text/javascript" src="scripts/notifications/notificationCountersService.js"></script>
+    <script type="text/javascript" src="scripts/notifications/updatesPollingService.js"></script>
+    <script type="text/javascript" src="scripts/notifications/dynamicFavicon.js"></script>
+    <script type="text/javascript" src="scripts/notifications/updateIndicator.js"></script>
 
     <!-- commits -->
     <script type="text/javascript" src="scripts/commits/diffCtrl.js"></script>
@@ -123,7 +126,7 @@
 
 </head>
 
-<body ng-app="codebrag">
+<body>
     <div class="loading-bar" http-request-tracker active-class="loading"></div>
     <contact-form-popup></contact-form-popup>
     <invite-form-popup></invite-form-popup>
@@ -139,7 +142,7 @@
                 <li>
                     <a id="commits-btn" href="#/commits" class="button" active-for-states="commits,commits.list,commits.details">
                         <div>
-                            <span class="number">{{counters.commits}}<span class="ghost-notification"></span></span>
+                            <span class="number">{{counters.commitsCount}}<update-indicator watch="commits"/></span>
                         </div>
                         commits
                     </a>
@@ -147,7 +150,7 @@
                 <li>
                     <a id="followups-btn" href="#/followups" class="button" active-for-states="followups,followups.list,followups.details">
                         <div>
-                            <span class="number">{{counters.followups}}<span class="ghost-notification"></span></span>
+                            <span class="number">{{counters.followupsCount}}<update-indicator watch="followups"/></span>
                         </div>
                         follow-ups
                     </a>
