@@ -209,33 +209,4 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     found.reactions.get should equal(List(CommentId, LikeId))
   }
 
-  "countSince" should "return zero if there are no new followups for the user" in {
-    //given
-    FollowupRecord.createRecord
-      .receivingUserId(FollowupTargetUserId)
-      .id(new ObjectId(DateTime.now().minusDays(1).toDate))
-      .save
-
-    //when
-    val count = followupDao.countSince(DateTime.now(), FollowupTargetUserId)
-
-    //then
-    count should equal(0)
-  }
-
-  it should "return a number of new followups for the user since a given date" in {
-    //given
-    for (i <- 0 to 2) {
-      FollowupRecord.createRecord
-        .receivingUserId(FollowupTargetUserId)
-        .id(new ObjectId(DateTime.now().minusDays(i).toDate))
-        .save
-    }
-
-    //when
-    val count = followupDao.countSince(DateTime.now().minusDays(1), FollowupTargetUserId)
-
-    //then
-    count should equal(2)
-  }
 }

@@ -50,11 +50,6 @@ class MongoFollowupDAO extends FollowupDAO {
     FollowupRecord.where(_.id eqs followupId).findAndDeleteOne()
   }
 
-
-  override def countSince(date: DateTime, userId: ObjectId): Long = {
-    FollowupRecord where (_.id after date) and (_.receivingUserId eqs userId) count()
-  }
-
   private def toFollowup(record: FollowupRecord) = {
     // TODO: if reaction is needed, fill it using like/comment daos
     Followup(record.receivingUserId.get, null)
