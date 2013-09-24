@@ -28,6 +28,7 @@
     "grunt-contrib-jshint": "~0.6.4",
     "grunt-cli": "~0.1.9",
     "grunt-preprocess": "~3.0.1",
-    "karma-teamcity-reporter": "~0.1.0"
+    "karma-teamcity-reporter": "~0.1.0",
+    "karma-osx-reporter": "0.0.3"
   }
 }

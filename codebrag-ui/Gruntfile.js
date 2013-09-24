@@ -105,7 +105,8 @@ module.exports = function (grunt) {
             },
             autotest: {
                 singleRun: false,
-                autoWatch: true
+                autoWatch: true,
+                reporters: ['progress', 'osx']
             },
             test: {
                 singleRun: true
