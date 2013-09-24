@@ -33,7 +33,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     commitInfoDao.storeCommit(Commit)
   }
 
-  it should "create new follow-up for user and commit if one doesn't exist" taggedAs(RequiresDb) in {
+  it should "create new follow-up for user and commit if one doesn't exist" taggedAs (RequiresDb) in {
     // given
     val comment = CommentAssembler.commentFor(Commit.id).withId(CommentId).withAuthorId(CommentAuthorId).get
     val followup = Followup(FollowupTargetUserId, comment)
@@ -43,13 +43,13 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // then
     val allRecords = FollowupRecord.findAll
-    allRecords should have size(1)
+    allRecords should have size (1)
     val followupFound = allRecords.head
     followupFound.lastReaction.get.reactionId.get should equal(CommentId)
     followupFound.receivingUserId.get should equal(FollowupTargetUserId)
   }
 
-  it should "create new inline follow-up if one doesn't exist" taggedAs(RequiresDb) in {
+  it should "create new inline follow-up if one doesn't exist" taggedAs (RequiresDb) in {
     // given
     val now = DateTime.now()
     val inlineComment = CommentAssembler.commentFor(Commit.id).withId(CommentId).withAuthorId(CommentAuthorId).withFileNameAndLineNumber("file.txt", 20).get
@@ -60,7 +60,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // then
     val allRecords = FollowupRecord.findAll
-    allRecords should have size(1)
+    allRecords should have size (1)
     val followupFound = allRecords.head
     followupFound.lastReaction.get.reactionId.get should equal(CommentId)
     followupFound.receivingUserId.get should equal(FollowupTargetUserId)
@@ -68,7 +68,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     followupFound.threadId.get.lineNumber.get should equal(followup.reaction.lineNumber)
   }
 
-  it should "update existing follow-up with reaction data when one already exits" taggedAs(RequiresDb) in {
+  it should "update existing follow-up with reaction data when one already exits" taggedAs (RequiresDb) in {
     // given
     val comment = CommentAssembler.commentFor(Commit.id).withId(CommentId).get
     val createdFollowup = Followup(FollowupTargetUserId, comment)
@@ -86,7 +86,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     updated.id.get should equal(createdFollowupId)
   }
 
-  it should "update follow up only for current thread" taggedAs(RequiresDb) in {
+  it should "update follow up only for current thread" taggedAs (RequiresDb) in {
     // given
     val commentForCommit = CommentAssembler.commentFor(Commit.id).withId(CommentId).get
     followupDao.createOrUpdateExisting(Followup(FollowupTargetUserId, commentForCommit))
@@ -106,7 +106,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     followups.head.threadId.get.fileName.get should equal(Some("file.txt"))
   }
 
-  it should "create new follow up for new inline comments thread" taggedAs(RequiresDb) in {
+  it should "create new follow up for new inline comments thread" taggedAs (RequiresDb) in {
     val inlineComment = CommentAssembler.commentFor(Commit.id).withId(OtherCommentId).withFileNameAndLineNumber("file.txt", 20).get
     followupDao.createOrUpdateExisting(Followup(FollowupTargetUserId, inlineComment))
 
@@ -121,7 +121,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     followups.size should be(1)
   }
 
-  it should "create new follow up for entire commit comments thread if one doesn't exist" taggedAs(RequiresDb) in {
+  it should "create new follow up for entire commit comments thread if one doesn't exist" taggedAs (RequiresDb) in {
     val inlineComment = CommentAssembler.commentFor(Commit.id).withFileNameAndLineNumber("file.txt", 20).get
     followupDao.createOrUpdateExisting(Followup(FollowupTargetUserId, inlineComment))
 
@@ -134,7 +134,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     FollowupRecord.count should be(2)
   }
 
-  it should "delete follow-up for single thread" taggedAs(RequiresDb) in {
+  it should "delete follow-up for single thread" taggedAs (RequiresDb) in {
     // given
     val commitComment = CommentAssembler.commentFor(Commit.id).get
     followupDao.createOrUpdateExisting(Followup(FollowupTargetUserId, commitComment))
@@ -151,7 +151,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     followupsLeft.toSet should equal(Set(Some(20), None))
   }
 
-  it should "not delete follow-ups of other users" taggedAs(RequiresDb) in {
+  it should "not delete follow-ups of other users" taggedAs (RequiresDb) in {
     // given
     val commitComment = CommentAssembler.commentFor(Commit.id).get
     followupDao.createOrUpdateExisting(Followup(DifferentUserId1, commitComment))
@@ -163,7 +163,7 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // then
     val storedUserIds = FollowupRecord.findAll.map(_.receivingUserId.get)
-    storedUserIds should equal (List(DifferentUserId1, DifferentUserId2))
+    storedUserIds should equal(List(DifferentUserId1, DifferentUserId2))
   }
 
   it should "update followup for like when comment followup exists for file/line" in {
@@ -207,5 +207,35 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     // then
     val Some(found) = FollowupRecord.where(_.id eqs followupId).get()
     found.reactions.get should equal(List(CommentId, LikeId))
+  }
+
+  "countSince" should "return zero if there are no new followups for the user" in {
+    //given
+    FollowupRecord.createRecord
+      .receivingUserId(FollowupTargetUserId)
+      .id(new ObjectId(DateTime.now().minusDays(1).toDate))
+      .save
+
+    //when
+    val count = followupDao.countSince(DateTime.now(), FollowupTargetUserId)
+
+    //then
+    count should equal(0)
+  }
+
+  it should "return a number of new followups for the user since a given date" in {
+    //given
+    for (i <- 0 to 2) {
+      FollowupRecord.createRecord
+        .receivingUserId(FollowupTargetUserId)
+        .id(new ObjectId(DateTime.now().minusDays(i).toDate))
+        .save
+    }
+
+    //when
+    val count = followupDao.countSince(DateTime.now().minusDays(1), FollowupTargetUserId)
+
+    //then
+    count should equal(2)
   }
 }

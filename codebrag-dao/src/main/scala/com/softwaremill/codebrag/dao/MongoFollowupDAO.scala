@@ -6,6 +6,7 @@ import org.bson.types.ObjectId
 import scala.None
 import com.foursquare.rogue.Query
 import com.foursquare.rogue
+import org.joda.time.DateTime
 
 class MongoFollowupDAO extends FollowupDAO {
 
@@ -21,9 +22,9 @@ class MongoFollowupDAO extends FollowupDAO {
     val alreadyExistsQuery = FollowupRecord
       .where(_.receivingUserId eqs followup.receivingUserId)
       .and(_.threadId.subselect(_.commitId) eqs followup.reaction.commitId)
-      .and(_.threadId.subselect(_.fileName) exists(followup.reaction.fileName.isDefined))
+      .and(_.threadId.subselect(_.fileName) exists (followup.reaction.fileName.isDefined))
       .andOpt(followup.reaction.fileName)(_.threadId.subselect(_.fileName) eqs _)
-      .and(_.threadId.subselect(_.lineNumber) exists(followup.reaction.lineNumber.isDefined))
+      .and(_.threadId.subselect(_.lineNumber) exists (followup.reaction.lineNumber.isDefined))
       .andOpt(followup.reaction.lineNumber)(_.threadId.subselect(_.lineNumber) eqs _)
 
     val modificationQuery = buildModificationQuery(followup, alreadyExistsQuery)
@@ -47,6 +48,11 @@ class MongoFollowupDAO extends FollowupDAO {
 
   override def delete(followupId: ObjectId) {
     FollowupRecord.where(_.id eqs followupId).findAndDeleteOne()
+  }
+
+
+  override def countSince(date: DateTime, userId: ObjectId): Long = {
+    FollowupRecord where (_.id after date) and (_.receivingUserId eqs userId) count()
   }
 
   private def toFollowup(record: FollowupRecord) = {
