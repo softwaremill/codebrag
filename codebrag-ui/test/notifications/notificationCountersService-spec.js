@@ -23,7 +23,6 @@ describe("Notification counters service", function () {
         rootScope.$broadcast(events.loggedIn);
 
         // When
-        notificationCountersService.counters();
         $httpBackend.flush();
 
         // Then expected server url called only once
@@ -40,36 +39,36 @@ describe("Notification counters service", function () {
         rootScope.$broadcast(events.loggedIn);
 
         // When
-        var counters = notificationCountersService.counters();
+        var counters = notificationCountersService.counters;
         $httpBackend.flush();
 
         // Then
-        expect(counters.commits).toEqual(expectedCommitCount);
-        expect(counters.followups).toEqual(expectedFollowupCount);
+        expect(counters.commitsCount).toEqual(expectedCommitCount);
+        expect(counters.followupsCount).toEqual(expectedFollowupCount);
     }));
 
     it('should correctly update counter values on commit counter change event', inject(function (notificationCountersService, events) {
         // Given
         var expectedCommitCount = 15;
-        var counters = notificationCountersService.counters();
+        var counters = notificationCountersService.counters;
 
         // When
         rootScope.$broadcast(events.commitCountChanged, {commitCount: expectedCommitCount});
 
         // Then
-        expect(counters.commits).toEqual(expectedCommitCount);
+        expect(counters.commitsCount).toEqual(expectedCommitCount);
     }));
 
     it('should correctly update counter values on follow-up counter change event', inject(function (notificationCountersService, events) {
         // Given
         var expectedFollowupCount = 15;
-        var counters = notificationCountersService.counters();
+        var counters = notificationCountersService.counters;
 
         // When
         rootScope.$broadcast(events.followupCountChanged, {followupCount: expectedFollowupCount});
 
         // Then
-        expect(counters.followups).toEqual(expectedFollowupCount);
+        expect(counters.followupsCount).toEqual(expectedFollowupCount);
     }));
 
 });
