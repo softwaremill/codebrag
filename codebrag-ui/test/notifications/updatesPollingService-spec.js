@@ -1,7 +1,7 @@
 describe("Updates polling service", function () {
 
     var updatesPollingService;
-    var $timeout, $httpBackend, $rootScope;
+    var $timeout, $httpBackend, $rootScope, events;
 
     var firstRequestUrl = '/rest/updates';
     var subsequentRequestsUrl = firstRequestUrl + '?since=';
@@ -14,12 +14,14 @@ describe("Updates polling service", function () {
     };
 
     beforeEach(module('codebrag.notifications'));
+    beforeEach(module('codebrag.events'));
 
-    beforeEach(inject(function(_updatesPollingService_, _$timeout_, _$httpBackend_, _$rootScope_) {
+    beforeEach(inject(function(_updatesPollingService_, _$timeout_, _$httpBackend_, _$rootScope_, _events_) {
         updatesPollingService = _updatesPollingService_;
         $timeout = _$timeout_;
         $httpBackend = _$httpBackend_;
         $rootScope = _$rootScope_;
+        events = _events_;
     }));
 
     afterEach(function() {
@@ -92,7 +94,7 @@ describe("Updates polling service", function () {
         flushAsync();
 
         // then
-        expect($rootScope.$broadcast).toHaveBeenCalledWith(updatesPollingService.updatesReceivedEvent, {commits: 5, followups: 10});
+        expect($rootScope.$broadcast).toHaveBeenCalledWith(events.updatesWaiting, {commits: 5, followups: 10});
     });
 
     function flushAsync() {

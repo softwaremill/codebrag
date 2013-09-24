@@ -7,6 +7,7 @@ angular.module('codebrag.events', []).constant('events', {
 
     commitCountChanged: 'codebrag:totalCommitCountChanged',
     followupCountChanged: 'codebrag:followupCountChanged',
+    updatesWaiting: 'codebrag:updatesWaiting',
 
     closeForm: 'codebrag:closeForm',
     scrollOnly: 'codebrag:scrollOnly',
