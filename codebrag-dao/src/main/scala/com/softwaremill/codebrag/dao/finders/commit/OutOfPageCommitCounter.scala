@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.dao.finders.commit
 
 import com.softwaremill.codebrag.dao.reporting.views.CommitView
 
-object CommitCounting {
+object OutOfPageCommitCounter {
   def countOlderCommits(commitIds: List[String], pagedCommitIds: List[CommitView]) = {
     pagedCommitIds.headOption match {
       case None => 0

@@ -11,7 +11,7 @@ class AllCommitsFinder extends CommitByIdFinder with UserDataEnhancer with Commi
 
   import CommitInfoToViewConverter._
   import ListSliceLoader._
-  import CommitCounting._
+  import OutOfPageCommitCounter._
 
   def findAllCommits(paging: LoadMoreCriteria, userId: ObjectId) = {
     val allCommitsIds = CommitInfoRecord.select(_.id).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()

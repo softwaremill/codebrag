@@ -11,7 +11,7 @@ class ReviewableCommitsListFinder extends CommitByIdFinder with UserDataEnhancer
 
   import CommitInfoToViewConverter._
   import ListSliceLoader._
-  import CommitCounting._
+  import OutOfPageCommitCounter._
 
   def findCommitsToReviewFor(userId: ObjectId, paging: LoadMoreCriteria) = {
     val commitsIdsToReview = reviewableCommitsIds(userId)
