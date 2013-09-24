@@ -1,7 +1,6 @@
 package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.AuthenticatableServletSpec
-import org.scalatest.BeforeAndAfterEach
 import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import org.mockito.BDDMockito._
 import org.mockito.Matchers._

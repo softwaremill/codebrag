@@ -2,18 +2,22 @@ package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.joda.time.DateTime
+import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
+import org.bson.types.ObjectId
 
-class UpdatesServlet(val authenticator: Authenticator) extends JsonServletWithAuthentication {
+class UpdatesServlet(val authenticator: Authenticator, finder: NotificationCountFinder) extends JsonServletWithAuthentication {
   before() {
     haltIfNotAuthenticated()
   }
 
   get("/") {
-    UpdateNotification(new DateTime().getMillis, 0, 0)
+    val counters = finder.getCounters(new ObjectId(user.id))
+    UpdateNotification(new DateTime().getMillis, counters.pendingCommitCount, counters.followupCount)
   }
 
   get("/", sinceLastTime) {
-    UpdateNotification(new DateTime().getMillis, 10, 5)
+    val counters = finder.getCountersSince(new DateTime(params.get("since").get.toLong), new ObjectId(user.id))
+    UpdateNotification(new DateTime().getMillis, counters.pendingCommitCount, counters.followupCount)
   }
 
   private def sinceLastTime = params.get("since").isDefined
@@ -23,4 +27,4 @@ object UpdatesServlet {
   val Mapping = "updates"
 }
 
-case class UpdateNotification(lastUpdate: Long, commits: Int, followUps: Int)
+case class UpdateNotification(lastUpdate: Long, commits: Long, followUps: Long)
