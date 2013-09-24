@@ -9,11 +9,11 @@ class EmailTemplateEngine {
 
   val scalateEngine = new TemplateEngine(List(new File(TemplatesDirectory)), "production")
 
-  def getTemplate(template: Templates.Template, params: Map[String, Object]): EmailContentWithSubject = {
+  def getTemplate(template: Templates.Template, params: Map[String, Any]): EmailContentWithSubject = {
     splitToContentAndSubject(prepareEmailTemplate(template, params))
   }
 
-  private def prepareEmailTemplate(template: Templates.Template, params: Map[String, Object]): String = {
+  private def prepareEmailTemplate(template: Templates.Template, params: Map[String, Any]): String = {
     scalateEngine.layout(TemplatesDirectory + template + ".mustache", params)
   }
 

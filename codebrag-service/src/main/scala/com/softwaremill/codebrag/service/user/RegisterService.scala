@@ -41,8 +41,8 @@ class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationSe
   private def registerUser(login: String, emailLowerCase: String, password: String): Either[String, Unit] = {
     val user = User(Authentication.basic(login, password), login, emailLowerCase,
       UUID.randomUUID().toString, User.defaultAvatarUrl(emailLowerCase))
-    newUserAdder.add(user)
-    notificationService.sendWelcomeNotification(user)
+    val addedUser = newUserAdder.add(user)
+    notificationService.sendWelcomeNotification(addedUser)
     Right()
   }
 

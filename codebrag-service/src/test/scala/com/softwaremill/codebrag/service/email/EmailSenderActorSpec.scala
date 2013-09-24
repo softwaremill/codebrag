@@ -49,27 +49,7 @@ class EmailSenderActorSpec extends FlatSpec with ShouldMatchers with MockitoSuga
     actorRef.underlyingActor.asInstanceOf[Actor].receive(SendEmail(email, scheduler))
 
     //then
-    verify(scheduler).schedule10Minutes(email)
-    email.ttl should be(9)
-  }
-
-  "Actor" should "not schedule next attempt when ttl <= 0 " in {
-    //given
-
-    val mockService = mock[EmailService]
-    val email = Email("address@email.com", "subject", "content", 1)
-    when(mockService.send(email)).thenThrow(new EmailNotSendException("error", new RuntimeException))
-    val scheduler = mock[EmailScheduler]
-
-
-    val actorRef = TestActorRef(new EmailSenderActor(mockService))
-
-    //when
-    actorRef.underlyingActor.asInstanceOf[Actor].receive(SendEmail(email, scheduler))
-
-    //then
-    verify(scheduler, never()).schedule10Minutes(any[Email])
-    email.ttl should be(0)
+    verify(scheduler).scheduleIn10Minutes(email--)
   }
 
   "Actor" should "not send email when ttl <= 0 " in {

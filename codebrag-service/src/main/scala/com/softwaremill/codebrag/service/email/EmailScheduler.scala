@@ -16,7 +16,7 @@ class EmailScheduler(actorSystem: ActorSystem, emailSenderActor: ActorRef) exten
     emailSenderActor ! SendEmail(email, this)
   }
 
-  def schedule10Minutes(email: Email): Any = {
+  def scheduleIn10Minutes(email: Email): Any = {
     schedule(email, NextAttemptAfterFailure)
   }
 
@@ -34,9 +34,12 @@ class EmailScheduler(actorSystem: ActorSystem, emailSenderActor: ActorRef) exten
 }
 
 case class Email(address: String, subject: String, content: String, var ttl: Int = 10) {
-  def decreaseTtl() = {
-    ttl = ttl - 1
+
+  def -- = {
+    Email(address, subject, content, ttl - 1)
   }
+
+  def shouldSend: Boolean = ttl > 0
 }
 
 object EmailScheduler {

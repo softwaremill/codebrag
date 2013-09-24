@@ -10,16 +10,13 @@ class EmailSenderActor(emailService: EmailService) extends Actor with Logging {
 
     case SendEmail(email: Email, emailScheduler: EmailScheduler) => {
       try {
-        if (email.ttl > 0) {
-          email.decreaseTtl()
+        if (email.shouldSend) {
           emailService.send(email)
         }
       } catch {
         case e: EmailNotSendException =>
           logger.error(s"Sending email failed: ${e.getMessage}\n ${e.getCause}")
-          if (email.ttl > 0) {
-            emailScheduler.schedule10Minutes(email)
-          }
+          emailScheduler.scheduleIn10Minutes(email--)
       }
     }
   }

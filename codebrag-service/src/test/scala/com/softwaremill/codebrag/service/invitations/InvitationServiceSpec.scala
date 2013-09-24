@@ -81,7 +81,7 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     val emailService = mock[EmailService]
     val emailTemplateEngine = mock[EmailTemplateEngine]
     val message = "some message"
-    when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject("subject", message))
+    when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject(message, "subject"))
 
     val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator, emailTemplateEngine)
 
@@ -94,7 +94,7 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     val argumentCaptor = ArgumentCaptor.forClass(classOf[Invitation])
     verify(invitationDAO).save(argumentCaptor.capture())
     argumentCaptor.getValue.invitationSender should be(id)
-    invitation should be eq message
+    invitation should equal(message)
   }
 
 

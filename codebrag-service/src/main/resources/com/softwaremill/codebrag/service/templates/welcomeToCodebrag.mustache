@@ -2,9 +2,19 @@ Welcome to codebrag!
 
 Dear {{userName}}
 
-Welcome to Codebrag. There are 10 commits waiting for your to review at {{link}}/#/commits.
+Welcome to Codebrag super-cool code review tool.
+{{#noOfCommits}}
+{{#single}}
+There is {{noOfCommits}} commit waiting for your to review at {{link}}/#/commits.
+{{/single}}
+{{^single}}
+There are {{noOfCommits}} commits waiting for your to review at {{link}}/#/commits.
+{{/single}}
+{{/noOfCommits}}
+{{^noOfCommits}}
+Currently there is nothing to review. We will notify you about new commits to review.
+{{/noOfCommits}}
 
 Enjoy,
 
 Codebrag
-
