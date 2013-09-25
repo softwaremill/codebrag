@@ -27,4 +27,4 @@ object UpdatesServlet {
   val Mapping = "updates"
 }
 
-case class UpdateNotification(lastUpdate: Long, commits: Long, followUps: Long)
+case class UpdateNotification(lastUpdate: Long, commits: Long, followups: Long)

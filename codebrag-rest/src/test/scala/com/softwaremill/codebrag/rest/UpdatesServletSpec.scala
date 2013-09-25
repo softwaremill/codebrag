@@ -39,7 +39,7 @@ class UpdatesServletSpec extends AuthenticatableServletSpec {
       //then
       status should equal(200)
       body should include( s""""commits":$expectedCommits""")
-      body should include( s""""followUps":$expectedFollowups""")
+      body should include( s""""followups":$expectedFollowups""")
     }
   }
 
@@ -57,7 +57,7 @@ class UpdatesServletSpec extends AuthenticatableServletSpec {
       dateTimeCaptor.getValue should equal(since)
       status should equal(200)
       body should include( s""""commits":$expectedCommits""")
-      body should include( s""""followUps":$expectedFollowups""")
+      body should include( s""""followups":$expectedFollowups""")
     }
   }
 
