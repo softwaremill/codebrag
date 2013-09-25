@@ -12,7 +12,6 @@ angular.module('codebrag.auth')
                     authService.loggedInUser = response.data;
                     $rootScope.$broadcast(events.loggedIn);
                     httpRequestsBuffer.retryAllRequest();
-                    $state.transitionTo('commits.list');
                 });
             },
 
