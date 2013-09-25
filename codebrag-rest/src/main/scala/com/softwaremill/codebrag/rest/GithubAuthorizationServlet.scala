@@ -23,7 +23,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator,
   private val RedirectToUrlParam = "redirectTo"
 
   get("/authenticate") {
-    request.getSession().put(RedirectToUrlParam, params.getOrElse(RedirectToUrlParam, "/commits"))
+    request.getSession.put(RedirectToUrlParam, params.getOrElse(RedirectToUrlParam, "/commits"))
     val clientId = Option(config.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
     SeeOther(s"https://github.com/login/oauth/authorize?client_id=$clientId&scope=user,repo")
   }
@@ -34,19 +34,12 @@ class GithubAuthorizationServlet(val authenticator: Authenticator,
     }
   }
 
-  def stopIfNotInDemoMode {
-    if (!config.demo) {
-      invalidateAndRedirect
-    }
-  }
-
   private def invalidateAndRedirect {
-    request.getSession().invalidate()
+    request.getSession.invalidate()
     redirect(contextPath)
   }
 
   get("/auth_callback") {
-    stopIfNotInDemoMode
     stopIfDeniedOnGithub
     val code = params.get("code").get
     logger.debug(s"Retrieved code $code")

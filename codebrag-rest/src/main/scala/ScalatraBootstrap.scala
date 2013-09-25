@@ -23,7 +23,6 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     val repositoryUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, repoDataProducer, commitImportService)
     context.mount(new UsersServlet(authenticator, registerService, swagger), Prefix + "users")
     context.mount(new CommitsServlet(authenticator, reviewableCommitsFinder, allCommitsFinder, reactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, swagger, diffWithCommentsService, unlikeUseCaseFactory), Prefix + CommitsServlet.MAPPING_PATH)
-    context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")
     context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupService), Prefix + FollowupsServlet.MappingPath)
     context.mount(new NotificationCountServlet(authenticator, swagger, notificationCountFinder), Prefix + NotificationCountServlet.MappingPath)
     context.mount(new SwaggerApiDoc(swagger), "/api-docs/*")
@@ -34,6 +33,10 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new InvitationServlet(authenticator, invitationsService), Prefix + "invitation")
     context.mount(new RepositorySyncServlet(actorSystem, repositoryUpdateActor), RepositorySyncServlet.Mapping)
     context.mount(new UpdatesServlet(authenticator, notificationCountFinder), Prefix + UpdatesServlet.Mapping)
+
+    if(config.demo) {
+      context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")
+    }
 
     context.put("codebrag", this)
   }
