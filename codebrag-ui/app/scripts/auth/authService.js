@@ -1,6 +1,6 @@
 angular.module('codebrag.auth')
 
-    .factory('authService', function ($http, httpRequestsBuffer, $q, $rootScope, events, $state) {
+    .factory('authService', function ($http, httpRequestsBuffer, $q, $rootScope, events) {
 
         var authService = {
 
@@ -20,6 +20,7 @@ angular.module('codebrag.auth')
                 var logoutRequest = $http.get('rest/users/logout');
                 return logoutRequest.then(function () {
                     authService.loggedInUser = undefined;
+                    $rootScope.$broadcast(events.loginRequired);
                 });
             },
 
@@ -35,12 +36,17 @@ angular.module('codebrag.auth')
                 if (authService.isAuthenticated()) {
                     return $q.when(authService.loggedInUser);
                 }
-                var promise = $http.get('rest/users');
-                return promise.then(function (response) {
-                    authService.loggedInUser = response.data;
-                    $rootScope.$broadcast(events.loggedIn);
+                function logInIfNotYetLoggedIn(currentUser) {
+                    if(authService.isNotAuthenticated()) {
+                        authService.loggedInUser = currentUser;
+                        $rootScope.$broadcast(events.loggedIn);
+                    }
+                }
+                return $http.get('rest/users').then(function (response) {
+                    logInIfNotYetLoggedIn(response.data);
                     return $q.when(authService.loggedInUser);
                 });
+
             },
 
             isFirstRegistration: function () {
