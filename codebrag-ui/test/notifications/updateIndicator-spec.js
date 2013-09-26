@@ -1,4 +1,4 @@
-ddescribe('Updates indicator directive', function() {
+describe('Updates indicator directive', function() {
 
     var $rootScope, el, $compile, events;
 
@@ -37,36 +37,8 @@ ddescribe('Updates indicator directive', function() {
         expect(notificationVisible()).toBe(false);
     });
 
-    it('should hide indicators when counters change', function() {
-        // given
-        setNotificationVisible();
-
-        // when
-        $rootScope.$broadcast(events.commitCountChanged);
-        $rootScope.$digest();
-
-        // then
-        expect(notificationVisible()).toBe(false);
-    });
-
-    it('should not hide indicators on other counter updates', function() {
-        // given
-        setNotificationVisible();
-
-        // when
-        $rootScope.$broadcast(events.followupCountChanged);
-        $rootScope.$digest();
-
-        // then
-        expect(notificationVisible()).toBe(true);
-    });
-
     function notificationVisible() {
         return el.find('span.ghost-notification').css('display') !== 'none';
-    }
-
-    function setNotificationVisible() {
-        el.find('span.ghost-notification').css('display', 'inline');
     }
 
 });

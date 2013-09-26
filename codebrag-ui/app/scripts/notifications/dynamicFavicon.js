@@ -6,15 +6,19 @@ angular.module('codebrag.notifications')
             restrict: 'A',
             link: function(scope, el, attrs) {
 
-                scope.$on(events.updatesWaiting, function() {
-                    setNotifyingFavicon();
+                scope.$on(events.updatesWaiting, function(event, data) {
+                    checkUpdatesAvailable(data) ? setNotifyingFavicon() : setRegularFavicon();
                 });
 
-                [events.commitCountChanged, events.followupCountChanged].forEach(function(event) {
-                    scope.$on(event, function() {
-                        setRegularFavicon();
-                    });
-                });
+                function checkUpdatesAvailable(data) {
+                    var updatesPresent = false;
+                    for (var p in data) {
+                        if (data.hasOwnProperty(p) && data[p] > 0) {
+                            updatesPresent = true;
+                        }
+                    }
+                    return updatesPresent;
+                }
 
                 function setNotifyingFavicon() {
                     el.attr('href', attrs.notifyingIcon || 'assets/images/notification-favicon/favicon.ico');

@@ -1,4 +1,4 @@
-ddescribe('Dynamic favicon directive', function() {
+describe('Dynamic favicon directive', function() {
 
     var $rootScope, el, $compile, events;
 
@@ -26,23 +26,23 @@ ddescribe('Dynamic favicon directive', function() {
     });
 
     it('should change favicon when new updates are waiting users attention', function() {
-        $rootScope.$broadcast(events.updatesWaiting, {commits: 10, followups: 10});
+        $rootScope.$broadcast(events.updatesWaiting, {commits:  20, followups: 10});
         var newHref = getFaviconUrl();
         expect(newHref).toBe(notifFaviconUrl);
     });
 
-    it('should change favicon back to regular when commits updates were acknowledged', function() {
+    it('should change favicon back to regular when all updates were acknowledged', function() {
         setFaviconTo(notifFaviconUrl);
-        $rootScope.$broadcast(events.commitCountChanged, {});
+        $rootScope.$broadcast(events.updatesWaiting, {commits: 0, followups: 0});
         var newHref = getFaviconUrl();
         expect(newHref).toBe(regularFaviconUrl);
     });
 
-    it('should change favicon back to regular when followups updates were acknowledged', function() {
+    it('should not change favicon back to regular when at least one update type is not acknowledged', function() {
         setFaviconTo(notifFaviconUrl);
-        $rootScope.$broadcast(events.followupCountChanged, {});
+        $rootScope.$broadcast(events.updatesWaiting, {commits: 0, followups: 10});
         var newHref = getFaviconUrl();
-        expect(newHref).toBe(regularFaviconUrl);
+        expect(newHref).toBe(notifFaviconUrl);
     });
 
     function setFaviconTo(faviconUrl) {

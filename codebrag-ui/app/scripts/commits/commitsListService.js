@@ -6,8 +6,6 @@ angular.module('codebrag.commits')
 
         var pageLimit = 7;
 
-        var totalCommitsToReviewCount = 0;
-
         var commitsListLoadFilter = {
             values: {all: 'all', toReview: 'to_review'},
             current: null,
@@ -40,7 +38,7 @@ angular.module('codebrag.commits')
                 commits.replaceWith(response.data.commits);
                 updatePreviousCommitsAvailability(response.data.older);
                 updateNextCommitsAvailability(response.data.newer);
-                updatePendingCommitsCounter(response.data.totalCount);
+                triggerAsyncCommitsCounterRefresh();
                 return commits;
             });
         };
@@ -52,7 +50,7 @@ angular.module('codebrag.commits')
                 commits.replaceWith(response.data.commits);
                 updatePreviousCommitsAvailability(response.data.older);
                 updateNextCommitsAvailability(response.data.newer);
-                updatePendingCommitsCounter(response.data.totalCount);
+                triggerAsyncCommitsCounterRefresh();
                 return commits;
             });
         };
@@ -64,7 +62,7 @@ angular.module('codebrag.commits')
                 commits.replaceWith(response.data.commits);
                 updatePreviousCommitsAvailability(response.data.older);
                 updateNextCommitsAvailability(response.data.newer);
-                updatePendingCommitsCounter(response.data.totalCount);
+                triggerAsyncCommitsCounterRefresh();
                 return commits;
             });
         };
@@ -94,7 +92,7 @@ angular.module('codebrag.commits')
             options = angular.extend(options, {filter: commitsListLoadFilter.current});
             return Commits.query(options).$then(function(response) {
                 commits.appendAll(response.data.commits);
-                updatePendingCommitsCounter(response.data.totalCount);
+                triggerAsyncCommitsCounterRefresh();
                 updateNextCommitsAvailability(response.data.newer);
                 notifyIfNextCommitsLoaded(response.data.commits.length);
             });
@@ -108,7 +106,7 @@ angular.module('codebrag.commits')
             options = angular.extend(options, {filter: commitsListLoadFilter.current});
             return Commits.query(options).$then(function(response) {
                 commits.prependAll(response.data.commits);
-                updatePendingCommitsCounter(response.data.totalCount);
+                triggerAsyncCommitsCounterRefresh();
                 updatePreviousCommitsAvailability(response.data.older);
                 notifyIfPreviousCommitsLoaded(response.data.commits.length);
             });
@@ -118,7 +116,7 @@ angular.module('codebrag.commits')
             var removedAtIndex;
             return Commits.remove({commitId: commitId}).$then(function() {
                 removedAtIndex = commits.removeFromListBy(commitId);
-                updatePendingCommitsCounter(totalCommitsToReviewCount - 1);
+                triggerCounterDecrease();
                 return self.loadNextCommits(1);
             }).then(function() {
                 return commits.elementAtIndexOrLast(removedAtIndex);
@@ -128,7 +126,7 @@ angular.module('codebrag.commits')
         function makeReviewedAndGetNextInAllMode(commitId) {
             return Commits.remove({commitId: commitId}).$then(function() {
                 var atIndex = commits.markAsReviewedOnly(commitId);
-                updatePendingCommitsCounter(totalCommitsToReviewCount - 1);
+                triggerCounterDecrease();
                 return $q.when(commits.elementAtIndexOrLast(atIndex + 1));
             });
         }
@@ -141,9 +139,12 @@ angular.module('codebrag.commits')
             count && $rootScope.$broadcast(events.previousCommitsLoaded);
         }
 
-        function updatePendingCommitsCounter(newCount) {
-            totalCommitsToReviewCount = newCount;
-            $rootScope.$broadcast(events.commitCountChanged, {commitCount: newCount});
+        function triggerCounterDecrease() {
+            $rootScope.$broadcast(events.commitReviewed);
+        }
+
+        function triggerAsyncCommitsCounterRefresh() {
+            $rootScope.$broadcast(events.refreshCommitsCounter);
         }
 
         function updateNextCommitsAvailability(newerCommits) {

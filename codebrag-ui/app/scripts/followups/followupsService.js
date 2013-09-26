@@ -7,15 +7,15 @@ angular.module('codebrag.followups')
         function allFollowups() {
             return _httpRequest('GET').then(function(response) {
                 followupsListLocal.addAll(response.data.followupsByCommit);
-                _broadcastNewFollowupCountEvent();
+                triggerAsyncFollowupsCounterRefresh();
                 return followupsListLocal.collection;
             });
         }
 
         function removeAndGetNext(followupId, commitId) {
             return _httpRequest('DELETE', followupId, {unique: true, requestId: 'removeFollowup_' + followupId}).then(function() {
+                triggerCounterDecrease();
                 var nextFollowup = followupsListLocal.removeOneAndGetNext(followupId, commitId);
-                _broadcastNewFollowupCountEvent();
                 return nextFollowup;
             });
 
@@ -37,8 +37,12 @@ angular.module('codebrag.followups')
             return $http(reqConfig);
         }
 
-        function _broadcastNewFollowupCountEvent() {
-            $rootScope.$broadcast(events.followupCountChanged, {followupCount: followupsListLocal.followupsCount()});
+        function triggerCounterDecrease() {
+            $rootScope.$broadcast(events.followupDone);
+        }
+
+        function triggerAsyncFollowupsCounterRefresh() {
+            $rootScope.$broadcast(events.refreshFollowupsCounter);
         }
 
         return {

@@ -28,35 +28,35 @@ describe("Followups service", function () {
     }));
 
 
-    it('should broadcast update event after loading follow-ups', inject(function (followupsService, events) {
+    it('should trigger counterupdate after loading follow-ups', inject(function (followupsService, events) {
         // Given
         $httpBackend.whenGET('rest/followups/').respond({followupsByCommit: followups});
         var listener = jasmine.createSpy('listener');
-        rootScope.$on(events.followupCountChanged, listener);
+        rootScope.$on(events.refreshFollowupsCounter, listener);
 
         // When
         followupsService.allFollowups();
         $httpBackend.flush();
 
         // Then
-        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {followupCount: 5});
+        expect(listener).toHaveBeenCalledWith(jasmine.any(Object));
     }));
 
-    it('should broadcast new number of follow-ups when removing', inject(function (followupsService, events) {
+    it('should trigger counter decrease when followup removed', inject(function (followupsService, events) {
         // Given
         $httpBackend.whenGET('rest/followups/').respond({followupsByCommit: followups});
         followupsService.allFollowups();
         $httpBackend.flush();
         $httpBackend.expectDELETE('rest/followups/followup_11').respond();
         var listener = jasmine.createSpy('listener');
-        rootScope.$on(events.followupCountChanged, listener);
+        rootScope.$on(events.followupDone, listener);
 
         // When
         followupsService.removeAndGetNext('followup_11');
         $httpBackend.flush();
 
         // Then
-        expect(listener).toHaveBeenCalledWith(jasmine.any(Object), {followupCount: 4});
+        expect(listener).toHaveBeenCalledWith(jasmine.any(Object));
     }));
 
 });

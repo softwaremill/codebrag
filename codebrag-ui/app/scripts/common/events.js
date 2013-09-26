@@ -5,8 +5,11 @@ angular.module('codebrag.events', []).constant('events', {
     httpError: 'codebrag:httpError',
     authError: 'codebrag:authError',
 
-    commitCountChanged: 'codebrag:totalCommitCountChanged',
-    followupCountChanged: 'codebrag:followupCountChanged',
+    commitReviewed: 'codebrag:commitReviewed',
+    followupDone: 'codebrag:followupDone',
+    refreshCommitsCounter: 'codebrag:refreshCommitsCounter',
+    refreshFollowupsCounter: 'codebrag:refreshFollowupsCounter',
+
     updatesWaiting: 'codebrag:updatesWaiting',
 
     closeForm: 'codebrag:closeForm',

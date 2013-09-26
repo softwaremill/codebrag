@@ -11,20 +11,8 @@ angular.module('codebrag.notifications')
                 var watchType = attrs.watch; // 'commits' or 'followups'
 
                 scope.$on(events.updatesWaiting, function(event, data) {
-                    scope.updatesAvailable = data[watchType];
+                    scope.updatesAvailable = data[watchType] > 0;
                 });
-
-                scope.$on(resetEventFor(watchType), function() {
-                    scope.updatesAvailable = false;
-                });
-
-                function resetEventFor(watchType) {
-                    if (watchType === 'commits') {
-                        return events.commitCountChanged;
-                    } else if (watchType === 'followups') {
-                        return events.followupCountChanged;
-                    }
-                }
 
             }
         }

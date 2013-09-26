@@ -1,6 +1,6 @@
 angular.module('codebrag.notifications')
 
-    .controller('NotificationCountersCtrl', function ($scope, notificationCountersService) {
+    .controller('NotificationCountersCtrl', function ($scope, notificationService) {
 
-        $scope.counters = notificationCountersService.counters;
+        $scope.counters = notificationService.counters;
     });
