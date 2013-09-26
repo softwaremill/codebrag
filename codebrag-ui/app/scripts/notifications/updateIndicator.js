@@ -5,7 +5,7 @@ angular.module('codebrag.notifications')
         return {
             template: '<span ng-show="updatesAvailable" class="ghost-notification"></span>',
             restrict: 'E',
-            replace: true,
+            replace: false,
             scope: {},
             link: function(scope, el, attrs) {
                 var watchType = attrs.watch; // 'commits' or 'followups'
