@@ -8,8 +8,6 @@ import org.mockito.Matchers._
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{Authentication, User}
-import org.joda.time.DateTime
-import org.mockito.ArgumentCaptor
 
 class UpdatesServletSpec extends AuthenticatableServletSpec {
   val countersFinderMock: NotificationCountFinder = mock[NotificationCountFinder]
@@ -37,24 +35,6 @@ class UpdatesServletSpec extends AuthenticatableServletSpec {
     // when
     get("/") {
       //then
-      status should equal(200)
-      body should include( s""""commits":$expectedCommits""")
-      body should include( s""""followups":$expectedFollowups""")
-    }
-  }
-
-  "GET /?since=:millis" should "call finder to fetch counters since the given date" in {
-    userIsAuthenticatedAs(UserJson(user))
-    val expectedCommits = 0
-    val expectedFollowups = 4
-    val dateTimeCaptor = ArgumentCaptor.forClass(classOf[DateTime])
-    val since = DateTime.now.toDateMidnight.minusDays(2)
-    given(countersFinderMock.getCountersSince(dateTimeCaptor.capture(), any[ObjectId])).willReturn(NotificationCountersView(expectedCommits, expectedFollowups))
-
-    //when
-    get(s"/?since=${since.getMillis}") {
-      //then
-      dateTimeCaptor.getValue should equal(since)
       status should equal(200)
       body should include( s""""commits":$expectedCommits""")
       body should include( s""""followups":$expectedFollowups""")
