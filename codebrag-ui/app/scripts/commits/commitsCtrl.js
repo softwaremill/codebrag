@@ -1,6 +1,10 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, commitsListService, $stateParams, $state, currentCommit) {
+    .controller('CommitsCtrl', function ($scope, commitsListService, $stateParams, $state, currentCommit, events) {
+
+        $scope.$on(events.reloadCommitsList, function() {
+            initCtrl();
+        });
 
         $scope.switchListView = function() {
             if($scope.listViewMode === 'all') {
@@ -52,12 +56,12 @@ angular.module('codebrag.commits')
             });
         }
 
-        $scope.initCtrl = function() {
+        function initCtrl() {
             currentCommit.empty();
             $scope.listViewMode = 'pending';
             loadPendingCommits();
-        };
+        }
 
-        $scope.initCtrl();
+        initCtrl();
 
     });

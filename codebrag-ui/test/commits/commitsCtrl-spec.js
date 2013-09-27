@@ -5,17 +5,21 @@ describe("Commits Controller", function () {
     var pendingCommits = ['commit1', 'commit2'];
 
     var $scope,
+        $rootScope,
         $q,
         commitsListService,
-        $stateParams;
+        $stateParams,
+        events;
 
     beforeEach(module('codebrag.commits'));
 
-    beforeEach(inject(function($rootScope, _$q_, $controller, _commitsListService_, _$stateParams_) {
-        $scope = $rootScope.$new();
+    beforeEach(inject(function(_$rootScope_, _$q_, $controller, _commitsListService_, _$stateParams_, _events_) {
+        $scope = _$rootScope_.$new();
+        $rootScope = _$rootScope_;
         $q = _$q_;
         commitsListService = _commitsListService_;
         $stateParams = _$stateParams_;
+        events = _events_;
     }));
 
     beforeEach(inject(function($controller) {
@@ -27,6 +31,20 @@ describe("Commits Controller", function () {
         expect($scope.listViewMode).toBe('pending');
         expect(commitsListService.loadCommitsToReview).toHaveBeenCalled();
     });
+
+    it('should re-initialize controller when event received', inject(function(currentCommit) {
+        // given
+        $scope.listViewMode = 'all';
+        currentCommit.set('dummy commit');
+
+        // when
+        $rootScope.$broadcast(events.reloadCommitsList);
+
+        // then
+        expect($scope.listViewMode).toBe('pending');
+        expect(currentCommit.get()).toBeNull();
+        expect(commitsListService.loadCommitsToReview).toHaveBeenCalled();
+    }));
 
     it('should load pending commits when view switched to pending', function() {
         // given
