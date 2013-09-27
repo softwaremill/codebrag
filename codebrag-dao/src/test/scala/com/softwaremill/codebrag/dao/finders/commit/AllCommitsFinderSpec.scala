@@ -40,18 +40,6 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     allCommitsView.commits.map(_.id) should equal(ThreeCommitIdsList)
   }
 
-  it should "return total number of commits to review" taggedAs RequiresDb in {
-    // given
-    storeCommits(commitOne, commitTwo, commitThree)
-    storeReviewTasksFor(reviewingUserId, commitOne)
-
-    // when
-    val allCommitsView = finder.findAllCommits(threeFromStart, reviewingUserId)
-
-    // then
-    allCommitsView.totalCount should equal(1)
-  }
-
   it should "return next page from all commits" taggedAs RequiresDb in {
     // given
     storeCommits(commitOne, commitTwo, commitThree)
@@ -63,7 +51,6 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // then
     commitsView.commits.map(_.id) should equal(List(commitTwo, commitThree).map(_.id.toString))
-    commitsView.totalCount should equal(1)
   }
 
   it should "return previous page from all commits" taggedAs RequiresDb in {
@@ -77,7 +64,6 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // then
     commitsView.commits.map(_.id) should equal(List(commitOne, commitTwo).map(_.id.toString))
-    commitsView.totalCount should equal(1)
   }
 
   it should "return commits view containing user data" taggedAs RequiresDb in {

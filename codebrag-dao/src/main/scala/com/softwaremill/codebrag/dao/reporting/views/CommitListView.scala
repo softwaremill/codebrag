@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.reporting.views
 import java.util.Date
 import com.softwaremill.codebrag.domain.CommitLike
 
-case class CommitListView(commits: List[CommitView], totalCount: Int, older: Int, newer: Int)
+case class CommitListView(commits: List[CommitView], older: Int, newer: Int)
 
 case class CommitView(id: String, sha: String, message: String, authorName: String, authorEmail: String,
                       date: Date, pendingReview: Boolean = true, authorAvatarUrl: String = "")

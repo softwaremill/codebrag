@@ -19,7 +19,7 @@ class ReviewableCommitsListFinder extends CommitByIdFinder with UserDataEnhancer
     val commits = toCommitViews(commitsSlice)
     val numOlder = countOlderCommits(commitsIdsToReview.map(_.toString), commits)
     val numNewer = countNewerCommits(commitsIdsToReview.map(_.toString), commits)
-    CommitListView(enhanceWithUserData(commits), commitsIdsToReview.length, numOlder, numNewer)
+    CommitListView(enhanceWithUserData(commits), numOlder, numNewer)
   }
 
   private def loadCommitsFn(ids: List[ObjectId]) = {

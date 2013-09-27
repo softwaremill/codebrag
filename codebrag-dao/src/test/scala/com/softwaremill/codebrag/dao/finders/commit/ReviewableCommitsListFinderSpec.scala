@@ -37,7 +37,6 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearDataAf
 
     // then
     commitsView.commits should be('empty)
-    commitsView.totalCount should be(0)
   }
 
   it should "find commits when user has commits to review" taggedAs RequiresDb in {
@@ -50,19 +49,6 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearDataAf
 
     // then
     commitsView.commits.map(_.id) should be(List(commitOne.id.toString, commitThree.id.toString))
-  }
-
-  it should "return total number of commits to review" taggedAs RequiresDb in {
-    // given
-    storeCommits(commitOne, commitTwo, commitThree)
-    storeReviewTasksFor(reviewingUserId, commitOne, commitTwo, commitThree)
-
-    // when
-    val twoCommitsOnPage = LoadMoreCriteria.fromBeginning(2)
-    val commitsView = finder.findCommitsToReviewFor(reviewingUserId, twoCommitsOnPage)
-
-    // then
-    commitsView.totalCount should be(3)
   }
 
   it should "indicate that there are no previous commits" taggedAs RequiresDb in {
@@ -102,7 +88,6 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearDataAf
 
     // then
     commitsView.commits.map(_.id) should be(List(commitThree.id.toString))
-    commitsView.totalCount should be(3)
   }
 
   it should "return commits view containing user data" taggedAs RequiresDb in {
