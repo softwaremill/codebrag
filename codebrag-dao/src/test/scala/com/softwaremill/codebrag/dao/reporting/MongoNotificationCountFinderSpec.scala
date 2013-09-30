@@ -49,6 +49,86 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearDataA
     resultCounters should equal(NotificationCountersView(BruceCommitCount, BruceFollowupCount))
   }
 
+  "getCountersSince" should "return zero followups if there are no new followups for the user" taggedAs RequiresDb in {
+    //given
+    givenFollowUpFor(UserBruceId, DateTime.now().minusDays(1))
+
+    //when
+    val counters = notificationCountFinder.getCountersSince(DateTime.now(), UserBruceId)
+
+    //then
+    counters.followupCount should equal(0)
+  }
+
+
+  it should "return a number of new followups for the user since a given date" taggedAs RequiresDb in {
+    def givenSomeFollowUpsForBruce() {
+      for (i <- 0 to 2) {
+        givenFollowUpFor(UserBruceId, DateTime.now().minusDays(i))
+      }
+    }
+    //given
+    givenSomeFollowUpsForBruce()
+
+    //when
+    val counters = notificationCountFinder.getCountersSince(DateTime.now().minusDays(1), UserBruceId)
+
+    //then
+    counters.followupCount should equal(2)
+  }
+
+  it should "return zero commits if there are no new review tasks for the user" taggedAs RequiresDb in {
+    def givenNoNewReviewTasksForBruce() {
+      givenReviewTaskFor(UserBruceId, DateTime.now().minusDays(1))
+      givenReviewTaskFor(UserBruceId, DateTime.now().minusDays(2))
+      givenReviewTaskFor(UserBruceId, DateTime.now().minusDays(3))
+    }
+
+    //given
+    val queryDate = DateTime.now()
+    givenNoNewReviewTasksForBruce()
+
+    //when
+    val counters = notificationCountFinder.getCountersSince(queryDate, UserBruceId)
+
+    //then
+    counters.pendingCommitCount should equal(0)
+  }
+
+  it should "return a number of new commits for the user since a given date" taggedAs RequiresDb in {
+    def givenSomeNewReviewTasksForBruce() {
+      givenReviewTaskFor(UserBruceId, DateTime.now())
+      givenReviewTaskFor(UserBruceId, DateTime.now().minusDays(1))
+      givenReviewTaskFor(UserBruceId, DateTime.now().minusDays(2))
+      givenReviewTaskFor(UserBruceId, DateTime.now().minusDays(3))
+    }
+
+    //given
+    val queryDate = DateTime.now().minusDays(2)
+    givenSomeNewReviewTasksForBruce()
+
+    //when
+    val counters = notificationCountFinder.getCountersSince(queryDate, UserBruceId)
+
+    //then
+    counters.pendingCommitCount should equal(3)
+  }
+
+  private def givenFollowUpFor(userId: ObjectId, date: DateTime) {
+    FollowupRecord.createRecord
+      .receivingUserId(userId)
+      .id(new ObjectId(date.toDate))
+      .save
+  }
+
+  private def givenReviewTaskFor(userId: ObjectId, date: DateTime) {
+    CommitReviewTaskRecord.createRecord
+      .userId(userId)
+      .commitId(CommitInfoAssembler.randomCommit.get.id)
+      .id(new ObjectId(date.toDate))
+      .save
+  }
+
   private def givenFollowupsFor(userId: ObjectId, count: Int) {
     val authorId = new ObjectId
     for (i <- 1 to count) {
