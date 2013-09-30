@@ -1,8 +1,6 @@
 angular.module('codebrag.common.directives')
 
     .directive('reactionMessageSummary', function ($filter) {
-        var converter = Markdown.getSanitizingConverter();
-
         function removeAllTags(message) {
             return $(message).text();
         }
@@ -17,7 +15,7 @@ angular.module('codebrag.common.directives')
             link: function (scope) {
                 var reaction = scope.reaction;
                 if (reaction.message) {
-                    var formattedMessage = converter.makeHtml(reaction.message);
+                    var formattedMessage = marked(reaction.message);
                     scope.reactionMessage = $filter('truncate')(removeAllTags(formattedMessage), 50);
                 } else {
                     scope.reactionMessage = reaction.reactionAuthor + ' liked your code.';

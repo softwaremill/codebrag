@@ -1,7 +1,6 @@
 angular.module('codebrag.commits.comments')
 
     .directive('markdownCommentForm', function($q, events, authService) {
-        var mdConverter = Markdown.getSanitizingConverter();
         var additionalArgsName = 'extraArgs';
         var closeableName = 'closeable';
         return {
@@ -14,7 +13,7 @@ angular.module('codebrag.commits.comments')
                 scope.togglePreviewMode = function() {
                     scope.previewModeOn = !scope.previewModeOn;
                     if(scope.previewModeOn) {
-                        scope.preview = mdConverter.makeHtml(scope.content || 'Nothing to preview');
+                        scope.preview = marked(scope.content || 'Nothing to preview');
                     } else {
                         setTimeout(function() {
                             element.find('textarea').focus();

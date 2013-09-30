@@ -108,3 +108,8 @@ angular.module('codebrag.followups')
                 templateUrl: 'views/secured/followups/followupDetails.html'
             });
     });
+
+angular.module('codebrag.common')
+    .run(function() {
+        marked.setOptions({sanitize: true, gfm: true});
+    });
