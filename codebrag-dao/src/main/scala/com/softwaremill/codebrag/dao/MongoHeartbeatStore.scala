@@ -10,6 +10,8 @@ trait HeartbeatStore {
   def update(userId: ObjectId)
 
   def get(userId: ObjectId): Option[DateTime]
+
+  def loadAll(): List[(ObjectId, DateTime)]
 }
 
 class MongoHeartbeatStore extends HeartbeatStore {
@@ -22,6 +24,10 @@ class MongoHeartbeatStore extends HeartbeatStore {
 
   def get(userId: ObjectId): Option[DateTime] = {
     HeartbeatRecord select (_.lastHeartbeat) where (_.id eqs userId) get() map (new DateTime(_))
+  }
+
+  def loadAll(): List[(ObjectId, DateTime)] = {
+    HeartbeatRecord.findAll.map(heartbeat => (heartbeat.id.get, new DateTime(heartbeat.lastHeartbeat.get)))
   }
 }
 

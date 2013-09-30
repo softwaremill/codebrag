@@ -60,4 +60,24 @@ class MongoHeartbeatStoreSpec extends FlatSpecWithMongo with ShouldMatchers with
     //then
     time should be(None)
   }
+
+  "loadAll" should "return empty list if no heartbeats are stored" taggedAs RequiresDb in {
+    store.loadAll should equal(List.empty)
+  }
+
+  it should "return all stored heartbeats" taggedAs RequiresDb in {
+    //given
+    val User1 = ObjectIdTestUtils.oid(1)
+    val User2 = ObjectIdTestUtils.oid(2)
+    val User3 = ObjectIdTestUtils.oid(3)
+    store.update(User1)
+    store.update(User2)
+    store.update(User3)
+
+    //when
+    val heartbeats = store.loadAll()
+
+    //then
+    heartbeats should have size 3
+  }
 }
