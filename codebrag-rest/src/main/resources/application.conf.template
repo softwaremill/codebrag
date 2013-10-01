@@ -35,6 +35,7 @@ codebrag {
     debug-services-password = "codebrag"
     demo = false
     application-url = "http://codebrag:8080"
+    invitation-expiry-time = "24H"
 }
 
 web-server {

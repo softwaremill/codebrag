@@ -92,6 +92,13 @@ Setup your email server/account so that Codebrag can send emails with invitation
 
 Codebrag needs to store repository data somewhere on your server. Edit `local-git-storage-path` accordingly. Codebrag will create directory called `repos` under provided location. Remember to set access rights accordingly so that Codebrag can read and write to this location.
 
+##### invitation-expiry-time
+
+`invitation-expiry-time` property indicates how long invitation links are valid. Afte that time no new registration can be issues with this link. This value defaults to 24 hours.
+
+	// number followed by "M" (minutes) "H" (hours) or "D" (days)
+	invitation-expiry-time= "24H"   
+
 ### "web-server" section
 
 By default Codebrag starts on port 8080. If you want to change that, edit `port` property accordingly.

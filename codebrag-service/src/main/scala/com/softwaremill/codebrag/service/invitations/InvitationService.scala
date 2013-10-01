@@ -66,7 +66,7 @@ class InvitationService(
   }
 
   private def saveToDb(hash: String, invitationSenderId: ObjectId) {
-    val expirationTime = clock.currentDateTimeUTC.plus(InvitationService.INVITATION_CODE_EXPIRATION_TIME)
+    val expirationTime = clock.currentDateTimeUTC.plus(config.invitationExpiryTime)
     invitationDAO.save(Invitation(hash, invitationSenderId, expirationTime))
   }
 
@@ -85,10 +85,6 @@ class InvitationService(
     }
   }
 
-}
-
-object InvitationService {
-  val INVITATION_CODE_EXPIRATION_TIME = Minutes.minutes(1)
 }
 
 trait UniqueHashGenerator {

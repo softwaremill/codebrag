@@ -13,6 +13,7 @@ import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.service.templates.{EmailContentWithSubject, Templates, EmailTemplateEngine}
 import com.softwaremill.codebrag.common.FixtureTimeClock
+import org.joda.time.Hours
 
 class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
@@ -103,6 +104,7 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
   it should "save created invitation with correct sender and expiry date" in {
     //given
     val message = "some message"
+    when(config.invitationExpiryTime).thenReturn(Hours.hours(20))
     when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject(message, "subject"))
     when(userDAO.findById(id)).thenReturn(Some(user))
 
@@ -113,7 +115,7 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     val invitationCaptor = ArgumentCaptor.forClass(classOf[Invitation])
     verify(invitationDAO).save(invitationCaptor.capture())
     invitationCaptor.getValue.invitationSender should be(id)
-    invitationCaptor.getValue.expiryDate should be(clock.currentDateTimeUTC.plus(InvitationService.INVITATION_CODE_EXPIRATION_TIME))
+    invitationCaptor.getValue.expiryDate should be(clock.currentDateTimeUTC.plus(config.invitationExpiryTime))
   }
 
   it should "send email with invitation message" in {
