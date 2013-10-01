@@ -112,4 +112,5 @@ Other users can be invited to join Codebrag by choosing "Invite friends" link fr
 
 ## Contact us if you need assistance
 
-If you experience any issues with Codebrag, do not hesitate to contact us via (email/forum/uservoice/irc). Also if want to let us know your feelings about Codebrag, drop us a line too.
+We are really eager to hear your feedback about Codebrag beta. Do drop us a line at
+**ask@codebrag.com** if you find an issue or just want to share a thought or ask a question.
