@@ -1,11 +1,12 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{Authentication, User}
+import com.softwaremill.codebrag.domain.{UserNotifications, Authentication, User}
 import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import org.joda.time.DateTime
 
 class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearDataAfterTest with Logging {
 
@@ -51,7 +52,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     val addedUser = userDAO.add(user)
 
     // then
-    user.id should be (null)
+    user.id should be(null)
     addedUser.id should not be (null)
   }
 
@@ -215,7 +216,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
 
     // Then
     userOpt match {
-      case Some(u) => u.email should be (commit.authorEmail)
+      case Some(u) => u.email should be(commit.authorEmail)
       case _ => fail("User option should be defined")
     }
   }
@@ -229,7 +230,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
 
     // Then
     userOpt match {
-      case Some(u) => u.name should be (commit.authorName)
+      case Some(u) => u.name should be(commit.authorName)
       case _ => fail("User option should be defined")
     }
   }
@@ -276,7 +277,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
 
   it should "find user by its Id" taggedAs RequiresDb in {
     // given
-    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde","avatarUrl", None)
+    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", "avatarUrl", None)
     userDAO.add(user)
 
     // when
@@ -286,8 +287,55 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     foundUser.get should equal(user)
   }
 
-  it should "store user's notification dates properly" taggedAs RequiresDb in {
+  it should "store notifications dates properly" taggedAs RequiresDb in {
+    // given
+    val commitDate = DateTime.now().minusHours(1)
+    val followupDate = DateTime.now().minusMinutes(1)
+    val notifications = Some(UserNotifications(Some(commitDate), Some(followupDate)))
+    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", "avatarUrl", notifications)
+    userDAO.add(user)
 
+    // when
+    val foundUser = userDAO.findById(user.id)
+
+    // then
+    foundUser.get.notifications.get.commits.get.getMillis should equal(commitDate.getMillis)
+    foundUser.get.notifications.get.followups.get.getMillis should equal(followupDate.getMillis)
+  }
+
+  "rememberNotifications" should "store dates properly" taggedAs RequiresDb in {
+    // given
+    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", "avatarUrl", None)
+    userDAO.add(user)
+    val followupDate = DateTime.now()
+    val notifications = UserNotifications(None, Some(followupDate))
+
+    // when
+    userDAO.rememberNotifications(user.id, notifications)
+
+    // then
+    val foundUser = userDAO.findById(user.id)
+    foundUser.get.notifications.get.commits should equal(None)
+    foundUser.get.notifications.get.followups.get.getMillis should equal(followupDate.getMillis)
+  }
+
+  it should "update existing dates" taggedAs RequiresDb in {
+    // given
+    val notifications = Some(UserNotifications(Some(DateTime.now().minusHours(5)), Some(DateTime.now().minusMinutes(5))))
+    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", "avatarUrl", notifications)
+    userDAO.add(user)
+
+    // when
+    val commitDate = DateTime.now().minusMinutes(1)
+    val followupDate = DateTime.now().minusMinutes(1)
+    val newNotifications = UserNotifications(Some(commitDate), Some(followupDate))
+    userDAO.rememberNotifications(user.id, newNotifications)
+
+    // then
+    val foundUser = userDAO.findById(user.id)
+    foundUser.get.notifications.get.commits.get.getMillis should equal(commitDate.getMillis)
+    foundUser.get.notifications.get.followups.get.getMillis should equal(followupDate.getMillis)
   }
 
 }
+

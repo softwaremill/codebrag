@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{CommitInfo, CommitLike, Authentication, User}
+import com.softwaremill.codebrag.domain._
 import org.bson.types.ObjectId
 
 trait UserDAO {
@@ -24,6 +24,8 @@ trait UserDAO {
   def findByToken(token: String): Option[User]
 
   def changeAuthentication(id: ObjectId, authentication: Authentication)
+
+  def rememberNotifications(id: ObjectId, notifications: UserNotifications)
 
   def findCommitAuthor(commit: CommitInfo): Option[User]
 

@@ -54,6 +54,10 @@ class MongoUserDAO extends UserDAO {
     UserRecord where (_.id eqs id) modify (_.authentication setTo (authentication)) updateOne()
   }
 
+  def rememberNotifications(id: ObjectId, notifications: UserNotifications) {
+    UserRecord where(_.id eqs id) modify (_.notifications setTo notifications) updateOne()
+  }
+
   def findCommitAuthor(commit: CommitInfo) = {
     UserRecord or(_.where(_.name eqs commit.authorName), _.where(_.email eqs commit.authorEmail)) get()
   }
