@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.service.invitations
 
-import org.scalatest.FlatSpec
+import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao.{UserDAO, InvitationDAO}
@@ -12,8 +12,9 @@ import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.service.templates.{EmailContentWithSubject, Templates, EmailTemplateEngine}
+import com.softwaremill.codebrag.common.FixtureTimeClock
 
-class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers {
+class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
   private val code = "1234"
   val email = "some@some.some"
@@ -21,18 +22,30 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
   val userName = "zuchos"
   val user = User(id, null, userName, null, null, null)
   val config = mock[CodebragConfig]
+
+  val clock = new FixtureTimeClock(System.currentTimeMillis())
+  var invitationDAO: InvitationDAO = _
+  var userDAO: UserDAO = _
+  var emailService: EmailService = _
+  var emailTemplateEngine: EmailTemplateEngine = _
+
+  var invitationService: InvitationService = _
+
   private val appPath = "http://localhost:8080"
   when(config.applicationUrl).thenReturn(appPath)
 
-  it should " verify invitation" in {
-    //given
-    val invitationDAO = mock[InvitationDAO]
-    when(invitationDAO.findByCode(code)).thenReturn(Some(Invitation(code, new ObjectId())))
-    val userDAO = mock[UserDAO]
-    val emailService = mock[EmailService]
-    val emailTemplateEngine = mock[EmailTemplateEngine]
+  override def beforeEach() {
+    invitationDAO = mock[InvitationDAO]
+    userDAO = mock[UserDAO]
+    emailService = mock[EmailService]
+    emailTemplateEngine = mock[EmailTemplateEngine]
+    invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator, emailTemplateEngine)(clock)
+  }
 
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator, emailTemplateEngine)
+  it should "positively verify invitation" in {
+    //given
+    val expirationInFuture = clock.currentDateTimeUTC.plusHours(1)
+    when(invitationDAO.findByCode(code)).thenReturn(Some(Invitation(code, new ObjectId(), expirationInFuture)))
 
     //when
     val verify = invitationService.verify(code)
@@ -41,15 +54,21 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     verify should be(true)
   }
 
-  it should "should not verify invitation" in {
+  it should "negatively verify invitation when invitation expired" in {
     //given
-    val invitationDAO = mock[InvitationDAO]
-    when(invitationDAO.findByCode(code)).thenReturn(None)
-    val userDAO = mock[UserDAO]
-    val emailService = mock[EmailService]
-    val emailTemplateEngine = mock[EmailTemplateEngine]
+    val expirationTimeInThePast = clock.currentDateTimeUTC.minusHours(1)
+    when(invitationDAO.findByCode(code)).thenReturn(Some(Invitation(code, new ObjectId(), expirationTimeInThePast)))
 
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator, emailTemplateEngine)
+    //when
+    val verify = invitationService.verify(code)
+
+    //then
+    verify should be(false)
+  }
+
+  it should "negatively verify invitation when code not found" in {
+    //given
+    when(invitationDAO.findByCode(code)).thenReturn(None)
 
     //when
     val verify = invitationService.verify(code)
@@ -60,12 +79,6 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
 
   it should "removed expired invitation code from DAO" in {
     //given
-    val invitationDAO = mock[InvitationDAO]
-    val userDAO = mock[UserDAO]
-    val emailService = mock[EmailService]
-    val emailTemplateEngine = mock[EmailTemplateEngine]
-
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator, emailTemplateEngine)
 
     //when
     invitationService.expire(code)
@@ -76,42 +89,39 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
 
   it should "create invitation message and save invitation in DAO" in {
     //given
-    val invitationDAO = mock[InvitationDAO]
-    val userDAO = mock[UserDAO]
-    val emailService = mock[EmailService]
-    val emailTemplateEngine = mock[EmailTemplateEngine]
     val message = "some message"
     when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject(message, "subject"))
-
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator, emailTemplateEngine)
-
     when(userDAO.findById(id)).thenReturn(Some(user))
 
     //when
     val invitation = invitationService.createInvitation(id)
 
     //then
-    val argumentCaptor = ArgumentCaptor.forClass(classOf[Invitation])
-    verify(invitationDAO).save(argumentCaptor.capture())
-    argumentCaptor.getValue.invitationSender should be(id)
     invitation should equal(message)
   }
 
+  it should "save created invitation with correct sender and expiry date" in {
+    //given
+    val message = "some message"
+    when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject(message, "subject"))
+    when(userDAO.findById(id)).thenReturn(Some(user))
+
+    //when
+    invitationService.createInvitation(id)
+
+    //then
+    val invitationCaptor = ArgumentCaptor.forClass(classOf[Invitation])
+    verify(invitationDAO).save(invitationCaptor.capture())
+    invitationCaptor.getValue.invitationSender should be(id)
+    invitationCaptor.getValue.expiryDate should be(clock.currentDateTimeUTC.plus(InvitationService.INVITATION_CODE_EXPIRATION_TIME))
+  }
 
   it should "send email with invitation message" in {
     //given
-
-    val invitationDAO = mock[InvitationDAO]
-    val userDAO = mock[UserDAO]
-    when(userDAO.findById(id)).thenReturn(Some(user))
-
-    val emailService = mock[EmailService]
-
     val message = "some message"
-    val emailTemplateEngine = mock[EmailTemplateEngine]
+    when(userDAO.findById(id)).thenReturn(Some(user))
     when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject("subject", "some message"))
 
-    val invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator, emailTemplateEngine)
     //when
     invitationService.sendInvitation(email, message, id)
 

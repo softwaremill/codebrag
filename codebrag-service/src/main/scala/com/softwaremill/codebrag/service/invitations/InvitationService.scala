@@ -1,14 +1,21 @@
 package com.softwaremill.codebrag.service.invitations
 
 import com.softwaremill.codebrag.dao.{UserDAO, InvitationDAO}
-import com.softwaremill.codebrag.common.Utils
+import com.softwaremill.codebrag.common.{Clock, Utils}
 import com.softwaremill.codebrag.domain.{User, Invitation}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.email.{EmailService, Email}
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.service.templates.{Templates, EmailTemplateEngine}
+import org.joda.time.{Minutes, Hours}
 
-class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailService: EmailService, config: CodebragConfig, uniqueHashGenerator: UniqueHashGenerator, templateEngine: EmailTemplateEngine) {
+class InvitationService(
+                         invitationDAO: InvitationDAO,
+                         userDAO: UserDAO,
+                         emailService: EmailService,
+                         config: CodebragConfig,
+                         uniqueHashGenerator: UniqueHashGenerator,
+                         templateEngine: EmailTemplateEngine)(implicit clock: Clock) {
 
   val registrationUrl = buildRegistrationUrl()
 
@@ -44,7 +51,7 @@ class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailSer
 
   def verify(code: String): Boolean = {
     invitationDAO.findByCode(code) match {
-      case Some(inv) => true
+      case Some(inv) => inv.isValid(clock.currentDateTimeUTC)
       case None => false
     }
   }
@@ -59,7 +66,8 @@ class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailSer
   }
 
   private def saveToDb(hash: String, invitationSenderId: ObjectId) {
-    invitationDAO.save(Invitation(hash, invitationSenderId))
+    val expirationTime = clock.currentDateTimeUTC.plus(InvitationService.INVITATION_CODE_EXPIRATION_TIME)
+    invitationDAO.save(Invitation(hash, invitationSenderId, expirationTime))
   }
 
   private def buildRegistrationUrl(): RegistrationUrl = {
@@ -77,6 +85,10 @@ class InvitationService(invitationDAO: InvitationDAO, userDAO: UserDAO, emailSer
     }
   }
 
+}
+
+object InvitationService {
+  val INVITATION_CODE_EXPIRATION_TIME = Minutes.minutes(1)
 }
 
 trait UniqueHashGenerator {
