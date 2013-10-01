@@ -42,6 +42,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
   lazy val templateEngine = new EmailTemplateEngine()
   lazy val invitationsService = new InvitationService(invitationDao, userDao, emailService, config, DefaultUniqueHashGenerator, templateEngine)
   lazy val notificationService = new NotificationService(emailScheduler, templateEngine, config, notificationCountFinder)
+  lazy val heartbeatStore = new MongoHeartbeatStore
 
 
   lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {

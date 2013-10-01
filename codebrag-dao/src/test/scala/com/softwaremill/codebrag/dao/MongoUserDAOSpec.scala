@@ -23,7 +23,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
       val password = "pass" + i
       val token = "token" + i
       val name = s"User Name $i"
-      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token, "avatarUrl"))
+      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token, "avatarUrl", None))
     }
   }
 
@@ -274,9 +274,9 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
 
   }
 
-  it should "find user by its Id" taggedAs (RequiresDb) in {
+  it should "find user by its Id" taggedAs RequiresDb in {
     // given
-    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde","avatarUrl")
+    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde","avatarUrl", None)
     userDAO.add(user)
 
     // when
@@ -284,6 +284,10 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
 
     // then
     foundUser.get should equal(user)
+  }
+
+  it should "store user's notification dates properly" taggedAs RequiresDb in {
+
   }
 
 }

@@ -32,6 +32,6 @@ object UserAssembler {
   def randomUser = new UserAssembler(createRandomUser())
 
   private def createRandomUser() = {
-    User(new ObjectId, Authentication("Basic", "Sofokles", "sofokles", "token", "salt"), "Sofokles Mill", "sofo@sml.com", "token", "http://avatar.com/1.jpg")
+    User(new ObjectId, Authentication("Basic", "Sofokles", "sofokles", "token", "salt"), "Sofokles Mill", "sofo@sml.com", "token", "http://avatar.com/1.jpg", None)
   }
 }

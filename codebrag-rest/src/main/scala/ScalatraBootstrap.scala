@@ -1,6 +1,7 @@
 import com.softwaremill.codebrag.dao.MongoInit
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.rest.debug.DebugServlet
+import com.softwaremill.codebrag.service.notification.NotificationScheduler
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.{EventingConfiguration, Beans}
 import java.util.Locale
@@ -21,6 +22,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     MongoInit.initialize(config)
 
     val repositoryUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, repoDataProducer, commitImportService)
+    val notificationScheduler = NotificationScheduler.initialize(actorSystem, heartbeatStore, notificationCountFinder, emailScheduler, userDao)
     context.mount(new UsersServlet(authenticator, registerService, swagger), Prefix + "users")
     context.mount(new CommitsServlet(authenticator, reviewableCommitsFinder, allCommitsFinder, reactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, swagger, diffWithCommentsService, unlikeUseCaseFactory), Prefix + CommitsServlet.MAPPING_PATH)
     context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupService), Prefix + FollowupsServlet.MappingPath)

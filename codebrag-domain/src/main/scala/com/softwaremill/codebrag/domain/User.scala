@@ -2,12 +2,14 @@ package com.softwaremill.codebrag.domain
 
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.Utils
+import org.joda.time.DateTime
 
-case class User(id: ObjectId, authentication: Authentication, name: String, email: String, token: String, avatarUrl: String)
+case class User(id: ObjectId, authentication: Authentication, name: String, email: String, token: String, avatarUrl: String,
+                notifications: Option[UserNotifications])
 
 object User {
   def apply(authentication: Authentication, name: String, email: String, token: String, avatarUrl: String) = {
-    new User(null, authentication, name, email, token, avatarUrl)
+    new User(null, authentication, name, email, token, avatarUrl, None)
   }
 
   def defaultAvatarUrl(email: String): String = {
@@ -16,12 +18,15 @@ object User {
 
   implicit object UserLikeRegularUser extends UserLike[User] {
     def userFullName(userLike: User) = userLike.name
+
     def userEmail(userLike: User) = userLike.email
   }
+
 }
 
 trait UserLike[T] {
   def userFullName(userLike: T): String
+
   def userEmail(userLike: T): String
 }
 
@@ -46,4 +51,6 @@ object Authentication {
   }
 
 }
+
+case class UserNotifications(commits: Option[DateTime], followups: Option[DateTime])
 

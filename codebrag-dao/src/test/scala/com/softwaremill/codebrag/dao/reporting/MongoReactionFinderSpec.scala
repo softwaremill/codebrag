@@ -18,8 +18,8 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
 
   val CommitId = oid(1)
 
-  val John = User(oid(2), Authentication.basic("john", "pass"), "John", "john@doe.com", "123abc", "http://john.doe.com/avatar")
-  val Mary = User(oid(3), Authentication.basic("mary", "pass"), "Mary", "mary@smith.com", "123abc", "http://mary.com/avatar")
+  val John = User(oid(2), Authentication.basic("john", "pass"), "John", "john@doe.com", "123abc", "http://john.doe.com/avatar", None)
+  val Mary = User(oid(3), Authentication.basic("mary", "pass"), "Mary", "mary@smith.com", "123abc", "http://mary.com/avatar", None)
 
   val StoredCommitComments = List(
     CommentAssembler.commentFor(CommitId).withAuthorId(John.id).withMessage("Monster class").get,

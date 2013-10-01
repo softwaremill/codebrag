@@ -1,10 +1,13 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{CommitInfo, CommitLike, Authentication, User}
+import com.softwaremill.codebrag.domain._
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{BsonRecordField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
+import org.joda.time.DateTime
+import net.liftweb.record.field.OptionalDateTimeField
+import net.liftweb.record.field.custom.OptionalBsonRecordField
 
 class MongoUserDAO extends UserDAO {
 
@@ -14,7 +17,6 @@ class MongoUserDAO extends UserDAO {
     val toSave = if (user.id == null) {
       user.copy(id = new ObjectId())
     } else user
-
     toSave.save(safe = true)
   }
 
@@ -58,24 +60,28 @@ class MongoUserDAO extends UserDAO {
 
   private object UserImplicits {
     implicit def fromRecord(user: UserRecord): User = {
-      User(user.id.get, user.authentication.get, user.name.get, user.email.get, user.token.get, user.avatarUrl.get)
+      User(user.id.get, user.authentication.get, user.name.get, user.email.get, user.token.get, user.avatarUrl.get, user.notifications.get)
     }
 
     implicit def fromRecords(users: List[UserRecord]): List[User] = {
-      users.map(fromRecord(_))
+      users.map(fromRecord)
     }
 
     implicit def fromOptionalRecord(userOpt: Option[UserRecord]): Option[User] = {
-      userOpt.map(fromRecord(_))
+      userOpt.map(fromRecord)
     }
 
     implicit def toRecord(user: User): UserRecord = {
-      UserRecord.createRecord.id(user.id)
+      val record: UserRecord = UserRecord.createRecord.id(user.id)
         .name(user.name)
         .token(user.token)
         .email(user.email)
         .authentication(user.authentication)
         .avatarUrl(user.avatarUrl)
+      user.notifications match {
+        case Some(notifications) => record.notifications(notifications)
+        case None => record
+      }
     }
 
     implicit def toRecord(authentication: Authentication): AuthenticationRecord = {
@@ -89,6 +95,26 @@ class MongoUserDAO extends UserDAO {
 
     implicit def fromRecord(record: AuthenticationRecord): Authentication = {
       Authentication(record.provider.get, record.username.get, record.usernameLowerCase.get, record.token.get, record.salt.get)
+    }
+
+    implicit def toRecord(notifications: UserNotifications): UserNotificationRecord = {
+      val record = UserNotificationRecord.createRecord
+      notifications match {
+        case UserNotifications(None, None) => record
+        case UserNotifications(Some(commits), None) => record.commits(commits.toGregorianCalendar)
+        case UserNotifications(Some(commits), Some(followups)) => record.commits(commits.toGregorianCalendar).followups(followups.toGregorianCalendar)
+        case UserNotifications(None, Some(followups)) => record.followups(followups.toGregorianCalendar)
+      }
+    }
+
+    implicit def fromRecord(record: UserNotificationRecord): UserNotifications = {
+      val commitsDate = record.commits.get
+      val followupsDate = record.followups.get
+      UserNotifications(commitsDate.map(new DateTime(_)), followupsDate.map(new DateTime(_)))
+    }
+
+    implicit def fromRecord(recordOpt: Option[UserNotificationRecord]): Option[UserNotifications] = {
+      recordOpt.map(fromRecord)
     }
   }
 
@@ -106,6 +132,8 @@ class UserRecord extends MongoRecord[UserRecord] with ObjectIdPk[UserRecord] {
   object token extends LongStringField(this)
 
   object avatarUrl extends LongStringField(this)
+
+  object notifications extends OptionalBsonRecordField(this, UserNotificationRecord)
 
 }
 
@@ -125,6 +153,19 @@ class AuthenticationRecord extends BsonRecord[AuthenticationRecord] {
   object token extends LongStringField(this)
 
   object salt extends LongStringField(this)
+
 }
 
 object AuthenticationRecord extends AuthenticationRecord with BsonMetaRecord[AuthenticationRecord]
+
+class UserNotificationRecord extends BsonRecord[UserNotificationRecord] {
+  def meta = UserNotificationRecord
+
+  object commits extends OptionalDateTimeField(this)
+
+  object followups extends OptionalDateTimeField(this)
+
+}
+
+object UserNotificationRecord extends UserNotificationRecord with BsonMetaRecord[UserNotificationRecord]
+

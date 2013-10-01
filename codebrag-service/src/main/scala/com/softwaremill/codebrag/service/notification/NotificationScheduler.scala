@@ -14,6 +14,7 @@ class NotificationScheduler(heartbeatStore: HeartbeatStore, val notificationCoun
                             actorSystem: ActorSystem) extends Actor with Logging with NotificationProducer {
   def receive = {
     case PrepareNotifications => {
+      import actorSystem.dispatcher
       logger.debug("Preparing notifications to send out")
       produceNotifications(heartbeatStore.loadAll())
       logger.debug(s"Scheduling next preparation in ${NotificationScheduler.NextNotificationPreparation}")
@@ -27,8 +28,8 @@ object NotificationScheduler {
 
   import scala.concurrent.duration._
 
-  val OfflineOffset = 15
-  val NextNotificationPreparation = 15.minutes
+  val OfflineOffset = 1
+  val NextNotificationPreparation = 1.minutes
 
   def initialize(actorSystem: ActorSystem, heartbeatStore: HeartbeatStore, notificationCountFinder: NotificationCountFinder,
                  emailScheduler: EmailScheduler, userDAO: UserDAO) = {
