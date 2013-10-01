@@ -30,6 +30,7 @@ class MongoInvitationDAOSpec extends FlatSpecWithMongo with ShouldMatchers with 
     val Some(invitationRecord) = (InvitationRecord where (_.code.eqs(code))).get()
     invitationRecord.code.get should be(code)
     invitationRecord.invitationSender.get should be(senderId)
+    invitationRecord.expiryDate.get should be(invitation.expiryDate.toDate)
   }
 
   it should "load invitation by code" taggedAs (RequiresDb) in {

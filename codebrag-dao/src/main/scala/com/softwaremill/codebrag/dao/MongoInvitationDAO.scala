@@ -3,8 +3,9 @@ package com.softwaremill.codebrag.dao
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.domain.Invitation
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
-import net.liftweb.mongodb.record.field.{ObjectIdField, ObjectIdPk}
+import net.liftweb.mongodb.record.field.{DateField, ObjectIdField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
+import org.joda.time.DateTime
 
 class MongoInvitationDAO extends InvitationDAO with Logging {
 
@@ -31,6 +32,7 @@ private object InvitationToRecordBuilder {
   def buildFrom(invitation: Invitation) = {
     InvitationRecord.createRecord
       .invitationSender(invitation.invitationSender)
+      .expiryDate(invitation.expiryDate.toDate)
       .code(invitation.code)
   }
 
@@ -39,7 +41,7 @@ private object InvitationToRecordBuilder {
 private object RecordToInvitationBuilder {
 
   def buildFrom(record: InvitationRecord) = {
-    Invitation(record.code.get, record.invitationSender.get)
+    Invitation(record.code.get, record.invitationSender.get, new DateTime(record.expiryDate.get))
   }
 }
 
@@ -50,6 +52,8 @@ class InvitationRecord extends MongoRecord[InvitationRecord] with ObjectIdPk[Inv
   object code extends LongStringField(this)
 
   object invitationSender extends ObjectIdField(this)
+
+  object expiryDate extends DateField(this)
 
 }
 
