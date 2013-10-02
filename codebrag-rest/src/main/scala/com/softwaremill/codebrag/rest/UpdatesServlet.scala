@@ -5,8 +5,9 @@ import org.joda.time.DateTime
 import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.HeartbeatStore
+import com.softwaremill.codebrag.common.Clock
 
-class UpdatesServlet(val authenticator: Authenticator, finder: NotificationCountFinder, heartbeat: HeartbeatStore) extends JsonServletWithAuthentication {
+class UpdatesServlet(val authenticator: Authenticator, finder: NotificationCountFinder, heartbeat: HeartbeatStore, clock: Clock) extends JsonServletWithAuthentication {
   before() {
     haltIfNotAuthenticated()
   }
@@ -15,7 +16,7 @@ class UpdatesServlet(val authenticator: Authenticator, finder: NotificationCount
     val userId = new ObjectId(user.id)
     heartbeat.update(userId)
     val counters = finder.getCounters(userId)
-    UpdateNotification(new DateTime().getMillis, counters.pendingCommitCount, counters.followupCount)
+    UpdateNotification(clock.currentTimeMillis, counters.pendingCommitCount, counters.followupCount)
   }
 
 }

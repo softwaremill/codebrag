@@ -22,7 +22,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     MongoInit.initialize(config)
 
     val repositoryUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, repoDataProducer, commitImportService)
-    val notificationScheduler = NotificationScheduler.initialize(actorSystem, heartbeatStore, notificationCountFinder, emailScheduler, userDao, templateEngine, config)
+    NotificationScheduler.initialize(actorSystem, heartbeatStore, notificationCountFinder, emailScheduler, userDao, templateEngine, config, clock)
     context.mount(new UsersServlet(authenticator, registerService, swagger), Prefix + "users")
     context.mount(new CommitsServlet(authenticator, reviewableCommitsFinder, allCommitsFinder, reactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, swagger, diffWithCommentsService, unlikeUseCaseFactory), Prefix + CommitsServlet.MAPPING_PATH)
     context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupService), Prefix + FollowupsServlet.MappingPath)
@@ -33,7 +33,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new ConfigServlet(config), Prefix + "config")
     context.mount(new InvitationServlet(authenticator, invitationsService), Prefix + "invitation")
     context.mount(new RepositorySyncServlet(actorSystem, repositoryUpdateActor), RepositorySyncServlet.Mapping)
-    context.mount(new UpdatesServlet(authenticator, notificationCountFinder, heartbeatStore), Prefix + UpdatesServlet.Mapping)
+    context.mount(new UpdatesServlet(authenticator, notificationCountFinder, heartbeatStore, clock), Prefix + UpdatesServlet.Mapping)
 
     if(config.demo) {
       context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")

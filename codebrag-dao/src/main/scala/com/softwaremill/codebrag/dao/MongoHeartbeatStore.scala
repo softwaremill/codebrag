@@ -1,10 +1,11 @@
 package com.softwaremill.codebrag.dao
 
 import org.bson.types.ObjectId
-import org.joda.time.{DateTimeZone, DateTime}
+import org.joda.time.DateTime
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{DateField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
+import com.softwaremill.codebrag.common.Clock
 
 trait HeartbeatStore {
   def update(userId: ObjectId)
@@ -14,9 +15,9 @@ trait HeartbeatStore {
   def loadAll(): List[(ObjectId, DateTime)]
 }
 
-class MongoHeartbeatStore extends HeartbeatStore {
+class MongoHeartbeatStore(clock: Clock) extends HeartbeatStore {
   def update(userId: ObjectId) {
-    val currentDateTime = DateTime.now(DateTimeZone.UTC)
+    val currentDateTime = clock.currentDateTimeUTC
     val query = HeartbeatRecord.where(_.id eqs userId).asDBObject
     val record = HeartbeatRecord.createRecord.lastHeartbeat(currentDateTime.toDate).id(userId).asDBObject
     HeartbeatRecord.upsert(query, record)

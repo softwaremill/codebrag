@@ -11,6 +11,7 @@ import com.softwaremill.codebrag.service.email.{Email, EmailScheduler}
 import com.softwaremill.codebrag.domain.{UserNotifications, User}
 import com.softwaremill.codebrag.service.templates.{Templates, EmailTemplateEngine}
 import com.softwaremill.codebrag.service.config.CodebragConfig
+import com.softwaremill.codebrag.common.Clock
 
 class NotificationScheduler(heartbeatStore: HeartbeatStore,
                             val notificationCounts: NotificationCountFinder,
@@ -18,7 +19,8 @@ class NotificationScheduler(heartbeatStore: HeartbeatStore,
                             val userDAO: UserDAO,
                             actorSystem: ActorSystem,
                             val templateEngine: EmailTemplateEngine,
-                            val config: CodebragConfig) extends Actor with Logging with NotificationProducer {
+                            val config: CodebragConfig,
+                            val clock: Clock) extends Actor with Logging with NotificationProducer {
   def receive = {
     case PrepareNotifications => {
       import actorSystem.dispatcher
@@ -39,9 +41,10 @@ object NotificationScheduler {
   val NextNotificationPreparation = 1.minutes
 
   def initialize(actorSystem: ActorSystem, heartbeatStore: HeartbeatStore, notificationCountFinder: NotificationCountFinder,
-                 emailScheduler: EmailScheduler, userDAO: UserDAO, templateEngine: EmailTemplateEngine, config: CodebragConfig) = {
+                 emailScheduler: EmailScheduler, userDAO: UserDAO, templateEngine: EmailTemplateEngine, config: CodebragConfig,
+                 clock: Clock) = {
     val actor = actorSystem.actorOf(
-      Props(new NotificationScheduler(heartbeatStore, notificationCountFinder, emailScheduler, userDAO, actorSystem, templateEngine, config)),
+      Props(new NotificationScheduler(heartbeatStore, notificationCountFinder, emailScheduler, userDAO, actorSystem, templateEngine, config, clock)),
       "notification-scheduler")
 
     actor ! PrepareNotifications
@@ -115,8 +118,8 @@ trait NotificationProducer {
   }
 
   private def rememberNotification(user: User, counters: NotificationCountersView) {
-    val commitDate = if (counters.pendingCommitCount > 0) Some(DateTime.now()) else None
-    val followupDate = if (counters.followupCount > 0) Some(DateTime.now()) else None
+    val commitDate = if (counters.pendingCommitCount > 0) Some(clock.currentDateTimeUTC) else None
+    val followupDate = if (counters.followupCount > 0) Some(clock.currentDateTimeUTC) else None
     if (commitDate.isDefined || followupDate.isDefined) {
       userDAO.rememberNotifications(user.id, UserNotifications(commitDate, followupDate))
     }

@@ -4,13 +4,15 @@ import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import org.joda.time.{DateTime, DateTimeZone}
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.common.{FixtureTimeClock, Clock}
 
 class MongoHeartbeatStoreSpec extends FlatSpecWithMongo with ShouldMatchers with ClearDataAfterTest {
   var store: MongoHeartbeatStore = _
+  var clock: Clock = new FixtureTimeClock(1500)
 
   override def beforeEach() {
     super.beforeEach()
-    store = new MongoHeartbeatStore
+    store = new MongoHeartbeatStore(clock)
   }
 
   "update" should "create a new entry" taggedAs RequiresDb in {
@@ -27,7 +29,8 @@ class MongoHeartbeatStoreSpec extends FlatSpecWithMongo with ShouldMatchers with
   it should "update an existing entry" taggedAs RequiresDb in {
     //given
     val userId = new ObjectId
-    val lastHeartbeat = DateTime.now(DateTimeZone.UTC).minusDays(2)
+    val fixtureClock = new FixtureTimeClock(1000)
+    val lastHeartbeat = fixtureClock.currentDateTimeUTC.minusDays(2)
     HeartbeatRecord.createRecord.id(userId).lastHeartbeat(lastHeartbeat.toDate).save
 
     //when
@@ -40,7 +43,8 @@ class MongoHeartbeatStoreSpec extends FlatSpecWithMongo with ShouldMatchers with
   "get" should "return time of the last heartbeat when one was stored" taggedAs RequiresDb in {
     //given
     val userId = new ObjectId
-    val lastHeartbeat = DateTime.now(DateTimeZone.UTC).minusDays(2)
+    val fixtureClock = new FixtureTimeClock(1000)
+    val lastHeartbeat = fixtureClock.currentDateTimeUTC.minusDays(2)
     HeartbeatRecord.createRecord.id(userId).lastHeartbeat(lastHeartbeat.toDate).save
 
     //when
