@@ -37,8 +37,8 @@ object NotificationScheduler {
 
   import scala.concurrent.duration._
 
-  val OfflineOffset = 1
-  val NextNotificationPreparation = 1.minutes
+  val OfflineOffset = 5
+  val NextNotificationPreparation = 15.minutes
 
   def initialize(actorSystem: ActorSystem, heartbeatStore: HeartbeatStore, notificationCountFinder: NotificationCountFinder,
                  emailScheduler: EmailScheduler, userDAO: UserDAO, templateEngine: EmailTemplateEngine, config: CodebragConfig,
