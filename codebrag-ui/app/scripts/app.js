@@ -15,6 +15,10 @@ angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.com
 
 angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events']);
 
+angular.module('codebrag.invitations', ['ui.validate', 'ui.keypress']);
+
+
+
 angular.module('codebrag', [
     'codebrag.templates',
     'codebrag.auth',
@@ -22,7 +26,8 @@ angular.module('codebrag', [
     'codebrag.session',
     'codebrag.commits',
     'codebrag.followups',
-    'codebrag.notifications']);
+    'codebrag.notifications',
+    'codebrag.invitations']);
 
 angular.module('codebrag')
     .config(function ($provide) {

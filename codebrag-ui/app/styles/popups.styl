@@ -73,13 +73,34 @@
         margin-bottom: 0.38em;
         text-align: left;
 
-      & input, textarea
+      & input, textarea, .list
         border: 1px solid #ccc;
         box-shadow: none;
         min-width: 400px;
         margin-bottom: 1.15em;
         padding: 7px;
         width: 100%;
+
+      & .list
+        background: #fff;
+        margin-bottom: 10px;
+        height: 150px;
+        overflow-y: auto;
+
+        & ul
+          list-style: none;
+          margin: 0;
+          padding: 5px;
+          text-align: left;
+
+        & .pending
+          color: $main-orange-color
+
+        & .success
+          color: $lime-green-color
+
+        & .failed
+          color: $error-red-color
 
       & input
         height: 32px;

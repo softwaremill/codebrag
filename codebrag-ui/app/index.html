@@ -29,6 +29,8 @@
     <script type="text/javascript" src="vendor/angular-resource.js"></script>
     <script type="text/javascript" src="vendor/angular-sanitize.js"></script>
     <script type="text/javascript" src="vendor/angular-ui-states.js"></script>
+    <script type="text/javascript" src="vendor/angular-ui/validate.js"></script>
+    <script type="text/javascript" src="vendor/angular-ui/keypress.js"></script>
 
     <script type="text/javascript" src="vendor/markdown/marked.js"></script>
     <script type="text/javascript" src="vendor/jquery-scrollto.js"></script>
@@ -88,6 +90,10 @@
     <script type="text/javascript" src="scripts/followups/followupDetailsCtrl.js"></script>
     <script type="text/javascript" src="scripts/followups/followupsService.js"></script>
 
+    <!--invitations-->
+    <script type="text/javascript" src="scripts/invitations/inviteFormPopupCtrl.js"></script>
+    <script type="text/javascript" src="scripts/invitations/invitationService.js"></script>
+
     <!--commons -->
     <script type="text/javascript" src="scripts/common/events.js"></script>
     <script type="text/javascript" src="scripts/common/flash.js"></script>
@@ -100,8 +106,8 @@
     <script type="text/javascript" src="scripts/common/directives/expandCollapseList.js"></script>
     <script type="text/javascript" src="scripts/common/directives/reactionMessageSummary.js"></script>
     <script type="text/javascript" src="scripts/common/directives/contactFormPopup.js"></script>
-    <script type="text/javascript" src="scripts/common/directives/inviteFormPopup.js"></script>
     <script type="text/javascript" src="scripts/common/directives/earlyVersionPopup.js"></script>
+    <script type="text/javascript" src="scripts/common/directives/popup.js"></script>
 
     <script type="text/javascript" src="scripts/common/directives/markdownToHtml.js"></script>
     <script type="text/javascript" src="scripts/common/directives/markCurrent.js"></script>
@@ -127,7 +133,7 @@
 <body ng-cloak>
     <div class="loading-bar" http-request-tracker active-class="loading"></div>
     <contact-form-popup></contact-form-popup>
-    <invite-form-popup></invite-form-popup>
+    <popup template-url="views/inviteForm.html" open-on="openInviteFormPopup"></popup>
     <header class="main-header" ng-controller="SessionCtrl">
         <div class="demo-nav" show-on-demo>
             <a href="http://codebrag.com/">back to codebrag.com</a>
