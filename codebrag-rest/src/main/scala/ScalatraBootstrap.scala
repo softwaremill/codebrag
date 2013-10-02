@@ -1,7 +1,7 @@
 import com.softwaremill.codebrag.dao.MongoInit
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.rest.debug.DebugServlet
-import com.softwaremill.codebrag.service.notification.NotificationScheduler
+import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.{EventingConfiguration, Beans}
 import java.util.Locale
@@ -22,7 +22,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     MongoInit.initialize(config)
 
     val repositoryUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, repoDataProducer, commitImportService)
-    NotificationScheduler.initialize(actorSystem, heartbeatStore, notificationCountFinder, emailScheduler, userDao, templateEngine, config, clock)
+    UserNotificationSenderActor.initialize(actorSystem, heartbeatStore, notificationCountFinder, emailScheduler, userDao, templateEngine, config, clock)
     context.mount(new UsersServlet(authenticator, registerService, userDao, swagger), Prefix + "users")
     context.mount(new CommitsServlet(authenticator, reviewableCommitsFinder, allCommitsFinder, reactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, swagger, diffWithCommentsService, unlikeUseCaseFactory), Prefix + CommitsServlet.MAPPING_PATH)
     context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupService), Prefix + FollowupsServlet.MappingPath)
@@ -35,7 +35,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new RepositorySyncServlet(actorSystem, repositoryUpdateActor), RepositorySyncServlet.Mapping)
     context.mount(new UpdatesServlet(authenticator, notificationCountFinder, heartbeatStore, clock), Prefix + UpdatesServlet.Mapping)
 
-    if(config.demo) {
+    if (config.demo) {
       context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")
     }
 

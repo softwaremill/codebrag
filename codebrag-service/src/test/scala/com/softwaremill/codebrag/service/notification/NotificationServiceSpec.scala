@@ -14,7 +14,7 @@ import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 
-class NotificationServiceSepc extends FlatSpec with MockitoSugar with ShouldMatchers {
+class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers {
 
   it should "send welcome notification" in {
     //given

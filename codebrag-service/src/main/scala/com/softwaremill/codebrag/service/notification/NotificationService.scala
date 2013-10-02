@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.service.notification
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.email.{Email, EmailScheduler}
 import com.softwaremill.codebrag.domain.User
-import com.softwaremill.codebrag.service.templates.EmailTemplateEngine
+import com.softwaremill.codebrag.service.templates.{Templates, EmailTemplateEngine}
 import com.softwaremill.codebrag.service.templates.Templates._
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
@@ -27,5 +27,25 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: EmailT
       return users ++ Map("noOfCommits" -> noOfCommits)
     }
     users
+  }
+
+  def sendCommitsOrFollowupNotification(user: User, commitCount: Long, followupCount: Long) {
+    val subject = {
+      val newCommits = s"$commitCount new commits"
+      val newFollowups = s"$followupCount followups"
+      val notificationCounts = if (commitCount > 0 && followupCount > 0) s"$newCommits and $newFollowups"
+      else if (commitCount > 0) newCommits
+      else newFollowups
+      s"Codebrag: $notificationCounts"
+    }
+
+    val templateParams = Map(
+      "username" -> user.name,
+      "commit_followup_message" -> subject,
+      "application_url" -> codebragConfig.applicationUrl
+    )
+    val email = Email(user.email, subject, templateEngine.getTemplate(Templates.UserNotifications, templateParams).content)
+
+    emailScheduler.scheduleInstant(email)
   }
 }
