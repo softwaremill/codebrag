@@ -66,12 +66,13 @@ trait NotificationProducer {
       case (userId, lastHeartbeat) =>
         if (userIsOffline(lastHeartbeat)) {
           val counters = notificationCounts.getCountersSince(lastHeartbeat, userId)
-          val user = userDAO.findById(userId).get
-          if (userShouldBeNotified(lastHeartbeat, user, counters)) {
-            scheduleNotifications(user, counters)
-            rememberNotification(user, counters)
-            emailsScheduled += 1
-          }
+          userDAO.findById(userId).foreach(user => {
+            if (userShouldBeNotified(lastHeartbeat, user, counters)) {
+              scheduleNotifications(user, counters)
+              rememberNotification(user, counters)
+              emailsScheduled += 1
+            }
+          })
         }
     }
 
@@ -79,20 +80,17 @@ trait NotificationProducer {
   }
 
   private def userShouldBeNotified(heartbeat: DateTime, user: User, counters: NotificationCountersView) = {
-    val needsCommitNotification = {
-      counters.pendingCommitCount > 0 && (user.notifications match {
-        case None => true
-        case Some(UserNotifications(None, _)) => true
-        case Some(UserNotifications(Some(date), _)) => date.isBefore(heartbeat)
-      })
-    }
-    val needsFollowupNotification = {
-      counters.followupCount > 0 && (user.notifications match {
-        case None => true
-        case Some(UserNotifications(_, None)) => true
-        case Some(UserNotifications(_, Some(date))) => date.isBefore(heartbeat)
-      })
-    }
+    val needsCommitNotification = counters.pendingCommitCount > 0 && (user.notifications match {
+      case None => true
+      case Some(UserNotifications(None, _)) => true
+      case Some(UserNotifications(Some(date), _)) => date.isBefore(heartbeat)
+    })
+
+    val needsFollowupNotification = counters.followupCount > 0 && (user.notifications match {
+      case None => true
+      case Some(UserNotifications(_, None)) => true
+      case Some(UserNotifications(_, Some(date))) => date.isBefore(heartbeat)
+    })
 
     needsCommitNotification || needsFollowupNotification
   }
