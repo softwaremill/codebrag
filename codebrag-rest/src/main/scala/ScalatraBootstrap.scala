@@ -22,7 +22,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     MongoInit.initialize(config)
 
     val repositoryUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, repoDataProducer, commitImportService)
-    val notificationScheduler = NotificationScheduler.initialize(actorSystem, heartbeatStore, notificationCountFinder, emailScheduler, userDao)
+    val notificationScheduler = NotificationScheduler.initialize(actorSystem, heartbeatStore, notificationCountFinder, emailScheduler, userDao, templateEngine, config)
     context.mount(new UsersServlet(authenticator, registerService, swagger), Prefix + "users")
     context.mount(new CommitsServlet(authenticator, reviewableCommitsFinder, allCommitsFinder, reactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, swagger, diffWithCommentsService, unlikeUseCaseFactory), Prefix + CommitsServlet.MAPPING_PATH)
     context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupService), Prefix + FollowupsServlet.MappingPath)

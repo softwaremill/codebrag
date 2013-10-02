@@ -24,7 +24,7 @@ class NotificationServiceSepc extends FlatSpec with MockitoSugar with ShouldMatc
     val countFinder = mock[NotificationCountFinder]
     val service = new NotificationService(scheduler, engine, config, countFinder)
     val emailAddress = "zuchos@zuchos.com"
-    val user = new User(null, null, "zuchos", emailAddress, null, null)
+    val user = User(null, null, "zuchos", emailAddress, null, null)
 
     when(engine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject("subject", "content"))
     when(countFinder.getCounters(any[ObjectId])).thenReturn(NotificationCountersView(10, 10))
@@ -60,7 +60,7 @@ class NotificationServiceSepc extends FlatSpec with MockitoSugar with ShouldMatc
       val countFinder = mock[NotificationCountFinder]
       val service = new NotificationService(scheduler, engine, config, countFinder)
       val emailAddress = "zuchos@zuchos.com"
-      val user = new User(null, null, "zuchos", emailAddress, null, null)
+      val user = User(null, null, "zuchos", emailAddress, null, null)
 
       when(countFinder.getCounters(any[ObjectId])).thenReturn(NotificationCountersView(pair._2, 10))
 

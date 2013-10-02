@@ -8,14 +8,16 @@ import org.mockito.Matchers._
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{Authentication, User}
+import com.softwaremill.codebrag.dao.HeartbeatStore
 
 class UpdatesServletSpec extends AuthenticatableServletSpec {
   val countersFinderMock: NotificationCountFinder = mock[NotificationCountFinder]
+  val heartbeat: HeartbeatStore = mock[HeartbeatStore]
   val user = currentUser(new ObjectId)
 
   override def beforeEach {
     super.beforeEach
-    addServlet(new TestableUpdatesServlet(countersFinderMock), "/*")
+    addServlet(new TestableUpdatesServlet(countersFinderMock, heartbeat), "/*")
   }
 
   "GET /" should "respond with HTTP 401 when user is not authenticated" in {
@@ -43,7 +45,7 @@ class UpdatesServletSpec extends AuthenticatableServletSpec {
 
   def currentUser(id: ObjectId) = User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde", "avatarUrl")
 
-  class TestableUpdatesServlet(finder: NotificationCountFinder) extends UpdatesServlet(fakeAuthenticator, finder) {
+  class TestableUpdatesServlet(finder: NotificationCountFinder, heartbeat: HeartbeatStore) extends UpdatesServlet(fakeAuthenticator, finder, heartbeat) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

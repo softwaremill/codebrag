@@ -12,6 +12,10 @@ object User {
     new User(null, authentication, name, email, token, avatarUrl, None)
   }
 
+  def apply(id: ObjectId, authentication: Authentication, name: String, email: String, token: String, avatarUrl: String) = {
+    new User(id, authentication, name, email, token, avatarUrl, None)
+  }
+
   def defaultAvatarUrl(email: String): String = {
     s"http://www.gravatar.com/avatar/${Utils.md5(email)}.png"
   }

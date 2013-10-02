@@ -9,10 +9,16 @@ import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import com.softwaremill.codebrag.service.email.{Email, EmailScheduler}
 import com.softwaremill.codebrag.domain.{UserNotifications, User}
+import com.softwaremill.codebrag.service.templates.{Templates, EmailTemplateEngine}
+import com.softwaremill.codebrag.service.config.CodebragConfig
 
-class NotificationScheduler(heartbeatStore: HeartbeatStore, val notificationCounts: NotificationCountFinder,
-                            val emailScheduler: EmailScheduler, val userDAO: UserDAO,
-                            actorSystem: ActorSystem) extends Actor with Logging with NotificationProducer {
+class NotificationScheduler(heartbeatStore: HeartbeatStore,
+                            val notificationCounts: NotificationCountFinder,
+                            val emailScheduler: EmailScheduler,
+                            val userDAO: UserDAO,
+                            actorSystem: ActorSystem,
+                            val templateEngine: EmailTemplateEngine,
+                            val config: CodebragConfig) extends Actor with Logging with NotificationProducer {
   def receive = {
     case PrepareNotifications => {
       import actorSystem.dispatcher
@@ -33,9 +39,9 @@ object NotificationScheduler {
   val NextNotificationPreparation = 1.minutes
 
   def initialize(actorSystem: ActorSystem, heartbeatStore: HeartbeatStore, notificationCountFinder: NotificationCountFinder,
-                 emailScheduler: EmailScheduler, userDAO: UserDAO) = {
+                 emailScheduler: EmailScheduler, userDAO: UserDAO, templateEngine: EmailTemplateEngine, config: CodebragConfig) = {
     val actor = actorSystem.actorOf(
-      Props(new NotificationScheduler(heartbeatStore, notificationCountFinder, emailScheduler, userDAO, actorSystem)),
+      Props(new NotificationScheduler(heartbeatStore, notificationCountFinder, emailScheduler, userDAO, actorSystem, templateEngine, config)),
       "notification-scheduler")
 
     actor ! PrepareNotifications
@@ -59,7 +65,7 @@ trait NotificationProducer {
           val counters = notificationCounts.getCountersSince(lastHeartbeat, userId)
           val user = userDAO.findById(userId).get
           if (userShouldBeNotified(lastHeartbeat, user, counters)) {
-            scheduleNotifications(user.email, counters)
+            scheduleNotifications(user, counters)
             rememberNotification(user, counters)
             emailsScheduled += 1
           }
@@ -88,10 +94,22 @@ trait NotificationProducer {
     needsCommitNotification || needsFollowupNotification
   }
 
-  private def scheduleNotifications(address: String, counter: NotificationCountersView) = {
-    val subject = s"${counter.pendingCommitCount} commits and ${counter.followupCount} followups are waiting for you"
-    val content = s"${counter.pendingCommitCount} commits and ${counter.followupCount} followups are waiting for you"
-    val email = Email(address, subject, content)
+  private def scheduleNotifications(user: User, counter: NotificationCountersView) = {
+    val subject = {
+      val newCommits = s"${counter.pendingCommitCount} new commits"
+      val newFollowups = s"${counter.followupCount} followups"
+      val notificationCounts = if (counter.pendingCommitCount > 0 && counter.followupCount > 0) s"$newCommits and $newFollowups"
+      else if (counter.pendingCommitCount > 0) newCommits
+      else newFollowups
+      s"Codebrag: $notificationCounts"
+    }
+
+    val templateParams = Map(
+      "username" -> user.name,
+      "commit_followup_message" -> subject,
+      "application_url" -> config.applicationUrl
+    )
+    val email = Email(user.email, subject, templateEngine.getTemplate(Templates.UserNotifications, templateParams).content)
 
     emailScheduler.scheduleInstant(email)
   }
