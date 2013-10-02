@@ -123,12 +123,12 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
 
   it should "send email with invitation message" in {
     //given
-    val message = "some message"
+    val invitationLink = "inv code"
     when(userDAO.findById(id)).thenReturn(Some(user))
-    when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject("subject", "some message"))
+    when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject(invitationLink, "subject"))
 
     //when
-    invitationService.sendInvitation(emails, message, id)
+    invitationService.sendInvitation(emails, invitationLink, id)
 
     //then
     val argumentCaptor = ArgumentCaptor.forClass(classOf[Email])
@@ -136,7 +136,7 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
 
     val emailArgument = argumentCaptor.getValue
     emailArgument.addresses should be(emails)
-    emailArgument.content should be(message)
+    emailArgument.content should be(invitationLink)
   }
 
 

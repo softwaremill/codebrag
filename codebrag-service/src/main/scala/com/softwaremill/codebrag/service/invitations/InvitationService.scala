@@ -19,11 +19,11 @@ class InvitationService(
 
   val registrationUrl = buildRegistrationUrl()
 
-  def sendInvitation(emailAddresses: List[String], message: String, invitationSenderId: ObjectId) {
+  def sendInvitation(emailAddresses: List[String], registrationLink: String, invitationSenderId: ObjectId) {
     val option: Option[User] = userDAO.findById(invitationSenderId)
     option match {
       case Some(user) => {
-        sendEmail(emailAddresses, message, user.name)
+        sendEmail(emailAddresses, invitationMessage(user.name, registrationLink), user.name)
       }
       case None => throw new SecurityException("Invitation sender doesn't exist")
     }
@@ -42,6 +42,10 @@ class InvitationService(
 
   private def getInvitationSubject(userName: String): String = {
     templateEngine.getTemplate(Templates.Invitation, Map("userName" -> userName)).subject
+  }
+
+  private def invitationMessage(senderName: String, invitationLink: String): String = {
+    templateEngine.getTemplate(Templates.Invitation, Map("userName" -> senderName, "url" -> invitationLink)).content
   }
 
   def verify(code: String): Boolean = {
