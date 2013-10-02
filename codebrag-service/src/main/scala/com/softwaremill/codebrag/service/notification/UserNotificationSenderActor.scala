@@ -7,7 +7,7 @@ import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
-import com.softwaremill.codebrag.domain.{UserNotifications, User}
+import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, User}
 import com.softwaremill.codebrag.common.Clock
 
 class UserNotificationSenderActor(actorSystem: ActorSystem,
@@ -92,14 +92,14 @@ trait UserNotificationsSender extends Logging {
   private def userShouldBeNotified(heartbeat: DateTime, user: User, counters: NotificationCountersView) = {
     val needsCommitNotification = counters.pendingCommitCount > 0 && (user.notifications match {
       case None => true
-      case Some(UserNotifications(None, _)) => true
-      case Some(UserNotifications(Some(date), _)) => date.isBefore(heartbeat)
+      case Some(LastUserNotificationDispatch(None, _)) => true
+      case Some(LastUserNotificationDispatch(Some(date), _)) => date.isBefore(heartbeat)
     })
 
     val needsFollowupNotification = counters.followupCount > 0 && (user.notifications match {
       case None => true
-      case Some(UserNotifications(_, None)) => true
-      case Some(UserNotifications(_, Some(date))) => date.isBefore(heartbeat)
+      case Some(LastUserNotificationDispatch(_, None)) => true
+      case Some(LastUserNotificationDispatch(_, Some(date))) => date.isBefore(heartbeat)
     })
 
     needsCommitNotification || needsFollowupNotification
@@ -113,7 +113,7 @@ trait UserNotificationsSender extends Logging {
     val commitDate = if (counters.pendingCommitCount > 0) Some(clock.currentDateTimeUTC) else None
     val followupDate = if (counters.followupCount > 0) Some(clock.currentDateTimeUTC) else None
     if (commitDate.isDefined || followupDate.isDefined) {
-      userDAO.rememberNotifications(user.id, UserNotifications(commitDate, followupDate))
+      userDAO.rememberNotifications(user.id, LastUserNotificationDispatch(commitDate, followupDate))
     }
   }
 

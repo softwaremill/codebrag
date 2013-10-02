@@ -54,7 +54,7 @@ class MongoUserDAO extends UserDAO {
     UserRecord where (_.id eqs id) modify (_.authentication setTo (authentication)) updateOne()
   }
 
-  def rememberNotifications(id: ObjectId, notifications: UserNotifications) {
+  def rememberNotifications(id: ObjectId, notifications: LastUserNotificationDispatch) {
     UserRecord where(_.id eqs id) modify (_.notifications setTo notifications) updateOne()
   }
 
@@ -101,23 +101,23 @@ class MongoUserDAO extends UserDAO {
       Authentication(record.provider.get, record.username.get, record.usernameLowerCase.get, record.token.get, record.salt.get)
     }
 
-    implicit def toRecord(notifications: UserNotifications): UserNotificationRecord = {
-      val record = UserNotificationRecord.createRecord
+    implicit def toRecord(notifications: LastUserNotificationDispatch): LastUserNotificationDispatchRecord$ = {
+      val record = LastUserNotificationDispatchRecord$.createRecord
       notifications match {
-        case UserNotifications(None, None) => record
-        case UserNotifications(Some(commits), None) => record.commits(commits.toGregorianCalendar)
-        case UserNotifications(Some(commits), Some(followups)) => record.commits(commits.toGregorianCalendar).followups(followups.toGregorianCalendar)
-        case UserNotifications(None, Some(followups)) => record.followups(followups.toGregorianCalendar)
+        case LastUserNotificationDispatch(None, None) => record
+        case LastUserNotificationDispatch(Some(commits), None) => record.commits(commits.toGregorianCalendar)
+        case LastUserNotificationDispatch(Some(commits), Some(followups)) => record.commits(commits.toGregorianCalendar).followups(followups.toGregorianCalendar)
+        case LastUserNotificationDispatch(None, Some(followups)) => record.followups(followups.toGregorianCalendar)
       }
     }
 
-    implicit def fromRecord(record: UserNotificationRecord): UserNotifications = {
+    implicit def fromRecord(record: LastUserNotificationDispatchRecord$): LastUserNotificationDispatch = {
       val commitsDate = record.commits.get
       val followupsDate = record.followups.get
-      UserNotifications(commitsDate.map(new DateTime(_)), followupsDate.map(new DateTime(_)))
+      LastUserNotificationDispatch(commitsDate.map(new DateTime(_)), followupsDate.map(new DateTime(_)))
     }
 
-    implicit def fromRecord(recordOpt: Option[UserNotificationRecord]): Option[UserNotifications] = {
+    implicit def fromRecord(recordOpt: Option[LastUserNotificationDispatchRecord$]): Option[LastUserNotificationDispatch] = {
       recordOpt.map(fromRecord)
     }
   }
@@ -137,7 +137,7 @@ class UserRecord extends MongoRecord[UserRecord] with ObjectIdPk[UserRecord] {
 
   object avatarUrl extends LongStringField(this)
 
-  object notifications extends OptionalBsonRecordField(this, UserNotificationRecord)
+  object notifications extends OptionalBsonRecordField(this, LastUserNotificationDispatchRecord$)
 
 }
 
@@ -162,8 +162,8 @@ class AuthenticationRecord extends BsonRecord[AuthenticationRecord] {
 
 object AuthenticationRecord extends AuthenticationRecord with BsonMetaRecord[AuthenticationRecord]
 
-class UserNotificationRecord extends BsonRecord[UserNotificationRecord] {
-  def meta = UserNotificationRecord
+class LastUserNotificationDispatchRecord$ extends BsonRecord[LastUserNotificationDispatchRecord$] {
+  def meta = LastUserNotificationDispatchRecord$
 
   object commits extends OptionalDateTimeField(this)
 
@@ -171,5 +171,5 @@ class UserNotificationRecord extends BsonRecord[UserNotificationRecord] {
 
 }
 
-object UserNotificationRecord extends UserNotificationRecord with BsonMetaRecord[UserNotificationRecord]
+object LastUserNotificationDispatchRecord$ extends LastUserNotificationDispatchRecord$ with BsonMetaRecord[LastUserNotificationDispatchRecord$]
 

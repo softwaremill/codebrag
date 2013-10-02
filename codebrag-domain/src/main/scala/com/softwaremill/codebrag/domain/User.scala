@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.common.Utils
 import org.joda.time.DateTime
 
 case class User(id: ObjectId, authentication: Authentication, name: String, email: String, token: String, avatarUrl: String,
-                notifications: Option[UserNotifications])
+                notifications: Option[LastUserNotificationDispatch])
 
 object User {
   def apply(authentication: Authentication, name: String, email: String, token: String, avatarUrl: String) = {
@@ -56,5 +56,5 @@ object Authentication {
 
 }
 
-case class UserNotifications(commits: Option[DateTime], followups: Option[DateTime])
+case class LastUserNotificationDispatch(commits: Option[DateTime], followups: Option[DateTime])
 

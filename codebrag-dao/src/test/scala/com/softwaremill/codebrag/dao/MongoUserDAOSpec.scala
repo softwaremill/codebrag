@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{UserNotifications, Authentication, User}
+import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, Authentication, User}
 import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
@@ -291,7 +291,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     // given
     val commitDate = DateTime.now().minusHours(1)
     val followupDate = DateTime.now().minusMinutes(1)
-    val notifications = Some(UserNotifications(Some(commitDate), Some(followupDate)))
+    val notifications = Some(LastUserNotificationDispatch(Some(commitDate), Some(followupDate)))
     val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", "avatarUrl", notifications)
     userDAO.add(user)
 
@@ -308,7 +308,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", "avatarUrl", None)
     userDAO.add(user)
     val followupDate = DateTime.now()
-    val notifications = UserNotifications(None, Some(followupDate))
+    val notifications = LastUserNotificationDispatch(None, Some(followupDate))
 
     // when
     userDAO.rememberNotifications(user.id, notifications)
@@ -321,14 +321,14 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
 
   it should "update existing dates" taggedAs RequiresDb in {
     // given
-    val notifications = Some(UserNotifications(Some(DateTime.now().minusHours(5)), Some(DateTime.now().minusMinutes(5))))
+    val notifications = Some(LastUserNotificationDispatch(Some(DateTime.now().minusHours(5)), Some(DateTime.now().minusMinutes(5))))
     val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", "avatarUrl", notifications)
     userDAO.add(user)
 
     // when
     val commitDate = DateTime.now().minusMinutes(1)
     val followupDate = DateTime.now().minusMinutes(1)
-    val newNotifications = UserNotifications(Some(commitDate), Some(followupDate))
+    val newNotifications = LastUserNotificationDispatch(Some(commitDate), Some(followupDate))
     userDAO.rememberNotifications(user.id, newNotifications)
 
     // then
