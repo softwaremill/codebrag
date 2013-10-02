@@ -6,6 +6,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.Invitation
 import com.foursquare.rogue.LiftRogue._
+import org.joda.time.DateTime
 
 class MongoInvitationDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearDataAfterTest with Logging {
 
@@ -21,7 +22,7 @@ class MongoInvitationDAOSpec extends FlatSpecWithMongo with ShouldMatchers with 
   private val code = "1234"
   it should "save invitation" taggedAs (RequiresDb) in {
     //given
-    val invitation = Invitation(code, senderId)
+    val invitation = Invitation(code, senderId, DateTime.now)
 
     //when
     invitationDAO.save(invitation)
