@@ -3,7 +3,7 @@ package com.softwaremill.codebrag
 import org.json4s.JsonDSL._
 import org.json4s.jackson.JsonMethods._
 import org.json4s.JsonAST.JValue
-import org.json4s.{DefaultFormats, Formats}
+import org.json4s.{DefaultJsonFormats, DefaultFormats, Formats}
 import org.scalatra.test.scalatest.ScalatraFlatSpec
 import org.scalatest.mock.MockitoSugar
 

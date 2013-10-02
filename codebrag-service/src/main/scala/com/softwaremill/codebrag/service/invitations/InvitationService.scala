@@ -19,30 +19,25 @@ class InvitationService(
 
   val registrationUrl = buildRegistrationUrl()
 
-  def sendInvitation(emailAddress: String, message: String, invitationSenderId: ObjectId) {
+  def sendInvitation(emailAddresses: List[String], message: String, invitationSenderId: ObjectId) {
     val option: Option[User] = userDAO.findById(invitationSenderId)
     option match {
       case Some(user) => {
-        sendEmail(emailAddress, message, user.name)
+        sendEmail(emailAddresses, message, user.name)
       }
       case None => throw new SecurityException("Invitation sender doesn't exist")
     }
   }
 
-  def createInvitation(invitationSenderId: ObjectId): String = {
+  def createInvitationLink(invitationSenderId: ObjectId): String = {
     userDAO.findById(invitationSenderId) match {
       case Some(user) => {
         val invitationCode: String = uniqueHashGenerator.generateUniqueHashCode()
         saveToDb(invitationCode, invitationSenderId)
-        getInvitationMessage(user, invitationCode)
+        registrationUrl.urlForCode(invitationCode)
       }
       case None => throw new IllegalStateException
     }
-  }
-
-
-  private def getInvitationMessage(user: User, invitationCode: String): String = {
-    templateEngine.getTemplate(Templates.Invitation, Map("userName" -> user.name, "url" -> registrationUrl.urlForCode(invitationCode))).content
   }
 
   private def getInvitationSubject(userName: String): String = {
@@ -61,8 +56,8 @@ class InvitationService(
   }
 
 
-  private def sendEmail(address: String, message: String, userName: String) {
-    emailService.send(Email(address, getInvitationSubject(userName), message))
+  private def sendEmail(addresses: List[String], message: String, userName: String) {
+    emailService.send(Email(addresses, getInvitationSubject(userName), message))
   }
 
   private def saveToDb(hash: String, invitationSenderId: ObjectId) {

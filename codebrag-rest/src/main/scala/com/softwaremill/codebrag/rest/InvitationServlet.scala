@@ -12,14 +12,14 @@ class InvitationServlet(val authenticator: Authenticator, invitationService: Inv
   }
 
   post("/") {
-    val email = (parsedBody \ "email").extract[String]
-    val message = (parsedBody \ "invitation").extract[String]
-    invitationService.sendInvitation(email, message, new ObjectId(user.id))
+    println(request.body)
+    val emails = (parsedBody \ "emails").extract[List[String]]
+    val message = (parsedBody \ "invitationLink").extract[String]
+    invitationService.sendInvitation(emails, message, new ObjectId(user.id))
   }
 
   get("/") {
-    val invitation = invitationService.createInvitation(new ObjectId(user.id))
-    Map("invitation" -> invitation)
+    Map("invitationLink" -> invitationService.createInvitationLink(new ObjectId(user.id)))
   }
 
 }

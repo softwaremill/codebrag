@@ -11,8 +11,6 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.ArgumentCaptor
-import org.json4s.JsonDSL._
-//import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 
 
 class InvitationServletSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {
@@ -29,12 +27,12 @@ class InvitationServletSpec extends AuthenticatableServletSpec with BeforeAndAft
     //given
     userIsAuthenticatedAs(someUser())
     val invitation = "invitation message"
-    when(invitationService.createInvitation(any[ObjectId])).thenReturn(invitation)
+    when(invitationService.createInvitationLink(any[ObjectId])).thenReturn(invitation)
     //when
     get("/") {
       //then
       status should be(200)
-      body should be("{\"invitation\":\""+invitation+"\"}")
+      body should be("{\"invitationLink\":\""+invitation+"\"}")
     }
   }
 
@@ -43,19 +41,19 @@ class InvitationServletSpec extends AuthenticatableServletSpec with BeforeAndAft
     userIsAuthenticatedAs(someUser())
 
     val email = "adam@example.org"
-    val invitation = "I invite you"
+    val invitationLink = "http://codebrag.com/register/123abc123"
 
     //when
-    post("/", mapToJson(Map("invitation" -> invitation, "email" -> email)),
-      defaultJsonHeaders) {
+    val json = s"""{"invitationLink": "${invitationLink}", "emails": ["${email}"]}"""
+    post("/", json, defaultJsonHeaders) {
       //then
       status should be(200)
-      val emailCaptor = ArgumentCaptor.forClass(classOf[String])
+      val emailCaptor = ArgumentCaptor.forClass(classOf[List[String]])
       val invitationCaptor = ArgumentCaptor.forClass(classOf[String])
       val objectId = ArgumentCaptor.forClass(classOf[ObjectId])
       verify(invitationService).sendInvitation(emailCaptor.capture(),invitationCaptor.capture(),objectId.capture())
-      emailCaptor.getValue should be(email)
-      invitationCaptor.getValue should be (invitation)
+      emailCaptor.getValue should be(List(email))
+      invitationCaptor.getValue should be (invitationLink)
     }
   }
 

@@ -110,7 +110,7 @@ trait NotificationProducer {
       "commit_followup_message" -> subject,
       "application_url" -> config.applicationUrl
     )
-    val email = Email(user.email, subject, templateEngine.getTemplate(Templates.UserNotifications, templateParams).content)
+    val email = Email(List(user.email), subject, templateEngine.getTemplate(Templates.UserNotifications, templateParams).content)
 
     emailScheduler.scheduleInstant(email)
   }

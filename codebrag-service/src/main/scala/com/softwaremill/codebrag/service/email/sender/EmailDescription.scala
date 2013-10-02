@@ -7,6 +7,6 @@ case class EmailDescription(emails: Array[String],
                             ccEmails: Array[String],
                             bccEmails: Array[String]) {
 
-  def this(email: String, message: String, subject: String) =
-    this(Array(email), message, subject, Array(), Array(), Array())
+  def this(emails: List[String], message: String, subject: String) =
+    this(emails.toArray, message, subject, Array(), Array(), Array())
 }

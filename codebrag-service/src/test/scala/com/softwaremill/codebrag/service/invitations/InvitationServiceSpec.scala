@@ -18,7 +18,7 @@ import org.joda.time.Hours
 class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
   private val code = "1234"
-  val email = "some@some.some"
+  val emails = List("some@some.some")
   val id = new ObjectId()
   val userName = "zuchos"
   val user = User(id, null, userName, null, null, null)
@@ -29,10 +29,12 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
   var userDAO: UserDAO = _
   var emailService: EmailService = _
   var emailTemplateEngine: EmailTemplateEngine = _
+  var uniqueHashGenerator: UniqueHashGenerator = _
 
   var invitationService: InvitationService = _
 
   private val appPath = "http://localhost:8080"
+  private val registerUrlBase = appPath + "/#/register/"
   when(config.applicationUrl).thenReturn(appPath)
 
   override def beforeEach() {
@@ -40,7 +42,8 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     userDAO = mock[UserDAO]
     emailService = mock[EmailService]
     emailTemplateEngine = mock[EmailTemplateEngine]
-    invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, DefaultUniqueHashGenerator, emailTemplateEngine)(clock)
+    uniqueHashGenerator = mock[UniqueHashGenerator]
+    invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, uniqueHashGenerator, emailTemplateEngine)(clock)
   }
 
   it should "positively verify invitation" in {
@@ -90,26 +93,26 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
 
   it should "create invitation message and save invitation in DAO" in {
     //given
-    val message = "some message"
-    when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject(message, "subject"))
+    val regCode = "123123123"
     when(userDAO.findById(id)).thenReturn(Some(user))
+    when(uniqueHashGenerator.generateUniqueHashCode()).thenReturn(regCode)
 
     //when
-    val invitation = invitationService.createInvitation(id)
+    val invitation = invitationService.createInvitationLink(id)
 
     //then
-    invitation should equal(message)
+    invitation should equal(registerUrlBase + regCode)
   }
 
   it should "save created invitation with correct sender and expiry date" in {
     //given
-    val message = "some message"
+    val regCode = "123123123"
     when(config.invitationExpiryTime).thenReturn(Hours.hours(20))
-    when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject(message, "subject"))
     when(userDAO.findById(id)).thenReturn(Some(user))
+    when(uniqueHashGenerator.generateUniqueHashCode()).thenReturn(regCode)
 
     //when
-    invitationService.createInvitation(id)
+    invitationService.createInvitationLink(id)
 
     //then
     val invitationCaptor = ArgumentCaptor.forClass(classOf[Invitation])
@@ -125,14 +128,14 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject("subject", "some message"))
 
     //when
-    invitationService.sendInvitation(email, message, id)
+    invitationService.sendInvitation(emails, message, id)
 
     //then
     val argumentCaptor = ArgumentCaptor.forClass(classOf[Email])
     verify(emailService).send(argumentCaptor.capture())
 
     val emailArgument = argumentCaptor.getValue
-    emailArgument.address should be(email)
+    emailArgument.addresses should be(emails)
     emailArgument.content should be(message)
   }
 

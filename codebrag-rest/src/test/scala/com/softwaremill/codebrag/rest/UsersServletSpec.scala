@@ -9,10 +9,12 @@ import org.mockito.Mockito._
 import org.mockito.Matchers._
 import org.json4s.JsonDSL._
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
+import com.softwaremill.codebrag.dao.UserDAO
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
   val registerService = mock[RegisterService]
+  val userDao = mock[UserDAO]
 
   override def beforeEach {
     super.beforeEach
@@ -77,7 +79,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends UsersServlet(fakeAuthenticator, registerService, new CodebragSwagger) {
+    extends UsersServlet(fakeAuthenticator, registerService, userDao, new CodebragSwagger) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

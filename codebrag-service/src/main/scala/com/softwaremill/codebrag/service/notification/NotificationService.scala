@@ -14,7 +14,7 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: EmailT
     val noOfCommits = notificationCountFinder.getCounters(user.id).pendingCommitCount
     val context: Map[String, Any] = prepareContextForWelcomeNotification(user, noOfCommits)
     val template = templateEngine.getTemplate(WelcomeToCodebrag, context)
-    emailScheduler.scheduleInstant(Email(user.email, template.subject, template.content))
+    emailScheduler.scheduleInstant(Email(List(user.email), template.subject, template.content))
   }
 
 

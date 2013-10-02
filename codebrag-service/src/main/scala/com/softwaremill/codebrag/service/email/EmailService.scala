@@ -7,7 +7,7 @@ class EmailService(config: EmailConfig) {
 
   def send(email:Email) = {
     try {
-      val emailDescription = new EmailDescription(email.address, email.content, email.subject)
+      val emailDescription = new EmailDescription(email.addresses, email.content, email.subject)
       EmailSender.send(config.emailSmtpHost, config.emailSmtpPort, config.emailSmtpUserName,
         config.emailSmtpPassword, config.emailFrom, config.emailEncoding, emailDescription)
     } catch {

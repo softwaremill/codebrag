@@ -4,8 +4,9 @@ import org.scalatra._
 import com.softwaremill.codebrag.service.user.{RegisterService, Authenticator}
 import com.softwaremill.codebrag.service.data.UserJson
 import swagger.{Swagger, SwaggerSupport}
+import com.softwaremill.codebrag.dao.UserDAO
 
-class UsersServlet(val authenticator: Authenticator, registerService: RegisterService, val swagger: Swagger)
+class UsersServlet(val authenticator: Authenticator, registerService: RegisterService, userDao: UserDAO, val swagger: Swagger)
   extends JsonServletWithAuthentication with UsersServletSwaggerDefinition with CookieSupport {
 
   post(operation(loginOperation)) {
@@ -21,6 +22,12 @@ class UsersServlet(val authenticator: Authenticator, registerService: RegisterSe
   get(operation(userProfileOperation)) {
     haltIfNotAuthenticated()
     user
+  }
+
+  get("/all") {
+    haltIfNotAuthenticated()
+    val usersView = userDao.findAll().map { user => Map("name" -> user.name, "email" -> user.email) }
+    Map("registeredUsers" -> usersView)
   }
 
   get("/logout", operation(logoutOperation)) {

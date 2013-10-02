@@ -37,7 +37,7 @@ class NotificationServiceSepc extends FlatSpec with MockitoSugar with ShouldMatc
     verify(scheduler).scheduleInstant(emailCaptor.capture())
 
     val email = emailCaptor.getValue
-    email.address should equal(emailAddress)
+    email.addresses should equal(List(emailAddress))
 
     val templateCaptor = ArgumentCaptor.forClass(classOf[Templates.Template])
     verify(engine).getTemplate(templateCaptor.capture(), any[Map[String, Object]])

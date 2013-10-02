@@ -21,7 +21,7 @@ class EmailSenderActorSpec extends FlatSpec with ShouldMatchers with MockitoSuga
 
   "Actor" should "send email via EmailService" in {
     //given
-    val email: Email = new Email("address@email.com", "subject", "content")
+    val email: Email = new Email(List("address@email.com"), "subject", "content")
     val mockService = mock[EmailService]
     val scheduler = mock[EmailScheduler]
 
@@ -37,7 +37,7 @@ class EmailSenderActorSpec extends FlatSpec with ShouldMatchers with MockitoSuga
 
   "Actor" should "schedule email in case of failure" in {
     //given
-    val email: Email = new Email("address@email.com", "subject", "content")
+    val email: Email = new Email(List("address@email.com"), "subject", "content")
     val mockService = mock[EmailService]
     when(mockService.send(email)).thenThrow(new EmailNotSendException("error", new RuntimeException))
     val scheduler = mock[EmailScheduler]
@@ -56,7 +56,7 @@ class EmailSenderActorSpec extends FlatSpec with ShouldMatchers with MockitoSuga
     //given
 
     val mockService = mock[EmailService]
-    val email = Email("address@email.com", "subject", "content", 0)
+    val email = Email(List("address@email.com"), "subject", "content", 0)
     val scheduler = mock[EmailScheduler]
     val actorRef = TestActorRef(new EmailSenderActor(mockService))
 

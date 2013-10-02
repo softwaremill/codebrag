@@ -12,7 +12,7 @@ class EmailScheduler(actorSystem: ActorSystem, emailSenderActor: ActorRef) exten
 
 
   def scheduleInstant(email: Email): Any = {
-    logger.info(s"Email (subject:${email.subject}, address:${email.address} is scheduled to send instantly")
+    logger.info(s"Email (subject:${email.subject}, addresses: ${email.addresses} is scheduled to send instantly")
     emailSenderActor ! SendEmail(email, this)
   }
 
@@ -21,7 +21,7 @@ class EmailScheduler(actorSystem: ActorSystem, emailSenderActor: ActorRef) exten
   }
 
   def schedule(email: Email, delay: FiniteDuration): Any = {
-    logger.info(s"Email (subject:${email.subject}, address:${email.address}) is scheduled to send in $delay")
+    logger.info(s"Email (subject:${email.subject}, addresses: ${email.addresses}) is scheduled to send in $delay")
     scheduleForSender(SendEmail(email, this), actorSystem, delay)
   }
 
@@ -33,10 +33,10 @@ class EmailScheduler(actorSystem: ActorSystem, emailSenderActor: ActorRef) exten
 
 }
 
-case class Email(address: String, subject: String, content: String, var ttl: Int = 10) {
+case class Email(addresses: List[String], subject: String, content: String, var ttl: Int = 10) {
 
   def -- = {
-    Email(address, subject, content, ttl - 1)
+    Email(addresses, subject, content, ttl - 1)
   }
 
   def shouldSend: Boolean = ttl > 0

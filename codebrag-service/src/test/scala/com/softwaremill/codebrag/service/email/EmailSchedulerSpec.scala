@@ -22,7 +22,7 @@ class EmailSchedulerSpec extends FlatSpec with MockitoSugar with ShouldMatchers 
   val memo = system.actorOf(Props[MemoActor])
   val scheduler: EmailScheduler = new EmailScheduler(system, memo)
 
-  val email: Email = new Email("test@test.pl", "subject", "content")
+  val email: Email = new Email(List("test@test.pl"), "subject", "content")
 
   it should " schedule and send message to actor instantly" in {
     import EmailSchedulerSpec._
