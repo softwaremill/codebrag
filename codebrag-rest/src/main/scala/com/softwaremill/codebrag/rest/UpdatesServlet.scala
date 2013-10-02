@@ -12,8 +12,9 @@ class UpdatesServlet(val authenticator: Authenticator, finder: NotificationCount
   }
 
   get("/") {
-    heartbeat.update(new ObjectId(user.id))
-    val counters = finder.getCounters(new ObjectId(user.id))
+    val userId = new ObjectId(user.id)
+    heartbeat.update(userId)
+    val counters = finder.getCounters(userId)
     UpdateNotification(new DateTime().getMillis, counters.pendingCommitCount, counters.followupCount)
   }
 
