@@ -8,6 +8,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import com.softwaremill.codebrag.service.email.{Email, EmailScheduler}
+import com.softwaremill.codebrag.domain.{UserNotifications, User}
 
 class NotificationScheduler(heartbeatStore: HeartbeatStore, val notificationCounts: NotificationCountFinder,
                             val emailScheduler: EmailScheduler, val userDAO: UserDAO,
@@ -49,14 +50,6 @@ trait NotificationProducer {
 
   def produceNotifications(heartbeats: List[(ObjectId, DateTime)]) {
     def userIsOffline(heartbeat: DateTime) = heartbeat.isBefore(DateTime.now().minusMinutes(NotificationScheduler.OfflineOffset))
-    def userHasPendingNotifications(counters: NotificationCountersView) = counters.pendingCommitCount > 0 || counters.followupCount > 0
-    def scheduleNotifications(userId: ObjectId, counters: NotificationCountersView) =
-      emailScheduler.scheduleInstant(email(userDAO.findById(userId).get.email, counters))
-    def email(address: String, counter: NotificationCountersView) = {
-      val subject = s"${counter.pendingCommitCount} commits and ${counter.followupCount} followups are waiting for you"
-      val content = s"${counter.pendingCommitCount} commits and ${counter.followupCount} followups are waiting for you"
-      Email(address, subject, content)
-    }
 
     var emailsScheduled = 0
 
@@ -64,8 +57,10 @@ trait NotificationProducer {
       case (userId, lastHeartbeat) =>
         if (userIsOffline(lastHeartbeat)) {
           val counters = notificationCounts.getCountersSince(lastHeartbeat, userId)
-          if (userHasPendingNotifications(counters)) {
-            scheduleNotifications(userId, counters)
+          val user = userDAO.findById(userId).get
+          if (userShouldBeNotified(lastHeartbeat, user, counters)) {
+            scheduleNotifications(user.email, counters)
+            rememberNotification(user, counters)
             emailsScheduled += 1
           }
         }
@@ -73,5 +68,41 @@ trait NotificationProducer {
 
     logger.debug(s"Scheduled $emailsScheduled notification emails")
   }
+
+  private def userShouldBeNotified(heartbeat: DateTime, user: User, counters: NotificationCountersView) = {
+    val needsCommitNotification = {
+      counters.pendingCommitCount > 0 && (user.notifications match {
+        case None => true
+        case Some(UserNotifications(None, _)) => true
+        case Some(UserNotifications(Some(date), _)) => date.isBefore(heartbeat)
+      })
+    }
+    val needsFollowupNotification = {
+      counters.followupCount > 0 && (user.notifications match {
+        case None => true
+        case Some(UserNotifications(_, None)) => true
+        case Some(UserNotifications(_, Some(date))) => date.isBefore(heartbeat)
+      })
+    }
+
+    needsCommitNotification || needsFollowupNotification
+  }
+
+  private def scheduleNotifications(address: String, counter: NotificationCountersView) = {
+    val subject = s"${counter.pendingCommitCount} commits and ${counter.followupCount} followups are waiting for you"
+    val content = s"${counter.pendingCommitCount} commits and ${counter.followupCount} followups are waiting for you"
+    val email = Email(address, subject, content)
+
+    emailScheduler.scheduleInstant(email)
+  }
+
+  private def rememberNotification(user: User, counters: NotificationCountersView) {
+    val commitDate = if (counters.pendingCommitCount > 0) Some(DateTime.now()) else None
+    val followupDate = if (counters.followupCount > 0) Some(DateTime.now()) else None
+    if (commitDate.isDefined || followupDate.isDefined) {
+      userDAO.rememberNotifications(user.id, UserNotifications(commitDate, followupDate))
+    }
+  }
+
 
 }
