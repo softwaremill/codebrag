@@ -11,7 +11,9 @@ module.exports = function(config) {
         'angular-mocks.js',
         'angular-ui-states.js',
         'lodash.js',
-        'markdown/marked.js'
+        'markdown/marked.js',
+        'angular-ui/validate.js',
+        'angular-ui/keypress.js'
     ].forEach(function(file) {
         files.push('app/vendor/' + file);
     });
