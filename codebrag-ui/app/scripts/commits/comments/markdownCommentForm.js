@@ -24,6 +24,11 @@ angular.module('codebrag.commits.comments')
 
                 scope.avatarUrl = authService.loggedInUser.avatarUrl;
 
+                scope._submitOnKey = function($event) {
+                    $event.preventDefault();
+                    return scope._submitComment(scope.content);
+                };
+
                 scope._submitComment = function(content) {
                     var submitArguments = [content];
                     if(_.isString(attrs[additionalArgsName])) {
