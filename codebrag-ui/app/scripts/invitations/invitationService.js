@@ -30,11 +30,12 @@ angular.module('codebrag.invitations')
                 invitationLink: invitationLink
             };
             return $http.post('rest/invitation', invitationRequestPayload, {unique: true, requestId: 'invitation'});
-        }
+        };
 
         this.validateEmails = function(emailsString) {
+            var regexp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
             var foundInvalid = emailsString.split(/[\s;,]+/).some(function (email) {
-                return !(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(email));
+                return !(regexp.test(email));
             });
             return !foundInvalid;
         }
