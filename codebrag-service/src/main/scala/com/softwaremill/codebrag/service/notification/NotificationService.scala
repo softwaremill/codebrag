@@ -44,7 +44,7 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: EmailT
       "commit_followup_message" -> subject,
       "application_url" -> codebragConfig.applicationUrl
     )
-    val email = Email(user.email, subject, templateEngine.getTemplate(Templates.UserNotifications, templateParams).content)
+    val email = Email(List(user.email), subject, templateEngine.getTemplate(Templates.UserNotifications, templateParams).content)
 
     emailScheduler.scheduleInstant(email)
   }
