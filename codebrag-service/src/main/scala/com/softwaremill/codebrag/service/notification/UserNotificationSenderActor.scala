@@ -30,7 +30,7 @@ class UserNotificationSenderActor(actorSystem: ActorSystem,
 
 }
 
-object UserNotificationSenderActor {
+object UserNotificationSenderActor extends Logging {
 
   import scala.concurrent.duration._
 
@@ -43,6 +43,7 @@ object UserNotificationSenderActor {
                  userDAO: UserDAO,
                  clock: Clock,
                  notificationsService: NotificationService) = {
+    logger.debug("Initializing user notification system")
     val actor = actorSystem.actorOf(
       Props(new UserNotificationSenderActor(actorSystem, heartbeatStore, notificationCountFinder, userDAO, clock, notificationsService)),
       "notification-scheduler")

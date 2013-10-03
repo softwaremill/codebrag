@@ -24,6 +24,8 @@ trait CodebragConfig extends ConfigWithDefault {
     }
   }
 
+  lazy val userNotifications: Boolean = getBoolean("codebrag.user-notifications", default = true)
+
 }
 
 
