@@ -17,7 +17,7 @@ class UserNotificationSenderActor(actorSystem: ActorSystem,
                                   val userDAO: UserDAO,
                                   val clock: Clock,
                                   val notificationService: NotificationService,
-                                  config: CodebragConfig)
+                                  val config: CodebragConfig)
   extends Actor with Logging with UserNotificationsSender {
 
   def receive = {
@@ -51,10 +51,6 @@ object UserNotificationSenderActor extends Logging {
     actor ! SendUserNotifications
   }
 
-  def offlineDuration = {
-    DateTime.now().minusMinutes(UserNotificationSenderActor.OfflineOffset)
-  }
-
 }
 
 case object SendUserNotifications
@@ -68,8 +64,10 @@ trait UserNotificationsSender extends Logging {
 
   def notificationService: NotificationService
 
+  def config: CodebragConfig
+
   def sendUserNotifications(heartbeats: List[(ObjectId, DateTime)]) {
-    def userIsOffline(heartbeat: DateTime) = heartbeat.isBefore(UserNotificationSenderActor.offlineDuration)
+    def userIsOffline(heartbeat: DateTime) = heartbeat.isBefore(clock.currentDateTimeUTC.minus(config.userOfflinePeriod))
 
     var emailsScheduled = 0
 
