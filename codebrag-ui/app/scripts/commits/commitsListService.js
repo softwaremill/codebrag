@@ -85,31 +85,41 @@ angular.module('codebrag.commits')
         };
 
         this.loadNextCommits = function(limit) {
+            var promise;
             if(!this.hasNextCommits()) {
-                return $q.when();
+                promise = $q.when();
+            } else {
+                var options = {min_id: commits.last().id, limit: limit || pageLimit};
+                options = angular.extend(options, {filter: commitsListLoadFilter.current});
+                promise = Commits.query(options).$then(function(response) {
+                    commits.appendAll(response.data.commits);
+                    updateNextCommitsAvailability(response.data.newer);
+                    notifyIfNextCommitsLoaded(response.data.commits.length);
+                });
             }
-            var options = {min_id: commits.last().id, limit: limit || pageLimit};
-            options = angular.extend(options, {filter: commitsListLoadFilter.current});
-            return Commits.query(options).$then(function(response) {
-                commits.appendAll(response.data.commits);
+            promise.then(function() {
                 triggerAsyncCommitsCounterRefresh();
-                updateNextCommitsAvailability(response.data.newer);
-                notifyIfNextCommitsLoaded(response.data.commits.length);
             });
+            return promise;
         };
 
         this.loadPreviousCommits = function(limit) {
+            var promise;
             if(!this.hasPreviousCommits()) {
-                return $q.when();
+                promise = $q.when();
+            } else {
+                var options = {max_id: commits.first().id, limit: limit || pageLimit};
+                options = angular.extend(options, {filter: commitsListLoadFilter.current});
+                promise =Commits.query(options).$then(function(response) {
+                    commits.prependAll(response.data.commits);
+                    updatePreviousCommitsAvailability(response.data.older);
+                    notifyIfPreviousCommitsLoaded(response.data.commits.length);
+                });
             }
-            var options = {max_id: commits.first().id, limit: limit || pageLimit};
-            options = angular.extend(options, {filter: commitsListLoadFilter.current});
-            return Commits.query(options).$then(function(response) {
-                commits.prependAll(response.data.commits);
+            promise.then(function() {
                 triggerAsyncCommitsCounterRefresh();
-                updatePreviousCommitsAvailability(response.data.older);
-                notifyIfPreviousCommitsLoaded(response.data.commits.length);
             });
+            return promise;
         };
 
         function makeReviewedAndGetNextInToReviewMode(commitId) {

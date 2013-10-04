@@ -210,6 +210,26 @@ describe("CommitsListService", function () {
         $httpBackend.flush();
     });
 
+    it('should trigger counter refresh when commit marked as reviewed', function() {
+        var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 8, 0, 5);
+        var nextCommitResponse = buildCommitsResponse([1], 8, 0, 0);
+        $httpBackend.whenGET('rest/commits?filter=to_review&limit=7').respond(commitsResponse);
+        $httpBackend.whenDELETE('rest/commits/3').respond(commitsResponse);
+        $httpBackend.whenGET('rest/commits?filter=to_review&limit=1&min_id=7').respond(nextCommitResponse);
+        var commitIdToReview = 3;
+
+        // when
+        var commits;
+        commitsListService.loadCommitsToReview().then(function(list) {
+            commits = list;
+            spyOn($rootScope, '$broadcast');
+            return commitsListService.makeReviewedAndGetNext(commitIdToReview).then(function() {
+                expect($rootScope.$broadcast).toHaveBeenCalledWith(events.refreshCommitsCounter);
+            });
+        });
+        $httpBackend.flush();
+    });
+
     it('should load newest commits and mark only previous commits are available', function() {
         // given
         var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 30, 1, 0);
