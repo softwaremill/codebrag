@@ -101,8 +101,8 @@ class MongoUserDAO extends UserDAO {
       Authentication(record.provider.get, record.username.get, record.usernameLowerCase.get, record.token.get, record.salt.get)
     }
 
-    implicit def toRecord(notifications: LastUserNotificationDispatch): LastUserNotificationDispatchRecord$ = {
-      val record = LastUserNotificationDispatchRecord$.createRecord
+    implicit def toRecord(notifications: LastUserNotificationDispatch): LastUserNotificationDispatchRecord = {
+      val record = LastUserNotificationDispatchRecord.createRecord
       notifications match {
         case LastUserNotificationDispatch(None, None) => record
         case LastUserNotificationDispatch(Some(commits), None) => record.commits(commits.toGregorianCalendar)
@@ -111,13 +111,13 @@ class MongoUserDAO extends UserDAO {
       }
     }
 
-    implicit def fromRecord(record: LastUserNotificationDispatchRecord$): LastUserNotificationDispatch = {
+    implicit def fromRecord(record: LastUserNotificationDispatchRecord): LastUserNotificationDispatch = {
       val commitsDate = record.commits.get
       val followupsDate = record.followups.get
       LastUserNotificationDispatch(commitsDate.map(new DateTime(_)), followupsDate.map(new DateTime(_)))
     }
 
-    implicit def fromRecord(recordOpt: Option[LastUserNotificationDispatchRecord$]): Option[LastUserNotificationDispatch] = {
+    implicit def fromRecord(recordOpt: Option[LastUserNotificationDispatchRecord]): Option[LastUserNotificationDispatch] = {
       recordOpt.map(fromRecord)
     }
   }
@@ -137,7 +137,7 @@ class UserRecord extends MongoRecord[UserRecord] with ObjectIdPk[UserRecord] {
 
   object avatarUrl extends LongStringField(this)
 
-  object notifications extends OptionalBsonRecordField(this, LastUserNotificationDispatchRecord$)
+  object notifications extends OptionalBsonRecordField(this, LastUserNotificationDispatchRecord)
 
 }
 
@@ -162,8 +162,8 @@ class AuthenticationRecord extends BsonRecord[AuthenticationRecord] {
 
 object AuthenticationRecord extends AuthenticationRecord with BsonMetaRecord[AuthenticationRecord]
 
-class LastUserNotificationDispatchRecord$ extends BsonRecord[LastUserNotificationDispatchRecord$] {
-  def meta = LastUserNotificationDispatchRecord$
+class LastUserNotificationDispatchRecord extends BsonRecord[LastUserNotificationDispatchRecord] {
+  def meta = LastUserNotificationDispatchRecord
 
   object commits extends OptionalDateTimeField(this)
 
@@ -171,5 +171,5 @@ class LastUserNotificationDispatchRecord$ extends BsonRecord[LastUserNotificatio
 
 }
 
-object LastUserNotificationDispatchRecord$ extends LastUserNotificationDispatchRecord$ with BsonMetaRecord[LastUserNotificationDispatchRecord$]
+object LastUserNotificationDispatchRecord extends LastUserNotificationDispatchRecord with BsonMetaRecord[LastUserNotificationDispatchRecord]
 
