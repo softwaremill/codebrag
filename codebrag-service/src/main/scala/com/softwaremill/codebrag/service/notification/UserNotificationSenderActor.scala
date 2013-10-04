@@ -9,13 +9,15 @@ import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, User}
 import com.softwaremill.codebrag.common.Clock
+import com.softwaremill.codebrag.service.config.CodebragConfig
 
 class UserNotificationSenderActor(actorSystem: ActorSystem,
                                   heartbeatStore: HeartbeatStore,
                                   val notificationCounts: NotificationCountFinder,
                                   val userDAO: UserDAO,
                                   val clock: Clock,
-                                  val notificationService: NotificationService)
+                                  val notificationService: NotificationService,
+                                  config: CodebragConfig)
   extends Actor with Logging with UserNotificationsSender {
 
   def receive = {
@@ -23,8 +25,8 @@ class UserNotificationSenderActor(actorSystem: ActorSystem,
       import actorSystem.dispatcher
       logger.debug("Preparing notifications to send out")
       sendUserNotifications(heartbeatStore.loadAll())
-      logger.debug(s"Scheduling next preparation in ${UserNotificationSenderActor.NextNotificationPreparation}")
-      actorSystem.scheduler.scheduleOnce(UserNotificationSenderActor.NextNotificationPreparation, self, SendUserNotifications)
+      logger.debug(s"Scheduling next preparation in ${config.notificationsCheckInterval}")
+      actorSystem.scheduler.scheduleOnce(config.notificationsCheckInterval, self, SendUserNotifications)
     }
   }
 
@@ -32,20 +34,18 @@ class UserNotificationSenderActor(actorSystem: ActorSystem,
 
 object UserNotificationSenderActor extends Logging {
 
-  import scala.concurrent.duration._
-
   val OfflineOffset = 5
-  val NextNotificationPreparation = 15.minutes
 
   def initialize(actorSystem: ActorSystem,
                  heartbeatStore: HeartbeatStore,
                  notificationCountFinder: NotificationCountFinder,
                  userDAO: UserDAO,
                  clock: Clock,
-                 notificationsService: NotificationService) = {
+                 notificationsService: NotificationService,
+                 config: CodebragConfig) = {
     logger.debug("Initializing user notification system")
     val actor = actorSystem.actorOf(
-      Props(new UserNotificationSenderActor(actorSystem, heartbeatStore, notificationCountFinder, userDAO, clock, notificationsService)),
+      Props(new UserNotificationSenderActor(actorSystem, heartbeatStore, notificationCountFinder, userDAO, clock, notificationsService, config)),
       "notification-scheduler")
 
     actor ! SendUserNotifications
