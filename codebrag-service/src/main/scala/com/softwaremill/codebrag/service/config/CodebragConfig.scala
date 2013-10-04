@@ -13,11 +13,11 @@ trait CodebragConfig extends ConfigWithDefault {
 
   lazy val invitationExpiryTime: ReadablePeriod = Period.millis(getMilliseconds("codebrag.invitation-expiry-time", 24.hours.toMillis).toInt)
 
-  lazy val userNotifications: Boolean = getBoolean("codebrag.user-notifications", default = true)
+  lazy val userNotifications: Boolean = getBoolean("codebrag.user-email-notifications.enabled", default = true)
 
-  lazy val notificationsCheckInterval = getMilliseconds("codebrag.notifications-check-interval", 15.minutes.toMillis).millis
+  lazy val notificationsCheckInterval = getMilliseconds("codebrag.user-email-notifications.check-interval", 15.minutes.toMillis).millis
 
-  lazy val userOfflinePeriod = Period.millis(getMilliseconds("codebrag.user-offline-period", 5.minutes.toMillis).toInt)
+  lazy val userOfflinePeriod = Period.millis(getMilliseconds("codebrag.user-email-notifications.user-offline-after", 5.minutes.toMillis).toInt)
 
 }
 

@@ -36,9 +36,11 @@ codebrag {
     demo = false
     application-url = "http://codebrag:8080"
     invitation-expiry-time = "24 hours"
-    user-notifications = true
-    notification-check-interval = "15 minutes"
-    user-offline-period = "5 minutes"
+    user-email-notifications {
+        enabled = true
+        check-interval = "15 minutes"
+        user-offline-after = "5 minutes"
+    }
 }
 
 web-server {
