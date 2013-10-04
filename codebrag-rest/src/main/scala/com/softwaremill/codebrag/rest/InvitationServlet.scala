@@ -12,7 +12,6 @@ class InvitationServlet(val authenticator: Authenticator, invitationService: Inv
   }
 
   post("/") {
-    println(request.body)
     val emails = (parsedBody \ "emails").extract[List[String]]
     val message = (parsedBody \ "invitationLink").extract[String]
     invitationService.sendInvitation(emails, message, new ObjectId(user.id))
