@@ -33,10 +33,9 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: EmailT
     val subject = {
       val newCommits = s"$commitCount new commits"
       val newFollowups = s"$followupCount followups"
-      val notificationCounts = if (commitCount > 0 && followupCount > 0) s"$newCommits and $newFollowups"
+      if (commitCount > 0 && followupCount > 0) s"$newCommits and $newFollowups"
       else if (commitCount > 0) newCommits
       else newFollowups
-      s"Codebrag: $notificationCounts"
     }
 
     val templateParams = Map(
