@@ -94,10 +94,30 @@ Codebrag needs to store repository data somewhere on your server. Edit `local-gi
 
 ##### invitation-expiry-time
 
-`invitation-expiry-time` property indicates how long invitation links are valid. Afte that time no new registration can be issues with this link. This value defaults to 24 hours.
+`invitation-expiry-time` property indicates how long invitation links are valid. After that time no new registration can be issued with this link. This value defaults to 24 hours.
 
-	// number followed by "M" (minutes) "H" (hours) or "D" (days)
-	invitation-expiry-time= "24H"   
+    //this setting uses Scala's Duration syntax, i.e. 15 minutes, 24 hours, 2 days
+	invitation-expiry-time= "24 hours"
+
+##### user-email-notifications
+
+    user-email-notifications {
+        enabled = true
+        check-interval = "15 minutes"
+        user-offline-after = "5 minutes"
+    }
+
+###### enabled
+
+Indicates whether email notifications should be enabled
+
+###### check-interval
+
+Defines how often the system will check for notifications to send
+
+###### user-offline-after
+
+Defines how long after closing tab with Codebrag user will be considered offline.
 
 ### "web-server" section
 
