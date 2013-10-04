@@ -35,10 +35,10 @@ codebrag {
     debug-services-password = "codebrag"
     demo = false
     application-url = "http://codebrag:8080"
-    invitation-expiry-time = "24H"
+    invitation-expiry-time = "24 hours"
     user-notifications = true
-    notification-check-interval = "15 M"
-    user-offline-period = "5 M"
+    notification-check-interval = "15 minutes"
+    user-offline-period = "5 minutes"
 }
 
 web-server {

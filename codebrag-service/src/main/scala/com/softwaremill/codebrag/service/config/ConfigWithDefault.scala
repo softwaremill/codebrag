@@ -10,6 +10,7 @@ trait ConfigWithDefault {
   def getString(path: String, default:String) =  ifHasPath(path,default) { _.getString(path) }
   def getInt(path: String, default:Int) =  ifHasPath(path,default) { _.getInt(path) }
   def getConfig(path: String, default:Config) =  ifHasPath(path,default) { _.getConfig(path) }
+  def getMilliseconds(path:String, default:Long) = ifHasPath(path, default) { _.getMilliseconds(path) }
 
   private def ifHasPath[T](path: String, default:T)(get: Config => T): T = {
     if (rootConfig.hasPath(path)) get(rootConfig) else default

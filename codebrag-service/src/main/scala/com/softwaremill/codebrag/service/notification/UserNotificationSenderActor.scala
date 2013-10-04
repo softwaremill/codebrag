@@ -34,8 +34,6 @@ class UserNotificationSenderActor(actorSystem: ActorSystem,
 
 object UserNotificationSenderActor extends Logging {
 
-  val OfflineOffset = 5
-
   def initialize(actorSystem: ActorSystem,
                  heartbeatStore: HeartbeatStore,
                  notificationCountFinder: NotificationCountFinder,
