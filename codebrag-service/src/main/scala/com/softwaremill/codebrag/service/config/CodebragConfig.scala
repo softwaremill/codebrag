@@ -17,12 +17,7 @@ trait CodebragConfig extends ConfigWithDefault {
     val key = "codebrag.invitation-expiry-time"
     val pattern = getTimePattern(key, "24 H")
 
-    pattern.unit match {
-      case Hours => org.joda.time.Hours.hours(pattern.time)
-      case Minutes => org.joda.time.Minutes.minutes(pattern.time)
-      case Days => org.joda.time.Days.days(pattern.time)
-      case _ => throw new RuntimeException(s"Incorrect invitation expiry time. Check $key configuration variable")
-    }
+    asReadablePeriod(pattern, new RuntimeException(s"Incorrect invitation expiry time. Check $key configuration variable"))
   }
 
   lazy val userNotifications: Boolean = getBoolean("codebrag.user-notifications", default = true)
@@ -36,9 +31,18 @@ trait CodebragConfig extends ConfigWithDefault {
       case Hours => pattern.time.hours
       case Minutes => pattern.time.minutes
       case Seconds => pattern.time.seconds
-      case _ => throw new RuntimeException(s"Incorrect invitation expiry time. Check $key configuration variable")
+      case _ => throw new RuntimeException(s"Incorrect notification check interval value. Check $key configuration variable")
     }
   }
+
+  lazy val userOfflinePeriod: ReadablePeriod = {
+    val key = "codebrag.user-offline-period"
+    val pattern = getTimePattern(key, "5 M")
+
+    asReadablePeriod(pattern, new RuntimeException(s"Incorrect user offline period value. Check $key configuration variable"))
+  }
+
+  private case class TimePattern(time: Int, unit: TimeUnit)
 
   private def getTimePattern(key: String, default: String): TimePattern = {
     val expirationString = getString(key, default).trim
@@ -47,7 +51,15 @@ trait CodebragConfig extends ConfigWithDefault {
     TimePattern(amount, TimeUnit.withName(timeUnit))
   }
 
-  private case class TimePattern(time: Int, unit: TimeUnit)
+  private def asReadablePeriod(pattern: TimePattern, unmatched: Throwable): ReadablePeriod = {
+    pattern.unit match {
+      case Hours => org.joda.time.Hours.hours(pattern.time)
+      case Minutes => org.joda.time.Minutes.minutes(pattern.time)
+      case Days => org.joda.time.Days.days(pattern.time)
+      case Seconds => org.joda.time.Seconds.seconds(pattern.time)
+      case _ => throw unmatched
+    }
+  }
 
 }
 

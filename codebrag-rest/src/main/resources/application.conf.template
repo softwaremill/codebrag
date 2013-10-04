@@ -38,6 +38,7 @@ codebrag {
     invitation-expiry-time = "24H"
     user-notifications = true
     notification-check-interval = "15 M"
+    user-offline-period = "5 M"
 }
 
 web-server {
