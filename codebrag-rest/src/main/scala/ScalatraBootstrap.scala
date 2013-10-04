@@ -22,7 +22,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     MongoInit.initialize(config)
 
     if(config.userNotifications) {
-      UserNotificationSenderActor.initialize(actorSystem, heartbeatStore, notificationCountFinder, userDao, clock, notificationService)
+      UserNotificationSenderActor.initialize(actorSystem, heartbeatStore, notificationCountFinder, userDao, clock, notificationService, config)
     }
 
     val repositoryUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, repoDataProducer, commitImportService)
