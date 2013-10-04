@@ -5,7 +5,7 @@
             <div class="info-line"><span class="username">{{username}}:</span></div>
             <form name="newCommentForm">
                 <div class="comment-body" ng-hide="previewModeOn">
-                        <textarea tabindex="0" ng-hide="previewModeOn" ng-model="content" required class="comment-text" placeholder="Write a comment and hit Ctrl+Enter to submit" ui-keypress="{'ctrl-enter': '_submitOnKey($event)'}"></textarea>
+                        <textarea tabindex="0" ng-hide="previewModeOn" ng-model="content" required class="comment-text" placeholder="Write a comment..." ui-keypress="{'ctrl-enter': '_submitOnKey($event)'}"></textarea>
                 </div>
                 <div ng-show="previewModeOn" ng-bind-html-unsafe="preview"></div>
             </form>
