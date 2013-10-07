@@ -31,8 +31,6 @@ repository {
 
 codebrag {
     local-git-storage-path = "."
-    debug-services-login = "codebrag"
-    debug-services-password = "codebrag"
     demo = false
     application-url = "http://codebrag:8080"
     invitation-expiry-time = "24 hours"

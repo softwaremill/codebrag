@@ -1,6 +1,5 @@
 import com.softwaremill.codebrag.dao.MongoInit
 import com.softwaremill.codebrag.rest._
-import com.softwaremill.codebrag.rest.debug.DebugServlet
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.{EventingConfiguration, Beans}
@@ -30,7 +29,6 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new CommitsServlet(authenticator, reviewableCommitsFinder, allCommitsFinder, reactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, swagger, diffWithCommentsService, unlikeUseCaseFactory), Prefix + CommitsServlet.MAPPING_PATH)
     context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupService), Prefix + FollowupsServlet.MappingPath)
     context.mount(new SwaggerApiDoc(swagger), "/api-docs/*")
-    context.mount(new DebugServlet(repoDataProducer, commitImportService, config), Prefix + DebugServlet.MappingPath)
     context.mount(new RefreshRepoDataServlet(repoDataProducer, repositoryUpdateActor), RefreshRepoDataServlet.MappingPath)
     context.mount(new VersionServlet, Prefix + "version")
     context.mount(new ConfigServlet(config), Prefix + "config")
