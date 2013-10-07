@@ -134,6 +134,7 @@
     <div class="loading-bar" http-request-tracker active-class="loading"></div>
     <contact-form-popup></contact-form-popup>
     <popup template-url="views/inviteForm.html" open-on="openInviteFormPopup"></popup>
+    <popup template-url="views/userProfile.html" open-on="openUserProfilePopup"></popup>
     <header class="main-header" ng-controller="SessionCtrl">
         <div class="demo-nav" show-on-demo>
             <a href="http://codebrag.com/">back to codebrag.com</a>
@@ -164,10 +165,10 @@
         <div class="pull-right-wrapper">
             <button class="uservoice-btn button" ng-click="openContactFormPopup()">Feedback</button>
             <div class="header-user-info" ng-show="isLogged()">
-                <user-avatar logged-in-user="true"></user-avatar>
+                <a ng-click="openUserProfilePopup()"><user-avatar logged-in-user="true"></user-avatar></a>
                 <span class="arrow-down"></span>
                 <ul class="user-info-dropdown">
-                    <li class="username"><strong>Signed in as {{loggedInUser().fullName}}</strong></li>
+                    <li class="username" ng-click="openUserProfilePopup()"><strong>Signed in as {{loggedInUser().fullName}}</strong></li>
                     <li class="gravatar-link"><a href="http://gravatar.com/" target="_blank">Update profile picture</a></li>
                     <li class="invite" ng-click="openInviteFormPopup()">Invite friends</li>
                     <li class="logout" ng-click="logout()">Logout</li>
