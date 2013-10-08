@@ -1,12 +1,32 @@
-<div class="invite popup-page opened" id="user-profile-popup">
+<div class="invite popup-page opened" id="user-profile-popup" ng-controller="UserProfileCtrl">
     <div class="popup-box">
-        <form class="popup-content" name="inviteForm" novalidate>
-
-            Profile form
-
-            <span class="close-btn" ng-click="closePopup()">
-                <i class="icon-remove"></i>
-            </span>
-        </form>
+        <div class="popup-content" style="min-width: 400px">
+            <h1 style="margin-bottom:20px">Your account</h1>
+            <div style="float:left">
+                <user-avatar logged-in-user="true"></user-avatar>
+            </div>
+            <div style="float: left; text-align:left; margin-left: 10px; overflow: hidden; max-width: 300px">
+                <h2 style="margin-top:0">{{user.login}}</h2>
+                <h3>{{user.email}}</h3>
+                <span>Codebrag uses <a href="http://gravatar.com" target="_blank">Gravatar</a> for your profile picture.</span>
+            </div>
+        </div>
+        <div class="popup-content" id="settings" ng-show="userSettings" style="clear:both">
+            <h1 style="margin-bottom:20px">Your settings</h1>
+                <div class="small-6 columns">
+                    <label class="right-inline">
+                        Smart email notifications
+                        <span ng-show="savingStatus && savingStatus.pending" class="pending">(saving)</span>
+                        <span ng-show="savingStatus && savingStatus.ok" class="success">(saved)</span>
+                        <span ng-show="savingStatus && savingStatus.err" class="failed">(not saved)</span>
+                    </label>
+                </div>
+                <div class="small-1 columns">
+                    <input ng-disabled="savingStatus && savingStatus.pending" type="checkbox" ng-model="userSettings.emailNotifications" ng-change="notificationsChanged()"/>
+                </div>
+        </div>
+        <span class="close-btn" ng-click="closePopup()">
+            <i class="icon-remove"></i>
+        </span>
     </div>
 </div>

@@ -94,6 +94,10 @@
     <script type="text/javascript" src="scripts/invitations/inviteFormPopupCtrl.js"></script>
     <script type="text/javascript" src="scripts/invitations/invitationService.js"></script>
 
+    <!--invitations-->
+    <script type="text/javascript" src="scripts/profile/userProfileCtrl.js"></script>
+    <script type="text/javascript" src="scripts/profile/userSettingsService.js"></script>
+
     <!--commons -->
     <script type="text/javascript" src="scripts/common/events.js"></script>
     <script type="text/javascript" src="scripts/common/flash.js"></script>
@@ -120,6 +124,7 @@
     <script type="text/javascript" src="scripts/common/AsyncCollection.js"></script>
     <script type="text/javascript" src="scripts/common/CurrentCommit.js"></script>
     <script type="text/javascript" src="scripts/common/uniqueRequestsAwareHttpService.js"></script>
+    <script type="text/javascript" src="scripts/common/operationStatus.js"></script>
     <!-- endbuild -->
 
     <!-- @exclude -->
@@ -169,7 +174,6 @@
                 <span class="arrow-down"></span>
                 <ul class="user-info-dropdown">
                     <li class="username" ng-click="openUserProfilePopup()"><strong>Signed in as {{loggedInUser().fullName}}</strong></li>
-                    <li class="gravatar-link"><a href="http://gravatar.com/" target="_blank">Update profile picture</a></li>
                     <li class="invite" ng-click="openInviteFormPopup()">Invite friends</li>
                     <li class="logout" ng-click="logout()">Logout</li>
                 </ul>

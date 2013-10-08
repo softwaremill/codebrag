@@ -17,6 +17,7 @@ angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth'
 
 angular.module('codebrag.invitations', ['ui.validate', 'ui.keypress']);
 
+angular.module('codebrag.profile', ['codebrag.session']);
 
 
 angular.module('codebrag', [
@@ -27,6 +28,7 @@ angular.module('codebrag', [
     'codebrag.commits',
     'codebrag.followups',
     'codebrag.notifications',
+    'codebrag.profile',
     'codebrag.invitations']);
 
 angular.module('codebrag')

@@ -40,6 +40,7 @@ angular.module('codebrag.common.directives')
             scope: {url: '='},
             link: function (scope, el, attrs) {
                 if (attrs.loggedInUser === "true") {
+                    on(scope)();
                     scope.$on(events.loggedIn, on(scope));
                 } else {
                     scope.$watch('url', watch(scope));
