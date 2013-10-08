@@ -6,7 +6,7 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao.UserDAO
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import com.softwaremill.codebrag.domain.{Authentication, User}
+import com.softwaremill.codebrag.domain.{UserSettings, Authentication, User}
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.service.invitations.InvitationService
 import com.softwaremill.codebrag.service.notification.NotificationService
@@ -42,7 +42,7 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
     user.authentication.username should be("Adamw")
     user.authentication.usernameLowerCase should be("adamw")
     user.email should be("adam@example.org")
-    user.avatarUrl should be(User.defaultAvatarUrl("adam@example.org"))
+    user.settings.avatarUrl should equal(UserSettings.defaultAvatarUrl("adam@example.org"))
     user.token.length should be > (0)
     Authentication.passwordsMatch("123456", user.authentication) should be(true)
   }
@@ -73,8 +73,8 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
     user.authentication.username should be("Adamw")
     user.authentication.usernameLowerCase should be("adamw")
     user.email should be("adam@example.org")
-    user.avatarUrl should be(User.defaultAvatarUrl("adam@example.org"))
-    user.token.length should be > (0)
+    user.settings.avatarUrl should equal(UserSettings.defaultAvatarUrl("adam@example.org"))
+    user.token.length should be > 0
     Authentication.passwordsMatch("123456", user.authentication) should be(true)
   }
 

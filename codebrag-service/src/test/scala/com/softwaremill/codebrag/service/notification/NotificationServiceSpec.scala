@@ -6,13 +6,13 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.service.email.{Email, EmailScheduler}
 import com.softwaremill.codebrag.service.templates.{EmailContentWithSubject, Templates, EmailTemplateEngine}
 import com.softwaremill.codebrag.service.config.CodebragConfig
-import com.softwaremill.codebrag.domain.User
 import org.mockito.{Matchers, ArgumentCaptor, Mockito}
 import Mockito._
 import Matchers._
 import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
+import com.softwaremill.codebrag.domain.builder.UserAssembler
 
 class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers {
 
@@ -23,8 +23,8 @@ class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
     val config = mock[CodebragConfig]
     val countFinder = mock[NotificationCountFinder]
     val service = new NotificationService(scheduler, engine, config, countFinder)
-    val emailAddress = "zuchos@zuchos.com"
-    val user = User(null, null, "zuchos", emailAddress, null, null)
+    val emailAddress = "sofo@sml.com"
+    val user = UserAssembler.randomUser.get
 
     when(engine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject("subject", "content"))
     when(countFinder.getCounters(any[ObjectId])).thenReturn(NotificationCountersView(10, 10))
@@ -59,8 +59,7 @@ class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
       when(config.applicationUrl).thenReturn("http://test:8080")
       val countFinder = mock[NotificationCountFinder]
       val service = new NotificationService(scheduler, engine, config, countFinder)
-      val emailAddress = "zuchos@zuchos.com"
-      val user = User(null, null, "zuchos", emailAddress, null, null)
+      val user = UserAssembler.randomUser.get
 
       when(countFinder.getCounters(any[ObjectId])).thenReturn(NotificationCountersView(pair._2, 10))
 

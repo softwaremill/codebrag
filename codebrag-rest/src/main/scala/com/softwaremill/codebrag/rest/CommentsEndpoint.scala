@@ -19,7 +19,7 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with UserReactionPa
     val comment = buildIncomingComment
     val savedComment = commentActivity.addCommentToCommit(comment)
     userDao.findById(savedComment.authorId) match {
-      case Some(user) => AddCommentResponse(CommentView(savedComment.id.toString, user.name, user.id.toString, savedComment.message, savedComment.postingTime.toDate, user.avatarUrl))
+      case Some(user) => AddCommentResponse(CommentView(savedComment.id.toString, user.name, user.id.toString, savedComment.message, savedComment.postingTime.toDate, user.settings.avatarUrl))
       case None => halt(400, s"Invalid user id $savedComment.authorId")
     }
   }

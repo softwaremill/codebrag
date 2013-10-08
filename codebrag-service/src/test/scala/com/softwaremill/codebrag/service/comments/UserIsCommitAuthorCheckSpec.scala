@@ -5,8 +5,8 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao.{UserDAO, CommitInfoDAO}
 import org.mockito.Mockito._
-import com.softwaremill.codebrag.domain.{Like, Authentication, User}
-import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import com.softwaremill.codebrag.domain.Like
+import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
 
@@ -21,8 +21,8 @@ class UserIsCommitAuthorCheckSpec extends FlatSpec with MockitoSugar with Should
   val CommitId = new ObjectId
   val Commit = CommitInfoAssembler.randomCommit.withId(CommitId).withAuthorName(AuthorName).get
 
-  val LikeUser = User(new ObjectId, Authentication.basic("john", "password"), "John Doe", "john@doe.com", "123", "")
-  val AnotherUser = User(new ObjectId, Authentication.basic("mary", "password"), "Mary Smith", "mary@smith.com", "123", "")
+  val LikeUser = UserAssembler.randomUser.get//User(new ObjectId, Authentication.basic("john", "password"), "John Doe", "john@doe.com", "123", "")
+  val AnotherUser = UserAssembler.randomUser.get//User(new ObjectId, Authentication.basic("mary", "password"), "Mary Smith", "mary@smith.com", "123", "")
 
   val LikeToValidate = Like(new ObjectId, CommitId, LikeUser.id, DateTime.now, Some("file.txt"), Some(20))
 

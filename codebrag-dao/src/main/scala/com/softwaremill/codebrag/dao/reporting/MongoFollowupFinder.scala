@@ -21,11 +21,12 @@ class MongoFollowupFinder extends FollowupFinder {
 
     val sortFollowupsForCommitByDate = (f1: FollowupReactionsView, f2: FollowupReactionsView) => f1.lastReaction.date.after(f2.lastReaction.date)
 
-    val followupsForCommits = followupsGroupedByCommit.map { case(commitId, followups) =>
-      val followupsForCommitViews = followups.map(followupToReactionsView(_, lastReactions, reactionAuthors)).sortWith(sortFollowupsForCommitByDate)
-      val commit = commits(commitId)
-      val commitView = FollowupCommitView(commit.id.get.toString, commit.authorName.get, commit.message.get, commit.authorDate.get)
-      FollowupsByCommitView(commitView, followupsForCommitViews)
+    val followupsForCommits = followupsGroupedByCommit.map {
+      case (commitId, followups) =>
+        val followupsForCommitViews = followups.map(followupToReactionsView(_, lastReactions, reactionAuthors)).sortWith(sortFollowupsForCommitByDate)
+        val commit = commits(commitId)
+        val commitView = FollowupCommitView(commit.id.get.toString, commit.authorName.get, commit.message.get, commit.authorDate.get)
+        FollowupsByCommitView(commitView, followupsForCommitViews)
     }
     FollowupsByCommitListView(sortFollowupGroupsByNewest(followupsForCommits))
   }
@@ -99,8 +100,8 @@ class MongoFollowupFinder extends FollowupFinder {
 
   def buildLastReactionView[T <: MongoRecord[T]](reaction: UserReactionRecord[_], author: UserRecord): FollowupLastReactionView = {
     reaction.asInstanceOf[MongoRecord[T]] match {
-      case comment: CommentRecord => FollowupLastCommentView(comment.id.get.toString, author.name.get, comment.date.get, author.avatarUrl.get, comment.message.get)
-      case like: LikeRecord => FollowupLastLikeView(like.id.get.toString, author.name.get, like.date.get, author.avatarUrl.get)
+      case comment: CommentRecord => FollowupLastCommentView(comment.id.get.toString, author.name.get, comment.date.get, author.userSettings.get.avatarUrl.get, comment.message.get)
+      case like: LikeRecord => FollowupLastLikeView(like.id.get.toString, author.name.get, like.date.get, author.userSettings.get.avatarUrl.get)
     }
   }
 

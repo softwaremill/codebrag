@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.domain.builder
 
-import com.softwaremill.codebrag.domain.{Authentication, User}
+import com.softwaremill.codebrag.domain.{UserSettings, Authentication, User}
 import org.bson.types.ObjectId
 
 class UserAssembler(var user: User) {
@@ -16,7 +16,7 @@ class UserAssembler(var user: User) {
   }
 
   def withAvatarUrl(url: String) = {
-    user = user.copy(avatarUrl = url)
+    user = user.copy(settings = UserSettings(url))
     this
   }
 
@@ -32,6 +32,6 @@ object UserAssembler {
   def randomUser = new UserAssembler(createRandomUser())
 
   private def createRandomUser() = {
-    User(new ObjectId, Authentication("Basic", "Sofokles", "sofokles", "token", "salt"), "Sofokles Mill", "sofo@sml.com", "token", "http://avatar.com/1.jpg", None)
+    User(new ObjectId, Authentication("Basic", "Sofokles", "sofokles", "token", "salt"), "Sofokles Mill", "sofo@sml.com", "token", UserSettings("http://avatar.com/1.jpg"), None)
   }
 }

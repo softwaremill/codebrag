@@ -6,7 +6,7 @@ import net.liftweb.mongodb.record.field.{BsonRecordField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
-import net.liftweb.record.field.OptionalDateTimeField
+import net.liftweb.record.field.{BooleanField, OptionalDateTimeField}
 import net.liftweb.record.field.custom.OptionalBsonRecordField
 
 class MongoUserDAO extends UserDAO {
@@ -55,7 +55,7 @@ class MongoUserDAO extends UserDAO {
   }
 
   def rememberNotifications(id: ObjectId, notifications: LastUserNotificationDispatch) {
-    UserRecord where(_.id eqs id) modify (_.notifications setTo notifications) updateOne()
+    UserRecord where (_.id eqs id) modify (_.notifications setTo notifications) updateOne()
   }
 
   def findCommitAuthor(commit: CommitInfo) = {
@@ -64,7 +64,7 @@ class MongoUserDAO extends UserDAO {
 
   private object UserImplicits {
     implicit def fromRecord(user: UserRecord): User = {
-      User(user.id.get, user.authentication.get, user.name.get, user.email.get, user.token.get, user.avatarUrl.get, user.notifications.get)
+      new User(user.id.get, user.authentication.get, user.name.get, user.email.get, user.token.get, user.userSettings.get, user.notifications.get)
     }
 
     implicit def fromRecords(users: List[UserRecord]): List[User] = {
@@ -81,7 +81,7 @@ class MongoUserDAO extends UserDAO {
         .token(user.token)
         .email(user.email)
         .authentication(user.authentication)
-        .avatarUrl(user.avatarUrl)
+        .userSettings(user.settings)
       user.notifications match {
         case Some(notifications) => record.notifications(notifications)
         case None => record
@@ -120,6 +120,14 @@ class MongoUserDAO extends UserDAO {
     implicit def fromRecord(recordOpt: Option[LastUserNotificationDispatchRecord]): Option[LastUserNotificationDispatch] = {
       recordOpt.map(fromRecord)
     }
+
+    implicit def fromRecord(record: UserSettingsRecord): UserSettings = {
+      UserSettings(record.avatarUrl.get, record.emailNotificationsEnabled.get)
+    }
+
+    implicit def toRecord(settings: UserSettings): UserSettingsRecord = {
+      UserSettingsRecord.createRecord.avatarUrl(settings.avatarUrl).emailNotificationsEnabled(settings.emailNotificationsEnabled)
+    }
   }
 
 }
@@ -135,7 +143,7 @@ class UserRecord extends MongoRecord[UserRecord] with ObjectIdPk[UserRecord] {
 
   object token extends LongStringField(this)
 
-  object avatarUrl extends LongStringField(this)
+  object userSettings extends BsonRecordField(this, UserSettingsRecord)
 
   object notifications extends OptionalBsonRecordField(this, LastUserNotificationDispatchRecord)
 
@@ -172,4 +180,15 @@ class LastUserNotificationDispatchRecord extends BsonRecord[LastUserNotification
 }
 
 object LastUserNotificationDispatchRecord extends LastUserNotificationDispatchRecord with BsonMetaRecord[LastUserNotificationDispatchRecord]
+
+class UserSettingsRecord extends BsonRecord[UserSettingsRecord] {
+  def meta = UserSettingsRecord
+
+  object avatarUrl extends LongStringField(this)
+
+  object emailNotificationsEnabled extends BooleanField(this)
+
+}
+
+object UserSettingsRecord extends UserSettingsRecord with BsonMetaRecord[UserSettingsRecord]
 

@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, Authentication, User}
+import com.softwaremill.codebrag.domain.{UserSettings, LastUserNotificationDispatch, Authentication, User}
 import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
@@ -24,7 +24,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
       val password = "pass" + i
       val token = "token" + i
       val name = s"User Name $i"
-      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token, "avatarUrl", None))
+      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token, UserSettings("avatarUrl"), None))
     }
   }
 
@@ -277,7 +277,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
 
   it should "find user by its Id" taggedAs RequiresDb in {
     // given
-    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", "avatarUrl", None)
+    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", UserSettings("avatarUrl"), None)
     userDAO.add(user)
 
     // when
@@ -292,7 +292,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
     val commitDate = DateTime.now().minusHours(1)
     val followupDate = DateTime.now().minusMinutes(1)
     val notifications = Some(LastUserNotificationDispatch(Some(commitDate), Some(followupDate)))
-    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", "avatarUrl", notifications)
+    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", UserSettings("avatarUrl"), notifications)
     userDAO.add(user)
 
     // when
@@ -305,7 +305,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
 
   "rememberNotifications" should "store dates properly" taggedAs RequiresDb in {
     // given
-    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", "avatarUrl", None)
+    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", "avatarUrl")
     userDAO.add(user)
     val followupDate = DateTime.now()
     val notifications = LastUserNotificationDispatch(None, Some(followupDate))
@@ -322,7 +322,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
   it should "update existing dates" taggedAs RequiresDb in {
     // given
     val notifications = Some(LastUserNotificationDispatch(Some(DateTime.now().minusHours(5)), Some(DateTime.now().minusMinutes(5))))
-    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", "avatarUrl", notifications)
+    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", UserSettings("avatarUrl"), notifications)
     userDAO.add(user)
 
     // when

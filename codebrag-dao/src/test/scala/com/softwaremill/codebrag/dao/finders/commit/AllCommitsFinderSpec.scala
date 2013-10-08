@@ -76,7 +76,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
 
     // then
     val commitView = commitsView.commits.head
-    commitView.authorAvatarUrl should equal(commitAuthor.avatarUrl)
+    commitView.authorAvatarUrl should equal(commitAuthor.settings.avatarUrl)
     commitView.authorName should equal(commitAuthor.name)
   }
 

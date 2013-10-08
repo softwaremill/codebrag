@@ -54,7 +54,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator,
       }
       case None => {
         logger.debug("Creating new user")
-        val newUser = User(new ObjectId, auth, user.name, user.email, UUID.randomUUID().toString, user.avatarUrl, None)
+        val newUser = User(auth, user.name, user.email, UUID.randomUUID().toString, user.avatarUrl)
         newUserAdder.add(newUser)
       }
     }

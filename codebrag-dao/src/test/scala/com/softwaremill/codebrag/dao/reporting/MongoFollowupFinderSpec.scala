@@ -123,7 +123,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
 
     inlineFollowup.lastReaction.date should be(secondInlineFollowup.reaction.postingTime.toDate)
     inlineFollowup.lastReaction.reactionAuthor should be(secondInlineFollowup.reactionAuthor.name)
-    inlineFollowup.lastReaction.reactionAuthorAvatarUrl should be(secondInlineFollowup.reactionAuthor.avatarUrl)
+    inlineFollowup.lastReaction.reactionAuthorAvatarUrl should equal(secondInlineFollowup.reactionAuthor.settings.avatarUrl)
     inlineFollowup.lastReaction.reactionId should be(secondInlineFollowup.reaction.id.toString)
   }
 

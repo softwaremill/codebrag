@@ -87,7 +87,10 @@ trait UserReactionToViewMapper {
   }
 
   private def findAllUsersIn(reactions: List[UserReaction]): List[(ObjectId, String, String)] = {
-    UserRecord.select(_.id, _.name, _.avatarUrl).where(_.id in reactions.map(_.authorId)).fetch()
+    UserRecord.select(_.id, _.name, _.userSettings.subfield(_.avatarUrl)).where(_.id in reactions.map(_.authorId)).fetch()
+    .map {
+      case (id, name, avatarOpt) => (id, name, avatarOpt.get)
+    }
   }
 
   private def findUserDetails(commenters: List[(ObjectId, String, String)], commenterId: ObjectId) = {

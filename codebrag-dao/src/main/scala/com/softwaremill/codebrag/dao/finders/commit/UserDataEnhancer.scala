@@ -5,7 +5,7 @@ import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.dao.reporting.views.CommitListView
 import com.softwaremill.codebrag.dao.reporting.views.CommitView
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
-import com.softwaremill.codebrag.domain.UserLike
+import com.softwaremill.codebrag.domain.{UserSettings, UserLike}
 
 
 trait UserDataEnhancer {
@@ -13,10 +13,13 @@ trait UserDataEnhancer {
   private case class PartialUserDetails(name: String, email: String, avatarUrl: String)
 
   private object PartialUserDetails {
+
     implicit object UserLikePartialUserDetails extends UserLike[PartialUserDetails] {
       def userFullName(userLike: PartialUserDetails) = userLike.name
+
       def userEmail(userLike: PartialUserDetails) = userLike.email
     }
+
   }
 
   def enhanceWithUserData(commit: CommitView) = {
@@ -50,10 +53,12 @@ trait UserDataEnhancer {
     val userNames = commits.map(_.authorName).toSet
     val userEmails = commits.map(_.authorEmail).toSet
     val usersFromDB = userProjectionQuery.or(_.where(_.name in userNames), _.where(_.email in userEmails)).fetch()
-    usersFromDB.map(user => (PartialUserDetails.apply _).tupled(user))
+    usersFromDB.map {
+      case (username, email, avatarOpt) => (PartialUserDetails.apply _).tupled((username, email, avatarOpt.getOrElse(UserSettings.defaultAvatarUrl(email))))
+    }
   }
 
-  private def userProjectionQuery = UserRecord.select(_.name, _.email, _.avatarUrl)
+  private def userProjectionQuery = UserRecord.select(_.name, _.email, _.userSettings.subfield(_.avatarUrl))
 
   private def authorAvatar(authorOpt: Option[PartialUserDetails]): String = {
     authorOpt match {

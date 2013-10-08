@@ -101,7 +101,7 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearDataAf
 
     // then
     val commitView = commitsView.commits.head
-    commitView.authorAvatarUrl should be(commitAuthor.avatarUrl)
+    commitView.authorAvatarUrl should equal(commitAuthor.settings.avatarUrl)
     commitView.authorName should be(commitAuthor.name)
   }
 

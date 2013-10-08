@@ -6,7 +6,7 @@ case class UserJson(id: String, login: String, fullName: String, email:String, t
 
 object UserJson {
   def apply(user: User) = {
-    new UserJson(user.id.toString, user.authentication.username, user.name, user.email, user.token, user.avatarUrl)
+    new UserJson(user.id.toString, user.authentication.username, user.name, user.email, user.token, user.settings.avatarUrl)
   }
 
   def apply(list: List[User]): List[UserJson] = {

@@ -14,6 +14,7 @@ import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.service.templates.{EmailContentWithSubject, Templates, EmailTemplateEngine}
 import com.softwaremill.codebrag.common.FixtureTimeClock
 import org.joda.time.Hours
+import com.softwaremill.codebrag.domain.builder.UserAssembler
 
 class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
@@ -21,7 +22,7 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
   val emails = List("some@some.some")
   val id = new ObjectId()
   val userName = "zuchos"
-  val user = User(id, null, userName, null, null, null)
+  val user = UserAssembler.randomUser.withId(id).withFullName(userName).get
   val config = mock[CodebragConfig]
 
   val clock = new FixtureTimeClock(System.currentTimeMillis())
