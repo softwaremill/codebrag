@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.{AuthenticatableServletSpec, CodebragServletSpec}
+import com.softwaremill.codebrag.AuthenticatableServletSpec
 
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.typesafe.config.ConfigFactory
