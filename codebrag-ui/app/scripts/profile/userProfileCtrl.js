@@ -2,16 +2,12 @@ angular.module('codebrag.profile')
 
     .controller('UserProfileCtrl', function($scope, authService, configService, userSettingsService, $q) {
 
-        $scope.user = authService.loggedInUser;
+        $scope.savingStatus = new codebrag.OperationStatus();
 
-        configService.fetchConfig().then(function(appConfig) {
-            return appConfig.emailNotifications ? userSettingsService.load() : $q.reject();
-        }).then(function(userSettings) {
-            $scope.userSettings = userSettings;
-        });
+        loadCurrentUserData();
+        loadCurrentUserNotificationSettingsIfGlobalEnabled();
 
         $scope.notificationsChanged = function() {
-            $scope.savingStatus = new codebrag.OperationStatus();
             $scope.savingStatus.setPending();
             userSettingsService.save($scope.userSettings).then(success, error);
 
@@ -22,5 +18,19 @@ angular.module('codebrag.profile')
                 $scope.savingStatus.setErr();
             }
         };
+
+        function loadCurrentUserData() {
+            authService.requestCurrentUser().then(function (user) {
+                $scope.user = user;
+            });
+        }
+
+        function loadCurrentUserNotificationSettingsIfGlobalEnabled() {
+            configService.fetchConfig().then(function (appConfig) {
+                return appConfig.emailNotifications ? userSettingsService.load() : $q.reject();
+            }).then(function (userSettings) {
+                $scope.userSettings = userSettings;
+            });
+        }
 
     });

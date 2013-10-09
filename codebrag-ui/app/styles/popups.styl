@@ -126,6 +126,7 @@
         text-align: center;
       &.opened
         display: block;
+
   &.invite
     & .invitation
       display: none;
@@ -137,3 +138,32 @@
         text-align: center;
       &.opened
         display: block;
+
+  &.user-profile
+    & .avatar
+      float:left;
+      width:80px
+    & .profile-info
+      float: left;
+      text-align: left;
+      overflow: hidden;
+      width: 340px;
+      padding-left: 0.4em
+      & h3
+        margin-top: 0
+        line-height: 16px;
+        font-weight: bold;
+
+    & .settings
+      margin-top: 2em;
+      & .label
+        width: 390px;
+        float: left;
+        margin-top: 10px;
+        text-align: left
+      & .control
+        width:30px;
+        float: right
+        & input
+          min-width: 30px;
+
