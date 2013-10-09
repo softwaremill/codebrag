@@ -15,6 +15,7 @@ WAR_FILE=$CODEBRAG_ROOT/codebrag-dist/target/scala-2.10/codebrag-dist-assembly*.
 CONF_FILE=$CODEBRAG_ROOT/codebrag-rest/src/main/resources/application.conf.template
 
 GUIDE_FILE=$CODEBRAG_ROOT/scripts/dist/package_content/install_guide.pdf
+LICENSE_FILE=$CODEBRAG_ROOT/scripts/dist/package_content/license.pdf
 LOG_CONF=$CODEBRAG_ROOT/scripts/dist/package_content/logback-example.xml
 RUN_SCRIPT=$CODEBRAG_ROOT/scripts/dist/package_content/run.sh
 
@@ -37,8 +38,9 @@ echo "Copying run script"
 cp $RUN_SCRIPT $DIST_DIR
 echo "Done"
 
-echo "Copying instruction"
+echo "Copying instruction and license"
 cp $GUIDE_FILE $DIST_DIR
+cp $LICENSE_FILE $DIST_DIR
 echo "Done"
 
 echo "Copying codebrag configuration file"
