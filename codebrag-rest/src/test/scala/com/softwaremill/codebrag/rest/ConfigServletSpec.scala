@@ -8,7 +8,7 @@ import org.scalatest.BeforeAndAfterEach
 import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.mockito.BDDMockito._
-import org.mockito.Matchers
+import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
@@ -55,6 +55,33 @@ class ConfigServletSpec extends AuthenticatableServletSpec with BeforeAndAfterEa
 
     //when
     get("/user") {
+      //then
+      status should equal(401)
+    }
+  }
+
+  "PUT /user" should "update user's email notifications setting" in {
+    //give
+    val user = UserAssembler.randomUser.get
+    userIsAuthenticatedAs(UserJson(user))
+    val notificationsEnabled = true
+
+    //when
+    val json = asJson(Map("emailNotifications" -> notificationsEnabled))
+    put("/user", json, defaultJsonHeaders) {
+      //then
+      verify(userDao).changeEmailNotifications(user.id, emailNotificationsEnabled = notificationsEnabled)
+    }
+  }
+
+  "PUT /user" should "return 401 when user is not logged in" in {
+    //given
+    userIsNotAuthenticated
+    val notificationsEnabled = true
+
+    //when
+    val json = asJson(Map("emailNotifications" -> notificationsEnabled))
+    put("/user", json, defaultJsonHeaders) {
       //then
       status should equal(401)
     }

@@ -16,12 +16,18 @@ class ConfigServlet(codebragConfig: CodebragConfig, userDAO: UserDAO, val authen
     haltIfNotAuthenticated()
     userDAO.findById(new ObjectId(user.id)) match {
       case Some(user) => Map("emailNotifications" -> user.settings.emailNotificationsEnabled)
-      case None =>
+      case None => //do nothing
     }
   }
 
   put("/user") {
     haltIfNotAuthenticated()
+    logger.debug(parsedBody.toString)
+    val emailNotifications = (parsedBody \ "emailNotifications").extractOpt[Boolean]
+    emailNotifications match {
+      case Some(notifications) => userDAO.changeEmailNotifications(new ObjectId(user.id), notifications)
+      case None => //do nothing
+    }
   }
 
 }
