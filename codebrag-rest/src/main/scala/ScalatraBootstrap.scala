@@ -31,7 +31,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new SwaggerApiDoc(swagger), "/api-docs/*")
     context.mount(new RefreshRepoDataServlet(repoDataProducer, repositoryUpdateActor), RefreshRepoDataServlet.MappingPath)
     context.mount(new VersionServlet, Prefix + "version")
-    context.mount(new ConfigServlet(config), Prefix + "config")
+    context.mount(new ConfigServlet(config, userDao, authenticator), Prefix + "config")
     context.mount(new InvitationServlet(authenticator, invitationsService), Prefix + "invitation")
     context.mount(new RepositorySyncServlet(actorSystem, repositoryUpdateActor), RepositorySyncServlet.Mapping)
     context.mount(new UpdatesServlet(authenticator, notificationCountFinder, heartbeatStore, clock), Prefix + UpdatesServlet.Mapping)
