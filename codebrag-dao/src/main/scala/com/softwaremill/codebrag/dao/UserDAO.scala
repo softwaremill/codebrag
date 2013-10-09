@@ -27,6 +27,8 @@ trait UserDAO {
 
   def rememberNotifications(id: ObjectId, notifications: LastUserNotificationDispatch)
 
+  def changeEmailNotifications(userId: ObjectId, emailNotificationsEnabled: Boolean)
+
   def findCommitAuthor(commit: CommitInfo): Option[User]
 
 }

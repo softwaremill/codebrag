@@ -5,30 +5,12 @@ import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
-import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import org.joda.time.DateTime
 
-class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearDataAfterTest with Logging {
+class MongoUserDAOSpec extends MongoUserSpec with ChangeEmailNotificationsSpec {
 
-  val userIdPrefix = "507f1f77bcf86cd79943901"
-  var userDAO: UserDAO = _
-
-  implicit def intSuffixToObjectId(suffix: Int): ObjectId = new ObjectId(userIdPrefix + suffix)
-
-  override def beforeEach() {
-    super.beforeEach()
-    userDAO = new MongoUserDAO
-
-    for (i <- 1 to 3) {
-      val login = "user" + i
-      val password = "pass" + i
-      val token = "token" + i
-      val name = s"User Name $i"
-      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token, UserSettings("avatarUrl"), None))
-    }
-  }
-
-  it should "add user with existing login" taggedAs (RequiresDb) in {
+  "other methods" should "add user with existing login" taggedAs (RequiresDb) in {
     // Given
     val login = "user1"
     val email = "anotherEmaill@sml.com"
@@ -339,3 +321,46 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearD
 
 }
 
+trait MongoUserSpec extends FlatSpecWithMongo with ShouldMatchers with ClearDataAfterTest with Logging {
+  val UserIdPrefix = "507f1f77bcf86cd79943901"
+  var userDAO: UserDAO = _
+
+  implicit def intSuffixToObjectId(suffix: Int): ObjectId = new ObjectId(UserIdPrefix + suffix)
+
+  override def beforeEach() {
+    super.beforeEach()
+    userDAO = new MongoUserDAO
+
+    for (i <- 1 to 3) {
+      val login = "user" + i
+      val password = "pass" + i
+      val token = "token" + i
+      val name = s"User Name $i"
+      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token, UserSettings("avatarUrl"), None))
+    }
+  }
+}
+
+trait ChangeEmailNotificationsSpec extends MongoUserSpec {
+  "changeEmailNotifications" should "set value to true" taggedAs RequiresDb in {
+    //given
+    userDAO.add(UserAssembler.randomUser.withId(9).withEmailNotificationsDisabled().get)
+
+    //when
+    userDAO.changeEmailNotifications(9, emailNotificationsEnabled = true)
+
+    //then
+    userDAO.findById(9).get.settings.emailNotificationsEnabled should equal(true)
+  }
+
+  it should "set value to false" taggedAs RequiresDb in {
+    //given
+    userDAO.add(UserAssembler.randomUser.withId(9).withEmailNotificationsEnabled().get)
+
+    //when
+    userDAO.changeEmailNotifications(9, emailNotificationsEnabled = false)
+
+    //then
+    userDAO.findById(9).get.settings.emailNotificationsEnabled should equal(false)
+  }
+}

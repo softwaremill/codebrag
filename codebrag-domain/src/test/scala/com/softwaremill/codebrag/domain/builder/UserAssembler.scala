@@ -25,6 +25,16 @@ class UserAssembler(var user: User) {
     this
   }
 
+  def withEmailNotificationsEnabled() = {
+    user = user.copy(settings = user.settings.copy(emailNotificationsEnabled = true))
+    this
+  }
+
+  def withEmailNotificationsDisabled() = {
+    user = user.copy(settings = user.settings.copy(emailNotificationsEnabled = false))
+    this
+  }
+
   def get = user
 }
 
