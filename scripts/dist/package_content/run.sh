@@ -1,5 +1,7 @@
 #!/bin/sh
 
-echo "Starting Codebrag..."
-nohup java -Dconfig.file=./codebrag.conf -Dlogback.configurationFile=./logback.xml -jar codebrag.jar &
+CONFIG=${1:-"codebrag.conf"}
+
+echo "Starting Codebrag... (with config:$CONFIG)"
+nohup java -Dconfig.file=./$CONFIG -Dlogback.configurationFile=./logback.xml -jar codebrag.jar &
 echo "Codebrag started. Logs are written to codebrag.log"
