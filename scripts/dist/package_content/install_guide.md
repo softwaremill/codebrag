@@ -127,9 +127,23 @@ By default Codebrag starts on port 8080. If you want to change that, edit `port`
 
 Assuming your MongoDB is working and java is installed Codebrag can be run with 
 
-	./run.sh
+On **Unix/OS X**
+
+	#for default config file codebrag.conf
+	./run.sh 
+	#Or
+	./run.sh custom.conf
+
+On **Windows**
+
+	run.bat
 	
-Logs will be written to `codebrag.log`
+Logs will be written to `codebrag.log`. To stop codebrag on **Unix/OS X** run script
+
+	#for default config file codebrag.conf
+	./stop.sh
+	#Or
+	./stop.sh custom.conf
 
 ## Logging into codebrag
 
@@ -140,4 +154,22 @@ Other users can be invited to join Codebrag by choosing "Invite friends" link fr
 ## Contact us if you need assistance
 
 We are really eager to hear your feedback about Codebrag beta. Do drop us a line at
-**ask@codebrag.com** if you find an issue or just want to share a thought or ask a question.
+[**ask@codebrag.com**](mailto:ask@codebrag.com) if you find an issue or just want to share a thought or ask a question.
+<br/>
+<br/>
+<br/>                
+## F.A.Q
+
+####Q: What Codebrag does with my repository ?
+**A:** Codbreag will clone it (checkout) and create local copy. It will also fetch updates from your repo but Codebrag will never commit anything to your repository.
+
+#####Q: I installed application but page loaded partialy (only title bar). What is wrong ?
+**A:** Try to trun off browser extesions such as **User Agernt Switcher** or other development tools that could have influence on **JavaScript** execution.
+
+#####Q: I launched Codebrag, but it looks that no commits were loaded. What should I do ?
+**A**: After first launch Codebrag is fetching whole repository. It could take a while if repository is huge or if you are using SVN repository. To make sure that the import was finnished correctly check `codebrag.log`.
+#####Q: How codebrag is matching commits with users ? 
+**A**: It uses **email** address or **login** to find author.
+#####Q: I am not getting any email notificatios. Is codebrag senging any ?
+**A**: Codebrag is sending 2 kinds of emails: invitations and notifications. Notifications are being send when there were new commits or follow-ups when you were offline. Just make sure that **email** section in config is set up. If problem persists check `codebrag.log`.
+
