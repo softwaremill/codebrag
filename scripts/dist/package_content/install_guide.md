@@ -138,7 +138,7 @@ On **Windows**
 
 	run.bat
 	
-Logs will be written to `codebrag.log`. To stop codebrag on **Unix/OS X** run script
+Logs will be written to `codebrag.log`. To stop Codebrag on **Unix/OS X** run script
 
 	#for default config file codebrag.conf
 	./stop.sh
@@ -160,16 +160,25 @@ We are really eager to hear your feedback about Codebrag beta. Do drop us a line
 <br/>                
 ## F.A.Q
 
-####Q: What Codebrag does with my repository ?
-**A:** Codbreag will clone it (checkout) and create local copy. It will also fetch updates from your repo but Codebrag will never commit anything to your repository.
+####Q: What Codebrag does with my repository?
+**A:** Codebrag will clone (checkout) the specified repository and create local copy. It will also periodically fetch
+updates but Codebrag will never commit anything to your repository.
 
-#####Q: I installed application but page loaded partialy (only title bar). What is wrong ?
-**A:** Try to trun off browser extesions such as **User Agernt Switcher** or other development tools that could have influence on **JavaScript** execution.
+#####Q: I installed the application but page loaded partially (only  thetitle bar). What is wrong?
+**A:** Try to turn off browser extensions such as **User Agent Switcher** or other development tools that could have
+influence on **JavaScript** execution.
 
-#####Q: I launched Codebrag, but it looks that no commits were loaded. What should I do ?
-**A**: After first launch Codebrag is fetching whole repository. It could take a while if repository is huge or if you are using SVN repository. To make sure that the import was finnished correctly check `codebrag.log`.
-#####Q: How codebrag is matching commits with users ? 
-**A**: It uses **email** address or **login** to find author.
-#####Q: I am not getting any email notificatios. Is codebrag senging any ?
-**A**: Codebrag is sending 2 kinds of emails: invitations and notifications. Notifications are being send when there were new commits or follow-ups when you were offline. Just make sure that **email** section in config is set up. If problem persists check `codebrag.log`.
+#####Q: I launched Codebrag, but it looks that no commits were loaded. What should I do?
+**A**: During the first launch Codebrag is fetching the whole repository. It could take a while if repository is huge
+or if you are using SVN. To make sure that the import was finished correctly check `codebrag.log`. You should see
+commits then.
+
+#####Q: How is Codebrag matching commits with users?
+**A**: It uses the **email** address or **login** to find the author. Hence users should be created with the
+emails/logins which are used for working with the repository.
+
+#####Q: I am not getting any email notifications. Is Codebrag sending any?
+**A**: Codebrag is sending 2 kinds of emails: invitations and notifications. Notifications are being sent when new
+commits or follow-ups appear when you are offline. Just make sure that the **email** section in config is set up.
+If problems persists check `codebrag.log`.
 
