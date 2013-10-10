@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.service.user.Authenticator
 class ConfigServlet(codebragConfig: CodebragConfig, userDAO: UserDAO, val authenticator: Authenticator) extends JsonServletWithAuthentication with Logging {
 
   get("/") {
-    Map("demo" -> codebragConfig.demo)
+    Map("demo" -> codebragConfig.demo, "emailNotifications" -> codebragConfig.userNotifications)
   }
 
   get("/user") {
