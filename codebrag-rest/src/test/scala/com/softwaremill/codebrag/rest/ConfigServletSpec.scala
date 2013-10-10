@@ -28,10 +28,10 @@ class ConfigServletSpec extends AuthenticatableServletSpec with BeforeAndAfterEa
     addServlet(new TestableConfigServlet(fakeAuthenticator, fakeScentry), "/*")
   }
 
-  "GET /" should "return demo flag" in {
+  "GET /" should "return system wide notifications" in {
     get("/") {
       status should be(200)
-      body should be( """{"demo":true}""")
+      body should be( """{"demo":true,"emailNotifications":true}""")
     }
   }
 
