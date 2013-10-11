@@ -1,0 +1,44 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="860" measuredH="700" mockupW="800" mockupH="680">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::Button" x="236" y="346" w="278" h="54" measuredW="108" measuredH="27" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Download%20Now</text>
+      </controlProperties>
+    </control>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::TextArea" x="521" y="370" w="164" h="30" measuredW="200" measuredH="140" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderColor>16777215</borderColor>
+        <text>or%20%5Bcheck%20out%20live%20demo%5D</text>
+      </controlProperties>
+    </control>
+    <control controlID="4" controlTypeID="com.balsamiq.mockups::TextArea" x="91" y="178" w="725" h="144" measuredW="200" measuredH="140" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderColor>16777215</borderColor>
+        <text>*Try%20Codebrag*%0A%20%0ACurrently%20Codebrag%20is%20available%20in%20beta%20version%2C%20which%20features%3A%0A-%20dead-simple%20code%20review%20workflow%0A-%20inline%20comments%20and%20%27likes%27%0A-%20all%20discussions%20on%20code%20in%20one%20place%20%28followups%29%0A-%20smart%20email%20notifications%0A-%20git%20and%20svn%20support%20%28single%20branch%20at%20this%20moment%20%3A%29%29%0A%20%0A%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="5" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="60" y="20" w="800" h="680" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1"/>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="60" y="91" w="800" h="66" measuredW="1130" measuredH="94" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>./assets/website-menu.png</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="7" controlTypeID="com.balsamiq.mockups::TextArea" x="597" y="206" w="200" h="51" measuredW="200" measuredH="140" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Completely%20free%20for%20beta%20period%21</text>
+      </controlProperties>
+    </control>
+    <control controlID="9" controlTypeID="com.balsamiq.mockups::Label" x="236" y="406" w="-1" h="-1" measuredW="278" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Linux/Mac%20OS%20X/Windows%20run%20scripts%20included.</text>
+      </controlProperties>
+    </control>
+    <control controlID="11" controlTypeID="com.balsamiq.mockups::TextArea" x="91" y="481" w="725" h="145" measuredW="200" measuredH="140" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderColor>16777215</borderColor>
+        <text>*Support*%0A%20%0A%20Need%20installation%20help%3F%20Questions%3F%20ask@codebrag.com%0A%20%0A*Stay%20connected*%0A%20%0A%20Subscribe%20to%20our%20%5Bblog%5D%20and%20%5Bfollow%20@codebrag%20on%20twitter%5D%20to%20get%20updated%20on%20new%20releases.</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
