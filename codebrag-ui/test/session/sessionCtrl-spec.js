@@ -4,16 +4,17 @@ describe("Session Controller", function () {
 
     beforeEach(module('codebrag.session'), module('codebrag.common.services'));
 
-    var scope, $httpBackend, ctrl, authSrv, q;
+    var scope, $httpBackend, ctrl, authSrv, $q, $rootScope;
 
-    beforeEach(inject(function (_$httpBackend_, $rootScope, $routeParams, configService, $controller, authService, $q) {
+    beforeEach(inject(function (_$httpBackend_, _$rootScope_, $routeParams, configService, $controller, authService, _$q_) {
         $httpBackend = _$httpBackend_;
         $httpBackend.expect("GET", "rest/config/").respond({demo: true});
 
+        $rootScope = _$rootScope_;
         scope = $rootScope.$new();
         authSrv = authService;
         ctrl = $controller('SessionCtrl', {$scope: scope, authService: authSrv, flash: {}});
-        q = $q;
+        $q = _$q_;
 
         scope.loginForm = {
             login: {
@@ -28,7 +29,7 @@ describe("Session Controller", function () {
 
     it('Should call login rest service when form is valid', inject(function ($state) {
         // Given
-        spyOn(authSrv, 'login').andReturn(q.when('anything'));
+        spyOn(authSrv, 'login').andReturn($q.when('anything'));
         spyOn($state, 'transitionTo');
 
         // When
@@ -96,7 +97,7 @@ describe("Session Controller", function () {
         expect(scope.isLogged()).toBe(true);
     }));
 
-    it('Should clear password after receiving error response from server', inject(function ($state, $q) {
+    it('Should clear password after receiving error response from server', inject(function ($state) {
         // Given
         var defer = $q.defer();
         defer.reject({status: 401});
@@ -114,7 +115,7 @@ describe("Session Controller", function () {
         expect(scope.user.login).toBe('login');
     }));
 
-    it('Should clear login and password after receiving success response from server', inject(function ($state, $q) {
+    it('Should clear login and password after receiving success response from server', inject(function ($state) {
         // Given
         var defer = $q.defer();
         defer.resolve();
@@ -133,16 +134,19 @@ describe("Session Controller", function () {
     }));
 
 
-    it('Calling logout should log out from angular layer', inject(function ($state) {
+    it('Calling logout should log out from angular layer', inject(function ($state, events) {
         // Given
         spyOn($state, 'transitionTo');
-        spyOn(authSrv, 'logout').andReturn(q.when('anything'));
-
+        spyOn(authSrv, 'logout').andReturn($q.when());
+        spyOn($rootScope, '$broadcast');
 
         // When
         scope.logout();
+        scope.$digest();
 
         // Then
         expect(authSrv.logout).toHaveBeenCalled();
+        expect($rootScope.$broadcast).toHaveBeenCalledWith(events.resetNotifications);
     }));
+
 });

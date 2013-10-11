@@ -13,6 +13,7 @@ angular.module('codebrag.events', []).constant('events', {
     refreshFollowupsCounter: 'codebrag:refreshFollowupsCounter',
 
     updatesWaiting: 'codebrag:updatesWaiting',
+    resetNotifications: 'codebrag:resetNotifications',
 
     closeForm: 'codebrag:closeForm',
     scrollOnly: 'codebrag:scrollOnly',

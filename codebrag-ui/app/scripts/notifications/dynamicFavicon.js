@@ -10,6 +10,10 @@ angular.module('codebrag.notifications')
                     checkUpdatesAvailable(data) ? setNotifyingFavicon() : setRegularFavicon();
                 });
 
+                scope.$on(events.resetNotifications, function() {
+                    setRegularFavicon();
+                });
+
                 function checkUpdatesAvailable(data) {
                     var updatesPresent = false;
                     for (var p in data) {

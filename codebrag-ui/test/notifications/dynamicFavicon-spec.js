@@ -25,6 +25,12 @@ describe('Dynamic favicon directive', function() {
         expect(href).toBe(initialDummyFaviconUrl);
     });
 
+    it('should change favicon back to original when got reset notification event', function() {
+        $rootScope.$broadcast(events.resetNotifications);
+        var href = getFaviconUrl();
+        expect(href).toBe(regularFaviconUrl);
+    });
+
     it('should change favicon when new updates are waiting users attention', function() {
         $rootScope.$broadcast(events.updatesWaiting, {commits:  20, followups: 10});
         var newHref = getFaviconUrl();
