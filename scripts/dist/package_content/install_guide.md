@@ -6,6 +6,8 @@
 * Java 1.7 installed. [Download here](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html) or install package for your server's OS.
 * MongoDB version 2.4.x installed. [Download here](http://www.mongodb.org/downloads) or install package for your server's OS.
 
+*** NOTE: *** If you want to use **Codebrag** with **SVN** you need to install **Git**. [Download here](http://git-scm.com/) or install package for your server's OS
+
 ## Configuring Codebrag 
 
 Codebrag has one configuration file `codebrag.conf`provided with distribution. Edit the following settings accordingly.
@@ -155,9 +157,7 @@ Other users can be invited to join Codebrag by choosing "Invite friends" link fr
 
 We are really eager to hear your feedback about Codebrag beta. Do drop us a line at
 [**ask@codebrag.com**](mailto:ask@codebrag.com) if you find an issue or just want to share a thought or ask a question.
-<br/>
-<br/>
-<br/>                
+           
 ## F.A.Q
 
 ####Q: What Codebrag does with my repository?
@@ -182,3 +182,5 @@ emails/logins which are used for working with the repository.
 commits or follow-ups appear when you are offline. Just make sure that the **email** section in config is set up.
 If problems persists check `codebrag.log`.
 
+#####Q: Is Codebrag sending any data or statistics anywhere outside?
+**A**: No.
