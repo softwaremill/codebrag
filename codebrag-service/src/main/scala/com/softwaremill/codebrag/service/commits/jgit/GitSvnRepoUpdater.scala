@@ -7,6 +7,8 @@ import scala.sys.process._
 import com.softwaremill.codebrag.dao.RepositoryHeadStore
 import org.eclipse.jgit.api.LogCommand
 import com.typesafe.scalalogging.slf4j.Logging
+import org.apache.commons.lang3.SystemUtils
+import java.io.File
 
 class GitSvnRepoUpdater(jGitFacade: JgitFacade, repoHeadDao: RepositoryHeadStore) extends RepoUpdater with Logging {
   def cloneFreshRepo(localPath: Path, repoData: RepoData): LogCommand = {
@@ -18,25 +20,57 @@ class GitSvnRepoUpdater(jGitFacade: JgitFacade, repoHeadDao: RepositoryHeadStore
 
 
   def checkoutSvnRepo(svnRepoData: SvnRepoData, localPath: Path) {
-    if(svnRepoData.username.isEmpty) {
-      s"echo ${svnRepoData.password}" #| s"git svn clone ${svnRepoData.remoteUri} --quiet ${localPath.toString}" !< ProcessLogger(logger info _)
+    if (isOsWindows) {
+      createParentDirectoryIfNeeded(localPath.toFile)
+    }
+    if (svnRepoData.username.isEmpty) {
+      prepareCommand(s"echo ${svnRepoData.password}") #| s"git svn clone ${svnRepoData.remoteUri} --quiet ${localPath.toString}" !< ProcessLogger(logger info _)
     } else {
-      s"echo ${svnRepoData.password}" #| s"git svn clone ${svnRepoData.remoteUri} --quiet --username ${svnRepoData.username} ${localPath.toString}" !< ProcessLogger(logger info _)
+      prepareCommand(s"echo ${svnRepoData.password}") #| s"git svn clone ${svnRepoData.remoteUri} --quiet --username ${svnRepoData.username} ${localPath.toString}" !< ProcessLogger(logger info _)
     }
     logger.debug("SVN repo checked out")
   }
 
+  private def createParentDirectoryIfNeeded(dir: File) {
+    val parentDir = dir.getParentFile
+    if (!parentDir.exists()) {
+      logger.debug(s"Directory doesn't exists:${parentDir.getAbsolutePath}")
+      createParentDirectoryIfNeeded(parentDir)
+      if (!parentDir.mkdir()) {
+        logger.error(s"Cannot create dir:${parentDir.getAbsolutePath}")
+      } else {
+        logger.debug(s"Directory created:${parentDir.getAbsolutePath}")
+      }
+    } else {
+      logger.debug(s"Directory exists:${parentDir.getAbsolutePath}")
+    }
+
+  }
+
+
+  private def prepareCommand(command: String): String = {
+    if (isOsWindows) {
+      "cmd /c " + command
+    } else {
+      command
+    }
+  }
+
+
+  def isOsWindows: Boolean = {
+    SystemUtils.IS_OS_WINDOWS
+  }
+
   def pullRepoChanges(localPath: Path, repoData: RepoData, previousHead: Option[ObjectId]): LogCommand = {
     val svnRepoData = repoData.asInstanceOf[SvnRepoData]
-
-    s"echo ${svnRepoData.password}" #| Process(s"git svn rebase --quiet --username ${svnRepoData.username}", localPath.toFile) !< ProcessLogger(logger info _)
+    prepareCommand(s"echo ${svnRepoData.password}") #| Process(s"git svn rebase --quiet --username ${svnRepoData.username}", localPath.toFile) !< ProcessLogger(logger info _)
 
     logger.debug("SVN repo updated")
 
     val headAfterPull = jGitFacade.getHeadId(localPath)
     repoHeadDao.update(repoData.repositoryName, ObjectId.toString(headAfterPull))
 
-    val git =  jGitFacade.gitRepo(localPath)
+    val git = jGitFacade.gitRepo(localPath)
 
     previousHead match {
       case Some(sha) => git.log.addRange(sha, headAfterPull)
