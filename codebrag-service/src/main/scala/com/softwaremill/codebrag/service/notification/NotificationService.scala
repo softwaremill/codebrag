@@ -31,8 +31,8 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: EmailT
 
   def sendCommitsOrFollowupNotification(user: User, commitCount: Long, followupCount: Long) {
     val subject = {
-      val newCommits = if(commitCount == 1) s"$commitCount new commit" else s"$commitCount new commits"
-      val newFollowups = if(followupCount == 1) s"$followupCount new followup" else s"$followupCount new followups"
+      val newCommits = if (commitCount == 1) s"$commitCount new commit" else s"$commitCount new commits"
+      val newFollowups = if (followupCount == 1) s"$followupCount new followup" else s"$followupCount new followups"
       if (commitCount > 0 && followupCount > 0) s"$newCommits and $newFollowups"
       else if (commitCount > 0) newCommits
       else newFollowups
