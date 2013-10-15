@@ -3,6 +3,7 @@ package com.softwaremill.codebrag.common
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.util.Random
+import org.apache.commons.codec.binary.Hex
 
 object Utils {
 
@@ -13,7 +14,7 @@ object Utils {
     val m = java.security.MessageDigest.getInstance("MD5")
     val b = s.getBytes("UTF-8")
     m.update(b, 0, b.length)
-    new java.math.BigInteger(1, m.digest()).toString(16)
+    Hex.encodeHexString(m.digest())
   }
 
   def sha1(s: String): String = {

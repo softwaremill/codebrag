@@ -103,6 +103,7 @@ object Dependencies {
 
   val commonsValidator = "commons-validator" % "commons-validator" % "1.4.0" exclude("commons-logging", "commons-logging")
   val commonsLang = "org.apache.commons" % "commons-lang3" % "3.1"
+  val commonsCodec = "commons-codec" % "commons-codec" % "1.8"
 
   val jetty = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion
   val jettyContainer = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container"
@@ -218,7 +219,7 @@ object SmlCodebragBuild extends Build {
   lazy val common: Project = Project(
     "codebrag-common",
     file("codebrag-common"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies ++ Seq(akka) ++ Seq(akkaSlf4j))
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies ++ Seq(akka) ++ Seq(akkaSlf4j) ++ Seq(commonsCodec))
   )
 
   lazy val domain: Project = Project(

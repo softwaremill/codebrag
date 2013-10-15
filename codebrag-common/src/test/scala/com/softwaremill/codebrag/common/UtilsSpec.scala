@@ -38,4 +38,11 @@ class UtilsSpec extends FlatSpec with ShouldMatchers {
   it should "generate string of length 64" in {
     sha256("admin", "secret") should have length (64)
   }
+
+  behavior of "md5"
+
+  it should "generate md5 hash with proper length and leading zero" in {
+    val result = md5("pawel.fronczak@outbox.pl")
+    result should be("0b75184e81485f7540b95b1dac37bc55")
+  }
 }
