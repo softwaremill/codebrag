@@ -34,7 +34,6 @@ class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationSe
       _ <- leftIfSome(userDao.findByEmail(emailLowerCase), "User with the given email already exists").right
     } yield {
       registerUser(login, emailLowerCase, password)
-      invitationService.expire(invitationCode)
     }
   }
 

@@ -82,16 +82,6 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     verify should be(false)
   }
 
-  it should "removed expired invitation code from DAO" in {
-    //given
-
-    //when
-    invitationService.expire(code)
-
-    //then
-    verify(invitationDAO).removeByCode(code)
-  }
-
   it should "create invitation message and save invitation in DAO" in {
     //given
     val regCode = "123123123"

@@ -55,11 +55,6 @@ class InvitationService(
     }
   }
 
-  def expire(code: String) {
-    invitationDAO.removeByCode(code)
-  }
-
-
   private def sendEmail(addresses: List[String], message: String, userName: String) {
     emailService.send(Email(addresses, getInvitationSubject(userName), message))
   }
