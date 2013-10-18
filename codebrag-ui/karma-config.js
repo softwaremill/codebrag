@@ -13,7 +13,8 @@ module.exports = function(config) {
         'lodash.js',
         'markdown/marked.js',
         'angular-ui/validate.js',
-        'angular-ui/keypress.js'
+        'angular-ui/keypress.js',
+        'angular-ui/modal.js'
     ].forEach(function(file) {
         files.push('app/vendor/' + file);
     });
