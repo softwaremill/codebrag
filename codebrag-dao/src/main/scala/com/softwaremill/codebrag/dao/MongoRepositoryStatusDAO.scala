@@ -8,7 +8,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import net.liftweb.record.field.BooleanField
 import com.softwaremill.codebrag.domain.RepositoryStatus
 
-trait RepositoryHeadStore {
+trait RepositoryStatusDAO {
   def update(repoName: String, newSha: String)
   def get(repoName: String): Option[String]
 
@@ -16,10 +16,10 @@ trait RepositoryHeadStore {
   def getRepoStatus(repoName: String): Option[RepositoryStatus]
 }
 
-class MongoRepositoryHeadStore extends RepositoryHeadStore with Logging {
+class MongoRepositoryStatusDAO extends RepositoryStatusDAO with Logging {
 
   def updateRepoStatus(newStatus: RepositoryStatus) {
-    RepositoryHeadRecord.where(_.repoName eqs newStatus.repositoryName)
+    RepositoryStatusRecord.where(_.repoName eqs newStatus.repositoryName)
       .modifyOpt(newStatus.headId)(_.sha setTo _)
       .modify(_.repoReady setTo newStatus.ready)
       .modify(_.repoStatusError setTo newStatus.error)
@@ -27,7 +27,7 @@ class MongoRepositoryHeadStore extends RepositoryHeadStore with Logging {
   }
 
   def getRepoStatus(repoName: String) = {
-    RepositoryHeadRecord.where(_.repoName eqs repoName).get() match {
+    RepositoryStatusRecord.where(_.repoName eqs repoName).get() match {
       case Some(record) => Some(RepositoryStatus(repoName, Option(record.sha.get), record.repoReady.get, record.repoStatusError.get))
       case None => None
     }
@@ -38,7 +38,7 @@ class MongoRepositoryHeadStore extends RepositoryHeadStore with Logging {
   }
 
   def get(repoName: String) = {
-    RepositoryHeadRecord.where(_.repoName eqs repoName).get() match {
+    RepositoryStatusRecord.where(_.repoName eqs repoName).get() match {
       case Some(record) => Some(record.sha.get)
       case None => None
     }
@@ -46,9 +46,9 @@ class MongoRepositoryHeadStore extends RepositoryHeadStore with Logging {
 
 }
 
-class RepositoryHeadRecord extends MongoRecord[RepositoryHeadRecord] with ObjectIdPk[RepositoryHeadRecord] {
+class RepositoryStatusRecord extends MongoRecord[RepositoryStatusRecord] with ObjectIdPk[RepositoryStatusRecord] {
 
-  def meta = RepositoryHeadRecord
+  def meta = RepositoryStatusRecord
 
   object sha extends LongStringField(this)
 
@@ -60,7 +60,7 @@ class RepositoryHeadRecord extends MongoRecord[RepositoryHeadRecord] with Object
 
 }
 
-object RepositoryHeadRecord extends RepositoryHeadRecord with MongoMetaRecord[RepositoryHeadRecord] {
+object RepositoryStatusRecord extends RepositoryStatusRecord with MongoMetaRecord[RepositoryStatusRecord] {
   override def collectionName = "repo_head"
 
   def ensureIndexes() {

@@ -4,12 +4,12 @@ import com.softwaremill.codebrag.service.commits.{RepoData, CommitsLoader}
 import com.softwaremill.codebrag.domain.{RepositoryStatus, CommitInfo}
 import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.JavaConversions._
-import com.softwaremill.codebrag.dao.RepositoryHeadStore
+import com.softwaremill.codebrag.dao.RepositoryStatusDAO
 import org.eclipse.jgit.lib.{Constants, ObjectId}
 import org.eclipse.jgit.api.LogCommand
 
 class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalDirTree, converter: JgitLogConverter,
-                              repoHeadDao: RepositoryHeadStore, repoUpdater : RepoUpdater)
+                              repoStatusDao: RepositoryStatusDAO, repoUpdater : RepoUpdater)
   extends CommitsLoader with Logging {
 
   def loadMissingCommits(repoData: RepoData): List[CommitInfo] = {
@@ -25,12 +25,12 @@ class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalDirTree
       val updateResult = updateRepository(repoData)
       val currentHead = ObjectId.toString(updateResult.getRepository.resolve(Constants.HEAD)) 
       val repoReadyStatus = RepositoryStatus.ready(repoData.repositoryName).withHeadId(currentHead)
-      repoHeadDao.updateRepoStatus(repoReadyStatus)
+      repoStatusDao.updateRepoStatus(repoReadyStatus)
       updateResult
     } catch {
       case e: Exception => {
         val repoNotReadyStatus = RepositoryStatus.notReady(repoData.repositoryName, Some(e.getMessage))
-        repoHeadDao.updateRepoStatus(repoNotReadyStatus)
+        repoStatusDao.updateRepoStatus(repoNotReadyStatus)
         throw e
       }
     }
@@ -54,7 +54,7 @@ class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalDirTree
   }
 
   private def fetchPreviousHead(repoData: RepoData): Option[ObjectId] = {
-    repoHeadDao.get(repoData.repositoryName).map(ObjectId.fromString(_))
+    repoStatusDao.get(repoData.repositoryName).map(ObjectId.fromString(_))
   }
 
 }

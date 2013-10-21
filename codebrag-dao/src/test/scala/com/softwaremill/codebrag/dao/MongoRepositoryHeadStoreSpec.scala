@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.domain.RepositoryStatus
 
 class MongoRepositoryHeadStoreSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 
-  var repoHeadDao = new MongoRepositoryHeadStore
+  var repoHeadDao = new MongoRepositoryStatusDAO
 
   it should "store repository HEAD reference if no record for given repo exists" in {
     // given

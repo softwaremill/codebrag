@@ -35,7 +35,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new InvitationServlet(authenticator, invitationsService), Prefix + "invitation")
     context.mount(new RepositorySyncServlet(actorSystem, repositoryUpdateActor), RepositorySyncServlet.Mapping)
     context.mount(new UpdatesServlet(authenticator, notificationCountFinder, heartbeatStore, clock), Prefix + UpdatesServlet.Mapping)
-    context.mount(new RepoStatusServlet(authenticator, repoDataProducer, repoHeadStore), Prefix + RepoStatusServlet.Mapping)
+    context.mount(new RepoStatusServlet(authenticator, repoDataProducer, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
 
     if (config.demo) {
       context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")

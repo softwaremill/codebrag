@@ -36,7 +36,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
   lazy val likeValidator = new LikeValidator(commitInfoDao, likeDao, userDao)
   lazy val userReactionService = new UserReactionService(commentDao, likeDao, likeValidator, eventBus)
-  lazy val repoHeadStore = new MongoRepositoryHeadStore
+  lazy val repoStatusDao = new MongoRepositoryStatusDAO
   lazy val emailService = new EmailService(config)
   lazy val emailScheduler = new EmailScheduler(actorSystem, EmailScheduler.createActor(actorSystem, emailService))
   lazy val templateEngine = new EmailTemplateEngine()

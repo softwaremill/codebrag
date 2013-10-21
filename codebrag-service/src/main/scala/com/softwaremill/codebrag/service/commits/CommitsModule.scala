@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.commits
 
 import com.softwaremill.codebrag.service.commits.jgit._
-import com.softwaremill.codebrag.dao.{RepositoryHeadStore, UserDAO, CommitInfoDAO}
+import com.softwaremill.codebrag.dao.{RepositoryStatusDAO, UserDAO, CommitInfoDAO}
 import com.softwaremill.codebrag.common.EventBus
 import com.softwaremill.codebrag.service.config.{RepositoryConfig, CodebragConfig}
 
@@ -11,7 +11,7 @@ trait CommitsModule {
       new JgitFacade,
       new InternalDirTree(config),
       new JgitLogConverter,
-      repoHeadStore,
+      repoStatusDao,
       repoDataProducer.getRepoTypeFromConfiguration match {
         case SvnRepoType  => new GitSvnRepoUpdater(new JgitFacade)
         case _            => new JgitRepoUpdater(new JgitFacade)
@@ -23,7 +23,7 @@ trait CommitsModule {
   lazy val repoDataProducer = new RepoDataProducer(userDao, config)
 
   def commitInfoDao: CommitInfoDAO
-  def repoHeadStore: RepositoryHeadStore
+  def repoStatusDao: RepositoryStatusDAO
   def userDao: UserDAO
   def eventBus: EventBus
   def config: CodebragConfig with RepositoryConfig

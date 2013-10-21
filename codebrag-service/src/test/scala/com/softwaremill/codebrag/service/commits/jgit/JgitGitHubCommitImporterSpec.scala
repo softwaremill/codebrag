@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.commits.jgit
 
 import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.service.commits.{CommitsModule, TestCodebragAndRepositoryConfig, FlatSpecWithGit, CommitImportService}
-import com.softwaremill.codebrag.dao.{RepositoryHeadStore, CommitInfoDAO}
+import com.softwaremill.codebrag.dao.{RepositoryStatusDAO, CommitInfoDAO}
 import org.mockito.{ArgumentCaptor, ArgumentMatcher}
 import org.mockito.Mockito._
 import org.mockito.BDDMockito._
@@ -16,7 +16,7 @@ import com.softwaremill.codebrag.service.events.MockEventBus
 class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar with MockEventBus {
 
   var commitInfoDaoMock: CommitInfoDAO = _
-  var repoHeadStoreMock: RepositoryHeadStore = _
+  var repoStatusDaoMock: RepositoryStatusDAO = _
   var service: CommitImportService = _
   var supplementaryService: CommitImportService = _
   val commitInfoDaoSupplementaryStub = mock[CommitInfoDAO]
@@ -25,7 +25,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
     eventBus.clear()
     testRepo = initRepo()
     commitInfoDaoMock = mock[CommitInfoDAO]
-    repoHeadStoreMock = mock[RepositoryHeadStore]
+    repoStatusDaoMock = mock[RepositoryStatusDAO]
     service = createService(commitInfoDaoMock)
     supplementaryService = createService(commitInfoDaoSupplementaryStub)
   }
@@ -118,7 +118,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
     givenInitialCommit()
     val lastCommit = givenCommit("file.txt", "file content update", "commit2 msg")
     givenAlreadyCalledImport()
-    given(repoHeadStoreMock.get(TestRepoData.repositoryName)).willReturn(Some(lastCommit.getId.name))
+    given(repoStatusDaoMock.get(TestRepoData.repositoryName)).willReturn(Some(lastCommit.getId.name))
     givenCommit("file.txt", "third update content", "third update message")
     givenCommit("file.txt", "fourth update content", "fourth update message")
 
@@ -148,7 +148,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
       def userDao = null
       def eventBus = self.eventBus
       def config = TestCodebragAndRepositoryConfig
-      def repoHeadStore = repoHeadStoreMock
+      def repoStatusDao = repoStatusDaoMock
     }
     module.commitImportService
   }
