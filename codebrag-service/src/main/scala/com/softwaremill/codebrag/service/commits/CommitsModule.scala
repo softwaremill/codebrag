@@ -13,8 +13,8 @@ trait CommitsModule {
       new JgitLogConverter,
       repoHeadStore,
       repoDataProducer.getRepoTypeFromConfiguration match {
-        case SvnRepoType  => new GitSvnRepoUpdater(new JgitFacade, repoHeadStore)
-        case _            => new JgitRepoUpdater(new JgitFacade, repoHeadStore)
+        case SvnRepoType  => new GitSvnRepoUpdater(new JgitFacade)
+        case _            => new JgitRepoUpdater(new JgitFacade)
       }
     ),
     commitInfoDao,
