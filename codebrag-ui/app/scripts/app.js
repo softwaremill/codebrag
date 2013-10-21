@@ -45,6 +45,9 @@ angular.module('codebrag')
                 authService.requestCurrentUser();
             }
         });
+    })
+    .run(function($rootScope, repositoryStatusService) {
+        repositoryStatusService.checkRepoReadyOnLogin();
     });
 
 angular.module('codebrag.auth')
@@ -119,10 +122,5 @@ angular.module('codebrag.followups')
 angular.module('codebrag.common')
     .run(function() {
         marked.setOptions({sanitize: true, gfm: true});
-    });
-
-angular.module('codebrag.notifications')
-    .run(function($rootScope, repositoryStatusService) {
-        repositoryStatusService.checkRepoReadyOnLogin();
     });
 
