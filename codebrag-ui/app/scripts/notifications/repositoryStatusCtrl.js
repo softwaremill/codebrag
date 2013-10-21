@@ -1,7 +1,7 @@
 angular.module('codebrag.notifications')
 
-    .controller('RepositoryStatusCtrl', function ($scope, $modalInstance, statusData) {
-        $scope.statusData = statusData;
+    .controller('RepositoryStatusCtrl', function ($scope, $modalInstance, repoStatus) {
+        $scope.repoStatus = repoStatus;
 
         $scope.close = function() {
             $modalInstance.close();

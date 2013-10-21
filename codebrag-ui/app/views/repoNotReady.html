@@ -1,12 +1,12 @@
-<div class="popup-content" ng-show="!statusData.error">
+<div class="popup-content" ng-show="!repoStatus.error">
     <h1 class="success">Downloading data</h1>
     <p>Codebrag is now working hard to fetch your repository content. It may take a while depending on repository type and size.</p>
     <p>We encourage you to grab a coffee and come back soon when Codebrag is ready. Just refresh the page.</p>
 </div>
-<div class="popup-content" ng-show="statusData.error">
-    <h1 class="failed">{{ statusData.error }}</h1>
+<div class="popup-content" ng-show="repoStatus.error">
+    <h1 class="failed">{{ repoStatus.error }}</h1>
     <p>Codebrag is having issues with repository state.</p>
     <p>If this problem persists, contact your administrator.</p>
 </div>
-<span class="close-btn" ng-show="statusData.error.length" ng-click="close()"><i class="icon-remove"></i></span>
+<span class="close-btn" ng-show="repoStatus.error && repoStatus.error.length" ng-click="close()"><i class="icon-remove"></i></span>
 

@@ -1,6 +1,6 @@
 angular.module('codebrag.notifications')
 
-    .factory('repositoryStatusService', function ($rootScope, events, $modal, $q) {
+    .factory('repositoryStatusService', function ($rootScope, events, $modal, $http) {
 
         function checkRepoReadyOnLogin() {
             $rootScope.$on(events.loggedIn, function() {
@@ -8,34 +8,32 @@ angular.module('codebrag.notifications')
             });
         }
 
-        // TODO: replace with $http call
         function checkRepoStatus() {
-            var result = {
-                ready: true
-            };
-            return $q.when(result);
+            return $http.get('/rest/repoStatus').then(function(response) {
+                return response.data.repoStatus;
+            });
         }
 
-        function displayModal(statusData) {
+        function displayModal(repoStatus) {
             var modalConfig = {
                 templateUrl: 'views/repoNotReady.html',
                 backdrop: false,
                 keyboard: false,
                 controller: 'RepositoryStatusCtrl',
                 resolve: {
-                    statusData: function () {
-                        return statusData;
+                    repoStatus: function () {
+                        return repoStatus;
                     }
                 }
             };
             $modal.open(modalConfig);
         }
 
-        function displayNotReadyInfoIfRequired(statusData) {
-            if(statusData.ready) {
+        function displayNotReadyInfoIfRequired(repoStatus) {
+            if(repoStatus.ready) {
                return;
             }
-            displayModal(statusData);
+            displayModal(repoStatus);
         }
 
         return {
