@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.service.config.{RepositoryConfig, CodebragConfi
 import com.softwaremill.codebrag.dao.{RepositoryStatusDAO, UserDAO}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.user.Authenticator
-import com.softwaremill.codebrag.service.commits.RepoDataProducer
+import com.softwaremill.codebrag.service.commits.{RepoData, RepoDataProducer}
 import org.scalatra.BadRequest
 import com.softwaremill.codebrag.domain.RepositoryStatus
 
@@ -13,19 +13,21 @@ class RepoStatusServlet(val authenticator: Authenticator, repoDataProducer: Repo
 
   get("/") {
     repoDataProducer.createFromConfiguration() match {
-      case Some(repoData) => {
-        repoStatusDao.getRepoStatus(repoData.repositoryName) match {
-          case Some(status) => Map("repoStatus" -> status)
-          case None => {
-            logger.debug(s"No status found for ${repoData.repositoryName}, assuming it is first run and repo is being cloned at the moment.")
-            Map("repoStatus" -> RepositoryStatus.notReady(repoData.repositoryName))
-          }
-        }
-      }
+      case Some(repoData) => getRepositoryStatus(repoData)
       case None => BadRequest("Cannot get repository information from configuration")
     }
   }
 
+
+  def getRepositoryStatus(repoData: RepoData): Map[String, RepositoryStatus] = {
+    repoStatusDao.getRepoStatus(repoData.repositoryName) match {
+      case Some(status) => Map("repoStatus" -> status)
+      case None => {
+        logger.debug(s"No status found for ${repoData.repositoryName}, assuming it is first run and repo is being cloned at the moment.")
+        Map("repoStatus" -> RepositoryStatus.notReady(repoData.repositoryName))
+      }
+    }
+  }
 }
 
 object RepoStatusServlet {
