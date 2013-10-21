@@ -16,7 +16,10 @@ class RepoStatusServlet(val authenticator: Authenticator, repoDataProducer: Repo
       case Some(repoData) => {
         repoStatusDao.getRepoStatus(repoData.repositoryName) match {
           case Some(status) => Map("repoStatus" -> status)
-          case None => Map("repoStatus" -> RepositoryStatus.notReady(repoData.repositoryName))
+          case None => {
+            logger.debug(s"No status found for ${repoData.repositoryName}, assuming it is first run and repo is being cloned at the moment.")
+            Map("repoStatus" -> RepositoryStatus.notReady(repoData.repositoryName))
+          }
         }
       }
       case None => BadRequest("Cannot get repository information from configuration")
