@@ -22,7 +22,7 @@ class MongoRepositoryHeadStore extends RepositoryHeadStore with Logging {
     RepositoryHeadRecord.where(_.repoName eqs newStatus.repositoryName)
       .modifyOpt(newStatus.headId)(_.sha setTo _)
       .modify(_.repoReady setTo newStatus.ready)
-      .modifyOpt(newStatus.error)(_.repoStatusError setTo _)
+      .modify(_.repoStatusError setTo newStatus.error)
       .upsertOne()
   }
 
