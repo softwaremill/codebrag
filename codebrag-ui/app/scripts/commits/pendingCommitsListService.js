@@ -5,7 +5,7 @@ angular.module('codebrag.commits')
         var pageLimit = 7;
 
         var nextCommits;
-        var prefetchedCommit;
+        var prefetchedCommitPromise;
 
         var commits = [];
         codebrag.commitsList.mixin.withBulkElementsManipulation.call(commits);
@@ -31,12 +31,14 @@ angular.module('codebrag.commits')
         }
 
         function markAsReviewed(commitId) {
-            var indexRemoved = commits.removeFromListBy(commitId);
-            prefetchedCommit && commits.push(prefetchedCommit);
-            eventsEmitter.triggerCounterDecrease();
-            Commits.remove({commitId: commitId});
-            _prefetchOneMoreCommit();
-            return commits.elementAtIndexOrLast(indexRemoved);
+            Commits.remove({commitId: commitId});   // fire and don't wait for response
+            return prefetchedCommitPromise.then(function(prefetchedCommit) {
+                var indexRemoved = commits.removeFromListBy(commitId);
+                prefetchedCommit && commits.push(prefetchedCommit);
+                eventsEmitter.triggerCounterDecrease();
+                _prefetchOneMoreCommit();
+                return commits.elementAtIndexOrLast(indexRemoved);
+            });
         }
 
         function loadNextCommits() {
@@ -62,9 +64,9 @@ angular.module('codebrag.commits')
         function _prefetchOneMoreCommit() {
             if(!commits.length) return;
             var options = {min_id: commits.last().id, limit: 1, filter: 'to_review'};
-            Commits.querySilent(options).$then(function(response) {
-                prefetchedCommit = response.data.commits.shift();
-                if(!prefetchedCommit) nextCommits = 0;
+            prefetchedCommitPromise = Commits.querySilent(options).$then(function(response) {
+                if(!response.data.commits.length) nextCommits = 0;
+                return response.data.commits.shift();
             });
         }
 

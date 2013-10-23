@@ -19,7 +19,7 @@ describe("DiffNavbarController", function () {
     it('should call service to mark current commit as reviewed', inject(function($controller, currentCommit) {
         // Given
         currentCommit.set(commit);
-        spyOn(commitsService, 'markAsReviewed');
+        spyOn(commitsService, 'markAsReviewed').andReturn(noopPromise);
         $controller('DiffNavbarCtrl', {$scope: $scope});
         $scope.$apply();
 
@@ -32,7 +32,9 @@ describe("DiffNavbarController", function () {
 
     it('should go to next commit when making current commit reviewed', inject(function($controller, $state, currentCommit) {
         // Given
-        spyOn(commitsService, 'markAsReviewed').andReturn(nextCommit);
+        var nextCommitDeferred = $q.defer();
+        nextCommitDeferred.resolve(nextCommit);
+        spyOn(commitsService, 'markAsReviewed').andReturn(nextCommitDeferred.promise);
         spyOn($state, 'transitionTo');
         currentCommit.set(commit);
         $controller('DiffNavbarCtrl', {$scope: $scope});
@@ -48,7 +50,9 @@ describe("DiffNavbarController", function () {
 
     it('should go to commits list when no next commit available', inject(function($controller, $state, currentCommit) {
         // Given
-        spyOn(commitsService, 'markAsReviewed').andReturn(null);
+        var nextCommitDeferred = $q.defer();
+        nextCommitDeferred.resolve(undefined);
+        spyOn(commitsService, 'markAsReviewed').andReturn(nextCommitDeferred.promise);
         spyOn($state, 'transitionTo');
         currentCommit.set(commit);
         $controller('DiffNavbarCtrl', {$scope: $scope});

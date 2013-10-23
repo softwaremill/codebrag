@@ -25,6 +25,14 @@ angular.module('codebrag.commits')
             currentCommit.set(current);
         });
 
+        function currentCommitPresent() {
+            return currentCommit.get();
+        }
+
+        $scope.$watch(currentCommitPresent, function(present) {
+            !present && delete $scope.currentCommit;
+        })
+
     });
 
 

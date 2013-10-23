@@ -3,8 +3,11 @@ angular.module('codebrag.commits')
     .controller('DiffNavbarCtrl', function ($scope, currentCommit, commitsService, $state) {
 
         $scope.markCurrentCommitAsReviewed = function () {
-            var nextCommit = commitsService.markAsReviewed($scope.currentCommit.info.id);
-            goTo(nextCommit);
+            var toRemove = $scope.currentCommit.info.id;
+            currentCommit.empty();
+            commitsService.markAsReviewed(toRemove).then(function(nextCommit) {
+                goTo(nextCommit);
+            })
         };
 
         var commitAvailable = function() {
@@ -16,7 +19,6 @@ angular.module('codebrag.commits')
         });
 
         function goTo(nextCommit) {
-            currentCommit.empty();
             if (nextCommit) {
                 return $state.transitionTo('commits.details', {id: nextCommit.id});
             }

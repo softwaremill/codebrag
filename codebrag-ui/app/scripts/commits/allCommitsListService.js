@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .factory('allCommitsListService', function(Commits, $rootScope, events) {
+    .factory('allCommitsListService', function(Commits, $rootScope, events, $q) {
 
         var pageLimit = 7;
 
@@ -32,10 +32,10 @@ angular.module('codebrag.commits')
         }
 
         function markAsReviewed(commitId) {
-            Commits.remove({commitId: commitId});
+            Commits.remove({commitId: commitId});   // fire and don't wait for response
             var indexReviewed = commits.markAsReviewedOnly(commitId);
             eventsEmitter.triggerCounterDecrease();
-            return commits.elementAtIndex(indexReviewed + 1);
+            return $q.when(commits.elementAtIndex(indexReviewed + 1));
         }
 
         function loadNextCommits() {
