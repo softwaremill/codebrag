@@ -53,9 +53,15 @@ codebrag.commitsList.mixin.withIndexOperations = function() {
         var el = this[index];
         if(el) {
             return el;
-        } else {
-            return this.last();
         }
+        return this.last();
+    };
+
+    this.elementAtIndex = function(index) {
+        if(index < this.length) {
+            return this[index];
+        }
+        return null;
     };
 
     this.last = function() {
@@ -71,3 +77,22 @@ codebrag.commitsList.mixin.withIndexOperations = function() {
     };
 
 };
+
+codebrag.commitsList.mixin.eventsEmitter = function($rootScope, events) {
+
+    return {
+        notifyIfNextCommitsLoaded: function(count) {
+            count && $rootScope.$broadcast(events.nextCommitsLoaded);
+        },
+        notifyIfPreviousCommitsLoaded: function(count) {
+            count && $rootScope.$broadcast(events.previousCommitsLoaded);
+        },
+        triggerCounterDecrease: function() {
+            $rootScope.$broadcast(events.commitReviewed);
+        },
+        triggerAsyncCommitsCounterRefresh: function() {
+            $rootScope.$broadcast(events.refreshCommitsCounter);
+        }
+    }
+
+}

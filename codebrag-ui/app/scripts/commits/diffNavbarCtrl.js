@@ -1,11 +1,10 @@
 angular.module('codebrag.commits')
 
-    .controller('DiffNavbarCtrl', function ($scope, currentCommit, commitsListService, $state) {
+    .controller('DiffNavbarCtrl', function ($scope, currentCommit, commitsService, $state) {
 
         $scope.markCurrentCommitAsReviewed = function () {
-            commitsListService.makeReviewedAndGetNext($scope.currentCommit.info.id).then(function (nextCommit) {
-                goTo(nextCommit);
-            });
+            var nextCommit = commitsService.markAsReviewed($scope.currentCommit.info.id);
+            goTo(nextCommit);
         };
 
         var commitAvailable = function() {
@@ -17,10 +16,10 @@ angular.module('codebrag.commits')
         });
 
         function goTo(nextCommit) {
+            currentCommit.empty();
             if (nextCommit) {
                 return $state.transitionTo('commits.details', {id: nextCommit.id});
             }
-            currentCommit.empty();
             $state.transitionTo('commits.list');
         }
 

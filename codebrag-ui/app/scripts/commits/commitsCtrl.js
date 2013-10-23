@@ -1,33 +1,29 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, commitsListService, $stateParams, $state, currentCommit, events) {
+    .controller('CommitsCtrl', function ($scope, commitsService, $stateParams, $state, currentCommit, events) {
 
         $scope.$on(events.reloadCommitsList, function() {
             initCtrl();
         });
 
         $scope.switchListView = function() {
-            if($scope.listViewMode === 'all') {
-                loadAllCommits();
-            } else {
-                loadPendingCommits();
-            }
+            $scope.listViewMode === 'all' ? loadAllCommits() : loadPendingCommits();
         };
 
         $scope.hasNextCommits = function() {
-            return commitsListService.hasNextCommits();
+            return commitsService.hasNextCommits();
         };
 
         $scope.hasPreviousCommits = function() {
-            return commitsListService.hasPreviousCommits();
+            return commitsService.hasPreviousCommits();
         };
 
         $scope.loadNextCommits = function() {
-            commitsListService.loadNextCommits();
+            commitsService.loadNextCommits();
         };
 
         $scope.loadPreviousCommits = function() {
-            commitsListService.loadPreviousCommits();
+            commitsService.loadPreviousCommits();
         };
 
         $scope.openCommitDetails = function(commitId) {
@@ -36,22 +32,22 @@ angular.module('codebrag.commits')
 
         $scope.allCommitsReviewed = function() {
             var emptyList = ($scope.commits && $scope.commits.length === 0);
-            var noMoreCommitsOnServer = !commitsListService.hasNextCommits();
+            var noMoreCommitsOnServer = !commitsService.hasNextCommits();
             return emptyList && noMoreCommitsOnServer;
         };
 
 
 
         function loadAllCommits() {
-            if($stateParams.id) {
-                $scope.commits = commitsListService.loadCommitsInContext($stateParams.id);
-            } else {
-                $scope.commits = commitsListService.loadNewestCommits();
-            }
+            commitsService.setAllMode();
+            commitsService.loadCommits($stateParams.id).then(function(commits) {
+                $scope.commits = commits;
+            })
         }
 
         function loadPendingCommits() {
-            commitsListService.loadCommitsToReview().then(function(commits) {
+            commitsService.setToReviewMode();
+            commitsService.loadCommits().then(function(commits) {
                 $scope.commits = commits;
             });
         }

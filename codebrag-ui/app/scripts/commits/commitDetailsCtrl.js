@@ -15,11 +15,11 @@ angular.module('codebrag.commits')
         };
     })
 
-    .controller('CommitDetailsCtrl', function ($stateParams, $state, $scope, commitsListService, currentCommit) {
+    .controller('CommitDetailsCtrl', function ($stateParams, $state, $scope, commitsService, currentCommit) {
 
         var commitId = $stateParams.id;
 
-        commitsListService.loadCommitDetails(commitId).then(function (commit) {
+        commitsService.commitDetails(commitId).then(function (commit) {
             var current = new codebrag.CurrentCommit(commit);
             $scope.currentCommit = current;
             currentCommit.set(current);

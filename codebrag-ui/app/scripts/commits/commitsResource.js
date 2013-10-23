@@ -11,6 +11,7 @@ angular.module('codebrag.commits')
             queryReviewable: {method: 'GET', isArray: false, requestType: commitsListLoadingRequest, params: loadCommitsToReviewParams},
             queryWithSurroundings: {method: 'GET', isArray: false, requestType: commitsListLoadingRequest, params: loadCommitWithSurroundings},
             query: {method: 'GET', isArray: false, requestType: commitsListLoadingRequest},
+            querySilent: {method: 'GET', isArray: false},
             get: {method: 'GET', isArray: false}
         });
     });

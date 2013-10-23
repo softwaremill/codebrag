@@ -4,26 +4,26 @@ describe("CommitDetailsController", function () {
 
     var selectedCommitId = 123;
     var noopPromise = {then: function(){}};
-    var $scope, $q, commitsListService;
+    var $scope, $q, commitsService;
 
     beforeEach(module('codebrag.commits'));
 
-    beforeEach(inject(function($rootScope, _$q_, _commitsListService_) {
+    beforeEach(inject(function($rootScope, _$q_, _commitsService_) {
         $scope = $rootScope.$new();
         $q = _$q_;
-        commitsListService = _commitsListService_;
+        commitsService = _commitsService_;
     }));
 
     it('should use commit id provided in $stateParams to load commit data', inject(function($stateParams, $controller) {
         // Given
         $stateParams.id = selectedCommitId;
-        spyOn(commitsListService, 'loadCommitDetails').andReturn(noopPromise);
+        spyOn(commitsService, 'commitDetails').andReturn(noopPromise);
 
         // when
-        $controller('CommitDetailsCtrl', {$scope: $scope, commitsListService: commitsListService});
+        $controller('CommitDetailsCtrl', {$scope: $scope, commitsListService: commitsService});
 
         // Then
-        expect(commitsListService.loadCommitDetails).toHaveBeenCalledWith(selectedCommitId);
+        expect(commitsService.commitDetails).toHaveBeenCalledWith(selectedCommitId);
     }));
 
     it('should expose loaded commit in scope', inject(function($controller, $stateParams) {
@@ -32,10 +32,10 @@ describe("CommitDetailsController", function () {
         var expectedCommitDetails = {commit: {sha: '123'}, diff: [], supressedFiles: []};
         var commitDetails = $q.defer();
         commitDetails.resolve(expectedCommitDetails);
-        spyOn(commitsListService, 'loadCommitDetails').andReturn(commitDetails.promise);
+        spyOn(commitsService, 'commitDetails').andReturn(commitDetails.promise);
 
         // When
-        $controller('CommitDetailsCtrl', {$scope: $scope, commitsListService: commitsListService});
+        $controller('CommitDetailsCtrl', {$scope: $scope, commitsListService: commitsService});
         $scope.$apply();
 
         //then
