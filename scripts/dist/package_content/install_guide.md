@@ -127,6 +127,8 @@ By default Codebrag starts on port 8080. If you want to change that, edit `port`
 
 ## Running Codebrag
 
+*** NOTE: *** If you already have previous Codebrag installation you need to run database migration scripts before running new version. Go to `mongo_migration` directory in distribution package and follow the instructions from `README` file there.
+
 Assuming your MongoDB is working and java is installed Codebrag can be run with 
 
 On **Unix/OS X**
