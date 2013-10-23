@@ -31,11 +31,8 @@ angular.module('codebrag.commits')
         }
 
         function markAsReviewed(commitId) {
-            console.log(commits.length);
             var indexRemoved = commits.removeFromListBy(commitId);
-            console.log(commits.length);
             prefetchedCommit && commits.push(prefetchedCommit);
-            console.log(commits.length);
             eventsEmitter.triggerCounterDecrease();
             Commits.remove({commitId: commitId});
             _prefetchOneMoreCommit();
@@ -65,10 +62,7 @@ angular.module('codebrag.commits')
         function _prefetchOneMoreCommit() {
             if(!commits.length) return;
             var options = {min_id: commits.last().id, limit: 1, filter: 'to_review'};
-            console.log('pref1');
             Commits.querySilent(options).$then(function(response) {
-                console.log('pref2');
-                console.log(response.data);
                 prefetchedCommit = response.data.commits.shift();
                 if(!prefetchedCommit) nextCommits = 0;
             });
