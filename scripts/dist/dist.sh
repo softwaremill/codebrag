@@ -13,6 +13,7 @@ DIST_DIR=codebrag
 DIST_ARCHIVE=codebrag.zip
 WAR_FILE=$CODEBRAG_ROOT/codebrag-dist/target/scala-2.10/codebrag-dist-assembly*.jar
 CONF_FILE=$CODEBRAG_ROOT/codebrag-rest/src/main/resources/application.conf.template
+DB_MIGRATIONS=$CODEBRAG_ROOT/scripts/mongo_migrations
 
 GUIDE_FILE=$CODEBRAG_ROOT/scripts/dist/package_content/install_guide.pdf
 LICENSE_FILE=$CODEBRAG_ROOT/scripts/dist/package_content/license.pdf
@@ -41,6 +42,10 @@ echo "Done"
 echo "Copying instruction and license"
 cp $GUIDE_FILE $DIST_DIR
 cp $LICENSE_FILE $DIST_DIR
+echo "Done"
+
+echo "Copying DB migrations"
+cp -r $DB_MIGRATIONS $DIST_DIR
 echo "Done"
 
 echo "Copying codebrag configuration file"
