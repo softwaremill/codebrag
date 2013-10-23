@@ -1,5 +1,11 @@
 angular.module('codebrag.commits')
-
+    /**
+     * It's kind of delegate that has two possible implemenations for all and pending commits
+     * Depending on what caller needs (with prior calls to setAllMode or setToReviewMode)
+     * suitable implementation is called.
+     *
+     * Most of the code here is to create delegates
+     */
     .factory('commitsService', function(allCommitsListService, pendingCommitsListService) {
 
         var toReviewService = true;
