@@ -32,8 +32,8 @@ class UserNotificationSenderActor(actorSystem: ActorSystem,
 
     case SendDailySummary => {
       logger.debug("Preparing daily summaries to send out")
+      scheduleNextDailySendOut(actorSystem, self, clock, config)
       sendDailySummary(userDAO.findAll())
-      scheduleNextDailySendOut(actorSystem, self, clock)
     }
   }
 
@@ -54,17 +54,27 @@ object UserNotificationSenderActor extends Logging {
       "notification-scheduler")
 
     scheduleNextNotificationsSendOut(actorSystem, actor, config.notificationsCheckInterval)
-    scheduleNextDailySendOut(actorSystem, actor, clock)
+    scheduleInitialDailySendOut(actorSystem, actor, clock, config)
   }
 
-  private def scheduleNextDailySendOut(actorSystem: ActorSystem, receiver: ActorRef, clock: Clock) {
+  private def scheduleInitialDailySendOut(actorSystem: ActorSystem, receiver: ActorRef, clock: Clock, config: CodebragConfig) {
     import actorSystem.dispatcher
     import scala.concurrent.duration._
 
-    val nextSendOutDate = clock.currentDateTime.withTimeAtStartOfDay().plusHours(9)
-    val millisToNextSendOut = nextSendOutDate.getMillis - clock.currentTimeMillis
+    val initialDelay = DailySummaryScheduleCalculator.initialScheduleTimeDelayInMillis(config)(clock).millis
+    val dateAtDelay = clock.currentDateTime.plusMillis(initialDelay.toMillis.toInt)
+    logger.debug(s"Scheduling initial daily summary send out at $dateAtDelay")
+    actorSystem.scheduler.scheduleOnce(initialDelay, receiver, SendDailySummary)
+  }
 
-    actorSystem.scheduler.scheduleOnce(millisToNextSendOut.millis, receiver, SendDailySummary)
+  private def scheduleNextDailySendOut(actorSystem: ActorSystem, receiver: ActorRef, clock: Clock, config: CodebragConfig) {
+    import actorSystem.dispatcher
+    import scala.concurrent.duration._
+
+    val nextSendOutDelay = DailySummaryScheduleCalculator.nextScheduleTimeDelayInMillis(config)(clock).millis
+    val dateAtDelay = clock.currentDateTime.plusMillis(nextSendOutDelay.toMillis.toInt)
+    logger.debug(s"Scheduling next daily summary send out at $dateAtDelay")
+    actorSystem.scheduler.scheduleOnce(nextSendOutDelay, receiver, SendDailySummary)
   }
 
   private def scheduleNextNotificationsSendOut(actorSystem: ActorSystem, receiver: ActorRef, interval: FiniteDuration) {
