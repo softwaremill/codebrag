@@ -30,10 +30,10 @@ class UserNotificationSenderActor(actorSystem: ActorSystem,
       scheduleNextNotificationsSendOut(actorSystem, self, config.notificationsCheckInterval)
     }
 
-    case SendDailySummary => {
-      logger.debug("Preparing daily summaries to send out")
+    case SendDailyDigest => {
+      logger.debug("Preparing daily digests to send out")
       scheduleNextDailySendOut(actorSystem, self, clock, config)
-      sendDailySummary(userDAO.findAll())
+      sendDailyDigest(userDAO.findAll())
     }
   }
 
@@ -61,20 +61,20 @@ object UserNotificationSenderActor extends Logging {
     import actorSystem.dispatcher
     import scala.concurrent.duration._
 
-    val initialDelay = DailySummaryScheduleCalculator.initialScheduleTimeDelayInMillis(config)(clock).millis
+    val initialDelay = DailyDigestScheduleCalculator.initialScheduleTimeDelayInMillis(config)(clock).millis
     val dateAtDelay = clock.currentDateTime.plusMillis(initialDelay.toMillis.toInt)
-    logger.debug(s"Scheduling initial daily summary send out at $dateAtDelay")
-    actorSystem.scheduler.scheduleOnce(initialDelay, receiver, SendDailySummary)
+    logger.debug(s"Scheduling initial daily digest sending at $dateAtDelay")
+    actorSystem.scheduler.scheduleOnce(initialDelay, receiver, SendDailyDigest)
   }
 
   private def scheduleNextDailySendOut(actorSystem: ActorSystem, receiver: ActorRef, clock: Clock, config: CodebragConfig) {
     import actorSystem.dispatcher
     import scala.concurrent.duration._
 
-    val nextSendOutDelay = DailySummaryScheduleCalculator.nextScheduleTimeDelayInMillis(config)(clock).millis
+    val nextSendOutDelay = DailyDigestScheduleCalculator.nextScheduleTimeDelayInMillis(config)(clock).millis
     val dateAtDelay = clock.currentDateTime.plusMillis(nextSendOutDelay.toMillis.toInt)
-    logger.debug(s"Scheduling next daily summary send out at $dateAtDelay")
-    actorSystem.scheduler.scheduleOnce(nextSendOutDelay, receiver, SendDailySummary)
+    logger.debug(s"Scheduling next daily digest sending at $dateAtDelay")
+    actorSystem.scheduler.scheduleOnce(nextSendOutDelay, receiver, SendDailyDigest)
   }
 
   private def scheduleNextNotificationsSendOut(actorSystem: ActorSystem, receiver: ActorRef, interval: FiniteDuration) {
@@ -88,7 +88,7 @@ object UserNotificationSenderActor extends Logging {
 
 case object SendUserNotifications
 
-case object SendDailySummary
+case object SendDailyDigest
 
 trait UserNotificationsSender extends Logging {
   def notificationCounts: NotificationCountFinder
@@ -151,11 +151,15 @@ trait UserNotificationsSender extends Logging {
     }
   }
 
-  def sendDailySummary(users: List[User]) {
+  def sendDailyDigest(users: List[User]) {
     users.foreach {
       user => {
         val counters = notificationCounts.getCounters(user.id)
-        notificationService.sendCommitsOrFollowupNotification(user, counters.pendingCommitCount, counters.followupCount)
+        if(counters.nonEmpty) {
+          notificationService.sendDailyDigest(user, counters.pendingCommitCount, counters.followupCount)
+        } else {
+          logger.debug(s"Not sending email to ${user.email} - no commits and followups waiting for this user")
+        }
       }
     }
   }

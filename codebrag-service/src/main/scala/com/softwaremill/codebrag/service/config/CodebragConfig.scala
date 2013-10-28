@@ -22,8 +22,8 @@ trait CodebragConfig extends ConfigWithDefault {
   // Config properties for daily summary send outs
   // Not included in docs and in config template as we prefer not to expose them
   // By default daily summaries are sent at 9am every day
-  lazy val dailySummarySendHour = getInt("codebrag.user-email-notifications.daily-summary-hour", 9)
-  lazy val dailySummarySendMinute = getInt("codebrag.user-email-notifications.daily-summary-minute", 0)
-  lazy val dailySummarySendInterval = Period.millis(getMilliseconds("codebrag.user-email-notifications.daily-summary-interval", 24.hours.toMillis).toInt)
+  lazy val dailyDigestSendHour = getInt("codebrag.user-email-notifications.daily-digest-hour", 9)
+  lazy val dailyDigestSendMinute = getInt("codebrag.user-email-notifications.daily-digest-minute", 0)
+  lazy val dailyDigestSendInterval = Period.millis(getMilliseconds("codebrag.user-email-notifications.daily-digest-interval", 24.hours.toMillis).toInt)
 }
 

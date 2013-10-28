@@ -13,8 +13,12 @@ import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import com.softwaremill.codebrag.domain.builder.UserAssembler
+import com.softwaremill.codebrag.common.FixtureTimeClock
+import org.joda.time.DateTime
 
 class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers {
+
+  val clock = new FixtureTimeClock(DateTime.now.getMillis.toInt)
 
   it should "send welcome notification" in {
     //given
@@ -22,7 +26,7 @@ class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
     val engine = mock[EmailTemplateEngine]
     val config = mock[CodebragConfig]
     val countFinder = mock[NotificationCountFinder]
-    val service = new NotificationService(scheduler, engine, config, countFinder)
+    val service = new NotificationService(scheduler, engine, config, countFinder, clock)
     val emailAddress = "sofo@sml.com"
     val user = UserAssembler.randomUser.get
 
@@ -58,7 +62,7 @@ class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
       val config = mock[CodebragConfig]
       when(config.applicationUrl).thenReturn("http://test:8080")
       val countFinder = mock[NotificationCountFinder]
-      val service = new NotificationService(scheduler, engine, config, countFinder)
+      val service = new NotificationService(scheduler, engine, config, countFinder, clock)
       val user = UserAssembler.randomUser.get
 
       when(countFinder.getCounters(any[ObjectId])).thenReturn(NotificationCountersView(pair._2, 10))

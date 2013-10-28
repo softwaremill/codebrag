@@ -11,13 +11,13 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 
 
-class DailySummaryScheduleCalculatorSpec extends FlatSpec with MockitoSugar with ShouldMatchers {
+class DailyDigestScheduleCalculatorSpec extends FlatSpec with MockitoSugar with ShouldMatchers {
 
   val config = new CodebragConfig with ConfigWithDefault {
     val params = Map(
-      "codebrag.user-email-notifications.daily-summary-hour" -> "9",
-      "codebrag.user-email-notifications.daily-summary-minute" -> "10",
-      "codebrag.user-email-notifications.daily-summary-interval" -> "1 minute"
+      "codebrag.user-email-notifications.daily-digest-hour" -> "9",
+      "codebrag.user-email-notifications.daily-digest-minute" -> "10",
+      "codebrag.user-email-notifications.daily-digest-interval" -> "1 minute"
     )
     def rootConfig = ConfigFactory.parseMap(params)
   }
@@ -27,7 +27,7 @@ class DailySummaryScheduleCalculatorSpec extends FlatSpec with MockitoSugar with
     val clock = clockAt("12/11/2013 8:45")
 
     // when
-    val delay = DailySummaryScheduleCalculator.initialScheduleTimeDelayInMillis(config)(clock)
+    val delay = DailyDigestScheduleCalculator.initialScheduleTimeDelayInMillis(config)(clock)
 
     // then
     val expectedDelay = delayTo("12/11/2013 9:10")(clock)
@@ -39,7 +39,7 @@ class DailySummaryScheduleCalculatorSpec extends FlatSpec with MockitoSugar with
     val clock = clockAt("12/11/2013 9:11")
 
     // when
-    val delay = DailySummaryScheduleCalculator.initialScheduleTimeDelayInMillis(config)(clock)
+    val delay = DailyDigestScheduleCalculator.initialScheduleTimeDelayInMillis(config)(clock)
 
     // then
     
@@ -52,7 +52,7 @@ class DailySummaryScheduleCalculatorSpec extends FlatSpec with MockitoSugar with
     val clock = clockAt("12/11/2013 9:10")
 
     // when
-    val delay = DailySummaryScheduleCalculator.initialScheduleTimeDelayInMillis(config)(clock)
+    val delay = DailyDigestScheduleCalculator.initialScheduleTimeDelayInMillis(config)(clock)
 
     // then
 
@@ -65,7 +65,7 @@ class DailySummaryScheduleCalculatorSpec extends FlatSpec with MockitoSugar with
     val clock = clockAt("12/11/2013 11:00")
 
     // when
-    val delay = DailySummaryScheduleCalculator.nextScheduleTimeDelayInMillis(config)(clock)
+    val delay = DailyDigestScheduleCalculator.nextScheduleTimeDelayInMillis(config)(clock)
 
     // then
     val expectedDelay = delayTo("12/11/2013 11:01")(clock)

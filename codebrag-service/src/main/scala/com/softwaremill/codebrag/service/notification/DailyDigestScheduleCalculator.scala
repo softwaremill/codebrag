@@ -4,11 +4,11 @@ import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.common.Clock
 import org.joda.time.Period
 
-object DailySummaryScheduleCalculator {
+object DailyDigestScheduleCalculator {
 
   def initialScheduleTimeDelayInMillis(config: CodebragConfig)(implicit clock: Clock) = {
-    val sendHour = config.dailySummarySendHour
-    val sendMinute = config.dailySummarySendMinute
+    val sendHour = config.dailyDigestSendHour
+    val sendMinute = config.dailyDigestSendMinute
     val sendPeriod = new Period().withHours(sendHour).withMinutes(sendMinute)
 
     val day = if(isBeforeSendHourToday(clock, sendPeriod)) {
@@ -20,7 +20,7 @@ object DailySummaryScheduleCalculator {
   }
 
   def nextScheduleTimeDelayInMillis(config: CodebragConfig)(implicit clock: Clock) = {
-    val interval = config.dailySummarySendInterval
+    val interval = config.dailyDigestSendInterval
     val nextSend = clock.currentDateTime.plus(interval)
     nextSend.getMillis - clock.currentDateTime.getMillis
   }
