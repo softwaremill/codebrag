@@ -17,7 +17,7 @@ class MongoNotificationCountFinder extends NotificationCountFinder {
   }
 
   def getCountersSince(date: DateTime, userId: ObjectId): NotificationCountersView = {
-    val followupCount = FollowupRecord where (_.id after date) and (_.receivingUserId eqs userId) count()
+    val followupCount = FollowupRecord.where(_.receivingUserId eqs userId).and(_.lastReaction.subselect(_.reactionId) after date).count()
     val commitCount = CommitReviewTaskRecord.where(_.id after date).and(_.userId eqs userId).count()
     NotificationCountersView(commitCount, followupCount)
   }

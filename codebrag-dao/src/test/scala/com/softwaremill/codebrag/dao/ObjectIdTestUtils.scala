@@ -1,6 +1,7 @@
 package com.softwaremill.codebrag.dao
 
 import org.bson.types.ObjectId
+import org.joda.time.DateTime
 
 object ObjectIdTestUtils {
 
@@ -11,5 +12,8 @@ object ObjectIdTestUtils {
     val prefixLength = fullPrefix.length - number.toString.length
     fullPrefix.substring(0, prefixLength + 1) + number
   }
+
+  def withDate(date: DateTime) = new ObjectId(date.toDate)
+
 
 }

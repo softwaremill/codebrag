@@ -4,11 +4,12 @@ import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.domain.builder.{CommentAssembler, CommitInfoAssembler}
+import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler, CommitInfoAssembler}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import scala.util.Random
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.common.FixtureTimeClock
 
 class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with MongoNotificationCountFinderSpecFixture {
 
@@ -50,11 +51,13 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearDataA
   }
 
   "getCountersSince" should "return zero followups if there are no new followups for the user" taggedAs RequiresDb in {
-    //given
-    givenFollowUpFor(UserBruceId, DateTime.now().minusDays(1))
+    // given
+    val clock = new FixtureTimeClock(DateTime.now.minusDays(1).getMillis)
+    val oldLike = LikeAssembler.likeFor(new ObjectId).withId(ObjectIdTestUtils.withDate(clock.currentDateTimeUTC)).withFileNameAndLineNumber("file.txt", 20).get
+    followupDao.createOrUpdateExisting(Followup(UserBruceId, oldLike))
 
     //when
-    val counters = notificationCountFinder.getCountersSince(DateTime.now(), UserBruceId)
+    val counters = notificationCountFinder.getCountersSince(clock.currentDateTimeUTC.plusDays(2), UserBruceId)
 
     //then
     counters.followupCount should equal(0)
@@ -62,16 +65,34 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearDataA
 
 
   it should "return a number of new followups for the user since a given date" taggedAs RequiresDb in {
-    def givenSomeFollowUpsForBruce() {
-      for (i <- 0 to 2) {
-        givenFollowUpFor(UserBruceId, DateTime.now().minusDays(i))
-      }
-    }
-    //given
-    givenSomeFollowUpsForBruce()
+    // given
+    val clock = new FixtureTimeClock(DateTime.now.getMillis)
+    val oldLike = LikeAssembler.likeFor(new ObjectId).withId(ObjectIdTestUtils.withDate(clock.currentDateTimeUTC)).withFileNameAndLineNumber("file.txt", 20).get
+    followupDao.createOrUpdateExisting(Followup(UserBruceId, oldLike))
 
     //when
-    val counters = notificationCountFinder.getCountersSince(DateTime.now().minusDays(1), UserBruceId)
+    val counters = notificationCountFinder.getCountersSince(clock.currentDateTimeUTC.minusDays(1), UserBruceId)
+
+    //then
+    counters.followupCount should equal(1)
+  }
+
+  it should "return a number of new and updated followups since a given date when new reactions were added to thread" taggedAs RequiresDb in {
+    //given
+    val commitId = new ObjectId
+    val clock = new FixtureTimeClock(DateTime.now.getMillis)
+
+    val earliestLike = LikeAssembler.likeFor(commitId).withId(ObjectIdTestUtils.withDate(clock.currentDateTimeUTC.minusHours(3))).withFileNameAndLineNumber("file.txt", 20).get
+    val latestLike = LikeAssembler.likeFor(commitId).withId(ObjectIdTestUtils.withDate(clock.currentDateTimeUTC.minusHours(1))).withFileNameAndLineNumber("file.txt", 20).get
+    followupDao.createOrUpdateExisting(Followup(UserBruceId, earliestLike))
+    followupDao.createOrUpdateExisting(Followup(UserBruceId, latestLike))
+
+    val anotherLike = LikeAssembler.likeFor(commitId).withId(ObjectIdTestUtils.withDate(clock.currentDateTimeUTC.minusHours(1))).withFileNameAndLineNumber("file.txt", 30).get
+    followupDao.createOrUpdateExisting(Followup(UserBruceId, anotherLike))
+
+    //when
+    val timeBetweenLatestAndEarliestLike = clock.currentDateTimeUTC.minusHours(2)
+    val counters = notificationCountFinder.getCountersSince(timeBetweenLatestAndEarliestLike, UserBruceId)
 
     //then
     counters.followupCount should equal(2)
@@ -112,13 +133,6 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearDataA
 
     //then
     counters.pendingCommitCount should equal(3)
-  }
-
-  private def givenFollowUpFor(userId: ObjectId, date: DateTime) {
-    FollowupRecord.createRecord
-      .receivingUserId(userId)
-      .id(new ObjectId(date.toDate))
-      .save
   }
 
   private def givenReviewTaskFor(userId: ObjectId, date: DateTime) {
