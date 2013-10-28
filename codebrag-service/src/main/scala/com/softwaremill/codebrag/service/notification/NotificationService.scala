@@ -21,13 +21,13 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: EmailT
 
 
   def sendCommitsOrFollowupNotification(user: User, commitCount: Long, followupCount: Long) {
-    val countersMsg = countersText(commitCount, followupCount)
     val templateParams = Map(
       "username" -> user.name,
-      "commit_followup_message" -> countersMsg,
+      "commit_followup_message" -> countersText(commitCount, followupCount),
       "application_url" -> codebragConfig.applicationUrl
     )
-    val email = Email(List(user.email), countersMsg, templateEngine.getTemplate(Templates.UserNotifications, templateParams).content)
+    val resolvedTemplate = templateEngine.getTemplate(Templates.UserNotifications, templateParams)
+    val email = Email(List(user.email), resolvedTemplate.subject, resolvedTemplate.content)
     emailScheduler.scheduleInstant(email)
   }
 
@@ -38,7 +38,6 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: EmailT
       "application_url" -> codebragConfig.applicationUrl,
       "date" -> clock.currentDateTime.toString(DateTimeFormat.forPattern("yyyy-MM-dd"))
     )
-    
     val resolvedTemplate = templateEngine.getTemplate(Templates.DailyDigest, templateParams)
     val email = Email(List(user.email), resolvedTemplate.subject, resolvedTemplate.content)
     emailScheduler.scheduleInstant(email)
