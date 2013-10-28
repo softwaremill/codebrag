@@ -9,6 +9,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import org.eclipse.jgit.util.FileUtils
 
 class JgitFacade extends Logging {
+  private val JGitCommandTimeoutSeconds = 60 * 10
 
   def clone(remote: String, branch: String, localPath: Path, credentials: CredentialsProvider): Git = {
     try {
@@ -27,7 +28,7 @@ class JgitFacade extends Logging {
     val repository = getRepository(localPath)
     val git = new Git(repository)
 
-    val pullResult = git.pull().setCredentialsProvider(credentials).call()
+    val pullResult = git.pull().setCredentialsProvider(credentials).setTimeout(JGitCommandTimeoutSeconds).call()
     if (!pullResult.isSuccessful) throw new IllegalStateException(s"Git pull to $localPath failed. Cause: $pullResult")
     git
   }
