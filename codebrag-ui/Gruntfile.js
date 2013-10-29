@@ -42,7 +42,7 @@ module.exports = function (grunt) {
             proxies: [{context: '/rest/', host: 'localhost', port: 8080}],
             options: {
                 port: 9090,
-                hostname: 'localhost'
+                hostname: '0.0.0.0'
             },
 
             livereload: {
