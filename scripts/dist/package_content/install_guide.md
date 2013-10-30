@@ -69,18 +69,22 @@ You can also use Codebrag with SVN repositories although *** this is an experime
 	    }
 	}
 
+<br><br>
+
 ### "email" section
 
 Setup your email server/account so that Codebrag can send emails with invitations and other notifications to users.
 
     email {
-        smtp-host = "smtp.gmail.com"
+        smtp-host = "your.smtp.server.com"
         smtp-port = "465"
         smtp-username = "user@mydomain.com"
         smtp-password = "myPassword"
         from = "user@mydomain.com"
         encoding = "UTF-8"
     }
+    
+Please make sure java has all required security certificates in case of using SSL/TLS connection.
 
 ### "codebrag" section
 
@@ -101,17 +105,20 @@ Codebrag needs to store repository data somewhere on your server. Edit `local-gi
     //this setting uses Scala's Duration syntax, i.e. 15 minutes, 24 hours, 2 days
 	invitation-expiry-time= "24 hours"
 
+<br><br>
+
 ##### user-email-notifications
 
     user-email-notifications {
         enabled = true
         check-interval = "15 minutes"
         user-offline-after = "5 minutes"
+        daily-digest-hour = 9
     }
 
 ###### enabled
 
-Indicates whether email notifications should be enabled
+Indicates whether email notifications should be enabled. If notifications are enabled each user can switch them off in his profile in application
 
 ###### check-interval
 
@@ -120,6 +127,10 @@ Defines how often the system will check for notifications to send
 ###### user-offline-after
 
 Defines how long after closing tab with Codebrag user will be considered offline.
+
+###### daily-digest-hour
+
+Defines when (full hour of the day) daily digest emails will be sent
 
 ### "web-server" section
 
@@ -137,6 +148,8 @@ On **Unix/OS X**
 	./run.sh 
 	#Or
 	./run.sh custom.conf
+
+<br>
 
 On **Windows**
 

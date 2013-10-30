@@ -38,6 +38,7 @@ codebrag {
         enabled = true
         check-interval = "15 minutes"
         user-offline-after = "5 minutes"
+        daily-digest-hour = 9
     }
 }
 
