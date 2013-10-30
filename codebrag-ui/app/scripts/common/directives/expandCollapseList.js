@@ -1,9 +1,19 @@
 angular.module('codebrag.common.directives')
 
-    .directive('expandCollapseList', function($window) {
+    .directive('expandCollapseList', function($window, events) {
         function triggerWindowResizeToLetCommentsFormAutoFit() {
             $($window).resize();
         }
+
+        function expand(el) {
+            var commitsList = $('.commits');
+            var diffArea = el.closest('.diff');
+            diffArea.removeClass('opened');
+            commitsList.animate({opacity: 1}, 500);
+            el.find('i').removeClass().addClass('icon-chevron-left');
+            triggerWindowResizeToLetCommentsFormAutoFit();
+        }
+
         return {
             restrict: 'A',
             link: function(scope, el) {
@@ -18,12 +28,13 @@ angular.module('codebrag.common.directives')
                             el.find('i').removeClass().addClass('icon-chevron-right');
                         }, 1000);
                     } else {
-                        commitsList.animate({opacity: 1}, 500);
-                        el.find('i').removeClass().addClass('icon-chevron-left');
-                        triggerWindowResizeToLetCommentsFormAutoFit();
+                        expand(el);
                     }
-
                 });
+
+                scope.$on(events.reloadCommitsList, function() {
+                    expand(el);
+                })
             }
         };
     });
