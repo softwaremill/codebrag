@@ -124,19 +124,27 @@ trait UserNotificationsSender extends Logging {
   }
 
   private def userShouldBeNotified(heartbeat: DateTime, user: User, counters: NotificationCountersView) = {
-    val needsCommitNotification = counters.pendingCommitCount > 0 && (user.notifications match {
-      case None => true
-      case Some(LastUserNotificationDispatch(None, _)) => true
-      case Some(LastUserNotificationDispatch(Some(date), _)) => date.isBefore(heartbeat)
-    })
+    val userHasNotificationsEnabled = user.settings.emailNotificationsEnabled
+    userHasNotificationsEnabled match {
+      case true => {
+        val needsCommitNotification = counters.pendingCommitCount > 0 && (user.notifications match {
+          case None => true
+          case Some(LastUserNotificationDispatch(None, _)) => true
+          case Some(LastUserNotificationDispatch(Some(date), _)) => date.isBefore(heartbeat)
+        })
+        val needsFollowupNotification = counters.followupCount > 0 && (user.notifications match {
+          case None => true
+          case Some(LastUserNotificationDispatch(_, None)) => true
+          case Some(LastUserNotificationDispatch(_, Some(date))) => date.isBefore(heartbeat)
+        })
+        needsCommitNotification || needsFollowupNotification
+      }
+      case false => {
+        logger.debug(s"Not sending email to ${user.email} - user has notifications disabled")
+        false
+      }
+    }
 
-    val needsFollowupNotification = counters.followupCount > 0 && (user.notifications match {
-      case None => true
-      case Some(LastUserNotificationDispatch(_, None)) => true
-      case Some(LastUserNotificationDispatch(_, Some(date))) => date.isBefore(heartbeat)
-    })
-
-    needsCommitNotification || needsFollowupNotification
   }
 
   private def sendNotifications(user: User, counter: NotificationCountersView) = {
@@ -155,10 +163,16 @@ trait UserNotificationsSender extends Logging {
     users.foreach {
       user => {
         val counters = notificationCounts.getCounters(user.id)
-        if(counters.nonEmpty) {
-          notificationService.sendDailyDigest(user, counters.pendingCommitCount, counters.followupCount)
-        } else {
-          logger.debug(s"Not sending email to ${user.email} - no commits and followups waiting for this user")
+        val userHasNotificationsEnabled = user.settings.emailNotificationsEnabled
+        userHasNotificationsEnabled match {
+          case true => {
+            if(counters.nonEmpty) {
+              notificationService.sendDailyDigest(user, counters.pendingCommitCount, counters.followupCount)
+            } else {
+              logger.debug(s"Not sending email to ${user.email} - no commits and followups waiting for this user")
+            }
+          }
+          case false => logger.debug(s"Not sending email to ${user.email} - user has notifications disabled")
         }
       }
     }
