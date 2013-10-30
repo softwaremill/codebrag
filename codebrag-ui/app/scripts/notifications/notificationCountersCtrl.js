@@ -5,11 +5,13 @@ angular.module('codebrag.notifications')
         $scope.counters = notificationService.counters;
 
         $scope.openFollowups = function() {
+            $rootScope.$broadcast(events.expandList);
             $state.transitionTo('followups.list');
         };
 
         $scope.openCommits = function() {
             $rootScope.$broadcast(events.reloadCommitsList);
+            $rootScope.$broadcast(events.expandList);
             $state.transitionTo('commits.list');
         };
     });

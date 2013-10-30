@@ -17,6 +17,7 @@ angular.module('codebrag.events', []).constant('events', {
 
     closeForm: 'codebrag:closeForm',
     scrollOnly: 'codebrag:scrollOnly',
+    expandList: 'codebrag:expandList',
 
     nextCommitsLoaded: 'codebrag:nextCommitsLoaded',
     previousCommitsLoaded: 'codebrag:previousCommitsLoaded',
