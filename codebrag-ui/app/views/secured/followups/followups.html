@@ -18,7 +18,8 @@
                 </div>
             </div>
 
-            <div class="no-more-items" ng-hide="hasFollowupsAvailable()">
+            <!--display: none to have it initially hidden, while request for followups didn't finish yet-->
+            <div class="no-more-items" style="display: none" ng-show="!hasFollowupsAvailable()">
                 Yay!<br> No follow-ups!
             </div>
 
