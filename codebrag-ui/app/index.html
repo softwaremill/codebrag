@@ -178,10 +178,11 @@
                 <a ng-click="openUserProfilePopup()"><user-avatar logged-in-user="true"></user-avatar></a>
                 <span class="arrow-down"></span>
                 <ul class="user-info-dropdown">
-                    <li class="username" ng-click="openUserProfilePopup()"><strong>Signed in as {{loggedInUser().fullName}}</strong></li>
+                    <li class="username" ng-click="openUserProfilePopup()">{{loggedInUser().fullName}} - profile</li>
                     <li class="invite" ng-click="openInviteFormPopup()">Invite friends</li>
                     <li class="logout" ng-click="logout()">Logout</li>
                 </ul>
+
             </div>
         </div>
     </header>
