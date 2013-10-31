@@ -14,8 +14,6 @@ Without first obtaining the express written consent of SoftwareMill, you may not
  
 ###Restrictions on Use
 
-You may not use, copy, or install the Software Product on any system with more than one computer, or permit the use, copying, or installation of the Software Product by more than one user or on more than one computer. If you hold multiple, validly licensed copies, you may not use, copy, or install the Software Product on any system with more than the number of computers permitted by license, or permit the use, copying, or installation by more users, or on more computers than the number permitted by license.
- 
 You may not decompile, "reverse-engineer", disassemble, or otherwise attempt to derive the source code for the Software Product.
  
 ###Restrictions on Alteration
