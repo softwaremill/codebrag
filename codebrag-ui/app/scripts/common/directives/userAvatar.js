@@ -15,10 +15,10 @@ angular.module('codebrag.common.directives')
         function on(scope) {
             return function () {
                 return authService.requestCurrentUser().then(function (user) {
-                    if (!user.avatarUrl || !user.avatarUrl.length) {
+                    if (!user.settings.avatarUrl || !user.settings.avatarUrl.length) {
                         scope.avatarUrl = defaultAvatarUrl;
                     } else {
-                        scope.avatarUrl = user.avatarUrl + buildDefaultAvatarParam();
+                        scope.avatarUrl = user.settings.avatarUrl + buildDefaultAvatarParam();
                     }
                 });
             };
