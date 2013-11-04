@@ -66,6 +66,10 @@ class MongoUserDAO extends UserDAO {
     UserRecord where (_.id eqs userId) modify (_.userSettings.subfield(_.emailNotificationsEnabled) setTo emailNotificationsEnabled) updateOne()
   }
 
+  def changeUserSettings(userId: ObjectId, newSettings: UserSettings) {
+    UserRecord where (_.id eqs userId) modify (_.userSettings setTo toRecord(newSettings)) updateOne()
+  }
+
   private object UserImplicits {
     implicit def fromRecord(user: UserRecord): User = {
       new User(user.id.get, user.authentication.get, user.name.get, user.email.get, user.token.get, user.userSettings.get, user.notifications.get)
