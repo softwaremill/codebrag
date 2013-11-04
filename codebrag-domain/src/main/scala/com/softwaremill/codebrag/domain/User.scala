@@ -58,11 +58,11 @@ object Authentication {
 
 case class LastUserNotificationDispatch(commits: Option[DateTime], followups: Option[DateTime])
 
-case class UserSettings(avatarUrl: String, emailNotificationsEnabled: Boolean)
+case class UserSettings(avatarUrl: String, emailNotificationsEnabled: Boolean, welcomeFollowupDone: Boolean)
 
 object UserSettings {
 
-  def apply(avatarUrl: String) = new UserSettings(avatarUrl, emailNotificationsEnabled = true)
+  def apply(avatarUrl: String) = new UserSettings(avatarUrl, emailNotificationsEnabled = true, welcomeFollowupDone = false)
 
   def defaultAvatarUrl(email: String): String = {
     s"http://www.gravatar.com/avatar/${Utils.md5(email)}.png"
