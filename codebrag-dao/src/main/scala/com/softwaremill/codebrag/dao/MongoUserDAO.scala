@@ -62,10 +62,6 @@ class MongoUserDAO extends UserDAO {
     UserRecord or(_.where(_.name eqs commit.authorName), _.where(_.email eqs commit.authorEmail)) get()
   }
 
-  def changeEmailNotifications(userId: ObjectId, emailNotificationsEnabled: Boolean) {
-    UserRecord where (_.id eqs userId) modify (_.userSettings.subfield(_.emailNotificationsEnabled) setTo emailNotificationsEnabled) updateOne()
-  }
-
   def changeUserSettings(userId: ObjectId, newSettings: UserSettings) {
     UserRecord where (_.id eqs userId) modify (_.userSettings setTo toRecord(newSettings)) updateOne()
   }

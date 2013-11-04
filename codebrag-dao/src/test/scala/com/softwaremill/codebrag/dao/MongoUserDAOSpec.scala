@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import org.joda.time.DateTime
 
-class MongoUserDAOSpec extends MongoUserSpec with ChangeEmailNotificationsSpec {
+class MongoUserDAOSpec extends MongoUserSpec with ChangeUserSettingsSpec {
 
   "other methods" should "add user with existing login" taggedAs (RequiresDb) in {
     // Given
@@ -341,26 +341,32 @@ trait MongoUserSpec extends FlatSpecWithMongo with ShouldMatchers with ClearData
   }
 }
 
-trait ChangeEmailNotificationsSpec extends MongoUserSpec {
-  "changeEmailNotifications" should "set value to true" taggedAs RequiresDb in {
+trait ChangeUserSettingsSpec extends MongoUserSpec {
+
+  val user = UserAssembler.randomUser.withId(9).withEmailNotificationsDisabled().withWelcomeFollowupNotYetDone().get
+
+  "changeUserSettings" should "change email notifications" taggedAs RequiresDb in {
     //given
-    userDAO.add(UserAssembler.randomUser.withId(9).withEmailNotificationsDisabled().get)
+    userDAO.add(user)
 
     //when
-    userDAO.changeEmailNotifications(9, emailNotificationsEnabled = true)
+    userDAO.changeUserSettings(9, user.settings.copy(emailNotificationsEnabled = true))
 
     //then
     userDAO.findById(9).get.settings.emailNotificationsEnabled should equal(true)
   }
 
-  it should "set value to false" taggedAs RequiresDb in {
+  it should "update multiple settings" taggedAs RequiresDb in {
     //given
-    userDAO.add(UserAssembler.randomUser.withId(9).withEmailNotificationsEnabled().get)
+    val newSettings = user.settings.copy(emailNotificationsEnabled = true, welcomeFollowupDone = true)
+    userDAO.add(user)
 
     //when
-    userDAO.changeEmailNotifications(9, emailNotificationsEnabled = false)
+    userDAO.changeUserSettings(9, newSettings)
 
     //then
-    userDAO.findById(9).get.settings.emailNotificationsEnabled should equal(false)
+    val Some(userFound) = userDAO.findById(9)
+    userFound.settings.emailNotificationsEnabled should equal(true)
+    userFound.settings.welcomeFollowupDone should equal(true)
   }
 }
