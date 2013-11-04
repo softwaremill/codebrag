@@ -14,7 +14,7 @@ import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.config.{EmailConfig, CodebragConfig, RepositoryConfig, GithubConfig}
 import com.typesafe.config.ConfigFactory
-import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
+import com.softwaremill.codebrag.usecase.{ChangeUserSettingsUseCase, UnlikeUseCaseFactory}
 import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
 import com.softwaremill.codebrag.service.invitations.{DefaultUniqueHashGenerator, InvitationService}
 import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
@@ -61,6 +61,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
   lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder, new DiffService(commitInfoDao))
 
   lazy val unlikeUseCaseFactory = new UnlikeUseCaseFactory(likeValidator, userReactionService)
+  lazy val changeUserSettingsUseCase = new ChangeUserSettingsUseCase(userDao)
 }
 
 trait Daos {
