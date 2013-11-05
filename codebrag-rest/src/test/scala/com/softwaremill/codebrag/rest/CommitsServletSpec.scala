@@ -14,7 +14,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import com.softwaremill.codebrag.common.LoadMoreCriteria
 import com.softwaremill.codebrag.service.comments.UserReactionService
-import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
+import com.softwaremill.codebrag.usecase.UnlikeUseCase
 import com.softwaremill.codebrag.dao.finders.commit.{AllCommitsFinder, ReviewableCommitsListFinder}
 import com.softwaremill.codebrag.common.LoadMoreCriteria.PagingDirection
 
@@ -33,7 +33,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var commitReviewTaskDao = mock[CommitReviewTaskDAO]
   val UserJson = someUser()
   val userReactionService = mock[UserReactionService]
-  val unlikeUseCaseFactory = mock[UnlikeUseCaseFactory]
+  val unlikeUseCaseFactory = mock[UnlikeUseCase]
 
   override def beforeEach {
     super.beforeEach

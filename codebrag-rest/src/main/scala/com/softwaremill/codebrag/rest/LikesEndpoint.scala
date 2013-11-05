@@ -7,13 +7,13 @@ import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.dao.reporting.ReactionFinder
 import com.softwaremill.codebrag.domain.Like
 import com.softwaremill.codebrag.dao.reporting.views.LikeView
-import com.softwaremill.codebrag.usecase.UnlikeUseCaseFactory
+import com.softwaremill.codebrag.usecase.UnlikeUseCase
 
 trait LikesEndpoint extends JsonServletWithAuthentication with UserReactionParametersReader {
 
   def userReactionService: UserReactionService
   def reactionFinder: ReactionFinder
-  def unlikeUseCaseFactory: UnlikeUseCaseFactory
+  def unlikeUseCase: UnlikeUseCase
 
   post("/:id/likes") {
     haltIfNotAuthenticated()
@@ -27,8 +27,7 @@ trait LikesEndpoint extends JsonServletWithAuthentication with UserReactionParam
   delete("/:id/likes/:likeId") {
     haltIfNotAuthenticated()
     val likeId = params.getOrElse("likeId", halt(400, "Missing id of like to remove"))
-    val unlikeUseCase = unlikeUseCaseFactory.createNew(user, new ObjectId(likeId))
-    unlikeUseCase.execute().left.map { err =>
+    unlikeUseCase.execute(user, new ObjectId(likeId)).left.map { err =>
       halt(400, Map("err" -> err, "likeId" -> likeId))
     }
   }
