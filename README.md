@@ -30,7 +30,7 @@ Working with application:
 4. Generate Intellij Idea project files with `gen-idea` command
 5. Open project in Idea
 6. run backend server on jetty with `~;container:start; container:reload /`. Project will be recompiled & redeployed every time Scala sources will be changed.
-7. Go to `codebrag-ui` project. If this is your first attempt, run `npm install`. This will install all the dependencies required to start UI Codebrag application. Then run `grunt server`
+7. Go to `codebrag-ui` project. If this is your first attempt, run `npm install`. This will install all the dependencies required to start UI Codebrag application. Then run `./node_modules/.bin/grunt server`. If you have `grunt` installed globally you can use `grunt server` instead.
 
 Default browser should open at [http://localhost:9090](http://localhost:9090)
 
