@@ -24,6 +24,21 @@ Codebrag can work with VCS repositories in three modes. You need to set one usin
 * `git-ssh` - git via ssh (with keys)
 * `svn` - experimental
 
+##### Git repository via HTTPS
+
+To use Codebrag with git via https please configure repository section as follows (leave username and password empty for public repositories):
+
+	repository {
+	    type = "git-https"
+	    git-https {
+	        name = "..."		
+	        uri = "..."				// e.g. https://github.com/sml/codebrag.git
+	        branch = "..." 	
+	        username = "..."
+	        password = "..."
+	    }
+	}
+
 ##### Git repository via SSH
 
 To use Codebrag with git repository with authentication via ssh (keys) please configure repository section as follows. Please remember to have ssh keys properly configured (leave passphrase empty if there is no passphrase for your keystore).
@@ -40,20 +55,6 @@ To use Codebrag with git repository with authentication via ssh (keys) please co
 	    }
 	}
 
-##### Git repository via HTTPS
-
-To use Codebrag with git via https please configure repository section as follows (leave username and password empty for public repositories):
-
-	repository {
-	    type = "git-https"
-	    git-https {
-	        name = "..."		
-	        uri = "..."				// e.g. https://github.com/sml/codebrag.git
-	        branch = "..." 	
-	        username = "..."
-	        password = "..."
-	    }
-	}
 
 ##### SVN repository (experimental)
 
