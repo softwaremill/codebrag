@@ -41,7 +41,7 @@ To use Codebrag with git via https please configure repository section as follow
 
 ##### Git repository via SSH
 
-To use Codebrag with git repository with authentication via ssh (keys) please configure repository section as follows. Please remember to have ssh keys properly configured (leave passphrase empty if there is no passphrase for your keystore).
+To use Codebrag with git repository with authentication via ssh (keys) please configure repository section as follows (leave passphrase empty if there is no passphrase for your keystore):
 
 *** NOTE: *** Test you repository ssh connection and add host to `known-hosts` otherwise Codebrag will not be able to authenticate. You may also want to create ssh configuration in `~/.ssh/config` file.
 
@@ -163,16 +163,20 @@ Logs will be written to `codebrag.log`. To stop Codebrag on **Unix/OS X** run sc
 	#Or
 	./stop.sh custom.conf
 
-## Logging into codebrag
+## First time login
 
 First user that accesses Codebrag after installation will be asked to register an account. Either email address or name provided have to match corresponding fields in `git log` in order to match commits with given user. Codebrag uses [Gravatar](http://gravatar.com) to display user avatars in application.
 
 Other users can be invited to join Codebrag by choosing "Invite friends" link from menu in upper left corner.
 
-## Contact us if you need assistance
+## Questions? Help? Contact us
 
-We are really eager to hear your feedback about Codebrag beta. Do drop us a line at
+Do drop us a line at
 [**ask@codebrag.com**](mailto:ask@codebrag.com) if you find an issue or just want to share a thought or ask a question.
+
+You may also want to join [Codebrag Users group](https://groups.google.com/forum/#!forum/codebrag-users).
+
+We hope you and your team will enjoy performing code review with Codebrag!
            
 ## F.A.Q
 
