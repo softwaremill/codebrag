@@ -43,8 +43,7 @@
                         </span>
                     </div>
                     <!--commit info end-->
-                    <!--display: none to have it initially hidden, while request for commits didn't finish yet-->
-                    <div class="no-more-items" style="display: none" ng-show="allCommitsReviewed()">
+                    <div class="no-more-items ng-cloak" ng-show="allCommitsReviewed()">
                         Yay!<br> Nothing to review!
                     </div>
                 </div>
