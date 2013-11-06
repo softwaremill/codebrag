@@ -3,10 +3,12 @@ angular.module('codebrag.followups')
     .factory('followupsService', function($http, $rootScope, events) {
 
         var followupsListLocal = new codebrag.followups.LocalFollowupsList();
+        var listFetched = false;
 
         function allFollowups() {
             return _httpRequest('GET').then(function(response) {
                 followupsListLocal.addAll(response.data.followupsByCommit);
+                listFetched = true;
                 triggerAsyncFollowupsCounterRefresh();
                 return followupsListLocal.collection;
             });
@@ -31,6 +33,10 @@ angular.module('codebrag.followups')
             return followupsListLocal.hasFollowups();
         }
 
+        function mightHaveFollowups() {
+            return !listFetched || followupsListLocal.hasFollowups()
+        }
+
         function _httpRequest(method, id, config) {
             var followupsUrl = 'rest/followups/' + (id || '');
             var reqConfig = angular.extend(config || {}, {method: method, url: followupsUrl});
@@ -49,7 +55,8 @@ angular.module('codebrag.followups')
             allFollowups: allFollowups,
             removeAndGetNext: removeAndGetNext,
             loadFollowupDetails: loadFollowupDetails,
-            hasFollowups: hasFollowups
+            hasFollowups: hasFollowups,
+            mightHaveFollowups: mightHaveFollowups
         };
 
     });

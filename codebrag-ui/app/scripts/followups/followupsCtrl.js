@@ -4,5 +4,6 @@ angular.module('codebrag.followups')
 
         $scope.followupCommits = followupsService.allFollowups();
         $scope.hasFollowupsAvailable = followupsService.hasFollowups;
+        $scope.mightHaveFollowups = followupsService.mightHaveFollowups;
 
     });
