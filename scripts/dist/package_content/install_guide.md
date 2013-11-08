@@ -172,35 +172,8 @@ Other users can be invited to join Codebrag by choosing "Invite friends" link fr
 ## Questions? Help? Contact us
 
 Do drop us a line at
-[**ask@codebrag.com**](mailto:ask@codebrag.com) if you find an issue or just want to share a thought or ask a question.
+[**ask@codebrag.com**](mailto:ask@codebrag.com) if you find an issue or just want to share a thought or ask a question. If you're looking for Frequently Asked Questions please visit the website!
 
 You may also want to join [Codebrag Users group](https://groups.google.com/forum/#!forum/codebrag-users).
 
 We hope you and your team will enjoy performing code review with Codebrag!
-           
-## F.A.Q
-
-####Q: What Codebrag does with my repository?
-**A:** Codebrag will clone (checkout) the specified repository and create local copy. It will also periodically fetch
-updates but Codebrag will never commit anything to your repository.
-
-#####Q: I installed the application but page loaded partially (only  thetitle bar). What is wrong?
-**A:** Try to turn off browser extensions such as **User Agent Switcher** or other development tools that could have
-influence on **JavaScript** execution.
-
-#####Q: I launched Codebrag, but it looks that no commits were loaded. What should I do?
-**A**: During the first launch Codebrag is fetching the whole repository. It could take a while if repository is huge
-or if you are using SVN. To make sure that the import was finished correctly check `codebrag.log`. You should see
-commits then.
-
-#####Q: How is Codebrag matching commits with users?
-**A**: It uses the **email** address or **login** to find the author. Hence users should be created with the
-emails/logins which are used for working with the repository.
-
-#####Q: I am not getting any email notifications. Is Codebrag sending any?
-**A**: Codebrag is sending 2 kinds of emails: invitations and notifications. Notifications are being sent when new
-commits or follow-ups appear when you are offline. Just make sure that the **email** section in config is set up.
-If problems persists check `codebrag.log`.
-
-#####Q: Is Codebrag sending any data or statistics anywhere outside?
-**A**: No.
