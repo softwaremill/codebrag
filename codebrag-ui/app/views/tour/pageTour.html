@@ -1,0 +1,39 @@
+<div ng-controller="PageTourCtrl">
+
+    <page-tour-popup dismiss="ackStep('commits')" visible-if="inCommits() && stepActive('commits')" position-css-class="tour-info-box-commits" arrow-css-class="tour-info-box-arrow-top-left">
+        <header>
+            <h3 class="tour-info-box-header">Welcome to Codebrag</h3>
+        </header>
+        <section>
+            <p class="tour-info-box-text">
+                <strong>"To Review"</strong> list shows your colleagues' recent commits awaiting your review
+            </p>
+        </section>
+    </page-tour-popup>
+
+    <page-tour-popup dismiss="ackStep('followups')" visible-if="inFollowups() && stepActive('followups')" position-css-class="tour-info-box-followups" arrow-css-class="tour-info-box-arrow-top-left">
+        <section>
+            <p class="tour-info-box-text">
+                <strong>Followups</strong> are comments requiring your attention
+                <br>
+                - comments (and likes!) on your commits
+                <br>
+                - new comments in discussions you take part in
+            </p>
+        </section>
+    </page-tour-popup>
+
+    <page-tour-popup dismiss="ackStep('invites')" visible-if="stepActive('invites')" position-css-class="tour-info-box-invite" arrow-css-class="tour-info-box-arrow-right-top">
+        <header>
+            <h3 class="tour-info-box-header">Invite friends</h3>
+        </header>
+        <section>
+            <p class="tour-info-box-text">
+                Share your knowledge.
+                <br>
+                Review the code together and learn from each other!
+            </p>
+        </section>
+    </page-tour-popup>
+
+</div>

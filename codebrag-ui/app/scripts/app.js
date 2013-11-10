@@ -19,6 +19,8 @@ angular.module('codebrag.invitations', ['ui.validate', 'ui.keypress']);
 
 angular.module('codebrag.profile', ['codebrag.session']);
 
+angular.module('codebrag.tour', ['codebrag.auth', 'codebrag.profile']);
+
 
 angular.module('codebrag', [
     'codebrag.templates',
@@ -28,6 +30,7 @@ angular.module('codebrag', [
     'codebrag.commits',
     'codebrag.followups',
     'codebrag.notifications',
+    'codebrag.tour',
     'codebrag.profile',
     'codebrag.invitations']);
 
@@ -46,8 +49,9 @@ angular.module('codebrag')
             }
         });
     })
-    .run(function($rootScope, repositoryStatusService) {
+    .run(function($rootScope, repositoryStatusService, pageTourService) {
         repositoryStatusService.checkRepoReadyOnLogin();
+        pageTourService.startTour();
     });
 
 angular.module('codebrag.auth')
