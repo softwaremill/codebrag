@@ -13,7 +13,7 @@ angular.module('codebrag.notifications', ['codebrag.events', 'ui.bootstrap.modal
 angular.module('codebrag.commits.comments', ['ui.compat', 'codebrag.events']);
 angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments', 'codebrag.events']);
 
-angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events']);
+angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.tour']);
 
 angular.module('codebrag.invitations', ['ui.validate', 'ui.keypress']);
 
