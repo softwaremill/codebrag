@@ -11,7 +11,7 @@ angular.module('codebrag.session', ['ui.compat', 'codebrag.auth', 'codebrag.even
 angular.module('codebrag.notifications', ['codebrag.events', 'ui.bootstrap.modal', 'codebrag.templates']);
 
 angular.module('codebrag.commits.comments', ['ui.compat', 'codebrag.events']);
-angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments', 'codebrag.events']);
+angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments', 'codebrag.events', 'codebrag.tour']);
 
 angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.tour']);
 
@@ -19,7 +19,7 @@ angular.module('codebrag.invitations', ['ui.validate', 'ui.keypress']);
 
 angular.module('codebrag.profile', ['codebrag.session']);
 
-angular.module('codebrag.tour', ['codebrag.auth', 'codebrag.profile']);
+angular.module('codebrag.tour', ['codebrag.templates', 'codebrag.auth', 'codebrag.profile']);
 
 
 angular.module('codebrag', [

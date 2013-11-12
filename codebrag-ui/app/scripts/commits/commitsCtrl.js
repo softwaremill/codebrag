@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, commitsService, $stateParams, $state, currentCommit, events) {
+    .controller('CommitsCtrl', function ($scope, commitsService, $stateParams, $state, currentCommit, events, pageTourService) {
 
         $scope.$on(events.reloadCommitsList, function() {
             initCtrl();
@@ -36,7 +36,13 @@ angular.module('codebrag.commits')
             return emptyList && noMoreCommitsOnServer;
         };
 
+        $scope.hasCommitsAvailable = function() {
+            return $scope.commits && $scope.commits.length > 0;
+        };
 
+        $scope.pageTourForCommitsVisible = function() {
+            return pageTourService.stepActive('commits');
+        };
 
         function loadAllCommits() {
             commitsService.setAllMode();
