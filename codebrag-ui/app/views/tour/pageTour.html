@@ -1,4 +1,4 @@
-<div ng-controller="PageTourCtrl">
+<div ng-controller="PageTourCtrl" ng-show="loggedInUser">
 
     <page-tour-popup dismiss="ackStep('commits')" visible-if="inCommits() && stepActive('commits')" position-css-class="tour-info-box-commits" arrow-css-class="tour-info-box-arrow-top-left">
         <header>

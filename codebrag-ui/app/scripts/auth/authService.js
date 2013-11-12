@@ -10,6 +10,7 @@ angular.module('codebrag.auth')
                 var loginRequest = $http.post('rest/users', user, {bypassInterceptors: true});
                 return loginRequest.then(function (response) {
                     authService.loggedInUser = response.data;
+                    updateLoggedInUserInRootScope(authService.loggedInUser, $rootScope);
                     $rootScope.$broadcast(events.loggedIn);
                     httpRequestsBuffer.retryAllRequest();
                 });
@@ -19,6 +20,7 @@ angular.module('codebrag.auth')
                 var logoutRequest = $http.get('rest/users/logout');
                 return logoutRequest.then(function () {
                     authService.loggedInUser = undefined;
+                    updateLoggedInUserInRootScope(authService.loggedInUser, $rootScope);
                     $rootScope.$broadcast(events.loginRequired);
                 });
             },
@@ -38,6 +40,7 @@ angular.module('codebrag.auth')
                 function logInIfNotYetLoggedIn(currentUser) {
                     if(authService.isNotAuthenticated()) {
                         authService.loggedInUser = currentUser;
+                        updateLoggedInUserInRootScope(authService.loggedInUser, $rootScope);
                         $rootScope.$broadcast(events.loggedIn);
                     }
                 }
@@ -60,6 +63,10 @@ angular.module('codebrag.auth')
             }
 
         };
+
+        function updateLoggedInUserInRootScope(loggedInUser, $rootScope) {
+            $rootScope.loggedInUser = loggedInUser;
+        }
 
         return authService;
 
