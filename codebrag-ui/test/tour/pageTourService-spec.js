@@ -90,6 +90,18 @@ describe('Page tour service', function() {
         expect(pageTourService.stepActive('invites')).toBeTruthy();
     });
 
+    it('should reset tour steps to initial state when user logs in', inject(function(events) {
+        // given
+        pageTourService.ackStep('commits');
+
+        // when
+        $rootScope.$broadcast(events.loggedIn);
+        $rootScope.$apply();
+
+        // then
+        expect(pageTourService.stepActive('commits')).toBeTruthy();
+    }));
+
     function tourElementPresent() {
         return $document.find('page-tour').length == 1;
     }

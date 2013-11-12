@@ -1,17 +1,30 @@
 angular.module('codebrag.tour')
 
-    .factory('pageTourService', function($document, $compile, $rootScope, authService, userSettingsService) {
+    .factory('pageTourService', function($document, $compile, $rootScope, authService, userSettingsService, events) {
 
-        var steps = {
-            commits: { ack: false },
-            followups: { ack: false },
-            invites: {
-                ack: false,
-                visible: function() {
-                    return steps.commits.ack && steps.followups.ack;
+        var tourSteps = (function() {
+
+            var steps = {
+                commits: { ack: false },
+                followups: { ack: false },
+                invites: {
+                    ack: false,
+                    visible: function() {
+                        return steps.commits.ack && steps.followups.ack;
+                    }
                 }
-            }
-        };
+            };
+
+            $rootScope.$on(events.loggedIn, function() {
+                Object.getOwnPropertyNames(steps).forEach(function(step) {
+                    steps[step].ack = false;
+                });
+            });
+
+            return steps;
+
+        }());
+
 
         var tourDOMAppender = (function() {
             var tourScope, tourDOMEl;
@@ -33,14 +46,14 @@ angular.module('codebrag.tour')
         })();
 
         function ackStep(stepName) {
-            steps[stepName].ack = true;
+            tourSteps[stepName].ack = true;
         }
 
         function stepActive(stepName) {
-            if(steps[stepName].visible) {
-                return !steps[stepName].ack && steps[stepName].visible();
+            if(tourSteps[stepName].visible) {
+                return !tourSteps[stepName].ack && tourSteps[stepName].visible();
             } else {
-                return !steps[stepName].ack;
+                return !tourSteps[stepName].ack;
             }
         }
 
