@@ -41,7 +41,7 @@ angular.module('codebrag.commits')
         };
 
         $scope.pageTourForCommitsVisible = function() {
-            return pageTourService.stepActive('commits');
+            return pageTourService.stepActive('commits') || pageTourService.stepActive('invites');
         };
 
         function loadAllCommits() {

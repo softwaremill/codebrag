@@ -7,7 +7,7 @@ angular.module('codebrag.followups')
         $scope.mightHaveFollowups = followupsService.mightHaveFollowups;
 
         $scope.pageTourForFollowupsVisible = function() {
-            return pageTourService.stepActive('followups');
+            return pageTourService.stepActive('followups') || pageTourService.stepActive('invites');
         }
 
     });
