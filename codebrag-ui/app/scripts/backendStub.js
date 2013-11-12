@@ -300,7 +300,10 @@
         "id": "517a3debe4b055c40cadecea",
         "login": "john_doe",
         "email": "michal.ostruszka@softwaremill.com",
-        "token": "818728e2-ced3-4d58-b676-1003d4106816"
+        "token": "818728e2-ced3-4d58-b676-1003d4106816",
+        "settings": {
+            "welcomeFollowupDone": false
+        }
     };
 
     var followups = {"followupsByCommit": [
@@ -343,6 +346,7 @@
                 $httpBackend.whenGET('rest/commits?context=true&limit=7').respond(allCommits);
                 $httpBackend.whenGET('rest/commits?filter=to_review&limit=7').respond(pendingCommits);
                 $httpBackend.whenGET(/rest\/commits\?filter=to_review&limit=7&min_id=[a-z0-9]{12}/).respond(additionalCommits);
+                $httpBackend.whenGET(/rest\/commits\?filter=to_review&limit=1&min_id=[a-z0-9]{12}/).respond(pendingCommits);
 
                 $httpBackend.whenGET(/rest\/commits\/[a-z0-9]{12}/).respond(commitDiff);
 
@@ -350,6 +354,11 @@
 
                 $httpBackend.whenGET(/rest\/followups\/[a-z0-9]{12}/).respond(followup);
 
+                $httpBackend.whenGET('/rest/repoStatus').respond({"repoStatus":{"repositoryName":"codebrag","headId":"33ddf03d675c9c49910da4ea65e18ddc205051ba","ready":true}});
+
+                $httpBackend.whenGET('rest/updates').respond({"lastUpdate":1384251660217,"commits":0,"followups":0});
+
+                $httpBackend.whenPUT('rest/users/settings').respond({});
             });
     }
 
