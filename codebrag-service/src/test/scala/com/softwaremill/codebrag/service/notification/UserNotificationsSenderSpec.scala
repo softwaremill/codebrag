@@ -71,6 +71,7 @@ class UserNotificationsSenderSpec extends FlatSpec with MockitoSugar with Should
 
     // then
     verifyZeroInteractions(notificationService)
+    verifyZeroInteractions(notificationCountFinder)
   }
 
   it should "not send daily digest when user has no commits or followups waiting" in {

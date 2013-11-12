@@ -162,10 +162,9 @@ trait UserNotificationsSender extends Logging {
   def sendDailyDigest(users: List[User]) {
     users.foreach {
       user => {
-        val counters = notificationCounts.getCounters(user.id)
-        val userHasNotificationsEnabled = user.settings.emailNotificationsEnabled
-        userHasNotificationsEnabled match {
+        user.settings.emailNotificationsEnabled match {
           case true => {
+            val counters = notificationCounts.getCounters(user.id)
             if(counters.nonEmpty) {
               notificationService.sendDailyDigest(user, counters.pendingCommitCount, counters.followupCount)
             } else {
