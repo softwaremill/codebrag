@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.service.commits
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{FlatSpec, BeforeAndAfter}
 import org.scalatest.mock.MockitoSugar
-import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import org.mockito.BDDMockito._
 import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO, UserDAO, ObjectIdTestUtils}
 import org.mockito.Mockito._
@@ -40,27 +40,28 @@ class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers 
 
   def testGenerateTasksForNewlyRegisteredUser(commitBySofokles: CommitInfo) {
     // given
-    val commits = commitBySofokles :: CommitInfoAssembler.randomCommits(count = 2)
-    given(commitInfoDaoMock.findNewestCommits(10)).willReturn(commits)
+    val commits = CommitInfoAssembler.randomCommits(count = 2)
     val sofoklesId = ObjectIdTestUtils.oid(1)
+    val user = NewUserRegistered(sofoklesId, "login", "Sofokles Smart", "sofokles@sml.com")
+    given(commitInfoDaoMock.findNewestCommitsNotAuthoredByUser(user, 10)).willReturn(commits)
 
     // when
-    generator.handleNewUserRegistered(NewUserRegistered(sofoklesId, "login", "Sofokles Smart", "sofokles@sml.com"))
+    generator.handleNewUserRegistered(user)
 
     // then
+    verify(reviewTaskDaoMock).save(CommitReviewTask(commits(0).id, sofoklesId))
     verify(reviewTaskDaoMock).save(CommitReviewTask(commits(1).id, sofoklesId))
-    verify(reviewTaskDaoMock).save(CommitReviewTask(commits(2).id, sofoklesId))
     verifyNoMoreInteractions(reviewTaskDaoMock)
   }
 
   it should "not generate any tasks if no commits for current user found within range" in {
     // given
-    val commits = List(CommitInfoAssembler.randomCommit.withAuthorName("Sofokles Smart").get)
-    given(commitInfoDaoMock.findNewestCommits(10)).willReturn(commits)
     val sofoklesId = ObjectIdTestUtils.oid(1)
+    val user = NewUserRegistered(sofoklesId, "login", "Sofokles Smart", "sofokles@sml.com")
+    given(commitInfoDaoMock.findNewestCommitsNotAuthoredByUser(user, 10)).willReturn(List.empty)
 
     // when
-    generator.handleNewUserRegistered(NewUserRegistered(sofoklesId, "login", "Sofokles Smart", "sofokles@sml.com"))
+    generator.handleNewUserRegistered(user)
 
     // then
     verifyZeroInteractions(reviewTaskDaoMock)

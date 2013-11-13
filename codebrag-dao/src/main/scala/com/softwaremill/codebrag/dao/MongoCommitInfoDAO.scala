@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.dao
 
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord}
-import com.softwaremill.codebrag.domain.{CommitFileInfo, CommitInfo}
+import com.softwaremill.codebrag.domain.{UserLike, CommitFileInfo, CommitInfo}
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{BsonRecordListField, MongoListField, DateField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
-import org.joda.time.{Interval, DateTime}
+import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import net.liftweb.json.JsonDSL._
 
@@ -29,9 +29,16 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
   override def findLastSha(): Option[String] = {
     CommitInfoRecord orderDesc(_.committerDate) andDesc(_.authorDate) get() map(_.sha.get)
   }
-  def findNewestCommits(count: Int): List[CommitInfo] = {
-    CommitInfoRecord orderDesc(_.committerDate) andDesc(_.authorDate) limit count fetch()
+
+  def findNewestCommitsNotAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo] = {
+    CommitInfoRecord where (_.authorName neqs userLike.userFullName(user)) and (_.authorEmail neqs userLike.userEmail(user)) orderDesc(_.committerDate) andDesc(_.authorDate) limit count fetch()
   }
+
+  def findLastCommitAuthoredByUser[T](user: T)(implicit userLike: UserLike[T]): Option[CommitInfo] = {
+    val commits = CommitInfoRecord where (_.authorEmail eqs userLike.userEmail(user)) or (_.where(_.authorName eqs userLike.userFullName(user))) orderDesc(_.committerDate) andDesc(_.authorDate) limit 1 fetch()
+    commits.headOption
+  }
+
   override def findAllSha(): Set[String] = {
     CommitInfoRecord.select(_.sha).fetch().toSet
   }

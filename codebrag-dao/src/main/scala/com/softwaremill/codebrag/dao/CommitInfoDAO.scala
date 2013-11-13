@@ -1,8 +1,7 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.CommitInfo
+import com.softwaremill.codebrag.domain.{UserLike, CommitInfo}
 import org.bson.types.ObjectId
-import org.joda.time.Interval
 
 trait CommitInfoDAO {
 
@@ -14,9 +13,12 @@ trait CommitInfoDAO {
 
   def findByCommitId(commitId: ObjectId): Option[CommitInfo]
 
-  def findNewestCommits(count: Int): List[CommitInfo]
-
   def findAllSha(): Set[String]
 
   def findLastSha(): Option[String]
+
+  def findNewestCommitsNotAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo]
+
+  def findLastCommitAuthoredByUser[T](user: T)(implicit userLike: UserLike[T]): Option[CommitInfo]
+
 }

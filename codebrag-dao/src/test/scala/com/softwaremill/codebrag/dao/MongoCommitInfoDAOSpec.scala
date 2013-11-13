@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.dao
 
 import org.scalatest.matchers.ShouldMatchers
-import org.joda.time.{Interval, DateTime}
-import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import org.joda.time.DateTime
+import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import CommitInfoAssembler._
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
-import com.softwaremill.codebrag.domain.CommitInfo
+import com.softwaremill.codebrag.domain.User
 
 class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
   var commitInfoDAO: MongoCommitInfoDAO = _
@@ -65,33 +65,6 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     commitInfoDAO.hasCommits should be(true)
   }
 
-  it should "find 0 last commits for empty storage" in {
-    // given nothing stored
-
-    // when
-    val commits = commitInfoDAO.findNewestCommits(10)
-
-    // then
-    commits should be('empty)
-  }
-
-  it should "find 10 last commits for non-empty storage" in {
-    // given
-    val tenCommitsOnFixtureTime = List.fill(10)({randomCommit.withCommitDate(FixtureTime).withAuthorDate(FixtureTime).get})
-    val tenCommitsMadeEarlier = List.fill(10)({randomCommit.withCommitDate(FixtureTime.minusDays(2)).get})
-    val tenCommitsMadeEventEarlier = List.fill(10)({randomCommit.withCommitDate(FixtureTime.minusWeeks(2)).get})
-
-    tenCommitsMadeEarlier.foreach(commitInfoDAO.storeCommit(_))
-    tenCommitsOnFixtureTime.foreach(commitInfoDAO.storeCommit(_))
-    tenCommitsMadeEventEarlier.foreach(commitInfoDAO.storeCommit(_))
-
-    // when
-    val commits = commitInfoDAO.findNewestCommits(10)
-
-    // then
-    commits should equal(tenCommitsOnFixtureTime)
-  }
-
   it should "retrieve commit sha with last commit + author date" taggedAs(RequiresDb) in {
     // given
     val date = new DateTime()
@@ -126,10 +99,60 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     commitsSha should equal(commits.map(_.sha).toSet)
   }
 
-  private def givenCommitStoredOn(dateTime: DateTime) = {
-    val commit = randomCommit.withCommitDate(dateTime).get
-    commitInfoDAO.storeCommit(commit)
-    commit
+  it should "find last commits (ordered) for user" taggedAs(RequiresDb) in {
+    // given
+    val tenDaysAgo = DateTime.now.minusDays(10)
+    val John = UserAssembler.randomUser.withEmail("john@codebrag.com").get
+    val Bob = UserAssembler.randomUser.withFullName("Bob Smith").get
+
+    val commits = List(
+      buildCommit(user = John, date = tenDaysAgo.plusDays(1), sha = "1"),
+      buildCommit(user = Bob, date = tenDaysAgo.plusDays(2), sha = "2"),
+      buildCommit(user = John, date = tenDaysAgo.plusDays(3), sha = "3"),
+      buildCommit(user = Bob, date = tenDaysAgo.plusDays(4), sha = "4"),
+      buildCommit(user = Bob, date = tenDaysAgo.plusDays(5), sha = "5"),
+      buildCommit(user = John, date = tenDaysAgo.plusDays(6), sha = "6"),
+      buildCommit(user = John, date = tenDaysAgo.plusDays(7), sha = "7")
+    )
+    commits.foreach(commitInfoDAO.storeCommit)
+    
+    // when
+    val threeCommitsNotByJohn = commitInfoDAO.findNewestCommitsNotAuthoredByUser(John, 3)
+    val atMostTenCommitsNotByBob = commitInfoDAO.findNewestCommitsNotAuthoredByUser(Bob, 10)
+
+    // then
+    threeCommitsNotByJohn.map(_.sha) should be(List("5", "4", "2"))
+    atMostTenCommitsNotByBob.map(_.sha) should be(List("7", "6", "3", "1"))
   }
 
+  it should "find last commit authored by user" in {
+    // given
+    val tenDaysAgo = DateTime.now.minusDays(10)
+    val John = UserAssembler.randomUser.withEmail("john@codebrag.com").get
+    val Bob = UserAssembler.randomUser.withFullName("Bob Smith").get
+    val Alice = UserAssembler.randomUser.withFullName("Alice Smith").get
+
+    val commits = List(
+      buildCommit(user = John, date = tenDaysAgo.plusDays(1), sha = "1"),
+      buildCommit(user = Bob, date = tenDaysAgo.plusDays(2), sha = "2"),
+      buildCommit(user = Bob, date = tenDaysAgo.plusDays(4), sha = "4"),
+      buildCommit(user = John, date = tenDaysAgo.plusDays(6), sha = "6")
+    )
+    commits.foreach(commitInfoDAO.storeCommit)
+
+    // when
+    val Some(lastCommitByBob) = commitInfoDAO.findLastCommitAuthoredByUser(Bob)
+    val Some(lastCommitByJohn) = commitInfoDAO.findLastCommitAuthoredByUser(John)
+    val noCommitByAlice = commitInfoDAO.findLastCommitAuthoredByUser(Alice)
+
+    // then
+    lastCommitByBob.sha should be("4")
+    lastCommitByJohn.sha should be("6")
+    noCommitByAlice should be(None)
+  }
+
+  def buildCommit(user: User, date: DateTime, sha: String) = {
+    CommitInfoAssembler.randomCommit.withAuthorEmail(user.email).withAuthorName(user.name).withAuthorDate(date).withSha(sha).get
+  }
+  
 }
