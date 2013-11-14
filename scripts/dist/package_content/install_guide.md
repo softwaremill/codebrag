@@ -145,12 +145,7 @@ Assuming your MongoDB is working and java is installed Codebrag can be run with
 
 On **Unix/OS X**
 
-	#for default config file codebrag.conf
 	./run.sh 
-	#Or
-	./run.sh custom.conf
-
-<br>
 
 On **Windows**
 
@@ -158,10 +153,7 @@ On **Windows**
 	
 Logs will be written to `codebrag.log`. To stop Codebrag on **Unix/OS X** run script
 
-	#for default config file codebrag.conf
 	./stop.sh
-	#Or
-	./stop.sh custom.conf
 
 ## First time login
 
