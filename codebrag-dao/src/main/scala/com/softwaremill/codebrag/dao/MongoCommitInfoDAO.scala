@@ -8,9 +8,10 @@ import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import net.liftweb.json.JsonDSL._
+import com.typesafe.scalalogging.slf4j.Logging
 
 
-class MongoCommitInfoDAO extends CommitInfoDAO {
+class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
 
   import CommitInfoImplicits._
 
@@ -35,8 +36,8 @@ class MongoCommitInfoDAO extends CommitInfoDAO {
   }
 
   def findLastCommitAuthoredByUser[T](user: T)(implicit userLike: UserLike[T]): Option[CommitInfo] = {
-    val commits = CommitInfoRecord where (_.authorEmail eqs userLike.userEmail(user)) or (_.where(_.authorName eqs userLike.userFullName(user))) orderDesc(_.committerDate) andDesc(_.authorDate) limit 1 fetch()
-    commits.headOption
+    val commitsByUserQuery = CommitInfoRecord or(_.where(_.authorEmail eqs userLike.userEmail(user)), (_.where(_.authorName eqs userLike.userFullName(user)))) orderDesc (_.committerDate) andDesc (_.authorDate)
+    commitsByUserQuery limit 1 fetch() headOption
   }
 
   override def findAllSha(): Set[String] = {

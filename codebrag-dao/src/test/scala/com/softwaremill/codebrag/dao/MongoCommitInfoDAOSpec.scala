@@ -106,13 +106,13 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     val Bob = UserAssembler.randomUser.withFullName("Bob Smith").get
 
     val commits = List(
-      buildCommit(user = John, date = tenDaysAgo.plusDays(1), sha = "1"),
-      buildCommit(user = Bob, date = tenDaysAgo.plusDays(2), sha = "2"),
-      buildCommit(user = John, date = tenDaysAgo.plusDays(3), sha = "3"),
-      buildCommit(user = Bob, date = tenDaysAgo.plusDays(4), sha = "4"),
-      buildCommit(user = Bob, date = tenDaysAgo.plusDays(5), sha = "5"),
-      buildCommit(user = John, date = tenDaysAgo.plusDays(6), sha = "6"),
-      buildCommit(user = John, date = tenDaysAgo.plusDays(7), sha = "7")
+      buildCommitWithMatchingUserEmail(user = John, date = tenDaysAgo.plusDays(1), sha = "1"),
+      buildCommitWithMatchingUserEmail(user = Bob, date = tenDaysAgo.plusDays(2), sha = "2"),
+      buildCommitWithMatchingUserEmail(user = John, date = tenDaysAgo.plusDays(3), sha = "3"),
+      buildCommitWithMatchingUserEmail(user = Bob, date = tenDaysAgo.plusDays(4), sha = "4"),
+      buildCommitWithMatchingUserEmail(user = Bob, date = tenDaysAgo.plusDays(5), sha = "5"),
+      buildCommitWithMatchingUserEmail(user = John, date = tenDaysAgo.plusDays(6), sha = "6"),
+      buildCommitWithMatchingUserEmail(user = John, date = tenDaysAgo.plusDays(7), sha = "7")
     )
     commits.foreach(commitInfoDAO.storeCommit)
     
@@ -128,15 +128,15 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
   it should "find last commit authored by user" in {
     // given
     val tenDaysAgo = DateTime.now.minusDays(10)
-    val John = UserAssembler.randomUser.withEmail("john@codebrag.com").get
+    val John = UserAssembler.randomUser.withFullName("John Doe").get
     val Bob = UserAssembler.randomUser.withFullName("Bob Smith").get
     val Alice = UserAssembler.randomUser.withFullName("Alice Smith").get
 
     val commits = List(
-      buildCommit(user = John, date = tenDaysAgo.plusDays(1), sha = "1"),
-      buildCommit(user = Bob, date = tenDaysAgo.plusDays(2), sha = "2"),
-      buildCommit(user = Bob, date = tenDaysAgo.plusDays(4), sha = "4"),
-      buildCommit(user = John, date = tenDaysAgo.plusDays(6), sha = "6")
+      buildCommitWithMatchingUserName(John, date = tenDaysAgo.plusDays(1), sha = "1"),
+      buildCommitWithMatchingUserName(Bob, date = tenDaysAgo.plusDays(2), sha = "2"),
+      buildCommitWithMatchingUserName(Bob, date = tenDaysAgo.plusDays(4), sha = "4"),
+      buildCommitWithMatchingUserName(John, date = tenDaysAgo.plusDays(6), sha = "6")
     )
     commits.foreach(commitInfoDAO.storeCommit)
 
@@ -151,8 +151,12 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     noCommitByAlice should be(None)
   }
 
-  def buildCommit(user: User, date: DateTime, sha: String) = {
-    CommitInfoAssembler.randomCommit.withAuthorEmail(user.email).withAuthorName(user.name).withAuthorDate(date).withSha(sha).get
+  def buildCommitWithMatchingUserEmail(user: User, date: DateTime, sha: String) = {
+    CommitInfoAssembler.randomCommit.withAuthorEmail(user.email).withAuthorDate(date).withSha(sha).get
   }
-  
+
+  def buildCommitWithMatchingUserName(user: User, date: DateTime, sha: String) = {
+    CommitInfoAssembler.randomCommit.withAuthorName(user.name).withAuthorDate(date).withSha(sha).get
+  }
+
 }
