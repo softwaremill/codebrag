@@ -1,6 +1,12 @@
 #Codebrag Installation Guide
 
 
+##Installation Overview
+
+1. Edit `codebrag.conf` to configure repository, mail server, etc.
+2. Run `run.sh`
+3. Create your account
+
 ## Prerequisites
 
 * Java 1.7 installed. [Download here](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html) or install package for your server's OS.
@@ -8,57 +14,72 @@
 
 *** NOTE: *** If you want to use **Codebrag** with **SVN** you need to install **Git**. [Download here](http://git-scm.com/) or install package for your server's OS
 
-## Configuring Codebrag 
+##Questions? Help?
+Should you encounter any issues with installation:
 
-Codebrag has one configuration file `codebrag.conf`provided with distribution. Edit the following settings accordingly.
+* Ping us at [ask@codebrag.com](mailto:ask@codebrag.com) 
+* [FAQ](http://codebrag.com/devoxx/faq.html)
+* [Codebrag Users group](https://groups.google.com/forum/#!forum/codebrag-users)
 
-### "mongo" section
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+## 1. Configure Codebrag
+
+Edit `codebrag.conf` file to configure:
+
+* Path to MongoDB
+* Your repository (Git or SVN)
+* Email server
+
+and other settings.
+
+
+### 1.1. "mongo" section
 
 Set `servers` and `database` properties to point your MongoDB installation.
 
-### "repository" section
+### 1.2. "repository" section
 
-Codebrag can work with VCS repositories in three modes. You need to set one using `type` property:
+Set repository `type` property to one of these values:
 
 * `git-https` - git via https (with user/password provided)
 * `git-ssh` - git via ssh (with keys)
-* `svn` - experimental
+* `svn` - subversion (experimental)
 
-##### Git repository via HTTPS
+##### 1.2.1. Git via HTTPS
 
-To use Codebrag with git via https please configure repository section as follows (leave username and password empty for public repositories):
+To use Codebrag with git via https please configure repository section as follows:
 
 	repository {
 	    type = "git-https"
 	    git-https {
-	        name = "..."		
+	        name = "..."			// e.g. codebrag
 	        uri = "..."				// e.g. https://github.com/sml/codebrag.git
-	        branch = "..." 	
-	        username = "..."
-	        password = "..."
+	        branch = "..." 			// e.g. "refs/heads/master"
+	        username = "..."		
+	        password = "..."		// leave username and password empty for public repository 
 	    }
 	}
 
-##### Git repository via SSH
+##### 1.2.2. Git via SSH
 
-To use Codebrag with git repository with authentication via ssh (keys) please configure repository section as follows (leave passphrase empty if there is no passphrase for your keystore):
-
-*** NOTE: *** Test you repository ssh connection and add host to `known-hosts` otherwise Codebrag will not be able to authenticate. You may also want to create ssh configuration in `~/.ssh/config` file.
+Configuration for git repository with authentication via ssh (keys):
 
 	repository {
 	    type = "git-ssh"
 	    git-ssh {
-	        name = "..."			// e.g. codebrag"
+	        name = "..."			
 	        uri ="..." 				// e.g.	git@github.com:sml/codebrag.git
-	        branch ="..."  			// e.g. "refs/heads/master"
-	        passphrase ="..." 		// or "" if no passphrase required
+	        branch ="..."  			
+	        passphrase ="..." 		// leave empty if not required
 	    }
 	}
 
+*** NOTE: *** Test you repository ssh connection and add host to `known-hosts` otherwise Codebrag will not be able to authenticate. You may also want to create ssh configuration in `~/.ssh/config` file.
 
-##### SVN repository (experimental)
+##### 1.2.3. SVN repository (experimental)
 
-You can also use Codebrag with SVN repositories although *** this is an experimental feature *** still in development. To use SVN, please change your repository configuration section to this:
+You can also use Codebrag with SVN repositories although *** this is an experimental feature *** still in development. Configuration for SVN:
 
 	repository {
 	    type = "svn"
@@ -143,13 +164,12 @@ By default Codebrag starts on port 8080. If you want to change that, edit `port`
 
 Assuming your MongoDB is working and java is installed Codebrag can be run with 
 
-On **Unix/OS X**
+)On** Unix/OS X**
 
 	./run.sh 
-
 On **Windows**
 
-	run.bat
+	)`run.ba.
 	
 Logs will be written to `codebrag.log`. To stop Codebrag on **Unix/OS X** run script
 
