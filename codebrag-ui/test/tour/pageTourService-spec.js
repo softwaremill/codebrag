@@ -1,6 +1,6 @@
 describe('Page tour service', function() {
 
-    var $rootScope, $compile, $document, authService, $q, pageTourService, userSettingsService;
+    var $rootScope, $compile, $document, authService, $q, pageTourService, userSettingsService, events;
 
     var USER_WITH_TOUR_NOT_YET_DONE = {
         settings: { welcomeFollowupDone: false}
@@ -13,7 +13,7 @@ describe('Page tour service', function() {
     beforeEach(module('codebrag.templates'));
     beforeEach(module('codebrag.tour'));
 
-    beforeEach(inject(function (_$rootScope_, _$compile_, _$document_, _authService_, _$q_, _pageTourService_, _userSettingsService_) {
+    beforeEach(inject(function (_$rootScope_, _$compile_, _$document_, _authService_, _$q_, _pageTourService_, _userSettingsService_, _events_) {
         $compile = _$compile_;
         $rootScope = _$rootScope_;
         $document = _$document_;
@@ -21,6 +21,7 @@ describe('Page tour service', function() {
         $q = _$q_;
         pageTourService = _pageTourService_;
         userSettingsService = _userSettingsService_;
+        events = _events_;
     }));
 
     afterEach(function() {
@@ -28,25 +29,23 @@ describe('Page tour service', function() {
         $document.find('body').find('page-tour').remove();
     });
 
-    it('should append tour element to DOM when user has not seen tour yet', function() {
+    it('should append tour element to DOM when user logs in and has not seen tour yet', function() {
         // given
-        spyOn(authService, 'requestCurrentUser').andReturn($q.when(USER_WITH_TOUR_NOT_YET_DONE));
+        pageTourService.initializeTour();
 
         // when
-        pageTourService.startTour();
-        $rootScope.$apply();
+        logUserIn(USER_WITH_TOUR_NOT_YET_DONE);
 
         // then
         expect(tourElementPresent()).toBeTruthy();
     });
 
-    it('should not append tour element to DOM when user already completed tour', function() {
+    it('should not append tour element to DOM when user logs in and already completed tour', function() {
         // given
-        spyOn(authService, 'requestCurrentUser').andReturn($q.when(USER_WITH_TOUR_COMPLETED));
+        pageTourService.initializeTour();
 
         // when
-        pageTourService.startTour();
-        $rootScope.$apply();
+        logUserIn(USER_WITH_TOUR_COMPLETED);
 
         // then
         expect(tourElementPresent()).toBeFalsy();
@@ -54,10 +53,9 @@ describe('Page tour service', function() {
 
     it('should remove tour element from DOM when user finished tour', function() {
         // given
-        spyOn(authService, 'requestCurrentUser').andReturn($q.when(USER_WITH_TOUR_NOT_YET_DONE));
+        pageTourService.initializeTour();
         spyOn(userSettingsService, 'save');
-        pageTourService.startTour();
-        $rootScope.$apply();
+        logUserIn(USER_WITH_TOUR_NOT_YET_DONE);
 
         // when
         pageTourService.finishTour();
@@ -67,7 +65,7 @@ describe('Page tour service', function() {
         expect(userSettingsService.save).toHaveBeenCalled();
     });
 
-    it('should mark step as donw', function() {
+    it('should mark step as done', function() {
         // given
         expect(pageTourService.stepActive('commits')).toBeTruthy();
 
@@ -90,20 +88,26 @@ describe('Page tour service', function() {
         expect(pageTourService.stepActive('invites')).toBeTruthy();
     });
 
-    it('should reset tour steps to initial state when user logs in', inject(function(events) {
+    it('should reset tour steps to initial state when user logs in', function() {
         // given
         pageTourService.ackStep('commits');
 
         // when
-        $rootScope.$broadcast(events.loggedIn);
-        $rootScope.$apply();
+        var anyUser = {};
+        logUserIn(anyUser);
 
         // then
         expect(pageTourService.stepActive('commits')).toBeTruthy();
-    }));
+    });
 
     function tourElementPresent() {
         return $document.find('page-tour').length == 1;
+    }
+
+    function logUserIn(user) {
+        spyOn(authService, 'requestCurrentUser').andReturn($q.when(user));
+        $rootScope.$broadcast(events.loggedIn);
+        $rootScope.$apply();
     }
 
 

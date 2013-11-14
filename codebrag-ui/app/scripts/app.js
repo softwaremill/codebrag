@@ -55,7 +55,7 @@ angular.module('codebrag')
                 authService.requestCurrentUser();
             }
         }
-        pageTourService.startTour();
+        pageTourService.initializeTour();
     });
 
 angular.module('codebrag.auth')

@@ -57,26 +57,30 @@ angular.module('codebrag.tour')
             }
         }
 
-        function startTour() {
-            function initializeTourIfNotYetDone(user) {
-                if(!!!user.settings.welcomeFollowupDone) {
-                    tourDOMAppender.append();
-                }
+        function initializeTour() {
+            $rootScope.$on(events.loggedIn, setupUserTour);
+
+            function setupUserTour() {
+                authService.requestCurrentUser().then(function(user) {
+                    if(!!!user.settings.welcomeFollowupDone) {
+                        tourDOMAppender.append();
+                    } else {
+                        tourDOMAppender.remove();
+                    }
+                });
             }
-            authService.requestCurrentUser().then(initializeTourIfNotYetDone);
         }
 
         function finishTour() {
             tourDOMAppender.remove();
-            var tourDone = {welcomeFollowupDone: true};
-            userSettingsService.save(tourDone);
+            userSettingsService.save({welcomeFollowupDone: true});
         }
 
 
         return {
             ackStep: ackStep,
             stepActive: stepActive,
-            startTour: startTour,
+            initializeTour: initializeTour,
             finishTour: finishTour
         }
 
