@@ -86,21 +86,21 @@ trait UserReactionToViewMapper {
     ReactionsView(reactionsByType.get("comment"), reactionsByType.get("like"))
   }
 
-  private def findAllUsersIn(reactions: List[UserReaction]): List[(ObjectId, String, String)] = {
+  private def findAllUsersIn(reactions: List[UserReaction]): List[(ObjectId, String, Option[String])] = {
     UserRecord.select(_.id, _.name, _.userSettings.subfield(_.avatarUrl)).where(_.id in reactions.map(_.authorId)).fetch()
     .map {
-      case (id, name, avatarOpt) => (id, name, avatarOpt.get)
+      case (id, name, avatarOpt) => (id, name, avatarOpt)
     }
   }
 
-  private def findUserDetails(commenters: List[(ObjectId, String, String)], commenterId: ObjectId) = {
+  private def findUserDetails(commenters: List[(ObjectId, String, Option[String])], commenterId: ObjectId) = {
     commenters.find(_._1 == commenterId) match {
       case Some(author) => AuthorData(author._2, author._1.toString, author._3)
-      case None => AuthorData("Unknown author", "", "")
+      case None => AuthorData("Unknown author", "")
     }
   }
 
-  case class AuthorData(authorName: String, authorId: String, avatarUrl: String)
+  case class AuthorData(authorName: String, authorId: String, avatarUrl: Option[String] = None)
 
 }
 
