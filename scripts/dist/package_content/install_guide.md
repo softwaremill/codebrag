@@ -21,7 +21,9 @@ Should you encounter any issues with installation:
 * [FAQ](http://codebrag.com/devoxx/faq.html)
 * [Codebrag Users group](https://groups.google.com/forum/#!forum/codebrag-users)
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+<div style="page-break-after: always;"></div>
+
 
 ## 1. Configure Codebrag
 
@@ -33,10 +35,13 @@ Edit `codebrag.conf` file to configure:
 
 and other settings.
 
+<br>
 
 ### 1.1. "mongo" section
 
 Set `servers` and `database` properties to point your MongoDB installation.
+
+<br>
 
 ### 1.2. "repository" section
 
@@ -75,7 +80,7 @@ Configuration for git repository with authentication via ssh (keys):
 	    }
 	}
 
-*** NOTE: *** Test you repository ssh connection and add host to `known-hosts` otherwise Codebrag will not be able to authenticate. You may also want to create ssh configuration in `~/.ssh/config` file.
+*** NOTE: *** Test you repository ssh connection and add host to `known-hosts`, otherwise Codebrag will not be able to authenticate. You may also want to create ssh configuration in `~/.ssh/config` file.
 
 ##### 1.2.3. SVN repository (experimental)
 
@@ -91,11 +96,11 @@ You can also use Codebrag with SVN repositories although *** this is an experime
 	    }
 	}
 
-<br><br>
+<br>
 
-### "email" section
+### 1.3. "email" section
 
-Setup your email server/account so that Codebrag can send emails with invitations and other notifications to users.
+Setup your email server so that Codebrag can send emails with invitations and notifications:
 
     email {
         smtp-host = "your.smtp.server.com"
@@ -106,16 +111,62 @@ Setup your email server/account so that Codebrag can send emails with invitation
         encoding = "UTF-8"
     }
     
-Please make sure java has all required security certificates in case of using SSL/TLS connection.
+*** NOTE: *** Make sure Java has required security certificates when using SSL/TLS connection.
 
-### "codebrag" section
+### 1.4. "codebrag" section
 
 ##### application-url
 
-`application-url` property should indicate URL that users would access to use Codebrag. It is used to create registration link.
+`application-url` property indicates URL under which Codebrag will be available:
 
 	application-url = "http://codebrag.mydomain.com:8080"
-		
+	
+##### send-anon-usage-data
+
+TODO	
+
+### 1.5. Other settings
+
+All other settings are optional and usually you do not need to change them. They are listed at the end of this installation guide (Appendix A).
+	
+<div style="page-break-after: always;"></div>
+
+
+## Running Codebrag
+
+*** NOTE: *** If you already have previous Codebrag installation you need to run database migration scripts before running new version. Go to `mongo_migration` directory in distribution package and follow the instructions from `README` file there.
+
+Assuming your MongoDB is working and java is installed Codebrag can be run with 
+
+)On** Unix/OS X**
+
+	./run.sh 
+On **Windows**
+
+	)`run.ba.
+	
+Logs will be written to `codebrag.log`. To stop Codebrag on **Unix/OS X** run script
+
+	./stop.sh
+
+## First time login
+
+First user that accesses Codebrag after installation will be asked to register an account. Either email address or name provided have to match corresponding fields in `git log` in order to match commits with given user. Codebrag uses [Gravatar](http://gravatar.com) to display user avatars in application.
+
+Other users can be invited to join Codebrag by choosing "Invite friends" link from menu in upper left corner.
+
+## Questions? Help? Contact us
+
+Do drop us a line at
+[**ask@codebrag.com**](mailto:ask@codebrag.com) if you find an issue or just want to share a thought or ask a question. If you're looking for Frequently Asked Questions please visit the website!
+
+You may also want to join [Codebrag Users group](https://groups.google.com/forum/#!forum/codebrag-users).
+
+We hope you and your team will enjoy performing code review with Codebrag!
+
+
+## Appendix A
+
 ##### local-git-storage-path
 
 Codebrag needs to store repository data somewhere on your server. Edit `local-git-storage-path` accordingly. Codebrag will create directory called `repos` under provided location. Remember to set access rights accordingly so that Codebrag can read and write to this location.
@@ -158,34 +209,3 @@ Defines when (full hour of the day) daily digest emails will be sent
 
 By default Codebrag starts on port 8080. If you want to change that, edit `port` property accordingly.
 
-## Running Codebrag
-
-*** NOTE: *** If you already have previous Codebrag installation you need to run database migration scripts before running new version. Go to `mongo_migration` directory in distribution package and follow the instructions from `README` file there.
-
-Assuming your MongoDB is working and java is installed Codebrag can be run with 
-
-)On** Unix/OS X**
-
-	./run.sh 
-On **Windows**
-
-	)`run.ba.
-	
-Logs will be written to `codebrag.log`. To stop Codebrag on **Unix/OS X** run script
-
-	./stop.sh
-
-## First time login
-
-First user that accesses Codebrag after installation will be asked to register an account. Either email address or name provided have to match corresponding fields in `git log` in order to match commits with given user. Codebrag uses [Gravatar](http://gravatar.com) to display user avatars in application.
-
-Other users can be invited to join Codebrag by choosing "Invite friends" link from menu in upper left corner.
-
-## Questions? Help? Contact us
-
-Do drop us a line at
-[**ask@codebrag.com**](mailto:ask@codebrag.com) if you find an issue or just want to share a thought or ask a question. If you're looking for Frequently Asked Questions please visit the website!
-
-You may also want to join [Codebrag Users group](https://groups.google.com/forum/#!forum/codebrag-users).
-
-We hope you and your team will enjoy performing code review with Codebrag!
