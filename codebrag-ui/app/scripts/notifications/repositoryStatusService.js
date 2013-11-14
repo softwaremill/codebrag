@@ -1,14 +1,15 @@
 angular.module('codebrag.notifications')
 
-    .factory('repositoryStatusService', function ($rootScope, events, $modal, $http) {
+    .factory('repositoryStatusService', function ($modal, $http, $q) {
 
-        function checkRepoReadyOnLogin() {
-            $rootScope.$on(events.loggedIn, function() {
-                checkRepoStatus().then(displayNotReadyInfoIfRequired);
+        function checkRepoReady() {
+            return getRepoState().then(function(repoState) {
+                displayNotReadyInfoIfRequired(repoState);
+                return repoState.ready ? $q.when(repoState) : $q.reject(repoState);
             });
         }
 
-        function checkRepoStatus() {
+        function getRepoState() {
             return $http.get('/rest/repoStatus').then(function(response) {
                 return response.data.repoStatus;
             });
@@ -37,7 +38,7 @@ angular.module('codebrag.notifications')
         }
 
         return {
-            checkRepoReadyOnLogin: checkRepoReadyOnLogin
+            checkRepoReady: checkRepoReady
         }
 
     });

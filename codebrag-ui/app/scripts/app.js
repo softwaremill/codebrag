@@ -40,17 +40,21 @@ angular.module('codebrag')
             return codebrag.uniqueRequestsAwareHttpService($delegate, $q);
         });
     })
-    .run(function (authService, $state) {
-        authService.isFirstRegistration().then(function (firstRegistration) {
-            if (firstRegistration === true) {
+    .run(function($rootScope, repositoryStatusService, pageTourService, authService, $state) {
+        repositoryStatusService.checkRepoReady()
+            .then(checkIfFirstRegistrationRequired)
+            .then(openFirstRegistrationIfNeeded);
+
+        function checkIfFirstRegistrationRequired() {
+            return authService.isFirstRegistration();
+        }
+        function openFirstRegistrationIfNeeded(firstRegistration) {
+            if (firstRegistration) {
                 $state.transitionTo('register', {});
             } else {
                 authService.requestCurrentUser();
             }
-        });
-    })
-    .run(function($rootScope, repositoryStatusService, pageTourService) {
-        repositoryStatusService.checkRepoReadyOnLogin();
+        }
         pageTourService.startTour();
     });
 
