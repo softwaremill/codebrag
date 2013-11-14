@@ -132,30 +132,33 @@ All other settings are optional and usually you do not need to change them. They
 <div style="page-break-after: always;"></div>
 
 
-## Running Codebrag
+## 2. Running Codebrag
 
 *** NOTE: *** If you already have previous Codebrag installation you need to run database migration scripts before running new version. Go to `mongo_migration` directory in distribution package and follow the instructions from `README` file there.
 
-Assuming your MongoDB is working and java is installed Codebrag can be run with 
+To start Codebrag execute:
 
-)On** Unix/OS X**
-
-	./run.sh 
-On **Windows**
-
-	)`run.ba.
+	./run.sh 			# Unix/OS X
+	run.bat				# Windows
 	
-Logs will be written to `codebrag.log`. To stop Codebrag on **Unix/OS X** run script
+Logs will be written to `codebrag.log`.
+
+To stop Codebrag execute:
 
 	./stop.sh
+	
 
-## First time login
+## 3. Create user account
 
-First user that accesses Codebrag after installation will be asked to register an account. Either email address or name provided have to match corresponding fields in `git log` in order to match commits with given user. Codebrag uses [Gravatar](http://gravatar.com) to display user avatars in application.
+First user that accesses Codebrag after installation will be asked to register an account.
+
+Either email address or name provided have to match corresponding fields in `git log` in order to match commits with given user.
+
+*** NOTE: *** If your repository is large, you may need to wait until it is downloaded.
 
 Other users can be invited to join Codebrag by choosing "Invite friends" link from menu in upper left corner.
 
-## Questions? Help? Contact us
+## 4. Questions? Help? Contact us
 
 Do drop us a line at
 [**ask@codebrag.com**](mailto:ask@codebrag.com) if you find an issue or just want to share a thought or ask a question. If you're looking for Frequently Asked Questions please visit the website!
@@ -163,6 +166,9 @@ Do drop us a line at
 You may also want to join [Codebrag Users group](https://groups.google.com/forum/#!forum/codebrag-users).
 
 We hope you and your team will enjoy performing code review with Codebrag!
+
+
+<div style="page-break-after: always;"></div>
 
 
 ## Appendix A
@@ -175,10 +181,8 @@ Codebrag needs to store repository data somewhere on your server. Edit `local-gi
 
 `invitation-expiry-time` property indicates how long invitation links are valid. After that time no new registration can be issued with this link. This value defaults to 24 hours.
 
-    //this setting uses Scala's Duration syntax, i.e. 15 minutes, 24 hours, 2 days
+    //this setting uses Scala Duration syntax, i.e. 15 minutes, 24 hours, 2 days
 	invitation-expiry-time= "24 hours"
-
-<br><br>
 
 ##### user-email-notifications
 
@@ -207,5 +211,4 @@ Defines when (full hour of the day) daily digest emails will be sent
 
 ### "web-server" section
 
-By default Codebrag starts on port 8080. If you want to change that, edit `port` property accordingly.
-
+By default Codebrag starts on port 8080. Edit `port` property to change it.
