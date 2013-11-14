@@ -131,12 +131,11 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
     val comment = comments(0).asInstanceOf[CommentView]
     comment.authorId should equal(John.id.toString)
     comment.authorName should equal(John.name)
-    comment.authorAvatarUrl should equal(John.settings.avatarUrl)
+    comment.authorAvatarUrl should equal(Some(John.settings.avatarUrl))
   }
 
   it should "return empty string as author avatar if author not registered in codebrag" in {
     // given
-    val emptyAvatarUrl = ""
     val dummyCommitId = ObjectIdTestUtils.oid(123123)
     val commentFromNonexistingUser = CommentAssembler.commentFor(dummyCommitId).withAuthorId(ObjectIdTestUtils.oid(1111111)).get
     commentDao.save(commentFromNonexistingUser)
@@ -146,7 +145,7 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest 
 
     // then
     val Some(comments) = commentsView.entireCommitReactions.comments
-    comments(0).asInstanceOf[CommentView].authorAvatarUrl should equal(emptyAvatarUrl)
+    comments(0).asInstanceOf[CommentView].authorAvatarUrl should equal(None)
   }
 
 }

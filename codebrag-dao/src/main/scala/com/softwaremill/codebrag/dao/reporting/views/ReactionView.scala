@@ -20,6 +20,6 @@ case class LikeView(id: String, authorName: String, authorId: String, time: Date
   val reactionType = "like"
 }
 
-case class CommentView(id: String, authorName: String, authorId: String, message: String, time: Date, authorAvatarUrl: String = "", fileName: Option[String] = None, lineNumber: Option[Int] = None) extends ReactionView {
+case class CommentView(id: String, authorName: String, authorId: String, message: String, time: Date, authorAvatarUrl: Option[String] = None, fileName: Option[String] = None, lineNumber: Option[Int] = None) extends ReactionView {
   val reactionType = "comment"
 }
