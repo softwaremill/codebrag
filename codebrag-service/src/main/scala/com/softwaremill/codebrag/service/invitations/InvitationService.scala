@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.domain.{User, Invitation}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.email.{EmailService, Email}
 import com.softwaremill.codebrag.service.config.CodebragConfig
-import com.softwaremill.codebrag.service.templates.{Templates, EmailTemplateEngine}
+import com.softwaremill.codebrag.service.templates.{EmailTemplates, TemplateEngine}
 import org.joda.time.{Minutes, Hours}
 
 class InvitationService(
@@ -15,7 +15,7 @@ class InvitationService(
                          emailService: EmailService,
                          config: CodebragConfig,
                          uniqueHashGenerator: UniqueHashGenerator,
-                         templateEngine: EmailTemplateEngine)(implicit clock: Clock) {
+                         templateEngine: TemplateEngine)(implicit clock: Clock) {
 
   val registrationUrl = buildRegistrationUrl()
 
@@ -41,11 +41,11 @@ class InvitationService(
   }
 
   private def getInvitationSubject(userName: String): String = {
-    templateEngine.getTemplate(Templates.Invitation, Map("userName" -> userName)).subject
+    templateEngine.getEmailTemplate(EmailTemplates.Invitation, Map("userName" -> userName)).subject
   }
 
   private def invitationMessage(senderName: String, invitationLink: String): String = {
-    templateEngine.getTemplate(Templates.Invitation, Map("userName" -> senderName, "url" -> invitationLink)).content
+    templateEngine.getEmailTemplate(EmailTemplates.Invitation, Map("userName" -> senderName, "url" -> invitationLink)).content
   }
 
   def verify(code: String): Boolean = {

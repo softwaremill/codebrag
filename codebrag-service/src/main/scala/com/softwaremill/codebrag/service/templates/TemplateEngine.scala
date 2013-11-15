@@ -1,19 +1,22 @@
 package com.softwaremill.codebrag.service.templates
 
-import org.fusesource.scalate._
 import java.io.File
 
-class EmailTemplateEngine {
+class TemplateEngine {
 
   val TemplatesDirectory = "com/softwaremill/codebrag/service/templates/"
 
-  val scalateEngine = new TemplateEngine(List(new File(TemplatesDirectory)), "production")
+  val scalateEngine = new org.fusesource.scalate.TemplateEngine(List(new File(TemplatesDirectory)), "production")
 
-  def getTemplate(template: Templates.Template, params: Map[String, Any]): EmailContentWithSubject = {
+  def getPlainTextTemplate(template: PlainTextTemplates.Value, params: Map[String, Any]): String= {
+    scalateEngine.layout(TemplatesDirectory + template + ".mustache", params)
+  }
+
+  def getEmailTemplate(template: EmailTemplates.Value, params: Map[String, Any]): EmailContentWithSubject = {
     splitToContentAndSubject(prepareEmailTemplate(template, params))
   }
 
-  private def prepareEmailTemplate(template: Templates.Template, params: Map[String, Any]): String = {
+  private def prepareEmailTemplate(template: EmailTemplates.Value, params: Map[String, Any]): String = {
     scalateEngine.layout(TemplatesDirectory + template + ".mustache", params)
   }
 
@@ -26,8 +29,12 @@ class EmailTemplateEngine {
   }
 }
 
-object Templates extends Enumeration {
-  type Template = Value
+object EmailTemplates extends Enumeration {
+  type EmailTemplates = Value
   val WelcomeToCodebrag, Invitation, UserNotifications, DailyDigest = Value
+}
 
+object PlainTextTemplates extends Enumeration {
+  type PlainTextTemplates = Value
+  val WelcomeComment = Value
 }

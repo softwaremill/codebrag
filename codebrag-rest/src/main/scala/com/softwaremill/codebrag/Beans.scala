@@ -19,7 +19,7 @@ import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder
 import com.softwaremill.codebrag.service.invitations.{DefaultUniqueHashGenerator, InvitationService}
 import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
 import com.softwaremill.codebrag.service.notification.NotificationService
-import com.softwaremill.codebrag.service.templates.EmailTemplateEngine
+import com.softwaremill.codebrag.service.templates.TemplateEngine
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 
@@ -39,7 +39,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
   lazy val repoStatusDao = new MongoRepositoryStatusDAO
   lazy val emailService = new EmailService(config)
   lazy val emailScheduler = new EmailScheduler(actorSystem, EmailScheduler.createActor(actorSystem, emailService))
-  lazy val templateEngine = new EmailTemplateEngine()
+  lazy val templateEngine = new TemplateEngine()
   lazy val invitationsService = new InvitationService(invitationDao, userDao, emailService, config, DefaultUniqueHashGenerator, templateEngine)
   lazy val notificationService = new NotificationService(emailScheduler, templateEngine, config, notificationCountFinder, clock)
   lazy val heartbeatStore = new MongoHeartbeatStore(clock)
@@ -51,7 +51,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
     val commitToReviewDao = self.commitReviewTaskDao
   }
 
-  lazy val welcomeFollowupsGenerator = new WelcomeFollowupsGenerator(internalUserDao, commentDao, likeDao, followupDao, commitInfoDao)
+  lazy val welcomeFollowupsGenerator = new WelcomeFollowupsGenerator(internalUserDao, commentDao, likeDao, followupDao, commitInfoDao, templateEngine)
 
   lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus, reviewTaskGenerator)
   lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)

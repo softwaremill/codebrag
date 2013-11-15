@@ -3,19 +3,19 @@ package com.softwaremill.codebrag.service.notification
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.email.{Email, EmailScheduler}
 import com.softwaremill.codebrag.domain.User
-import com.softwaremill.codebrag.service.templates.{Templates, EmailTemplateEngine}
-import com.softwaremill.codebrag.service.templates.Templates._
+import com.softwaremill.codebrag.service.templates.{EmailTemplates, TemplateEngine}
+import com.softwaremill.codebrag.service.templates.EmailTemplates._
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import com.softwaremill.codebrag.common.Clock
 import org.joda.time.format.DateTimeFormat
 
-class NotificationService(emailScheduler: EmailScheduler, templateEngine: EmailTemplateEngine, codebragConfig: CodebragConfig, notificationCountFinder: NotificationCountFinder, clock: Clock) extends Logging {
+class NotificationService(emailScheduler: EmailScheduler, templateEngine: TemplateEngine, codebragConfig: CodebragConfig, notificationCountFinder: NotificationCountFinder, clock: Clock) extends Logging {
 
   def sendWelcomeNotification(user: User) {
     val noOfCommits = notificationCountFinder.getCounters(user.id).pendingCommitCount
     val context: Map[String, Any] = prepareContextForWelcomeNotification(user, noOfCommits)
-    val template = templateEngine.getTemplate(WelcomeToCodebrag, context)
+    val template = templateEngine.getEmailTemplate(WelcomeToCodebrag, context)
     emailScheduler.scheduleInstant(Email(List(user.email), template.subject, template.content))
   }
 
@@ -26,7 +26,7 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: EmailT
       "commit_followup_message" -> countersText(commitCount, followupCount),
       "application_url" -> codebragConfig.applicationUrl
     )
-    val resolvedTemplate = templateEngine.getTemplate(Templates.UserNotifications, templateParams)
+    val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.UserNotifications, templateParams)
     val email = Email(List(user.email), resolvedTemplate.subject, resolvedTemplate.content)
     emailScheduler.scheduleInstant(email)
   }
@@ -38,7 +38,7 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: EmailT
       "application_url" -> codebragConfig.applicationUrl,
       "date" -> clock.currentDateTime.toString(DateTimeFormat.forPattern("yyyy-MM-dd"))
     )
-    val resolvedTemplate = templateEngine.getTemplate(Templates.DailyDigest, templateParams)
+    val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.DailyDigest, templateParams)
     val email = Email(List(user.email), resolvedTemplate.subject, resolvedTemplate.content)
     emailScheduler.scheduleInstant(email)
   }

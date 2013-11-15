@@ -11,7 +11,7 @@ import com.softwaremill.codebrag.domain.{User, Invitation}
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.service.config.CodebragConfig
-import com.softwaremill.codebrag.service.templates.{EmailContentWithSubject, Templates, EmailTemplateEngine}
+import com.softwaremill.codebrag.service.templates.{EmailContentWithSubject, EmailTemplates, TemplateEngine}
 import com.softwaremill.codebrag.common.FixtureTimeClock
 import org.joda.time.Hours
 import com.softwaremill.codebrag.domain.builder.UserAssembler
@@ -29,7 +29,7 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
   var invitationDAO: InvitationDAO = _
   var userDAO: UserDAO = _
   var emailService: EmailService = _
-  var emailTemplateEngine: EmailTemplateEngine = _
+  var emailTemplateEngine: TemplateEngine = _
   var uniqueHashGenerator: UniqueHashGenerator = _
 
   var invitationService: InvitationService = _
@@ -42,7 +42,7 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     invitationDAO = mock[InvitationDAO]
     userDAO = mock[UserDAO]
     emailService = mock[EmailService]
-    emailTemplateEngine = mock[EmailTemplateEngine]
+    emailTemplateEngine = mock[TemplateEngine]
     uniqueHashGenerator = mock[UniqueHashGenerator]
     invitationService = new InvitationService(invitationDAO, userDAO, emailService, config, uniqueHashGenerator, emailTemplateEngine)(clock)
   }
@@ -116,7 +116,7 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
     //given
     val invitationLink = "inv code"
     when(userDAO.findById(id)).thenReturn(Some(user))
-    when(emailTemplateEngine.getTemplate(any[Templates.Template], any[Map[String, Object]])).thenReturn(EmailContentWithSubject(invitationLink, "subject"))
+    when(emailTemplateEngine.getEmailTemplate(any[EmailTemplates.Value], any[Map[String, Object]])).thenReturn(EmailContentWithSubject(invitationLink, "subject"))
 
     //when
     invitationService.sendInvitation(emails, invitationLink, id)
