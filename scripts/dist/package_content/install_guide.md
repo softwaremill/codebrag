@@ -123,9 +123,9 @@ Setup your email server so that Codebrag can send emails with invitations and no
 	
 ##### send-anon-usage-data
 
-By default Codebrag sends anonymus data about its usage (e.g. number of users, number of comments). This information **never includes any contents of your repository**. `usage-data.txt` file in the distribution package contains detailed information on what data is sent.
+By default Codebrag sends anonymous data about its usage (e.g. number of users, number of comments). This information **never includes any contents of your repository**. `usage-data.txt` file in the distribution package contains detailed information on what data is sent.
 
-Gathering such anonymus statistics helps us improve Codebrag. Hovewer, if you wish to disable this, set `send-anon-usage-data` property to `false`.
+Gathering such anonymous statistics helps us improve Codebrag. Hovewer, if you wish to disable this, set `send-anon-usage-data` property to `false`.
 
 ### 1.5. Other settings
 
