@@ -44,7 +44,6 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
   lazy val notificationService = new NotificationService(emailScheduler, templateEngine, config, notificationCountFinder, clock)
   lazy val heartbeatStore = new MongoHeartbeatStore(clock)
 
-
   lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {
     val userDao = self.userDao
     val commitInfoDao = self.commitInfoDao
@@ -64,6 +63,9 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
 
   lazy val unlikeUseCaseFactory = new UnlikeUseCase(likeValidator, userReactionService)
   lazy val changeUserSettingsUseCase = new ChangeUserSettingsUseCase(userDao)
+
+  lazy val instanceSettings = instanceSettingsDao.readOrCreate
+
 }
 
 trait Daos {
@@ -81,6 +83,8 @@ trait Daos {
   lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
 
   lazy val invitationDao = new MongoInvitationDAO
+
+  lazy val instanceSettingsDao = new MongoInstanceSettingsDAO
 
 }
 
