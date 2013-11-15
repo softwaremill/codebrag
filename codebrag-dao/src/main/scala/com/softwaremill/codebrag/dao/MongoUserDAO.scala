@@ -21,49 +21,45 @@ class MongoUserDAO extends UserDAO {
   }
 
   override def findAll() = {
-    UserRecord.findAll
+    UserRecord.asRegularUser.fetch()
   }
 
   override def findByEmail(email: String) = {
-    UserRecord where (_.email eqs email.toLowerCase) get()
+    UserRecord.asRegularUser.where(_.email eqs email.toLowerCase).get()
   }
 
   override def findByLowerCasedLogin(login: String) = {
-    UserRecord where (_.authentication.subfield(_.usernameLowerCase) eqs login.toLowerCase) get()
+    UserRecord.asRegularUser.where(_.authentication.subfield(_.usernameLowerCase) eqs login.toLowerCase).get()
   }
 
   def findByLoginOrEmail(login: String, email: String) = {
     val lowercasedLogin = login.toLowerCase
     val lowercasedEmail = email.toLowerCase
-    UserRecord or(_.where(_.authentication.subfield(_.usernameLowerCase) eqs lowercasedLogin), _.where(_.email eqs lowercasedEmail)) get()
-  }
-
-  def findByUserNameOrEmail(userName: String, email: String) = {
-    UserRecord or(_.where(_.name eqs userName), _.where(_.email eqs email)) get()
+    UserRecord.asRegularUser.or(_.where(_.authentication.subfield(_.usernameLowerCase) eqs lowercasedLogin), _.where(_.email eqs lowercasedEmail)) get()
   }
 
   def findByToken(token: String) = {
-    UserRecord where (_.token eqs token) get()
+    UserRecord.asRegularUser.where (_.token eqs token) get()
   }
 
   def findById(userId: ObjectId) = {
-    UserRecord.where(_.id eqs userId).get()
+    UserRecord.asRegularUser.where(_.id eqs userId).get()
   }
 
   def changeAuthentication(id: ObjectId, authentication: Authentication) {
-    UserRecord where (_.id eqs id) modify (_.authentication setTo (authentication)) updateOne()
+    UserRecord.asRegularUser.where(_.id eqs id).modify(_.authentication setTo (authentication)).updateOne()
   }
 
   def rememberNotifications(id: ObjectId, notifications: LastUserNotificationDispatch) {
-    UserRecord where (_.id eqs id) modify (_.notifications setTo notifications) updateOne()
+    UserRecord.asRegularUser.where(_.id eqs id).modify(_.notifications setTo notifications).updateOne()
   }
 
   def findCommitAuthor(commit: CommitInfo) = {
-    UserRecord or(_.where(_.name eqs commit.authorName), _.where(_.email eqs commit.authorEmail)) get()
+    UserRecord.asRegularUser.or(_.where(_.name eqs commit.authorName), _.where(_.email eqs commit.authorEmail)).get()
   }
 
   def changeUserSettings(userId: ObjectId, newSettings: UserSettings) {
-    UserRecord where (_.id eqs userId) modify (_.userSettings setTo toRecord(newSettings)) updateOne()
+    UserRecord.asRegularUser.where(_.id eqs userId).modify(_.userSettings setTo toRecord(newSettings)).updateOne()
   }
 
   private object UserImplicits {
@@ -151,10 +147,14 @@ class UserRecord extends MongoRecord[UserRecord] with ObjectIdPk[UserRecord] {
 
   object notifications extends OptionalBsonRecordField(this, LastUserNotificationDispatchRecord)
 
+  object regular extends BooleanField(this, true)
+
 }
 
 object UserRecord extends UserRecord with MongoMetaRecord[UserRecord] {
   override def collectionName = "users"
+
+  val asRegularUser = UserRecord where(_.regular eqs true)
 }
 
 class AuthenticationRecord extends BsonRecord[AuthenticationRecord] {

@@ -1,14 +1,27 @@
 package com.softwaremill.codebrag.dao
 
-import com.softwaremill.codebrag.domain.{UserSettings, LastUserNotificationDispatch, Authentication, User}
+import com.softwaremill.codebrag.domain._
 import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import org.joda.time.DateTime
+import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
+import scala.Some
 
 class MongoUserDAOSpec extends MongoUserSpec with ChangeUserSettingsSpec {
+
+  "regular user dao" should "not consider users that are flagged as internal" in {
+    // given
+    UserRecord.drop // clean database from preloaded uses
+    val internalUser = InternalUser("codebrag")
+    internalUserDAO.createIfNotExists(internalUser)
+
+    // then
+    userDAO.findAll() should be('empty)
+    userDAO.findById(internalUser.id) should be('empty)
+  }
 
   "other methods" should "add user with existing login" taggedAs (RequiresDb) in {
     // Given
@@ -324,12 +337,14 @@ class MongoUserDAOSpec extends MongoUserSpec with ChangeUserSettingsSpec {
 trait MongoUserSpec extends FlatSpecWithMongo with ShouldMatchers with ClearDataAfterTest with Logging {
   val UserIdPrefix = "507f1f77bcf86cd79943901"
   var userDAO: UserDAO = _
+  var internalUserDAO: MongoInternalUserDAO = _
 
   implicit def intSuffixToObjectId(suffix: Int): ObjectId = new ObjectId(UserIdPrefix + suffix)
 
   override def beforeEach() {
     super.beforeEach()
     userDAO = new MongoUserDAO
+    internalUserDAO = new MongoInternalUserDAO
 
     for (i <- 1 to 3) {
       val login = "user" + i
