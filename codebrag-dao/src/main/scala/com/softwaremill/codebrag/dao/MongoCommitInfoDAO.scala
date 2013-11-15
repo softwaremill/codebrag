@@ -31,13 +31,13 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
     CommitInfoRecord orderDesc(_.committerDate) andDesc(_.authorDate) get() map(_.sha.get)
   }
 
-  def findNewestCommitsNotAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo] = {
+  override def findNewestCommitsNotAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo] = {
     CommitInfoRecord where (_.authorName neqs userLike.userFullName(user)) and (_.authorEmail neqs userLike.userEmail(user)) orderDesc(_.committerDate) andDesc(_.authorDate) limit count fetch()
   }
 
-  def findLastCommitAuthoredByUser[T](user: T)(implicit userLike: UserLike[T]): Option[CommitInfo] = {
+  override def findLastCommitsAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo] = {
     val commitsByUserQuery = CommitInfoRecord or(_.where(_.authorEmail eqs userLike.userEmail(user)), (_.where(_.authorName eqs userLike.userFullName(user)))) orderDesc (_.committerDate) andDesc (_.authorDate)
-    commitsByUserQuery limit 1 fetch() headOption
+    commitsByUserQuery limit count fetch()
   }
 
   override def findAllSha(): Set[String] = {

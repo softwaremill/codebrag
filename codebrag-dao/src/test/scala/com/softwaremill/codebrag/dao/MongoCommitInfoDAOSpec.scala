@@ -141,14 +141,14 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     commits.foreach(commitInfoDAO.storeCommit)
 
     // when
-    val Some(lastCommitByBob) = commitInfoDAO.findLastCommitAuthoredByUser(Bob)
-    val Some(lastCommitByJohn) = commitInfoDAO.findLastCommitAuthoredByUser(John)
-    val noCommitByAlice = commitInfoDAO.findLastCommitAuthoredByUser(Alice)
+    val lastCommitByBob = commitInfoDAO.findLastCommitsAuthoredByUser(Bob, 1)
+    val lastCommitsByJohn = commitInfoDAO.findLastCommitsAuthoredByUser(John, 2)
+    val noCommitByAlice = commitInfoDAO.findLastCommitsAuthoredByUser(Alice, 1)
 
     // then
-    lastCommitByBob.sha should be("4")
-    lastCommitByJohn.sha should be("6")
-    noCommitByAlice should be(None)
+    lastCommitByBob.map(_.sha) should be(List("4"))
+    lastCommitsByJohn.map(_.sha) should be(List("1", "6"))
+    noCommitByAlice should be('empty)
   }
 
   def buildCommitWithMatchingUserEmail(user: User, date: DateTime, sha: String) = {

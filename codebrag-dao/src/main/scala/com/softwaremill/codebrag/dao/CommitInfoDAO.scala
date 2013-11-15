@@ -19,6 +19,6 @@ trait CommitInfoDAO {
 
   def findNewestCommitsNotAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo]
 
-  def findLastCommitAuthoredByUser[T](user: T)(implicit userLike: UserLike[T]): Option[CommitInfo]
+  def findLastCommitsAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo]
 
 }
