@@ -7,7 +7,7 @@ import dao._
 import com.softwaremill.codebrag.rest.CodebragSwagger
 import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
-import service.followups.FollowupService
+import com.softwaremill.codebrag.service.followups.{WelcomeFollowupsGenerator, FollowupService}
 import service.commits._
 import com.softwaremill.codebrag.service.user._
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
@@ -51,11 +51,13 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
     val commitToReviewDao = self.commitReviewTaskDao
   }
 
+  lazy val welcomeFollowupsGenerator = new WelcomeFollowupsGenerator(internalUserDao, commentDao, likeDao, followupDao, commitInfoDao)
+
   lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus, reviewTaskGenerator)
   lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
   lazy val commentActivity = new AddCommentActivity(userReactionService, followupService)
 
-  lazy val newUserAdder = new NewUserAdder(userDao, eventBus, reviewTaskGenerator)
+  lazy val newUserAdder = new NewUserAdder(userDao, eventBus, reviewTaskGenerator, welcomeFollowupsGenerator)
   lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService, notificationService)
 
   lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder, new DiffService(commitInfoDao))
@@ -67,6 +69,8 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
 trait Daos {
 
   lazy val userDao = new MongoUserDAO
+  lazy val internalUserDao = new MongoInternalUserDAO
+
   lazy val commitInfoDao = new MongoCommitInfoDAO
   lazy val followupDao = new MongoFollowupDAO
   lazy val followupWithReactionsDao = new MongoFollowupWithReactionsDAO(commentDao, likeDao)

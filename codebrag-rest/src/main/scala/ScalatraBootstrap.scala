@@ -1,4 +1,5 @@
 import com.softwaremill.codebrag.dao.MongoInit
+import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
@@ -19,6 +20,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     Locale.setDefault(Locale.US) // set default locale to prevent Scalatra from sending cookie expiration date in polish format :)
 
     MongoInit.initialize(config)
+    ensureInternalCodebragUserExists
 
     if(config.userNotifications) {
       UserNotificationSenderActor.initialize(actorSystem, heartbeatStore, notificationCountFinder, userDao, clock, notificationService, config)
@@ -43,6 +45,11 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     }
 
     context.put("codebrag", this)
+  }
+
+
+  def ensureInternalCodebragUserExists {
+    internalUserDao.createIfNotExists(InternalUser(InternalUser.WelcomeFollowupsAuthorName))
   }
 
   override def destroy(context: ServletContext) {

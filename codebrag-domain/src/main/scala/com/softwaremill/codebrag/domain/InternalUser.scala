@@ -6,6 +6,8 @@ case class InternalUser(id: ObjectId, name: String)
 
 object InternalUser {
 
+  val WelcomeFollowupsAuthorName = "Codebrag"
+
   def apply(name: String) = {
     new InternalUser(new ObjectId, name)
   }

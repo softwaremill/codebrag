@@ -147,7 +147,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
 
     // then
     lastCommitByBob.map(_.sha) should be(List("4"))
-    lastCommitsByJohn.map(_.sha) should be(List("1", "6"))
+    lastCommitsByJohn.map(_.sha) should be(List("6", "1"))
     noCommitByAlice should be('empty)
   }
 
