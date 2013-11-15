@@ -123,7 +123,9 @@ Setup your email server so that Codebrag can send emails with invitations and no
 	
 ##### send-anon-usage-data
 
-TODO	
+By default Codebrag sends anonymus data about its usage (e.g. number of users, number of comments). This information **never includes any contents of your repository**. `usage-data.txt` file in the distribution package contains detailed information on what data is sent.
+
+Gathering such anonymus statistics helps us improve Codebrag. Hovewer, if you wish to disable this, set `send-anon-usage-data` property to `false`.
 
 ### 1.5. Other settings
 
@@ -156,7 +158,7 @@ Either email address or name provided have to match corresponding fields in `git
 
 *** NOTE: *** If your repository is large, you may need to wait until it is downloaded.
 
-Other users can be invited to join Codebrag by choosing "Invite friends" link from menu in upper left corner.
+Other users can be invited to join Codebrag by choosing "Invite friends" link from menu in upper right corner.
 
 ## 4. Questions? Help? Contact us
 
