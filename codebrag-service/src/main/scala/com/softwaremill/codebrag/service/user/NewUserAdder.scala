@@ -14,7 +14,7 @@ class NewUserAdder(userDao: UserDAO,
 
   def add(user: User):User = {
     val addedUser = userDao.add(user)
-    val userRegisteredEvent = NewUserRegistered(user)
+    val userRegisteredEvent = NewUserRegistered(addedUser)
     reviewTaskGenerator.handleNewUserRegistered(userRegisteredEvent)
     welcomeFollowupGenerator.createWelcomeFollowupFor(userRegisteredEvent)
     eventBus.publish(userRegisteredEvent)
