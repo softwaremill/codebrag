@@ -13,6 +13,7 @@ import com.softwaremill.codebrag.domain.Comment
 import com.softwaremill.codebrag.domain.Followup
 import scala.Some
 import com.softwaremill.codebrag.domain.Like
+import com.softwaremill.codebrag.service.templates.{PlainTextTemplates, TemplateEngine}
 
 class WelcomeFollowupsGeneratorSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
@@ -21,6 +22,7 @@ class WelcomeFollowupsGeneratorSpec extends FlatSpec with MockitoSugar with Shou
   var likesDao: LikeDAO = _
   var followupsDao: FollowupDAO = _
   var commitInfoDao: CommitInfoDAO = _
+  var templateEngine: TemplateEngine = _
 
   var generator: WelcomeFollowupsGenerator = _
   
@@ -34,7 +36,8 @@ class WelcomeFollowupsGeneratorSpec extends FlatSpec with MockitoSugar with Shou
     likesDao = mock[LikeDAO]
     followupsDao = mock[FollowupDAO]
     commitInfoDao = mock[CommitInfoDAO]
-    generator = new WelcomeFollowupsGenerator(internalUserDao, commentsDao, likesDao, followupsDao, commitInfoDao)
+    templateEngine = mock[TemplateEngine]
+    generator = new WelcomeFollowupsGenerator(internalUserDao, commentsDao, likesDao, followupsDao, commitInfoDao, templateEngine)
 
     when(internalUserDao.findByName(InternalUser.WelcomeFollowupsAuthorName)).thenReturn(Some(internalUser))
   }
@@ -76,6 +79,21 @@ class WelcomeFollowupsGeneratorSpec extends FlatSpec with MockitoSugar with Shou
     val like = verifyLikeCreatedFor(twoCommitsList(0))
     val comment = verifyCommentCreatedFor(twoCommitsList(1))
     verifyFollowupsCreatedFor(comment, like, newUser)
+  }
+
+  it should "generate comment with predefined content" in {
+    // given
+    val commentContent = "Welcome abroad!"
+    val oneCommitList = List(CommitInfoAssembler.randomCommit.get)
+    when(commitInfoDao.findLastCommitsAuthoredByUser(registeredUserData, 2)).thenReturn(oneCommitList)
+    when(templateEngine.getPlainTextTemplate(PlainTextTemplates.WelcomeComment, Map.empty)).thenReturn(commentContent)
+
+    // when
+    generator.createWelcomeFollowupFor(registeredUserData)
+
+    // then
+    val comment = verifyCommentCreatedFor(oneCommitList.head)
+    comment.message should be(commentContent)
   }
 
 

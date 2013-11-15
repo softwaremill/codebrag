@@ -7,12 +7,14 @@ import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.Comment
 import com.softwaremill.codebrag.domain.Followup
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
+import com.softwaremill.codebrag.service.templates.{PlainTextTemplates, TemplateEngine}
 
 class WelcomeFollowupsGenerator(internalUserDao: MongoInternalUserDAO,
                                  commentsDao: CommitCommentDAO,
                                  likesDao: LikeDAO,
                                  followupsDao: FollowupDAO,
-                                 commitInfoDao: CommitInfoDAO) {
+                                 commitInfoDao: CommitInfoDAO,
+                                 templateEngine: TemplateEngine) {
 
   def createWelcomeFollowupFor(newUser: NewUserRegistered) {
     internalUserDao.findByName(InternalUser.WelcomeFollowupsAuthorName).foreach { codebragInternalUser =>
@@ -30,7 +32,8 @@ class WelcomeFollowupsGenerator(internalUserDao: MongoInternalUserDAO,
   }
 
   private def createWelcomeComment(commit: CommitInfo, registeredUser: NewUserRegistered, codebragUser: InternalUser) {
-    val comment = Comment(new ObjectId, commit.id, codebragUser.id, DateTime.now, "Hey there. This is **codebrag**")
+    val commentContent = templateEngine.getPlainTextTemplate(PlainTextTemplates.WelcomeComment, Map.empty)
+    val comment = Comment(new ObjectId, commit.id, codebragUser.id, DateTime.now, commentContent)
     commentsDao.save(comment)
     followupsDao.createOrUpdateExisting(Followup(registeredUser.id, comment))
   }
