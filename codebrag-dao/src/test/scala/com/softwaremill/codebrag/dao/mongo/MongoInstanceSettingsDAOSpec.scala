@@ -3,14 +3,20 @@ package com.softwaremill.codebrag.dao.mongo
 import com.softwaremill.codebrag.dao._
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.concurrent.Conductors
+import java.util.concurrent.CopyOnWriteArraySet
 
-class MongoInstanceSettingsDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
+class MongoInstanceSettingsDAOSpec
+  extends FlatSpecWithMongo
+  with ClearDataAfterTest
+  with ShouldMatchers
+  with Conductors {
 
   /**
    * Uncomment the line below - simplifies testing in IDE
    * remember that this must point to folder above 'bin/mongod'
    */
-  //System.setProperty("mongo.directory", "/opt/local")
+  System.setProperty("mongo.directory", "/opt/local")
 
   var instanceDao: InstanceSettingsDAO = _
 
@@ -65,6 +71,28 @@ class MongoInstanceSettingsDAOSpec extends FlatSpecWithMongo with ClearDataAfter
     before should be(0)
     after should be(2)
     result should equal("More than one record exists in collection 'instance_settings'!")
+  }
+
+  it should "always generate just one uniqueId no matter how many threads" taggedAs RequiresDb in {
+    // given
+    val conductor = new Conductor
+    import conductor._
+
+    val expected = instanceDao.readOrCreate.right.get.uniqueId
+    val instances = new CopyOnWriteArraySet[String]()
+
+    // when
+    for (i <- 1 until 50) {
+      thread("instance-" + i) {
+        instances add instanceDao.readOrCreate.right.get.uniqueId
+      }
+    }
+
+    // then
+    whenFinished {
+      instances should have size 1
+      instances should contain(expected)
+    }
   }
 
 }

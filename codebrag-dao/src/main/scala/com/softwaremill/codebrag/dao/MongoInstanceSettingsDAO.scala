@@ -4,6 +4,8 @@ import com.softwaremill.codebrag.domain.InstanceSettings
 
 class MongoInstanceSettingsDAO extends InstanceSettingsDAO {
 
+  import com.foursquare.rogue.LiftRogue._
+
   def readOrCreate = {
     InstanceSettingsRecord.count match {
       case 0 => Right(createInstance)
@@ -20,10 +22,10 @@ class MongoInstanceSettingsDAO extends InstanceSettingsDAO {
   }
 
   private def createInstance = {
-    val record = InstanceSettingsRecord
-      .createRecord
-      .save
-    InstanceSettings(record.id.toString())
+    InstanceSettingsRecord.upsert(
+      InstanceSettingsRecord.limit(1).asDBObject,
+      InstanceSettingsRecord.createRecord.asDBObject)
+    readInstance
   }
 
 }
