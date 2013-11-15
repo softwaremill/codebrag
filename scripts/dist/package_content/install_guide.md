@@ -161,9 +161,9 @@ Other users can be invited to join Codebrag by choosing "Invite friends" link fr
 ## 4. Questions? Help? Contact us
 
 Do drop us a line at
-[**ask@codebrag.com**](mailto:ask@codebrag.com) if you find an issue or just want to share a thought or ask a question. If you're looking for Frequently Asked Questions please visit the website!
+[**ask@codebrag.com**](mailto:ask@codebrag.com) if you find an issue or just want to share a thought or ask a question.
 
-You may also want to join [Codebrag Users group](https://groups.google.com/forum/#!forum/codebrag-users).
+You may also want to check out Codebrag [FAQ](http://codebrag.com/devoxx/faq.html) or join [Codebrag Users group](https://groups.google.com/forum/#!forum/codebrag-users) to be very first to learn about bug fixes and new releases.
 
 We hope you and your team will enjoy performing code review with Codebrag!
 
@@ -171,15 +171,17 @@ We hope you and your team will enjoy performing code review with Codebrag!
 <div style="page-break-after: always;"></div>
 
 
-## Appendix A
+### Appendix A - Optional Configuration Properties
+
+#### 'codebrag' section
 
 ##### local-git-storage-path
 
-Codebrag needs to store repository data somewhere on your server. Edit `local-git-storage-path` accordingly. Codebrag will create directory called `repos` under provided location. Remember to set access rights accordingly so that Codebrag can read and write to this location.
+Repository data will be stored under this location (Codebrag will create `repos` directory). Remember to set access rights accordingly so that Codebrag can read and write to it.
 
 ##### invitation-expiry-time
 
-`invitation-expiry-time` property indicates how long invitation links are valid. After that time no new registration can be issued with this link. This value defaults to 24 hours.
+This property indicates how long invitation links are valid.
 
     //this setting uses Scala Duration syntax, i.e. 15 minutes, 24 hours, 2 days
 	invitation-expiry-time= "24 hours"
@@ -195,11 +197,11 @@ Codebrag needs to store repository data somewhere on your server. Edit `local-gi
 
 ###### enabled
 
-Indicates whether email notifications should be enabled. If notifications are enabled each user can switch them off in his profile in application
+Indicates whether email notifications should be enabled. If notifications are enabled each user can switch them off in his profile in application.
 
 ###### check-interval
 
-Defines how often the system will check for notifications to send
+Defines how often the system will check for notifications to send.
 
 ###### user-offline-after
 
@@ -207,8 +209,8 @@ Defines how long after closing tab with Codebrag user will be considered offline
 
 ###### daily-digest-hour
 
-Defines when (full hour of the day) daily digest emails will be sent
+Defines when (full hour of the day) daily digest emails will be sent.
 
-### "web-server" section
+#### "web-server" section
 
 By default Codebrag starts on port 8080. Edit `port` property to change it.
