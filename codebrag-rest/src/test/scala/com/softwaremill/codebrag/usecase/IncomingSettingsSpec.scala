@@ -15,21 +15,21 @@ class IncomingSettingsSpec extends FlatSpec with MockitoSugar with ShouldMatcher
   val existingSettings = UserSettings(
     avatarUrl =  "http://codebrag.com/avatar",
     emailNotificationsEnabled = true,
-    welcomeFollowupDone = false
+    appTourDone = false
   )
 
   it should "update only incoming settings" in {
     // given
     val noNotificationsSettings = newSettingsWithNotificationsDisabled
-    val followupDoneSettings = newSettingsWithWelcomeFollowupDone
+    val tourDoneSettings = newSettingsWithAppTourDone
 
     // when
     val updatedNotifications = noNotificationsSettings.applyTo(existingSettings)
-    val updatedWelcomeFollowup = followupDoneSettings.applyTo(existingSettings)
+    val updatedWelcomeFollowup = tourDoneSettings.applyTo(existingSettings)
 
     // then
     updatedNotifications should equal(existingSettings.copy(emailNotificationsEnabled = false))
-    updatedWelcomeFollowup should equal(existingSettings.copy(welcomeFollowupDone = true))
+    updatedWelcomeFollowup should equal(existingSettings.copy(appTourDone = true))
   }
 
   it should "update nothing when no values in incoming settings found" in {
@@ -43,6 +43,6 @@ class IncomingSettingsSpec extends FlatSpec with MockitoSugar with ShouldMatcher
     updatedSettings should equal(existingSettings)
   }
 
-  val newSettingsWithNotificationsDisabled = IncomingSettings(emailNotificationsEnabled = Some(false), welcomeFollowupDone = None)
-  val newSettingsWithWelcomeFollowupDone = IncomingSettings(None, welcomeFollowupDone = Some(true))
+  val newSettingsWithNotificationsDisabled = IncomingSettings(emailNotificationsEnabled = Some(false), appTourDone = None)
+  val newSettingsWithAppTourDone = IncomingSettings(None, appTourDone = Some(true))
 }

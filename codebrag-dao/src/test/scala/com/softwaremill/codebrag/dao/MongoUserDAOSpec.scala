@@ -373,7 +373,7 @@ trait ChangeUserSettingsSpec extends MongoUserSpec {
 
   it should "update multiple settings" taggedAs RequiresDb in {
     //given
-    val newSettings = user.settings.copy(emailNotificationsEnabled = true, welcomeFollowupDone = true)
+    val newSettings = user.settings.copy(emailNotificationsEnabled = true, appTourDone = true)
     userDAO.add(user)
 
     //when
@@ -382,6 +382,6 @@ trait ChangeUserSettingsSpec extends MongoUserSpec {
     //then
     val Some(userFound) = userDAO.findById(9)
     userFound.settings.emailNotificationsEnabled should equal(true)
-    userFound.settings.welcomeFollowupDone should equal(true)
+    userFound.settings.appTourDone should equal(true)
   }
 }

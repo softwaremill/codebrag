@@ -302,7 +302,7 @@
         "email": "michal.ostruszka@softwaremill.com",
         "token": "818728e2-ced3-4d58-b676-1003d4106816",
         "settings": {
-            "welcomeFollowupDone": false
+            "appTourDone": false
         }
     };
 

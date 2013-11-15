@@ -3,11 +3,11 @@ describe('Page tour service', function() {
     var $rootScope, $compile, $document, authService, $q, pageTourService, userSettingsService, events;
 
     var USER_WITH_TOUR_NOT_YET_DONE = {
-        settings: { welcomeFollowupDone: false}
+        settings: { appTourDone: false}
     };
 
     var USER_WITH_TOUR_COMPLETED = {
-        settings: { welcomeFollowupDone: true}
+        settings: { appTourDone: true}
     };
 
     beforeEach(module('codebrag.templates'));

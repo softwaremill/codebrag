@@ -62,7 +62,7 @@ angular.module('codebrag.tour')
 
             function setupUserTour() {
                 authService.requestCurrentUser().then(function(user) {
-                    if(!!!user.settings.welcomeFollowupDone) {
+                    if(!user.settings.appTourDone) {
                         tourDOMAppender.append();
                     } else {
                         tourDOMAppender.remove();
@@ -73,7 +73,7 @@ angular.module('codebrag.tour')
 
         function finishTour() {
             tourDOMAppender.remove();
-            userSettingsService.save({welcomeFollowupDone: true});
+            userSettingsService.save({appTourDone: true});
         }
 
 

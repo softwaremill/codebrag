@@ -36,7 +36,7 @@ class UserAssembler(var user: User) {
   }
 
   def withWelcomeFollowupNotYetDone() = {
-    user = user.copy(settings = user.settings.copy(welcomeFollowupDone = false))
+    user = user.copy(settings = user.settings.copy(appTourDone = false))
     this
   }
 

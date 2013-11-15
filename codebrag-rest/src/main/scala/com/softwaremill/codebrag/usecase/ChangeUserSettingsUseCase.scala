@@ -26,11 +26,11 @@ class ChangeUserSettingsUseCase(userDao: UserDAO) extends Logging {
 
 }
 
-case class IncomingSettings(emailNotificationsEnabled: Option[Boolean], welcomeFollowupDone: Option[Boolean]) {
+case class IncomingSettings(emailNotificationsEnabled: Option[Boolean], appTourDone: Option[Boolean]) {
   def applyTo(existingSettings: UserSettings) = {
     existingSettings
       .copy(emailNotificationsEnabled = this.emailNotificationsEnabled.getOrElse(existingSettings.emailNotificationsEnabled))
-      .copy(welcomeFollowupDone = this.welcomeFollowupDone.getOrElse(existingSettings.welcomeFollowupDone))
+      .copy(appTourDone = this.appTourDone.getOrElse(existingSettings.appTourDone))
   }
 }
 
