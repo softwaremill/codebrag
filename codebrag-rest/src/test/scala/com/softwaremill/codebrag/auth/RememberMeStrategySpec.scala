@@ -23,7 +23,9 @@ class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
   when(userService.authenticateWithToken(loggedUser.token)) thenReturn(Option(loggedUser))
 
   val rememberMe = true
-  val strategy = new RememberMeStrategy(app, rememberMe, userService)
+  val strategy = new RememberMeStrategy(app, rememberMe, userService) {
+    override def cookieKey(implicit request: HttpServletRequest): String = "rememberMe"
+  }
 
   it should "authenticate user base on cookie" in {
     // Given

@@ -3,7 +3,7 @@ import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
-import com.softwaremill.codebrag.{EventingConfiguration, Beans}
+import com.softwaremill.codebrag.{InstanceContext, EventingConfiguration, Beans}
 import java.util.Locale
 import org.scalatra._
 import javax.servlet.ServletContext
@@ -44,7 +44,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
       context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")
     }
 
-    context.put("codebrag", this)
+    InstanceContext.put(context, this)
   }
 
 
@@ -57,4 +57,5 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     actorSystem.shutdown()
     actorSystem.awaitTermination()
   }
+
 }

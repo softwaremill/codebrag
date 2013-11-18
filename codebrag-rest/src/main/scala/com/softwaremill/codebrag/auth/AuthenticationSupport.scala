@@ -1,8 +1,8 @@
 package com.softwaremill.codebrag.auth
 
 import org.scalatra._
-import org.scalatra.auth.ScentryAuthStore.CookieAuthStore
-import org.scalatra.auth.{ Scentry, ScentryConfig, ScentrySupport }
+import org.scalatra.auth.ScentryAuthStore.ScentryAuthStore
+import org.scalatra.auth.{ ScentryConfig, ScentrySupport }
 import scala.Some
 import com.softwaremill.codebrag.common.{ Utils, JsonWrapper }
 import com.softwaremill.codebrag.service.user.Authenticator
@@ -51,9 +51,19 @@ trait AuthenticationSupport extends ScentrySupport[UserJson] {
 
   override protected def configureScentry {
     val authCookieOptions = cookieOptions.copy(path = "/", secure = false, maxAge = Utils.OneWeek, httpOnly = true)
-    scentry.store = new CookieAuthStore(self) {
+    scentry.store = new ScentryAuthStore {
+      override def get(implicit request: HttpServletRequest, response: HttpServletResponse): String = {
+        cookies.get(cookieKey) getOrElse ""
+      }
+      override def set(value: String)(implicit request: HttpServletRequest, response: HttpServletResponse): Unit = {
+        cookies.update(cookieKey, value)(cookieOptions)
+      }
       override def invalidate()(implicit request: HttpServletRequest, response: HttpServletResponse) {
-        cookies.update(Scentry.scentryAuthKey, user.token)(authCookieOptions.copy(maxAge = 0))
+        cookies.update(cookieKey, user.token)(authCookieOptions.copy(maxAge = 0))
+      }
+      private def cookieKey(implicit request: HttpServletRequest) = {
+         request.getServletContext
+        AuthUtils.scentryAuthKey
       }
     }
     scentry.unauthenticated {

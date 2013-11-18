@@ -64,7 +64,10 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
   lazy val unlikeUseCaseFactory = new UnlikeUseCase(likeValidator, userReactionService)
   lazy val changeUserSettingsUseCase = new ChangeUserSettingsUseCase(userDao)
 
-  lazy val instanceSettings = instanceSettingsDao.readOrCreate
+  lazy val instanceSettings = instanceSettingsDao.readOrCreate match {
+    case Left(error) => throw new RuntimeException(s"Cannot properly initialise Instance settings: $error")
+    case Right(instance) => instance
+  }
 
 }
 
