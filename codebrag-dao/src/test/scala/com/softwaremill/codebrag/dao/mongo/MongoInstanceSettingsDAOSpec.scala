@@ -16,7 +16,7 @@ class MongoInstanceSettingsDAOSpec
    * Uncomment the line below - simplifies testing in IDE
    * remember that this must point to folder above 'bin/mongod'
    */
-  System.setProperty("mongo.directory", "/opt/local")
+  // System.setProperty("mongo.directory", "/opt/local")
 
   var instanceDao: InstanceSettingsDAO = _
 
