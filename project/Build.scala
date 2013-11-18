@@ -1,4 +1,6 @@
 import java.io.PrintWriter
+import java.text.SimpleDateFormat
+import java.util.Date
 import sbt._
 import Keys._
 import com.gu.SbtJasminePlugin._
@@ -157,25 +159,28 @@ object SmlCodebragBuild extends Build {
   import BuildSettings._
   import com.github.siasia.WebPlugin.webSettings
 
-  val genCommitSHAFile = TaskKey[Unit](
-    "gen-commit-file",
+  val genVersionFile = TaskKey[Unit](
+    "gen-version-file",
     "Generates a file in target/classes containing SHA of current git commit"
   )
 
-  val gitCommitGenSettings = Seq[Setting[_]](genCommitSHAFile <<= SHAFile)
+  val versionGenSettings = Seq[Setting[_]](genVersionFile <<= VersionFile)
 
-  lazy val SHAFile = {
+  lazy val VersionFile = {
     (scalaVersion, baseDirectory, projectID) map { (sv, bd, pid) =>
-      val targetProperties: File = bd / "target" / "scala-2.10" / "classes" / "commit.sha"
-      replaceFileContent(targetProperties, currentGitCommitSHA)
+      val targetProperties: File = bd / "target" / "scala-2.10" / "classes" / "version.id"
+      val versionIdentifier = List(buildDateString, currentGitCommitSHA).mkString("-")
+      replaceFileContent(targetProperties, versionIdentifier)
       println("Generated version file in: " + targetProperties.getPath)
     }
   }
 
   def currentGitCommitSHA = Process("git rev-parse HEAD")!!
+  def buildDateString = new SimpleDateFormat("yyyyMMddHHmm").format(new Date())
+
 
   def replaceFileContent(file: File, content: String) {
-    println("Writing commit SHA to " + file)
+    println("Writing version to " + file)
     if(file.exists) file.delete()
     file.createNewFile()
     val writer = new PrintWriter(file)
@@ -244,11 +249,11 @@ object SmlCodebragBuild extends Build {
   lazy val rest: Project = Project(
     "codebrag-rest",
     file("codebrag-rest"),
-    settings = buildSettings ++ graphSettings ++ webSettings ++ gitCommitGenSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig, jettyContainer)) ++ Seq(
+    settings = buildSettings ++ graphSettings ++ webSettings ++ versionGenSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig, jettyContainer)) ++ Seq(
       artifactName := { (config: ScalaVersion, module: ModuleID, artifact: Artifact) =>
         "codebrag." + artifact.extension // produces nice war name -> http://stackoverflow.com/questions/8288859/how-do-you-remove-the-scala-version-postfix-from-artifacts-builtpublished-wi
       },
-      (copyResources in Compile) <<= (copyResources in Compile) dependsOn (genCommitSHAFile))
+      (copyResources in Compile) <<= (copyResources in Compile) dependsOn (genVersionFile))
   ) dependsOn(service % "test->test;compile->compile", domain, common)
 
 

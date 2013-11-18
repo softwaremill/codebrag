@@ -5,13 +5,13 @@ import scala.io.Source._
 
 class VersionServlet extends JsonServlet with Logging {
 
-  val commitShaFile = "commit.sha"
+  val commitShaFile = "version.id"
 
   get("/") {
     try {
       val fileStream = Thread.currentThread().getContextClassLoader.getResourceAsStream(commitShaFile)
       val sha = fromInputStream(fileStream).mkString
-      Map("commitId" -> sha.trim)
+      Map("version" -> sha.trim)
     } catch {
       case e: Exception => {
         logger.error(s"Could not read ${commitShaFile}", e)
