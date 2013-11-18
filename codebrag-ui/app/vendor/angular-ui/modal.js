@@ -62,7 +62,7 @@ angular.module('ui.bootstrap.modal', [])
     return {
       restrict: 'EA',
       replace: true,
-      templateUrl: 'views/modalBackdrop.html',
+      templateUrl: 'views/popups/modalBackdrop.html',
       link: function (scope, element, attrs) {
 
         //trigger CSS transitions
@@ -90,7 +90,7 @@ angular.module('ui.bootstrap.modal', [])
       },
       replace: true,
       transclude: true,
-      templateUrl: 'views/modalWindow.html',
+      templateUrl: 'views/popups/modalWindow.html',
       link: function (scope, element, attrs) {
         scope.windowClass = attrs.windowClass || '';
 

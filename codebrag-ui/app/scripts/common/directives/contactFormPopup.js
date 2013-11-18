@@ -52,7 +52,7 @@ angular.module('codebrag.common.directives').directive('contactFormPopup', funct
         restrict: 'E',
         replace: true,
         scope: {},
-        templateUrl: 'views/contactForm.html',
+        templateUrl: 'views/popups/contactForm.html',
         controller: ContactFormPopup
     };
 

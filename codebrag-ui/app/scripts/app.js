@@ -40,7 +40,10 @@ angular.module('codebrag')
             return codebrag.uniqueRequestsAwareHttpService($delegate, $q);
         });
     })
-    .run(function($rootScope, repositoryStatusService, pageTourService, authService, $state) {
+    .run(function($rootScope, repositoryStatusService, pageTourService, authService, $state, $http) {
+        $http.get('rest/version').then(function(response) {
+            $rootScope.version = response.data.version;
+        });
         repositoryStatusService.checkRepoReady()
             .then(checkIfFirstRegistrationRequired)
             .then(openFirstRegistrationIfNeeded);

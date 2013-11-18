@@ -17,7 +17,7 @@ angular.module('codebrag.notifications')
 
         function displayModal(repoStatus) {
             var modalConfig = {
-                templateUrl: 'views/repoNotReady.html',
+                templateUrl: 'views/popups/repoNotReady.html',
                 backdrop: false,
                 keyboard: false,
                 controller: 'RepositoryStatusCtrl',

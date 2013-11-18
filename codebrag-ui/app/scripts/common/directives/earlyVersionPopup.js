@@ -19,7 +19,7 @@ angular.module('codebrag.common.directives').directive('earlyVersionPopup', func
         restrict: 'E',
         replace: true,
         scope: {},
-        templateUrl: 'views/earlyVersionPopup.html',
+        templateUrl: 'views/popups/earlyVersionPopup.html',
         controller: EarlyVersionPopup,
         link: function(scope, el) {
             var $ribbon = el.find('a.ribbon');
