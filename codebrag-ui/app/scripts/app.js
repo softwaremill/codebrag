@@ -1,14 +1,14 @@
 angular.module('codebrag.events', []);
 
-angular.module('codebrag.common.services', []);
+angular.module('codebrag.common.services', ['ui.bootstrap.modal']);
 angular.module('codebrag.common.filters', []);
 angular.module('codebrag.common.directives', ['codebrag.common.services', 'codebrag.events']);
 angular.module('codebrag.common', ['codebrag.common.services', 'codebrag.common.directives', 'codebrag.common.filters']);
 
 angular.module('codebrag.auth', ['codebrag.events']);
 
-angular.module('codebrag.session', ['ui.compat', 'codebrag.auth', 'codebrag.events']);
-angular.module('codebrag.notifications', ['codebrag.events', 'ui.bootstrap.modal', 'codebrag.templates']);
+angular.module('codebrag.session', ['ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.common']);
+angular.module('codebrag.notifications', ['codebrag.events', 'codebrag.common', 'codebrag.templates']);
 
 angular.module('codebrag.commits.comments', ['ui.compat', 'codebrag.events']);
 angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments', 'codebrag.events', 'codebrag.tour']);

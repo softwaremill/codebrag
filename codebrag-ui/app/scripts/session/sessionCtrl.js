@@ -1,6 +1,6 @@
 angular.module('codebrag.session')
 
-    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, configService, $state, events, $window, $location, flash) {
+    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, configService, $state, events, $window, $location, flash, popupsService) {
 
         $scope.user = {
             login: '',
@@ -57,6 +57,8 @@ angular.module('codebrag.session')
         $scope.openUserProfilePopup = function () {
             $rootScope.$broadcast('openUserProfilePopup');
         };
+
+        $scope.openAboutPopup = popupsService.openAboutPopup;
 
         function clearPasswordField() {
             $scope.loginForm.password.$dirty = false;

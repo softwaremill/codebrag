@@ -1,0 +1,22 @@
+<div class="popup-content" style="text-align: left">
+    <h1 class="success">About Codebrag</h1>
+    <p>Codegrag is a super-simple tool for code review brought to you by <a href="http://softwaremill.com">SoftwareMill</a>.</p>
+    <p>Want to know more?
+        <ul>
+            <li>visit <a href="http://codebrag.com">http://codebrag.com</a></li>
+            <li>join our mailing list <a href="https://groups.google.com/forum/#!forum/codebrag-users">codebrag-users</a></li>
+            <li>or read our <a href="https://codebrag.com/faq">FAQ</a></li>
+        </ul>
+    </p>
+    <p>You are running Codebrag version:
+        <br>
+        {{ version }}
+    </p>
+    <div class="btn-centered-wrapper">
+        <button class="button centered" ng-click="$close()">
+            Close
+        </button>
+    </div>
+
+</div>
+<span class="close-btn" ng-click="$close()"><i class="icon-remove"></i></span>

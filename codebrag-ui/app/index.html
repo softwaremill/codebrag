@@ -103,6 +103,9 @@
     <script type="text/javascript" src="scripts/profile/userProfileCtrl.js"></script>
     <script type="text/javascript" src="scripts/profile/userSettingsService.js"></script>
 
+    <!--about-->
+    <script type="text/javascript" src="scripts/about/aboutCtrl.js"></script>
+
     <!--tour-->
     <script type="text/javascript" src="scripts/tour/pageTour.js"></script>
     <script type="text/javascript" src="scripts/tour/pageTourCtrl.js"></script>
@@ -113,6 +116,7 @@
     <script type="text/javascript" src="scripts/common/flash.js"></script>
     <script type="text/javascript" src="scripts/common/filters/dateFormatFilter.js"></script>
     <script type="text/javascript" src="scripts/common/filters/truncate.js"></script>
+
     <script type="text/javascript" src="scripts/common/directives/messagePopup.js"></script>
     <script type="text/javascript" src="scripts/common/directives/httpRequestTracker.js"></script>
     <script type="text/javascript" src="scripts/common/directives/isolateClick.js"></script>
@@ -122,7 +126,6 @@
     <script type="text/javascript" src="scripts/common/directives/contactFormPopup.js"></script>
     <script type="text/javascript" src="scripts/common/directives/earlyVersionPopup.js"></script>
     <script type="text/javascript" src="scripts/common/directives/popup.js"></script>
-
     <script type="text/javascript" src="scripts/common/directives/markdownToHtml.js"></script>
     <script type="text/javascript" src="scripts/common/directives/markCurrent.js"></script>
     <script type="text/javascript" src="scripts/common/directives/scrollable.js"></script>
@@ -130,6 +133,8 @@
     <script type="text/javascript" src="scripts/common/directives/autoFitHeight.js"></script>
     <script type="text/javascript" src="scripts/common/directives/repeatPassword.js"></script>
     <script type="text/javascript" src="scripts/common/directives/autoFillable.js"></script>
+
+    <script type="text/javascript" src="scripts/common/services/popupsService.js"></script>
 
     <script type="text/javascript" src="scripts/common/AsyncCollection.js"></script>
     <script type="text/javascript" src="scripts/common/CurrentCommit.js"></script>
@@ -185,6 +190,7 @@
                 <ul class="user-info-dropdown">
                     <li class="username" ng-click="openUserProfilePopup()">{{loggedInUser().fullName}} - profile</li>
                     <li class="invite" ng-click="openInviteFormPopup()">Invite friends</li>
+                    <li class="invite" ng-click="openAboutPopup()">About Codebrag</li>
                     <li class="logout" ng-click="logout()">Logout</li>
                 </ul>
 

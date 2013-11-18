@@ -1,6 +1,6 @@
 angular.module('codebrag.notifications')
 
-    .factory('repositoryStatusService', function ($modal, $http, $q) {
+    .factory('repositoryStatusService', function ($http, $q, popupsService) {
 
         function checkRepoReady() {
             return getRepoState().then(function(repoState) {
@@ -15,26 +15,11 @@ angular.module('codebrag.notifications')
             });
         }
 
-        function displayModal(repoStatus) {
-            var modalConfig = {
-                templateUrl: 'views/popups/repoNotReady.html',
-                backdrop: false,
-                keyboard: false,
-                controller: 'RepositoryStatusCtrl',
-                resolve: {
-                    repoStatus: function () {
-                        return repoStatus;
-                    }
-                }
-            };
-            $modal.open(modalConfig);
-        }
-
         function displayNotReadyInfoIfRequired(repoStatus) {
             if(repoStatus.ready) {
                return;
             }
-            displayModal(repoStatus);
+            popupsService.openRepoNotReadyPopup(repoStatus);
         }
 
         return {
