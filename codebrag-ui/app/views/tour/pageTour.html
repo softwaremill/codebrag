@@ -9,6 +9,10 @@
                 <strong>"To Review"</strong> list shows your colleagues' recent commits awaiting your review
             </p>
         </section>
+        <footer class="tour-info-box-footer">
+            <button ng-click="ackStep('commits')" class="btn centered">Ok, got it</button>
+            <a class="button centered" href="http://codebrag.com/#how-codebrag-works" target="_blank">Learn more</a>
+        </footer>
     </page-tour-popup>
 
     <page-tour-popup dismiss="ackStep('followups')" visible-if="inFollowups() && stepActive('followups')" position-css-class="tour-info-box-followups" arrow-css-class="tour-info-box-arrow-top-left">
@@ -21,9 +25,13 @@
                 - new comments in discussions you take part in
             </p>
         </section>
+        <footer class="tour-info-box-footer">
+            <button ng-click="ackStep('followups')" class="btn centered">Ok, got it</button>
+            <a class="button centered" href="http://codebrag.com/#how-codebrag-works" target="_blank">Learn more</a>
+        </footer>
     </page-tour-popup>
 
-    <page-tour-popup dismiss="ackStep('invites')" visible-if="stepActive('invites')" position-css-class="tour-info-box-invite" arrow-css-class="tour-info-box-arrow-right-top" custom-buttons="true">
+    <page-tour-popup visible-if="stepActive('invites')" position-css-class="tour-info-box-invite" arrow-css-class="tour-info-box-arrow-right-top">
         <header>
             <h3 class="tour-info-box-header">Invite friends</h3>
         </header>

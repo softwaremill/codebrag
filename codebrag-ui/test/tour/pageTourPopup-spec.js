@@ -12,7 +12,6 @@ describe('Page tour popup', function() {
         el = angular.element(
             '<div>' +
                 '<page-tour-popup ' +
-                'dismiss="popupDismissed()"' +
                 'visible-if="shouldDisplayPopup"' +
                 'position-css-class="user-defined-position-class"' +
                 'arrow-css-class="user-defined-arrow-class">' +
@@ -28,8 +27,6 @@ describe('Page tour popup', function() {
 
         // then
         expect(getPopupContentText()).toBe('This is tour popup content');
-        expect(getOkButton().text()).toBe('Ok, got it');
-        expect(getLearnMoreLink().text()).toBe('Learn more');
     });
 
     it('add user-defined css classes to popup (defining position and arrow)', function() {
@@ -62,33 +59,12 @@ describe('Page tour popup', function() {
         expect(getPopupBox().css('display')).toBe('none');
     });
 
-    it('should invoke user-defined function on OK button click', function() {
-        // given
-        scope.popupDismissed = jasmine.createSpy('popupDismissed');
-        $compile(el)(scope);
-        $rootScope.$apply();
-
-        // when
-        getOkButton().click();
-
-        // then
-        expect(scope.popupDismissed).toHaveBeenCalled();
-    });
-
     function getPopupBox() {
         return el.find('.tour-info-box');
     }
 
     function getPopupContentText() {
         return el.find('.tour-info-box > div').text().trim();
-    }
-
-    function getOkButton() {
-        return el.find('.tour-info-box-footer button').eq(0);
-    }
-
-    function getLearnMoreLink() {
-        return el.find('.tour-info-box-footer a').eq(0);
     }
 
 });

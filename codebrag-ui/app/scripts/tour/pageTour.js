@@ -14,11 +14,9 @@ angular.module('codebrag.tour')
             transclude: true,
             templateUrl: 'views/tour/pageTourPopup.html',
             scope: {
-                dismiss: '&',
                 visibleIf: '=',
                 positionCssClass: '@',
-                arrowCssClass: '@',
-                customButtons: '='
+                arrowCssClass: '@'
             }
         }
 
