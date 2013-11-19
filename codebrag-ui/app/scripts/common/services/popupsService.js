@@ -5,7 +5,7 @@ angular.module('codebrag.common.services')
         function modalConfig(config) {
             var defaultConfig = {
                 backdrop: false,
-                keyboard: false
+                keyboard: true
             };
             return angular.extend(defaultConfig, config);
         }
@@ -31,5 +31,11 @@ angular.module('codebrag.common.services')
             return $modal.open(modalConfig(repoStatusModalConfig));
         };
 
+        this.openInvitePopup = function() {
+            var inviteModalConfig = {
+                templateUrl: 'views/popups/inviteForm.html'
+            };
+            return $modal.open(modalConfig(inviteModalConfig));
+        };
 
     });

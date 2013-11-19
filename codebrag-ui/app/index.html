@@ -153,7 +153,6 @@
 <body ng-cloak>
     <div class="loading-bar" http-request-tracker active-class="loading"></div>
     <contact-form-popup></contact-form-popup>
-    <popup template-url="views/popups/inviteForm.html" open-on="openInviteFormPopup"></popup>
     <popup template-url="views/popups/userProfile.html" open-on="openUserProfilePopup"></popup>
     <header class="main-header" ng-controller="SessionCtrl">
         <div class="demo-nav" show-on-demo>
@@ -189,7 +188,7 @@
                 <span class="arrow-down"></span>
                 <ul class="user-info-dropdown">
                     <li class="username" ng-click="openUserProfilePopup()">{{loggedInUser().fullName}} - profile</li>
-                    <li class="invite" ng-click="openInviteFormPopup()">Invite friends</li>
+                    <li class="invite" ng-click="openInvitePopup()">Invite friends</li>
                     <li class="invite" ng-click="openAboutPopup()">About Codebrag</li>
                     <li class="logout" ng-click="logout()">Logout</li>
                 </ul>

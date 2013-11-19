@@ -59,6 +59,7 @@ angular.module('codebrag.session')
         };
 
         $scope.openAboutPopup = popupsService.openAboutPopup;
+        $scope.openInvitePopup = popupsService.openInvitePopup;
 
         function clearPasswordField() {
             $scope.loginForm.password.$dirty = false;
