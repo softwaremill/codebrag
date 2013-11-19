@@ -61,10 +61,12 @@ To use Codebrag with git via https please configure repository section as follow
 	        name = "..."			// e.g. codebrag
 	        uri = "..."				// e.g. https://github.com/sml/codebrag.git
 	        branch = "..." 			// e.g. "refs/heads/master"
-	        username = "..."		
-	        password = "..."		// leave username and password empty for public repository 
+	        username = "..."
+	        password = "..."
 	    }
 	}
+	
+*** NOTE: *** Leave `username` and `password` empty for public repository.
 
 ##### 1.2.2. Git via SSH
 
@@ -136,7 +138,7 @@ All other settings are optional and usually you do not need to change them. They
 
 ## 2. Running Codebrag
 
-*** NOTE: *** If you already have a previous Codebrag installation you need to run database migration scripts before running the new version. Go to the `mongo_migration` directory in the distribution package and follow the instructions from the `README` file there.
+*** NOTE: *** If you already have a previous Codebrag installation you need to run database migration scripts before running the new version. Go to the `mongo_migration` directory in the distribution package and follow the instructions from the `README.txt` file there.
 
 To start Codebrag execute:
 
