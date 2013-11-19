@@ -27,7 +27,7 @@ Should you encounter any issues with installation:
 
 ## 1. Configure Codebrag
 
-Edit `codebrag.conf` file to configure:
+Edit the `codebrag.conf` file to configure:
 
 * Path to MongoDB
 * Your repository (Git or SVN)
@@ -39,13 +39,13 @@ and other settings.
 
 ### 1.1. "mongo" section
 
-Set `servers` and `database` properties to point your MongoDB installation.
+Set `servers` and `database` properties to point to your MongoDB installation.
 
 <br>
 
 ### 1.2. "repository" section
 
-Set repository `type` property to one of these values:
+Set the `type` property to one of these values:
 
 * `git-https` - git via https (with user/password provided)
 * `git-ssh` - git via ssh (with keys)
@@ -80,7 +80,7 @@ Configuration for git repository with authentication via ssh (keys):
 	    }
 	}
 
-*** NOTE: *** Test you repository ssh connection and add host to `known-hosts`, otherwise Codebrag will not be able to authenticate. You may also want to create ssh configuration in `~/.ssh/config` file.
+*** NOTE: *** Test your repository ssh connection and add host to `known-hosts`, otherwise Codebrag will not be able to authenticate. You may also want to create ssh configuration in the `~/.ssh/config` file.
 
 ##### 1.2.3. SVN repository (experimental)
 
@@ -111,19 +111,19 @@ Setup your email server so that Codebrag can send emails with invitations and no
         encoding = "UTF-8"
     }
     
-*** NOTE: *** Make sure Java has required security certificates when using SSL/TLS connection.
+*** NOTE: *** Make sure Java has the required security certificates when using the SSL/TLS connection.
 
 ### 1.4. "codebrag" section
 
 ##### application-url
 
-`application-url` property indicates URL under which Codebrag will be available:
+The `application-url` property indicates the URL under which Codebrag will be available:
 
 	application-url = "http://codebrag.mydomain.com:8080"
 	
 ##### send-anon-usage-data
 
-By default Codebrag sends anonymous data about its usage (e.g. number of users, number of comments). This information **never includes any contents of your repository**.
+By default, Codebrag sends anonymous data about its usage (e.g. number of users, number of comments). This information **never includes any contents of your repository**.
 
 Gathering such anonymous statistics helps us improve Codebrag. Hovewer, if you wish to disable this, set `send-anon-usage-data` property to `false`.
 
@@ -136,7 +136,7 @@ All other settings are optional and usually you do not need to change them. They
 
 ## 2. Running Codebrag
 
-*** NOTE: *** If you already have previous Codebrag installation you need to run database migration scripts before running new version. Go to `mongo_migration` directory in distribution package and follow the instructions from `README` file there.
+*** NOTE: *** If you already have a previous Codebrag installation you need to run database migration scripts before running the new version. Go to the `mongo_migration` directory in the distribution package and follow the instructions from the `README` file there.
 
 To start Codebrag execute:
 
@@ -152,22 +152,22 @@ To stop Codebrag execute:
 
 ## 3. Create user account
 
-First user that accesses Codebrag after installation will be asked to register an account.
+The first user who accesses Codebrag after installation will be asked to register an account.
 
-Either email address or name provided have to match corresponding fields in `git log` in order to match commits with given user.
+Either the email address or the name provided have to match corresponding fields in `git log` in order to match commits with a given user.
 
 *** NOTE: *** If your repository is large, you may need to wait until it is downloaded.
 
-Other users can be invited to join Codebrag by choosing "Invite friends" link from menu in upper right corner.
+Other users can be invited to join Codebrag by choosing the "Invite friends" link from the menu in the upper right corner.
 
 ## 4. Questions? Help? Contact us
 
 Do drop us a line at
-[**ask@codebrag.com**](mailto:ask@codebrag.com) if you find an issue or just want to share a thought or ask a question.
+[**ask@codebrag.com**](mailto:ask@codebrag.com) if you find an issue, or just want to share a thought or ask a question.
 
-You may also want to check out Codebrag [FAQ](http://codebrag.com/devoxx/faq.html) or join [Codebrag Users group](https://groups.google.com/forum/#!forum/codebrag-users) to be very first to learn about bug fixes and new releases.
+You may also want to check out the Codebrag [FAQ](http://codebrag.com/devoxx/faq.html) or join the [Codebrag Users group](https://groups.google.com/forum/#!forum/codebrag-users) to be among the very first to learn about bug fixes and new releases.
 
-We hope you and your team will enjoy performing code review with Codebrag!
+We hope you and your team will enjoy doing code reviews with Codebrag!
 
 
 <div style="page-break-after: always;"></div>
@@ -199,7 +199,7 @@ This property indicates how long invitation links are valid.
 
 ###### enabled
 
-Indicates whether email notifications should be enabled. If notifications are enabled each user can switch them off in his profile in application.
+Indicates whether email notifications should be enabled. If notifications are enabled each user can switch them off in his profile in the application.
 
 ###### check-interval
 
@@ -207,11 +207,11 @@ Defines how often the system will check for notifications to send.
 
 ###### user-offline-after
 
-Defines how long after closing tab with Codebrag user will be considered offline.
+Defines how long after closing the Codebrag tab the user will be considered offline.
 
 ###### daily-digest-hour
 
-Defines when (full hour of the day) daily digest emails will be sent.
+Defines when (full hour) daily digest emails will be sent.
 
 #### "web-server" section
 
