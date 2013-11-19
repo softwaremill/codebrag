@@ -49,8 +49,8 @@ class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
   }
 
   private val templatesTest = Map("Currently there is nothing to review. We will notify you about new commits to review." -> 0,
-    "There are 10 commits waiting for your to review at http://test:8080/#/commits." -> 10,
-    "There is 1 commit waiting for your to review at http://test:8080/#/commits." -> 1)
+    "There are 10 commits waiting for you to review at http://test:8080/#/commits." -> 10,
+    "There is 1 commit waiting for you to review at http://test:8080/#/commits." -> 1)
 
 
   for (pair <- templatesTest) {
