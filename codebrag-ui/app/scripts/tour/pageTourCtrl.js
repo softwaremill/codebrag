@@ -1,6 +1,6 @@
 angular.module('codebrag.tour')
 
-    .controller('PageTourCtrl', function($scope, pageTourService, $state) {
+    .controller('PageTourCtrl', function($scope, pageTourService, $state, $rootScope, popupsService) {
 
         $scope.stepActive = function(stepName) {
             return pageTourService.stepActive(stepName);
@@ -20,6 +20,11 @@ angular.module('codebrag.tour')
         $scope.inCommits = function() {
             return $state.current.name === 'commits.list';
         };
+
+        $scope.ackAndOpenInvitePopup = function(stepName) {
+            $scope.ackStep(stepName);
+            popupsService.openInvitePopup();
+        }
 
     });
 

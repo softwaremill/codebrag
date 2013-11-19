@@ -17,7 +17,8 @@ angular.module('codebrag.tour')
                 dismiss: '&',
                 visibleIf: '=',
                 positionCssClass: '@',
-                arrowCssClass: '@'
+                arrowCssClass: '@',
+                customButtons: '='
             }
         }
 

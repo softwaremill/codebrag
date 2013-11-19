@@ -23,7 +23,7 @@
         </section>
     </page-tour-popup>
 
-    <page-tour-popup dismiss="ackStep('invites')" visible-if="stepActive('invites')" position-css-class="tour-info-box-invite" arrow-css-class="tour-info-box-arrow-right-top">
+    <page-tour-popup dismiss="ackStep('invites')" visible-if="stepActive('invites')" position-css-class="tour-info-box-invite" arrow-css-class="tour-info-box-arrow-right-top" custom-buttons="true">
         <header>
             <h3 class="tour-info-box-header">Invite friends</h3>
         </header>
@@ -34,6 +34,10 @@
                 Review the code together and learn from each other!
             </p>
         </section>
+        <footer class="tour-info-box-footer">
+            <button ng-click="ackAndOpenInvitePopup('invites')" class="btn centered">Invite now</button>
+            <button ng-click="ackStep('invites')" class="btn centered">Later</button>
+        </footer>
     </page-tour-popup>
 
 </div>

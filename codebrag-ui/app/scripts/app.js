@@ -19,7 +19,7 @@ angular.module('codebrag.invitations', ['ui.validate', 'ui.keypress']);
 
 angular.module('codebrag.profile', ['codebrag.session']);
 
-angular.module('codebrag.tour', ['codebrag.templates', 'codebrag.auth', 'codebrag.profile']);
+angular.module('codebrag.tour', ['codebrag.templates', 'codebrag.auth', 'codebrag.profile', 'codebrag.common']);
 
 
 angular.module('codebrag', [

@@ -28,9 +28,8 @@ describe('Page tour popup', function() {
 
         // then
         expect(getPopupContentText()).toBe('This is tour popup content');
-        var buttons = getPopupButtons();
-        expect(buttons.eq(0).text()).toBe('Ok, got it');
-        expect(buttons.eq(1).text()).toBe('Learn more');
+        expect(getOkButton().text()).toBe('Ok, got it');
+        expect(getLearnMoreLink().text()).toBe('Learn more');
     });
 
     it('add user-defined css classes to popup (defining position and arrow)', function() {
@@ -70,7 +69,7 @@ describe('Page tour popup', function() {
         $rootScope.$apply();
 
         // when
-        getPopupButtons().eq(0).click();
+        getOkButton().click();
 
         // then
         expect(scope.popupDismissed).toHaveBeenCalled();
@@ -84,8 +83,12 @@ describe('Page tour popup', function() {
         return el.find('.tour-info-box > div').text().trim();
     }
 
-    function getPopupButtons() {
-        return el.find('.tour-info-box-footer button');
+    function getOkButton() {
+        return el.find('.tour-info-box-footer button').eq(0);
+    }
+
+    function getLearnMoreLink() {
+        return el.find('.tour-info-box-footer a').eq(0);
     }
 
 });
