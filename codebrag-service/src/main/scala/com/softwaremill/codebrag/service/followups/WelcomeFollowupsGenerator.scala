@@ -9,12 +9,13 @@ import com.softwaremill.codebrag.domain.Followup
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.service.templates.{PlainTextTemplates, TemplateEngine}
 
-class WelcomeFollowupsGenerator(internalUserDao: MongoInternalUserDAO,
-                                 commentsDao: CommitCommentDAO,
-                                 likesDao: LikeDAO,
-                                 followupsDao: FollowupDAO,
-                                 commitInfoDao: CommitInfoDAO,
-                                 templateEngine: TemplateEngine) {
+class WelcomeFollowupsGenerator(
+  internalUserDao: MongoInternalUserDAO,
+  commentsDao: CommitCommentDAO,
+  likesDao: LikeDAO,
+  followupsDao: FollowupDAO,
+  commitInfoDao: CommitInfoDAO,
+  templateEngine: TemplateEngine) {
 
   def createWelcomeFollowupFor(newUser: NewUserRegistered) {
     internalUserDao.findByName(InternalUser.WelcomeFollowupsAuthorName).foreach { codebragInternalUser =>
