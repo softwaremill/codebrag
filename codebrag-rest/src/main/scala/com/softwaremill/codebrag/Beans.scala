@@ -54,7 +54,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
 
   lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus, reviewTaskGenerator)
   lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
-  lazy val commentActivity = new AddCommentActivity(userReactionService, followupService)
+  lazy val commentActivity = new AddCommentActivity(userReactionService, followupService, eventBus)
 
   lazy val newUserAdder = new NewUserAdder(userDao, eventBus, reviewTaskGenerator, welcomeFollowupsGenerator)
   lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService, notificationService)
