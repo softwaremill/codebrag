@@ -39,7 +39,7 @@ unzip $PACKAGE -d $BASE_DIR
 if [ -d $CONFIG_DIR ]
 then
   echo "Overwrite configs with $CONFIG_DIR"
-  cp -r $CONFIG_DIR/* $INSTALL_DIR
+  cp -rf $CONFIG_DIR/* $INSTALL_DIR
 fi
 
 # cleanup downloaded package
