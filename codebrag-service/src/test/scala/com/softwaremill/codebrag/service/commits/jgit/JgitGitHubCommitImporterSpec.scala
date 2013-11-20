@@ -12,6 +12,7 @@ import org.bson.types.ObjectId
 import org.mockito.Matchers._
 import scala.collection.JavaConversions._
 import com.softwaremill.codebrag.service.events.MockEventBus
+import com.softwaremill.codebrag.common.FixtureTimeClock
 
 class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar with MockEventBus {
 
@@ -149,6 +150,7 @@ class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar wit
       def eventBus = self.eventBus
       def config = TestCodebragAndRepositoryConfig
       def repoStatusDao = repoStatusDaoMock
+      def clock = new FixtureTimeClock(1)
     }
     module.commitImportService
   }

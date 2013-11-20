@@ -3,9 +3,9 @@ package com.softwaremill.codebrag.service.commits
 import com.softwaremill.codebrag.dao.CommitInfoDAO
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.domain.{UpdatedCommit, CommitsUpdatedEvent}
-import com.softwaremill.codebrag.common.EventBus
+import com.softwaremill.codebrag.common.{Clock, EventBus}
 
-class CommitImportService(commitsLoader: CommitsLoader, commitInfoDao: CommitInfoDAO, eventBus: EventBus) extends Logging {
+class CommitImportService(commitsLoader: CommitsLoader, commitInfoDao: CommitInfoDAO, eventBus: EventBus)(implicit clock: Clock) extends Logging {
 
   def importRepoCommits(repoData: RepoData) {
     logger.debug("Start loading commits")

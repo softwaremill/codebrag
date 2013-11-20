@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.commits
 
 import com.softwaremill.codebrag.service.commits.jgit._
 import com.softwaremill.codebrag.dao.{RepositoryStatusDAO, UserDAO, CommitInfoDAO}
-import com.softwaremill.codebrag.common.EventBus
+import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.service.config.{RepositoryConfig, CodebragConfig}
 
 trait CommitsModule {
@@ -18,7 +18,7 @@ trait CommitsModule {
       }
     ),
     commitInfoDao,
-    eventBus)
+    eventBus)(clock)
 
   lazy val repoDataProducer = new RepoDataProducer(userDao, config)
 
@@ -27,4 +27,6 @@ trait CommitsModule {
   def userDao: UserDAO
   def eventBus: EventBus
   def config: CodebragConfig with RepositoryConfig
+  def clock: Clock
+
 }

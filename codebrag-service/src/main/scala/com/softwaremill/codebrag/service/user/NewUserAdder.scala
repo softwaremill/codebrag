@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.user
 
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.dao.UserDAO
-import com.softwaremill.codebrag.common.EventBus
+import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.service.commits.CommitReviewTaskGeneratorActions
 import com.softwaremill.codebrag.domain.User
 import com.softwaremill.codebrag.service.followups.WelcomeFollowupsGenerator
@@ -10,7 +10,7 @@ import com.softwaremill.codebrag.service.followups.WelcomeFollowupsGenerator
 class NewUserAdder(userDao: UserDAO,
                    eventBus: EventBus,
                    reviewTaskGenerator: CommitReviewTaskGeneratorActions,
-                    welcomeFollowupGenerator: WelcomeFollowupsGenerator) {
+                    welcomeFollowupGenerator: WelcomeFollowupsGenerator)(implicit clock: Clock) {
 
   def add(user: User):User = {
     val addedUser = userDao.add(user)

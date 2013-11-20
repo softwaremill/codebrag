@@ -11,8 +11,11 @@ import com.softwaremill.codebrag.domain.{CommitsUpdatedEvent, CommitInfo}
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.events.MockEventBus
+import com.softwaremill.codebrag.common.FixtureTimeClock
 
 class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with MockEventBus {
+
+  implicit val clock = new FixtureTimeClock(1)
 
   var commitsLoader: CommitsLoader = _
   var commitInfoDao: CommitInfoDAO = _

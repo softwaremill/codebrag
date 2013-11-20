@@ -9,8 +9,12 @@ import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO, UserDA
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.domain.{CommitInfo, CommitReviewTask}
+import com.softwaremill.codebrag.common.{FixtureTimeClock, Clock}
 
 class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
+
+  // implicit value used by Events
+  implicit val clock: Clock = new FixtureTimeClock(1)
 
   behavior of "CommitReviewTaskGeneratorActions"
   val FixtureCommitsToFetch = CommitReviewTaskGeneratorActions.LastCommitsToReviewCount

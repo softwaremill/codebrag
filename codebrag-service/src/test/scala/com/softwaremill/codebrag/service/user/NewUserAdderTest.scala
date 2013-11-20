@@ -6,12 +6,14 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao.UserDAO
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.common.EventBus
+import com.softwaremill.codebrag.common.{FixtureTimeClock, EventBus}
 import com.softwaremill.codebrag.service.commits.CommitReviewTaskGenerator
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.service.followups.WelcomeFollowupsGenerator
 
 class NewUserAdderTest extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
+
+  implicit val clock = new FixtureTimeClock(1)
 
   var welcomeFollowupGenerator: WelcomeFollowupsGenerator = _
   var userDao: UserDAO = _

@@ -28,7 +28,8 @@ BeforeAndAfterAll with MockitoSugar {
   var reviewTaskDaoMock: CommitReviewTaskDAO = _
   var commitInfoDaoMock: CommitInfoDAO = _
   val FixtureTime = new DateTime(23333333)
-  val fixtureClock = new FixtureTimeClock(FixtureTime.getMillis)
+
+  implicit val fixtureClock = new FixtureTimeClock(FixtureTime.getMillis)
 
   before {
     userDaoMock = mock[UserDAO]

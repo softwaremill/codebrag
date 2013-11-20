@@ -15,12 +15,12 @@ import com.softwaremill.codebrag.common.FixtureTimeClock
 
 class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with MockEventBus {
 
+  implicit val FixedClock = new FixtureTimeClock(System.currentTimeMillis())
+
   var userReactionService: UserReactionService = _
   var commentDaoMock: CommitCommentDAO = _
   var likeDaoMock: LikeDAO = _
   var likeValidatorMock: LikeValidator = _
-
-  val FixedClock = new FixtureTimeClock(System.currentTimeMillis())
 
   val AuthorId = ObjectIdTestUtils.oid(100)
   val CommitId = ObjectIdTestUtils.oid(200)

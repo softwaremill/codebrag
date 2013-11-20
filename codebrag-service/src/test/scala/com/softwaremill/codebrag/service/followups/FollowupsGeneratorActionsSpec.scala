@@ -14,8 +14,11 @@ import com.softwaremill.codebrag.domain.Followup
 import scala.Some
 import com.softwaremill.codebrag.domain.FollowupWithNoReactions
 import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
+import com.softwaremill.codebrag.common.{Clock, FixtureTimeClock}
 
 class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterEach with MockitoSugar {
+
+  implicit val clock: Clock = new FixtureTimeClock(1)
 
   var generator: FollowupsGeneratorActions = _
   var followupDaoMock: FollowupDAO = _
@@ -85,7 +88,7 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
     when(followupWithReactionsDaoMock.findAllContainingReaction(johnsLike.id)).thenReturn(List(Left(followup)))
 
     // when
-    generator.handleUnlikeEvent(UnlikeEvent(johnsLike.id))
+    generator.handleUnlikeEvent(UnlikeEvent(johnsLike))
 
     // then
     verify(followupDaoMock).delete(followup.followupId)
@@ -97,7 +100,7 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
     when(followupWithReactionsDaoMock.findAllContainingReaction(johnsLike.id)).thenReturn(List(Right(followup)))
 
     // when
-    generator.handleUnlikeEvent(UnlikeEvent(johnsLike.id))
+    generator.handleUnlikeEvent(UnlikeEvent(johnsLike))
 
     // then
     verify(followupDaoMock).delete(followup.followupId)
@@ -110,7 +113,7 @@ class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with Be
     when(followupWithReactionsDaoMock.findAllContainingReaction(johnsLike.id)).thenReturn(List(Right(followup)))
 
     // when
-    generator.handleUnlikeEvent(UnlikeEvent(johnsLike.id))
+    generator.handleUnlikeEvent(UnlikeEvent(johnsLike))
 
     // then
     val captor = ArgumentCaptor.forClass(classOf[FollowupWithReactions])
