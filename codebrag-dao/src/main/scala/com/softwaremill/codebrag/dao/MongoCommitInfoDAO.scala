@@ -31,7 +31,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
     CommitInfoRecord orderDesc(_.committerDate) andDesc(_.authorDate) get() map(_.sha.get)
   }
 
-  override def findNewestCommitsNotAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo] = {
+  override def findLastCommitsNotAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo] = {
     CommitInfoRecord where (_.authorName neqs userLike.userFullName(user)) and (_.authorEmail neqs userLike.userEmail(user)) orderDesc(_.committerDate) andDesc(_.authorDate) limit count fetch()
   }
 

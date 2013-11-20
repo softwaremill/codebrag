@@ -117,8 +117,8 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     commits.foreach(commitInfoDAO.storeCommit)
     
     // when
-    val threeCommitsNotByJohn = commitInfoDAO.findNewestCommitsNotAuthoredByUser(John, 3)
-    val atMostTenCommitsNotByBob = commitInfoDAO.findNewestCommitsNotAuthoredByUser(Bob, 10)
+    val threeCommitsNotByJohn = commitInfoDAO.findLastCommitsNotAuthoredByUser(John, 3)
+    val atMostTenCommitsNotByBob = commitInfoDAO.findLastCommitsNotAuthoredByUser(Bob, 10)
 
     // then
     threeCommitsNotByJohn.map(_.sha) should be(List("5", "4", "2"))

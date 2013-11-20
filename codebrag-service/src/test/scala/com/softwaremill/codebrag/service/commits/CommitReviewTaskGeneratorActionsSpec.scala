@@ -43,7 +43,7 @@ class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers 
     val commits = CommitInfoAssembler.randomCommits(count = 2)
     val sofoklesId = ObjectIdTestUtils.oid(1)
     val user = NewUserRegistered(sofoklesId, "login", "Sofokles Smart", "sofokles@sml.com")
-    given(commitInfoDaoMock.findNewestCommitsNotAuthoredByUser(user, 10)).willReturn(commits)
+    given(commitInfoDaoMock.findLastCommitsNotAuthoredByUser(user, 10)).willReturn(commits)
 
     // when
     generator.handleNewUserRegistered(user)
@@ -58,7 +58,7 @@ class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers 
     // given
     val sofoklesId = ObjectIdTestUtils.oid(1)
     val user = NewUserRegistered(sofoklesId, "login", "Sofokles Smart", "sofokles@sml.com")
-    given(commitInfoDaoMock.findNewestCommitsNotAuthoredByUser(user, 10)).willReturn(List.empty)
+    given(commitInfoDaoMock.findLastCommitsNotAuthoredByUser(user, 10)).willReturn(List.empty)
 
     // when
     generator.handleNewUserRegistered(user)
