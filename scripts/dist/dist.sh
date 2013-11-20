@@ -19,6 +19,7 @@ GUIDE_FILE=$CODEBRAG_ROOT/scripts/dist/package_content/install_guide.pdf
 LICENSE_FILE=$CODEBRAG_ROOT/scripts/dist/package_content/license.pdf
 LOG_CONF=$CODEBRAG_ROOT/scripts/dist/package_content/logback-example.xml
 RUN_SCRIPT=$CODEBRAG_ROOT/scripts/dist/package_content/run.sh
+STOP_SCRIPT=$CODEBRAG_ROOT/scripts/dist/package_content/stop.sh
 
 UPLOAD_ARG="upload"
 S3CMD_PATH="./lib/s3cmd-1.5.0-alpha1/s3cmd"
@@ -35,8 +36,9 @@ echo "Copying application"
 cp $WAR_FILE $DIST_DIR/codebrag.jar
 echo "Done"
 
-echo "Copying run script"
+echo "Copying run&stop script"
 cp $RUN_SCRIPT $DIST_DIR
+cp $STOP_SCRIPT $DIST_DIR
 echo "Done"
 
 echo "Copying instruction and license"
