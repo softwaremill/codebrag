@@ -5,6 +5,7 @@ import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.concurrent.Conductors
 import java.util.concurrent.CopyOnWriteArraySet
+import org.scalatest.time.{Milliseconds, Millisecond, Span}
 
 class MongoInstanceSettingsDAOSpec
   extends FlatSpecWithMongo
@@ -73,6 +74,9 @@ class MongoInstanceSettingsDAOSpec
     result should equal("More than one record exists in collection 'instance_settings'!")
   }
 
+  // use large timeout for Conductor's test
+  override def patienceConfig = PatienceConfig(timeout = Span(400, Milliseconds))
+
   it should "always generate just one uniqueId no matter how many threads" taggedAs RequiresDb in {
     // given
     val conductor = new Conductor
@@ -93,6 +97,7 @@ class MongoInstanceSettingsDAOSpec
       instances should have size 1
       instances should contain(expected)
     }
+
   }
 
 }
