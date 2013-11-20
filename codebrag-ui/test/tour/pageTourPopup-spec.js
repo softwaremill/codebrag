@@ -60,11 +60,11 @@ describe('Page tour popup', function() {
     });
 
     function getPopupBox() {
-        return el.find('.tour-info-box');
+        return el.find('.popup-box');
     }
 
     function getPopupContentText() {
-        return el.find('.tour-info-box > div').text().trim();
+        return el.find('.popup-box > div').text().trim();
     }
 
 });
