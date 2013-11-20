@@ -1,10 +1,15 @@
 Codebrag MongoDB Migrations
 ===========================
 
-To run database migrations go to mongo_migrations directory in distribution package and run the command below.
 Only migrations that were not already applied will be run.
 
+To run database migrations go to mongo_migrations directory in distribution package and run the command below.
+
 /path/to/mongo <HOST:PORT>/<DATABASE> run_migration.js
+
+or if you have Ruby interpreter installed, run
+
+migrate.rb <CODEBRAG_CONFIG_FILE> <PATH_TO_MONGO>
 
 FAQ
 ===
