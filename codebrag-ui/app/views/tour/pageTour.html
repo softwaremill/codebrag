@@ -1,50 +1,40 @@
 <div ng-controller="PageTourCtrl" ng-show="loggedInUser">
 
-    <page-tour-popup dismiss="ackStep('commits')" visible-if="inCommits() && stepActive('commits')" position-css-class="tour-info-box-commits" arrow-css-class="tour-info-box-arrow-top-left">
+    <page-tour-popup dismiss="ackStep('commits')" visible-if="inCommits() && stepActive('commits')" position-css-class="tour-info-box-commits" arrow-css-class="tour-arrow-to-left">
         <header>
-            <h3 class="tour-info-box-header">Welcome to Codebrag</h3>
+            <h1>Welcome to Codebrag</h1>
         </header>
-        <section>
-            <p class="tour-info-box-text">
-                <strong>"To Review"</strong> list shows your colleagues' recent commits awaiting your review
-            </p>
-        </section>
-        <footer class="tour-info-box-footer">
-            <button ng-click="ackStep('commits')" class="btn centered">Ok, got it</button>
-            <a class="button centered" href="http://codebrag.com/#how-codebrag-works" target="_blank">Learn more</a>
+        <p>
+            <strong>"To Review"</strong> list shows your colleagues' recent commits awaiting your review
+        </p>
+        <footer class="btn-centered-wrapper">
+            <button class="link" ng-click="ackStep('commits')">Ok, got it</button>
+            <a class="button link" href="http://codebrag.com/#how-codebrag-works" target="_blank">Learn more</a>
         </footer>
     </page-tour-popup>
 
-    <page-tour-popup dismiss="ackStep('followups')" visible-if="inFollowups() && stepActive('followups')" position-css-class="tour-info-box-followups" arrow-css-class="tour-info-box-arrow-top-left">
-        <section>
-            <p class="tour-info-box-text">
-                <strong>Followups</strong> are comments requiring your attention:
-                <br>
-                - comments (and likes) on your commits
-                <br>
-                - new comments in discussions you take part in
-            </p>
-        </section>
-        <footer class="tour-info-box-footer">
-            <button ng-click="ackStep('followups')" class="btn centered">Ok, got it</button>
-            <a class="button centered" href="http://codebrag.com/#how-codebrag-works" target="_blank">Learn more</a>
+    <page-tour-popup dismiss="ackStep('followups')" visible-if="inFollowups() && stepActive('followups')" position-css-class="tour-info-box-followups" arrow-css-class="tour-arrow-to-left">
+        <p><strong>Followups</strong> are comments requiring your attention:</p>
+        <ul>
+            <li>&ndash;&nbsp;comments (and likes) on your commits</li>
+            <li>&ndash;&nbsp;new comments in discussions you take part in</li>
+        </ul>
+        <footer class="btn-centered-wrapper">
+            <button class="link" ng-click="ackStep('followups')">Ok, got it</button>
+            <a class="button link" href="http://codebrag.com/#how-codebrag-works" target="_blank">Learn more</a>
         </footer>
     </page-tour-popup>
 
-    <page-tour-popup visible-if="stepActive('invites')" position-css-class="tour-info-box-invite" arrow-css-class="tour-info-box-arrow-right-top">
+    <page-tour-popup visible-if="stepActive('invites')" position-css-class="tour-info-box-invite" arrow-css-class="tour-arrow-to-top">
         <header>
-            <h3 class="tour-info-box-header">Invite friends</h3>
+            <h1>Invite friends</h1>
         </header>
-        <section>
-            <p class="tour-info-box-text">
-                Share your knowledge.
-                <br>
-                Review the code together and learn from each other!
-            </p>
-        </section>
-        <footer class="tour-info-box-footer">
-            <button ng-click="ackAndOpenInvitePopup('invites')" class="btn centered">Invite now</button>
-            <button ng-click="ackStep('invites')" class="btn centered">Later</button>
+        <p>
+            Share your knowledge.<br>Review the code together and learn from each other!
+        </p>
+        <footer class="btn-centered-wrapper">
+            <button class="link" ng-click="ackAndOpenInvitePopup('invites')">Invite now</button>
+            <button class="link" ng-click="ackStep('invites')">Later</button>
         </footer>
     </page-tour-popup>
 

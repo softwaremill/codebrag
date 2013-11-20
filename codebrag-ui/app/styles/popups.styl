@@ -19,99 +19,6 @@
   width: 100%;
   z-index: 1000;
 
-  & .popup-box
-    background-color: $body-bg-color;
-    border: 1px solid white;
-    box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.5);
-    display: inline-block;
-    max-width: 500px;
-    position: relative;
-    top: 20%;
-
-    & .close-btn
-      background: $form-input-bg-color;
-      color: $error-red-color;
-      display: inline-block;
-      padding: 0.77em;
-      position: absolute;
-      right: 0;
-      top: 0;
-      transition: background 250ms, color 250ms; 
-      &:hover
-        background: $error-red-color;
-        color: white;
-
-    & .popup-content
-      padding: 2.3em;
-
-      & h1
-        font-size: 1.17em;
-        margin-top: 0;
-        text-align: center;
-
-      & a
-        color: $main-orange-color;
-        text-decoration: none;
-
-      & blockquote
-        background: $form-input-bg-color;
-        border-left: 0.38em solid $main-orange-color;
-        color: $second-body-text-color;
-        font-style: italic;
-        line-height: 1.4;
-        margin: 1.5em 0 0;
-        padding: 0.77em 1em 0.77em 2.3em;
-        text-align: left;
-        & footer
-          font-style: normal;
-          margin-top: 0.5em;
-
-      & fieldset
-        padding: 0;
-
-      & label
-        margin-bottom: 0.38em;
-        text-align: left;
-
-      & input, textarea, .list
-        border: 1px solid #ccc;
-        box-shadow: none;
-        min-width: 400px;
-        margin-bottom: 1.15em;
-        padding: 7px;
-        width: 100%;
-
-      & .list
-        background: #fff;
-        margin-bottom: 10px;
-        height: 150px;
-        overflow-y: auto;
-
-        & ul
-          list-style: none;
-          margin: 0;
-          padding: 5px;
-          text-align: left;
-
-      & .pending
-        color: $main-orange-color
-
-      & .success
-        color: $lime-green-color
-
-      & .failed
-        color: $error-red-color
-
-      & input
-        height: 32px;
-
-      & textarea
-        resize: vertical;
-        height: auto;
-
-      & .form-group span.text-error
-        bottom: -16px;
-
   &.uservoice
     & .uv-success
       display: none;
@@ -167,3 +74,101 @@
         & input
           min-width: 30px;
 
+.popup-box
+  background-color: $body-bg-color;
+  border: 1px solid white;
+  box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.5);
+  display: inline-block;
+  max-width: 500px;
+  position: relative;
+  text-align: center;
+  top: 20%;
+
+  & .close-btn
+    background: $form-input-bg-color;
+    color: $error-red-color;
+    display: inline-block;
+    padding: 0.77em;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: background 250ms, color 250ms; 
+    &:hover
+      background: $error-red-color;
+      color: white;
+
+  & .popup-content
+    padding: 2.3em;
+
+  & h1
+    font-size: 1.17em;
+    margin-top: 0;
+    text-align: center;
+
+  & a
+    color: $main-orange-color;
+    text-decoration: none;
+    &.button
+      color: white;
+      &.link
+        color: #a27d69;
+        &:hover
+          color: $main-orange-color;
+
+  & blockquote
+    background: $form-input-bg-color;
+    border-left: 0.38em solid $main-orange-color;
+    color: $second-body-text-color;
+    font-style: italic;
+    line-height: 1.4;
+    margin: 1.5em 0 0;
+    padding: 0.77em 1em 0.77em 2.3em;
+    text-align: left;
+    & footer
+      font-style: normal;
+      margin-top: 0.5em;
+
+  & fieldset
+    padding: 0;
+
+  & label
+    margin-bottom: 0.38em;
+    text-align: left;
+
+  & input, textarea, .list
+    border: 1px solid #ccc;
+    box-shadow: none;
+    min-width: 400px;
+    margin-bottom: 1.15em;
+    padding: 7px;
+    width: 100%;
+
+  & .list
+    background: #fff;
+    margin-bottom: 10px;
+    height: 150px;
+    overflow-y: auto;
+
+  & ul
+    list-style: none;
+    padding: 0;
+    text-align: left;
+
+  & .pending
+    color: $main-orange-color
+
+  & .success
+    color: $lime-green-color
+
+  & .failed
+    color: $error-red-color
+
+  & input
+    height: 32px;
+
+  & textarea
+    resize: vertical;
+    height: auto;
+
+  & .form-group span.text-error
+    bottom: -16px;

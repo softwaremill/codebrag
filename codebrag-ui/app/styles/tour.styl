@@ -1,52 +1,31 @@
-.tour-info-box
-    padding: 0.5em;
-    position: fixed;
-    word-wrap: normal;
-    display: inline-block;
-    background: #fff;
-    border: 1px solid #d1cbb9;
+.tour
+    &.popup-box
+        background: #fff;
+        border: 1px solid #e4d9b8;
+        box-shadow: none;
+        position: fixed;
+        top: 200px;
+        width: 365px;
 
-.tour-info-box-invite
-    width: 400px;
-    margin: 0 auto;
-    position: fixed;
-    top: 200px;
-    right: 100px;
+    &.tour-arrow-to-left
+        left: 40%;
+        &:before
+            background: url("/assets/images/tour-arrow.svg") no-repeat;
+            content: "";
+            height: 60px;
+            left: -180px;
+            position: absolute;
+            top: -60px;
+            width: 216px;
 
-.tour-info-box-commits, .tour-info-box-followups
-    width: 400px;
-    margin: 0 auto;
-    position: fixed;
-    top: 200px;
-    left: 40%;
-
-.tour-info-box-header
-    text-align: center;
-    color: #70493e;
-
-.tour-info-box-text
-    line-height: 180%;
-
-.tour-info-box-footer
-    text-align: center;
-
-.tour-info-box-arrow-top-left:before
-    content: "";
-    background: url("/assets/images/arrow_left.png") no-repeat;
-    position: absolute;
-    top: -55px;
-    left: -161px;
-    width: 312px;
-    height: 55px;
-
-.tour-info-box-arrow-right-top:after
-    content: "";
-    background: url("/assets/images/arrow_up.png") no-repeat;
-    position: absolute;
-    top: -108px;
-    left: 100%;
-    height: 216px;
-    width: 55px;
-
-.tour-info-box-wrapper
-    text-align: center;
+    &.tour-arrow-to-top
+        right: 100px;
+        &:after
+            background: url("/assets/images/tour-arrow.svg") no-repeat;
+            content: "";
+            height: 60px;
+            position: absolute;
+            right: -139px;
+            top: -45px;
+            transform: rotate(90deg);
+            width: 216px;
