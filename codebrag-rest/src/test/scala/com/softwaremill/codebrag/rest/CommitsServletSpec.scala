@@ -5,11 +5,11 @@ import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import com.softwaremill.codebrag.AuthenticatableServletSpec
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
-import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO, UserDAO, CommitInfoDAO}
+import com.softwaremill.codebrag.dao.{UserDAO, CommitInfoDAO}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.reporting.MongoReactionFinder
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
-import com.softwaremill.codebrag.activities.AddCommentActivity
+import com.softwaremill.codebrag.activities.{CommitReviewActivity, AddCommentActivity}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import com.softwaremill.codebrag.common.LoadMoreCriteria
@@ -30,7 +30,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var diffService = mock[DiffWithCommentsService]
   var userReactionFinder = mock[MongoReactionFinder]
   var userDao = mock[UserDAO]
-  var commitReviewTaskDao = mock[CommitReviewTaskDAO]
+  var commitReviewActivity = mock[CommitReviewActivity]
   val UserJson = someUser()
   val userReactionService = mock[UserReactionService]
   val unlikeUseCaseFactory = mock[UnlikeUseCase]
@@ -58,7 +58,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val reviewTaskToRemove = CommitReviewTask(commitId, userId)
 
     delete("/" + commitId.toString) {
-      verify(commitReviewTaskDao).delete(reviewTaskToRemove)
+      verify(commitReviewActivity).markAsReviewed(reviewTaskToRemove)
     }
   }
 
@@ -91,12 +91,12 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   "GET / with context=true and no id provided" should "load first commits" in {
-      val userId = givenStandardAuthenticatedUser()
+    val userId = givenStandardAuthenticatedUser()
 
-      get("/?context=true") {
-        val criteria = LoadMoreCriteria.fromEnd(CommitsEndpoint.DefaultPageLimit)
-        verify(allCommitsFinder).findAllCommits(criteria, userId)
-      }
+    get("/?context=true") {
+      val criteria = LoadMoreCriteria.fromEnd(CommitsEndpoint.DefaultPageLimit)
+      verify(allCommitsFinder).findAllCommits(criteria, userId)
+    }
   }
 
   "GET / with paging criteria" should "call service with proper criteria object" in {
@@ -119,7 +119,8 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends CommitsServlet(fakeAuthenticator, reviewableCommitsFinder, allCommitsFinder, userReactionFinder, commentActivity, commitReviewTaskDao, userReactionService, userDao, new CodebragSwagger, diffService, unlikeUseCaseFactory) {
+    extends CommitsServlet(fakeAuthenticator, reviewableCommitsFinder, allCommitsFinder, userReactionFinder, commentActivity,
+      commitReviewActivity, userReactionService, userDao, new CodebragSwagger, diffService, unlikeUseCaseFactory) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 
