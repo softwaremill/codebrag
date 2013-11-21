@@ -9,7 +9,7 @@ class EmailService(config: EmailConfig) {
     try {
       val emailDescription = new EmailDescription(email.addresses, email.content, email.subject)
       EmailSender.send(config.emailSmtpHost, config.emailSmtpPort, config.emailSmtpUserName,
-        config.emailSmtpPassword, config.emailFrom, config.emailEncoding, emailDescription)
+        config.emailSmtpPassword, config.verifySSLCertificate, config.emailFrom, config.emailEncoding, emailDescription)
     } catch {
       case e: Throwable => throw new EmailNotSendException(e.getMessage,e)
     }

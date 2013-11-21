@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.config
 
 import com.typesafe.config.Config
 
-trait EmailConfig {
+trait EmailConfig extends ConfigWithDefault {
   def rootConfig: Config
 
   private lazy val emailConfig = rootConfig.getConfig("email")
@@ -13,4 +13,5 @@ trait EmailConfig {
   lazy val emailSmtpPassword: String = emailConfig.getString("smtp-password")
   lazy val emailFrom: String = emailConfig.getString("from")
   lazy val emailEncoding: String = emailConfig.getString("encoding")
+  lazy val verifySSLCertificate: String = getString("email.verify-ssl-certificate", "true")
 }

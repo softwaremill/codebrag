@@ -12,11 +12,19 @@ import javax.mail.{Address, Transport, Session, Message}
  * https://github.com/softwaremill/softwaremill-common/blob/master/softwaremill-sqs/src/main/java/com/softwaremill/common/sqs/email/EmailSender.java
  */
 object EmailSender extends Logging {
+  
+  def supressSSLCertVerification(props: Properties, verifySSLCert: String) {
+    if(verifySSLCert == "false") {
+      props.put("mail.smtps.ssl.checkserveridentity", "false")
+      props.put("mail.smtps.ssl.trust", "*")
+    }
+  }
 
   def send(smtpHost: String,
            smtpPort: String,
            smtpUsername: String,
            smtpPassword: String,
+           verifySSLCertificate: String,
            from: String,
            encoding: String,
            emailDescription: EmailDescription,
@@ -33,6 +41,7 @@ object EmailSender extends Logging {
       props.put("mail.smtps.auth", "true")
       props.put("mail.smtps.user", smtpUsername)
       props.put("mail.smtps.password", smtpPassword)
+      supressSSLCertVerification(props, verifySSLCertificate)
     } else {
       props.put("mail.smtp.host", smtpHost)
       props.put("mail.smtp.port", smtpPort)

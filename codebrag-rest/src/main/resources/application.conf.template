@@ -55,4 +55,5 @@ email {
     smtp-password = "password"
     from = "email@softwaremill.pl"
     encoding = "UTF-8"
+    verify-ssl-certificate = true
 }

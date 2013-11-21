@@ -111,9 +111,10 @@ Setup your email server so that Codebrag can send emails with invitations and no
         smtp-password = "myPassword"
         from = "user@mydomain.com"
         encoding = "UTF-8"
+        verify-ssl-certificate = true
     }
     
-*** NOTE: *** Make sure Java has the required security certificates when using the SSL/TLS connection.
+*** NOTE: *** Make sure Java has the required security certificates when using the SSL/TLS connection. You can skip certificate verification by setting `verify-ssl-certificate` to `false`.
 
 ### 1.4. "codebrag" section
 
