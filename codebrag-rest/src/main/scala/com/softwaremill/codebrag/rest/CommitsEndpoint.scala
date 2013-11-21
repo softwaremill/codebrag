@@ -9,6 +9,7 @@ import com.softwaremill.codebrag.domain.CommitReviewTask
 import CommitsEndpoint._
 import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
 import LoadMoreCriteria.PagingDirection
+import com.softwaremill.codebrag.activities.CommitReviewActivity
 
 trait CommitsEndpoint extends JsonServletWithAuthentication {
 
@@ -17,7 +18,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   def reviewableCommitsListFinder: ReviewableCommitsListFinder
   def allCommitsFinder: AllCommitsFinder
 
-  def commitReviewTaksDao: CommitReviewTaskDAO
+  def commitReviewActivity: CommitReviewActivity
 
   before() {
     haltIfNotAuthenticated
@@ -35,7 +36,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     val commitId = new ObjectId(params("id"))
     val userId = new ObjectId(user.id)
     val reviewTask = CommitReviewTask(commitId, userId)
-    commitReviewTaksDao.delete(reviewTask)
+    commitReviewActivity.markAsReviewed(reviewTask)
   }
 
   get("/", allCommits) {

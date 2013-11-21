@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag
 
-import activities.AddCommentActivity
+import com.softwaremill.codebrag.activities.{CommitReviewActivity, AddCommentActivity}
 import com.softwaremill.codebrag.common.{RealTimeClock, ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.dao.reporting._
 import dao._
@@ -55,6 +55,8 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
   lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus, reviewTaskGenerator)
   lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
   lazy val commentActivity = new AddCommentActivity(userReactionService, followupService, eventBus)
+
+  lazy val commitReviewActivity = new CommitReviewActivity(commitReviewTaskDao, commitInfoDao, eventBus)
 
   lazy val newUserAdder = new NewUserAdder(userDao, eventBus, reviewTaskGenerator, welcomeFollowupsGenerator)
   lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService, notificationService)
