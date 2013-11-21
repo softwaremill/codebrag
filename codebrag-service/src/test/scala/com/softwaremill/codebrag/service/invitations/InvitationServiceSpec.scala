@@ -7,16 +7,17 @@ import com.softwaremill.codebrag.dao.{UserDAO, InvitationDAO}
 import com.softwaremill.codebrag.service.email.{Email, EmailService}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import com.softwaremill.codebrag.domain.{User, Invitation}
+import com.softwaremill.codebrag.domain.Invitation
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.service.templates.{EmailContentWithSubject, EmailTemplates, TemplateEngine}
-import com.softwaremill.codebrag.common.FixtureTimeClock
+import com.softwaremill.codebrag.common.ClockSpec
 import org.joda.time.Hours
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 
-class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
+class InvitationServiceSpec
+  extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
 
   private val code = "1234"
   val emails = List("some@some.some")
@@ -25,7 +26,6 @@ class InvitationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatche
   val user = UserAssembler.randomUser.withId(id).withFullName(userName).get
   val config = mock[CodebragConfig]
 
-  val clock = new FixtureTimeClock(System.currentTimeMillis())
   var invitationDAO: InvitationDAO = _
   var userDAO: UserDAO = _
   var emailService: EmailService = _

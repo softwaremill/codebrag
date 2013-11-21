@@ -11,11 +11,10 @@ import com.softwaremill.codebrag.service.comments.command.{IncomingLike, Incomin
 import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.domain.reactions.LikeEvent
 import org.mockito.ArgumentCaptor
-import com.softwaremill.codebrag.common.FixtureTimeClock
+import com.softwaremill.codebrag.common.ClockSpec
 
-class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with MockEventBus {
-
-  implicit val FixedClock = new FixtureTimeClock(System.currentTimeMillis())
+class UserReactionServiceSpec
+  extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with MockEventBus with ClockSpec {
 
   var userReactionService: UserReactionService = _
   var commentDaoMock: CommitCommentDAO = _
@@ -33,7 +32,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
     commentDaoMock = mock[CommitCommentDAO]
     likeDaoMock = mock[LikeDAO]
     likeValidatorMock = mock[LikeValidator]
-    userReactionService = new UserReactionService(commentDaoMock, likeDaoMock, likeValidatorMock, eventBus)(FixedClock)
+    userReactionService = new UserReactionService(commentDaoMock, likeDaoMock, likeValidatorMock, eventBus)
 
     // make all likes to be first and valid
     when(likeValidatorMock.isLikeValid(any[Like])).thenReturn(Right())
@@ -59,7 +58,7 @@ class UserReactionServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
     savedComment.commitId should equal(CommentForCommit.commitId)
     savedComment.authorId should equal(CommentForCommit.authorId)
     savedComment.message should equal(CommentForCommit.message)
-    savedComment.postingTime should equal(FixedClock.currentDateTimeUTC)
+    savedComment.postingTime should equal(clock.currentDateTimeUTC)
   }
 
   it should "return created inline comment as a result" in {

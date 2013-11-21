@@ -3,18 +3,16 @@ package com.softwaremill.codebrag.service.commits
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{FlatSpec, BeforeAndAfter}
 import org.scalatest.mock.MockitoSugar
-import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
+import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import org.mockito.BDDMockito._
 import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO, UserDAO, ObjectIdTestUtils}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.domain.{CommitInfo, CommitReviewTask}
-import com.softwaremill.codebrag.common.{FixtureTimeClock, Clock}
+import com.softwaremill.codebrag.common.ClockSpec
 
-class CommitReviewTaskGeneratorActionsSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
-
-  // implicit value used by Events
-  implicit val clock: Clock = new FixtureTimeClock(1)
+class CommitReviewTaskGeneratorActionsSpec
+  extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar with ClockSpec {
 
   behavior of "CommitReviewTaskGeneratorActions"
   val FixtureCommitsToFetch = CommitReviewTaskGeneratorActions.LastCommitsToReviewCount

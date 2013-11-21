@@ -15,10 +15,10 @@ import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
 import org.joda.time.DateTime
 import scala.util.Random
-import com.softwaremill.codebrag.common.FixtureTimeClock
+import com.softwaremill.codebrag.common.ClockSpec
 
-class CommitReviewTaskGeneratorSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with
-BeforeAndAfterAll with MockitoSugar {
+class CommitReviewTaskGeneratorSpec
+  extends FlatSpec with ShouldMatchers with BeforeAndAfter with BeforeAndAfterAll with MockitoSugar with ClockSpec {
 
   behavior of "CommitReviewTaskGenerator"
 
@@ -27,9 +27,7 @@ BeforeAndAfterAll with MockitoSugar {
   var userDaoMock: UserDAO = _
   var reviewTaskDaoMock: CommitReviewTaskDAO = _
   var commitInfoDaoMock: CommitInfoDAO = _
-  val FixtureTime = new DateTime(23333333)
-
-  implicit val fixtureClock = new FixtureTimeClock(FixtureTime.getMillis)
+  override val fixtureTime = new DateTime(23333333).getMillis
 
   before {
     userDaoMock = mock[UserDAO]

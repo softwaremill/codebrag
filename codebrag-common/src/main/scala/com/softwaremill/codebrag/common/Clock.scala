@@ -19,3 +19,14 @@ class FixtureTimeClock(millis: Long) extends Clock {
   def currentDateTimeUTC = new DateTime(millis, DateTimeZone.UTC)
   def currentTimeMillis = millis
 }
+
+/**
+ * Simple trait to be used in tests required implicit clock value
+ */
+trait ClockSpec {
+
+  implicit lazy val clock = new FixtureTimeClock(fixtureTime)
+
+  def fixtureTime = System.currentTimeMillis()
+
+}

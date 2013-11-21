@@ -9,14 +9,14 @@ import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.dao.HeartbeatStore
-import com.softwaremill.codebrag.common.{FixtureTimeClock, Clock}
+import com.softwaremill.codebrag.common.{ClockSpec, Clock}
 
-class UpdatesServletSpec extends AuthenticatableServletSpec {
+class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
+
   val countersFinderMock: NotificationCountFinder = mock[NotificationCountFinder]
   val heartbeat: HeartbeatStore = mock[HeartbeatStore]
   val user = currentUser(new ObjectId)
-  val TimeInMillis = 1000
-  val clock = new FixtureTimeClock(TimeInMillis)
+  override val fixtureTime = 1000
 
   override def beforeEach {
     super.beforeEach
@@ -41,7 +41,7 @@ class UpdatesServletSpec extends AuthenticatableServletSpec {
     get("/") {
       //then
       status should equal(200)
-      body should include( s""""lastUpdate":${TimeInMillis}""")
+      body should include( s""""lastUpdate":$fixtureTime""")
       body should include( s""""commits":$expectedCommits""")
       body should include( s""""followups":$expectedFollowups""")
     }

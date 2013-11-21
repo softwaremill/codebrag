@@ -14,11 +14,10 @@ import com.softwaremill.codebrag.domain.Followup
 import scala.Some
 import com.softwaremill.codebrag.domain.Like
 import com.softwaremill.codebrag.service.templates.{PlainTextTemplates, TemplateEngine}
-import com.softwaremill.codebrag.common.FixtureTimeClock
+import com.softwaremill.codebrag.common.ClockSpec
 
-class WelcomeFollowupsGeneratorSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
-
-  implicit val clock = new FixtureTimeClock(1)
+class WelcomeFollowupsGeneratorSpec
+  extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
 
   var internalUserDao: MongoInternalUserDAO = _
   var commentsDao: CommitCommentDAO = _

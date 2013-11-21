@@ -3,8 +3,7 @@ package com.softwaremill.codebrag.service.notification
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.common.{Clock, FixtureTimeClock}
-import org.joda.time.DateTime
+import com.softwaremill.codebrag.common.{ClockSpec, Clock}
 import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import com.softwaremill.codebrag.service.config.{ConfigWithDefault, CodebragConfig}
@@ -13,9 +12,8 @@ import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import org.mockito.Mockito._
 
-class UserNotificationsSenderSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
-
-  val clock = new FixtureTimeClock(DateTime.now.getMillis.toInt)
+class UserNotificationsSenderSpec
+  extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
 
   var notificationService: NotificationService = _
   var userDao: UserDAO = _

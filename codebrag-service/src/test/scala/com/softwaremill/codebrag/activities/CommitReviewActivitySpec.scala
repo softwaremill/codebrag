@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.activities
 import org.scalatest.{FlatSpec, BeforeAndAfterEach}
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
-import com.softwaremill.codebrag.common.{EventBus, FixtureTimeClock}
+import com.softwaremill.codebrag.common.{ClockSpec, EventBus}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{CommitInfo, CommitReviewTask}
 import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO}
@@ -11,9 +11,8 @@ import org.mockito.Mockito._
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.reactions.CommitReviewedEvent
 
-class CommitReviewActivitySpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
-
-  implicit val clock = new FixtureTimeClock(1)
+class CommitReviewActivitySpec
+  extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
 
   var commitReviewTaskDao: CommitReviewTaskDAO = _
   var commitInfoDao: CommitInfoDAO = _

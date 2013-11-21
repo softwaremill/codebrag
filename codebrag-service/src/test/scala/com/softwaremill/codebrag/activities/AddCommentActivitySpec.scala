@@ -5,17 +5,16 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.service.followups.FollowupService
-import com.softwaremill.codebrag.common.{FixtureTimeClock, EventBus}
+import com.softwaremill.codebrag.common.{ClockSpec, EventBus}
 import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.Comment
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.reactions.CommentAddedEvent
 
-class AddCommentActivitySpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
+class AddCommentActivitySpec
+  extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
 
-  implicit val clock = new FixtureTimeClock(1)
-  
   var userReactionService: UserReactionService = _
   var followupService: FollowupService = _
   var eventBus: EventBus = _

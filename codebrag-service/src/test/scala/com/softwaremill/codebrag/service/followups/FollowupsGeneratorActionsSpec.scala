@@ -14,11 +14,10 @@ import com.softwaremill.codebrag.domain.Followup
 import scala.Some
 import com.softwaremill.codebrag.domain.FollowupWithNoReactions
 import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
-import com.softwaremill.codebrag.common.{Clock, FixtureTimeClock}
+import com.softwaremill.codebrag.common.ClockSpec
 
-class FollowupsGeneratorActionsSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterEach with MockitoSugar {
-
-  implicit val clock: Clock = new FixtureTimeClock(1)
+class FollowupsGeneratorActionsSpec
+  extends FlatSpec with ShouldMatchers with BeforeAndAfterEach with MockitoSugar with ClockSpec {
 
   var generator: FollowupsGeneratorActions = _
   var followupDaoMock: FollowupDAO = _
