@@ -161,7 +161,7 @@ Either the email address or the name provided have to match corresponding fields
 
 *** NOTE: *** If your repository is large, you may need to wait until it is downloaded.
 
-Other users can be invited to join Codebrag by choosing the "Invite friends" link from the menu in the upper right corner.
+Other users can be invited to join Codebrag by choosing the "Invite team members" link from the menu in the upper right corner.
 
 ## 4. Questions? Help? Contact us
 
