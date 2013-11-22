@@ -75,8 +75,9 @@ class MongoInstanceSettingsDAOSpec
   }
 
   /**
-   * This test fails from time to time, by default each thread has 150 ms to finish which is not enough
-   * and threads can be blocked when accessing instances array
+   * By default each thread has 150 ms to finish which is not enough
+   * and threads can be blocked when accessing instances array,
+   * that's why a large timeout is needed
    */
   override def patienceConfig = PatienceConfig(timeout = Span(400, Milliseconds))
 
