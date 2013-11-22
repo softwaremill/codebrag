@@ -16,7 +16,7 @@ class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
   val countersFinderMock: NotificationCountFinder = mock[NotificationCountFinder]
   val heartbeat: HeartbeatStore = mock[HeartbeatStore]
   val user = currentUser(new ObjectId)
-  override val fixtureTime = 1000
+  override val fixtureTime = 1000L
 
   override def beforeEach {
     super.beforeEach

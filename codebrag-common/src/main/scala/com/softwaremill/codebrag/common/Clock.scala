@@ -27,6 +27,6 @@ trait ClockSpec {
 
   implicit lazy val clock = new FixtureTimeClock(fixtureTime)
 
-  def fixtureTime = System.currentTimeMillis()
+  def fixtureTime: Long = System.currentTimeMillis()
 
 }
