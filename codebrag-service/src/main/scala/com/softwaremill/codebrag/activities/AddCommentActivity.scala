@@ -6,9 +6,11 @@ import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.domain.reactions.CommentAddedEvent
 
-class AddCommentActivity(userReactionService: UserReactionService,
-                         followupService: FollowupService,
-                         eventBus: EventBus)(implicit clock: Clock) {
+class AddCommentActivity(
+  userReactionService: UserReactionService,
+  followupService: FollowupService,
+  eventBus: EventBus)
+  (implicit clock: Clock) {
 
   def addCommentToCommit(newComment: IncomingComment) = {
     val addedComment = userReactionService.storeComment(newComment)
