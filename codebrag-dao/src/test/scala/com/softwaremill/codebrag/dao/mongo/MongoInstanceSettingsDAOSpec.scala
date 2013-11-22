@@ -74,7 +74,10 @@ class MongoInstanceSettingsDAOSpec
     result should equal("More than one record exists in collection 'instance_settings'!")
   }
 
-  // use large timeout for Conductor's test
+  /**
+   * This test fails from time to time, by default each thread has 150 ms to finish which is not enough
+   * and threads can be blocked when accessing instances array
+   */
   override def patienceConfig = PatienceConfig(timeout = Span(400, Milliseconds))
 
   it should "always generate just one uniqueId no matter how many threads" taggedAs RequiresDb in {
