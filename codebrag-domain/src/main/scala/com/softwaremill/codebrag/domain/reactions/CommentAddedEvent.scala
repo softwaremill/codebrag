@@ -12,8 +12,6 @@ case class CommentAddedEvent(comment: Comment)(implicit clock: Clock) extends Ev
 
   def timestamp: DateTime = clock.currentDateTimeUTC
 
-  def eventType: String = getClass.getSimpleName
-
   def userId: Option[ObjectId] = Some(comment.authorId)
 
   def toEventStream: String = s"Comment [${comment.message}] from [${comment.authorId}] to [${comment.commitId}}]"

@@ -12,7 +12,7 @@ trait Event {
 
   def timestamp: DateTime
 
-  def eventType: String
+  def eventType: String = getClass.getSimpleName
 
   def userId: Option[ObjectId]
 

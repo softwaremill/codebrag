@@ -12,8 +12,6 @@ case class CommitReviewedEvent(commit: CommitInfo, userIdArg: ObjectId)(implicit
 
   def timestamp: DateTime = clock.currentDateTimeUTC
 
-  def eventType: String = getClass.getSimpleName
-
   def userId: Option[ObjectId] = Some(userIdArg)
 
   def toEventStream: String = s"User $userIdArg reviewed commit ${commit.sha}"

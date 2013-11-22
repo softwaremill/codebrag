@@ -15,8 +15,6 @@ case class CommitsUpdatedEvent(firstTime: Boolean, newCommits: List[UpdatedCommi
 
   def timestamp: DateTime = clock.currentDateTimeUTC
 
-  def eventType: String = this.getClass.getSimpleName
-
   def userId: Option[ObjectId] = None
 
   def toEventStream: String = s"Number of new commits: ${newCommits.size}"

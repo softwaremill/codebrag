@@ -15,8 +15,6 @@ case class LikeEvent(like: Like)(implicit clock: Clock) extends Event {
 
   def timestamp: DateTime = clock.currentDateTimeUTC
 
-  def eventType: String = getClass.getSimpleName
-
   def userId: Option[ObjectId] = Some(like.authorId)
 
   def toEventStream: String = s"Commit ${like.commitId} liked by ${like.authorId}"
@@ -32,8 +30,6 @@ case class LikeEvent(like: Like)(implicit clock: Clock) extends Event {
 case class UnlikeEvent(like: Like)(implicit clock: Clock) extends Event {
 
   def timestamp: DateTime = clock.currentDateTimeUTC
-
-  def eventType: String = getClass.getSimpleName
 
   def userId: Option[ObjectId] = Some(like.authorId)
 

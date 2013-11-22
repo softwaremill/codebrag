@@ -9,8 +9,6 @@ case class NewUserRegistered(id: ObjectId, login: String, fullName: String, emai
 
   def timestamp: DateTime = clock.currentDateTimeUTC
 
-  def eventType: String = getClass.getSimpleName
-
   def userId: Option[ObjectId] = Some(id)
 
   def toEventStream: String = s"New user $fullName was registered"
