@@ -1,34 +1,35 @@
 <div class="user-profile popup-page opened" id="user-profile-popup" ng-controller="UserProfileCtrl">
     <div class="popup-box">
         <div class="popup-content">
-            <div class="profile clearfix">
+            <section class="profile-info">
                 <h1>Your profile</h1>
-                <div class="avatar">
-                    <user-avatar logged-in-user="true"></user-avatar>
+                <div class="authored-box">
+                    <div class="author-box">
+                        <user-avatar logged-in-user="true"></user-avatar>
+                    </div>
+                    <div class="info-box">
+                        <div><strong>{{user.login}}</strong></div>
+                        <div><strong>{{user.email}}</strong></div>
+                    </div>
                 </div>
-                <div class="profile-info">
-                    <h3>{{user.login}}</h3>
-                    <h3>{{user.email}}</h3>
-                    <span>Codebrag uses <a href="http://gravatar.com" target="_blank">Gravatar</a> for your profile picture.</span>
-                </div>
-            </div>
-            <div style="clear:both"></div>
-            <div class="settings" ng-show="userSettings">
+                <aside class="info-line">Codebrag uses <a href="http://gravatar.com" target="_blank">Gravatar</a> for your profile picture.</aside>
+            </section>
+
+            <section class="settings-info" ng-show="userSettings">
                 <h1>Your settings</h1>
-                <div class="param clearfix">
-                    <div class="label">
-                        <label>
+                <form class="param clearfix">
+                    <p class="clearfix">
+                        <label >
                             Smart email notifications <a href="http://codebrag.com/faq.html#notifications">(more info)</a>
                             <span ng-show="savingStatus && savingStatus.pending" class="pending">(Saving...)</span>
                             <span ng-show="savingStatus && savingStatus.ok" class="success">(Saved)</span>
                             <span ng-show="savingStatus && savingStatus.err" class="failed">(Something went wrong, not saved)</span>
+
+                            <input ng-disabled="savingStatus && savingStatus.pending" type="checkbox" ng-model="userSettings.emailNotificationsEnabled" ng-change="notificationsChanged()"/>
                         </label>
-                    </div>
-                    <div class="control">
-                        <input ng-disabled="savingStatus && savingStatus.pending" type="checkbox" ng-model="userSettings.emailNotificationsEnabled" ng-change="notificationsChanged()"/>
-                    </div>
-                </div>
-            </div>
+                    </p>
+                </form>
+            </section>
         </div>
         <span class="close-btn" ng-click="closePopup()">
             <i class="icon-remove"></i>

@@ -47,32 +47,33 @@
         display: block;
 
   &.user-profile
-    & .avatar
-      float:left;
-      width:80px
-    & .profile-info
-      float: left;
-      text-align: left;
-      overflow: hidden;
-      width: 340px;
-      padding-left: 0.4em
-      & h3
-        margin-top: 0
-        line-height: 16px;
-        font-weight: bold;
 
-    & .settings
-      margin-top: 2em;
-      & .label
-        width: 390px;
-        float: left;
-        margin-top: 10px;
-        text-align: left
-      & .control
-        width:30px;
-        float: right
-        & input
-          min-width: 30px;
+    & .profile-info
+      margin-bottom: 2.3em;
+      text-align: left;
+
+      & .author-box
+        & img
+          margin-right: 1.15em;
+          width: 3.85em;
+
+      & .info-box
+        text-align: left;
+
+        & div
+          margin: 0.5em 0;
+
+      & .info-line
+        margin: 0.77em 0;
+
+    & .settings-info
+      & label
+        min-width: 336px;
+
+      & input[type="checkbox"]
+        float: right;
+        margin-top: 0.2em;
+        vertical-align: top;
 
 .popup-box
   background-color: $body-bg-color;
@@ -129,7 +130,7 @@
     margin-bottom: 0.38em;
     text-align: left;
 
-  & input, textarea, .list
+  & input, textarea, .list, :not(input[type="checkbox"])
     border: 1px solid #ccc;
     box-shadow: none;
     min-width: 400px;
@@ -157,7 +158,7 @@
   & .failed
     color: $error-red-color
 
-  & input
+  & input, :not(input[type="checkbox"])
     height: 32px;
 
   & textarea
