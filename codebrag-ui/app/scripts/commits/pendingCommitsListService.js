@@ -31,14 +31,19 @@ angular.module('codebrag.commits')
         }
 
         function markAsReviewed(commitId) {
-            Commits.remove({commitId: commitId});   // fire and don't wait for response
-            return prefetchedCommitPromise.then(function(prefetchedCommit) {
+            function removeGivenAndAppendPrefetchedCommit(prefetchedCommit) {
                 var indexRemoved = commits.removeFromListBy(commitId);
                 prefetchedCommit && commits.push(prefetchedCommit);
                 eventsEmitter.triggerCounterDecrease();
-                _prefetchOneMoreCommit();
                 return commits.elementAtIndexOrLast(indexRemoved);
+            }
+
+            var commitMarkedAsReviewed =Commits.remove({commitId: commitId}).$then(function() {
+                return prefetchedCommitPromise;
             });
+            var nextCommitToReview = commitMarkedAsReviewed.then(removeGivenAndAppendPrefetchedCommit)
+            nextCommitToReview.then(_prefetchOneMoreCommit);
+            return nextCommitToReview;
         }
 
         function loadNextCommits() {
