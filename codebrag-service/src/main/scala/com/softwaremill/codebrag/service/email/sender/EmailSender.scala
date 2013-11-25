@@ -30,7 +30,7 @@ object EmailSender extends Logging {
            emailDescription: EmailDescription,
            attachmentDescriptions: AttachmentDescription*) {
 
-    val secured = smtpUsername != null
+    val secured = (smtpUsername != null && smtpUsername.nonEmpty)
 
     // Setup mail server
     val props = new Properties()
