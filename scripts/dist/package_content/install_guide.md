@@ -111,6 +111,7 @@ Setup your email server so that Codebrag can send emails with invitations and no
         smtp-password = "myPassword"
         from = "user@mydomain.com"
         encoding = "UTF-8"
+        ssl-connection = true
         verify-ssl-certificate = true
     }
     

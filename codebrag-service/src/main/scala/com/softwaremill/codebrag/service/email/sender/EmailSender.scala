@@ -13,39 +13,18 @@ import javax.mail.{Address, Transport, Session, Message}
  */
 object EmailSender extends Logging {
   
-  def supressSSLCertVerification(props: Properties, verifySSLCert: String) {
-    if(verifySSLCert == "false") {
-      props.put("mail.smtps.ssl.checkserveridentity", "false")
-      props.put("mail.smtps.ssl.trust", "*")
-    }
-  }
-
   def send(smtpHost: String,
            smtpPort: String,
            smtpUsername: String,
            smtpPassword: String,
-           verifySSLCertificate: String,
+           verifySSLCertificate: Boolean,
+           sslConnection: Boolean,
            from: String,
            encoding: String,
            emailDescription: EmailDescription,
            attachmentDescriptions: AttachmentDescription*) {
-
-    val secured = (smtpUsername != null && smtpUsername.nonEmpty)
-
-    // Setup mail server
-    val props = new Properties()
-    if (secured) {
-      props.put("mail.smtps.host", smtpHost)
-      props.put("mail.smtps.port", smtpPort)
-      props.put("mail.smtps.starttls.enable", "true")
-      props.put("mail.smtps.auth", "true")
-      props.put("mail.smtps.user", smtpUsername)
-      props.put("mail.smtps.password", smtpPassword)
-      supressSSLCertVerification(props, verifySSLCertificate)
-    } else {
-      props.put("mail.smtp.host", smtpHost)
-      props.put("mail.smtp.port", smtpPort)
-    }
+    
+    val props = setupSmtpServerProperties(sslConnection, smtpHost, smtpPort, verifySSLCertificate)
 
     // Get a mail session
     val session = Session.getInstance(props)
@@ -71,22 +50,52 @@ object EmailSender extends Logging {
       m.setText(emailDescription.message, encoding, "plain")
     }
 
-    if (secured) {
-      val transport = session.getTransport("smtps")
-      try {
-        transport.connect(smtpUsername, smtpPassword)
-        transport.sendMessage(m, m.getAllRecipients)
-      } finally {
-        transport.close()
+    val transport = createSmtpTransportFrom(session, sslConnection)
+    try {
+      connectToSmtpServer(transport, smtpUsername, smtpPassword)
+      sendEmail(transport, m, emailDescription, to)
+    } finally {
+      transport.close()
+    }
+  }
+
+
+  private def setupSmtpServerProperties(sslConnection: Boolean, smtpHost: String, smtpPort: String, verifySSLCertificate: Boolean): Properties = {
+    // Setup mail server
+    val props = new Properties()
+    if (sslConnection) {
+      props.put("mail.smtps.host", smtpHost)
+      props.put("mail.smtps.port", smtpPort)
+      props.put("mail.smtps.starttls.enable", "true")
+      if(!verifySSLCertificate) {
+        props.put("mail.smtps.ssl.checkserveridentity", "false")
+        props.put("mail.smtps.ssl.trust", "*")
       }
     } else {
-      Transport.send(m)
+      props.put("mail.smtp.host", smtpHost)
+      props.put("mail.smtp.port", smtpPort)
     }
+    props
+  }
 
+  private def createSmtpTransportFrom(session: Session, sslConnection: Boolean): Transport = {
+    if (sslConnection) session.getTransport("smtps") else session.getTransport("smtp")
+  }
+
+  private def sendEmail(transport: Transport, m: MimeMessage, emailDescription: EmailDescription, to: Array[Address]) {
+    transport.sendMessage(m, m.getAllRecipients)
     logger.debug("Mail '" + emailDescription.subject + "' sent to: " + to.mkString(","))
   }
 
-  def convertStringEmailsToAddresses(emails: Array[String]): Array[Address] = {
+  private def connectToSmtpServer(transport: Transport, smtpUsername: String, smtpPassword: String) {
+    if (smtpUsername != null && smtpUsername.nonEmpty) {
+      transport.connect(smtpUsername, smtpPassword)
+    } else {
+      transport.connect()
+    }
+  }
+
+  private def convertStringEmailsToAddresses(emails: Array[String]): Array[Address] = {
     val addresses = new Array[Address](emails.length)
 
     for (i <- 0 until emails.length) {
@@ -96,7 +105,7 @@ object EmailSender extends Logging {
     addresses
   }
 
-  def addAttachments(mimeMessage: MimeMessage, msg: String, encoding: String,
+  private def addAttachments(mimeMessage: MimeMessage, msg: String, encoding: String,
     attachmentDescriptions: AttachmentDescription*) {
     val multiPart = new MimeMultipart()
 

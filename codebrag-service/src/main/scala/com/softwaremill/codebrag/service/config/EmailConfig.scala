@@ -13,5 +13,6 @@ trait EmailConfig extends ConfigWithDefault {
   lazy val emailSmtpPassword: String = emailConfig.getString("smtp-password")
   lazy val emailFrom: String = emailConfig.getString("from")
   lazy val emailEncoding: String = emailConfig.getString("encoding")
-  lazy val verifySSLCertificate: String = getString("email.verify-ssl-certificate", "true")
+  lazy val sslConnection: Boolean = emailConfig.getBoolean("ssl-connection")
+  lazy val verifySSLCertificate: Boolean = getBoolean("email.verify-ssl-certificate", true)
 }
