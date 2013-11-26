@@ -14,6 +14,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.common.ClockSpec
+import com.softwaremill.codebrag.service.notification
 
 class NotificationServiceSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with ClockSpec {
@@ -75,6 +76,19 @@ class NotificationServiceSpec
       val email = emailCaptor.getValue
 
       email.content should include(pair._1)
+    }
+  }
+
+  it should "correctly translate counters to textual message" in {
+    import NotificationService.CountersToText.translate
+
+    verifyTranslation(commitsCount = 1, followupsCount = 1, isTotalCount = false)("1 new commit and 1 new followup")
+    verifyTranslation(commitsCount = 1, followupsCount = 1, isTotalCount = true)("1 commit and 1 followup")
+    verifyTranslation(commitsCount = 2, followupsCount = 2, isTotalCount = false)("2 new commits and 2 new followups")
+    verifyTranslation(commitsCount = 2, followupsCount = 2, isTotalCount = true)("2 commits and 2 followups")
+
+    def verifyTranslation(commitsCount: Long, followupsCount: Long, isTotalCount: Boolean)(expectedMsg: String) {
+      translate(commitsCount, followupsCount, isTotalCount) should equal (expectedMsg)
     }
   }
 

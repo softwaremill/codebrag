@@ -12,6 +12,8 @@ import org.joda.time.format.DateTimeFormat
 
 class NotificationService(emailScheduler: EmailScheduler, templateEngine: TemplateEngine, codebragConfig: CodebragConfig, notificationCountFinder: NotificationCountFinder, clock: Clock) extends Logging {
 
+  import NotificationService.CountersToText.translate
+
   def sendWelcomeNotification(user: User) {
     val noOfCommits = notificationCountFinder.getCounters(user.id).pendingCommitCount
     val context: Map[String, Any] = prepareContextForWelcomeNotification(user, noOfCommits)
@@ -23,7 +25,7 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: Templa
   def sendCommitsOrFollowupNotification(user: User, commitCount: Long, followupCount: Long) {
     val templateParams = Map(
       "username" -> user.name,
-      "commit_followup_message" -> countersText(commitCount, followupCount),
+      "commit_followup_message" -> translate(commitCount, followupCount, isTotalCount = false),
       "application_url" -> codebragConfig.applicationUrl
     )
     val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.UserNotifications, templateParams)
@@ -34,25 +36,13 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: Templa
   def sendDailyDigest(user: User, commitCount: Long, followupCount: Long) {
     val templateParams = Map(
       "username" -> user.name,
-      "commit_followup_message" -> countersText(commitCount, followupCount),
+      "commit_followup_message" -> translate(commitCount, followupCount, isTotalCount = true),
       "application_url" -> codebragConfig.applicationUrl,
       "date" -> clock.currentDateTime.toString(DateTimeFormat.forPattern("yyyy-MM-dd"))
     )
     val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.DailyDigest, templateParams)
     val email = Email(List(user.email), resolvedTemplate.subject, resolvedTemplate.content)
     emailScheduler.scheduleInstant(email)
-  }
-
-
-  private def countersText(commitCount: Long, followupCount: Long): String = {
-    val msg = {
-      val newCommits = if (commitCount == 1) s"$commitCount new commit" else s"$commitCount new commits"
-      val newFollowups = if (followupCount == 1) s"$followupCount new followup" else s"$followupCount new followups"
-      if (commitCount > 0 && followupCount > 0) s"$newCommits and $newFollowups"
-      else if (commitCount > 0) newCommits
-      else newFollowups
-    }
-    msg
   }
 
   private def prepareContextForWelcomeNotification(user: User, noOfCommits: Long): Map[String, Any] = {
@@ -64,6 +54,36 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: Templa
       return users ++ Map("noOfCommits" -> noOfCommits)
     }
     users
+  }
+
+}
+
+object NotificationService {
+
+    /**
+    * Translates followups and commits numerical counters to text e.g.:
+    * 1 commit and 2 followups
+    * 1 new commit and 2 new followups
+    */
+  object CountersToText {
+
+    def translate(commitCount: Long, followupCount: Long, isTotalCount: Boolean = false): String = {
+      def newOrAll(word: String) = if(isTotalCount) word else s"new $word"
+      val msg = {
+        val commits = pluralize(commitCount, newOrAll("commit"))
+        val followups = pluralize(followupCount, newOrAll("followup"))
+        if (commitCount > 0 && followupCount > 0) s"$commits and $followups"
+        else if (commitCount > 0) commits
+        else followups
+      }
+      msg
+    }
+
+    private def pluralize(count: Long, singular: String)  = {
+      val plural = singular + "s"
+      if (count == 1) s"$count $singular" else s"$count $plural"
+    }
+
   }
 
 }
