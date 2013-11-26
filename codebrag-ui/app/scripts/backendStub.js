@@ -335,7 +335,7 @@
 
                 $httpBackend.whenGET(/views\/.*/).passThrough();
 
-                $httpBackend.whenGET('rest/config/').respond({demo: false});
+                $httpBackend.whenGET('rest/config/').respond({demo: false, emailNotifications: true});
 
                 $httpBackend.whenGET('rest/users').respond(authUser);
 
@@ -358,7 +358,9 @@
 
                 $httpBackend.whenGET('rest/updates').respond({"lastUpdate":1384251660217,"commits":0,"followups":0});
 
-                $httpBackend.whenPUT('rest/users/settings').respond({});
+                $httpBackend.whenPUT('rest/users/settings').respond({userSettings: {}});
+
+                $httpBackend.whenGET('rest/users/settings').respond({userSettings: {}});
             });
     }
 
