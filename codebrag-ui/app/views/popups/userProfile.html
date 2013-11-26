@@ -16,16 +16,18 @@
             </section>
 
             <section class="settings-info" ng-show="userSettings">
-                <h1>Your settings</h1>
+                <h1>Your settings <span saving-status="savingStatus"></span></h1>
                 <form class="param clearfix">
                     <p class="clearfix">
                         <label >
                             Smart email notifications <a href="http://codebrag.com/faq.html#notifications">(more info)</a>
-                            <span ng-show="savingStatus && savingStatus.pending" class="pending">(Saving...)</span>
-                            <span ng-show="savingStatus && savingStatus.ok" class="success">(Saved)</span>
-                            <span ng-show="savingStatus && savingStatus.err" class="failed">(Something went wrong, not saved)</span>
-
-                            <input ng-disabled="savingStatus && savingStatus.pending" type="checkbox" ng-model="userSettings.emailNotificationsEnabled" ng-change="notificationsChanged()"/>
+                            <input ng-disabled="isSavePending()" type="checkbox" ng-model="userSettings.emailNotificationsEnabled" ng-change="notificationsChanged()"/>
+                        </label>
+                    </p>
+                    <p class="clearfix">
+                        <label >
+                            Daily update emails
+                            <input ng-disabled="isSavePending()" type="checkbox" ng-model="userSettings.dailyUpdatesEmailEnabled" ng-change="notificationsChanged()"/>
                         </label>
                     </p>
                 </form>

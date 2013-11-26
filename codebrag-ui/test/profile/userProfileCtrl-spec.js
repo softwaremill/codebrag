@@ -78,31 +78,28 @@ describe('UserProfileCtrl', function() {
         });
 
         it('should set pending status when saving changes', function() {
-            spyOn(scope.savingStatus, 'setPending');
 
             scope.notificationsChanged();
 
-            expect(scope.savingStatus.setPending).toHaveBeenCalled();
+            expect(scope.savingStatus).toBe('pending');
         });
 
         it('should set status to ok when changes saved', function() {
             spyOn(userSettingsService, 'save').andReturn($q.when());
-            spyOn(scope.savingStatus, 'setOk');
 
             scope.notificationsChanged();
             $rootScope.$apply();
 
-            expect(scope.savingStatus.setOk).toHaveBeenCalled();
+            expect(scope.savingStatus).toBe('success');
         });
 
         it('should set status to error when changes not saved', function() {
             spyOn(userSettingsService, 'save').andReturn($q.reject());
-            spyOn(scope.savingStatus, 'setErr');
 
             scope.notificationsChanged();
             $rootScope.$apply();
 
-            expect(scope.savingStatus.setErr).toHaveBeenCalled();
+            expect(scope.savingStatus).toBe('failed');
         });
 
     });

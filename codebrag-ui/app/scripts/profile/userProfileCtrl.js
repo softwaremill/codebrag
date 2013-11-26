@@ -2,21 +2,23 @@ angular.module('codebrag.profile')
 
     .controller('UserProfileCtrl', function($scope, authService, configService, userSettingsService, $q) {
 
-        $scope.savingStatus = new codebrag.OperationStatus();
-
         loadCurrentUserData();
         loadCurrentUserNotificationSettingsIfGlobalEnabled();
 
         $scope.notificationsChanged = function() {
-            $scope.savingStatus.setPending();
+            $scope.savingStatus = 'pending';
             userSettingsService.save($scope.userSettings).then(success, error);
 
             function success() {
-                $scope.savingStatus.setOk();
+                $scope.savingStatus = 'success';
             }
             function error() {
-                $scope.savingStatus.setErr();
+                $scope.savingStatus = 'failed';
             }
+        };
+
+        $scope.isSavePending = function() {
+            return $scope.savingStatus && $scope.savingStatus == 'pending';
         };
 
         function loadCurrentUserData() {

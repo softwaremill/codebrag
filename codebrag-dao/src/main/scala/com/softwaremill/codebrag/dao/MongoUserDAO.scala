@@ -122,11 +122,15 @@ class MongoUserDAO extends UserDAO {
     }
 
     implicit def fromRecord(record: UserSettingsRecord): UserSettings = {
-      UserSettings(record.avatarUrl.get, record.emailNotificationsEnabled.get, record.appTourDone.get)
+      UserSettings(record.avatarUrl.get, record.emailNotificationsEnabled.get, record.dailyUpdatesEmailEnabled.get, record.appTourDone.get)
     }
 
     implicit def toRecord(settings: UserSettings): UserSettingsRecord = {
-      UserSettingsRecord.createRecord.avatarUrl(settings.avatarUrl).emailNotificationsEnabled(settings.emailNotificationsEnabled).appTourDone(settings.appTourDone)
+      UserSettingsRecord.createRecord
+        .avatarUrl(settings.avatarUrl)
+        .emailNotificationsEnabled(settings.emailNotificationsEnabled)
+        .dailyUpdatesEmailEnabled(settings.dailyUpdatesEmailEnabled)
+        .appTourDone(settings.appTourDone)
     }
   }
 
@@ -191,6 +195,8 @@ class UserSettingsRecord extends BsonRecord[UserSettingsRecord] {
   object avatarUrl extends LongStringField(this)
 
   object emailNotificationsEnabled extends BooleanField(this)
+
+  object dailyUpdatesEmailEnabled extends BooleanField(this)
 
   object appTourDone extends BooleanField(this)
 
