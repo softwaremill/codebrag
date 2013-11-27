@@ -49,7 +49,7 @@
   &.user-profile
 
     & .profile-info
-      margin-bottom: 2.3em;
+      margin-bottom: 3em;
       text-align: left;
 
       & .author-box
@@ -67,6 +67,12 @@
         margin: 0.77em 0;
 
     & .settings-info
+      & h1
+        margin-bottom: 0.4em;
+
+      & .info-line
+        margin-top: 0.3em;
+
       & label
         min-width: 336px;
 
@@ -74,6 +80,9 @@
         float: right;
         margin-top: 0.2em;
         vertical-align: top;
+
+      & p:last-child
+        margin-bottom: 0;
 
 .popup-box
   background-color: $body-bg-color;
