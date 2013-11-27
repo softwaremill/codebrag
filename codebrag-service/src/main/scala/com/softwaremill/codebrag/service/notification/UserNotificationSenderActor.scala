@@ -162,7 +162,7 @@ trait UserNotificationsSender extends Logging {
   def sendDailyDigest(users: List[User]) {
     users.foreach {
       user => {
-        user.settings.emailNotificationsEnabled match {
+        user.settings.dailyUpdatesEmailEnabled match {
           case true => {
             val counters = notificationCounts.getCounters(user.id)
             if(counters.nonEmpty) {
@@ -171,7 +171,7 @@ trait UserNotificationsSender extends Logging {
               logger.debug(s"Not sending email to ${user.email} - no commits and followups waiting for this user")
             }
           }
-          case false => logger.debug(s"Not sending email to ${user.email} - user has notifications disabled")
+          case false => logger.debug(s"Not sending email to ${user.email} - user has daily digest emails disabled")
         }
       }
     }

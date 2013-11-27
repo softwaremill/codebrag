@@ -59,9 +59,9 @@ class UserNotificationsSenderSpec
     verifyZeroInteractions(notificationService)
   }
 
-  it should "not send daily digest when user has notifications disabled" in {
+  it should "not send daily digest when user has daily digest email disabled" in {
     // given
-    val user = UserAssembler.randomUser.withEmailNotificationsDisabled().get
+    val user = UserAssembler.randomUser.withDailyDigestEmailDisabled().get
     val sender = new TestUserNotificationsSender(notificationCountFinder, userDao, notificationService, clock)
 
     // when
