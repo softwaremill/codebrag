@@ -25,7 +25,7 @@
                         Valid email address is required</span>
                 </div>
                 <div class="btn-centered-wrapper" ng-hide="failure">
-                    <button class="button centered" ng-click="submit()" ng-disabled="contactForm.$invalid">Send message</button>
+                    <button class="button" ng-click="submit()" ng-disabled="contactForm.$invalid">Send message</button>
                 </div>
             </fieldset>
             <fieldset class="uv-success" ng-class="{opened: success}">
@@ -36,7 +36,7 @@
                 <h1>Ooops!</h1>
                 <p>Something went wrong... Do you want to try again?</p>
                 <div class="btn-centered-wrapper">
-                    <button class="button centered" ng-click="submit()">Sure, let's try again</button>
+                    <button class="button" ng-click="submit()">Sure, let's try again</button>
                 </div>
             </fieldset>
         </form>
