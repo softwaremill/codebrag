@@ -1,4 +1,4 @@
-ddescribe('Dynamic favicon directive', function() {
+describe('Saving status indicator directive', function() {
 
     var $rootScope, $scope, el, $compile;
     var statusClasses = ['pending', 'success', 'failed'];
