@@ -18,7 +18,7 @@ class ChangeUserSettingsUseCaseSpec extends FlatSpec with MockitoSugar with Shou
   var userDao: UserDAO = _
   var changeUserSettings: ChangeUserSettingsUseCase = _
 
-  val dummySettings = IncomingSettings(None, None)
+  val dummySettings = IncomingSettings(None, None, None)
 
   override def beforeEach() {
     userDao = mock[UserDAO]
