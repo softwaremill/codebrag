@@ -11,7 +11,7 @@ angular.module('codebrag.common.directives')
             "success": 'Saved',
             "failed": 'Something went wrong, not saved',
             allClasses: function() {
-                return Object.keys(this).join(' ');
+                return Object.keys(this);
             }
         };
 
@@ -20,11 +20,17 @@ angular.module('codebrag.common.directives')
             link: function(scope, el, attrs) {
                 scope.$watch(attrs.savingStatus, function(changedStatus) {
                     if(changedStatus) {
-                        el.removeClass(statusToText.allClasses);
+                        removeStatusClasses();
                         el.addClass(changedStatus);
                         el.text(statusToText[changedStatus])
                     }
                 });
+
+                function removeStatusClasses() {
+                    statusToText.allClasses().forEach(function(clazz) {
+                        el.removeClass(clazz);
+                    });
+                }
             }
         };
 
