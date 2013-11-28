@@ -5,6 +5,7 @@ angular.module('codebrag.common.directives').directive('contactFormPopup', funct
         $scope.isVisible = false;
 
         $scope.submit = function() {
+            clearStatus();
             sendFeedbackViaUservoice().then(success, failure);
             function success() {
                 $scope.success = true;
@@ -21,10 +22,14 @@ angular.module('codebrag.common.directives').directive('contactFormPopup', funct
 
         $scope.close = function() {
             $scope.isVisible = false;
-            delete $scope.success;
-            delete $scope.failure;
+            clearStatus();
             clearFormFields();
         };
+
+        function clearStatus() {
+            delete $scope.success;
+            delete $scope.failure;
+        }
 
         function clearFormFields() {
             $scope.msg = {};
