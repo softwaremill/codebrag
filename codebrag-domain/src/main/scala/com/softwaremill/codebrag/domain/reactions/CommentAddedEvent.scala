@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.domain.reactions
 
-import com.softwaremill.codebrag.common.{Clock, Event}
+import com.softwaremill.codebrag.common.{StatisticEvent, Clock, Event}
 import com.softwaremill.codebrag.domain.Comment
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
@@ -8,7 +8,7 @@ import org.joda.time.DateTime
 /**
  * Describes event when someone added a comment
  */
-case class CommentAddedEvent(comment: Comment)(implicit clock: Clock) extends Event {
+case class CommentAddedEvent(comment: Comment)(implicit clock: Clock) extends Event with StatisticEvent {
 
   def timestamp: DateTime = clock.currentDateTimeUTC
 

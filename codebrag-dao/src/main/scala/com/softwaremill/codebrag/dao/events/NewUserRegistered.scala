@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.dao.events
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.common.{Clock, Event}
+import com.softwaremill.codebrag.common.{StatisticEvent, Clock, Event}
 import com.softwaremill.codebrag.domain.{User, UserLike}
 import org.joda.time.DateTime
 
-case class NewUserRegistered(id: ObjectId, login: String, fullName: String, email: String)(implicit clock: Clock) extends Event {
+case class NewUserRegistered(id: ObjectId, login: String, fullName: String, email: String)(implicit clock: Clock) extends Event with StatisticEvent {
 
   def timestamp: DateTime = clock.currentDateTimeUTC
 

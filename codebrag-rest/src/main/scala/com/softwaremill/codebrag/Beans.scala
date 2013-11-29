@@ -20,6 +20,7 @@ import com.softwaremill.codebrag.service.invitations.{DefaultUniqueHashGenerator
 import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
 import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.service.templates.TemplateEngine
+import com.softwaremill.codebrag.dao.eventstream.EventDao
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 
@@ -90,6 +91,8 @@ trait Daos {
   lazy val invitationDao = new MongoInvitationDAO
 
   lazy val instanceSettingsDao = new MongoInstanceSettingsDAO
+
+  lazy val eventDao = new EventDao
 
 }
 

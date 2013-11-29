@@ -19,3 +19,8 @@ trait Event {
   def toEventStream: String
 
 }
+
+/**
+ * Marker trait for events collected for stats
+ */
+trait StatisticEvent extends Event
