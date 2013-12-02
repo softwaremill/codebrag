@@ -1,21 +1,22 @@
 package com.softwaremill.codebrag.stats
 
-import akka.actor.Actor
 import com.typesafe.scalalogging.slf4j.Logging
-import org.joda.time.DateTime
+import com.softwaremill.codebrag.service.config.CodebragStatsConfig
+import org.apache.http.impl.client.HttpClients
+import org.apache.http.entity.{ContentType, StringEntity}
+import org.apache.http.client.methods.RequestBuilder
 
-class StatsSender(statsAggregator: StatsAggregator) extends Actor with Logging {
+object StatsSender extends Logging {
 
-  def receive = {
-    case StatsSender.SendStatsCommand(currentDate: DateTime) => {
-      statsAggregator.getStatsForPreviousDayOf(currentDate.plusDays(1)).right.foreach { stats =>
-        logger.debug(s"### Sending stats $stats")
-      }
+  def sendHttpStatsRequest(jsonData: String, config: CodebragStatsConfig): Any = {
+    val client = HttpClients.createDefault()
+    val reqBody = new StringEntity(jsonData, ContentType.create("application/json", "UTF-8"))
+    val req = RequestBuilder.post().setUri(config.statsServerUrl).setEntity(reqBody).build()
+    try {
+      client.execute(req)
+    } catch {
+      case e: Exception => logger.error("Could not send statistics", e)
     }
   }
 
-}
-
-object StatsSender {
-  case class SendStatsCommand(currentTime: DateTime)
 }
