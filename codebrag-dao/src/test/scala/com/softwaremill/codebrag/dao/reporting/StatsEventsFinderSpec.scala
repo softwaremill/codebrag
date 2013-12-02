@@ -7,6 +7,7 @@ import com.softwaremill.codebrag.dao.eventstream.EventRecord
 import org.joda.time.{DateTimeZone, DateTime}
 import com.softwaremill.codebrag.domain.reactions.{LikeEvent, CommentAddedEvent, CommitReviewedEvent}
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
+import org.bson.types.ObjectId
 
 class StatsEventsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 
@@ -66,6 +67,32 @@ class StatsEventsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wi
     count should be(1)
   }
 
-  private def storeEventWith(date: DateTime, eventType: String) = EventRecord.createRecord.date(date.toDate).eventType(eventType).save
-  
+  it should "get number of active users (without registered)" in {
+    // given
+    storeEventWith(today, NewUserRegisteredEventType, userId = Some(new ObjectId))
+    storeEventWith(today, LikeAddedEventType, userId = Some(new ObjectId))
+    storeEventWith(today, CommentAddedEventType, userId = Some(new ObjectId))
+
+    // when
+    val count = finder.activeUsersCount(today)
+
+    // then
+    count should be(2)
+  }
+
+  it should "count user as active only once" in {
+    // given
+    val user = new ObjectId
+    storeEventWith(today, LikeAddedEventType, userId = Some(user))
+    storeEventWith(today, CommentAddedEventType, userId = Some(user))
+
+    // when
+    val count = finder.activeUsersCount(today)
+
+    // then
+    count should be(1)
+
+  }
+
+  private def storeEventWith(date: DateTime, eventType: String, userId: Option[ObjectId] = None) = EventRecord.createRecord.date(date.toDate).originatingUserId(userId).eventType(eventType).save
 }

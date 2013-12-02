@@ -34,7 +34,7 @@ class StatsEventsFinder extends Logging{
 
   def activeUsersCount(day: DateTime): Long = {
     val dateBounds = dayBoundaries(day)
-    val allEventUsers = EventRecord.select(_.originatingUserId).where(_.date between(dateBounds._1, dateBounds._2)).fetch()
+    val allEventUsers = EventRecord.select(_.originatingUserId).where(_.date between(dateBounds._1, dateBounds._2)).and(_.eventType neqs NewUserRegistered.EventType).fetch()
     allEventUsers.toSet.size
   }
 
