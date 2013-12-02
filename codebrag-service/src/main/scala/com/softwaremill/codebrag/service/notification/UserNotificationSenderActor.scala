@@ -11,6 +11,7 @@ import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, User}
 import com.softwaremill.codebrag.common.Clock
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import scala.concurrent.duration.FiniteDuration
+import com.softwaremill.codebrag.common.scheduling.ScheduleDelaysCalculator
 
 class UserNotificationSenderActor(actorSystem: ActorSystem,
                                   heartbeatStore: HeartbeatStore,
@@ -61,8 +62,8 @@ object UserNotificationSenderActor extends Logging {
     import actorSystem.dispatcher
     import scala.concurrent.duration._
 
-    val initialDelay = DailyDigestScheduleCalculator.initialScheduleTimeDelayInMillis(config)(clock).millis
-    val dateAtDelay = clock.currentDateTime.plusMillis(initialDelay.toMillis.toInt)
+    val initialDelay = ScheduleDelaysCalculator.delayToGivenTimeInMillis(config.dailyDigestSendHour, config.dailyDigestSendMinute)(clock).millis
+    val dateAtDelay = ScheduleDelaysCalculator.dateAtDelay(clock.currentDateTime, initialDelay)
     logger.debug(s"Scheduling initial daily digest sending at $dateAtDelay")
     actorSystem.scheduler.scheduleOnce(initialDelay, receiver, SendDailyDigest)
   }
@@ -71,7 +72,7 @@ object UserNotificationSenderActor extends Logging {
     import actorSystem.dispatcher
     import scala.concurrent.duration._
 
-    val nextSendOutDelay = DailyDigestScheduleCalculator.nextScheduleTimeDelayInMillis(config)(clock).millis
+    val nextSendOutDelay = ScheduleDelaysCalculator.delayInMillis(config.dailyDigestSendInterval)(clock).millis
     val dateAtDelay = clock.currentDateTime.plusMillis(nextSendOutDelay.toMillis.toInt)
     logger.debug(s"Scheduling next daily digest sending at $dateAtDelay")
     actorSystem.scheduler.scheduleOnce(nextSendOutDelay, receiver, SendDailyDigest)

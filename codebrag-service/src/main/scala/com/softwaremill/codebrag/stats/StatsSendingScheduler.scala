@@ -7,6 +7,7 @@ import org.joda.time.Period
 import scala.concurrent.duration.FiniteDuration
 import java.util.concurrent
 import com.softwaremill.codebrag.service.config.CodebragStatsConfig
+import com.softwaremill.codebrag.common.scheduling.ScheduleDelaysCalculator
 
 object StatsSendingScheduler extends Logging {
 
@@ -18,18 +19,19 @@ object StatsSendingScheduler extends Logging {
     actor
   }
 
-  def scheduleDaily(actorSystem: ActorSystem, config: CodebragStatsConfig, clock: Clock) {
+  private def scheduleDaily(actorSystem: ActorSystem, config: CodebragStatsConfig, clock: Clock) {
     import actorSystem.dispatcher
-    actorSystem.scheduler.schedule(timeToScheduleFirstStatsSending(clock, config), config.statsSendInterval, actor, StatsSender.SendStatsCommand(clock.currentDateTime))
-    logger.debug("Statistics calculation scheduled")
+    import scala.concurrent.duration._
+    val initialDelay = ScheduleDelaysCalculator.delayToGivenTimeInMillis(config.statsSendHour, config.statsSendMinute)(clock).millis
+    actorSystem.scheduler.schedule(initialDelay, config.statsSendInterval, actor, StatsSender.SendStatsCommand(clock.currentDateTime))
+    logScheduleInfo(clock, initialDelay, config)
   }
 
-  def timeToScheduleFirstStatsSending(clock: Clock, config: CodebragStatsConfig): FiniteDuration = {
-    val sendPeriod = new Period().withHours(config.statsSendHour).withMinutes(config.statsSendMinute)
-    val tomorrowAtSendTime = clock.currentDateTime.plusDays(1).withTimeAtStartOfDay().plus(sendPeriod)
-    val configuredTimeAsMillis = tomorrowAtSendTime.getMillis - clock.currentDateTime.getMillis
-    val calculatedDelay = FiniteDuration(configuredTimeAsMillis, concurrent.TimeUnit.MILLISECONDS)
-    logger.debug(s"First stats sending at ${calculatedDelay.toMinutes} minutes (${calculatedDelay.toHours} hours)")
-    calculatedDelay
+
+  private def logScheduleInfo(clock: Clock, initialDelay: FiniteDuration, config: CodebragStatsConfig) {
+    val dateAtDelay = ScheduleDelaysCalculator.dateAtDelay(clock.currentDateTime, initialDelay)
+    val intervalHours = config.statsSendInterval.toHours
+    val intervalMinutes = config.statsSendInterval.toMinutes
+    logger.debug(s"Statistics calculation scheduled to $dateAtDelay with interval $intervalMinutes minutes ($intervalHours hours)")
   }
 }

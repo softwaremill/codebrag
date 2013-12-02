@@ -1,14 +1,15 @@
-package com.softwaremill.codebrag.service.notification
+package com.softwaremill.codebrag.common.scheduling
 
-import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.common.Clock
-import org.joda.time.Period
+import org.joda.time.{DateTime, Period}
+import scala.concurrent.duration.Duration
 
-object DailyDigestScheduleCalculator {
+/**
+ * Calculates amount of time left to given moment
+ */
+object ScheduleDelaysCalculator {
 
-  def initialScheduleTimeDelayInMillis(config: CodebragConfig)(implicit clock: Clock) = {
-    val sendHour = config.dailyDigestSendHour
-    val sendMinute = config.dailyDigestSendMinute
+  def delayToGivenTimeInMillis(sendHour: Int, sendMinute: Int)(implicit clock: Clock) = {
     val sendPeriod = new Period().withHours(sendHour).withMinutes(sendMinute)
 
     val day = if(isBeforeSendHourToday(clock, sendPeriod)) {
@@ -19,11 +20,12 @@ object DailyDigestScheduleCalculator {
     day.getMillis - clock.currentDateTime.getMillis
   }
 
-  def nextScheduleTimeDelayInMillis(config: CodebragConfig)(implicit clock: Clock) = {
-    val interval = config.dailyDigestSendInterval
-    val nextSend = clock.currentDateTime.plus(interval)
+  def delayInMillis(delayPeriod: Period)(implicit clock: Clock) = {
+    val nextSend = clock.currentDateTime.plus(delayPeriod)
     nextSend.getMillis - clock.currentDateTime.getMillis
   }
+
+  def dateAtDelay(now: DateTime, duration: Duration) = now.plusMillis(duration.toMillis.toInt)
 
   private def isBeforeSendHourToday(clock: Clock, period: Period) = {
     val sendTime = clock.currentDateTime.withTimeAtStartOfDay.plus(period)
