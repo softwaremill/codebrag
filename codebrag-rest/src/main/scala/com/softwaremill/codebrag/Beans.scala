@@ -21,6 +21,7 @@ import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
 import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.dao.eventstream.EventDao
+import com.softwaremill.codebrag.stats.StatsAggregator
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 
@@ -64,6 +65,8 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
 
   lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder, new DiffService(commitInfoDao))
 
+  lazy val statsAggregator = new StatsAggregator(statsFinder, instanceSettingsDao)
+
   lazy val unlikeUseCaseFactory = new UnlikeUseCase(likeValidator, userReactionService)
   lazy val changeUserSettingsUseCase = new ChangeUserSettingsUseCase(userDao)
 
@@ -106,5 +109,7 @@ trait Finders {
   lazy val reviewableCommitsFinder = new ReviewableCommitsListFinder
 
   lazy val followupFinder = new MongoFollowupFinder
+
+  lazy val statsFinder = new StatsEventsFinder
 
 }

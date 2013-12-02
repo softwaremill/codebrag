@@ -13,6 +13,8 @@ import org.joda.time.DateTime
  */
 case class LikeEvent(like: Like)(implicit clock: Clock) extends Event with StatisticEvent {
 
+  def eventType = LikeEvent.EventType
+
   def timestamp: DateTime = clock.currentDateTimeUTC
 
   def userId: Option[ObjectId] = Some(like.authorId)
@@ -20,6 +22,11 @@ case class LikeEvent(like: Like)(implicit clock: Clock) extends Event with Stati
   def toEventStream: String = s"Commit ${like.commitId} liked by ${like.authorId}"
 
 }
+
+object LikeEvent {
+  val EventType = "LikeAdded"
+}
+
 
 /**
  * Describes event when someone dislike given commit

@@ -10,10 +10,16 @@ import org.joda.time.DateTime
  */
 case class CommentAddedEvent(comment: Comment)(implicit clock: Clock) extends Event with StatisticEvent {
 
+  def eventType = CommentAddedEvent.EventType
+
   def timestamp: DateTime = clock.currentDateTimeUTC
 
   def userId: Option[ObjectId] = Some(comment.authorId)
 
   def toEventStream: String = s"Comment [${comment.message}] from [${comment.authorId}] to [${comment.commitId}}]"
 
+}
+
+object CommentAddedEvent {
+  val EventType = "CommentAdded"
 }

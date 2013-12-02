@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.service.config
 import org.joda.time._
 import scala.concurrent.duration._
 
-trait CodebragConfig extends ConfigWithDefault {
+trait CodebragConfig extends ConfigWithDefault with CodebragStatsConfig {
 
   lazy val localGitStoragePath: String = rootConfig.getString("codebrag.local-git-storage-path")
   lazy val debugServicesLogin: String = rootConfig.getString("codebrag.debug-services-login")
@@ -27,3 +27,10 @@ trait CodebragConfig extends ConfigWithDefault {
   lazy val dailyDigestSendInterval = Period.millis(getMilliseconds("codebrag.user-email-notifications.daily-digest-interval", 24.hours.toMillis).toInt)
 }
 
+trait CodebragStatsConfig extends ConfigWithDefault {
+
+  lazy val sendStats = getBoolean("codebrag.send-anon-usage-data", true)
+  lazy val statsSendHour = getInt("codebrag.stats-send-hour", 3)
+  lazy val statsSendMinute = getInt("codebrag.stats-send-minute", 0)
+  lazy val statsSendInterval = getMilliseconds("codebrag.stats-send-interval", 24.hours.toMillis).millis
+}

@@ -8,19 +8,19 @@ import org.joda.time.DateTime
  *
  * @see com.softwaremill.codebrag.common.EventBus
  */
-trait Event {
+trait Event
+
+/**
+ * Trait for events collected for stats
+ */
+trait StatisticEvent extends Event {
 
   def timestamp: DateTime
 
-  def eventType: String = getClass.getSimpleName
+  def eventType: String
 
   def userId: Option[ObjectId]
 
   def toEventStream: String
 
 }
-
-/**
- * Marker trait for events collected for stats
- */
-trait StatisticEvent extends Event

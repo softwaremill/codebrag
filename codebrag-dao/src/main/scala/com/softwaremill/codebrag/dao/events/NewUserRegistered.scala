@@ -7,6 +7,8 @@ import org.joda.time.DateTime
 
 case class NewUserRegistered(id: ObjectId, login: String, fullName: String, email: String)(implicit clock: Clock) extends Event with StatisticEvent {
 
+  def eventType = NewUserRegistered.EventType
+
   def timestamp: DateTime = clock.currentDateTimeUTC
 
   def userId: Option[ObjectId] = Some(id)
@@ -16,6 +18,8 @@ case class NewUserRegistered(id: ObjectId, login: String, fullName: String, emai
 }
 
 object NewUserRegistered {
+
+  val EventType = "UserRegistered"
 
   def apply(user: User)(implicit clock: Clock) = {
     new NewUserRegistered(user.id, user.authentication.usernameLowerCase, user.name, user.email)(clock)

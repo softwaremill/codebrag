@@ -11,10 +11,16 @@ import com.sun.org.glassfish.external.statistics.Statistic
  */
 case class CommitReviewedEvent(commit: CommitInfo, userIdArg: ObjectId)(implicit clock: Clock) extends Event with StatisticEvent {
 
+  def eventType = CommitReviewedEvent.EventType
+
   def timestamp: DateTime = clock.currentDateTimeUTC
 
   def userId: Option[ObjectId] = Some(userIdArg)
 
   def toEventStream: String = s"User $userIdArg reviewed commit ${commit.sha}"
 
+}
+
+object CommitReviewedEvent {
+  val EventType = "CommitReviewed"
 }

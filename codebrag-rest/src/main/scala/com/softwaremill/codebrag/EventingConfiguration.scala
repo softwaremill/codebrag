@@ -1,18 +1,18 @@
 package com.softwaremill.codebrag
 
 import akka.actor.Props
-import com.softwaremill.codebrag.common.{StatisticEvent, Event}
+import com.softwaremill.codebrag.common.{Event, StatisticEvent}
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.commits.CommitReviewTaskGenerator
 import com.softwaremill.codebrag.dao._
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.service.followups.FollowupsGenerator
-import com.softwaremill.codebrag.service.events.EventLogger
 import com.softwaremill.codebrag.domain.CommitsUpdatedEvent
 import com.softwaremill.codebrag.domain.reactions.LikeEvent
 import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
 import com.softwaremill.codebrag.dao.eventstream.EventDao
 import com.softwaremill.codebrag.eventstream.StatisticEventsCollector
+import com.softwaremill.codebrag.service.events.EventLogger
 
 trait EventingConfiguration extends ActorSystemSupport {
 

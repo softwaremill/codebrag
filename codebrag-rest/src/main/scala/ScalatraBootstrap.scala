@@ -3,7 +3,9 @@ import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
+import com.softwaremill.codebrag.stats.StatsSendingScheduler
 import com.softwaremill.codebrag.{InstanceContext, EventingConfiguration, Beans}
+import com.typesafe.scalalogging.slf4j.Logging
 import java.util.Locale
 import org.scalatra._
 import javax.servlet.ServletContext
@@ -13,7 +15,7 @@ import javax.servlet.ServletContext
  * filters. It's also a good place to put initialization code which needs to
  * run at application start (e.g. database configurations), and init params.
  */
-class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration {
+class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration with Logging {
   val Prefix = "/rest/"
 
   override def init(context: ServletContext) {
@@ -24,6 +26,12 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
 
     if(config.userNotifications) {
       UserNotificationSenderActor.initialize(actorSystem, heartbeatStore, notificationCountFinder, userDao, clock, notificationService, config)
+    }
+
+    if(config.sendStats) {
+      StatsSendingScheduler.initialize(actorSystem, statsAggregator, config)
+    } else {
+      logger.info("Sending anonymous statistics was disabled - not scheduling stats calculation")
     }
 
     val repositoryUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, repoDataProducer, commitImportService)
