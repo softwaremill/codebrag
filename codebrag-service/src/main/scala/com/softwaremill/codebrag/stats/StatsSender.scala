@@ -2,18 +2,14 @@ package com.softwaremill.codebrag.stats
 
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.config.CodebragStatsConfig
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.entity.{ContentType, StringEntity}
-import org.apache.http.client.methods.RequestBuilder
+import dispatch._
 
 object StatsSender extends Logging {
 
-  def sendHttpStatsRequest(jsonData: String, config: CodebragStatsConfig): Any = {
-    val client = HttpClients.createDefault()
-    val reqBody = new StringEntity(jsonData, ContentType.create("application/json", "UTF-8"))
-    val req = RequestBuilder.post().setUri(config.statsServerUrl).setEntity(reqBody).build()
+  def sendHttpStatsRequest(jsonData: String, config: CodebragStatsConfig) {
+    val svc = dispatch.url(config.statsServerUrl).setMethod("POST").setHeader("Content-Type", "application/json") << jsonData
     try {
-      client.execute(req)
+      Http(svc)()
     } catch {
       case e: Exception => logger.error("Could not send statistics", e)
     }
