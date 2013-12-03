@@ -33,5 +33,5 @@ trait CodebragStatsConfig extends ConfigWithDefault {
   lazy val statsSendHour = getInt("codebrag.stats-send-hour", 3)
   lazy val statsSendMinute = getInt("codebrag.stats-send-minute", 0)
   lazy val statsSendInterval = getMilliseconds("codebrag.stats-send-interval", 24.hours.toMillis).millis
-  lazy val statsServerUrl = getString("codebrag.stats-server-url", "https://stats.codebrag.com:3000")
+  lazy val statsServerUrl = getString("codebrag.stats-server-url", "https://stats.codebrag.com:6666")
 }
