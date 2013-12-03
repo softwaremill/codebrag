@@ -21,7 +21,7 @@ object StatsSendingScheduler extends Logging {
     import actorSystem.dispatcher
     import scala.concurrent.duration._
     val initialDelay = ScheduleDelaysCalculator.delayToGivenTimeInMillis(config.statsSendHour, config.statsSendMinute)(clock).millis
-    actorSystem.scheduler.schedule(initialDelay, config.statsSendInterval, actor, StatsSenderActor.SendStatsCommand(clock.currentDateTime))
+    actorSystem.scheduler.schedule(initialDelay, config.statsSendInterval, actor, StatsSenderActor.SendStatsCommand(clock))
     logScheduleInfo(clock, initialDelay, config)
   }
 

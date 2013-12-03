@@ -2,14 +2,14 @@ package com.softwaremill.codebrag.stats
 
 import akka.actor.Actor
 import com.typesafe.scalalogging.slf4j.Logging
-import org.joda.time.DateTime
 import com.softwaremill.codebrag.service.config.CodebragStatsConfig
+import com.softwaremill.codebrag.common.Clock
 
 class StatsSenderActor(statsAggregator: StatsAggregator, statsConfig: CodebragStatsConfig) extends Actor with Logging {
 
   def receive = {
-    case StatsSenderActor.SendStatsCommand(currentDate: DateTime) => {
-      statsAggregator.getStatsForPreviousDayOf(currentDate).right.foreach { stats =>
+    case StatsSenderActor.SendStatsCommand(clock: Clock) => {
+      statsAggregator.getStatsForPreviousDayOf(clock.currentDateTime).right.foreach { stats =>
         val json = stats.asJson
         logger.debug(s"Sending statistics: $json")
         sendStats(json)
@@ -22,5 +22,5 @@ class StatsSenderActor(statsAggregator: StatsAggregator, statsConfig: CodebragSt
 }
 
 object StatsSenderActor {
-  case class SendStatsCommand(currentTime: DateTime)
+  case class SendStatsCommand(clock: Clock)
 }
