@@ -2,10 +2,7 @@ package com.softwaremill.codebrag.stats
 
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.dao.reporting.StatsEventsFinder
-import java.util.Date
 import com.softwaremill.codebrag.dao.InstanceSettingsDAO
-import org.json4s.jackson.Serialization
-import org.json4s._
 import com.softwaremill.codebrag.domain.InstanceSettings
 
 class StatsAggregator(val statsFinder: StatsEventsFinder, val instanceSettingsDao: InstanceSettingsDAO) {
@@ -27,16 +24,8 @@ class StatsAggregator(val statsFinder: StatsEventsFinder, val instanceSettingsDa
       "registeredUsers" -> statsFinder.registeredUsersCount(day),
       "activeUsersCount" -> statsFinder.activeUsersCount(day)
     )
-    DailyStatistics(instanceSettings.uniqueId, day.toDate, countersMap)
+    DailyStatistics(instanceSettings.uniqueId, day, countersMap)
   }
 
 }
 
-case class DailyStatistics(instanceId: String, date: Date, counters: Map[String, Long]) {
-
-  def asJson = {
-    import org.json4s.jackson.Serialization.write
-    implicit val formats = Serialization.formats(NoTypeHints)
-    write(this)
-  }
-}
