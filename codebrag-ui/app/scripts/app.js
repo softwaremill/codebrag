@@ -9,6 +9,7 @@ angular.module('codebrag.auth', ['codebrag.events']);
 
 angular.module('codebrag.session', ['ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.common']);
 angular.module('codebrag.notifications', ['codebrag.events', 'codebrag.common', 'codebrag.templates']);
+angular.module('codebrag.favicon', ['codebrag.events']);
 
 angular.module('codebrag.commits.comments', ['ui.compat', 'codebrag.events']);
 angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments', 'codebrag.events', 'codebrag.tour']);
@@ -30,6 +31,7 @@ angular.module('codebrag', [
     'codebrag.commits',
     'codebrag.followups',
     'codebrag.notifications',
+    'codebrag.favicon',
     'codebrag.tour',
     'codebrag.profile',
     'codebrag.invitations']);
@@ -52,6 +54,11 @@ angular.module('codebrag')
                 authService.requestCurrentUser();
             }
         }
+    });
+
+angular.module('codebrag.favicon')
+    .run(function(faviconChangeService) {
+        faviconChangeService.setupNotificationWatchers();
     });
 
 angular.module('codebrag.auth')
