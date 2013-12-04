@@ -1,8 +1,7 @@
 var winston = require('winston');
 
 winston.add(winston.transports.File, {
-  filename: __dirname + '/../statistics.log',
-  maxsize: 10240
+  filename: __dirname + '/../statistics.log'
 });
 winston.remove(winston.transports.Console);
 
