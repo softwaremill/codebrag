@@ -25,7 +25,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.softwaremill.codebrag" level="DEBUG" additivity="FALSE">
+    <logger name="com.softwaremill.codebrag" level="INFO" additivity="FALSE">
         <appender-ref ref="FILE" />
     </logger>
 
