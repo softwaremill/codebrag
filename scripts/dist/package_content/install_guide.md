@@ -114,7 +114,9 @@ Setup your email server so that Codebrag can send emails with invitations and no
         ssl-connection = true
         verify-ssl-certificate = true
     }
-    
+
+You can use internal SMTP server or external one (e.g. create [GMail](http://gmail.com)  or [Mandrill](http://mandrill.com/) account).
+
 *** NOTE: *** Make sure Java has the required security certificates when using the SSL/TLS connection. You can skip certificate verification by setting `verify-ssl-certificate` to `false`.
 
 ### 1.4. "codebrag" section
