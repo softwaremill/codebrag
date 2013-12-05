@@ -48,12 +48,13 @@ web-server {
     port = 8080
 }
 
+// internal SMTP server or external one (e.g. GMail account or http://mandrill.com)
 email {
     smtp-host = "smtp.gmail.com"
     smtp-port = "465"
-    smtp-username = "email@softwaremill.pl"
-    smtp-password = "password"
-    from = "email@softwaremill.pl"
+    smtp-username = ""
+    smtp-password = ""
+    from = "notifications@codebrag.com"
     encoding = "UTF-8"
     ssl-connection = true
     verify-ssl-certificate = true
