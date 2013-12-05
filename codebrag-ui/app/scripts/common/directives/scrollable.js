@@ -25,29 +25,47 @@ angular.module('codebrag.common.directives')
         return {
             restrict: 'A',
             link: function(scope, elem, attrs) {
+                // added some code to debug an issue with scrolling
+                scope.$watch(function() {
+                    return $('#diff-area').height();
+                }, function(height) {
+                    console.log('Diff height is', height);
+                });
 
                 var timeoutsCount = 0;
 
                 var scrollToId = scope.$eval(attrs.scrollable);
+
+                function scrollTo(domElement) {
+                    var $el = findElementToMarkAsActive($(domElement));
+                    $el.addClass(glowTargetReactionClass);
+                    var options = {
+                        duration: 800,
+                        offset: -400,
+                        easing: 'easeInOutExpo',
+                        onAfter: function () {
+                            $el.addClass(removeGlowAnimationClass);
+                        }
+                    };
+                    // added some code to debug an issue with scrolling
+                    console.log('Diff height when scrolling ', $('#diff-area').height());
+                    $('.diff-wrapper').scrollTo('#' + scrollToId, options);
+                }
+
                 function scrollIfElementPresent() {
                     timeoutsCount++;
                     var element = document.getElementById(scrollToId);
                     if(element) {
-                        var $el = findElementToMarkAsActive($(element));
-                        $el.addClass(glowTargetReactionClass);
-                        var options = {
-                            duration: 800,
-                            offset: -400,
-                            easing:'easeInOutExpo',
-                            onAfter: function() {
-                                $el.addClass(removeGlowAnimationClass);
-                            }
-                        };
-                        $('.diff-wrapper').scrollTo('#' + scrollToId, options);
+                        console.log('Scrollable target found');
+                        // queue scroll to let DOM stabilize
+                        setTimeout(function() {
+                            scrollTo(element);
+                        }, pollingInterval);
                     } else {
                         timeoutsCount < maxTimeoutCount && setTimeout(scrollIfElementPresent, pollingInterval);
                     }
                 }
+
                 setTimeout(scrollIfElementPresent, pollingInterval);
                 scope.$on(events.scrollOnly, function() {
                     scrollIfElementPresent();
