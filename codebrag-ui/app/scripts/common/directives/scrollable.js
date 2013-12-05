@@ -25,15 +25,7 @@ angular.module('codebrag.common.directives')
         return {
             restrict: 'A',
             link: function(scope, elem, attrs) {
-                // added some code to debug an issue with scrolling
-                scope.$watch(function() {
-                    return $('#diff-area').height();
-                }, function(height) {
-                    console.log('Diff height is', height);
-                });
-
                 var timeoutsCount = 0;
-
                 var scrollToId = scope.$eval(attrs.scrollable);
 
                 function scrollTo(domElement) {
@@ -47,8 +39,6 @@ angular.module('codebrag.common.directives')
                             $el.addClass(removeGlowAnimationClass);
                         }
                     };
-                    // added some code to debug an issue with scrolling
-                    console.log('Diff height when scrolling ', $('#diff-area').height());
                     $('.diff-wrapper').scrollTo('#' + scrollToId, options);
                 }
 
@@ -56,8 +46,6 @@ angular.module('codebrag.common.directives')
                     timeoutsCount++;
                     var element = document.getElementById(scrollToId);
                     if(element) {
-                        console.log('Scrollable target found');
-                        // queue scroll to let DOM stabilize
                         setTimeout(function() {
                             scrollTo(element);
                         }, pollingInterval);
