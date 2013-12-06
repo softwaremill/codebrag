@@ -7,11 +7,15 @@ import scala.collection.JavaConversions
 
 object MongoInit extends Logging {
   def initialize(mongoConfig: MongoConfig) {
-    MongoDB.defineDb(DefaultMongoIdentifier, createMongo(asServerAdresses(mongoConfig.mongoServers)), mongoConfig.mongoDatabase)
-    ensureIndexes()
+    initializeWithoutIndexCheck(mongoConfig)
+    ensureMongoIndexes()
   }
 
-  private def ensureIndexes() {
+  def initializeWithoutIndexCheck(mongoConfig: MongoConfig) {
+    MongoDB.defineDb(DefaultMongoIdentifier, createMongo(asServerAdresses(mongoConfig.mongoServers)), mongoConfig.mongoDatabase)
+  }
+
+  def ensureMongoIndexes() {
     logger.info("Ensuring Mongo indexes")
     CommitInfoRecord.ensureIndexes()
     FollowupRecord.ensureIndexes()
