@@ -18,9 +18,9 @@ DB_MIGRATIONS=$CODEBRAG_ROOT/scripts/mongo_migrations
 GUIDE_FILE=$CODEBRAG_ROOT/scripts/dist/package_content/install_guide.pdf
 LICENSE_FILE=$CODEBRAG_ROOT/scripts/dist/package_content/license.pdf
 LOG_CONF=$CODEBRAG_ROOT/scripts/dist/package_content/logback-example.xml
-RUN_SCRIPT=$CODEBRAG_ROOT/scripts/dist/package_content/run.sh
-STOP_SCRIPT=$CODEBRAG_ROOT/scripts/dist/package_content/stop.sh
-PASSWD_SCRIPT=$CODEBRAG_ROOT/scripts/dist/package_content/passwd.sh
+RUN_SCRIPT=$CODEBRAG_ROOT/scripts/dist/package_content/run.*
+STOP_SCRIPT=$CODEBRAG_ROOT/scripts/dist/package_content/stop.*
+PASSWD_SCRIPT=$CODEBRAG_ROOT/scripts/dist/package_content/passwd.*
 
 UPLOAD_ARG="upload"
 S3CMD_PATH="./lib/s3cmd-1.5.0-alpha1/s3cmd"
