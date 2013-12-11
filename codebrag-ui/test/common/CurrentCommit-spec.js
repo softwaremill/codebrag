@@ -112,6 +112,25 @@ describe("Current Commit", function () {
         expect(commit.userAlreadyLikedCommit(oneUser)).toBeFalsy();
     });
 
+    it('should say whether user is commit author', function() {
+        // Given
+        var commit = new codebrag.CurrentCommit(emptyCommit);
+        var userWithMatchingEmailOnly = {id: '333', name: 'Any User', email: commitAuthor.email};
+        var userWithMatchingNameOnly = {id: '333', name: commitAuthor.name, email: 'any@email.com'};
+
+        // When
+        var isAuthor = commit.isUserAuthorOfCommit(commitAuthor);
+        var isNotAuthor = commit.isUserAuthorOfCommit(otherUser);
+        var isAuthorByEmailOnly = commit.isUserAuthorOfCommit(userWithMatchingEmailOnly);
+        var isAuthorByFullNameOnly = commit.isUserAuthorOfCommit(userWithMatchingNameOnly);
+
+        // Then
+        expect(isAuthor).toBeTruthy();
+        expect(isAuthorByEmailOnly).toBeTruthy();
+        expect(isAuthorByFullNameOnly).toBeTruthy();
+        expect(isNotAuthor).toBeFalsy();
+    });
+
     function createLike(user, fileName, lineNumber) {
         var like = {
             authorId: user ? user.id : '123',

@@ -71,7 +71,7 @@ codebrag.CurrentCommit.prototype = {
     },
 
     isUserAuthorOfCommit: function(user) {
-         return this.info.authorEmail === user.email;
+         return this.info.authorEmail === user.email || this.info.authorName === user.fullName || this.info.authorName === user.name;
     },
 
     userAlreadyLikedLine: function (user, fileName, lineNumber) {
