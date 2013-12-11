@@ -49,6 +49,7 @@ angular.module('codebrag.invitations')
 
         function loadRegisteredUsers() {
             invitationService.loadRegisteredUsers().then(function(users) {
+                $scope.registeredUsersLoaded = true;
                 $scope.registeredUsers = users;
             });
         }

@@ -35,7 +35,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     }
 
     val repositoryUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, repoDataProducer, commitImportService)
-    context.mount(new UsersServlet(authenticator, registerService, userDao, swagger), Prefix + "users")
+    context.mount(new UsersServlet(authenticator, registerService, userDao, config, swagger), Prefix + "users")
     context.mount(new UsersSettingsServlet(authenticator, userDao, changeUserSettingsUseCase), Prefix + "users/settings")
     context.mount(new CommitsServlet(authenticator, reviewableCommitsFinder, allCommitsFinder, reactionFinder, commentActivity,
       commitReviewActivity, userReactionService, userDao, swagger, diffWithCommentsService, unlikeUseCaseFactory), Prefix + CommitsServlet.MAPPING_PATH)

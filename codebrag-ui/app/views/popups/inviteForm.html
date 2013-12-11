@@ -10,7 +10,8 @@
             <div class="form-group">
                 <label>Users already registered in Codebrag</label>
                 <div class="list">
-                    <span ng-hide="registeredUsers.length">Loading registered users...</span>
+                    <span ng-hide="registeredUsersLoaded">Loading registered users...</span>
+                    <span show-on-demo>Displaying registered users disabled on demo</span>
                     <ul>
                         <li ng-repeat="user in registeredUsers">
                             {{user.email}}
