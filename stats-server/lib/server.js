@@ -34,7 +34,7 @@ function initializeRoutes(db) {
 }
 
 function startServer(security, app) {
-  var port = 3000;
+  var port = 6666;
   var httpsServer = https.createServer(security.credentials, app);
   httpsServer.listen(port);
   console.log("Codebrag stats server started on port", port);
