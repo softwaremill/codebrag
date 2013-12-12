@@ -3,7 +3,7 @@ var MongoClient = require('mongodb');
 var db;
 
 function initialize(callback) {
-  MongoClient.connect("mongodb://localhost:27017/stats", function(err, _db) {
+  MongoClient.connect("mongodb://localhost:27017/codebrag", function(err, _db) {
     if(err) return callback(err);
     db = _db;
     ensureIndex(db, callback);

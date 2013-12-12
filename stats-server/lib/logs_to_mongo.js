@@ -58,7 +58,7 @@ function store(entries, db) {
 }
 
 function initMongo(callback) {
-  MongoClient.connect("mongodb://localhost:27017/stats", function(err, db) {
+  MongoClient.connect("mongodb://localhost:27017/codebrag", function(err, db) {
     if(err) throw err;
     db.collection('stats').ensureIndex({instanceId:1, date: 1}, {unique:true}, function(err, indexName) {
       if(err) throw err;
