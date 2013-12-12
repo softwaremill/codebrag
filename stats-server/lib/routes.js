@@ -40,7 +40,7 @@ module.exports = function(app, logger, db) {
   });
 
   function saveStatsToMongo(stats, db, callback) {
-    db.collection('stats').insert(stats, function(err) {
+    db.collection('statistics').insert(stats, function(err) {
       if(err) {
         logger.log('info', 'Stats', stats);
         console.error('Could not save stats. They were logged to statistics.log instead', stats, err);

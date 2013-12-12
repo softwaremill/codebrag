@@ -15,13 +15,12 @@ function ensureIndex(db, callback) {
     instanceId: 1,
     date: 1
   };
-  db.collection('stats').ensureIndex(index, {unique:true}, function(err) {
+  db.collection('statistics').ensureIndex(index, {unique:true}, function(err) {
     if(err) return callback(err);
     callback(null, db);
   });
 }
 
 module.exports = {
-  initialize: initialize,
-  db: db
+  initialize: initialize
 };

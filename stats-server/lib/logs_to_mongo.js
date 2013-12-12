@@ -4,6 +4,8 @@ var _ = require('lodash');
 var moment = require('moment');
 var MongoClient = require('mongodb').MongoClient;
 
+var statsCollName = 'statistics';
+
 
 var statsLogFileName = process.argv[2];
 if(!statsLogFileName) {
@@ -46,7 +48,7 @@ function makeUnique(entriesMap) {
 function store(entries, db) {
   var left = entries.length;
   entries.forEach(function(stat) {
-    db.collection('stats').insert(stat, function(err, result) {
+    db.collection(statsCollName).insert(stat, function(err, result) {
       left--;
       if(err) throw err;
       if(left === 0) {
@@ -60,7 +62,7 @@ function store(entries, db) {
 function initMongo(callback) {
   MongoClient.connect("mongodb://localhost:27017/codebrag", function(err, db) {
     if(err) throw err;
-    db.collection('stats').ensureIndex({instanceId:1, date: 1}, {unique:true}, function(err, indexName) {
+    db.collection(statsCollName).ensureIndex({instanceId:1, date: 1}, {unique:true}, function(err, indexName) {
       if(err) throw err;
       callback(db);
     });
