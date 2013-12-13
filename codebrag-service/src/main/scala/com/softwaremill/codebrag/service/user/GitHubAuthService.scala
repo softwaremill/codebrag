@@ -6,7 +6,6 @@ import org.eclipse.egit.github.core.client.GitHubClient
 import org.json4s.DefaultFormats
 import org.eclipse.egit.github.core.service.UserService
 import org.eclipse.egit.github.core.User
-import scala.collection.JavaConversions._
 import com.softwaremill.codebrag.service.config.GithubConfig
 import org.eclipse.jgit.util.StringUtils
 
@@ -32,7 +31,7 @@ class GitHubAuthService(githubConfig: GithubConfig) {
     val client = new GitHubClient().setOAuth2Token(accessToken.access_token)
     val userService = new UserService(client)
     val user = userService.getUser
-    GitHubUser(user.getLogin, fullNameOrLogin(user), readEmail(user, userService), user.getAvatarUrl)
+    GitHubUser(user.getLogin, fullNameOrLogin(user), readEmail(user), user.getAvatarUrl)
   }
 
   private def fullNameOrLogin(user: User) = {
@@ -42,12 +41,9 @@ class GitHubAuthService(githubConfig: GithubConfig) {
     else user.getName
   }
 
-  def readEmail(user: User, service: UserService) = {
-    if (user.getEmail != null) {
-      user.getEmail
-    } else {
-      service.getEmails.headOption getOrElse (throw new IllegalArgumentException("User doesn't have email address"))
-    }
+  def readEmail(user: User) = {
+    val emptyEmail = ""
+    Option(user.getEmail).getOrElse(emptyEmail)
   }
 }
 

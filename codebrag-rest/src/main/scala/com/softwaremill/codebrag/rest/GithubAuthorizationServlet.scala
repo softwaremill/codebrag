@@ -8,7 +8,6 @@ import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.auth.AuthenticationSupport
 import com.softwaremill.codebrag.service.config.{CodebragConfig, GithubConfig}
-import org.bson.types.ObjectId
 
 
 class GithubAuthorizationServlet(val authenticator: Authenticator,
@@ -25,7 +24,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator,
   get("/authenticate") {
     request.getSession.put(RedirectToUrlParam, params.getOrElse(RedirectToUrlParam, "/commits"))
     val clientId = Option(config.githubClientId) getOrElse (throw new IllegalStateException("No GitHub Client Id found, check your application.conf"))
-    SeeOther(s"https://github.com/login/oauth/authorize?client_id=$clientId&scope=user,repo")
+    SeeOther(s"https://github.com/login/oauth/authorize?client_id=$clientId")
   }
 
   def stopIfDeniedOnGithub {

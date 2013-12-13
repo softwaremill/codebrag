@@ -1,14 +1,12 @@
 package com.softwaremill.codebrag.service.user
 
-import org.scalatest.{GivenWhenThen, FlatSpec}
+import org.scalatest.FlatSpec
 import org.scalatest.mock.MockitoSugar
 import org.eclipse.egit.github.core.User
-import org.mockito.Mockito._
-import org.eclipse.egit.github.core.service.UserService
-import org.mockito.BDDMockito
 import com.softwaremill.codebrag.service.config.GithubConfig
+import org.scalatest.matchers.ShouldMatchers
 
-class GitHubAuthServiceSpec extends FlatSpec with MockitoSugar with GivenWhenThen {
+class GitHubAuthServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers {
   behavior of "GitHub Auth Service"
 
   val testConfig = new GithubConfig {
@@ -16,32 +14,30 @@ class GitHubAuthServiceSpec extends FlatSpec with MockitoSugar with GivenWhenThe
   }
 
   it should "read email of user" in {
-    Given("auth service")
+    // given
+    val email = "my@email.com"
     val service = new GitHubAuthService(testConfig)
-    And("loaded user data")
-    val user = mock[User]
-    BDDMockito.given(user.getEmail).willReturn("some@email.com")
+    val user = new User()
+    user.setEmail(email)
 
-    When("Extracting user email")
-    service.readEmail(user, null)
+    // when
+    val userEmail = service.readEmail(user)
 
-    Then("user's public email is read")
-    verify(user, times(2)).getEmail
+    // then
+    userEmail should be(email)
+
   }
 
-  it should "fetch list of emails if user doesn't have public email" in {
-    import scala.collection.JavaConversions._
-
-    Given("auth service")
+  it should "fallback to empty email if user doesn't have public email" in {
+    // given
     val service = new GitHubAuthService(testConfig)
-    And("user service")
-    val userService = mock[UserService]
-    val user = mock[User]
-    BDDMockito.given(userService.getEmails).willReturn(List("email@email.com"))
+    val user = new User()
+    user.setEmail(null)
 
-    When("extracting user data")
-    service.readEmail(user, userService)
+    // when
+    val userEmail = service.readEmail(user)
 
-    Then("service is used to look up users private emails")
+    // then
+    userEmail should be('empty)
   }
 }
