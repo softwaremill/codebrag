@@ -1,24 +1,19 @@
 var MongoClient = require('mongodb');
-
-var db;
+    Q = require('q');
 
 function initialize(callback) {
-  MongoClient.connect("mongodb://localhost:27017/codebrag", function(err, _db) {
-    if(err) return callback(err);
-    db = _db;
-    ensureIndex(db, callback);
-  });
+  var connect = Q.denodeify(MongoClient.connect);
+  var dbInitialized = connect("mongodb://localhost:27017/codebrag");
+  dbInitialized.then(ensureIndex);
+  return dbInitialized.nodeify(callback);   // return promise, but allow for callback style too
 }
 
-function ensureIndex(db, callback) {
-  var index = {
+function ensureIndex(db) {
+  var indexFields = {
     instanceId: 1,
     date: 1
   };
-  db.collection('statistics').ensureIndex(index, {unique:true}, function(err) {
-    if(err) return callback(err);
-    callback(null, db);
-  });
+  return Q.ninvoke(db.collection('statistics'), 'ensureIndex', indexFields, {unique:true});
 }
 
 module.exports = {
