@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" href="css/normalize.min.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <link rel="stylesheet" href="vendor/rickshaw/rickshaw.min.css">
+
+        <!--[if lt IE 9]>
+            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+            <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
+        <![endif]-->
+    </head>
+    <body ng-app="stats">
+        <header>
+            <div style="background: #555; text-align:center; overflow: auto">
+                <h2 style="color: #fff">Codebrag statistics</h2>
+            </div>
+        </header>
+        <section ng-controller="StatsCtrl">
+            <nav class="centered">
+                <ul>
+                    <li><button ng-click="openInstancesPerDayReport()">Instances count per day</button></li>
+                    <li><button ng-click="openCountersPerDayReport()">Events per day</button></li>
+                </ul>
+            </nav>
+            <div ng-show="reportData" ng-view></div>
+
+        </section>
+
+        <script src="vendor/moment/moment.js"></script>
+        <script src="vendor/d3/d3.min.js"></script>
+        <script src="vendor/rickshaw/rickshaw.min.js"></script>
+        <script src="vendor/angular/angular.min.js"></script>
+        <script src="vendor/angular-route/angular-route.min.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+
+    <script type="text/ng-template" id="instancesPerDay">
+        <graph title="Instances per day" data="reportData"></graph>
+    </script>
+
+    <script type="text/ng-template" id="countersPerDay">
+        <graph title="Reviewed commits " data="reportData['commitsReviewedCount']"></graph>
+        <graph title="Likes added" data="reportData['likesCount']"></graph>
+        <graph title="Comments added" data="reportData['commentsCount']"></graph>
+        <graph title="Active users" data="reportData['activeUsersCount']"></graph>
+        <graph title="New users registered" data="reportData['registeredUsersCount']"></graph>
+    </script>
+</html>

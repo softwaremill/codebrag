@@ -5,6 +5,8 @@ var http = require('http'),
 function configureExpressApp() {
   var app = express();
   app.use(genericErrorHandler);
+  console.log(__dirname + '../../public');
+  app.use(express.static(__dirname + '/../../public'));
   return app;
 
   function genericErrorHandler(err, req, res, next) {

@@ -19,7 +19,7 @@ var AGGREGATION_STEPS = [
         likesCount: "$likesCount",
         commentsCount: "$commentsCount",
         activeUsersCount: "$activeUsersCount",
-        registeredUsersCount: "$registeredUsers"
+        registeredUsersCount: "$registeredUsersCount"
       }
     }
   },{
