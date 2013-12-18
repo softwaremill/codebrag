@@ -10,7 +10,7 @@ angular.module('codebrag.notifications')
         }
 
         function getRepoState() {
-            return $http.get('/rest/repoStatus').then(function(response) {
+            return $http.get('rest/repoStatus').then(function(response) {
                 return response.data.repoStatus;
             });
         }
