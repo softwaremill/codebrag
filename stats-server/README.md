@@ -4,6 +4,8 @@
 
 ![Beware](http://ecx.images-amazon.com/images/I/41Z6n%2BjZcKL._SL500_AA300_.jpg)
 
+### You can access production version of this stats server at [http://stats.codebrag.com:8080](http://stats.codebrag.com:8080)
+
 #### Requirements
 - nodejs 0.10+ (with bower installed)
 - mongodb 2.4.x
@@ -12,12 +14,12 @@
 
 It has two parts:
 
-- one for collecting statistics
+- one for collecting statistics 
 - one for reporting purposes
 
 
 #### Collecting stats
-There is a nodejs server running on port `6666` that you can `POST` to and if your request data looks reasonable, it'll be saved in Mongo `statistics` collection in `codebrag` database.
+There is a nodejs server running on port `6666` that you can `POST` to and if your request data looks reasonable, it'll be saved in Mongo `statistics` collection in `codebrag` database. 
 
 By default stats on Codebrags are sent at 3am and only one stat entry for given instance id will be saved for given day. In other words there is an unique index on (instanceId, date)
 
@@ -28,7 +30,7 @@ Then the frontend magic happens (using Angular, D3, Rickshaw) supported by Bower
 
 #### Development
 
-** Before throwing WFTs at me type and run: `npm install` and `bower install` to install all dependencies required for both backend and frontend **
+** Before throwing WFTs at me type and run: `npm install` and `bower install` to install all dependencies required for both backend and frontend ** 
 
 Installing new backend dependencies - issue `npm install --save [package]`.
 
@@ -40,4 +42,4 @@ Any change in backend part requires restarting server. If you want, you can use 
 
 To continuously run those servers there is "forever" tool used and running scripts are provided. You can separately run collecting server and reporting server as well as change status of those processes using `status.sh`.
 
-Basically what "forever" does is it restarts server if it crashes (any unhandled exception etc).  You can also run it as usual `node` app using `node lib/server.js` or `node lib/reporting/reporting_server.js`.
+Basically what "forever" does is it restarts server if it crashes (any unhandled exception etc).
