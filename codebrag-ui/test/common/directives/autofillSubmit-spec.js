@@ -1,4 +1,4 @@
-ddescribe('Autocomplete-aware form submit directive', function() {
+describe('Autocomplete-aware form submit directive', function() {
 
     var $rootScope, $scope, el, $compile;
     var template = "<div><form name=\"loginForm\" af-submit=\"login()\">\n    <input type=\"text\" name=\"username\" id=\"username\" ng-model=\"username\" data-af-enabled/>\n    <input type=\"password\" name=\"password\" id=\"password\" ng-model=\"password\" data-af-enabled/>\n    <input type=\"text\" name=\"notAfAware\" id=\"notAfAware\" ng-model=\"notAfAware\"/>\n</form></div>";
