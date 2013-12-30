@@ -9,7 +9,7 @@ stats.config(function($routeProvider) {
       templateUrl: 'countersPerDay'
     })
     .otherwise({
-      redirectTo: '/instances-per-day'
+      redirectTo: '/'
     });
 });
 
@@ -17,7 +17,9 @@ stats.controller('StatsCtrl', function($scope, statsDataService, $location) {
 
   $scope.openInstancesPerDayReport = function() {
     statsDataService.instancesPerDayReport().then(function(reportData) {
-      $scope.reportData = toSeries(transformToChartSeries(reportData));
+      $scope.reportData = {};
+      $scope.reportData.allInstances= toSeries(transformToChartSeries(reportData.allInstances));
+      $scope.reportData.activeInstances = toSeries(transformToChartSeries(reportData.activeInstances));
       $location.path('/instances-per-day');
     });
 

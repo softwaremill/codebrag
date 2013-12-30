@@ -43,7 +43,8 @@
     </body>
 
     <script type="text/ng-template" id="instancesPerDay">
-        <graph title="Instances per day" data="reportData"></graph>
+        <graph title="Instances per day" data="reportData['allInstances']"></graph>
+        <graph title="Active instances per day" data="reportData['activeInstances']"></graph>
     </script>
 
     <script type="text/ng-template" id="countersPerDay">
