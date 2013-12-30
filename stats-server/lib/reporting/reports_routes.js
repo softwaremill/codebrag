@@ -1,6 +1,9 @@
+var Q = require('q');
+
 var instancesPerDayReport = require('./reports/instances_per_day'),
     countersPerDayReport = require('./reports/counters_per_day'),
-    instanceCounters = require('./reports/instance_counters');
+    instanceCounters = require('./reports/instance_counters'),
+    activeInstancesPerDay = require('./reports/active_instances_per_day');
 
 function sendReportContent(res) {
   return function(report) {
@@ -15,10 +18,25 @@ function sendError(res) {
   };
 }
 
+function collectInstancesPerDay(db) {
+    var instancesPerDay = instancesPerDayReport.load(db);
+    var activePerDay = activeInstancesPerDay.load(db);
+    return Q.all([instancesPerDay, activePerDay]).spread(joinAllAndActive);
+
+    function joinAllAndActive(instances, active) {
+      return {
+        stats: {
+          allInstances: instances.stats,
+          activeInstances: active.stats
+        }
+      };
+    }
+}
+
 module.exports = function(app, db) {
 
   app.get('/reports/instances-per-day', function(req, res){
-    instancesPerDayReport.load(db).done(sendReportContent(res), sendError(res));
+      collectInstancesPerDay(db).done(sendReportContent(res), sendError(res));
   });
 
   app.get('/reports/counters-per-day', function(req, res){
