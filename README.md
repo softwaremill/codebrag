@@ -41,10 +41,8 @@ Run Codebrag with stubbed backend
 ---
 
 You may want to run Codebrag without backend services e.g. to work on frontend side (HTML, CSS).
-
-Follow the instructions in `codebrag-ui-grunt` project README to install all required stuff.
-
-Files under `src/main/webapp/` can be now modified and results should be instantly visible in browser.
+Follow the instructions in `codebrag-ui` project README to install all required stuff.
+When Codebrag is run, appending `?nobackend` to any URL lets you work with stubbed data - with no backend required.
 
 
 Skipping slow tests
