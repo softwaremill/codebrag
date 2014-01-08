@@ -151,6 +151,33 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest w
     noCommitByAlice should be('empty)
   }
 
+  it should "find user commits authored since given date" in {
+    // given
+    val hourAgo = DateTime.now.minusDays(10)
+    val John = UserAssembler.randomUser.withFullName("John Doe").get
+    val Bob = UserAssembler.randomUser.withFullName("Bob Smith").get
+
+    val commits = List(
+      buildCommitWithMatchingUserName(John, date = hourAgo.plusMinutes(5), sha = "1"),
+      buildCommitWithMatchingUserName(Bob, date = hourAgo.plusMinutes(10), sha = "2"),
+      buildCommitWithMatchingUserName(Bob, date = hourAgo.plusMinutes(15), sha = "4"),
+      buildCommitWithMatchingUserName(John, date = hourAgo.plusMinutes(20), sha = "6")
+    )
+    commits.foreach(commitInfoDAO.storeCommit)
+
+    // when
+    val commitsByBobSince8mins = commitInfoDAO.findLastCommitsAuthoredByUserSince(Bob, hourAgo.plusMinutes(8))
+    val commitsByBobSince10mins = commitInfoDAO.findLastCommitsAuthoredByUserSince(Bob, hourAgo.plusMinutes(15))
+    val commitsByBobSince16mins = commitInfoDAO.findLastCommitsAuthoredByUserSince(Bob, hourAgo.plusMinutes(16))
+    val commitsByBobSince15minsAnd1Sec = commitInfoDAO.findLastCommitsAuthoredByUserSince(Bob, hourAgo.plusMinutes(15).plusSeconds(1))
+
+    // then
+    commitsByBobSince8mins.map(_.sha) should be(List("2", "4"))
+    commitsByBobSince10mins.map(_.sha) should be(List("4"))
+    commitsByBobSince16mins.map(_.sha) should be('empty)
+    commitsByBobSince15minsAnd1Sec.map(_.sha) should be('empty)
+  }
+
   def buildCommitWithMatchingUserEmail(user: User, date: DateTime, sha: String) = {
     CommitInfoAssembler.randomCommit.withAuthorEmail(user.email).withAuthorDate(date).withSha(sha).get
   }

@@ -40,6 +40,10 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
     commitsByUserQuery limit count fetch()
   }
 
+  override def findLastCommitsAuthoredByUserSince[T](user: T, date: DateTime)(implicit userLike: UserLike[T]): List[CommitInfo] = {
+    CommitInfoRecord or(_.where(_.authorEmail eqs userLike.userEmail(user)), (_.where(_.authorName eqs userLike.userFullName(user)))) and (_.authorDate onOrAfter(date)) fetch()
+  }
+
   override def findAllSha(): Set[String] = {
     CommitInfoRecord.select(_.sha).fetch().toSet
   }

@@ -2,6 +2,7 @@ package com.softwaremill.codebrag.dao
 
 import com.softwaremill.codebrag.domain.{UserLike, CommitInfo}
 import org.bson.types.ObjectId
+import org.joda.time.DateTime
 
 trait CommitInfoDAO {
 
@@ -20,5 +21,7 @@ trait CommitInfoDAO {
   def findLastCommitsNotAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo]
 
   def findLastCommitsAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo]
+
+  def findLastCommitsAuthoredByUserSince[T](user: T, date: DateTime)(implicit userLike: UserLike[T]): List[CommitInfo]
 
 }
