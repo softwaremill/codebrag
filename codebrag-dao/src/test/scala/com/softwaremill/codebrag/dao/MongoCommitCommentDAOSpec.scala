@@ -15,6 +15,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTes
 
   val CommitId: ObjectId = oid(2)
   val AnotherCommitId: ObjectId = oid(123)
+  val YetAnotherCommitId: ObjectId = oid(666)
 
   override def beforeEach() {
     super.beforeEach()
@@ -56,10 +57,26 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTes
     additionalComments.foreach(commentDao.save(_))
 
     // when
-    val comments = commentDao.findCommentsForCommit(CommitId)
+    val comments = commentDao.findCommentsForCommits(CommitId)
 
     // then
     comments should equal(fixtureCommentList)
+  }
+
+  it should "load comments for given commits" taggedAs (RequiresDb) in {
+    // given
+    val fixtureCommentList = createCommentsFor(CommitId, 3)
+    val additionalComments = createCommentsFor(AnotherCommitId, 5)
+    val yetAnotherComments = createCommentsFor(YetAnotherCommitId, 4)
+    fixtureCommentList.foreach(commentDao.save(_))
+    additionalComments.foreach(commentDao.save(_))
+    yetAnotherComments.foreach(commentDao.save(_))
+
+    // when
+    val comments = commentDao.findCommentsForCommits(CommitId, AnotherCommitId)
+
+    // then
+    comments should equal(fixtureCommentList ++ additionalComments)
   }
 
   it should "find inline comments and comments for entire commit" taggedAs (RequiresDb) in {
@@ -70,7 +87,7 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTes
     commentDao.save(inlineComment)
 
     // when
-    val comments = commentDao.findCommentsForCommit(CommitId)
+    val comments = commentDao.findCommentsForCommits(CommitId)
 
     // then
     comments.length should be(2)

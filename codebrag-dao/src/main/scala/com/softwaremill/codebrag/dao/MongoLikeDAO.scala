@@ -16,8 +16,8 @@ class MongoLikeDAO extends LikeDAO with Logging {
     LikeRecord.where(_.id eqs likeId).get().map(RecordToLikeBuilder.buildFrom(_))
   }
 
-  override def findLikesForCommit(commitId: ObjectId) = {
-    val likes = LikeRecord.where(_.commitId eqs commitId).orderAsc(_.date).fetch()
+  override def findLikesForCommits(commitIds: ObjectId*) = {
+    val likes = LikeRecord.where(_.commitId in commitIds).orderAsc(_.date).fetch()
     likes.map(RecordToLikeBuilder.buildFrom(_))
   }
 

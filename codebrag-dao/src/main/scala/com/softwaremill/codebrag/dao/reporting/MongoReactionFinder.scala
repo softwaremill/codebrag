@@ -19,10 +19,10 @@ class MongoReactionFinder extends ReactionFinder with UserReactionToViewMapper w
       }
     }
 
-    val comments = new MongoCommitCommentDAO().findCommentsForCommit(commitId)
+    val comments = new MongoCommitCommentDAO().findCommentsForCommits(commitId)
     val (inlineComments, entireComments) = comments.partition(c => c.fileName.isDefined && c.lineNumber.isDefined)
 
-    val likes = new MongoLikeDAO().findLikesForCommit(commitId)
+    val likes = new MongoLikeDAO().findLikesForCommits(commitId)
     val (inlineLikes, entireLikes) = likes.partition(l => l.fileName.isDefined && l.lineNumber.isDefined)
 
     val inlineReactionsView = mapInlineReactionsToView(inlineComments ++ inlineLikes, reactionToView)

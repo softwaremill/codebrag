@@ -15,6 +15,7 @@ class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with Sh
 
   val CommitId: ObjectId = oid(2)
   val AnotherCommitId: ObjectId = oid(123)
+  val YetAnotherCommitId: ObjectId = oid(456)
 
   override def beforeEach() {
     super.beforeEach()
@@ -71,18 +72,20 @@ class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with Sh
     likeDao.findById(like.id) should be('empty)
   }
 
-  it should "load only likes for commit id" taggedAs (RequiresDb) in {
+  it should "load only likes for given commits" taggedAs (RequiresDb) in {
     // given
     val fixtureLikesList = createLikesFor(CommitId, 3)
     val additionalLikes = createLikesFor(AnotherCommitId, 5)
+    val yetAnotherLikes = createLikesFor(YetAnotherCommitId, 5)
     fixtureLikesList.foreach(likeDao.save(_))
     additionalLikes.foreach(likeDao.save(_))
+    yetAnotherLikes.foreach(likeDao.save(_))
 
     // when
-    val likes = likeDao.findLikesForCommit(CommitId)
+    val likes = likeDao.findLikesForCommits(CommitId, AnotherCommitId)
 
     // then
-    likes should equal(fixtureLikesList)
+    likes should equal(fixtureLikesList ++ additionalLikes)
   }
 
   it should "find inline likes and likes for entire commit" taggedAs (RequiresDb) in {
@@ -93,7 +96,7 @@ class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with Sh
     likeDao.save(inlineLike)
 
     // when
-    val likes = likeDao.findLikesForCommit(CommitId)
+    val likes = likeDao.findLikesForCommits(CommitId)
 
     // then
     likes.length should be(2)

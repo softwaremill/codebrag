@@ -11,8 +11,8 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
     CommentToRecordBuilder.buildFrom(comment).save
   }
 
-  override def findCommentsForCommit(commitId: ObjectId) = {
-    val comments = CommentRecord.where(_.commitId eqs commitId).orderAsc(_.date).fetch()
+  override def findCommentsForCommits(commitIds: ObjectId*) = {
+    val comments = CommentRecord.where(_.commitId in commitIds).orderAsc(_.date).fetch()
     comments.map(RecordToCommentBuilder.buildFrom(_))
   }
 

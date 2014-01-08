@@ -7,7 +7,7 @@ trait LikeDAO {
 
   def save(like: Like)
 
-  def findLikesForCommit(commitId: ObjectId): List[Like]
+  def findLikesForCommits(commitIds: ObjectId*): List[Like]
 
   def findAllLikesForThread(thread: ThreadDetails): List[Like]
 
