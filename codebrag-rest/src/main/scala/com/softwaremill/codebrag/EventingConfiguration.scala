@@ -30,7 +30,6 @@ trait EventingConfiguration extends ActorSystemSupport {
 
   actorSystem.eventStream.subscribe(eventLogger, classOf[Event])
   actorSystem.eventStream.subscribe(reviewTaskGeneratorActor, classOf[CommitsUpdatedEvent])
-  actorSystem.eventStream.subscribe(reviewTaskGeneratorActor, classOf[NewUserRegistered])
   actorSystem.eventStream.subscribe(followupGeneratorActor, classOf[LikeEvent])
   actorSystem.eventStream.subscribe(followupGeneratorActor, classOf[UnlikeEvent])
   actorSystem.eventStream.subscribe(statsEventsCollector, classOf[StatisticEvent])
