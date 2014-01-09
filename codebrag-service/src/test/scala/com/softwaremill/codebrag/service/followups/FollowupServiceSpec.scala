@@ -91,7 +91,7 @@ class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   it should "throw exception and not generate follow-ups when commit not found" in {
     // Given
     given(commitInfoDao.findByCommitId(Commit.id)).willReturn(None)
-    given(commitCommentDao.findCommentsForCommit(Commit.id)).willReturn(JohnAndTwoMaryComments)
+    given(commitCommentDao.findCommentsForCommits(Commit.id)).willReturn(JohnAndTwoMaryComments)
 
     // When
     val thrown = intercept[RuntimeException] {
