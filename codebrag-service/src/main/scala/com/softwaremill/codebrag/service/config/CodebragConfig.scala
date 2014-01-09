@@ -25,6 +25,8 @@ trait CodebragConfig extends ConfigWithDefault with CodebragStatsConfig {
   lazy val dailyDigestSendHour = getInt("codebrag.user-email-notifications.daily-digest-hour", 6)
   lazy val dailyDigestSendMinute = getInt("codebrag.user-email-notifications.daily-digest-minute", 0)
   lazy val dailyDigestSendInterval = Period.millis(getMilliseconds("codebrag.user-email-notifications.daily-digest-interval", 24.hours.toMillis).toInt)
+
+  lazy val replayFollowupsForPastCommitsTimeInDays = getInt("codebrag.replay-followups-time", 30)
 }
 
 trait CodebragStatsConfig extends ConfigWithDefault {
