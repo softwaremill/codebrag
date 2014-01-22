@@ -10,3 +10,4 @@ local.conf
 scripts/dist/codebrag/*
 scripts/dist/codebrag.zip
 codebrag-ui-grunt/
+.instanceId

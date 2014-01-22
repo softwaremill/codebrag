@@ -94,7 +94,7 @@ trait Daos {
 
   lazy val invitationDao = new MongoInvitationDAO
 
-  lazy val instanceSettingsDao = new MongoInstanceSettingsDAO
+  lazy val instanceSettingsDao = new FileBasedInstanceSettingsDAO
 
   lazy val eventDao = new EventDao
 
