@@ -12,7 +12,7 @@ import service.commits._
 import com.softwaremill.codebrag.service.user._
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
-import com.softwaremill.codebrag.service.config.{EmailConfig, CodebragConfig, RepositoryConfig, GithubConfig}
+import com.softwaremill.codebrag.service.config._
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.usecase.{ChangeUserSettingsUseCase, UnlikeUseCase}
 import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
@@ -21,11 +21,11 @@ import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
 import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.dao.eventstream.EventDao
-import com.softwaremill.codebrag.stats.StatsAggregator
+import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 
-  lazy val config = new MongoConfig with RepositoryConfig with GithubConfig with CodebragConfig with EmailConfig {
+  lazy val config = new MongoConfig with RepositoryConfig with GithubConfig with CodebragConfig with EmailConfig with CodebragStatsConfig {
     def rootConfig = ConfigFactory.load()
   }
 
@@ -75,6 +75,9 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
     case Left(error) => throw new RuntimeException(s"Cannot properly initialise Instance settings: $error")
     case Right(instance) => instance
   }
+
+  lazy val statsHTTPRequestSender = new StatsHTTPRequestSender(config)
+  lazy val instanceRunStatsSender = new InstanceRunStatsSender(statsHTTPRequestSender)
 
 }
 

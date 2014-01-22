@@ -11,8 +11,8 @@ object StatsSendingScheduler extends Logging {
 
   private var actor: ActorRef = _
 
-  def initialize(actorSystem: ActorSystem, statsAggregator: StatsAggregator, config: CodebragStatsConfig)(implicit clock: Clock) : ActorRef = {
-    actor = actorSystem.actorOf(Props(new StatsSenderActor(statsAggregator, config)), "dailyStatsSender")
+  def initialize(actorSystem: ActorSystem, statsAggregator: StatsAggregator, httpSender: StatsHTTPRequestSender, config: CodebragStatsConfig)(implicit clock: Clock) : ActorRef = {
+    actor = actorSystem.actorOf(Props(new StatsSenderActor(statsAggregator, httpSender)), "dailyStatsSender")
     scheduleDaily(actorSystem, config, clock)
     actor
   }

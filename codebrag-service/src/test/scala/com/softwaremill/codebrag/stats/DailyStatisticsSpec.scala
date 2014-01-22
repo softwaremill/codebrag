@@ -4,6 +4,7 @@ import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
+import com.softwaremill.codebrag.stats.data.DailyStatistics
 
 class DailyStatisticsSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterEach {
 

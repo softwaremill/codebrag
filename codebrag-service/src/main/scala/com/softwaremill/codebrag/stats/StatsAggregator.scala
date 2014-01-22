@@ -4,6 +4,7 @@ import org.joda.time.DateTime
 import com.softwaremill.codebrag.dao.reporting.StatsEventsFinder
 import com.softwaremill.codebrag.dao.InstanceSettingsDAO
 import com.softwaremill.codebrag.domain.InstanceSettings
+import com.softwaremill.codebrag.stats.data.DailyStatistics
 
 class StatsAggregator(val statsFinder: StatsEventsFinder, val instanceSettingsDao: InstanceSettingsDAO) {
 

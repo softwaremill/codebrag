@@ -3,12 +3,14 @@ import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
-import com.softwaremill.codebrag.stats.StatsSendingScheduler
+import com.softwaremill.codebrag.stats.data.InstanceRunStatistics
+import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsSendingScheduler}
 import com.softwaremill.codebrag.{InstanceContext, EventingConfiguration, Beans}
 import com.typesafe.scalalogging.slf4j.Logging
 import java.util.Locale
 import org.scalatra._
 import javax.servlet.ServletContext
+import scala.util.parsing.json.JSON
 
 /**
  * This is the ScalatraBootstrap codebrag file. You can use it to mount servlets or
@@ -29,7 +31,8 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     }
 
     if(config.sendStats) {
-      StatsSendingScheduler.initialize(actorSystem, statsAggregator, config)
+      instanceRunStatsSender.sendInstanceRunInfoImmediately(instanceSettings)
+      StatsSendingScheduler.initialize(actorSystem, statsAggregator, statsHTTPRequestSender, config)
     } else {
       logger.info("Sending anonymous statistics was disabled - not scheduling stats calculation")
     }

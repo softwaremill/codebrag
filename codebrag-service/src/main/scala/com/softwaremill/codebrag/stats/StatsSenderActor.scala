@@ -5,7 +5,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.config.CodebragStatsConfig
 import com.softwaremill.codebrag.common.Clock
 
-class StatsSenderActor(statsAggregator: StatsAggregator, statsConfig: CodebragStatsConfig) extends Actor with Logging {
+class StatsSenderActor(statsAggregator: StatsAggregator, httpSender: StatsHTTPRequestSender) extends Actor with Logging {
 
   def receive = {
     case StatsSenderActor.SendStatsCommand(clock: Clock) => {
@@ -17,7 +17,7 @@ class StatsSenderActor(statsAggregator: StatsAggregator, statsConfig: CodebragSt
     }
   }
 
-  def sendStats(json: String) = StatsSender.sendHttpStatsRequest(json, statsConfig)
+  def sendStats(json: String) = httpSender.sendDailyStats(json)
 
 }
 
