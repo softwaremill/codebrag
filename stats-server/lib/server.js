@@ -30,7 +30,9 @@ function initializeMongo(onSuccessCallback) {
 }
 
 function initializeRoutes(db) {
-  require('./routes')(app, logger, db);
+  ['./daily_stats_routes', './instance_run_routes'].forEach(function(routes) {
+    require(routes)(app, logger, db);
+  });
 }
 
 function startServer(security, app) {
