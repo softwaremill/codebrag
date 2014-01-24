@@ -10,7 +10,7 @@ startServer(security, app);
 
 
 function configureExpressApp() {
-  var app = express();
+ var app = express();
   app.use(express.json());
   app.use(express.urlencoded());
   app.use(genericErrorHandler);

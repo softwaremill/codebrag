@@ -81,6 +81,14 @@ graph {
     display: block;
 }
 
+nav button {
+    background: #0ad;
+    line-height: 2em;
+    color: #fff;    
+    border: none;
+    border-radius: 4px;
+}
+
 
 
 

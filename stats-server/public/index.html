@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="css/normalize.min.css">
         <link rel="stylesheet" href="css/main.css">
 
+        <link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.4.3.min.css">
         <link rel="stylesheet" href="vendor/rickshaw/rickshaw.min.css">
 
         <!--[if lt IE 9]>
@@ -19,7 +20,7 @@
     </head>
     <body ng-app="stats">
         <header>
-            <div style="background: #555; text-align:center; overflow: auto">
+            <div style="background: #0ad; text-align:center; overflow: auto">
                 <h2 style="color: #fff">Codebrag statistics</h2>
             </div>
         </header>
@@ -30,9 +31,13 @@
                     <li><button ng-click="openCountersPerDayReport()">Events per day</button></li>
                 </ul>
             </nav>
-            <div ng-show="reportData" ng-view></div>
+            <div ng-view ng-show="reportData"></div>
 
         </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+        <script src="http://cdn.oesmith.co.uk/morris-0.4.3.min.js"></script>
 
         <script src="vendor/moment/moment.js"></script>
         <script src="vendor/d3/d3.min.js"></script>
@@ -43,15 +48,44 @@
     </body>
 
     <script type="text/ng-template" id="instancesPerDay">
-        <graph title="Instances per day" data="reportData['allInstances']"></graph>
-        <graph title="Active instances per day" data="reportData['activeInstances']"></graph>
+        <morris-graph
+            title="Instances per day" 
+            data="reportData" 
+            xkey="'x'", 
+            ykeys="['y1', 'y2']", 
+            ylabels="['All instances', 'Active instances']">
+        </morris-graph>
+
     </script>
 
     <script type="text/ng-template" id="countersPerDay">
-        <graph title="Reviewed commits " data="reportData['commitsReviewedCount']"></graph>
-        <graph title="Likes added" data="reportData['likesCount']"></graph>
-        <graph title="Comments added" data="reportData['commentsCount']"></graph>
-        <graph title="Active users" data="reportData['activeUsersCount']"></graph>
-        <graph title="New users registered" data="reportData['registeredUsersCount']"></graph>
+        <morris-graph 
+            title="Reviewed commits per day" 
+            data="reportData" 
+            xkey="'date'", 
+            ykeys="['commitsReviewedCount']", 
+            ylabels="['Reviewed commits']">
+        </morris-graph>
+        <morris-graph 
+            title="Likes & comments per day" 
+            data="reportData" 
+            xkey="'date'", 
+            ykeys="['likesCount', 'commentsCount']", 
+            ylabels="['Likes', 'Comments']">
+        </morris-graph>
+        <morris-graph 
+            title="Active users per day" 
+            data="reportData" 
+            xkey="'date'", 
+            ykeys="['activeUsersCount']", 
+            ylabels="['Active users']">
+        </morris-graph>
+        <morris-graph 
+            title="Registered users per day" 
+            data="reportData" 
+            xkey="'date'", 
+            ykeys="['registeredUsersCount']", 
+            ylabels="['Registered users']">
+        </morris-graph>
     </script>
 </html>
