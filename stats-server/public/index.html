@@ -28,10 +28,11 @@
             <nav class="centered">
                 <ul>
                     <li><button ng-click="openInstancesPerDayReport()">Instances count per day</button></li>
+                    <li><button ng-click="openInstanceStartsPerDayReport()">Instance runs per day</button></li>
                     <li><button ng-click="openCountersPerDayReport()">Events per day</button></li>
                 </ul>
             </nav>
-            <div ng-view ng-show="reportData"></div>
+            <div ng-view ng-show="reportData != null"></div>
 
         </section>
 
@@ -55,7 +56,16 @@
             ykeys="['y1', 'y2']", 
             ylabels="['All instances', 'Active instances']">
         </morris-graph>
+    </script>
 
+    <script type="text/ng-template" id="instanceStartsPerDay">
+        <morris-graph
+            title="Instance runs per day" 
+            data="reportData" 
+            xkey="'x'", 
+            ykeys="['y1', 'y2']", 
+            ylabels="['Unique instances', 'All runs']">
+        </morris-graph>
     </script>
 
     <script type="text/ng-template" id="countersPerDay">

@@ -19,7 +19,7 @@ module.exports = function(app, logger, db) {
   var middlewares = [MIDDLEWARES.validateRequestBody];
 
   app.post('/instanceRun', middlewares, function(req, res){
-      var now = moment.utc().toDate();
+      var now = moment.utc().startOf('day').toDate();
       var instanceRunData = {
         instanceId: req.body.instanceId,
         date: now

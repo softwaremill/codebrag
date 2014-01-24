@@ -8,6 +8,9 @@ stats.config(function($routeProvider) {
     .when('/counters-per-day', {
       templateUrl: 'countersPerDay'
     })
+    .when('/instance-starts-per-day', {
+      templateUrl: 'instanceStartsPerDay'
+    })
     .otherwise({
       redirectTo: '/'
     });
@@ -27,6 +30,23 @@ stats.controller('StatsCtrl', function($scope, statsDataService, $location) {
           x: moment(entry.date).format('DDMMM'),
           y1: entry.allCount,
           y2: entry.activeCount
+        };
+      });
+    }
+  };
+
+  $scope.openInstanceStartsPerDayReport = function() {
+    statsDataService.instanceStartsPerDayReport().then(function(reportData) {
+      $scope.reportData = transformToChartSeries(reportData);
+      $location.path('/instance-starts-per-day');
+    });
+
+    function transformToChartSeries(reportData) {
+      return reportData.map(function(entry) {
+        return {
+          x: moment(entry.date).format('DDMMM'),
+          y1: entry.uniqueInstances.length,
+          y2: entry.allRunsCount
         };
       });
     }
@@ -60,6 +80,10 @@ stats.service('statsDataService', function($http) {
 
   this.countersPerDayReport = function() {
     return issueGet('/reports/counters-per-day');
+  };
+
+  this.instanceStartsPerDayReport = function() {
+    return issueGet('/reports/instance-starts-per-day');
   };
 
   function issueGet(url) {
