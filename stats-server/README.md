@@ -4,7 +4,7 @@
 
 ![Beware](http://ecx.images-amazon.com/images/I/41Z6n%2BjZcKL._SL500_AA300_.jpg)
 
-### You can access production version of this stats server at [http://stats.codebrag.com:8080](http://stats.codebrag.com:8080)
+### You can access production version of this stats server at [http://stats.codebrag.com:8080](http://stats.codebrag.com:8080) (requires authentication: codebrag/\_showmestats\_)
 
 #### Requirements
 - nodejs 0.10+ (with bower installed)
@@ -26,7 +26,7 @@ By default stats on Codebrags are sent at 3am and only one stat entry for given 
 #### Reporting
 Reporting is run as another server and it's code is in `lib/reporting/` and `public/` for frontend stuff. It basically uses Mongo Aggregation framework to massage stats data to be meaningful. Then it just hands them over to the client as JSON.
 
-Then the frontend magic happens (using Angular, D3, Rickshaw) supported by Bower for packages management.
+Then the frontend magic happens (using Angular and Morris) supported by Bower for packages management.
 
 #### Development
 
