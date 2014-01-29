@@ -1,7 +1,6 @@
 #!/bin/sh
 
 function java_not_installed {
-  echo "test"
   local JAVA_VERSION_REQUIRED=1.7*
   local JAVA_VERSION_CURRENT=`java -version 2>&1 | grep "java version" | awk '{print $3}' | tr -d \"`
   if ! [[ $JAVA_VERSION_CURRENT == $JAVA_VERSION_REQUIRED ]]; then
@@ -12,9 +11,7 @@ function java_not_installed {
   fi
 }
 
-JAVA=$(java_not_installed)
-
-if [[ JAVA ]]; then
+if [[ $(java_not_installed) -eq 0 ]]; then
   echo "Please install required version of Java JDK first"
   exit 1
 fi
