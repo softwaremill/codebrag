@@ -12,7 +12,7 @@ function java_not_installed {
 }
 
 if [[ $(java_not_installed) -eq 0 ]]; then
-  echo "Please install required version of Java JDK first"
+  echo "Please install required version of Java first"
   exit 1
 fi
 
