@@ -2,7 +2,7 @@
 
 function java_not_installed {
   echo "test"
-  local JAVA_VERSION_REQUIRED=1.8*
+  local JAVA_VERSION_REQUIRED=1.7*
   local JAVA_VERSION_CURRENT=`java -version 2>&1 | grep "java version" | awk '{print $3}' | tr -d \"`
   if ! [[ $JAVA_VERSION_CURRENT == $JAVA_VERSION_REQUIRED ]]; then
     echo "ERROR: Java JDK in required version $JAVA_VERSION_REQUIRED not found" >&2
