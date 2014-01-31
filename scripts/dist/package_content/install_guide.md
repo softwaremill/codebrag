@@ -10,9 +10,9 @@
 ## Prerequisites
 
 * Java 1.7 installed. [Download here](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html) or install package for your server's OS.
-* MongoDB version 2.4.x installed. [Download here](http://www.mongodb.org/downloads) or install package for your server's OS.
+* MongoDB version 2.4.x installed. Follow these [Installation instructions](http://docs.mongodb.org/manual/installation/) or install package for your server's OS.
 
-*** NOTE: *** If you want to use **Codebrag** with **SVN** you need to install **Git**. [Download here](http://git-scm.com/) or install package for your server's OS
+*** NOTE: *** If you want to use **Codebrag** with **SVN** you need to install **Git**. [Download here](http://git-scm.com/) or install package for your server's OS.
 
 ##Questions? Help?
 Should you encounter any issues with installation:
