@@ -1,8 +1,8 @@
 var genericLoader = require('./generic_report_loader');
 
 var AGGREGATION_STEPS = [
-  { $project: { instanceId: 1, date: 1, _id: 0 } },
-  { $group: { _id: "$instanceId",  activityDates: { $push: "$date"} } },
+  { $project: { instanceId: 1, date: 1, active: 1, _id: 0 } },
+  { $group: { _id: "$instanceId",  activityDates: { $push: { date: "$date", active: "$active" } } } },
   { $project: {  instanceId: "$_id",  _id: 0, activityDates: 1 } }
 ];
 
