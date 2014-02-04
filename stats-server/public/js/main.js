@@ -134,6 +134,7 @@ stats.service('statsDataService', function($http) {
 stats.directive('morrisGraph', function($window) {
 
   return {
+    transclude: true,
     restrict: 'E',
     templateUrl: 'graphArea',
     scope: {
