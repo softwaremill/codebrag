@@ -30,6 +30,7 @@
                     <li><button ng-click="openInstancesPerDayReport()">Instances count per day</button></li>
                     <li><button ng-click="openInstanceStartsPerDayReport()">Instance runs per day</button></li>
                     <li><button ng-click="openCountersPerDayReport()">Events per day</button></li>
+                    <li><button ng-click="openInstanceLifeReport()">Instance life</button></li>
                 </ul>
             </nav>
             <div ng-view ng-show="reportData != null"></div>
@@ -45,8 +46,16 @@
         <script src="vendor/rickshaw/rickshaw.min.js"></script>
         <script src="vendor/angular/angular.min.js"></script>
         <script src="vendor/angular-route/angular-route.min.js"></script>
+
+        <link rel="stylesheet" href="other/jquery-gantt/css/style.css">
+        <script src="other/jquery-gantt/js/jquery.fn.gantt.js"></script>
+
         <script src="js/main.js"></script>
     </body>
+
+    <script type="text/ng-template" id="instanceLife">
+        <gantt-graph data="reportData" extra-class="gantt-chart" title="Instances lifecycle"></gantt-graph>
+    </script>
 
     <script type="text/ng-template" id="instancesPerDay">
         <morris-graph
@@ -97,5 +106,9 @@
             ykeys="['registeredUsersCount']", 
             ylabels="['Registered users']">
         </morris-graph>
+    </script>
+
+    <script type="text/ng-template" id="graphArea">
+        <section class="graph-section {{extraClass}}"><h2 ng-show="title">{{title}}</h2><div id="{{id}}" class="graph-area"></div></section>
     </script>
 </html>

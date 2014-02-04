@@ -5,7 +5,8 @@ var instancesPerDayReport = require('./reports/instances_per_day'),
     countersPerDayReport = require('./reports/counters_per_day'),
     instanceCounters = require('./reports/instance_counters'),
     activeInstancesPerDay = require('./reports/active_instances_per_day'),
-    instanceStartsPerDay = require('./reports/instance_starts_per_day');
+    instanceStartsPerDay = require('./reports/instance_starts_per_day'),
+    instanceLifeTimeline = require('./reports/instance_life_timeline');
 
 function sendReportContent(res) {
   return function(report) {
@@ -70,6 +71,10 @@ module.exports = function(app, db) {
   app.get('/reports/instance-counters/:instanceId', function(req, res){
     var instanceId = req.params.instanceId;
     instanceCounters.load(db, instanceId).done(sendReportContent(res), sendError(res));
+  });
+
+  app.get('/reports/instance-life', function(req, res){
+    instanceLifeTimeline.load(db).done(sendReportContent(res), sendError(res));
   });
 
 };

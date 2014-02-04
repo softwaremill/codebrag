@@ -11,6 +11,9 @@ stats.config(function($routeProvider) {
     .when('/instance-starts-per-day', {
       templateUrl: 'instanceStartsPerDay'
     })
+    .when('/instance-life', {
+      templateUrl: 'instanceLife'
+    })
     .otherwise({
       redirectTo: '/'
     });
@@ -55,7 +58,6 @@ stats.controller('StatsCtrl', function($scope, statsDataService, $location) {
   $scope.openCountersPerDayReport = function() {
     statsDataService.countersPerDayReport().then(function(reportData) {
       $scope.reportData = toSeries(reportData);
-      console.log($scope.reportData);
       $location.path('/counters-per-day');
     });
 
@@ -68,6 +70,29 @@ stats.controller('StatsCtrl', function($scope, statsDataService, $location) {
       });
     }
 
+  };
+
+  $scope.openInstanceLifeReport = function() {
+    statsDataService.instanceLifeReport().then(function(reportData) {      
+      $scope.reportData = toSeries(reportData);
+      $location.path('/instance-life');
+    });
+
+    function toSeries(data) {
+      return data.map(function(entry) {
+        var values = entry.activityDates.map(function(date) {
+          return {
+            to: "/Date(" + moment.utc(date).startOf('day').valueOf() + ")/",
+            from: "/Date(" + moment.utc(date).endOf('day').valueOf() + ")/"
+          }
+        });
+
+        return {
+          name: entry.instanceId,
+          values: values
+        }
+      });
+    }
   };
 
 });
@@ -84,6 +109,10 @@ stats.service('statsDataService', function($http) {
 
   this.instanceStartsPerDayReport = function() {
     return issueGet('/reports/instance-starts-per-day');
+  };
+
+  this.instanceLifeReport = function() {
+    return issueGet('/reports/instance-life');
   };
 
   function issueGet(url) {
@@ -105,7 +134,7 @@ stats.directive('morrisGraph', function($window) {
 
   return {
     restrict: 'E',
-    template: '<section style="margin-top: 4em; color: #0ad; display: block; text-align: center"><h2 ng-show="title">{{title}}</h2><div id="{{id}}" style="width: 90%; margin: 0 auto"></div></section>',
+    templateUrl: 'graphArea',
     scope: {
       data: '=',
       title: '@',
@@ -130,5 +159,34 @@ stats.directive('morrisGraph', function($window) {
       });
     }
   };
+});
+
+stats.directive('gantt-graph', function() {
+  return {
+    restrict: 'E',
+    replace: true,
+    templateUrl: 'graphArea',
+    scope: {
+      title: '@',
+      data: '=',
+      extraClass: '@'
+    },
+    link: function(scope, el, attrs) {
+      scope.id = String(Math.round(Math.random() * 1000));      
+      var unwatch = scope.$watch('data', function(data) {
+        if(angular.isUndefined(data)) return;
+        unwatch();      
+        var $rootGanttEl = $("#" + scope.id);
+        $rootGanttEl.gantt({
+          scale: "days",
+          minScale: "days",
+          maxScale: "weeks",
+          itemsPerPage: 100,
+          navigate: "scroll",
+          source: data
+        });        
+      });
+    }
+  }
 });
 
