@@ -80,10 +80,11 @@ stats.controller('StatsCtrl', function($scope, statsDataService, $location) {
 
     function toSeries(data) {
       return data.map(function(entry) {
-        var values = entry.activityDates.map(function(date) {
+        var values = entry.activityDates.map(function(entry) {
           return {
-            to: "/Date(" + moment.utc(date).startOf('day').valueOf() + ")/",
-            from: "/Date(" + moment.utc(date).endOf('day').valueOf() + ")/"
+            to: "/Date(" + moment.utc(entry.date).startOf('day').valueOf() + ")/",
+            from: "/Date(" + moment.utc(entry.date).endOf('day').valueOf() + ")/",
+            customClass: (entry.active === true ? 'active' : 'inactive')
           }
         });
 
@@ -166,6 +167,7 @@ stats.directive('ganttGraph', function() {
     restrict: 'E',
     replace: true,
     templateUrl: 'graphArea',
+    transclude: true,
     scope: {
       title: '@',
       data: '=',

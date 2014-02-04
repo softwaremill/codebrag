@@ -93,6 +93,20 @@ nav li {
     display: none;
 }
 
+.gantt-chart .active {
+    color: #fff !important;
+    background: #aaa !important;
+}
+
+.gantt-chart .inactive {
+    color: #fff !important;
+    background: #ddd !important;
+}
+
+.legend {
+    padding: 0.3em;
+}
+
 nav button {
     background: #0ad;
     line-height: 2em;

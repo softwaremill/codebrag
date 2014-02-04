@@ -54,7 +54,9 @@
     </body>
 
     <script type="text/ng-template" id="instanceLife">
-        <gantt-graph data="reportData" extra-class="gantt-chart" title="Instances lifecycle"></gantt-graph>
+        <gantt-graph data="reportData" extra-class="gantt-chart" title="Instances lifecycle">
+            <h3><span class="active legend">active</span> vs <span class="inactive legend">inactive</span></h3>
+        </gantt-graph>
     </script>
 
     <script type="text/ng-template" id="instancesPerDay">
@@ -109,6 +111,6 @@
     </script>
 
     <script type="text/ng-template" id="graphArea">
-        <section class="graph-section {{extraClass}}"><h2 ng-show="title">{{title}}</h2><div id="{{id}}" class="graph-area"></div></section>
+        <section class="graph-section {{extraClass}}"><h2 ng-show="title">{{title}}</h2><div ng-transclude></div><div id="{{id}}" class="graph-area"></div></section>
     </script>
 </html>
