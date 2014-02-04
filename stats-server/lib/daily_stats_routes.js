@@ -19,13 +19,21 @@ var MIDDLEWARES = {
     stats.date = moment.utc(stats.date, 'DD/MM/YYYY').toDate();
     req.stats = stats;
     next();
+  },
+
+  flagIfInstanceActive: function(req, res, next) {
+    var isActive = Object.keys(req.stats.counters).filter(function(key) {
+      return req.stats.counters[key] > 0;
+    }).length > 0;
+    req.stats.active = isActive;
+    next();
   }
 
 };
 
 module.exports = function(app, logger, db) {
 
-  var middlewares = [MIDDLEWARES.validateRequestBody, MIDDLEWARES.parseStatsDate];
+  var middlewares = [MIDDLEWARES.validateRequestBody, MIDDLEWARES.parseStatsDate, MIDDLEWARES.flagIfInstanceActive];
 
   app.post('/', middlewares, function(req, res){
     saveStatsToMongo(req.stats, db, function(err) {
