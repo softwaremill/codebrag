@@ -161,7 +161,7 @@ stats.directive('morrisGraph', function($window) {
   };
 });
 
-stats.directive('gantt-graph', function() {
+stats.directive('ganttGraph', function() {
   return {
     restrict: 'E',
     replace: true,
