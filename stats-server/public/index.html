@@ -49,6 +49,7 @@
 
         <link rel="stylesheet" href="other/jquery-gantt/css/style.css">
         <script src="other/jquery-gantt/js/jquery.fn.gantt.js"></script>
+        <script src="other/harmony-collections.js"></script>
 
         <script src="js/main.js"></script>
     </body>
@@ -63,8 +64,8 @@
         <morris-graph
             title="Instances per day" 
             data="reportData" 
-            xkey="'x'", 
-            ykeys="['y1', 'y2']", 
+            xkey="'x'"
+            ykeys="['y1', 'y2']"
             ylabels="['All instances', 'Active instances']">
         </morris-graph>
     </script>
@@ -73,9 +74,10 @@
         <morris-graph
             title="Instance runs per day" 
             data="reportData" 
-            xkey="'x'", 
-            ykeys="['y1', 'y2']", 
+            xkey="'x'"
+            ykeys="['y1', 'y2']"
             ylabels="['Unique instances', 'All runs']">
+            <p>Shows unique (new) instances number vs total number of startups per day</p>
         </morris-graph>
     </script>
 
@@ -83,29 +85,29 @@
         <morris-graph 
             title="Reviewed commits per day" 
             data="reportData" 
-            xkey="'date'", 
-            ykeys="['commitsReviewedCount']", 
+            xkey="'date'"
+            ykeys="['commitsReviewedCount']"
             ylabels="['Reviewed commits']">
         </morris-graph>
         <morris-graph 
             title="Likes & comments per day" 
             data="reportData" 
-            xkey="'date'", 
-            ykeys="['likesCount', 'commentsCount']", 
+            xkey="'date'"
+            ykeys="['likesCount', 'commentsCount']"
             ylabels="['Likes', 'Comments']">
         </morris-graph>
         <morris-graph 
             title="Active users per day" 
             data="reportData" 
-            xkey="'date'", 
-            ykeys="['activeUsersCount']", 
+            xkey="'date'"
+            ykeys="['activeUsersCount']"
             ylabels="['Active users']">
         </morris-graph>
         <morris-graph 
             title="Registered users per day" 
             data="reportData" 
-            xkey="'date'", 
-            ykeys="['registeredUsersCount']", 
+            xkey="'date'"
+            ykeys="['registeredUsersCount']"
             ylabels="['Registered users']">
         </morris-graph>
     </script>

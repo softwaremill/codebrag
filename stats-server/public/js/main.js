@@ -109,7 +109,26 @@ stats.service('statsDataService', function($http) {
   };
 
   this.instanceStartsPerDayReport = function() {
-    return issueGet('/reports/instance-starts-per-day');
+    return issueGet('/reports/instance-starts-per-day').then(cleanupDuplicatedInstances);
+
+    function cleanupDuplicatedInstances(collection) {
+      return collection.map(function(el) {
+        el.uniqueInstances = removeInstancesIfSeen(el.uniqueInstances);
+        return el;
+      });
+
+      function removeInstancesIfSeen(instances) {
+        removeInstancesIfSeen._seen = removeInstancesIfSeen._seen || new Set();
+        return instances.filter(function(instance) {
+          if(removeInstancesIfSeen._seen.has(instance)) {
+            return false;
+          }
+          removeInstancesIfSeen._seen.add(instance);
+          return true;
+        });
+      }
+    }
+
   };
 
   this.instanceLifeReport = function() {
