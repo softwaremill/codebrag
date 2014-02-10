@@ -12,8 +12,15 @@ function wrapResults(results) {
   };
 }
 
+// sort by date of first run
+function sortByAppearDate(results) {
+  return results.sort(function(a,b) {
+    return b.activityDates[0].date.getTime() - a.activityDates[0].date.getTime();
+  });
+}
+
 module.exports = {
   load: function instancesPerDay(db) {
-    return genericLoader.makeMongoAggregation(db, AGGREGATION_STEPS).then(wrapResults);
+    return genericLoader.makeMongoAggregation(db, AGGREGATION_STEPS).then(sortByAppearDate).then(wrapResults);
   }
 };
