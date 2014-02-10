@@ -28,7 +28,7 @@ class UsersServlet(val authenticator: Authenticator, registerService: RegisterSe
   get("/all") {
     haltIfNotAuthenticated()
     val usersView = if(!config.demo) {
-      userDao.findAll().map { user => Map("name" -> user.name, "email" -> user.email) }
+      userDao.findAll().map { user => Map("name" -> user.name, "email" -> user.emailLowerCase) }
     } else {
       List.empty
     }

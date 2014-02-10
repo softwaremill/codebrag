@@ -18,7 +18,7 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: Templa
     val noOfCommits = notificationCountFinder.getCounters(user.id).pendingCommitCount
     val context: Map[String, Any] = prepareContextForWelcomeNotification(user, noOfCommits)
     val template = templateEngine.getEmailTemplate(WelcomeToCodebrag, context)
-    emailScheduler.scheduleInstant(Email(List(user.email), template.subject, template.content))
+    emailScheduler.scheduleInstant(Email(List(user.emailLowerCase), template.subject, template.content))
   }
 
 
@@ -29,7 +29,7 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: Templa
       "application_url" -> codebragConfig.applicationUrl
     )
     val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.UserNotifications, templateParams)
-    val email = Email(List(user.email), resolvedTemplate.subject, resolvedTemplate.content)
+    val email = Email(List(user.emailLowerCase), resolvedTemplate.subject, resolvedTemplate.content)
     emailScheduler.scheduleInstant(email)
   }
 
@@ -41,7 +41,7 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: Templa
       "date" -> clock.currentDateTime.toString(DateTimeFormat.forPattern("yyyy-MM-dd"))
     )
     val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.DailyDigest, templateParams)
-    val email = Email(List(user.email), resolvedTemplate.subject, resolvedTemplate.content)
+    val email = Email(List(user.emailLowerCase), resolvedTemplate.subject, resolvedTemplate.content)
     emailScheduler.scheduleInstant(email)
   }
 

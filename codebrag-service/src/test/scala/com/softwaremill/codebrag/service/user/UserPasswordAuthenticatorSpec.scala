@@ -71,7 +71,7 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
     val Some(user) = authenticator.authenticate(fixtureLogin, fixturePassword)
 
     user.fullName should be(fixtureUser.name)
-    user.email should be(fixtureUser.email)
+    user.email should be(fixtureUser.emailLowerCase)
   }
 
   it should "return None if user credentials don't match" in {

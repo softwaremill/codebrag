@@ -22,7 +22,7 @@ object NewUserRegistered {
   val EventType = "UserRegistered"
 
   def apply(user: User)(implicit clock: Clock) = {
-    new NewUserRegistered(user.id, user.authentication.usernameLowerCase, user.name, user.email)(clock)
+    new NewUserRegistered(user.id, user.authentication.usernameLowerCase, user.name, user.emailLowerCase)(clock)
   }
 
   implicit object UserLikeNewUserRegisteredEvent extends UserLike[NewUserRegistered] {

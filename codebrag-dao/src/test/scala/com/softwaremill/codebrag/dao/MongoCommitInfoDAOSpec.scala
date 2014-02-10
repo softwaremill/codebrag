@@ -179,7 +179,7 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterT
   }
 
   def buildCommitWithMatchingUserEmail(user: User, date: DateTime, sha: String) = {
-    CommitInfoAssembler.randomCommit.withAuthorEmail(user.email).withAuthorDate(date).withSha(sha).get
+    CommitInfoAssembler.randomCommit.withAuthorEmail(user.emailLowerCase).withAuthorDate(date).withSha(sha).get
   }
 
   def buildCommitWithMatchingUserName(user: User, date: DateTime, sha: String) = {

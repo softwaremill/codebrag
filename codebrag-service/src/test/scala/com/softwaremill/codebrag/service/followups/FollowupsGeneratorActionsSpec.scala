@@ -28,7 +28,7 @@ class FollowupsGeneratorActionsSpec
 
   val bob = UserAssembler.randomUser.withEmail("bob@smith.com").get
   val john = UserAssembler.randomUser.withEmail("john@doe.com").get
-  val bobsCommit = CommitInfoAssembler.randomCommit.withAuthorEmail(bob.email).withAuthorName(bob.name).get
+  val bobsCommit = CommitInfoAssembler.randomCommit.withAuthorEmail(bob.emailLowerCase).withAuthorName(bob.name).get
   val johnsLike = LikeAssembler.likeFor(bobsCommit.id).withAuthorId(john.id).get
   val johnsLikeEvent = LikeEvent(johnsLike)
 
@@ -69,7 +69,7 @@ class FollowupsGeneratorActionsSpec
     // given
     val nonExistingCommitAuthor = UserAssembler.randomUser.withEmail("bob@smith.com").get
     val likeAuthor = UserAssembler.randomUser.withEmail("john@doe.com").get
-    val commit = CommitInfoAssembler.randomCommit.withAuthorEmail(nonExistingCommitAuthor.email).withAuthorName(nonExistingCommitAuthor.name).get
+    val commit = CommitInfoAssembler.randomCommit.withAuthorEmail(nonExistingCommitAuthor.emailLowerCase).withAuthorName(nonExistingCommitAuthor.name).get
     val like = LikeAssembler.likeFor(commit.id).withAuthorId(likeAuthor.id).get
     val event = LikeEvent(like)
     when(commitDaoMock.findByCommitId(commit.id)).thenReturn(Some(commit))

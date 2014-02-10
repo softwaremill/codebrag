@@ -41,7 +41,7 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
 
     user.authentication.username should be("Adamw")
     user.authentication.usernameLowerCase should be("adamw")
-    user.email should be("adam@example.org")
+    user.emailLowerCase should be("adam@example.org")
     user.settings.avatarUrl should equal(UserSettings.defaultAvatarUrl("adam@example.org"))
     user.token.length should be > (0)
     Authentication.passwordsMatch("123456", user.authentication) should be(true)
@@ -72,7 +72,7 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
 
     user.authentication.username should be("Adamw")
     user.authentication.usernameLowerCase should be("adamw")
-    user.email should be("adam@example.org")
+    user.emailLowerCase should be("adam@example.org")
     user.settings.avatarUrl should equal(UserSettings.defaultAvatarUrl("adam@example.org"))
     user.token.length should be > 0
     Authentication.passwordsMatch("123456", user.authentication) should be(true)

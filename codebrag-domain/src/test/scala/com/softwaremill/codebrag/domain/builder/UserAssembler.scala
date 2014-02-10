@@ -21,7 +21,7 @@ class UserAssembler(var user: User) {
   }
 
   def withEmail(email: String) = {
-    user = user.copy(email = email)
+    user = user.copy(emailLowerCase = email)
     this
   }
 

@@ -96,7 +96,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
     // Then
     userOpt match {
-      case Some(u) => u.email should be(email)
+      case Some(u) => u.emailLowerCase should be(email)
       case _ => fail("User option should be defined")
     }
   }
@@ -146,7 +146,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
     // Then
     userOpt match {
-      case Some(u) => u.email should be(email.toLowerCase)
+      case Some(u) => u.emailLowerCase should be(email.toLowerCase)
       case _ => fail("User option should be defined")
     }
   }
@@ -216,7 +216,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
     // Then
     userOpt match {
-      case Some(u) => u.email should be(email.toLowerCase())
+      case Some(u) => u.emailLowerCase should be(email.toLowerCase())
       case _ => fail("User option should be defined")
     }
   }
@@ -230,7 +230,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
     // Then
     userOpt match {
-      case Some(u) => u.email should be(commit.authorEmail)
+      case Some(u) => u.emailLowerCase should be(commit.authorEmail)
       case _ => fail("User option should be defined")
     }
   }
@@ -258,7 +258,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
     // Then
     userOpt match {
-      case Some(u) => u.email should be(email.toLowerCase())
+      case Some(u) => u.emailLowerCase should be(email.toLowerCase())
       case _ => fail("User option should be defined")
     }
   }

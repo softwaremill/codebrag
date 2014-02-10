@@ -52,7 +52,7 @@ class MongoUserDAO extends UserDAO {
   }
 
   def findCommitAuthor(commit: CommitInfo) = {
-    UserRecord.asRegularUser.or(_.where(_.name eqs commit.authorName), _.where(_.email eqs commit.authorEmail)).get()
+    UserRecord.asRegularUser.or(_.where(_.name eqs commit.authorName), _.where(_.email eqs commit.authorEmail.toLowerCase)).get()
   }
 
   def changeUserSettings(userId: ObjectId, newSettings: UserSettings) {
@@ -76,7 +76,7 @@ class MongoUserDAO extends UserDAO {
       UserRecord.createRecord.id(user.id)
         .name(user.name)
         .token(user.token)
-        .email(user.email)
+        .email(user.emailLowerCase)
         .authentication(user.authentication)
         .userSettings(user.settings)
         .notifications(user.notifications)

@@ -72,7 +72,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     userIsAuthenticatedAs(someUser())
     get("/all") {
       status should be(200)
-      val expectedBody = Map("registeredUsers" -> actualUsers.map{user => Map("name" -> user.name, "email" -> user.email)})
+      val expectedBody = Map("registeredUsers" -> actualUsers.map{user => Map("name" -> user.name, "email" -> user.emailLowerCase)})
       body should be(asJson(expectedBody))
     }
   }

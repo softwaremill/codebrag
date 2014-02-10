@@ -25,24 +25,24 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
 
   def findById(userId: ObjectId) = findOneWhere(_.id === userId)
 
-  def findByEmail(email: String) = findOneWhere(_.email === email.toLowerCase) // TODO: extract the common to-lower-case
+  def findByEmail(email: String) = findOneWhere(_.emailLowerCase === email.toLowerCase)
 
-  def findByLowerCasedLogin(login: String) = findOneWhere(_.authUsernameLower === login.toLowerCase)
+  def findByLowerCasedLogin(login: String) = findOneWhere(_.authUsernameLowerCase === login.toLowerCase)
 
   def findByLoginOrEmail(login: String, email: String) = findOneWhere { u =>
-    u.authUsernameLower === login.toLowerCase || u.email === email.toLowerCase
+    u.authUsernameLowerCase === login.toLowerCase || u.emailLowerCase === email.toLowerCase
   }
 
   def findByToken(token: String) = findOneWhere(_.token === token)
 
   def findCommitAuthor(commit: CommitInfo) = findOneWhere { u =>
-    u.name === commit.authorName || u.email === commit.authorEmail
+    u.name === commit.authorName || u.emailLowerCase === commit.authorEmail.toLowerCase
   }
 
   def changeAuthentication(id: ObjectId, auth: Authentication) = db.withTransaction { implicit session =>
     val q = for {
       u <- users if u.id === id
-    } yield (u.authProvider, u.authUsername, u.authUsernameLower, u.authToken, u.authSalt)
+    } yield (u.authProvider, u.authUsername, u.authUsernameLowerCase, u.authToken, u.authSalt)
 
     q.update(auth.provider, auth.username, auth.usernameLowerCase, auth.token, auth.salt)
   }
@@ -71,11 +71,11 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
     def id = column[ObjectId]("id", O.PrimaryKey)
     def authProvider = column[String]("auth_provider")
     def authUsername = column[String]("auth_username")
-    def authUsernameLower = column[String]("auth_username_lower")
+    def authUsernameLowerCase = column[String]("auth_username_lowercase")
     def authToken = column[String]("auth_token")
     def authSalt = column[String]("auth_salt")
     def name = column[String]("name")
-    def email = column[String]("email")
+    def emailLowerCase = column[String]("email_lowercase")
     def token = column[String]("token")
     def settingsAvatarUrl = column[String]("settings_avatar_url")
     def settingsEmailNotificationsEnabled = column[Boolean]("settings_email_notif")
@@ -84,7 +84,7 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
     def notifLastCommitsDispatch = column[Option[DateTime]]("notif_last_commits_dispatch")
     def notifLastFollowupsDispatch = column[Option[DateTime]]("notif_last_followups_dispatch")
 
-    def * = (id, authProvider, authUsername, authUsernameLower, authToken, authSalt, name, email, token,
+    def * = (id, authProvider, authUsername, authUsernameLowerCase, authToken, authSalt, name, emailLowerCase, token,
       settingsAvatarUrl, settingsEmailNotificationsEnabled, settingsDailyUpdatesEmailEnabled, settingsAppTourDone,
       notifLastCommitsDispatch, notifLastFollowupsDispatch)
   }
@@ -95,7 +95,7 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
     (user.id,
       user.authentication.provider, user.authentication.username, user.authentication.usernameLowerCase,
       user.authentication.token, user.authentication.salt,
-      user.name, user.email, user.token,
+      user.name, user.emailLowerCase, user.token,
       user.settings.avatarUrl, user.settings.emailNotificationsEnabled,
       user.settings.dailyUpdatesEmailEnabled, user.settings.appTourDone,
       user.notifications.commits,

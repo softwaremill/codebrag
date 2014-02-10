@@ -140,7 +140,7 @@ trait UserNotificationsSender extends Logging {
         needsCommitNotification || needsFollowupNotification
       }
       case false => {
-        logger.debug(s"Not sending email to ${user.email} - user has notifications disabled")
+        logger.debug(s"Not sending email to ${user.emailLowerCase} - user has notifications disabled")
         false
       }
     }
@@ -168,10 +168,10 @@ trait UserNotificationsSender extends Logging {
             if(counters.nonEmpty) {
               notificationService.sendDailyDigest(user, counters.pendingCommitCount, counters.followupCount)
             } else {
-              logger.debug(s"Not sending email to ${user.email} - no commits and followups waiting for this user")
+              logger.debug(s"Not sending email to ${user.emailLowerCase} - no commits and followups waiting for this user")
             }
           }
-          case false => logger.debug(s"Not sending email to ${user.email} - user has daily digest emails disabled")
+          case false => logger.debug(s"Not sending email to ${user.emailLowerCase} - user has daily digest emails disabled")
         }
       }
     }

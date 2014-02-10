@@ -7,7 +7,8 @@ import org.joda.time.DateTime
 /**
  * @param token Used by "remember me" - set in a cookie.
  */
-case class User(id: ObjectId, authentication: Authentication, name: String, email: String, token: String, settings: UserSettings,
+case class User(id: ObjectId, authentication: Authentication, name: String, 
+                emailLowerCase: String, token: String, settings: UserSettings,
                 notifications: LastUserNotificationDispatch)
 
 object User {
@@ -26,7 +27,7 @@ object User {
   implicit object UserLikeRegularUser extends UserLike[User] {
     def userFullName(userLike: User) = userLike.name
 
-    def userEmail(userLike: User) = userLike.email
+    def userEmail(userLike: User) = userLike.emailLowerCase
   }
 
 }
