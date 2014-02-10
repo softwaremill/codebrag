@@ -5,15 +5,15 @@ import com.softwaremill.codebrag.domain.InternalUser
 import org.bson.types.ObjectId
 import scala.slick.driver.JdbcProfile
 
-class SQLInternalUserDAO(db: SQLDatabase) extends InternalUserDAO with WithSQLSchema {
-  import db.driver.simple._
-  import db.db._
+class SQLInternalUserDAO(database: SQLDatabase) extends InternalUserDAO with WithSQLSchema {
+  import database.driver.simple._
+  import database._
 
-  def findByName(internalUserName: String) = withTransaction { implicit session =>
+  def findByName(internalUserName: String) = db.withTransaction { implicit session =>
     doFindByName(internalUserName)
   }
   
-  def createIfNotExists(internalUser: InternalUser) = withTransaction { implicit session =>
+  def createIfNotExists(internalUser: InternalUser) = db.withTransaction { implicit session =>
     doFindByName(internalUser.name).getOrElse {
       internalUsers += (internalUser.id.toString, internalUser.name)
       internalUser
@@ -37,7 +37,7 @@ class SQLInternalUserDAO(db: SQLDatabase) extends InternalUserDAO with WithSQLSc
 
   private val internalUsers = TableQuery[InternalUsers]
 
-  def count() = withTransaction { implicit session => Query(internalUsers.length).first().toLong }
+  def count() = db.withTransaction { implicit session => Query(internalUsers.length).first().toLong }
 
   def schema: JdbcProfile#DDLInvoker = internalUsers.ddl
 }

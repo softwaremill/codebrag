@@ -7,9 +7,9 @@ import com.softwaremill.codebrag.dao.sql.{WithSQLSchema, SQLDatabase}
 import scala.slick.driver.JdbcProfile
 import org.joda.time.DateTime
 
-class SQLUserDAO(db: SQLDatabase) extends UserDAO with WithSQLSchema {
-  import db.driver.simple._
-  import db.db._
+class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
+  import database.driver.simple._
+  import database._
 
   def add(user: User) = {
     // TODO -> move to trait?
@@ -17,14 +17,14 @@ class SQLUserDAO(db: SQLDatabase) extends UserDAO with WithSQLSchema {
       user.copy(id = new ObjectId())
     } else user
 
-    withTransaction { implicit session =>
+    db.withTransaction { implicit session =>
       users += tuple(toSave)
     }
 
     toSave
   }
 
-  def findAll() = withTransaction { implicit session =>
+  def findAll() = db.withTransaction { implicit session =>
     users.list().map(untuple)
   }
 
@@ -44,7 +44,7 @@ class SQLUserDAO(db: SQLDatabase) extends UserDAO with WithSQLSchema {
     u.name === commit.authorName || u.email === commit.authorEmail
   }
 
-  def changeAuthentication(id: ObjectId, auth: Authentication) = withTransaction { implicit session =>
+  def changeAuthentication(id: ObjectId, auth: Authentication) = db.withTransaction { implicit session =>
     val q = for {
       u <- users if u.id === id.toString
     } yield (u.authProvider, u.authUsername, u.authUsernameLower, u.authToken, u.authSalt)
@@ -52,15 +52,15 @@ class SQLUserDAO(db: SQLDatabase) extends UserDAO with WithSQLSchema {
     q.update(auth.provider, auth.username, auth.usernameLowerCase, auth.token, auth.salt)
   }
 
-  def rememberNotifications(id: ObjectId, notifications: LastUserNotificationDispatch) = withTransaction { implicit session =>
+  def rememberNotifications(id: ObjectId, notifications: LastUserNotificationDispatch) = db.withTransaction { implicit session =>
     val q = for {
       u <- users if u.id === id.toString
     } yield (u.notifLastCommitsDispatch, u.notifLastFollowupsDispatch)
 
-    q.update(toSqlDate(notifications.commits), toSqlDate(notifications.followups))
+    q.update(notifications.commits, notifications.followups)
   }
 
-  def changeUserSettings(id: ObjectId, newSettings: UserSettings) = withTransaction { implicit session =>
+  def changeUserSettings(id: ObjectId, newSettings: UserSettings) = db.withTransaction { implicit session =>
     val q = for {
       u <- users if u.id === id.toString
     } yield (u.settingsAvatarUrl, u.settingsEmailNotificationsEnabled, u.settingsDailyUpdatesEmailEnabled, u.settingsAppTourDone)
@@ -69,8 +69,7 @@ class SQLUserDAO(db: SQLDatabase) extends UserDAO with WithSQLSchema {
       newSettings.dailyUpdatesEmailEnabled, newSettings.appTourDone)
   }
 
-  private type SQLDateTime = java.sql.Timestamp
-  private type UserTuple = (String, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean, Option[SQLDateTime], Option[SQLDateTime])
+  private type UserTuple = (String, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean, Option[DateTime], Option[DateTime])
 
   // TODO: extract entities
   private class Users(tag: Tag) extends Table[UserTuple](tag, "users") {
@@ -87,8 +86,8 @@ class SQLUserDAO(db: SQLDatabase) extends UserDAO with WithSQLSchema {
     def settingsEmailNotificationsEnabled = column[Boolean]("settings_email_notif")
     def settingsDailyUpdatesEmailEnabled = column[Boolean]("settings_email_daily_updates")
     def settingsAppTourDone = column[Boolean]("settings_app_tour_done")
-    def notifLastCommitsDispatch = column[Option[SQLDateTime]]("notif_last_commits_dispatch")
-    def notifLastFollowupsDispatch = column[Option[SQLDateTime]]("notif_last_followups_dispatch")
+    def notifLastCommitsDispatch = column[Option[DateTime]]("notif_last_commits_dispatch")
+    def notifLastFollowupsDispatch = column[Option[DateTime]]("notif_last_followups_dispatch")
 
     def * = (id, authProvider, authUsername, authUsernameLower, authToken, authSalt, name, email, token,
       settingsAvatarUrl, settingsEmailNotificationsEnabled, settingsDailyUpdatesEmailEnabled, settingsAppTourDone,
@@ -96,10 +95,6 @@ class SQLUserDAO(db: SQLDatabase) extends UserDAO with WithSQLSchema {
   }
 
   private val users = TableQuery[Users]
-
-  // TODO: custom type?
-  private implicit def toSqlDate(dt: DateTime) = new SQLDateTime(dt.getMillis)
-  private implicit def toSqlDate(dto: Option[DateTime]) = dto.map(dt => new SQLDateTime(dt.getMillis))
 
   private def tuple(user: User): UserTuple = {
     (user.id.toString,
@@ -113,9 +108,7 @@ class SQLUserDAO(db: SQLDatabase) extends UserDAO with WithSQLSchema {
   }
 
   private def untuple(tuple: UserTuple): User = {
-    val lastUserNotificationDispatch = LastUserNotificationDispatch(
-      tuple._14.map(d => new DateTime(d.getTime)),
-      tuple._15.map(d => new DateTime(d.getTime)))
+    val lastUserNotificationDispatch = LastUserNotificationDispatch(tuple._14, tuple._15)
 
     User(new ObjectId(tuple._1),
       Authentication(tuple._2, tuple._3, tuple._4, tuple._5, tuple._6),
@@ -125,7 +118,7 @@ class SQLUserDAO(db: SQLDatabase) extends UserDAO with WithSQLSchema {
   }
 
   private def findOneWhere(condition: Users => Column[Boolean]): Option[User] = {
-    withTransaction { implicit session =>
+    db.withTransaction { implicit session =>
       val q = for {
         u <- users if condition(u)
       } yield u
