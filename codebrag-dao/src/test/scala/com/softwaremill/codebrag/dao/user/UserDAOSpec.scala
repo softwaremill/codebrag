@@ -34,12 +34,11 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
   "regular user dao" should "not consider users that are flagged as internal" in {
     // given
-    UserRecord.drop // clean database from preloaded uses
     val internalUser = InternalUser("codebrag")
     internalUserDAO.createIfNotExists(internalUser)
 
     // then
-    userDAO.findAll() should be('empty)
+    userDAO.findAll().map(_.name) should not contain ("codebrag")
     userDAO.findById(internalUser.id) should be('empty)
   }
 
@@ -393,7 +392,7 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest wi
 
 class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with UserDAOSpec {
   val userDAO = new SQLUserDAO(sqlDatabase)
-  var internalUserDAO: InternalUserDAO = null
+  var internalUserDAO = new SQLInternalUserDAO(sqlDatabase)
 
-  def withSchemas = List(userDAO)
+  def withSchemas = List(userDAO, internalUserDAO)
 }
