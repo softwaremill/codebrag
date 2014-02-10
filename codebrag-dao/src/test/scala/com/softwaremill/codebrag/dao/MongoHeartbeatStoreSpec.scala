@@ -3,10 +3,10 @@ package com.softwaremill.codebrag.dao
 import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import org.joda.time.{DateTime, DateTimeZone}
-import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.test.mongo.ClearMongoDataAfterTest
 import com.softwaremill.codebrag.common.{FixtureTimeClock, Clock}
 
-class MongoHeartbeatStoreSpec extends FlatSpecWithMongo with ShouldMatchers with ClearDataAfterTest {
+class MongoHeartbeatStoreSpec extends FlatSpecWithMongo with ShouldMatchers with ClearMongoDataAfterTest {
   var store: MongoHeartbeatStore = _
   var clock: Clock = new FixtureTimeClock(1500)
 

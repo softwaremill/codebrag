@@ -5,12 +5,12 @@ import com.softwaremill.codebrag.domain.Like
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
-import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.test.mongo.ClearMongoDataAfterTest
 import com.softwaremill.codebrag.domain.builder.LikeAssembler
 import LikeAssembler._
 import com.softwaremill.codebrag.dao.user.LikeRecord
 
-class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
+class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 
   var likeDao: MongoLikeDAO = _
 

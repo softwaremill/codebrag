@@ -7,10 +7,10 @@ import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.domain.builder.CommentAssembler
 import CommentAssembler._
-import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.test.mongo.ClearMongoDataAfterTest
 import com.softwaremill.codebrag.dao.user.CommentRecord
 
-class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
+class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 
   var commentDao: MongoCommitCommentDAO = _
 

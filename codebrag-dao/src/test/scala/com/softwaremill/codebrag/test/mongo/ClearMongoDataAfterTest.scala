@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.test.mongo
 import org.scalatest.BeforeAndAfterEach
 import com.softwaremill.codebrag.dao.FlatSpecWithMongo
 
-trait  ClearDataAfterTest extends BeforeAndAfterEach {
+trait ClearMongoDataAfterTest extends BeforeAndAfterEach {
   this: FlatSpecWithMongo =>
 
   override protected def afterEach() {

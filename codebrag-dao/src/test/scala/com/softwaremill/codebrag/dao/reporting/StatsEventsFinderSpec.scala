@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.dao.reporting
 
 import com.softwaremill.codebrag.dao.FlatSpecWithMongo
-import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.test.mongo.ClearMongoDataAfterTest
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao.eventstream.EventRecord
 import org.joda.time.{DateTimeZone, DateTime}
@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.domain.reactions.{LikeEvent, CommentAddedEvent,
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import org.bson.types.ObjectId
 
-class StatsEventsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
+class StatsEventsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 
   val finder = new StatsEventsFinder
   val today = DateTime.now(DateTimeZone.UTC)

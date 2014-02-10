@@ -1,13 +1,13 @@
 package com.softwaremill.codebrag.dao.user
 
-import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.test.mongo.ClearMongoDataAfterTest
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.BeforeAndAfterEach
 import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.dao.FlatSpecWithMongo
 
-class MongoInternalUserDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers with BeforeAndAfterEach {
+class MongoInternalUserDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers with BeforeAndAfterEach {
 
   var internalUserDao: MongoInternalUserDAO = _
 

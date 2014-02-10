@@ -4,7 +4,7 @@ import com.softwaremill.codebrag.domain._
 import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.test.mongo.ClearMongoDataAfterTest
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
@@ -379,7 +379,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
   }
 }
 
-class MongoUserDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with UserDAOSpec {
+class MongoUserDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with UserDAOSpec {
   var userDAO: UserDAO = _
   var internalUserDAO: InternalUserDAO = _
 

@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.dao.mongo
 
 import com.softwaremill.codebrag.dao._
-import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.test.mongo.ClearMongoDataAfterTest
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.concurrent.Conductors
 import java.util.concurrent.CopyOnWriteArraySet
@@ -9,7 +9,7 @@ import org.scalatest.time.{Milliseconds, Millisecond, Span}
 
 class MongoInstanceSettingsDAOSpec
   extends FlatSpecWithMongo
-  with ClearDataAfterTest
+  with ClearMongoDataAfterTest
   with ShouldMatchers
   with Conductors {
 

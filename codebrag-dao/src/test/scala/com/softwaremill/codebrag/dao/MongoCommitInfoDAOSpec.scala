@@ -4,10 +4,10 @@ import org.scalatest.matchers.ShouldMatchers
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import CommitInfoAssembler._
-import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.test.mongo.ClearMongoDataAfterTest
 import com.softwaremill.codebrag.domain.User
 
-class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
+class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
   var commitInfoDAO: MongoCommitInfoDAO = _
   val FixtureTime = new DateTime(23333333)
   override def beforeEach() {

@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.dao.finders.commit
 
 import com.softwaremill.codebrag.dao._
-import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
+import com.softwaremill.codebrag.test.mongo.ClearMongoDataAfterTest
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.common.LoadMoreCriteria
 import com.softwaremill.codebrag.domain.builder.{CommitInfoAssembler, UserAssembler}
@@ -10,7 +10,7 @@ import org.bson.types.ObjectId
 import LoadMoreCriteria.PagingDirection
 import com.softwaremill.codebrag.dao.user.MongoUserDAO
 
-class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
+class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 
   val finder = new AllCommitsFinder
 
