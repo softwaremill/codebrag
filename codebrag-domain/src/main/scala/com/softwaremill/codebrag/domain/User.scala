@@ -40,7 +40,7 @@ trait UserLike[T] {
 
 case class Authentication(provider: String, username: String, usernameLowerCase: String, token: String, salt: String)
 
-object Authentication {
+object Authentication extends ((String, String, String, String, String) => Authentication) {
   def github(username: String, accessToken: String) = {
     Authentication("GitHub", username, username.toLowerCase, accessToken, "")
   }

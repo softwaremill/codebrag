@@ -3,16 +3,18 @@ package com.softwaremill.codebrag.dao.user
 import com.softwaremill.codebrag.domain._
 import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.sql.{WithSQLSchema, SQLDatabase}
+import com.softwaremill.codebrag.dao.sql.{WithSQLSchemas, SQLDatabase}
 import scala.slick.driver.JdbcProfile
 import org.joda.time.DateTime
+import scala.slick.model.ForeignKeyAction
 
-class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
+class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
   import database.driver.simple._
   import database._
 
   def addWithId(user: User) = {
     db.withTransaction { implicit session =>
+      auths += tupleAuth(user)
       users += tuple(user)
     }
 
@@ -20,17 +22,35 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
   }
 
   def findAll() = db.withTransaction { implicit session =>
-    users.list().map(untuple)
+    val q = for {
+      u <- users
+      a <- u.authJoin
+    } yield (u, a)
+
+    q.list().map(untuple)
   }
 
   def findById(userId: ObjectId) = findOneWhere(_.id === userId)
 
   def findByEmail(email: String) = findOneWhere(_.emailLowerCase === email.toLowerCase)
 
-  def findByLowerCasedLogin(login: String) = findOneWhere(_.authUsernameLowerCase === login.toLowerCase)
+  def findByLowerCasedLogin(login: String) = db.withTransaction { implicit session =>
+    val q = for {
+      u <- users
+      a <- u.authJoin if a.usernameLowerCase === login.toLowerCase
+    } yield (u, a)
 
-  def findByLoginOrEmail(login: String, email: String) = findOneWhere { u =>
-    u.authUsernameLowerCase === login.toLowerCase || u.emailLowerCase === email.toLowerCase
+    q.firstOption.map(untuple)
+  }
+
+  def findByLoginOrEmail(login: String, email: String) = db.withTransaction { implicit session =>
+    val q = for {
+      u <- users
+      a <- u.authJoin
+      if a.usernameLowerCase === login.toLowerCase || u.emailLowerCase === email.toLowerCase
+    } yield (u, a)
+
+    q.firstOption.map(untuple)
   }
 
   def findByToken(token: String) = findOneWhere(_.token === token)
@@ -40,11 +60,7 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
   }
 
   def changeAuthentication(id: ObjectId, auth: Authentication) = db.withTransaction { implicit session =>
-    val q = for {
-      u <- users if u.id === id
-    } yield (u.authProvider, u.authUsername, u.authUsernameLowerCase, u.authToken, u.authSalt)
-
-    q.update(auth.provider, auth.username, auth.usernameLowerCase, auth.token, auth.salt)
+    auths.where(_.id === id).update(tupleAuth(id, auth))
   }
 
   def rememberNotifications(id: ObjectId, notifications: LastUserNotificationDispatch) = db.withTransaction { implicit session =>
@@ -64,16 +80,26 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
       newSettings.dailyUpdatesEmailEnabled, newSettings.appTourDone)
   }
 
-  private type UserTuple = (ObjectId, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean, Option[DateTime], Option[DateTime])
+  private type AuthTuple = (ObjectId, String, String, String, String, String)
+  private type UserTuple = (ObjectId, String, String, String, String, Boolean, Boolean, Boolean, Option[DateTime], Option[DateTime])
+
+  private class Auths(tag: Tag) extends Table[AuthTuple](tag, "authentications") {
+    def id = column[ObjectId]("id", O.PrimaryKey)
+    def provider = column[String]("provider")
+    def username = column[String]("username")
+    def usernameLowerCase = column[String]("username_lowercase")
+    def token = column[String]("token")
+    def salt = column[String]("salt")
+
+    def * = (id, provider, username, usernameLowerCase, token, salt)
+  }
+
+  private val auths = TableQuery[Auths]
 
   // TODO: extract entities
+  // TODO: indexes
   private class Users(tag: Tag) extends Table[UserTuple](tag, "users") {
     def id = column[ObjectId]("id", O.PrimaryKey)
-    def authProvider = column[String]("auth_provider")
-    def authUsername = column[String]("auth_username")
-    def authUsernameLowerCase = column[String]("auth_username_lowercase")
-    def authToken = column[String]("auth_token")
-    def authSalt = column[String]("auth_salt")
     def name = column[String]("name")
     def emailLowerCase = column[String]("email_lowercase")
     def token = column[String]("token")
@@ -84,7 +110,10 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
     def notifLastCommitsDispatch = column[Option[DateTime]]("notif_last_commits_dispatch")
     def notifLastFollowupsDispatch = column[Option[DateTime]]("notif_last_followups_dispatch")
 
-    def * = (id, authProvider, authUsername, authUsernameLowerCase, authToken, authSalt, name, emailLowerCase, token,
+    def auth = foreignKey("AUTH_FK", id, auths)(_.id, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
+    def authJoin = auths.where(_.id === id)
+
+    def * = (id, name, emailLowerCase, token,
       settingsAvatarUrl, settingsEmailNotificationsEnabled, settingsDailyUpdatesEmailEnabled, settingsAppTourDone,
       notifLastCommitsDispatch, notifLastFollowupsDispatch)
   }
@@ -93,8 +122,6 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
 
   private def tuple(user: User): UserTuple = {
     (user.id,
-      user.authentication.provider, user.authentication.username, user.authentication.usernameLowerCase,
-      user.authentication.token, user.authentication.salt,
       user.name, user.emailLowerCase, user.token,
       user.settings.avatarUrl, user.settings.emailNotificationsEnabled,
       user.settings.dailyUpdatesEmailEnabled, user.settings.appTourDone,
@@ -102,25 +129,32 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
       user.notifications.followups)
   }
 
-  private def untuple(tuple: UserTuple): User = {
-    val lastUserNotificationDispatch = LastUserNotificationDispatch(tuple._14, tuple._15)
+  private def tupleAuth(user: User): AuthTuple = tupleAuth(user.id, user.authentication)
+
+  private def tupleAuth(id: ObjectId, auth: Authentication): AuthTuple = {
+    (id,
+      auth.provider, auth.username, auth.usernameLowerCase,
+      auth.token, auth.salt)
+  }
+
+  private val untuple: ((UserTuple, AuthTuple)) => User = { case (tuple: UserTuple, authTuple: AuthTuple) =>
+    val lastUserNotificationDispatch = LastUserNotificationDispatch(tuple._9, tuple._10)
 
     User(tuple._1,
-      Authentication(tuple._2, tuple._3, tuple._4, tuple._5, tuple._6),
-      tuple._7, tuple._8, tuple._9,
-      UserSettings(tuple._10, tuple._11, tuple._12, tuple._13),
+      Authentication(authTuple._2, authTuple._3, authTuple._4, authTuple._5, authTuple._6),
+      tuple._2, tuple._3, tuple._4,
+      UserSettings(tuple._5, tuple._6, tuple._7, tuple._8),
       lastUserNotificationDispatch)
   }
 
-  private def findOneWhere(condition: Users => Column[Boolean]): Option[User] = {
-    db.withTransaction { implicit session =>
-      val q = for {
-        u <- users if condition(u)
-      } yield u
+  private def findOneWhere(condition: Users => Column[Boolean]): Option[User] = db.withTransaction { implicit session =>
+    val q = for {
+      u <- users if condition(u)
+      a <- u.authJoin
+    } yield (u, a)
 
-      q.firstOption.map(untuple)
-    }
+    q.firstOption.map(untuple)
   }
 
-  def schema: JdbcProfile#DDLInvoker = users.ddl
+  def schemas: List[JdbcProfile#DDLInvoker] = List(auths.ddl, users.ddl)
 }

@@ -2,6 +2,6 @@ package com.softwaremill.codebrag.dao.sql
 
 import scala.slick.driver.JdbcProfile
 
-trait WithSQLSchema {
-  def schema: JdbcProfile#DDLInvoker
+trait WithSQLSchemas {
+  def schemas: Iterable[JdbcProfile#DDLInvoker]
 }

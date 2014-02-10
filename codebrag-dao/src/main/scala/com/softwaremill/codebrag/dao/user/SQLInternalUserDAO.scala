@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.dao.user
 
-import com.softwaremill.codebrag.dao.sql.{SQLDatabase, WithSQLSchema}
+import com.softwaremill.codebrag.dao.sql.{SQLDatabase, WithSQLSchemas}
 import com.softwaremill.codebrag.domain.InternalUser
 import org.bson.types.ObjectId
 import scala.slick.driver.JdbcProfile
 
-class SQLInternalUserDAO(database: SQLDatabase) extends InternalUserDAO with WithSQLSchema {
+class SQLInternalUserDAO(database: SQLDatabase) extends InternalUserDAO with WithSQLSchemas {
   import database.driver.simple._
   import database._
 
@@ -39,5 +39,5 @@ class SQLInternalUserDAO(database: SQLDatabase) extends InternalUserDAO with Wit
 
   def count() = db.withTransaction { implicit session => Query(internalUsers.length).first().toLong }
 
-  def schema: JdbcProfile#DDLInvoker = internalUsers.ddl
+  def schemas: List[JdbcProfile#DDLInvoker] = List(internalUsers.ddl)
 }
