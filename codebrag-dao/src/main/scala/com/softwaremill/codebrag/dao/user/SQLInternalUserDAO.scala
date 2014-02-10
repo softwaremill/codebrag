@@ -15,7 +15,7 @@ class SQLInternalUserDAO(database: SQLDatabase) extends InternalUserDAO with Wit
   
   def createIfNotExists(internalUser: InternalUser) = db.withTransaction { implicit session =>
     doFindByName(internalUser.name).getOrElse {
-      internalUsers += (internalUser.id, internalUser.name)
+      internalUsers += internalUser
       internalUser
     }
   }
@@ -25,14 +25,14 @@ class SQLInternalUserDAO(database: SQLDatabase) extends InternalUserDAO with Wit
       iu <- internalUsers if iu.name === internalUserName
     } yield iu
 
-    q.firstOption.map { case (id, name) => InternalUser(id, name) }
+    q.firstOption
   }
 
-  private class InternalUsers(tag: Tag) extends Table[(ObjectId, String)](tag, "internal_users") {
+  private class InternalUsers(tag: Tag) extends Table[InternalUser](tag, "internal_users") {
     def id = column[ObjectId]("id", O.PrimaryKey)
     def name = column[String]("name")
 
-    def * = (id, name)
+    def * = (id, name) <> (InternalUser.tupled, InternalUser.unapply)
   }
 
   private val internalUsers = TableQuery[InternalUsers]
