@@ -4,6 +4,9 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.Utils
 import org.joda.time.DateTime
 
+/**
+ * @param token Used by "remember me" - set in a cookie.
+ */
 case class User(id: ObjectId, authentication: Authentication, name: String, email: String, token: String, settings: UserSettings,
                 notifications: LastUserNotificationDispatch)
 

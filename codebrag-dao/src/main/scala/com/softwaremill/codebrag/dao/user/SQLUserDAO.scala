@@ -76,7 +76,7 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
     def authSalt = column[String]("auth_salt")
     def name = column[String]("name")
     def email = column[String]("email")
-    def token = column[String]("token") // TODO: why two tokens
+    def token = column[String]("token")
     def settingsAvatarUrl = column[String]("settings_avatar_url")
     def settingsEmailNotificationsEnabled = column[Boolean]("settings_email_notif")
     def settingsDailyUpdatesEmailEnabled = column[Boolean]("settings_email_daily_updates")
