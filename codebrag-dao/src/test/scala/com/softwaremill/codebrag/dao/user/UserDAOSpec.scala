@@ -9,8 +9,28 @@ import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssemb
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
 import com.softwaremill.codebrag.dao.{FlatSpecWithMongo, ObjectIdTestUtils, RequiresDb}
+import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 
-class MongoUserDAOSpec extends MongoUserSpec with ChangeUserSettingsSpec {
+trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with Logging {
+
+  def userDAO: UserDAO
+  def internalUserDAO: InternalUserDAO
+
+  val UserIdPrefix = "507f1f77bcf86cd79943901"
+
+  implicit def intSuffixToObjectId(suffix: Int): ObjectId = new ObjectId(UserIdPrefix + suffix)
+
+  override def beforeEach() {
+    super.beforeEach()
+
+    for (i <- 1 to 3) {
+      val login = "user" + i
+      val password = "pass" + i
+      val token = "token" + i
+      val name = s"User Name $i"
+      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token, UserSettings("avatarUrl"), None))
+    }
+  }
 
   "regular user dao" should "not consider users that are flagged as internal" in {
     // given
@@ -144,7 +164,6 @@ class MongoUserDAOSpec extends MongoUserSpec with ChangeUserSettingsSpec {
       case _ => fail("User option should be defined")
     }
   }
-
 
   it should "find by uppercased login" taggedAs (RequiresDb) in {
     // Given
@@ -332,32 +351,6 @@ class MongoUserDAOSpec extends MongoUserSpec with ChangeUserSettingsSpec {
     foundUser.get.notifications.get.followups.get.getMillis should equal(followupDate.getMillis)
   }
 
-}
-
-trait MongoUserSpec extends FlatSpecWithMongo with ShouldMatchers with ClearDataAfterTest with Logging {
-  val UserIdPrefix = "507f1f77bcf86cd79943901"
-  var userDAO: UserDAO = _
-  var internalUserDAO: MongoInternalUserDAO = _
-
-  implicit def intSuffixToObjectId(suffix: Int): ObjectId = new ObjectId(UserIdPrefix + suffix)
-
-  override def beforeEach() {
-    super.beforeEach()
-    userDAO = new MongoUserDAO
-    internalUserDAO = new MongoInternalUserDAO
-
-    for (i <- 1 to 3) {
-      val login = "user" + i
-      val password = "pass" + i
-      val token = "token" + i
-      val name = s"User Name $i"
-      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token, UserSettings("avatarUrl"), None))
-    }
-  }
-}
-
-trait ChangeUserSettingsSpec extends MongoUserSpec {
-
   val user = UserAssembler.randomUser.withId(9).withEmailNotificationsDisabled().withWelcomeFollowupNotYetDone().get
 
   "changeUserSettings" should "change email notifications" taggedAs RequiresDb in {
@@ -383,5 +376,17 @@ trait ChangeUserSettingsSpec extends MongoUserSpec {
     val Some(userFound) = userDAO.findById(9)
     userFound.settings.emailNotificationsEnabled should equal(true)
     userFound.settings.appTourDone should equal(true)
+  }
+}
+
+class MongoUserDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with UserDAOSpec {
+  var userDAO: UserDAO = _
+  var internalUserDAO: InternalUserDAO = _
+
+  override def beforeEach() {
+    userDAO = new MongoUserDAO
+    internalUserDAO = new MongoInternalUserDAO
+
+    super.beforeEach()
   }
 }
