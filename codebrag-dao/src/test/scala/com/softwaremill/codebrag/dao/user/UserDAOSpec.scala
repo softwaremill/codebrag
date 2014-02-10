@@ -28,7 +28,8 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
       val password = "pass" + i
       val token = "token" + i
       val name = s"User Name $i"
-      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token, UserSettings("avatarUrl"), None))
+      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token,
+        UserSettings("avatarUrl"), LastUserNotificationDispatch(None, None)))
     }
   }
 
@@ -290,7 +291,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
   it should "find user by its Id" taggedAs RequiresDb in {
     // given
-    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", UserSettings("avatarUrl"), None)
+    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", UserSettings("avatarUrl"), LastUserNotificationDispatch(None, None))
     userDAO.add(user)
 
     // when
@@ -304,7 +305,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     // given
     val commitDate = DateTime.now().minusHours(1)
     val followupDate = DateTime.now().minusMinutes(1)
-    val notifications = Some(LastUserNotificationDispatch(Some(commitDate), Some(followupDate)))
+    val notifications = LastUserNotificationDispatch(Some(commitDate), Some(followupDate))
     val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", UserSettings("avatarUrl"), notifications)
     userDAO.add(user)
 
@@ -312,8 +313,8 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     val foundUser = userDAO.findById(user.id)
 
     // then
-    foundUser.get.notifications.get.commits.get.getMillis should equal(commitDate.getMillis)
-    foundUser.get.notifications.get.followups.get.getMillis should equal(followupDate.getMillis)
+    foundUser.get.notifications.commits.get.getMillis should equal(commitDate.getMillis)
+    foundUser.get.notifications.followups.get.getMillis should equal(followupDate.getMillis)
   }
 
   "rememberNotifications" should "store dates properly" taggedAs RequiresDb in {
@@ -328,13 +329,13 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
     // then
     val foundUser = userDAO.findById(user.id)
-    foundUser.get.notifications.get.commits should equal(None)
-    foundUser.get.notifications.get.followups.get.getMillis should equal(followupDate.getMillis)
+    foundUser.get.notifications.commits should equal(None)
+    foundUser.get.notifications.followups.get.getMillis should equal(followupDate.getMillis)
   }
 
   it should "update existing dates" taggedAs RequiresDb in {
     // given
-    val notifications = Some(LastUserNotificationDispatch(Some(DateTime.now().minusHours(5)), Some(DateTime.now().minusMinutes(5))))
+    val notifications = LastUserNotificationDispatch(Some(DateTime.now().minusHours(5)), Some(DateTime.now().minusMinutes(5)))
     val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", UserSettings("avatarUrl"), notifications)
     userDAO.add(user)
 
@@ -346,8 +347,8 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
     // then
     val foundUser = userDAO.findById(user.id)
-    foundUser.get.notifications.get.commits.get.getMillis should equal(commitDate.getMillis)
-    foundUser.get.notifications.get.followups.get.getMillis should equal(followupDate.getMillis)
+    foundUser.get.notifications.commits.get.getMillis should equal(commitDate.getMillis)
+    foundUser.get.notifications.followups.get.getMillis should equal(followupDate.getMillis)
   }
 
   val user = UserAssembler.randomUser.withId(9).withEmailNotificationsDisabled().withWelcomeFollowupNotYetDone().get

@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.notification
 
 import akka.actor.{ActorRef, Props, ActorSystem, Actor}
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.dao.{HeartbeatStore}
+import com.softwaremill.codebrag.dao.HeartbeatStore
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
@@ -130,14 +130,12 @@ trait UserNotificationsSender extends Logging {
     userHasNotificationsEnabled match {
       case true => {
         val needsCommitNotification = counters.pendingCommitCount > 0 && (user.notifications match {
-          case None => true
-          case Some(LastUserNotificationDispatch(None, _)) => true
-          case Some(LastUserNotificationDispatch(Some(date), _)) => date.isBefore(heartbeat)
+          case LastUserNotificationDispatch(None, _) => true
+          case LastUserNotificationDispatch(Some(date), _) => date.isBefore(heartbeat)
         })
         val needsFollowupNotification = counters.followupCount > 0 && (user.notifications match {
-          case None => true
-          case Some(LastUserNotificationDispatch(_, None)) => true
-          case Some(LastUserNotificationDispatch(_, Some(date))) => date.isBefore(heartbeat)
+          case LastUserNotificationDispatch(_, None) => true
+          case LastUserNotificationDispatch(_, Some(date)) => date.isBefore(heartbeat)
         })
         needsCommitNotification || needsFollowupNotification
       }

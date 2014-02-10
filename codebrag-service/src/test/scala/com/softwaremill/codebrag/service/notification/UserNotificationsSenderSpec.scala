@@ -11,6 +11,7 @@ import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
 
 class UserNotificationsSenderSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
@@ -47,7 +48,7 @@ class UserNotificationsSenderSpec
 
   it should "not send notification when user has no commits or followups waiting" in {
     // given
-    val user = UserAssembler.randomUser.get.copy(notifications = None)
+    val user = UserAssembler.randomUser.get.copy(notifications = LastUserNotificationDispatch(None, None))
     val heartbeats = List((user.id, clock.currentDateTimeUTC.minusHours(1)))
     when(userDao.findById(user.id)).thenReturn(Some(user))
     when(notificationCountFinder.getCountersSince(heartbeats.head._2, user.id)).thenReturn(NoCommitsAndFollowups)

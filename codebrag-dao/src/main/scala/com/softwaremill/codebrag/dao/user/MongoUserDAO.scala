@@ -7,7 +7,6 @@ import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
 import net.liftweb.record.field.{BooleanField, OptionalDateTimeField}
-import net.liftweb.record.field.custom.OptionalBsonRecordField
 import com.softwaremill.codebrag.dao.LongStringField
 
 class MongoUserDAO extends UserDAO {
@@ -77,16 +76,13 @@ class MongoUserDAO extends UserDAO {
     }
 
     implicit def toRecord(user: User): UserRecord = {
-      val record: UserRecord = UserRecord.createRecord.id(user.id)
+      UserRecord.createRecord.id(user.id)
         .name(user.name)
         .token(user.token)
         .email(user.email)
         .authentication(user.authentication)
         .userSettings(user.settings)
-      user.notifications match {
-        case Some(notifications) => record.notifications(notifications)
-        case None => record
-      }
+        .notifications(user.notifications)
     }
 
     implicit def toRecord(authentication: Authentication): AuthenticationRecord = {
@@ -150,7 +146,7 @@ class UserRecord extends MongoRecord[UserRecord] with ObjectIdPk[UserRecord] {
 
   object userSettings extends BsonRecordField(this, UserSettingsRecord)
 
-  object notifications extends OptionalBsonRecordField(this, LastUserNotificationDispatchRecord)
+  object notifications extends BsonRecordField(this, LastUserNotificationDispatchRecord)
 
   object regular extends BooleanField(this, true)
 

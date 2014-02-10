@@ -87,7 +87,7 @@ class SQLUserDAO(db: SQLDatabase) extends UserDAO with WithSQLSchema {
     def settingsEmailNotificationsEnabled = column[Boolean]("settings_email_notif")
     def settingsDailyUpdatesEmailEnabled = column[Boolean]("settings_email_daily_updates")
     def settingsAppTourDone = column[Boolean]("settings_app_tour_done")
-    def notifLastCommitsDispatch = column[Option[SQLDateTime]]("notif_last_commits_dispatch") // TODO: double options?
+    def notifLastCommitsDispatch = column[Option[SQLDateTime]]("notif_last_commits_dispatch")
     def notifLastFollowupsDispatch = column[Option[SQLDateTime]]("notif_last_followups_dispatch")
 
     def * = (id, authProvider, authUsername, authUsernameLower, authToken, authSalt, name, email, token,
@@ -108,22 +108,20 @@ class SQLUserDAO(db: SQLDatabase) extends UserDAO with WithSQLSchema {
       user.name, user.email, user.token,
       user.settings.avatarUrl, user.settings.emailNotificationsEnabled,
       user.settings.dailyUpdatesEmailEnabled, user.settings.appTourDone,
-      user.notifications.flatMap(_.commits),
-      user.notifications.flatMap(_.followups))
+      user.notifications.commits,
+      user.notifications.followups)
   }
 
   private def untuple(tuple: UserTuple): User = {
     val lastUserNotificationDispatch = LastUserNotificationDispatch(
       tuple._14.map(d => new DateTime(d.getTime)),
       tuple._15.map(d => new DateTime(d.getTime)))
-    val hasLastUserNotificationDispatch = lastUserNotificationDispatch.commits.isDefined ||
-      lastUserNotificationDispatch.followups.isDefined
 
     User(new ObjectId(tuple._1),
       Authentication(tuple._2, tuple._3, tuple._4, tuple._5, tuple._6),
       tuple._7, tuple._8, tuple._9,
       UserSettings(tuple._10, tuple._11, tuple._12, tuple._13),
-      if (hasLastUserNotificationDispatch) Some(lastUserNotificationDispatch) else None)
+      lastUserNotificationDispatch)
   }
 
   private def findOneWhere(condition: Users => Column[Boolean]): Option[User] = {
