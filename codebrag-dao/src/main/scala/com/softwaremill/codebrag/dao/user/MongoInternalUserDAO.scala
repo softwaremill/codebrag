@@ -8,7 +8,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import net.liftweb.record.field.BooleanField
 import com.softwaremill.codebrag.dao.LongStringField
 
-class MongoInternalUserDAO extends Logging {
+class MongoInternalUserDAO extends InternalUserDAO with Logging {
 
   def createIfNotExists(internalUser: InternalUser): InternalUser = {
     findUserQuery(internalUser.name) match {
