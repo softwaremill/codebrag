@@ -14,6 +14,8 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
 
   def addWithId(user: User) = {
     db.withTransaction { implicit session =>
+      lastNotifs += tupleLastNotif(user.id, user.notifications)
+      userSettings += tupleSettings(user.id, user.settings)
       auths += tupleAuth(user)
       users += tuple(user)
     }
@@ -25,7 +27,9 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
     val q = for {
       u <- users
       a <- u.authJoin
-    } yield (u, a)
+      s <- u.settingsJoin
+      l <- u.lastNotifJoin
+    } yield (u, a, s, l)
 
     q.list().map(untuple)
   }
@@ -38,7 +42,9 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
     val q = for {
       u <- users
       a <- u.authJoin if a.usernameLowerCase === login.toLowerCase
-    } yield (u, a)
+      s <- u.settingsJoin
+      l <- u.lastNotifJoin
+    } yield (u, a, s, l)
 
     q.firstOption.map(untuple)
   }
@@ -48,7 +54,9 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
       u <- users
       a <- u.authJoin
       if a.usernameLowerCase === login.toLowerCase || u.emailLowerCase === email.toLowerCase
-    } yield (u, a)
+      s <- u.settingsJoin
+      l <- u.lastNotifJoin
+    } yield (u, a, s, l)
 
     q.firstOption.map(untuple)
   }
@@ -64,26 +72,19 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
   }
 
   def rememberNotifications(id: ObjectId, notifications: LastUserNotificationDispatch) = db.withTransaction { implicit session =>
-    val q = for {
-      u <- users if u.id === id
-    } yield (u.notifLastCommitsDispatch, u.notifLastFollowupsDispatch)
-
-    q.update(notifications.commits, notifications.followups)
+    lastNotifs.where(_.id === id).update(tupleLastNotif(id, notifications))
   }
 
   def changeUserSettings(id: ObjectId, newSettings: UserSettings) = db.withTransaction { implicit session =>
-    val q = for {
-      u <- users if u.id === id
-    } yield (u.settingsAvatarUrl, u.settingsEmailNotificationsEnabled, u.settingsDailyUpdatesEmailEnabled, u.settingsAppTourDone)
-
-    q.update(newSettings.avatarUrl, newSettings.emailNotificationsEnabled,
-      newSettings.dailyUpdatesEmailEnabled, newSettings.appTourDone)
+    userSettings.where(_.id === id).update(tupleSettings(id, newSettings))
   }
 
   private type AuthTuple = (ObjectId, String, String, String, String, String)
-  private type UserTuple = (ObjectId, String, String, String, String, Boolean, Boolean, Boolean, Option[DateTime], Option[DateTime])
+  private type SettingsTuple = (ObjectId, String, Boolean, Boolean, Boolean)
+  private type LastNotifTuple = (ObjectId, Option[DateTime], Option[DateTime])
+  private type UserTuple = (ObjectId, String, String, String)
 
-  private class Auths(tag: Tag) extends Table[AuthTuple](tag, "authentications") {
+  private class Auths(tag: Tag) extends Table[AuthTuple](tag, "users_authentications") {
     def id = column[ObjectId]("id", O.PrimaryKey)
     def provider = column[String]("provider")
     def username = column[String]("username")
@@ -95,38 +96,53 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
   }
 
   private val auths = TableQuery[Auths]
+  
+  private class Settings(tag: Tag) extends Table[SettingsTuple](tag, "users_settings") {
+    def id = column[ObjectId]("id", O.PrimaryKey)
+    def avatarUrl = column[String]("avatar_url")
+    def emailNotificationsEnabled = column[Boolean]("email_notif")
+    def dailyUpdatesEmailEnabled = column[Boolean]("email_daily_updates")
+    def appTourDone = column[Boolean]("app_tour_done")
 
-  // TODO: extract entities
+    def * = (id, avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone)
+  }
+
+  private val userSettings = TableQuery[Settings]
+
+  private class LastNotifs(tag: Tag) extends Table[LastNotifTuple](tag, "users_last_notifs") {
+    def id = column[ObjectId]("id", O.PrimaryKey)
+    def lastCommitsDispatch = column[Option[DateTime]]("last_commits_dispatch")
+    def lastFollowupsDispatch = column[Option[DateTime]]("last_followups_dispatch")
+
+    def * = (id, lastCommitsDispatch, lastFollowupsDispatch)
+  }
+
+  private val lastNotifs = TableQuery[LastNotifs]
+
   // TODO: indexes
   private class Users(tag: Tag) extends Table[UserTuple](tag, "users") {
     def id = column[ObjectId]("id", O.PrimaryKey)
     def name = column[String]("name")
     def emailLowerCase = column[String]("email_lowercase")
     def token = column[String]("token")
-    def settingsAvatarUrl = column[String]("settings_avatar_url")
-    def settingsEmailNotificationsEnabled = column[Boolean]("settings_email_notif")
-    def settingsDailyUpdatesEmailEnabled = column[Boolean]("settings_email_daily_updates")
-    def settingsAppTourDone = column[Boolean]("settings_app_tour_done")
-    def notifLastCommitsDispatch = column[Option[DateTime]]("notif_last_commits_dispatch")
-    def notifLastFollowupsDispatch = column[Option[DateTime]]("notif_last_followups_dispatch")
 
     def auth = foreignKey("AUTH_FK", id, auths)(_.id, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
     def authJoin = auths.where(_.id === id)
 
-    def * = (id, name, emailLowerCase, token,
-      settingsAvatarUrl, settingsEmailNotificationsEnabled, settingsDailyUpdatesEmailEnabled, settingsAppTourDone,
-      notifLastCommitsDispatch, notifLastFollowupsDispatch)
+    def settings = foreignKey("SETTINGS_FK", id, userSettings)(_.id, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
+    def settingsJoin = userSettings.where(_.id === id)
+
+    def lastNotif = foreignKey("LAST_NOTIFS_FK", id, lastNotifs)(_.id, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
+    def lastNotifJoin = lastNotifs.where(_.id === id)
+
+    def * = (id, name, emailLowerCase, token)
   }
 
   private val users = TableQuery[Users]
 
   private def tuple(user: User): UserTuple = {
     (user.id,
-      user.name, user.emailLowerCase, user.token,
-      user.settings.avatarUrl, user.settings.emailNotificationsEnabled,
-      user.settings.dailyUpdatesEmailEnabled, user.settings.appTourDone,
-      user.notifications.commits,
-      user.notifications.followups)
+      user.name, user.emailLowerCase, user.token)
   }
 
   private def tupleAuth(user: User): AuthTuple = tupleAuth(user.id, user.authentication)
@@ -137,24 +153,33 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
       auth.token, auth.salt)
   }
 
-  private val untuple: ((UserTuple, AuthTuple)) => User = { case (tuple: UserTuple, authTuple: AuthTuple) =>
-    val lastUserNotificationDispatch = LastUserNotificationDispatch(tuple._9, tuple._10)
+  private def tupleSettings(id: ObjectId, settings: UserSettings): SettingsTuple =
+    (id,
+      settings.avatarUrl, settings.emailNotificationsEnabled,
+      settings.dailyUpdatesEmailEnabled, settings.appTourDone)
 
-    User(tuple._1,
-      Authentication(authTuple._2, authTuple._3, authTuple._4, authTuple._5, authTuple._6),
-      tuple._2, tuple._3, tuple._4,
-      UserSettings(tuple._5, tuple._6, tuple._7, tuple._8),
-      lastUserNotificationDispatch)
+  private def tupleLastNotif(id: ObjectId, lastNotif: LastUserNotificationDispatch): LastNotifTuple =
+    (id, lastNotif.commits, lastNotif.followups)
+
+  private val untuple: ((UserTuple, AuthTuple, SettingsTuple, LastNotifTuple)) => User = {
+    case (tuple, authTuple, settingsTuple, lastNotifTuple) =>
+      User(tuple._1,
+        Authentication(authTuple._2, authTuple._3, authTuple._4, authTuple._5, authTuple._6),
+        tuple._2, tuple._3, tuple._4,
+        UserSettings(settingsTuple._2, settingsTuple._3, settingsTuple._4, settingsTuple._5),
+        LastUserNotificationDispatch(lastNotifTuple._2, lastNotifTuple._3))
   }
 
   private def findOneWhere(condition: Users => Column[Boolean]): Option[User] = db.withTransaction { implicit session =>
     val q = for {
       u <- users if condition(u)
       a <- u.authJoin
-    } yield (u, a)
+      s <- u.settingsJoin
+      l <- u.lastNotifJoin
+    } yield (u, a, s, l)
 
     q.firstOption.map(untuple)
   }
 
-  def schemas: List[JdbcProfile#DDLInvoker] = List(auths.ddl, users.ddl)
+  def schemas: List[JdbcProfile#DDLInvoker] = List(lastNotifs.ddl, userSettings.ddl, auths.ddl, users.ddl)
 }
