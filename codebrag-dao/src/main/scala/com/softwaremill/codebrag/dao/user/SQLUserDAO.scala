@@ -119,7 +119,6 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
 
   private val lastNotifs = TableQuery[LastNotifs]
 
-  // TODO: indexes
   private class Users(tag: Tag) extends Table[UserTuple](tag, "users") {
     def id = column[ObjectId]("id", O.PrimaryKey)
     def name = column[String]("name")
