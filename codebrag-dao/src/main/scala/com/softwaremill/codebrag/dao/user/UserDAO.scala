@@ -7,7 +7,15 @@ trait UserDAO {
   /**
    * @return The saved user - in case id was not present, it will be filled after saving.
    */
-  def add(user: User): User
+  def add(user: User): User = {
+    val toAdd = if (user.id == null) {
+      user.copy(id = new ObjectId())
+    } else user
+
+    addWithId(toAdd)
+  }
+
+  def addWithId(user: User): User
 
   def findAll(): List[User]
 

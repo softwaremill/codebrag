@@ -11,17 +11,12 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchema {
   import database.driver.simple._
   import database._
 
-  def add(user: User) = {
-    // TODO -> move to trait?
-    val toSave = if (user.id == null) {
-      user.copy(id = new ObjectId())
-    } else user
-
+  def addWithId(user: User) = {
     db.withTransaction { implicit session =>
-      users += tuple(toSave)
+      users += tuple(user)
     }
 
-    toSave
+    user
   }
 
   def findAll() = db.withTransaction { implicit session =>
