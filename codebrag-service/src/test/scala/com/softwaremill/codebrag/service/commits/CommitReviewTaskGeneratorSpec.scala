@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.commits
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfter, FlatSpec}
-import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO, UserDAO}
+import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO}
 import akka.testkit.TestActorRef
 import com.softwaremill.codebrag.domain.{CommitReviewTask, UpdatedCommit, CommitsUpdatedEvent}
 import org.bson.types.ObjectId
@@ -16,6 +16,7 @@ import com.typesafe.config.ConfigFactory
 import org.joda.time.DateTime
 import scala.util.Random
 import com.softwaremill.codebrag.common.ClockSpec
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class CommitReviewTaskGeneratorSpec
   extends FlatSpec with ShouldMatchers with BeforeAndAfter with BeforeAndAfterAll with MockitoSugar with ClockSpec {

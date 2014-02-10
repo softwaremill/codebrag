@@ -2,9 +2,9 @@ package com.softwaremill.codebrag.usecase
 
 import com.softwaremill.codebrag.service.data.UserJson
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.domain.UserSettings
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class ChangeUserSettingsUseCase(userDao: UserDAO) extends Logging {
 

@@ -9,6 +9,7 @@ import scala.Some
 import com.softwaremill.codebrag.dao._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.{FollowupLastLikeView, FollowupLastCommentView}
+import com.softwaremill.codebrag.dao.user.{UserDAO, MongoUserDAO}
 
 class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 

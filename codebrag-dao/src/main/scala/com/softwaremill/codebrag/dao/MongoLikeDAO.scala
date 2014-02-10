@@ -5,6 +5,7 @@ import org.bson.types.ObjectId
 import org.joda.time.DateTime
 import com.foursquare.rogue.LiftRogue._
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.dao.user.LikeRecord
 
 class MongoLikeDAO extends LikeDAO with Logging {
 

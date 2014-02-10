@@ -11,6 +11,7 @@ import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with FollowupServiceSpecFixture{
 

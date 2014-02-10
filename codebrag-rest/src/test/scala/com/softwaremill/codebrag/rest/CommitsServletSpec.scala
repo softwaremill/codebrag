@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import com.softwaremill.codebrag.AuthenticatableServletSpec
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
-import com.softwaremill.codebrag.dao.{UserDAO, CommitInfoDAO}
+import com.softwaremill.codebrag.dao.{CommitInfoDAO}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.reporting.MongoReactionFinder
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
@@ -17,6 +17,7 @@ import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.usecase.UnlikeUseCase
 import com.softwaremill.codebrag.dao.finders.commit.{AllCommitsFinder, ReviewableCommitsListFinder}
 import com.softwaremill.codebrag.common.LoadMoreCriteria.PagingDirection
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {

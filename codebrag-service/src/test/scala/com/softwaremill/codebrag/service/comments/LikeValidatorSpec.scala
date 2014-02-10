@@ -3,10 +3,11 @@ package com.softwaremill.codebrag.service.comments
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, UserDAO, CommitInfoDAO, LikeDAO}
+import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, CommitInfoDAO, LikeDAO}
 import com.softwaremill.codebrag.domain.Like
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class LikeValidatorSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach{
 

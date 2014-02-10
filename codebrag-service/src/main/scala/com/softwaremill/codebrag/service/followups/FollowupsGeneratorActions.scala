@@ -7,6 +7,7 @@ import scala.Some
 import com.softwaremill.codebrag.domain.reactions.LikeEvent
 import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 trait FollowupsGeneratorActions extends Logging {
 

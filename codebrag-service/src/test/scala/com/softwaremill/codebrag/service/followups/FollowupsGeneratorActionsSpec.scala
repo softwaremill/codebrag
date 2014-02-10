@@ -15,6 +15,7 @@ import scala.Some
 import com.softwaremill.codebrag.domain.FollowupWithNoReactions
 import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
 import com.softwaremill.codebrag.common.ClockSpec
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class FollowupsGeneratorActionsSpec
   extends FlatSpec with ShouldMatchers with BeforeAndAfterEach with MockitoSugar with ClockSpec {

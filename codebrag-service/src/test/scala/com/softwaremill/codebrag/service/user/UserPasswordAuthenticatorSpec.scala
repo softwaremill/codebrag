@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.service.user
 
-import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, UserDAO}
+import com.softwaremill.codebrag.dao.ObjectIdTestUtils
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
@@ -11,6 +11,7 @@ import com.softwaremill.codebrag.service.data.UserJson
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.service.commits.CommitReviewTaskGeneratorActions
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with MockEventBus {
 

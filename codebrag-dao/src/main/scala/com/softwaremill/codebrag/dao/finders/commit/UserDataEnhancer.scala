@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.dao.finders.commit
 
-import com.softwaremill.codebrag.dao.UserRecord
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.dao.reporting.views.CommitListView
 import com.softwaremill.codebrag.dao.reporting.views.CommitView
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 import com.softwaremill.codebrag.domain.{UserSettings, UserLike}
+import com.softwaremill.codebrag.dao.user.UserRecord
 
 
 trait UserDataEnhancer {

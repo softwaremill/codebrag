@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.service.invitations
 
-import com.softwaremill.codebrag.dao.{UserDAO, InvitationDAO}
+import com.softwaremill.codebrag.dao.{InvitationDAO}
 import com.softwaremill.codebrag.common.{Clock, Utils}
 import com.softwaremill.codebrag.domain.{User, Invitation}
 import org.bson.types.ObjectId
@@ -8,6 +8,7 @@ import com.softwaremill.codebrag.service.email.{EmailService, Email}
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.service.templates.{EmailTemplates, TemplateEngine}
 import org.joda.time.{Minutes, Hours}
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class InvitationService(
                          invitationDAO: InvitationDAO,

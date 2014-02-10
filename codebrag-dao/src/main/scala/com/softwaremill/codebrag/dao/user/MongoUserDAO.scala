@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.user
 
 import com.softwaremill.codebrag.domain._
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
@@ -8,6 +8,7 @@ import org.bson.types.ObjectId
 import org.joda.time.DateTime
 import net.liftweb.record.field.{BooleanField, OptionalDateTimeField}
 import net.liftweb.record.field.custom.OptionalBsonRecordField
+import com.softwaremill.codebrag.dao.LongStringField
 
 class MongoUserDAO extends UserDAO {
 

@@ -8,6 +8,7 @@ import com.softwaremill.codebrag.domain.builder.{CommitInfoAssembler, UserAssemb
 import com.softwaremill.codebrag.domain.{CommitReviewTask, CommitInfo, User}
 import org.bson.types.ObjectId
 import LoadMoreCriteria.PagingDirection
+import com.softwaremill.codebrag.dao.user.MongoUserDAO
 
 class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 

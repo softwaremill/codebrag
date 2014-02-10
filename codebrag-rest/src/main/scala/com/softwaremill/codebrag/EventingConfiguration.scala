@@ -13,6 +13,7 @@ import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
 import com.softwaremill.codebrag.dao.eventstream.EventDao
 import com.softwaremill.codebrag.eventstream.StatisticEventsCollector
 import com.softwaremill.codebrag.service.events.EventLogger
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 trait EventingConfiguration extends ActorSystemSupport {
 

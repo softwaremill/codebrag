@@ -3,13 +3,13 @@ package com.softwaremill.codebrag.service.user
 import org.scalatest.FlatSpec
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.UserDAO
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import com.softwaremill.codebrag.domain.{UserSettings, Authentication, User}
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.service.invitations.InvitationService
 import com.softwaremill.codebrag.service.notification.NotificationService
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers {
 

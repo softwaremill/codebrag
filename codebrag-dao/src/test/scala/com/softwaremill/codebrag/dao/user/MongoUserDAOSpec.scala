@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.user
 
 import com.softwaremill.codebrag.domain._
 import org.scalatest.matchers.ShouldMatchers
@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
-import scala.Some
+import com.softwaremill.codebrag.dao.{FlatSpecWithMongo, ObjectIdTestUtils, RequiresDb}
 
 class MongoUserDAOSpec extends MongoUserSpec with ChangeUserSettingsSpec {
 

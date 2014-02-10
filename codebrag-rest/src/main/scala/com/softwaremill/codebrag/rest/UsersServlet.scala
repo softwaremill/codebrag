@@ -4,8 +4,8 @@ import org.scalatra._
 import com.softwaremill.codebrag.service.user.{RegisterService, Authenticator}
 import com.softwaremill.codebrag.service.data.UserJson
 import swagger.{Swagger, SwaggerSupport}
-import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.service.config.CodebragConfig
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class UsersServlet(val authenticator: Authenticator, registerService: RegisterService, userDao: UserDAO, config: CodebragConfig, val swagger: Swagger)
   extends JsonServletWithAuthentication with UsersServletSwaggerDefinition with CookieSupport {

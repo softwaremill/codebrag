@@ -3,10 +3,10 @@ package com.softwaremill.codebrag.rest
 import org.bson.types.ObjectId
 import org.scalatra.swagger.SwaggerSupport
 import com.softwaremill.codebrag.activities.AddCommentActivity
-import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import scala.Some
 import com.softwaremill.codebrag.dao.reporting.views.CommentView
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 
 trait CommentsEndpoint extends JsonServletWithAuthentication with UserReactionParametersReader with CommentsEndpointSwaggerDefinition {

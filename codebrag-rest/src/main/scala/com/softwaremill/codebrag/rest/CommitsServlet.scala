@@ -8,10 +8,10 @@ import swagger.{Swagger, SwaggerSupport}
 import com.softwaremill.codebrag.dao.reporting._
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import com.softwaremill.codebrag.activities.{CommitReviewActivity, AddCommentActivity}
-import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO, UserDAO}
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.usecase.UnlikeUseCase
 import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class CommitsServlet(val authenticator: Authenticator,
                      val reviewableCommitsListFinder: ReviewableCommitsListFinder,

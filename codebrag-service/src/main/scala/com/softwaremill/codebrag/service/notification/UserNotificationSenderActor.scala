@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.notification
 
 import akka.actor.{ActorRef, Props, ActorSystem, Actor}
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.dao.{UserDAO, HeartbeatStore}
+import com.softwaremill.codebrag.dao.{HeartbeatStore}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
@@ -12,6 +12,7 @@ import com.softwaremill.codebrag.common.Clock
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import scala.concurrent.duration.FiniteDuration
 import com.softwaremill.codebrag.common.scheduling.ScheduleDelaysCalculator
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class UserNotificationSenderActor(actorSystem: ActorSystem,
                                   heartbeatStore: HeartbeatStore,

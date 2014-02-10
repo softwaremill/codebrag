@@ -8,6 +8,7 @@ import com.softwaremill.codebrag.common.{LoadMoreCriteria}
 import com.softwaremill.codebrag.domain.{User, CommitInfo, CommitReviewTask}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.LoadMoreCriteria.PagingDirection
+import com.softwaremill.codebrag.dao.user.MongoUserDAO
 
 class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 

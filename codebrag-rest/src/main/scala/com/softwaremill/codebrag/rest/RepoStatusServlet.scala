@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.rest
 
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.config.{RepositoryConfig, CodebragConfig}
-import com.softwaremill.codebrag.dao.{RepositoryStatusDAO, UserDAO}
+import com.softwaremill.codebrag.dao.{RepositoryStatusDAO}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.service.commits.{RepoData, RepoDataProducer}

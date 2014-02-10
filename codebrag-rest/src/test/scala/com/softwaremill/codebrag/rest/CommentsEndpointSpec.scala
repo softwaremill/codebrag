@@ -4,7 +4,6 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.AuthenticatableServletSpec
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
-import com.softwaremill.codebrag.dao.UserDAO
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import com.softwaremill.codebrag.activities.AddCommentActivity
@@ -17,6 +16,7 @@ import org.scalatest.BeforeAndAfterEach
 import scala.Some
 import com.softwaremill.codebrag.dao.reporting.views.CommentView
 import com.softwaremill.codebrag.service.comments.command.IncomingComment
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 
 class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {

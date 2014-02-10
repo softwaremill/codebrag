@@ -4,6 +4,7 @@ import com.softwaremill.codebrag.domain.{ThreadDetails, Comment}
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
+import com.softwaremill.codebrag.dao.user.CommentRecord
 
 class MongoCommitCommentDAO extends CommitCommentDAO {
 

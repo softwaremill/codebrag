@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.service.commits
 
-import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.service.config.RepositoryConfig
 import com.typesafe.scalalogging.slf4j.Logging
 import org.eclipse.jgit.util.StringUtils
 import org.eclipse.jgit.transport._
 import com.jcraft.jsch.Session
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class RepoDataProducer(userDao: UserDAO, config: RepositoryConfig) extends Logging {
   def getRepoTypeFromConfiguration: RepoType = {

@@ -8,6 +8,7 @@ import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import com.softwaremill.codebrag.domain.builder.LikeAssembler
 import LikeAssembler._
+import com.softwaremill.codebrag.dao.user.LikeRecord
 
 class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
 

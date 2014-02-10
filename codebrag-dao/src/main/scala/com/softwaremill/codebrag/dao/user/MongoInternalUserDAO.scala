@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.user
 
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.ObjectIdPk
@@ -6,6 +6,7 @@ import com.softwaremill.codebrag.domain.InternalUser
 import com.foursquare.rogue.LiftRogue._
 import com.typesafe.scalalogging.slf4j.Logging
 import net.liftweb.record.field.BooleanField
+import com.softwaremill.codebrag.dao.LongStringField
 
 class MongoInternalUserDAO extends Logging {
 

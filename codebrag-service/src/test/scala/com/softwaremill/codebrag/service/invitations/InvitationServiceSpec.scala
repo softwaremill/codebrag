@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.service.invitations
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.{UserDAO, InvitationDAO}
+import com.softwaremill.codebrag.dao.{InvitationDAO}
 import com.softwaremill.codebrag.service.email.{Email, EmailService}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
@@ -15,6 +15,7 @@ import com.softwaremill.codebrag.service.templates.{EmailContentWithSubject, Ema
 import com.softwaremill.codebrag.common.ClockSpec
 import org.joda.time.Hours
 import com.softwaremill.codebrag.domain.builder.UserAssembler
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class InvitationServiceSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
