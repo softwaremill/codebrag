@@ -38,7 +38,7 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: Templa
       "username" -> user.name,
       "commit_followup_message" -> translate(commitCount, followupCount, isTotalCount = true),
       "application_url" -> codebragConfig.applicationUrl,
-      "date" -> clock.currentDateTime.toString(DateTimeFormat.forPattern("yyyy-MM-dd"))
+      "date" -> clock.now.toString(DateTimeFormat.forPattern("yyyy-MM-dd"))
     )
     val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.DailyDigest, templateParams)
     val email = Email(List(user.emailLowerCase), resolvedTemplate.subject, resolvedTemplate.content)

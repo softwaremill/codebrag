@@ -30,7 +30,7 @@ class MongoHeartbeatStoreSpec extends FlatSpecWithMongo with ShouldMatchers with
     //given
     val userId = new ObjectId
     val fixtureClock = new FixtureTimeClock(1000)
-    val lastHeartbeat = fixtureClock.currentDateTimeUTC.minusDays(2)
+    val lastHeartbeat = fixtureClock.nowUtc.minusDays(2)
     HeartbeatRecord.createRecord.id(userId).lastHeartbeat(lastHeartbeat.toDate).save
 
     //when
@@ -44,7 +44,7 @@ class MongoHeartbeatStoreSpec extends FlatSpecWithMongo with ShouldMatchers with
     //given
     val userId = new ObjectId
     val fixtureClock = new FixtureTimeClock(1000)
-    val lastHeartbeat = fixtureClock.currentDateTimeUTC.minusDays(2)
+    val lastHeartbeat = fixtureClock.nowUtc.minusDays(2)
     HeartbeatRecord.createRecord.id(userId).lastHeartbeat(lastHeartbeat.toDate).save
 
     //when

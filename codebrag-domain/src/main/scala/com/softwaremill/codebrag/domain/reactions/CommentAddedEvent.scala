@@ -12,7 +12,7 @@ case class CommentAddedEvent(comment: Comment)(implicit clock: Clock) extends Ev
 
   def eventType = CommentAddedEvent.EventType
 
-  def timestamp: DateTime = clock.currentDateTimeUTC
+  def timestamp: DateTime = clock.nowUtc
 
   def userId: Option[ObjectId] = Some(comment.authorId)
 

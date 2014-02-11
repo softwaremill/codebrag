@@ -54,11 +54,11 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearMongo
   "getCountersSince" should "return zero followups if there are no new followups for the user" taggedAs RequiresDb in {
     // given
     val clock = new FixtureTimeClock(DateTime.now.minusDays(1).getMillis)
-    val oldLike = LikeAssembler.likeFor(new ObjectId).withId(ObjectIdTestUtils.withDate(clock.currentDateTimeUTC)).withFileNameAndLineNumber("file.txt", 20).get
+    val oldLike = LikeAssembler.likeFor(new ObjectId).withId(ObjectIdTestUtils.withDate(clock.nowUtc)).withFileNameAndLineNumber("file.txt", 20).get
     followupDao.createOrUpdateExisting(Followup(UserBruceId, oldLike))
 
     //when
-    val counters = notificationCountFinder.getCountersSince(clock.currentDateTimeUTC.plusDays(2), UserBruceId)
+    val counters = notificationCountFinder.getCountersSince(clock.nowUtc.plusDays(2), UserBruceId)
 
     //then
     counters.followupCount should equal(0)
@@ -68,11 +68,11 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearMongo
   it should "return a number of new followups for the user since a given date" taggedAs RequiresDb in {
     // given
     val clock = new FixtureTimeClock(DateTime.now.getMillis)
-    val oldLike = LikeAssembler.likeFor(new ObjectId).withId(ObjectIdTestUtils.withDate(clock.currentDateTimeUTC)).withFileNameAndLineNumber("file.txt", 20).get
+    val oldLike = LikeAssembler.likeFor(new ObjectId).withId(ObjectIdTestUtils.withDate(clock.nowUtc)).withFileNameAndLineNumber("file.txt", 20).get
     followupDao.createOrUpdateExisting(Followup(UserBruceId, oldLike))
 
     //when
-    val counters = notificationCountFinder.getCountersSince(clock.currentDateTimeUTC.minusDays(1), UserBruceId)
+    val counters = notificationCountFinder.getCountersSince(clock.nowUtc.minusDays(1), UserBruceId)
 
     //then
     counters.followupCount should equal(1)
@@ -83,16 +83,16 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearMongo
     val commitId = new ObjectId
     val clock = new FixtureTimeClock(DateTime.now.getMillis)
 
-    val earliestLike = LikeAssembler.likeFor(commitId).withId(ObjectIdTestUtils.withDate(clock.currentDateTimeUTC.minusHours(3))).withFileNameAndLineNumber("file.txt", 20).get
-    val latestLike = LikeAssembler.likeFor(commitId).withId(ObjectIdTestUtils.withDate(clock.currentDateTimeUTC.minusHours(1))).withFileNameAndLineNumber("file.txt", 20).get
+    val earliestLike = LikeAssembler.likeFor(commitId).withId(ObjectIdTestUtils.withDate(clock.nowUtc.minusHours(3))).withFileNameAndLineNumber("file.txt", 20).get
+    val latestLike = LikeAssembler.likeFor(commitId).withId(ObjectIdTestUtils.withDate(clock.nowUtc.minusHours(1))).withFileNameAndLineNumber("file.txt", 20).get
     followupDao.createOrUpdateExisting(Followup(UserBruceId, earliestLike))
     followupDao.createOrUpdateExisting(Followup(UserBruceId, latestLike))
 
-    val anotherLike = LikeAssembler.likeFor(commitId).withId(ObjectIdTestUtils.withDate(clock.currentDateTimeUTC.minusHours(1))).withFileNameAndLineNumber("file.txt", 30).get
+    val anotherLike = LikeAssembler.likeFor(commitId).withId(ObjectIdTestUtils.withDate(clock.nowUtc.minusHours(1))).withFileNameAndLineNumber("file.txt", 30).get
     followupDao.createOrUpdateExisting(Followup(UserBruceId, anotherLike))
 
     //when
-    val timeBetweenLatestAndEarliestLike = clock.currentDateTimeUTC.minusHours(2)
+    val timeBetweenLatestAndEarliestLike = clock.nowUtc.minusHours(2)
     val counters = notificationCountFinder.getCountersSince(timeBetweenLatestAndEarliestLike, UserBruceId)
 
     //then

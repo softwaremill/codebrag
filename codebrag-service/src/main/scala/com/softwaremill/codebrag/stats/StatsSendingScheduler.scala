@@ -27,7 +27,7 @@ object StatsSendingScheduler extends Logging {
 
 
   private def logScheduleInfo(clock: Clock, initialDelay: FiniteDuration, config: CodebragStatsConfig) {
-    val dateAtDelay = ScheduleDelaysCalculator.dateAtDelay(clock.currentDateTime, initialDelay)
+    val dateAtDelay = ScheduleDelaysCalculator.dateAtDelay(clock.now, initialDelay)
     val intervalHours = config.statsSendInterval.toHours
     val intervalMinutes = config.statsSendInterval.toMinutes
     logger.debug(s"Statistics calculation scheduled to $dateAtDelay with interval $intervalMinutes minutes ($intervalHours hours)")

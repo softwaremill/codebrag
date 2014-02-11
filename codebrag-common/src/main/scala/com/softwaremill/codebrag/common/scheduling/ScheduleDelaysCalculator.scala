@@ -13,23 +13,23 @@ object ScheduleDelaysCalculator {
     val sendPeriod = new Period().withHours(sendHour).withMinutes(sendMinute)
 
     val day = if(isBeforeSendHourToday(clock, sendPeriod)) {
-      clock.currentDateTime.withTimeAtStartOfDay().plus(sendPeriod)
+      clock.now.withTimeAtStartOfDay().plus(sendPeriod)
     } else {
-      clock.currentDateTime.plusDays(1).withTimeAtStartOfDay().plus(sendPeriod)
+      clock.now.plusDays(1).withTimeAtStartOfDay().plus(sendPeriod)
     }
-    day.getMillis - clock.currentDateTime.getMillis
+    day.getMillis - clock.now.getMillis
   }
 
   def delayInMillis(delayPeriod: Period)(implicit clock: Clock) = {
-    val nextSend = clock.currentDateTime.plus(delayPeriod)
-    nextSend.getMillis - clock.currentDateTime.getMillis
+    val nextSend = clock.now.plus(delayPeriod)
+    nextSend.getMillis - clock.now.getMillis
   }
 
   def dateAtDelay(now: DateTime, duration: Duration) = now.plusMillis(duration.toMillis.toInt)
 
   private def isBeforeSendHourToday(clock: Clock, period: Period) = {
-    val sendTime = clock.currentDateTime.withTimeAtStartOfDay.plus(period)
-    clock.currentDateTime.isBefore(sendTime)
+    val sendTime = clock.now.withTimeAtStartOfDay.plus(period)
+    clock.now.isBefore(sendTime)
   }
 
 }

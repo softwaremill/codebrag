@@ -40,7 +40,7 @@ class FollowupsGeneratorForReactionsPriorUserRegistration(
   }
 
   private def findRecentUserCommits(newUser: NewUserRegistered): List[ObjectId] = {
-    val timeRangeForCommits = clock.currentDateTime.minusDays(codebragConfig.replayFollowupsForPastCommitsTimeInDays)
+    val timeRangeForCommits = clock.now.minusDays(codebragConfig.replayFollowupsForPastCommitsTimeInDays)
     commitInfoDao.findLastCommitsAuthoredByUserSince(newUser, timeRangeForCommits).map(_.id)
   }
 

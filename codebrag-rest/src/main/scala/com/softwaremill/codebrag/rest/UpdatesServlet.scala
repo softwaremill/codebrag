@@ -15,7 +15,7 @@ class UpdatesServlet(val authenticator: Authenticator, finder: NotificationCount
     val userId = new ObjectId(user.id)
     heartbeat.update(userId)
     val counters = finder.getCounters(userId)
-    UpdateNotification(clock.currentTimeMillis, counters.pendingCommitCount, counters.followupCount)
+    UpdateNotification(clock.nowMillis, counters.pendingCommitCount, counters.followupCount)
   }
 
 }

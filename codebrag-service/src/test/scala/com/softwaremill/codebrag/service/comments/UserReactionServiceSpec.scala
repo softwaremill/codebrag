@@ -59,7 +59,7 @@ class UserReactionServiceSpec
     savedComment.commitId should equal(CommentForCommit.commitId)
     savedComment.authorId should equal(CommentForCommit.authorId)
     savedComment.message should equal(CommentForCommit.message)
-    savedComment.postingTime should equal(clock.currentDateTimeUTC)
+    savedComment.postingTime should equal(clock.nowUtc)
   }
 
   it should "return created inline comment as a result" in {

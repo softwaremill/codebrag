@@ -9,7 +9,7 @@ case class NewUserRegistered(id: ObjectId, login: String, fullName: String, emai
 
   def eventType = NewUserRegistered.EventType
 
-  def timestamp: DateTime = clock.currentDateTimeUTC
+  def timestamp: DateTime = clock.nowUtc
 
   def userId: Option[ObjectId] = Some(id)
 

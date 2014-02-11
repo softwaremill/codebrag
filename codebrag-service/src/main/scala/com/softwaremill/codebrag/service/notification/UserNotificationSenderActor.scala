@@ -64,7 +64,7 @@ object UserNotificationSenderActor extends Logging {
     import scala.concurrent.duration._
 
     val initialDelay = ScheduleDelaysCalculator.delayToGivenTimeInMillis(config.dailyDigestSendHour, config.dailyDigestSendMinute)(clock).millis
-    val dateAtDelay = ScheduleDelaysCalculator.dateAtDelay(clock.currentDateTime, initialDelay)
+    val dateAtDelay = ScheduleDelaysCalculator.dateAtDelay(clock.now, initialDelay)
     logger.debug(s"Scheduling initial daily digest sending at $dateAtDelay")
     actorSystem.scheduler.scheduleOnce(initialDelay, receiver, SendDailyDigest)
   }
@@ -74,7 +74,7 @@ object UserNotificationSenderActor extends Logging {
     import scala.concurrent.duration._
 
     val nextSendOutDelay = ScheduleDelaysCalculator.delayInMillis(config.dailyDigestSendInterval)(clock).millis
-    val dateAtDelay = clock.currentDateTime.plusMillis(nextSendOutDelay.toMillis.toInt)
+    val dateAtDelay = clock.now.plusMillis(nextSendOutDelay.toMillis.toInt)
     logger.debug(s"Scheduling next daily digest sending at $dateAtDelay")
     actorSystem.scheduler.scheduleOnce(nextSendOutDelay, receiver, SendDailyDigest)
   }
@@ -104,7 +104,7 @@ trait UserNotificationsSender extends Logging {
   def config: CodebragConfig
 
   def sendUserNotifications(heartbeats: List[(ObjectId, DateTime)]) {
-    def userIsOffline(heartbeat: DateTime) = heartbeat.isBefore(clock.currentDateTimeUTC.minus(config.userOfflinePeriod))
+    def userIsOffline(heartbeat: DateTime) = heartbeat.isBefore(clock.nowUtc.minus(config.userOfflinePeriod))
 
     var emailsScheduled = 0
 
@@ -152,8 +152,8 @@ trait UserNotificationsSender extends Logging {
   }
 
   private def updateLastNotificationsDispatch(user: User, counters: NotificationCountersView) {
-    val commitDate = if (counters.pendingCommitCount > 0) Some(clock.currentDateTimeUTC) else None
-    val followupDate = if (counters.followupCount > 0) Some(clock.currentDateTimeUTC) else None
+    val commitDate = if (counters.pendingCommitCount > 0) Some(clock.nowUtc) else None
+    val followupDate = if (counters.followupCount > 0) Some(clock.nowUtc) else None
     if (commitDate.isDefined || followupDate.isDefined) {
       userDAO.rememberNotifications(user.id, LastUserNotificationDispatch(commitDate, followupDate))
     }

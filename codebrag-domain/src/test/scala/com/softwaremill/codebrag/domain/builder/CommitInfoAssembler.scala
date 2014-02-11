@@ -67,7 +67,7 @@ object CommitInfoAssembler {
     val committerEmail = Utils.randomString(10)
     val parent = Utils.randomString(10)
     CommitInfo(new ObjectId, sha, message, authorName, authorEmail, committerName, committerEmail,
-      RealTimeClock.currentDateTimeUTC, RealTimeClock.currentDateTimeUTC, List(parent), List())
+      RealTimeClock.nowUtc, RealTimeClock.nowUtc, List(parent), List())
   }
 
 }

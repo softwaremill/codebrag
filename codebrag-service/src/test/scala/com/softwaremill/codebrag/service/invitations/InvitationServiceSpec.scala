@@ -50,7 +50,7 @@ class InvitationServiceSpec
 
   it should "positively verify invitation" in {
     //given
-    val expirationInFuture = clock.currentDateTimeUTC.plusHours(1)
+    val expirationInFuture = clock.nowUtc.plusHours(1)
     when(invitationDAO.findByCode(code)).thenReturn(Some(Invitation(code, new ObjectId(), expirationInFuture)))
 
     //when
@@ -62,7 +62,7 @@ class InvitationServiceSpec
 
   it should "negatively verify invitation when invitation expired" in {
     //given
-    val expirationTimeInThePast = clock.currentDateTimeUTC.minusHours(1)
+    val expirationTimeInThePast = clock.nowUtc.minusHours(1)
     when(invitationDAO.findByCode(code)).thenReturn(Some(Invitation(code, new ObjectId(), expirationTimeInThePast)))
 
     //when
@@ -110,7 +110,7 @@ class InvitationServiceSpec
     val invitationCaptor = ArgumentCaptor.forClass(classOf[Invitation])
     verify(invitationDAO).save(invitationCaptor.capture())
     invitationCaptor.getValue.invitationSender should be(id)
-    invitationCaptor.getValue.expiryDate should be(clock.currentDateTimeUTC.plus(config.invitationExpiryTime))
+    invitationCaptor.getValue.expiryDate should be(clock.nowUtc.plus(config.invitationExpiryTime))
   }
 
   it should "send email with invitation message" in {

@@ -36,7 +36,7 @@ class UserNotificationsSenderSpec
   it should "not send notification when user has notifications disabled" in {
     // given
     val user = UserAssembler.randomUser.withEmailNotificationsDisabled().get
-    val heartbeats = List((user.id, clock.currentDateTimeUTC.minusHours(1)))
+    val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
     when(userDao.findById(user.id)).thenReturn(Some(user))
 
     // when
@@ -49,7 +49,7 @@ class UserNotificationsSenderSpec
   it should "not send notification when user has no commits or followups waiting" in {
     // given
     val user = UserAssembler.randomUser.get.copy(notifications = LastUserNotificationDispatch(None, None))
-    val heartbeats = List((user.id, clock.currentDateTimeUTC.minusHours(1)))
+    val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
     when(userDao.findById(user.id)).thenReturn(Some(user))
     when(notificationCountFinder.getCountersSince(heartbeats.head._2, user.id)).thenReturn(NoCommitsAndFollowups)
 
@@ -88,7 +88,7 @@ class UserNotificationsSenderSpec
   it should "send notification when user has commits or followups" in {
     // given
     val user = UserAssembler.randomUser.get
-    val heartbeats = List((user.id, clock.currentDateTimeUTC.minusHours(1)))
+    val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
     when(userDao.findById(user.id)).thenReturn(Some(user))
     when(notificationCountFinder.getCountersSince(heartbeats.head._2, user.id)).thenReturn(SomeCommitsAndFollowups)
 

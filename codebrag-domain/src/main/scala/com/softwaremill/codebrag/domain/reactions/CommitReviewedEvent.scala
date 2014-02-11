@@ -13,7 +13,7 @@ case class CommitReviewedEvent(commit: CommitInfo, userIdArg: ObjectId)(implicit
 
   def eventType = CommitReviewedEvent.EventType
 
-  def timestamp: DateTime = clock.currentDateTimeUTC
+  def timestamp: DateTime = clock.nowUtc
 
   def userId: Option[ObjectId] = Some(userIdArg)
 

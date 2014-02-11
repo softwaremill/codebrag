@@ -51,7 +51,7 @@ class InvitationService(
 
   def verify(code: String): Boolean = {
     invitationDAO.findByCode(code) match {
-      case Some(inv) => inv.isValid(clock.currentDateTimeUTC)
+      case Some(inv) => inv.isValid(clock.nowUtc)
       case None => false
     }
   }
@@ -61,7 +61,7 @@ class InvitationService(
   }
 
   private def saveToDb(hash: String, invitationSenderId: ObjectId) {
-    val expirationTime = clock.currentDateTimeUTC.plus(config.invitationExpiryTime)
+    val expirationTime = clock.nowUtc.plus(config.invitationExpiryTime)
     invitationDAO.save(Invitation(hash, invitationSenderId, expirationTime))
   }
 

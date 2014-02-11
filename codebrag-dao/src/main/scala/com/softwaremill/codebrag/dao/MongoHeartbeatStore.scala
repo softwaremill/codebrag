@@ -17,7 +17,7 @@ trait HeartbeatStore {
 
 class MongoHeartbeatStore(clock: Clock) extends HeartbeatStore {
   def update(userId: ObjectId) {
-    val currentDateTime = clock.currentDateTimeUTC
+    val currentDateTime = clock.nowUtc
     val query = HeartbeatRecord.where(_.id eqs userId).asDBObject
     val record = HeartbeatRecord.createRecord.lastHeartbeat(currentDateTime.toDate).id(userId).asDBObject
     HeartbeatRecord.upsert(query, record)

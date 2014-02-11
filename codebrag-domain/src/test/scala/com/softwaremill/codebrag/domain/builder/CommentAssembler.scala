@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.common.RealTimeClock
 object CommentAssembler {
 
   def commentFor(commitId: ObjectId) = {
-    new Assembler(Comment(new ObjectId, commitId, new ObjectId, RealTimeClock.currentDateTimeUTC, "Comment message"))
+    new Assembler(Comment(new ObjectId, commitId, new ObjectId, RealTimeClock.nowUtc, "Comment message"))
   }
 
   class Assembler(var base: Comment) {
