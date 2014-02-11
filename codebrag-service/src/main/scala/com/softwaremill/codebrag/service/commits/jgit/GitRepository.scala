@@ -7,6 +7,7 @@ import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.revwalk.{RevCommit, RevWalk}
 import org.eclipse.jgit.errors.MissingObjectException
+import org.eclipse.jgit.transport.{URIish, CredentialItem, UsernamePasswordCredentialsProvider, CredentialsProvider}
 
 /**
  * Encapsulates all required operations on already initialized git repo
@@ -14,14 +15,14 @@ import org.eclipse.jgit.errors.MissingObjectException
  * either all or only those to specified commit (starting from HEAD)
  * @param location location of repository on file system
  */
-class GitRepository(location: String) extends Logging {
+class GitRepository(location: String, credentials: RepoCredentials) extends Logging {
 
   val repo = buildRepository
 
   def pullChanges {
     logger.debug(s"Pulling changes for $location")
     try {
-      new Git(repo).pull().call()
+      new Git(repo).pull().setCredentialsProvider(credentials.credentialsProvider).call()
       logger.debug(s"Changes pulled succesfully")
     } catch {
       case e: Exception => throw new RuntimeException(s"Cannot pull changes for repo: $location", e)
@@ -60,6 +61,36 @@ class GitRepository(location: String) extends Logging {
       new FileRepositoryBuilder().setGitDir(new File(location + File.separator + ".git")).setMustExist(true).build()
     } catch {
       case e: Exception => throw new RuntimeException(s"Cannot build valid git repository object from $location", e)
+    }
+  }
+
+}
+
+trait RepoCredentials {
+  def credentialsProvider: CredentialsProvider
+}
+
+case class UserPassRepoCredentials(user: String, password: String) extends RepoCredentials {
+  def credentialsProvider = new UsernamePasswordCredentialsProvider(user, password)
+}
+
+case class SshRepoCredentials(passphrase: String) extends RepoCredentials {
+
+  def credentialsProvider = new SshPassphraseCredentialsProvider(passphrase)
+
+  class SshPassphraseCredentialsProvider(passphrase: String) extends CredentialsProvider {
+    def isInteractive = false
+    def supports(items: CredentialItem*) = true
+    def get(uri: URIish, items: CredentialItem*) = {
+      if(passphrase.nonEmpty) {
+        items.foreach { item => {
+          item match {
+            case i: CredentialItem.StringType => i.setValue(passphrase)
+            case _ => {}
+          }
+        }}
+      }
+      true
     }
   }
 
