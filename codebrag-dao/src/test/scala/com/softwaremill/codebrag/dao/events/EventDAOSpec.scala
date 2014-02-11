@@ -1,13 +1,15 @@
 package com.softwaremill.codebrag.dao.events
 
-import com.softwaremill.codebrag.test.{ClearMongoDataAfterTest, FlatSpecWithMongo}
+import com.softwaremill.codebrag.test.{FlatSpecWithSQL, ClearSQLDataAfterTest, ClearMongoDataAfterTest, FlatSpecWithMongo}
 import org.scalatest.matchers.ShouldMatchers
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.reactions.{LikeEvent, CommentAddedEvent, CommitReviewedEvent}
 import com.softwaremill.codebrag.common.{RealTimeClock, StatisticEvent}
+import org.bson.types.ObjectId
+import org.scalatest.FlatSpec
 
-class EventDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
-  val dao = new EventDAO
+trait EventDAOSpec extends FlatSpec with ShouldMatchers {
+  def eventDAO: EventDAO
 
   val today = RealTimeClock.nowUtc
   val yesterday = today.minusDays(1)
@@ -24,9 +26,9 @@ class EventDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with S
     storeEventWith(yesterday, CommitReviewedEventType)
 
     // when
-    val count1 = dao.countEvents(today, today, CommitReviewedEventType)
-    val count2 = dao.countEvents(today.minusMinutes(1), today.plusMinutes(1), CommitReviewedEventType)
-    val count3 = dao.countEvents(yesterday, today.plusMinutes(1), CommitReviewedEventType)
+    val count1 = eventDAO.countEvents(today, today, CommitReviewedEventType)
+    val count2 = eventDAO.countEvents(today.minusMinutes(1), today.plusMinutes(1), CommitReviewedEventType)
+    val count3 = eventDAO.countEvents(yesterday, today.plusMinutes(1), CommitReviewedEventType)
 
     // then
     count1 should be (2)
@@ -44,9 +46,9 @@ class EventDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with S
     storeEventWith(yesterday, CommentAddedEventType)
 
     // when
-    val likesCount = dao.countEvents(yesterday, today, LikeAddedEventType)
-    val commentsCount = dao.countEvents(yesterday, today, CommentAddedEventType)
-    val reviewedCount = dao.countEvents(yesterday, today, CommitReviewedEventType)
+    val likesCount = eventDAO.countEvents(yesterday, today, LikeAddedEventType)
+    val commentsCount = eventDAO.countEvents(yesterday, today, CommentAddedEventType)
+    val reviewedCount = eventDAO.countEvents(yesterday, today, CommitReviewedEventType)
 
     // then
     likesCount should be (3)
@@ -56,12 +58,12 @@ class EventDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with S
 
   it should "get number of active users (without registered)" in {
     // given
-    storeEventWith(today, NewUserRegisteredEventType, Some(new ObjectId))
-    storeEventWith(today, LikeAddedEventType, Some(new ObjectId))
-    storeEventWith(today, CommentAddedEventType, Some(new ObjectId))
+    storeEventWith(today, NewUserRegisteredEventType)
+    storeEventWith(today, LikeAddedEventType)
+    storeEventWith(today, CommentAddedEventType)
 
     // when
-    val count = dao.countActiveUsers(today, today)
+    val count = eventDAO.countActiveUsers(today, today)
 
     // then
     count should be (2)
@@ -70,22 +72,32 @@ class EventDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with S
   it should "count user as active only once" in {
     // given
     val user = new ObjectId
-    storeEventWith(today, LikeAddedEventType, Some(user))
-    storeEventWith(today, CommentAddedEventType, Some(user))
+    storeEventWith(today, LikeAddedEventType, user)
+    storeEventWith(today, CommentAddedEventType, user)
 
     // when
-    val count = dao.countActiveUsers(today, today)
+    val count = eventDAO.countActiveUsers(today, today)
 
     // then
     count should be (1)
 
   }
 
-  private def storeEventWith(_date: DateTime, _eventType: String, _userId: Option[ObjectId] = None) =
-    dao.storeEvent(new StatisticEvent {
+  private def storeEventWith(_date: DateTime, _eventType: String, _userId: ObjectId = new ObjectId) =
+    eventDAO.storeEvent(new StatisticEvent {
       def timestamp = _date
       def eventType = _eventType
       def userId = _userId
       def toEventStream = ""
     })
+}
+
+class MongoEventDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with EventDAOSpec {
+  val eventDAO = new MongoEventDAO()
+}
+
+class SQLEventDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with EventDAOSpec {
+  val eventDAO = new SQLEventDAO(sqlDatabase)
+
+  def withSchemas = List(eventDAO)
 }

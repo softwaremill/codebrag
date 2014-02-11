@@ -11,7 +11,7 @@ case class NewUserRegistered(id: ObjectId, login: String, fullName: String, emai
 
   def timestamp: DateTime = clock.nowUtc
 
-  def userId: Option[ObjectId] = Some(id)
+  def userId = id
 
   def toEventStream: String = s"New user $fullName was registered"
 
