@@ -16,6 +16,7 @@ import com.softwaremill.codebrag.domain.Like
 import com.softwaremill.codebrag.service.templates.{PlainTextTemplates, TemplateEngine}
 import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.dao.user.InternalUserDAO
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 
 class WelcomeFollowupsGeneratorSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {

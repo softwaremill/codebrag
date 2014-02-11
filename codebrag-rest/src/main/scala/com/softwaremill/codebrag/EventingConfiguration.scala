@@ -14,6 +14,7 @@ import com.softwaremill.codebrag.dao.eventstream.EventDao
 import com.softwaremill.codebrag.eventstream.StatisticEventsCollector
 import com.softwaremill.codebrag.service.events.EventLogger
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 
 trait EventingConfiguration extends ActorSystemSupport {
 

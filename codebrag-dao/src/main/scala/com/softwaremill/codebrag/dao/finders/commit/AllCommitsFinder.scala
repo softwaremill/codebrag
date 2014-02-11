@@ -2,10 +2,10 @@ package com.softwaremill.codebrag.dao.finders.commit
 
 import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.CommitInfoRecord
 import com.softwaremill.codebrag.common.LoadMoreCriteria
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.dao.reporting.views.CommitListView
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoRecord
 
 class AllCommitsFinder extends CommitByIdFinder with UserDataEnhancer with CommitReviewedByUserMarker with Logging {
 

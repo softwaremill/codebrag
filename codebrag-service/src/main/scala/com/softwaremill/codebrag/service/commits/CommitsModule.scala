@@ -1,10 +1,11 @@
 package com.softwaremill.codebrag.service.commits
 
 import com.softwaremill.codebrag.service.commits.jgit._
-import com.softwaremill.codebrag.dao.{RepositoryStatusDAO, CommitInfoDAO}
+import com.softwaremill.codebrag.dao.{RepositoryStatusDAO}
 import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.service.config.{RepositoryConfig, CodebragConfig}
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 
 trait CommitsModule {
   lazy val commitImportService = new CommitImportService(

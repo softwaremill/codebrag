@@ -9,6 +9,7 @@ import com.softwaremill.codebrag.dao.reporting.views.FollowupCommitView
 import scala.Some
 import net.liftweb.mongodb.record.MongoRecord
 import com.softwaremill.codebrag.dao.user.{LikeRecord, CommentRecord, UserReactionRecord, UserRecord}
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoRecord
 
 class MongoFollowupFinder extends FollowupFinder {
 

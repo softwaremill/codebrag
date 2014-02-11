@@ -1,9 +1,9 @@
 package com.softwaremill.codebrag.service.commits
 
-import com.softwaremill.codebrag.dao.CommitInfoDAO
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.domain.{UpdatedCommit, CommitsUpdatedEvent}
 import com.softwaremill.codebrag.common.{Clock, EventBus}
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 
 class CommitImportService(commitsLoader: CommitsLoader, commitInfoDao: CommitInfoDAO, eventBus: EventBus)(implicit clock: Clock) extends Logging {
 

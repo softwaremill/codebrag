@@ -10,6 +10,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.{FollowupLastLikeView, FollowupLastCommentView}
 import com.softwaremill.codebrag.dao.user.{UserDAO, MongoUserDAO}
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.commitinfo.{MongoCommitInfoDAO, CommitInfoDAO}
 
 class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 

@@ -9,6 +9,7 @@ import org.bson.types.ObjectId
 import LoadMoreCriteria.PagingDirection
 import com.softwaremill.codebrag.dao.user.MongoUserDAO
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
 
 class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 

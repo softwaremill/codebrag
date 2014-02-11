@@ -12,6 +12,7 @@ import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler
 import org.mockito.Mockito._
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.domain.Followup
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 
 class FollowupsGeneratorForReactionsPriorUserRegistrationSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterEach with MockitoSugar with ClockSpec {
 

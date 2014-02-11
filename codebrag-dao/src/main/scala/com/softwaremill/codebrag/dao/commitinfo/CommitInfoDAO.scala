@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.commitinfo
 
 import com.softwaremill.codebrag.domain.{UserLike, CommitInfo}
 import org.bson.types.ObjectId

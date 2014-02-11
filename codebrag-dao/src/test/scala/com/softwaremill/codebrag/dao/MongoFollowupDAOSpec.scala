@@ -8,6 +8,7 @@ import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler, CommitInfoAssembler}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.commitinfo.{MongoCommitInfoDAO, CommitInfoDAO}
 
 class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 

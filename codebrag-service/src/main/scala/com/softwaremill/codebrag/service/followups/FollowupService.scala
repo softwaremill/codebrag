@@ -5,6 +5,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 
 class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, commitCommentDao: CommitCommentDAO, userDao: UserDAO)
   extends Logging {

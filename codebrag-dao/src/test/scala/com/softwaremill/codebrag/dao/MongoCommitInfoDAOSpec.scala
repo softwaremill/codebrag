@@ -6,6 +6,7 @@ import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssemb
 import CommitInfoAssembler._
 import com.softwaremill.codebrag.domain.User
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
 
 class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
   var commitInfoDAO: MongoCommitInfoDAO = _

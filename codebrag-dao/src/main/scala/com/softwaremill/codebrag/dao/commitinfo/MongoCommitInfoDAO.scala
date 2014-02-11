@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.commitinfo
 
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord}
 import com.softwaremill.codebrag.domain.{UserLike, CommitFileInfo, CommitInfo}

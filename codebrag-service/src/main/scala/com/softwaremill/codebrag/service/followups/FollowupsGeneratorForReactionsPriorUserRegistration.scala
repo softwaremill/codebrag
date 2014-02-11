@@ -8,6 +8,7 @@ import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.common.Clock
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.config.CodebragConfig
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 
 class FollowupsGeneratorForReactionsPriorUserRegistration(
   commentsDao: CommitCommentDAO,

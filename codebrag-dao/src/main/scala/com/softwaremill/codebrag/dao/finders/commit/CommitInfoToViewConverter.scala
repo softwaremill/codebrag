@@ -2,9 +2,9 @@ package com.softwaremill.codebrag.dao.finders.commit
 
 import org.bson.types.ObjectId
 import java.util.Date
-import com.softwaremill.codebrag.dao.CommitInfoRecord
 import com.softwaremill.codebrag.dao.reporting.views.CommitView
 import com.foursquare.rogue.LiftRogue._
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoRecord
 
 object CommitInfoToViewConverter {
 

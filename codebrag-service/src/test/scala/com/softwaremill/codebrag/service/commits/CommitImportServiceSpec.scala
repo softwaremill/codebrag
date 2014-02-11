@@ -2,7 +2,6 @@ package com.softwaremill.codebrag.service.commits
 
 import org.scalatest.{FlatSpec, BeforeAndAfter}
 import org.scalatest.mock.MockitoSugar
-import com.softwaremill.codebrag.dao.CommitInfoDAO
 import org.scalatest.matchers.ShouldMatchers
 import org.mockito.Mockito._
 import org.mockito.Matchers._
@@ -12,6 +11,7 @@ import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.common.ClockSpec
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 
 class CommitImportServiceSpec
   extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with MockEventBus with ClockSpec {

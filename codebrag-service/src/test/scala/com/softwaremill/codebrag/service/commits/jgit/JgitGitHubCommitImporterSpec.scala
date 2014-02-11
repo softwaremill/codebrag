@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.commits.jgit
 
 import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.service.commits.{CommitsModule, TestCodebragAndRepositoryConfig, FlatSpecWithGit, CommitImportService}
-import com.softwaremill.codebrag.dao.{RepositoryStatusDAO, CommitInfoDAO}
+import com.softwaremill.codebrag.dao.{RepositoryStatusDAO}
 import org.mockito.{ArgumentCaptor, ArgumentMatcher}
 import org.mockito.Mockito._
 import org.mockito.BDDMockito._
@@ -13,6 +13,7 @@ import org.mockito.Matchers._
 import scala.collection.JavaConversions._
 import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.common.ClockSpec
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 
 class JgitGitHubCommitImporterSpec extends FlatSpecWithGit with MockitoSugar with MockEventBus {
 
