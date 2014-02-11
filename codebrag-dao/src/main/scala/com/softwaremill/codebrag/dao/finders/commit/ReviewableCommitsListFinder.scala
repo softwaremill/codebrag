@@ -6,9 +6,10 @@ import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView
 import com.softwaremill.codebrag.common.LoadMoreCriteria
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoRecord
-import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskRecord
+import com.softwaremill.codebrag.dao.reviewtask.{CommitReviewTaskDAO, CommitReviewTaskRecord}
 
-class ReviewableCommitsListFinder extends CommitByIdFinder with UserDataEnhancer with CommitReviewedByUserMarker with Logging {
+class ReviewableCommitsListFinder(val commitReviewTaskDAO: CommitReviewTaskDAO)
+  extends CommitByIdFinder with UserDataEnhancer with CommitReviewedByUserMarker with Logging {
 
   import CommitInfoToViewConverter._
   import ListSliceLoader._

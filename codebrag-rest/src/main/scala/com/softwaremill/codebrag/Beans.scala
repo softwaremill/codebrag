@@ -111,13 +111,14 @@ trait Daos {
 }
 
 trait Finders {
+  this: Daos =>
 
   lazy val notificationCountFinder = new MongoNotificationCountFinder
 
   lazy val reactionFinder = new MongoReactionFinder
 
-  lazy val allCommitsFinder = new AllCommitsFinder
-  lazy val reviewableCommitsFinder = new ReviewableCommitsListFinder
+  lazy val allCommitsFinder = new AllCommitsFinder(commitReviewTaskDao)
+  lazy val reviewableCommitsFinder = new ReviewableCommitsListFinder(commitReviewTaskDao)
 
   lazy val followupFinder = new MongoFollowupFinder
 

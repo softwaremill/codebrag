@@ -4,7 +4,7 @@ import com.softwaremill.codebrag.domain.CommitReviewTask
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{ObjectIdPk, ObjectIdField}
 import com.foursquare.rogue.LiftRogue._
-
+import org.bson.types.ObjectId
 
 class MongoCommitReviewTaskDAO extends CommitReviewTaskDAO {
 
@@ -15,6 +15,11 @@ class MongoCommitReviewTaskDAO extends CommitReviewTaskDAO {
 
   def delete(task: CommitReviewTask) {
     CommitReviewTaskRecord.where(_.commitId eqs task.commitId).and(_.userId eqs task.userId).findAndDeleteOne()
+  }
+
+  def commitsPendingReviewFor(userId: ObjectId) = {
+    val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
+    userReviewTasks.map(_.commitId.get).toSet
   }
 
   private def toRecord(commitToReview: CommitReviewTask) = {

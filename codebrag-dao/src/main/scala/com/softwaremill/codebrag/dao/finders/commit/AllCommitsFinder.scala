@@ -4,10 +4,11 @@ import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.LoadMoreCriteria
 import com.foursquare.rogue.LiftRogue._
-import com.softwaremill.codebrag.dao.reporting.views.CommitListView
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoRecord
+import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
 
-class AllCommitsFinder extends CommitByIdFinder with UserDataEnhancer with CommitReviewedByUserMarker with Logging {
+class AllCommitsFinder(val commitReviewTaskDAO: CommitReviewTaskDAO)
+  extends CommitByIdFinder with UserDataEnhancer with CommitReviewedByUserMarker with Logging {
 
   import CommitInfoToViewConverter._
   import ListSliceLoader._

@@ -3,18 +3,21 @@ package com.softwaremill.codebrag.dao.finders.commit
 import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
-import com.softwaremill.codebrag.common.{LoadMoreCriteria}
-import com.softwaremill.codebrag.domain.{User, CommitInfo, CommitReviewTask}
+import com.softwaremill.codebrag.common.LoadMoreCriteria
+import com.softwaremill.codebrag.domain.{User, CommitInfo}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.LoadMoreCriteria.PagingDirection
 import com.softwaremill.codebrag.dao.user.MongoUserDAO
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
-import com.softwaremill.codebrag.dao.reviewtask.MongoCommitReviewTaskDAO
+import com.softwaremill.codebrag.dao.reviewtask.{CommitReviewTaskDAO, MongoCommitReviewTaskDAO}
+import org.mockito.Mockito._
+import com.softwaremill.codebrag.domain.CommitReviewTask
+import org.scalatest.mock.MockitoSugar
 
-class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
+class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers with MockitoSugar {
 
-  val finder = new ReviewableCommitsListFinder
+  var finder: ReviewableCommitsListFinder = _
 
   val commitDao = new MongoCommitInfoDAO
   val reviewTaskDao = new MongoCommitReviewTaskDAO
@@ -29,11 +32,11 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearMongoD
   val commitTwo = CommitInfoAssembler.randomCommit.withAuthorName(commitAuthor.name).get
   val commitThree = CommitInfoAssembler.randomCommit.withAuthorName(commitAuthor.name).get
 
-
-
   it should "find no commits when user has no commits to review" taggedAs RequiresDb in {
     // given
     storeCommits(commitOne, commitTwo, commitThree)
+
+    initFinder(Set())
 
     // when
     val commitsView = finder.findCommitsToReviewFor(reviewingUserId, paging)
@@ -47,6 +50,8 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearMongoD
     storeCommits(commitOne, commitTwo, commitThree)
     storeReviewTasksFor(reviewingUserId, commitOne, commitThree)
 
+    initFinder(Set(commitOne.id, commitThree.id))
+
     // when
     val commitsView = finder.findCommitsToReviewFor(reviewingUserId, paging)
 
@@ -58,6 +63,8 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearMongoD
     // given
     storeCommits(commitOne, commitTwo, commitThree)
     storeReviewTasksFor(reviewingUserId, commitOne, commitTwo, commitThree)
+
+    initFinder(Set(commitOne.id, commitTwo.id, commitThree.id))
 
     // when
     val twoCommitsOnPage = LoadMoreCriteria.fromBeginning(2)
@@ -72,6 +79,8 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearMongoD
     storeCommits(commitOne, commitTwo, commitThree)
     storeReviewTasksFor(reviewingUserId, commitOne, commitTwo, commitThree)
 
+    initFinder(Set(commitOne.id, commitTwo.id, commitThree.id))
+
     // when
     val oneCommitToReview = LoadMoreCriteria.fromBeginning(1)
     val commitsView = finder.findCommitsToReviewFor(reviewingUserId, oneCommitToReview)
@@ -84,6 +93,8 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearMongoD
     // given
     storeCommits(commitOne, commitTwo, commitThree)
     storeReviewTasksFor(reviewingUserId, commitOne, commitTwo, commitThree)
+
+    initFinder(Set(commitOne.id, commitTwo.id, commitThree.id))
 
     // when
     val nextAfterSecondCommit = LoadMoreCriteria(commitTwo.id, PagingDirection.Right, 2)
@@ -99,6 +110,8 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearMongoD
     storeCommits(commitOne)
     storeReviewTasksFor(reviewingUserId, commitOne)
 
+    initFinder(Set(commitOne.id))
+
     // when
     val commitsView = finder.findCommitsToReviewFor(reviewingUserId, paging)
 
@@ -106,6 +119,13 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearMongoD
     val commitView = commitsView.commits.head
     commitView.authorAvatarUrl should equal(commitAuthor.settings.avatarUrl)
     commitView.authorName should be(commitAuthor.name)
+  }
+
+  def initFinder(commitPendingReviewForReviewingUserId: Set[ObjectId]) {
+    val mockCommitReviewTaskDAO = mock[CommitReviewTaskDAO]
+    when(mockCommitReviewTaskDAO.commitsPendingReviewFor(reviewingUserId)).thenReturn(commitPendingReviewForReviewingUserId)
+
+    finder = new ReviewableCommitsListFinder(mockCommitReviewTaskDAO)
   }
 
   private def storeUser(user: User) = userDao.add(user)

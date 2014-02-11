@@ -1,6 +1,7 @@
 package com.softwaremill.codebrag.dao.reviewtask
 
 import com.softwaremill.codebrag.domain.CommitReviewTask
+import org.bson.types.ObjectId
 
 trait CommitReviewTaskDAO {
 
@@ -8,4 +9,5 @@ trait CommitReviewTaskDAO {
 
   def delete(task: CommitReviewTask)
 
+  def commitsPendingReviewFor(userId: ObjectId): Set[ObjectId]
 }
