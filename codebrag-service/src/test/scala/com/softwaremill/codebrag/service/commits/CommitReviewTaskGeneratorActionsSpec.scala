@@ -5,13 +5,14 @@ import org.scalatest.{FlatSpec, BeforeAndAfter}
 import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import org.mockito.BDDMockito._
-import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO, ObjectIdTestUtils}
+import com.softwaremill.codebrag.dao.{ObjectIdTestUtils}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.domain.{CommitInfo, CommitReviewTask}
 import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
 
 class CommitReviewTaskGeneratorActionsSpec
   extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar with ClockSpec {

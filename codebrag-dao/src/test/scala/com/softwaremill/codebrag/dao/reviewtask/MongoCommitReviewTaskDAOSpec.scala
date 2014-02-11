@@ -1,10 +1,12 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.reviewtask
 
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.reviewtask.{CommitReviewTaskRecord, MongoCommitReviewTaskDAO}
+import com.softwaremill.codebrag.dao.{RequiresDb, ObjectIdTestUtils}
 
 class MongoCommitReviewTaskDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 

@@ -11,6 +11,7 @@ import scala.util.Random
 import com.softwaremill.codebrag.common.FixtureTimeClock
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
+import com.softwaremill.codebrag.dao.reviewtask.{CommitReviewTaskRecord, MongoCommitReviewTaskDAO}
 
 class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers with MongoNotificationCountFinderSpecFixture {
 

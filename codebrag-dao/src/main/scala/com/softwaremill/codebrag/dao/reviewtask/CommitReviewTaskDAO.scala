@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.reviewtask
 
 import com.softwaremill.codebrag.domain.CommitReviewTask
 

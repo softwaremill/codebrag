@@ -2,8 +2,8 @@ package com.softwaremill.codebrag.dao.finders.commit
 
 import com.softwaremill.codebrag.dao.reporting.views.{CommitListView, CommitView}
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.CommitReviewTaskRecord
 import com.foursquare.rogue.LiftRogue._
+import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskRecord
 
 
 trait CommitReviewedByUserMarker {

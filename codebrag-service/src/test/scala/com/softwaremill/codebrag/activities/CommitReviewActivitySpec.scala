@@ -6,11 +6,11 @@ import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.common.{ClockSpec, EventBus}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{CommitInfo, CommitReviewTask}
-import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO}
 import org.mockito.Mockito._
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.reactions.CommitReviewedEvent
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
 
 class CommitReviewActivitySpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {

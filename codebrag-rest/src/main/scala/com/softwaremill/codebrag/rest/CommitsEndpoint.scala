@@ -4,12 +4,12 @@ import com.softwaremill.codebrag.common.LoadMoreCriteria
 import org.scalatra.NotFound
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.CommitReviewTaskDAO
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import CommitsEndpoint._
 import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
 import LoadMoreCriteria.PagingDirection
 import com.softwaremill.codebrag.activities.CommitReviewActivity
+import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
 
 trait CommitsEndpoint extends JsonServletWithAuthentication {
 

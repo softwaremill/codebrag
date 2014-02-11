@@ -2,11 +2,11 @@ package com.softwaremill.codebrag.dao.finders.commit
 
 import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.{CommitReviewTaskRecord}
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitListView}
 import com.softwaremill.codebrag.common.LoadMoreCriteria
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoRecord
+import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskRecord
 
 class ReviewableCommitsListFinder extends CommitByIdFinder with UserDataEnhancer with CommitReviewedByUserMarker with Logging {
 

@@ -1,7 +1,6 @@
 package com.softwaremill.codebrag.service.commits
 
 import com.softwaremill.codebrag.domain._
-import com.softwaremill.codebrag.dao.{CommitReviewTaskDAO}
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.domain.CommitsUpdatedEvent
 import com.softwaremill.codebrag.domain.CommitReviewTask
@@ -11,6 +10,7 @@ import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
 
 trait CommitReviewTaskGeneratorActions extends Logging {
 

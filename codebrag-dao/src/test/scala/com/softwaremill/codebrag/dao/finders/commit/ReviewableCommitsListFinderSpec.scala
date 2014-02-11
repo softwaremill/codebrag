@@ -10,6 +10,7 @@ import com.softwaremill.codebrag.common.LoadMoreCriteria.PagingDirection
 import com.softwaremill.codebrag.dao.user.MongoUserDAO
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
+import com.softwaremill.codebrag.dao.reviewtask.MongoCommitReviewTaskDAO
 
 class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 
