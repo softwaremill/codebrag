@@ -4,37 +4,30 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.Like
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.bson.types.ObjectId
-import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.domain.builder.LikeAssembler
 import LikeAssembler._
-import com.softwaremill.codebrag.dao.user.LikeRecord
-import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
-import com.softwaremill.codebrag.dao.reaction.MongoLikeDAO
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.RequiresDb
+import org.scalatest.FlatSpec
 
-class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
-
-  var likeDao: MongoLikeDAO = _
+trait LikeDAOSpec extends FlatSpec with ShouldMatchers {
+  def likeDao: LikeDAO
 
   val CommitId: ObjectId = oid(2)
   val AnotherCommitId: ObjectId = oid(123)
   val YetAnotherCommitId: ObjectId = oid(456)
-
-  override def beforeEach() {
-    super.beforeEach()
-    likeDao = new MongoLikeDAO
-  }
 
   it should "store new like for entire commit" taggedAs (RequiresDb) in {
     val newLike = likeFor(CommitId).get
 
     // when
     likeDao.save(newLike)
-    val likes = LikeRecord.where(_.id eqs newLike.id).and(_.commitId eqs newLike.commitId).fetch()
+    val likes = likeDao.findLikesForCommits(newLike.commitId)
 
     // then
     likes.size should be(1)
-    likes.head.commitId.get should be(CommitId)
+    likes.head.authorId should be(newLike.authorId)
+    likes.head.commitId should be(CommitId)
   }
 
   it should "store new line like for commit" taggedAs (RequiresDb) in {
@@ -42,13 +35,13 @@ class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest wi
 
     // when
     likeDao.save(lineLike)
-    val likes = LikeRecord.where(_.id eqs lineLike.id).and(_.commitId eqs lineLike.commitId).fetch()
+    val likes = likeDao.findLikesForCommits(lineLike.commitId)
 
     // then
     likes.size should be(1)
     val savedLike = likes.head
-    savedLike.fileName.get should equal(lineLike.fileName)
-    savedLike.lineNumber.get should equal(lineLike.lineNumber)
+    savedLike.fileName should equal(lineLike.fileName)
+    savedLike.lineNumber should equal(lineLike.lineNumber)
   }
 
   it should "load like by id if one exists" taggedAs (RequiresDb) in {
@@ -132,4 +125,14 @@ class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest wi
   private def createLikesFor(commitId: ObjectId, howMany: Int): Seq[Like] = {
     (1 to howMany).map(i => likeFor(commitId).get).toSeq
   }
+}
+
+class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with LikeDAOSpec {
+  val likeDao = new MongoLikeDAO()
+}
+
+class SQLLikeDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with LikeDAOSpec {
+  val likeDao = new SQLLikeDAO(sqlDatabase)
+
+  def withSchemas = List(likeDao)
 }

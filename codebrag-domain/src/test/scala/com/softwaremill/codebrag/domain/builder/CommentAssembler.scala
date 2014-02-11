@@ -58,7 +58,7 @@ object LikeAssembler {
 
 
   def likeFor(commitId: ObjectId) = {
-    new Assembler(Like(new ObjectId, commitId, new ObjectId, DateTime.now))
+    new Assembler(Like(new ObjectId, commitId, new ObjectId, RealTimeClock.nowUtc))
   }
 
   class Assembler(var base: Like) {

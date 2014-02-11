@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.dao.reaction
 
 import com.softwaremill.codebrag.domain.{ThreadDetails, Like}
 import org.bson.types.ObjectId
-import org.joda.time.DateTime
+import org.joda.time.{DateTimeZone, DateTime}
 import com.foursquare.rogue.LiftRogue._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.LikeRecord
@@ -63,7 +63,7 @@ class MongoLikeDAO extends LikeDAO with Logging {
         record.id.get,
         record.commitId.get,
         record.authorId.get,
-        new DateTime(record.date.get),
+        new DateTime(record.date.get).withZone(DateTimeZone.UTC),
         record.fileName.get,
         record.lineNumber.get)
     }
