@@ -67,15 +67,15 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
   }
 
   def changeAuthentication(id: ObjectId, auth: Authentication) = db.withTransaction { implicit session =>
-    auths.where(_.id === id).update(toSQLAuth(id, auth))
+    auths.where(_.userId === id).update(toSQLAuth(id, auth))
   }
 
   def rememberNotifications(id: ObjectId, notifications: LastUserNotificationDispatch) = db.withTransaction { implicit session =>
-    lastNotifs.where(_.id === id).update(toSQLLastNotif(id, notifications))
+    lastNotifs.where(_.userId === id).update(toSQLLastNotif(id, notifications))
   }
 
   def changeUserSettings(id: ObjectId, newSettings: UserSettings) = db.withTransaction { implicit session =>
-    userSettings.where(_.id === id).update(toSQLSettings(id, newSettings))
+    userSettings.where(_.userId === id).update(toSQLSettings(id, newSettings))
   }
 
   private case class SQLAuth(id: ObjectId, provider: String, username: String, usernameLowerCase: String, token: String, salt: String) {
@@ -100,36 +100,36 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
   private type UserTuple = (ObjectId, String, String, String)
 
   private class Auths(tag: Tag) extends Table[SQLAuth](tag, "users_authentications") {
-    def id = column[ObjectId]("id", O.PrimaryKey)
+    def userId = column[ObjectId]("user_id", O.PrimaryKey)
     def provider = column[String]("provider")
     def username = column[String]("username")
     def usernameLowerCase = column[String]("username_lowercase")
     def token = column[String]("token")
     def salt = column[String]("salt")
 
-    def * = (id, provider, username, usernameLowerCase, token, salt) <> (SQLAuth.tupled, SQLAuth.unapply)
+    def * = (userId, provider, username, usernameLowerCase, token, salt) <> (SQLAuth.tupled, SQLAuth.unapply)
   }
 
   private val auths = TableQuery[Auths]
   
   private class Settings(tag: Tag) extends Table[SQLSettings](tag, "users_settings") {
-    def id = column[ObjectId]("id", O.PrimaryKey)
+    def userId = column[ObjectId]("user_id", O.PrimaryKey)
     def avatarUrl = column[String]("avatar_url")
     def emailNotificationsEnabled = column[Boolean]("email_notif")
     def dailyUpdatesEmailEnabled = column[Boolean]("email_daily_updates")
     def appTourDone = column[Boolean]("app_tour_done")
 
-    def * = (id, avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone) <> (SQLSettings.tupled, SQLSettings.unapply)
+    def * = (userId, avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone) <> (SQLSettings.tupled, SQLSettings.unapply)
   }
 
   private val userSettings = TableQuery[Settings]
 
   private class LastNotifs(tag: Tag) extends Table[SQLLastNotif](tag, "users_last_notifs") {
-    def id = column[ObjectId]("id", O.PrimaryKey)
+    def userId = column[ObjectId]("user_id", O.PrimaryKey)
     def lastCommitsDispatch = column[Option[DateTime]]("last_commits_dispatch")
     def lastFollowupsDispatch = column[Option[DateTime]]("last_followups_dispatch")
 
-    def * = (id, lastCommitsDispatch, lastFollowupsDispatch) <> (SQLLastNotif.tupled, SQLLastNotif.unapply)
+    def * = (userId, lastCommitsDispatch, lastFollowupsDispatch) <> (SQLLastNotif.tupled, SQLLastNotif.unapply)
   }
 
   private val lastNotifs = TableQuery[LastNotifs]
@@ -140,11 +140,9 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
     def emailLowerCase = column[String]("email_lowercase")
     def token = column[String]("token")
 
-    def auth = foreignKey("AUTH_FK", id, auths)(_.id, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
-
-    def settings = foreignKey("SETTINGS_FK", id, userSettings)(_.id, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
-
-    def lastNotif = foreignKey("LAST_NOTIFS_FK", id, lastNotifs)(_.id, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
+    def auth = foreignKey("AUTH_FK", id, auths)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
+    def settings = foreignKey("SETTINGS_FK", id, userSettings)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
+    def lastNotif = foreignKey("LAST_NOTIFS_FK", id, lastNotifs)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
 
     def * = (id, name, emailLowerCase, token)
   }
