@@ -122,6 +122,6 @@ trait Finders {
 
   lazy val followupFinder = new MongoFollowupFinder
 
-  lazy val statsFinder = new StatsEventsFinder
+  lazy val statsFinder = new StatsEventsFinder(eventDao)
 
 }
