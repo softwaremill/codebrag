@@ -25,9 +25,9 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
   def findAll() = db.withTransaction { implicit session =>
     val q = for {
       u <- users
-      a <- u.authJoin
-      s <- u.settingsJoin
-      l <- u.lastNotifJoin
+      a <- u.auth
+      s <- u.settings
+      l <- u.lastNotif
     } yield (u, a, s, l)
 
     q.list().map(untuple)
@@ -40,9 +40,9 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
   def findByLowerCasedLogin(login: String) = db.withTransaction { implicit session =>
     val q = for {
       u <- users
-      a <- u.authJoin if a.usernameLowerCase === login.toLowerCase
-      s <- u.settingsJoin
-      l <- u.lastNotifJoin
+      a <- u.auth if a.usernameLowerCase === login.toLowerCase
+      s <- u.settings
+      l <- u.lastNotif
     } yield (u, a, s, l)
 
     q.firstOption.map(untuple)
@@ -51,10 +51,10 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
   def findByLoginOrEmail(login: String, email: String) = db.withTransaction { implicit session =>
     val q = for {
       u <- users
-      a <- u.authJoin
+      a <- u.auth
       if a.usernameLowerCase === login.toLowerCase || u.emailLowerCase === email.toLowerCase
-      s <- u.settingsJoin
-      l <- u.lastNotifJoin
+      s <- u.settings
+      l <- u.lastNotif
     } yield (u, a, s, l)
 
     q.firstOption.map(untuple)
@@ -141,13 +141,10 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
     def token = column[String]("token")
 
     def auth = foreignKey("AUTH_FK", id, auths)(_.id, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
-    def authJoin = auths.where(_.id === id)
 
     def settings = foreignKey("SETTINGS_FK", id, userSettings)(_.id, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
-    def settingsJoin = userSettings.where(_.id === id)
 
     def lastNotif = foreignKey("LAST_NOTIFS_FK", id, lastNotifs)(_.id, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
-    def lastNotifJoin = lastNotifs.where(_.id === id)
 
     def * = (id, name, emailLowerCase, token)
   }
@@ -164,9 +161,9 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
   private def findOneWhere(condition: Users => Column[Boolean]): Option[User] = db.withTransaction { implicit session =>
     val q = for {
       u <- users if condition(u)
-      a <- u.authJoin
-      s <- u.settingsJoin
-      l <- u.lastNotifJoin
+      a <- u.auth
+      s <- u.settings
+      l <- u.lastNotif
     } yield (u, a, s, l)
 
     q.firstOption.map(untuple)
