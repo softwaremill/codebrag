@@ -1,13 +1,13 @@
 package com.softwaremill.codebrag.domain.builder
 
-import org.joda.time.DateTime
+import org.joda.time.{DateTimeZone, DateTime}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{Like, Comment}
 
 object CommentAssembler {
 
   def commentFor(commitId: ObjectId) = {
-    new Assembler(Comment(new ObjectId, commitId, new ObjectId, DateTime.now, "Comment message"))
+    new Assembler(Comment(new ObjectId, commitId, new ObjectId, DateTime.now.withZone(DateTimeZone.UTC), "Comment message"))
   }
 
   class Assembler(var base: Comment) {

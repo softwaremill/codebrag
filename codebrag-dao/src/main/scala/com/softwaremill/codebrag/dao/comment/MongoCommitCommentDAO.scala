@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.comment
 import com.softwaremill.codebrag.domain.{ThreadDetails, Comment}
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
-import org.joda.time.DateTime
+import org.joda.time.{DateTimeZone, DateTime}
 import com.softwaremill.codebrag.dao.user.CommentRecord
 
 class MongoCommitCommentDAO extends CommitCommentDAO {
@@ -52,7 +52,7 @@ class MongoCommitCommentDAO extends CommitCommentDAO {
         record.id.get,
         record.commitId.get,
         record.authorId.get,
-        new DateTime(record.date.get),
+        new DateTime(record.date.get).withZone(DateTimeZone.UTC),
         record.message.get,
         record.fileName.get,
         record.lineNumber.get)
