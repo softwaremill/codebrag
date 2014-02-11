@@ -1,11 +1,12 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.repositorystatus
 
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.RepositoryStatus
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.repositorystatus.MongoRepositoryStatusDAO
 
 
-class MongoRepositoryHeadStoreSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
+class MongoRepositoryStatusDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 
   var repoHeadDao = new MongoRepositoryStatusDAO
 

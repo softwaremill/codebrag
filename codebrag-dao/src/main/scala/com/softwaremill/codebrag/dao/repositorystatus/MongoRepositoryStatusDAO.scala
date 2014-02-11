@@ -1,21 +1,12 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.repositorystatus
 
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.ObjectIdPk
-import net.liftweb.json.JsonDSL._
 import com.foursquare.rogue.LiftRogue._
 import com.typesafe.scalalogging.slf4j.Logging
 import net.liftweb.record.field.BooleanField
 import com.softwaremill.codebrag.domain.RepositoryStatus
 import com.softwaremill.codebrag.dao.mongo.{OptionalLongStringField, LongStringField}
-
-trait RepositoryStatusDAO {
-  def update(repoName: String, newSha: String)
-  def get(repoName: String): Option[String]
-
-  def updateRepoStatus(newStatus: RepositoryStatus)
-  def getRepoStatus(repoName: String): Option[RepositoryStatus]
-}
 
 class MongoRepositoryStatusDAO extends RepositoryStatusDAO with Logging {
 

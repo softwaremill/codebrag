@@ -4,9 +4,9 @@ import com.softwaremill.codebrag.service.commits.{RepoData, CommitsLoader}
 import com.softwaremill.codebrag.domain.{RepositoryStatus, CommitInfo}
 import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.JavaConversions._
-import com.softwaremill.codebrag.dao.RepositoryStatusDAO
 import org.eclipse.jgit.lib.{Constants, ObjectId}
 import org.eclipse.jgit.api.LogCommand
+import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 
 class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalDirTree, converter: JgitLogConverter,
                               repoStatusDao: RepositoryStatusDAO, repoUpdater : RepoUpdater)
