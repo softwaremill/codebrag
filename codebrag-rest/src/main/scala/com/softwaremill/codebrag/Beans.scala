@@ -29,6 +29,7 @@ import com.softwaremill.codebrag.dao.instance.FileBasedInstanceSettingsDAO
 import com.softwaremill.codebrag.dao.invitation.MongoInvitationDAO
 import com.softwaremill.codebrag.dao.reviewtask.MongoCommitReviewTaskDAO
 import com.softwaremill.codebrag.dao.events.{MongoEventDAO, EventDAO}
+import com.softwaremill.codebrag.dao.heartbeat.MongoHeartbeatDAO
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 
@@ -51,7 +52,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
   lazy val templateEngine = new TemplateEngine()
   lazy val invitationsService = new InvitationService(invitationDao, userDao, emailService, config, DefaultUniqueHashGenerator, templateEngine)
   lazy val notificationService = new NotificationService(emailScheduler, templateEngine, config, notificationCountFinder, clock)
-  lazy val heartbeatStore = new MongoHeartbeatStore(clock)
+  lazy val heartbeatStore = new MongoHeartbeatDAO(clock)
 
   lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {
     val userDao = self.userDao

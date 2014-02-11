@@ -1,18 +1,20 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.heartbeat
 
 import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import org.joda.time.{DateTime, DateTimeZone}
 import com.softwaremill.codebrag.common.{FixtureTimeClock, Clock}
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.heartbeat.{HeartbeatRecord, MongoHeartbeatDAO}
+import com.softwaremill.codebrag.dao.ObjectIdTestUtils
 
-class MongoHeartbeatStoreSpec extends FlatSpecWithMongo with ShouldMatchers with ClearMongoDataAfterTest {
-  var store: MongoHeartbeatStore = _
+class MongoHeartbeatDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearMongoDataAfterTest {
+  var store: MongoHeartbeatDAO = _
   var clock: Clock = new FixtureTimeClock(1500)
 
   override def beforeEach() {
     super.beforeEach()
-    store = new MongoHeartbeatStore(clock)
+    store = new MongoHeartbeatDAO(clock)
   }
 
   "update" should "create a new entry" taggedAs RequiresDb in {

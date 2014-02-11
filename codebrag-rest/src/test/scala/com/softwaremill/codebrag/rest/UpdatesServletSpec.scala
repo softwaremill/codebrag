@@ -8,13 +8,13 @@ import org.mockito.Matchers._
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{Authentication, User}
-import com.softwaremill.codebrag.dao.HeartbeatStore
 import com.softwaremill.codebrag.common.{ClockSpec, Clock}
+import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
 
 class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
 
   val countersFinderMock: NotificationCountFinder = mock[NotificationCountFinder]
-  val heartbeat: HeartbeatStore = mock[HeartbeatStore]
+  val heartbeat: HeartbeatDAO = mock[HeartbeatDAO]
   val user = currentUser(new ObjectId)
   override val fixtureTime = 1000L
 
@@ -49,7 +49,7 @@ class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
 
   def currentUser(id: ObjectId) = User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde", "avatarUrl")
 
-  class TestableUpdatesServlet(finder: NotificationCountFinder, heartbeat: HeartbeatStore, clock: Clock) extends UpdatesServlet(fakeAuthenticator, finder, heartbeat, clock) {
+  class TestableUpdatesServlet(finder: NotificationCountFinder, heartbeat: HeartbeatDAO, clock: Clock) extends UpdatesServlet(fakeAuthenticator, finder, heartbeat, clock) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 
