@@ -26,8 +26,8 @@ class SQLInvitationDAO(database: SQLDatabase) extends InvitationDAO with WithSQL
 
   private class Invitations(tag: Tag) extends Table[Invitation](tag, "invitations") {
     def code = column[String]("code", O.PrimaryKey)
-    def invitationSender = column[ObjectId]("invitation_sender")
-    def expiryDate = column[DateTime]("expiryDate")
+    def invitationSender  = column[ObjectId]("invitation_sender")
+    def expiryDate        = column[DateTime]("expiry_date")
 
     def * = (code, invitationSender, expiryDate) <> (Invitation.tupled, Invitation.unapply)
   }
