@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.domain.builder
 
 import com.softwaremill.codebrag.domain.{CommitInfo, CommitFileInfo}
-import org.joda.time.DateTime
+import org.joda.time.{DateTimeZone, DateTime}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.Utils
 
@@ -67,7 +67,7 @@ object CommitInfoAssembler {
     val committerEmail = Utils.randomString(10)
     val parent = Utils.randomString(10)
     CommitInfo(new ObjectId, sha, message, authorName, authorEmail, committerName, committerEmail,
-      new DateTime(), new DateTime(), List(parent), List())
+      new DateTime().withZone(DateTimeZone.UTC), new DateTime().withZone(DateTimeZone.UTC), List(parent), List())
   }
 
 }

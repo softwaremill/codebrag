@@ -1,20 +1,19 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.commitinfo
 
 import org.scalatest.matchers.ShouldMatchers
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import CommitInfoAssembler._
 import com.softwaremill.codebrag.domain.User
-import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
-import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
+import com.softwaremill.codebrag.test.{FlatSpecWithSQL, ClearSQLDataAfterTest, FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.RequiresDb
+import org.scalatest.FlatSpec
 
-class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
-  var commitInfoDAO: MongoCommitInfoDAO = _
+trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
+
+  def commitInfoDAO: CommitInfoDAO
+
   val FixtureTime = new DateTime(23333333)
-  override def beforeEach() {
-    super.beforeEach()
-    commitInfoDAO = new MongoCommitInfoDAO
-  }
 
   it should "find a stored commit" taggedAs(RequiresDb) in {
     // given
@@ -186,5 +185,14 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterT
   def buildCommitWithMatchingUserName(user: User, date: DateTime, sha: String) = {
     CommitInfoAssembler.randomCommit.withAuthorName(user.name).withAuthorDate(date).withSha(sha).get
   }
+}
 
+class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with CommitInfoDAOSpec {
+  var commitInfoDAO = new MongoCommitInfoDAO()
+}
+
+class SQLCommitInfoDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with CommitInfoDAOSpec {
+  var commitInfoDAO = new SQLCommitInfoDAO(sqlDatabase)
+
+  def withSchemas = List(commitInfoDAO)
 }

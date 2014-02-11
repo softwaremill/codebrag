@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.domain.{UserLike, CommitFileInfo, CommitInfo}
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{BsonRecordListField, MongoListField, DateField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
-import org.joda.time.DateTime
+import org.joda.time.{DateTimeZone, DateTime}
 import org.bson.types.ObjectId
 import net.liftweb.json.JsonDSL._
 import com.typesafe.scalalogging.slf4j.Logging
@@ -57,8 +57,8 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
 
     implicit def toCommitInfo(record: CommitInfoRecord): CommitInfo = {
       CommitInfo(record.id.get, record.sha.get, record.message.get, record.authorName.get, record.authorEmail.get,
-        record.committerName.get, record.committerEmail.get, new DateTime(record.authorDate.get),
-        new DateTime(record.committerDate.get), record.parents.get, record.files.get.toList)
+        record.committerName.get, record.committerEmail.get, new DateTime(record.authorDate.get).withZone(DateTimeZone.UTC),
+        new DateTime(record.committerDate.get).withZone(DateTimeZone.UTC), record.parents.get, record.files.get.toList)
     }
 
 
