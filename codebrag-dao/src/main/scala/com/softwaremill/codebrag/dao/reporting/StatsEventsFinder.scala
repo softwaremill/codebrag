@@ -1,12 +1,11 @@
 package com.softwaremill.codebrag.dao.reporting
 
-import com.softwaremill.codebrag.dao.eventstream.EventDao
 import org.joda.time.{DateTimeZone, DateTime}
 import com.softwaremill.codebrag.domain.reactions.{LikeEvent, CommentAddedEvent, CommitReviewedEvent}
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.dao.events.NewUserRegistered
+import com.softwaremill.codebrag.dao.events.{EventDAO, NewUserRegistered}
 
-class StatsEventsFinder(eventDAO: EventDao) extends Logging{
+class StatsEventsFinder(eventDAO: EventDAO) extends Logging{
 
   private def dayBoundaries(day: DateTime) = {
     val day2 = day.toDateTime(DateTimeZone.UTC)

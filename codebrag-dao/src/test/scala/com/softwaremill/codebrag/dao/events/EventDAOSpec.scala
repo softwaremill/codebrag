@@ -1,15 +1,13 @@
-package com.softwaremill.codebrag.dao.eventstream
+package com.softwaremill.codebrag.dao.events
 
 import com.softwaremill.codebrag.test.{ClearMongoDataAfterTest, FlatSpecWithMongo}
 import org.scalatest.matchers.ShouldMatchers
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.reactions.{LikeEvent, CommentAddedEvent, CommitReviewedEvent}
-import com.softwaremill.codebrag.dao.events.NewUserRegistered
-import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.{RealTimeClock, StatisticEvent}
 
-class EventDaoTest extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
-  val dao = new EventDao
+class EventDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
+  val dao = new EventDAO
 
   val today = RealTimeClock.nowUtc
   val yesterday = today.minusDays(1)

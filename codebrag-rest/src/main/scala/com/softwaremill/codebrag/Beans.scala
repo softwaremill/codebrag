@@ -20,7 +20,6 @@ import com.softwaremill.codebrag.service.invitations.{DefaultUniqueHashGenerator
 import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
 import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.service.templates.TemplateEngine
-import com.softwaremill.codebrag.dao.eventstream.EventDao
 import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
 import com.softwaremill.codebrag.dao.user.{MongoInternalUserDAO, MongoUserDAO}
 import com.softwaremill.codebrag.dao.mongo.MongoConfig
@@ -29,6 +28,7 @@ import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, MongoCommitCommentD
 import com.softwaremill.codebrag.dao.instance.FileBasedInstanceSettingsDAO
 import com.softwaremill.codebrag.dao.invitation.MongoInvitationDAO
 import com.softwaremill.codebrag.dao.reviewtask.MongoCommitReviewTaskDAO
+import com.softwaremill.codebrag.dao.events.EventDAO
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 
@@ -106,7 +106,7 @@ trait Daos {
 
   lazy val instanceSettingsDao = new FileBasedInstanceSettingsDAO
 
-  lazy val eventDao = new EventDao
+  lazy val eventDao = new EventDAO
 
 }
 

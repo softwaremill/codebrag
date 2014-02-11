@@ -5,8 +5,8 @@ import org.joda.time.{DateTimeZone, DateTime}
 import com.softwaremill.codebrag.domain.reactions.CommitReviewedEvent
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.FlatSpec
-import com.softwaremill.codebrag.dao.eventstream.EventDao
 import org.mockito.Mockito._
+import com.softwaremill.codebrag.dao.events.EventDAO
 
 class StatsEventsFinderSpec extends FlatSpec with ShouldMatchers with MockitoSugar {
 
@@ -16,7 +16,7 @@ class StatsEventsFinderSpec extends FlatSpec with ShouldMatchers with MockitoSug
 
   it should "properly convert date to date bounds" in {
     // given
-    val mockEventDAO = mock[EventDao]
+    val mockEventDAO = mock[EventDAO]
     val finder = new StatsEventsFinder(mockEventDAO)
 
     // when

@@ -5,12 +5,11 @@ import com.softwaremill.codebrag.common.{Event, StatisticEvent}
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.commits.CommitReviewTaskGenerator
 import com.softwaremill.codebrag.dao._
-import com.softwaremill.codebrag.dao.events.NewUserRegistered
+import com.softwaremill.codebrag.dao.events.{EventDAO, NewUserRegistered}
 import com.softwaremill.codebrag.service.followups.FollowupsGenerator
 import com.softwaremill.codebrag.domain.CommitsUpdatedEvent
 import com.softwaremill.codebrag.domain.reactions.LikeEvent
 import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
-import com.softwaremill.codebrag.dao.eventstream.EventDao
 import com.softwaremill.codebrag.eventstream.StatisticEventsCollector
 import com.softwaremill.codebrag.service.events.EventLogger
 import com.softwaremill.codebrag.dao.user.UserDAO
@@ -24,7 +23,7 @@ trait EventingConfiguration extends ActorSystemSupport {
   def commitInfoDao: CommitInfoDAO
   def followupDao: FollowupDAO
   def followupWithReactionsDao: FollowupWithReactionsDAO
-  def eventDao: EventDao
+  def eventDao: EventDAO
 
   val eventLogger = actorSystem.actorOf(Props(classOf[EventLogger]))
   val reviewTaskGeneratorActor = actorSystem.actorOf(Props(new CommitReviewTaskGenerator(userDao, commitReviewTaskDao, commitInfoDao)))
