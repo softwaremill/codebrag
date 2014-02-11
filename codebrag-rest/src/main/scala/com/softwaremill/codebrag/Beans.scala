@@ -25,6 +25,7 @@ import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequest
 import com.softwaremill.codebrag.dao.user.{MongoInternalUserDAO, MongoUserDAO}
 import com.softwaremill.codebrag.dao.mongo.MongoConfig
 import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
+import com.softwaremill.codebrag.dao.comment.MongoCommitCommentDAO
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 

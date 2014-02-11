@@ -13,6 +13,7 @@ import org.mockito.Mockito._
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.domain.Followup
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.comment.CommitCommentDAO
 
 class FollowupsGeneratorForReactionsPriorUserRegistrationSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterEach with MockitoSugar with ClockSpec {
 

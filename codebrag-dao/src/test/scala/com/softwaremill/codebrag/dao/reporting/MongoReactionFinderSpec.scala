@@ -9,6 +9,7 @@ import com.softwaremill.codebrag.dao.reporting.views.{CommitReactionsView, React
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler}
 import com.softwaremill.codebrag.dao.user.MongoUserDAO
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.comment.MongoCommitCommentDAO
 
 class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers with ReactionFinderVerifyHelpers {
 

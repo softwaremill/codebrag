@@ -1,13 +1,14 @@
 package com.softwaremill.codebrag.dao.reporting
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.{MongoLikeDAO, MongoCommitCommentDAO}
+import com.softwaremill.codebrag.dao.{MongoLikeDAO}
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.domain.{Like, UserReaction, Comment}
 import com.softwaremill.codebrag.dao.reporting.views._
 import scala.Some
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.{LikeRecord, UserRecord}
+import com.softwaremill.codebrag.dao.comment.MongoCommitCommentDAO
 
 class MongoReactionFinder extends ReactionFinder with UserReactionToViewMapper with LikesFinder {
 

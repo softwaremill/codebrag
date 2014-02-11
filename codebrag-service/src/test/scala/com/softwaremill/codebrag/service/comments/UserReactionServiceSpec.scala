@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.service.comments
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.{LikeDAO, ObjectIdTestUtils, CommitCommentDAO}
+import com.softwaremill.codebrag.dao.{LikeDAO, ObjectIdTestUtils}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import com.softwaremill.codebrag.domain._
@@ -12,6 +12,7 @@ import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.domain.reactions.LikeEvent
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.common.ClockSpec
+import com.softwaremill.codebrag.dao.comment.CommitCommentDAO
 
 class UserReactionServiceSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with MockEventBus with ClockSpec {

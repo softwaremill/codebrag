@@ -13,6 +13,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.comment.CommitCommentDAO
 
 class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with FollowupServiceSpecFixture{
 

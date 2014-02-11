@@ -9,6 +9,7 @@ import com.softwaremill.codebrag.domain.builder.CommentAssembler
 import CommentAssembler._
 import com.softwaremill.codebrag.dao.user.CommentRecord
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.comment.MongoCommitCommentDAO
 
 class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 

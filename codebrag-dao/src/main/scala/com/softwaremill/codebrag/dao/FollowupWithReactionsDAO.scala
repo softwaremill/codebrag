@@ -4,6 +4,7 @@ import com.softwaremill.codebrag.domain.{FollowupWithNoReactions, UserReaction, 
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.dao.comment.CommitCommentDAO
 
 trait FollowupWithReactionsDAO extends Logging {
 

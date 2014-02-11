@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.comment
 
 import com.softwaremill.codebrag.domain.{ThreadDetails, Like, Comment}
 import org.bson.types.ObjectId
