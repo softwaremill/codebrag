@@ -15,14 +15,18 @@ import org.eclipse.jgit.transport.{URIish, CredentialItem, UsernamePasswordCrede
  * either all or only those to specified commit (starting from HEAD)
  * @param location location of repository on file system
  */
-class GitRepository(location: String, credentials: RepoCredentials) extends Logging {
+class GitRepository(location: String, credentials: Option[RepoCredentials] = None) extends Logging {
 
   val repo = buildRepository
 
   def pullChanges {
     logger.debug(s"Pulling changes for $location")
     try {
-      new Git(repo).pull().setCredentialsProvider(credentials.credentialsProvider).call()
+      val pullCommand = new Git(repo).pull()
+      credentials.foreach { credentials =>
+        pullCommand.setCredentialsProvider(credentials.credentialsProvider)
+      }
+      pullCommand.call()
       logger.debug(s"Changes pulled succesfully")
     } catch {
       case e: Exception => throw new RuntimeException(s"Cannot pull changes for repo: $location", e)
