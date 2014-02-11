@@ -2,6 +2,7 @@ package com.softwaremill.codebrag.dao.repositorystatus
 
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.ObjectIdPk
+import net.liftweb.json.JsonDSL._
 import com.foursquare.rogue.LiftRogue._
 import com.typesafe.scalalogging.slf4j.Logging
 import net.liftweb.record.field.BooleanField
@@ -23,10 +24,6 @@ class MongoRepositoryStatusDAO extends RepositoryStatusDAO with Logging {
       case Some(record) => Some(RepositoryStatus(repoName, Option(record.sha.get), record.repoReady.get, record.repoStatusError.get))
       case None => None
     }
-  }
-
-  def update(repoName: String, newSha: String) {
-      updateRepoStatus(RepositoryStatus.ready(repoName).withHeadId(newSha))
   }
 
   def get(repoName: String) = {

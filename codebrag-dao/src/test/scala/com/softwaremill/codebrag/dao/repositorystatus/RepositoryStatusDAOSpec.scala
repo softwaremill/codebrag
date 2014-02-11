@@ -2,13 +2,11 @@ package com.softwaremill.codebrag.dao.repositorystatus
 
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.RepositoryStatus
-import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
-import com.softwaremill.codebrag.dao.repositorystatus.MongoRepositoryStatusDAO
+import org.scalatest.FlatSpec
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, ClearMongoDataAfterTest, FlatSpecWithMongo}
 
-
-class MongoRepositoryStatusDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
-
-  var repoHeadDao = new MongoRepositoryStatusDAO
+trait RepositoryStatusDAOSpec extends FlatSpec with ShouldMatchers {
+  def repositoryStatusDAO: RepositoryStatusDAO
 
   it should "store repository HEAD reference if no record for given repo exists" in {
     // given
@@ -16,8 +14,8 @@ class MongoRepositoryStatusDAOSpec extends FlatSpecWithMongo with ClearMongoData
     val newHeadId = "123abc"
 
     // when
-    repoHeadDao.updateRepoStatus(RepositoryStatus.ready(repoName).withHeadId(newHeadId))
-    val Some(fetched) = repoHeadDao.getRepoStatus(repoName)
+    repositoryStatusDAO.updateRepoStatus(RepositoryStatus.ready(repoName).withHeadId(newHeadId))
+    val Some(fetched) = repositoryStatusDAO.getRepoStatus(repoName)
 
     // then
     fetched.headId should be(Some(newHeadId))
@@ -28,11 +26,11 @@ class MongoRepositoryStatusDAOSpec extends FlatSpecWithMongo with ClearMongoData
     val repoName = "codebrag"
     val oldHeadId = "123abc"
     val newHeadId = "456def"
-    repoHeadDao.updateRepoStatus(RepositoryStatus.ready(repoName).withHeadId(oldHeadId))
+    repositoryStatusDAO.updateRepoStatus(RepositoryStatus.ready(repoName).withHeadId(oldHeadId))
 
     // when
-    repoHeadDao.updateRepoStatus(RepositoryStatus.ready(repoName).withHeadId(newHeadId))
-    val Some(fetched) = repoHeadDao.getRepoStatus(repoName)
+    repositoryStatusDAO.updateRepoStatus(RepositoryStatus.ready(repoName).withHeadId(newHeadId))
+    val Some(fetched) = repositoryStatusDAO.getRepoStatus(repoName)
 
     // then
     fetched.headId should be(Some(newHeadId))
@@ -43,7 +41,7 @@ class MongoRepositoryStatusDAOSpec extends FlatSpecWithMongo with ClearMongoData
     val repoName = "codebrag"
 
     // when
-    val fetched = repoHeadDao.getRepoStatus(repoName)
+    val fetched = repositoryStatusDAO.getRepoStatus(repoName)
 
     // then
     fetched should be(None)
@@ -55,24 +53,24 @@ class MongoRepositoryStatusDAOSpec extends FlatSpecWithMongo with ClearMongoData
     val repoStatus = RepositoryStatus.ready(repoName)
 
     // when
-    repoHeadDao.updateRepoStatus(repoStatus)
+    repositoryStatusDAO.updateRepoStatus(repoStatus)
 
     // then
-    val Some(storedStatus) = repoHeadDao.getRepoStatus(repoName)
+    val Some(storedStatus) = repositoryStatusDAO.getRepoStatus(repoName)
     storedStatus.ready should be(true)
   }
 
   it should "update repo-ready status to ready and keep head id not changed" in {
     // given
     val repoName = "codebrag"
-    repoHeadDao.update(repoName, "123123")
+    repositoryStatusDAO.update(repoName, "123123")
     val repoStatus = RepositoryStatus.ready(repoName)
 
     // when
-    repoHeadDao.updateRepoStatus(repoStatus)
+    repositoryStatusDAO.updateRepoStatus(repoStatus)
 
     // then
-    val Some(storedStatus) = repoHeadDao.getRepoStatus(repoName)
+    val Some(storedStatus) = repositoryStatusDAO.getRepoStatus(repoName)
     storedStatus.ready should be(true)
     storedStatus.headId should be(Some("123123"))
   }
@@ -83,10 +81,10 @@ class MongoRepositoryStatusDAOSpec extends FlatSpecWithMongo with ClearMongoData
     val repoStatus = RepositoryStatus.notReady(repoName)
 
     // when
-    repoHeadDao.updateRepoStatus(repoStatus)
+    repositoryStatusDAO.updateRepoStatus(repoStatus)
 
     // then
-    val Some(storedStatus) = repoHeadDao.getRepoStatus(repoName)
+    val Some(storedStatus) = repositoryStatusDAO.getRepoStatus(repoName)
     storedStatus.ready should be(false)
   }
 
@@ -98,10 +96,10 @@ class MongoRepositoryStatusDAOSpec extends FlatSpecWithMongo with ClearMongoData
     val repoStatus = RepositoryStatus.notReady(repoName, Some(errorMsg))
 
     // when
-    repoHeadDao.updateRepoStatus(repoStatus)
+    repositoryStatusDAO.updateRepoStatus(repoStatus)
 
     // then
-    val Some(storedStatus) = repoHeadDao.getRepoStatus(repoName)
+    val Some(storedStatus) = repositoryStatusDAO.getRepoStatus(repoName)
     storedStatus.ready should be(false)
     storedStatus.error should be(Some(errorMsg))
   }
@@ -110,15 +108,24 @@ class MongoRepositoryStatusDAOSpec extends FlatSpecWithMongo with ClearMongoData
     // given
     val repoName = "codebrag"
     val repoStatus = RepositoryStatus.ready(repoName)
-    repoHeadDao.updateRepoStatus(repoStatus)
+    repositoryStatusDAO.updateRepoStatus(repoStatus)
 
     // when
-    repoHeadDao.update(repoName, "123123")
+    repositoryStatusDAO.update(repoName, "123123")
 
     // then
-    val Some(storedStatus) = repoHeadDao.getRepoStatus(repoName)
+    val Some(storedStatus) = repositoryStatusDAO.getRepoStatus(repoName)
     storedStatus.ready should be(true)
     storedStatus.headId should be(Some("123123"))
   }
+}
 
+class MongoRepositoryStatusDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with RepositoryStatusDAOSpec {
+  val repositoryStatusDAO = new MongoRepositoryStatusDAO()
+}
+
+class SQLRepositoryStatusDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with RepositoryStatusDAOSpec {
+  val repositoryStatusDAO = new SQLRepositoryStatusDAO(sqlDatabase)
+
+  def withSchemas = List(repositoryStatusDAO)
 }

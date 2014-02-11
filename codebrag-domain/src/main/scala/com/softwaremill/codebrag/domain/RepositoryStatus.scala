@@ -6,7 +6,7 @@ case class RepositoryStatus(repositoryName: String, headId: Option[String], read
 
 }
 
-object RepositoryStatus {
+object RepositoryStatus extends ((String, Option[String], Boolean, Option[String]) => RepositoryStatus) {
   def ready(repoName: String) = new RepositoryStatus(repoName, None, true, None)
   def notReady(repoName: String, error: Option[String] = None) = new RepositoryStatus(repoName, None, false, error)
 }

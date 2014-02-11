@@ -3,9 +3,9 @@ package com.softwaremill.codebrag.dao.repositorystatus
 import com.softwaremill.codebrag.domain.RepositoryStatus
 
 trait RepositoryStatusDAO {
-   def update(repoName: String, newSha: String)
-   def get(repoName: String): Option[String]
+  def updateRepoStatus(newStatus: RepositoryStatus)
+  def update(repoName: String, newSha: String) = updateRepoStatus(RepositoryStatus.ready(repoName).withHeadId(newSha))
 
-   def updateRepoStatus(newStatus: RepositoryStatus)
-   def getRepoStatus(repoName: String): Option[RepositoryStatus]
- }
+  def get(repoName: String): Option[String]
+  def getRepoStatus(repoName: String): Option[RepositoryStatus]
+}
