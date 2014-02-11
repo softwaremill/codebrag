@@ -28,7 +28,7 @@ import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, MongoCommitCommentD
 import com.softwaremill.codebrag.dao.instance.FileBasedInstanceSettingsDAO
 import com.softwaremill.codebrag.dao.invitation.MongoInvitationDAO
 import com.softwaremill.codebrag.dao.reviewtask.MongoCommitReviewTaskDAO
-import com.softwaremill.codebrag.dao.events.EventDAO
+import com.softwaremill.codebrag.dao.events.{MongoEventDAO, EventDAO}
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 
@@ -106,7 +106,7 @@ trait Daos {
 
   lazy val instanceSettingsDao = new FileBasedInstanceSettingsDAO
 
-  lazy val eventDao = new EventDAO
+  lazy val eventDao = new MongoEventDAO
 
 }
 

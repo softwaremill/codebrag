@@ -10,7 +10,7 @@ class DailyStatisticsSpec extends FlatSpec with ShouldMatchers with BeforeAndAft
 
   val InstanceId = new ObjectId("529d94ff300418028363ed0d").toString
   val Date = new DateTime().withDayOfMonth(1).withMonthOfYear(12).withYear(2013)
-  val Counters: Map[String, Long] = Map.empty
+  val Counters: Map[String, Int] = Map.empty
 
 
   it should "serialize date to dd/mm/yyyy format" in {
