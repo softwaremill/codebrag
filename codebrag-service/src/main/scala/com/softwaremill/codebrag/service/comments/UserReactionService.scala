@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.service.comments.command.{IncomingLike, Incomin
 import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.domain.reactions.{UnlikeEvent, LikeEvent}
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.dao.comment.CommitCommentDAO
+import com.softwaremill.codebrag.dao.reaction.CommitCommentDAO
 
 class UserReactionService(commentDao: CommitCommentDAO,
                           likeDao: LikeDAO,

@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.dao.reporting.views._
 import scala.Some
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.{LikeRecord, UserRecord}
-import com.softwaremill.codebrag.dao.comment.MongoCommitCommentDAO
+import com.softwaremill.codebrag.dao.reaction.MongoCommitCommentDAO
 
 class MongoReactionFinder extends ReactionFinder with UserReactionToViewMapper with LikesFinder {
 

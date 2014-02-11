@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao.comment
+package com.softwaremill.codebrag.dao.reaction
 
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.Comment

@@ -10,7 +10,7 @@ import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.service.templates.{PlainTextTemplates, TemplateEngine}
 import com.softwaremill.codebrag.dao.user.InternalUserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.dao.comment.CommitCommentDAO
+import com.softwaremill.codebrag.dao.reaction.CommitCommentDAO
 
 class WelcomeFollowupsGenerator(
   internalUserDao: InternalUserDAO,

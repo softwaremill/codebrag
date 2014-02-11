@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.common.Clock
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.dao.comment.CommitCommentDAO
+import com.softwaremill.codebrag.dao.reaction.CommitCommentDAO
 
 class FollowupsGeneratorForReactionsPriorUserRegistration(
   commentsDao: CommitCommentDAO,

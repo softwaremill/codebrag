@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao.comment
+package com.softwaremill.codebrag.dao.reaction
 
 import com.softwaremill.codebrag.dao.sql.{SQLDatabase, WithSQLSchemas}
 import com.softwaremill.codebrag.domain.{Comment, ThreadDetails}

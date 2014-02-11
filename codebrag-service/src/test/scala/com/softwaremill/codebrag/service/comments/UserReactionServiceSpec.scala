@@ -12,7 +12,7 @@ import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.domain.reactions.LikeEvent
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.common.ClockSpec
-import com.softwaremill.codebrag.dao.comment.CommitCommentDAO
+import com.softwaremill.codebrag.dao.reaction.CommitCommentDAO
 
 class UserReactionServiceSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with MockEventBus with ClockSpec {
