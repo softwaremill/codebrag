@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.service.comments
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.dao.{LikeDAO}
 import com.softwaremill.codebrag.domain.{CommitInfo, Like}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.reaction.LikeDAO
 
 class LikeValidator(val commitDao: CommitInfoDAO, val likeDao: LikeDAO, val userDao: UserDAO)
   extends UserAlreadyLikedItCheck

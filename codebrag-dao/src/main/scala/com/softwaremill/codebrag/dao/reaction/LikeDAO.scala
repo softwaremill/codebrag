@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.reaction
 
 import com.softwaremill.codebrag.domain.{ThreadDetails, Like}
 import org.bson.types.ObjectId

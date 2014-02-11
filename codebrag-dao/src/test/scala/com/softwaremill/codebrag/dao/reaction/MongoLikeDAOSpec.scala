@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.reaction
 
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.Like
@@ -9,6 +9,8 @@ import com.softwaremill.codebrag.domain.builder.LikeAssembler
 import LikeAssembler._
 import com.softwaremill.codebrag.dao.user.LikeRecord
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.reaction.MongoLikeDAO
+import com.softwaremill.codebrag.dao.RequiresDb
 
 class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 
