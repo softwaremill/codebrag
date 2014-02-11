@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.instance
 
 import com.softwaremill.codebrag.domain.InstanceSettings
 

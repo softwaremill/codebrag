@@ -1,6 +1,7 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.instance
 
 import com.softwaremill.codebrag.domain.InstanceSettings
+import com.softwaremill.codebrag.dao.InstanceSettingsRecord
 
 class MongoInstanceSettingsDAO extends InstanceSettingsDAO {
 

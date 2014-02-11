@@ -6,6 +6,7 @@ import org.scalatest.concurrent.Conductors
 import java.util.concurrent.CopyOnWriteArraySet
 import org.scalatest.time.{Milliseconds, Millisecond, Span}
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.instance.{MongoInstanceSettingsDAO, InstanceSettingsDAO}
 
 class MongoInstanceSettingsDAOSpec
   extends FlatSpecWithMongo
