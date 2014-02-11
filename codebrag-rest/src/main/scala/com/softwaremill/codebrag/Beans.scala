@@ -23,6 +23,7 @@ import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.dao.eventstream.EventDao
 import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
 import com.softwaremill.codebrag.dao.user.{MongoInternalUserDAO, MongoUserDAO}
+import com.softwaremill.codebrag.dao.mongo.MongoConfig
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 

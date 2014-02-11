@@ -7,6 +7,7 @@ import com.foursquare.rogue.LiftRogue._
 import com.typesafe.scalalogging.slf4j.Logging
 import net.liftweb.record.field.BooleanField
 import com.softwaremill.codebrag.domain.RepositoryStatus
+import com.softwaremill.codebrag.dao.mongo.{OptionalLongStringField, LongStringField}
 
 trait RepositoryStatusDAO {
   def update(repoName: String, newSha: String)

@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.user
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{ObjectIdPk, DateField, ObjectIdField}
 import net.liftweb.record.field.OptionalIntField
-import com.softwaremill.codebrag.dao.{LongStringField, OptionalLongStringField}
+import com.softwaremill.codebrag.dao.mongo.{OptionalLongStringField, LongStringField}
 
 trait UserReactionRecord[MyType <: MongoRecord[MyType]] {
 

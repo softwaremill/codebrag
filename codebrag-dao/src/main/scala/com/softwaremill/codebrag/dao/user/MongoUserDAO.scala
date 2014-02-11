@@ -7,7 +7,7 @@ import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
 import net.liftweb.record.field.{BooleanField, OptionalDateTimeField}
-import com.softwaremill.codebrag.dao.LongStringField
+import com.softwaremill.codebrag.dao.mongo.LongStringField
 
 class MongoUserDAO extends UserDAO {
 

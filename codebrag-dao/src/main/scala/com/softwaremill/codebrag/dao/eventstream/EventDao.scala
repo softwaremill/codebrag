@@ -4,7 +4,7 @@ import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.common.StatisticEvent
-import com.softwaremill.codebrag.dao.LongStringField
+import com.softwaremill.codebrag.dao.mongo.LongStringField
 
 
 class EventDao extends Logging {

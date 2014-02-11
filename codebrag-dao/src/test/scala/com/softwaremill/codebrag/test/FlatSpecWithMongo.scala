@@ -1,8 +1,10 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.test
 
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, FlatSpec}
 import com.mongodb.Mongo
 import com.typesafe.config.Config
+import com.softwaremill.codebrag.dao.mongo.{MongoConfig, MongoInit}
+import com.softwaremill.codebrag.test.MongoRunner
 
 trait FlatSpecWithMongo extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 

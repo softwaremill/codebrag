@@ -1,7 +1,6 @@
-package com.softwaremill.codebrag.test.mongo
+package com.softwaremill.codebrag.test
 
 import org.scalatest.BeforeAndAfterEach
-import com.softwaremill.codebrag.dao.{FlatSpecWithSQL, FlatSpecWithMongo}
 
 trait ClearSQLDataAfterTest extends BeforeAndAfterEach {
   this: FlatSpecWithSQL =>

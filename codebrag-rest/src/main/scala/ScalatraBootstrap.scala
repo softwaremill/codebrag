@@ -1,4 +1,4 @@
-import com.softwaremill.codebrag.dao.MongoInit
+import com.softwaremill.codebrag.dao.mongo.MongoInit
 import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor

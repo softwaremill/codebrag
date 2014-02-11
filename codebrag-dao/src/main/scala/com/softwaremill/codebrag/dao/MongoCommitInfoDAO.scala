@@ -9,6 +9,7 @@ import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import net.liftweb.json.JsonDSL._
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.dao.mongo.LongStringField
 
 
 class MongoCommitInfoDAO extends CommitInfoDAO with Logging {

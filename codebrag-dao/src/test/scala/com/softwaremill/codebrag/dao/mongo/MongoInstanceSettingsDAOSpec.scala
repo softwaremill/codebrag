@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.dao.mongo
 
 import com.softwaremill.codebrag.dao._
-import com.softwaremill.codebrag.test.mongo.ClearMongoDataAfterTest
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.concurrent.Conductors
 import java.util.concurrent.CopyOnWriteArraySet
 import org.scalatest.time.{Milliseconds, Millisecond, Span}
+import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
 
 class MongoInstanceSettingsDAOSpec
   extends FlatSpecWithMongo

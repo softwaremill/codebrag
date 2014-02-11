@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.test
 
 import java.io.File
 import com.mongodb.ServerAddress

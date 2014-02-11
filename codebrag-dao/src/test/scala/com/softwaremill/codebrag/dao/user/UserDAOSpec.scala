@@ -4,12 +4,12 @@ import com.softwaremill.codebrag.domain._
 import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.test.mongo.{ClearSQLDataAfterTest, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
-import com.softwaremill.codebrag.dao.{FlatSpecWithSQL, FlatSpecWithMongo, ObjectIdTestUtils, RequiresDb}
+import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, RequiresDb}
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
+import com.softwaremill.codebrag.test.{FlatSpecWithSQL, FlatSpecWithMongo, ClearSQLDataAfterTest, ClearMongoDataAfterTest}
 
 trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with Logging {
 

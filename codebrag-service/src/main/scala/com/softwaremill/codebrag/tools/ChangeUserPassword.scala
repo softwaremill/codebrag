@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.tools
 
-import com.softwaremill.codebrag.dao.{MongoConfig, MongoInit}
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.common.Utils
 import java.io.File
 import com.softwaremill.codebrag.domain.User
 import com.softwaremill.codebrag.dao.user.MongoUserDAO
+import com.softwaremill.codebrag.dao.mongo.{MongoConfig, MongoInit}
 
 object ChangeUserPassword {
 

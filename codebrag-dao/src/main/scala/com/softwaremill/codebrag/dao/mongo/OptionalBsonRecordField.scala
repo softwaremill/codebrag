@@ -1,5 +1,4 @@
-package net.liftweb.record.field.custom
-
+package com.softwaremill.codebrag.dao.mongo
 
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord}
 import net.liftweb.record.{OptionalTypedField, Field}

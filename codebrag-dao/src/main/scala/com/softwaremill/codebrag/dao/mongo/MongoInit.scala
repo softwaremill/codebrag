@@ -1,9 +1,10 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.mongo
 
 import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB}
-import com.mongodb.{MongoClient, ServerAddress, Mongo}
+import com.mongodb.{MongoClient, ServerAddress}
 import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.JavaConversions
+import com.softwaremill.codebrag.dao.{FollowupRecord, CommitInfoRecord}
 
 object MongoInit extends Logging {
   def initialize(mongoConfig: MongoConfig) {

@@ -6,6 +6,7 @@ import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{DateField, ObjectIdField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
+import com.softwaremill.codebrag.dao.mongo.LongStringField
 
 class MongoInvitationDAO extends InvitationDAO with Logging {
 

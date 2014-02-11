@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.domain.InternalUser
 import com.foursquare.rogue.LiftRogue._
 import com.typesafe.scalalogging.slf4j.Logging
 import net.liftweb.record.field.BooleanField
-import com.softwaremill.codebrag.dao.LongStringField
+import com.softwaremill.codebrag.dao.mongo.LongStringField
 
 class MongoInternalUserDAO extends InternalUserDAO with Logging {
 

@@ -4,7 +4,7 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.test.mongo.ClearMongoDataAfterTest
+import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
 
 class MongoCommitReviewTaskDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 

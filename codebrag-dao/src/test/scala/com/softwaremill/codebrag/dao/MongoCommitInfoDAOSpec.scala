@@ -4,8 +4,8 @@ import org.scalatest.matchers.ShouldMatchers
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import CommitInfoAssembler._
-import com.softwaremill.codebrag.test.mongo.ClearMongoDataAfterTest
 import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
 
 class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
   var commitInfoDAO: MongoCommitInfoDAO = _

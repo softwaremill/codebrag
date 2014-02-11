@@ -1,11 +1,10 @@
 package com.softwaremill.codebrag.dao.user
 
-import com.softwaremill.codebrag.test.mongo.{ClearSQLDataAfterTest, ClearMongoDataAfterTest}
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
 import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.dao.{FlatSpecWithSQL, FlatSpecWithMongo}
+import com.softwaremill.codebrag.test.{FlatSpecWithSQL, FlatSpecWithMongo, ClearSQLDataAfterTest, ClearMongoDataAfterTest}
 
 trait InternalUserDAOSpec extends FlatSpec with ShouldMatchers {
 
