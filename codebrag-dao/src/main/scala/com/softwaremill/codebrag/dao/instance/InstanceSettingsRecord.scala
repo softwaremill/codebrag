@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.instance
 
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.ObjectIdPk
