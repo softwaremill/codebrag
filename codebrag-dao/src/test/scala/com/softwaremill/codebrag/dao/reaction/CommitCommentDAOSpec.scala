@@ -116,11 +116,11 @@ trait CommitCommentDAOSpec extends FlatSpec with ShouldMatchers {
   }
 }
 
-class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with CommitCommentDAOSpec {
+class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with CommitCommentDAOSpec {
   val commentDao = new MongoCommitCommentDAO()
 }
 
-class SQLCommitInfoDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with CommitCommentDAOSpec {
+class SQLCommitCommentDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with CommitCommentDAOSpec {
   val commentDao = new SQLCommitCommentDAO(sqlDatabase)
 
   def withSchemas = List(commentDao)
