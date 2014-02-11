@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.invitation
 
 import com.softwaremill.codebrag.domain.Invitation
 

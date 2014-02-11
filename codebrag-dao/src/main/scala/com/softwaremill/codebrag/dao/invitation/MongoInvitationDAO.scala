@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.invitation
 
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.domain.Invitation

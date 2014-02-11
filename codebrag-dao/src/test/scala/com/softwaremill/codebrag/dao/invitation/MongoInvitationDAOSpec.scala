@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.invitation
 
 import org.scalatest.matchers.ShouldMatchers
 import com.typesafe.scalalogging.slf4j.Logging
@@ -7,6 +7,8 @@ import com.softwaremill.codebrag.domain.Invitation
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.invitation.{InvitationRecord, MongoInvitationDAO}
+import com.softwaremill.codebrag.dao.RequiresDb
 
 class MongoInvitationDAOSpec extends FlatSpecWithMongo with ShouldMatchers with ClearMongoDataAfterTest with Logging {
 

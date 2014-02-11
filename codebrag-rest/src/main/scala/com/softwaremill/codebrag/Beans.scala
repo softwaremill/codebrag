@@ -27,6 +27,7 @@ import com.softwaremill.codebrag.dao.mongo.MongoConfig
 import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
 import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, MongoCommitCommentDAO}
 import com.softwaremill.codebrag.dao.instance.FileBasedInstanceSettingsDAO
+import com.softwaremill.codebrag.dao.invitation.MongoInvitationDAO
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 
