@@ -28,7 +28,6 @@ case class SQLDatabase(db: scala.slick.jdbc.JdbcBackend.Database, driver: JdbcPr
         daos.commitReviewTaskDao.schemas ++
         daos.eventDao.schemas ++
         daos.followupDao.schemas ++
-        daos.internalUserDao.schemas ++
         daos.invitationDao.schemas ++
         daos.likeDao.schemas ++
         daos.userDao.schemas ++

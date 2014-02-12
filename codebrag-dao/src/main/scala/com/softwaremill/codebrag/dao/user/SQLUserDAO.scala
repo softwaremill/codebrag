@@ -22,7 +22,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with WithSQLSchemas 
 
   def findAll() = db.withTransaction { implicit session =>
     val q = for {
-      u <- users
+      u <- users if u.regular
       a <- u.auth
       s <- u.settings
       l <- u.lastNotif
@@ -37,7 +37,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with WithSQLSchemas 
 
   def findByLowerCasedLogin(login: String) = db.withTransaction { implicit session =>
     val q = for {
-      u <- users
+      u <- users if u.regular
       a <- u.auth if a.usernameLowerCase === login.toLowerCase
       s <- u.settings
       l <- u.lastNotif
@@ -48,7 +48,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with WithSQLSchemas 
 
   def findByLoginOrEmail(login: String, email: String) = db.withTransaction { implicit session =>
     val q = for {
-      u <- users
+      u <- users if u.regular
       a <- u.auth
       if a.usernameLowerCase === login.toLowerCase || u.emailLowerCase === email.toLowerCase
       s <- u.settings
@@ -92,7 +92,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with WithSQLSchemas 
 
   private def findOneWhere(condition: Users => Column[Boolean]): Option[User] = db.withTransaction { implicit session =>
     val q = for {
-      u <- users if condition(u)
+      u <- users if condition(u) && u.regular
       a <- u.auth
       s <- u.settings
       l <- u.lastNotif

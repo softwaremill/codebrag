@@ -418,5 +418,5 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Use
   val userDAO = new SQLUserDAO(sqlDatabase)
   var internalUserDAO = new SQLInternalUserDAO(sqlDatabase)
 
-  def withSchemas = List(userDAO, internalUserDAO)
+  def withSchemas = List(userDAO)
 }

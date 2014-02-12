@@ -67,5 +67,5 @@ class SQLInternalUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest 
 
   def countInternalUsers() = internalUserDAO.count()
 
-  def withSchemas = List(internalUserDAO, userDAO)
+  def withSchemas = List(userDAO)
 }
