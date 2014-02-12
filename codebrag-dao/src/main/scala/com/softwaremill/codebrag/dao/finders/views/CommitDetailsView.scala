@@ -1,6 +1,7 @@
-package com.softwaremill.codebrag.dao.reporting.views
+package com.softwaremill.codebrag.dao.finders.views
 
 import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff}
+import com.softwaremill.codebrag.dao.finders.views.ReactionsView
 
 case class CommitDetailsView(
                             commit: CommitView,

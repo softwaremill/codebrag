@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.dao.finders.reaction
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.views.{CommentView, CommitReactionsView, LikeView}
 import com.softwaremill.codebrag.domain.{Like, Comment, UserReaction}
 import com.softwaremill.codebrag.dao.user.{UserDAO, PartialUserDetails}
 import com.softwaremill.codebrag.dao.reaction.{LikeDAO, CommitCommentDAO, MongoLikeDAO}
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.dao.finders.views.{CommentView, LikeView, CommitReactionsView}
 
 class ReactionFinder(val userDAO: UserDAO, commitCommentDAO: CommitCommentDAO, likeDAO: LikeDAO)
   extends Logging with UserReactionToViewMapper {

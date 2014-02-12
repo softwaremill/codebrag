@@ -5,9 +5,9 @@ import com.softwaremill.codebrag.service.comments.command.IncomingLike
 import scala.Some
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.domain.Like
-import com.softwaremill.codebrag.dao.reporting.views.LikeView
 import com.softwaremill.codebrag.usecase.UnlikeUseCase
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
+import com.softwaremill.codebrag.dao.finders.views.LikeView
 
 trait LikesEndpoint extends JsonServletWithAuthentication with UserReactionParametersReader {
 

@@ -1,8 +1,8 @@
 package com.softwaremill.codebrag.dao.finders.commit
 
-import com.softwaremill.codebrag.dao.reporting.views.CommitView
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
+import com.softwaremill.codebrag.dao.finders.views.CommitView
 
 trait CommitReviewedByUserMarker {
 

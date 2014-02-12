@@ -13,8 +13,8 @@ import com.softwaremill.codebrag.dao.reaction._
 import com.softwaremill.codebrag.dao.followup._
 import org.scalatest.FlatSpec
 import com.softwaremill.codebrag.domain.Followup
-import com.softwaremill.codebrag.dao.reporting.views.FollowupLastCommentView
 import com.softwaremill.codebrag.domain.Comment
+import com.softwaremill.codebrag.dao.finders.views.FollowupLastCommentView
 
 trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
   def followupDao: FollowupDAO

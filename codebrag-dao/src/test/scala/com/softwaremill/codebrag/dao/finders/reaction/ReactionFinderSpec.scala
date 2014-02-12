@@ -5,16 +5,13 @@ import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.dao.reporting.views.ReactionView
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, LikeAssembler, CommentAssembler}
 import com.softwaremill.codebrag.dao.reaction._
 import org.scalatest.BeforeAndAfterEach
 import com.softwaremill.codebrag.dao.user.MongoUserDAO
-import com.softwaremill.codebrag.dao.reporting.views.CommentView
 import scala.Some
-import com.softwaremill.codebrag.dao.reporting.views.CommitReactionsView
-import com.softwaremill.codebrag.dao.reporting.views.ReactionsView
 import com.softwaremill.codebrag.test.{ClearMongoDataAfterTest, FlatSpecWithMongo}
+import com.softwaremill.codebrag.dao.finders.views.{CommentView, ReactionsView, CommitReactionsView, ReactionView}
 
 class ReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers
   with ReactionFinderVerifyHelpers with BeforeAndAfterEach {

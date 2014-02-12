@@ -14,7 +14,7 @@ import com.softwaremill.codebrag.dao.followup._
 import org.scalatest.FlatSpec
 import com.softwaremill.codebrag.domain.Followup
 import com.softwaremill.codebrag.domain.CommitReviewTask
-import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
+import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 
 trait NotificationCountFinderSpec extends FlatSpec with ShouldMatchers with NotificationCountFinderSpecFixture {
 

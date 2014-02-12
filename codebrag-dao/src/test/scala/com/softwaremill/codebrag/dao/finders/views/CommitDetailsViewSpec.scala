@@ -1,11 +1,17 @@
-package com.softwaremill.codebrag.dao.reporting
+package com.softwaremill.codebrag.dao.finders.views
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{FlatSpec, BeforeAndAfterEach}
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.dao.reporting.views._
 import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff}
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinderVerifyHelpers
+import com.softwaremill.codebrag.dao.finders.views._
+import com.softwaremill.codebrag.domain.DiffLine
+import com.softwaremill.codebrag.domain.CommitFileDiff
+import com.softwaremill.codebrag.domain.FileDiffStats
+import scala.Some
+import com.softwaremill.codebrag.dao.finders.views.ReactionsView
+import com.softwaremill.codebrag.dao.finders.views.CommitReactionsView
 
 class CommitDetailsViewSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with ReactionFinderVerifyHelpers {
 

@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.dao.finders.followup
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.views.{FollowupsByCommitListView, SingleFollowupView}
+import com.softwaremill.codebrag.dao.finders.views.{FollowupsByCommitListView, SingleFollowupView}
 
 trait FollowupFinder {
 

@@ -14,9 +14,9 @@ import org.mockito.ArgumentCaptor
 import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterEach
 import scala.Some
-import com.softwaremill.codebrag.dao.reporting.views.CommentView
 import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.finders.views.CommentView
 
 
 class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {

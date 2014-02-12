@@ -5,7 +5,7 @@ import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.followup.SQLFollowupSchema
 import com.softwaremill.codebrag.dao.reviewtask.SQLCommitReviewTaskSchema
-import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
+import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 
 class SQLNotificationCountFinder(val database: SQLDatabase)
   extends NotificationCountFinder with SQLCommitReviewTaskSchema with SQLFollowupSchema {

@@ -4,13 +4,17 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao._
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.dao.reporting.views._
-import com.softwaremill.codebrag.dao.reporting.views.SingleFollowupView
-import com.softwaremill.codebrag.dao.reporting.views.FollowupCommitView
 import scala.Some
 import net.liftweb.mongodb.record.MongoRecord
 import com.softwaremill.codebrag.dao.user.{LikeRecord, CommentRecord, UserReactionRecord, UserRecord}
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoRecord
 import com.softwaremill.codebrag.dao.followup.FollowupRecord
+import com.softwaremill.codebrag.dao.finders.views._
+import com.softwaremill.codebrag.dao.finders.views.SingleFollowupView
+import com.softwaremill.codebrag.dao.finders.views.FollowupsByCommitListView
+import scala.Some
+import com.softwaremill.codebrag.dao.finders.views.FollowupsByCommitView
+import com.softwaremill.codebrag.dao.finders.views.FollowupCommitView
 
 class MongoFollowupFinder extends FollowupFinder {
 

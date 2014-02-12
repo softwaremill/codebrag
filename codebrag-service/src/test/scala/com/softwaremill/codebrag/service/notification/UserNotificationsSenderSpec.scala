@@ -7,11 +7,11 @@ import com.softwaremill.codebrag.common.{ClockSpec, Clock}
 import com.softwaremill.codebrag.service.config.{ConfigWithDefault, CodebragConfig}
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
 import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
+import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 
 class UserNotificationsSenderSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {

@@ -8,10 +8,14 @@ import com.softwaremill.codebrag.domain.{Like, Comment, UserReaction}
 import com.softwaremill.codebrag.dao.user.{UserDAO, PartialUserDetails}
 import com.softwaremill.codebrag.dao.commitinfo.SQLCommitInfoSchema
 import com.softwaremill.codebrag.dao.sql.SQLDatabase
-import com.softwaremill.codebrag.dao.reporting.views.FollowupsByCommitListView
-import com.softwaremill.codebrag.dao.reporting.views.FollowupReactionsView
-import com.softwaremill.codebrag.dao.reporting.views.FollowupsByCommitView
-import com.softwaremill.codebrag.dao.reporting.views.FollowupCommitView
+import com.softwaremill.codebrag.dao.finders.views._
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
+import com.softwaremill.codebrag.dao.finders.views.FollowupsByCommitListView
+import com.softwaremill.codebrag.dao.finders.views.FollowupReactionsView
+import com.softwaremill.codebrag.domain.Like
+import com.softwaremill.codebrag.domain.Comment
+import com.softwaremill.codebrag.dao.finders.views.FollowupsByCommitView
+import com.softwaremill.codebrag.dao.finders.views.FollowupCommitView
 
 class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends FollowupFinder with SQLFollowupSchema
   with SQLReactionSchema with SQLCommitInfoSchema {

@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.dao.finders.notification
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskRecord
 import com.softwaremill.codebrag.dao.followup.FollowupRecord
+import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 
 
 class MongoNotificationCountFinder extends NotificationCountFinder {
