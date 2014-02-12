@@ -10,6 +10,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.reaction.{LikeDAO, CommitCommentDAO}
+import com.softwaremill.codebrag.dao.followup.FollowupDAO
 
 class FollowupsGeneratorForReactionsPriorUserRegistration(
   commentsDao: CommitCommentDAO,

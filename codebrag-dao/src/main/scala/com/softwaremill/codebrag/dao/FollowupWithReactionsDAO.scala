@@ -5,6 +5,7 @@ import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.reaction.{LikeDAO, CommitCommentDAO}
+import com.softwaremill.codebrag.dao.followup.{LastReactionRecord, FollowupRecord}
 
 trait FollowupWithReactionsDAO extends Logging {
 

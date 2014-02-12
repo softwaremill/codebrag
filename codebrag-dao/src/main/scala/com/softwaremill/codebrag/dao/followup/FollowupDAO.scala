@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.followup
 
 import com.softwaremill.codebrag.domain.Followup
 import org.bson.types.ObjectId

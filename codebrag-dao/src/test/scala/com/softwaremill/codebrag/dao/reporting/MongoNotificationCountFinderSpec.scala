@@ -12,6 +12,7 @@ import com.softwaremill.codebrag.common.FixtureTimeClock
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
 import com.softwaremill.codebrag.dao.reviewtask.{CommitReviewTaskRecord, MongoCommitReviewTaskDAO}
+import com.softwaremill.codebrag.dao.followup.MongoFollowupDAO
 
 class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers with MongoNotificationCountFinderSpecFixture {
 

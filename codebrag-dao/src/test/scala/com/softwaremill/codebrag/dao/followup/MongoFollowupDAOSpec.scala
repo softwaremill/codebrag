@@ -1,14 +1,18 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.followup
 
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.Followup
 import org.joda.time.DateTime
-import ObjectIdTestUtils._
 import com.foursquare.rogue.LiftRogue._
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler, CommitInfoAssembler}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.commitinfo.{MongoCommitInfoDAO, CommitInfoDAO}
+import com.softwaremill.codebrag.dao.followup.{MongoFollowupDAO, FollowupRecord}
+import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
+import com.softwaremill.codebrag.domain.Followup
+import scala.Some
+import com.softwaremill.codebrag.dao.RequiresDb
 
 class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 

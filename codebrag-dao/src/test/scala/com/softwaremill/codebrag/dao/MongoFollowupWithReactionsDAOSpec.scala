@@ -6,6 +6,7 @@ import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler}
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, MongoCommitCommentDAO}
+import com.softwaremill.codebrag.dao.followup.MongoFollowupDAO
 
 class MongoFollowupWithReactionsDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 

@@ -4,8 +4,8 @@ import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB}
 import com.mongodb.{MongoClient, ServerAddress}
 import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.JavaConversions
-import com.softwaremill.codebrag.dao.FollowupRecord
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoRecord
+import com.softwaremill.codebrag.dao.followup.FollowupRecord
 
 object MongoInit extends Logging {
   def initialize(mongoConfig: MongoConfig) {

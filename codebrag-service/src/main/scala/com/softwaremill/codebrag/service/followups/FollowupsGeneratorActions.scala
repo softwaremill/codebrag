@@ -9,6 +9,7 @@ import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.followup.FollowupDAO
 
 trait FollowupsGeneratorActions extends Logging {
 
