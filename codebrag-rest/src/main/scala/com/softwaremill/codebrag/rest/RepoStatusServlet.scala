@@ -1,33 +1,27 @@
 package com.softwaremill.codebrag.rest
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.service.config.{RepositoryConfig, CodebragConfig}
-import com.softwaremill.codebrag.dao.{RepositoryStatusDAO, UserDAO}
-import org.bson.types.ObjectId
+import com.softwaremill.codebrag.dao.RepositoryStatusDAO
 import com.softwaremill.codebrag.service.user.Authenticator
-import com.softwaremill.codebrag.service.commits.{RepoData, RepoDataProducer}
-import org.scalatra.BadRequest
 import com.softwaremill.codebrag.domain.RepositoryStatus
+import com.softwaremill.codebrag.repository.config.RepoConfig
 
-class RepoStatusServlet(val authenticator: Authenticator, repoDataProducer: RepoDataProducer, repoStatusDao: RepositoryStatusDAO) extends JsonServletWithAuthentication with Logging {
+class RepoStatusServlet(val authenticator: Authenticator, repoConfig: RepoConfig, repoStatusDao: RepositoryStatusDAO) extends JsonServletWithAuthentication with Logging {
 
   get("/") {
-    repoDataProducer.createFromConfiguration() match {
-      case Some(repoData) => getRepositoryStatus(repoData)
-      case None => BadRequest("Cannot get repository information from configuration")
-    }
+    getRepositoryStatus(repoConfig)
   }
 
-
-  def getRepositoryStatus(repoData: RepoData): Map[String, RepositoryStatus] = {
-    repoStatusDao.getRepoStatus(repoData.repositoryName) match {
+  private def getRepositoryStatus(repoConfig: RepoConfig): Map[String, RepositoryStatus] = {
+    repoStatusDao.getRepoStatus(repoConfig.repoName) match {
       case Some(status) => Map("repoStatus" -> status)
       case None => {
-        logger.debug(s"No status found for ${repoData.repositoryName}, assuming it is first run and repo is being cloned at the moment.")
-        Map("repoStatus" -> RepositoryStatus.notReady(repoData.repositoryName))
+        logger.debug(s"No status found for ${repoConfig.repoName}, assuming it is first run and repo is being cloned at the moment.")
+        Map("repoStatus" -> RepositoryStatus.notReady(repoConfig.repoName))
       }
     }
   }
+
 }
 
 object RepoStatusServlet {
