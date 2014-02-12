@@ -101,7 +101,7 @@ class MongoFollowupFinder extends FollowupFinder {
     }
   }
 
-  def buildLastReactionView[T <: MongoRecord[T]](reaction: UserReactionRecord[_], author: UserRecord): FollowupLastReactionView = {
+  private def buildLastReactionView[T <: MongoRecord[T]](reaction: UserReactionRecord[_], author: UserRecord): FollowupLastReactionView = {
     reaction.asInstanceOf[MongoRecord[T]] match {
       case comment: CommentRecord => FollowupLastCommentView(comment.id.get.toString, author.name.get, comment.date.get, author.userSettings.get.avatarUrl.get, comment.message.get)
       case like: LikeRecord => FollowupLastLikeView(like.id.get.toString, author.name.get, like.date.get, author.userSettings.get.avatarUrl.get)

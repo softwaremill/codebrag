@@ -4,42 +4,31 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.{CommentAssembler, UserAssembler, CommitInfoAssembler}
-import scala.Some
 import com.softwaremill.codebrag.dao._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.views.{FollowupLastLikeView, FollowupLastCommentView}
-import com.softwaremill.codebrag.dao.user.{UserDAO, MongoUserDAO}
-import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
-import com.softwaremill.codebrag.dao.commitinfo.{MongoCommitInfoDAO, CommitInfoDAO}
-import com.softwaremill.codebrag.dao.reaction.{MongoCommitCommentDAO, CommitCommentDAO}
-import com.softwaremill.codebrag.dao.followup.{MongoFollowupDAO, FollowupDAO}
-import com.softwaremill.codebrag.dao.finders.followup.{MongoFollowupFinder, FollowupFinder}
+import com.softwaremill.codebrag.dao.user.{SQLUserDAO, MongoUserDAO, UserDAO}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.commitinfo.{SQLCommitInfoDAO, MongoCommitInfoDAO, CommitInfoDAO}
+import com.softwaremill.codebrag.dao.reaction._
+import com.softwaremill.codebrag.dao.followup._
+import org.scalatest.FlatSpec
+import com.softwaremill.codebrag.domain.Followup
+import com.softwaremill.codebrag.dao.reporting.views.FollowupLastCommentView
+import com.softwaremill.codebrag.domain.Comment
 
-class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
-
-  var followupDao: FollowupDAO = _
-  var commitInfoDao: CommitInfoDAO = _
-  var commentDao: CommitCommentDAO = _
-  var followupFinder: FollowupFinder = _
-  var userDao: UserDAO = _
+trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
+  def followupDao: FollowupDAO
+  def commitInfoDao: CommitInfoDAO
+  def commentDao: CommitCommentDAO
+  def followupFinder: FollowupFinder
+  def userDao: UserDAO
 
   val JohnId = ObjectIdTestUtils.oid(12)
   val BobId = ObjectIdTestUtils.oid(25)
 
-  override def beforeEach() {
-    super.beforeEach()
-    followupDao = new MongoFollowupDAO
-    followupFinder = new MongoFollowupFinder
-    commitInfoDao = new MongoCommitInfoDAO
-    userDao = new MongoUserDAO
-    commentDao = new MongoCommitCommentDAO
-  }
-
   case class CreatedFollowup(id: ObjectId, followup: Followup, reaction: Comment, reactionAuthor: User, commit: CommitInfo)
 
   def createFollowupWithDependenciesFor(commit: CommitInfo, receivingUserId: ObjectId, reactionDate: DateTime = DateTime.now, threadDetails: ThreadDetails = ThreadDetails(new ObjectId, None, None)) = {
-    commitInfoDao.storeCommit(commit)
-
     val user = UserAssembler.randomUser.get
     userDao.add(user)
 
@@ -60,10 +49,12 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     // given
     val now = DateTime.now
     val commit = CommitInfoAssembler.randomCommit.get
+    commitInfoDao.storeCommit(commit)
     val entireCommitFollowup = createFollowupWithDependenciesFor(commit, JohnId, now, ThreadDetails(commit.id))
     val firstInlineFollowup = createFollowupWithDependenciesFor(commit, JohnId, now.plusHours(2), ThreadDetails(commit.id, Some(20), Some("file.txt")))
 
     val anotherCommit = CommitInfoAssembler.randomCommit.get
+    commitInfoDao.storeCommit(anotherCommit)
     val anotherCommitFollowup = createFollowupWithDependenciesFor(anotherCommit, JohnId, now.plusHours(1), ThreadDetails(anotherCommit.id))
 
 
@@ -86,9 +77,11 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     // given
     val now = DateTime.now
     val commit = CommitInfoAssembler.randomCommit.get
+    commitInfoDao.storeCommit(commit)
     createFollowupWithDependenciesFor(commit, JohnId, now, ThreadDetails(commit.id))
 
     val anotherCommit = CommitInfoAssembler.randomCommit.get
+    commitInfoDao.storeCommit(anotherCommit)
     createFollowupWithDependenciesFor(anotherCommit, JohnId, now.plusHours(1), ThreadDetails(anotherCommit.id))
 
     // when
@@ -114,6 +107,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     // given
     val now = DateTime.now
     val commit = CommitInfoAssembler.randomCommit.get
+    commitInfoDao.storeCommit(commit)
     val firstInlineFollowup = createFollowupWithDependenciesFor(commit, JohnId, now.plusHours(1), ThreadDetails(commit.id, Some(20), Some("file.txt")))
     val secondInlineFollowup = createFollowupWithDependenciesFor(commit, JohnId, now.plusHours(2), ThreadDetails(commit.id, Some(20), Some("file.txt")))
 
@@ -132,9 +126,10 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     inlineFollowup.lastReaction.reactionId should be(secondInlineFollowup.reaction.id.toString)
   }
 
-  it should "find all follow-ups only for given user" taggedAs(RequiresDb) in {
+  it should "find all follow-ups only for given user" taggedAs RequiresDb in {
     // given
     val commit = CommitInfoAssembler.randomCommit.get
+    commitInfoDao.storeCommit(commit)
     val johnFollowup = createFollowupWithDependenciesFor(commit, JohnId)
     createFollowupWithDependenciesFor(commit, BobId)
 
@@ -147,9 +142,10 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     firstFollowupOnList.followupId should be(johnFollowup.id.toString)
   }
 
-  it should "find followup by id for given user" taggedAs(RequiresDb) in {
+  it should "find followup by id for given user" taggedAs RequiresDb in {
     // given
     val commit = CommitInfoAssembler.randomCommit.get
+    commitInfoDao.storeCommit(commit)
     val johnFollowup = createFollowupWithDependenciesFor(commit, JohnId)
 
     // when
@@ -159,19 +155,21 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     found.followupId should be(johnFollowup.id.toString)
   }
 
-  it should "not find followup by id for another user" taggedAs(RequiresDb) in {
+  it should "not find followup by id for another user" taggedAs RequiresDb in {
     // given
     val commit = CommitInfoAssembler.randomCommit.get
+    commitInfoDao.storeCommit(commit)
     val johnFollowup = createFollowupWithDependenciesFor(commit, JohnId)
 
     // when & then
-    val Left(msg) = followupFinder.findFollowupForUser(BobId, johnFollowup.id)
+    val Left(_) = followupFinder.findFollowupForUser(BobId, johnFollowup.id)
   }
 
-  it should "have follow-ups for commit in newest-first order" taggedAs(RequiresDb) in {
+  it should "have follow-ups for commit in newest-first order" taggedAs RequiresDb in {
     // given
     val now = DateTime.now
     val commit = CommitInfoAssembler.randomCommit.get
+    commitInfoDao.storeCommit(commit)
     createFollowupWithDependenciesFor(commit, JohnId, now, ThreadDetails(commit.id))
     createFollowupWithDependenciesFor(commit, JohnId, now.plusHours(2), ThreadDetails(commit.id, Some(20), Some("file.txt")))
 
@@ -184,14 +182,16 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     followupsForCommit(0).lastReaction.date should be > followupsForCommit(1).lastReaction.date
   }
 
-  it should "have commits in newest-followup-first order" taggedAs(RequiresDb) in {
+  it should "have commits in newest-followup-first order" taggedAs RequiresDb in {
     // given
     val now = DateTime.now
 
     val commit = CommitInfoAssembler.randomCommit.get
+    commitInfoDao.storeCommit(commit)
     createFollowupWithDependenciesFor(commit, JohnId, now, ThreadDetails(commit.id))
 
     val anotherCommit = CommitInfoAssembler.randomCommit.get
+    commitInfoDao.storeCommit(anotherCommit)
     createFollowupWithDependenciesFor(anotherCommit, JohnId, now.plusHours(1), ThreadDetails(anotherCommit.id))
 
     // when
@@ -206,6 +206,7 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     // given
     val now = DateTime.now
     val commit = CommitInfoAssembler.randomCommit.get
+    commitInfoDao.storeCommit(commit)
     val created = createFollowupWithDependenciesFor(commit, JohnId, now, ThreadDetails(commit.id))
 
     // when
@@ -216,4 +217,22 @@ class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     reaction.message should be(created.reaction.message)
   }
 
+}
+
+class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with FollowupFinderSpec {
+  val commentDao = new MongoCommitCommentDAO()
+  val followupDao = new MongoFollowupDAO()
+  val commitInfoDao = new MongoCommitInfoDAO()
+  val userDao = new MongoUserDAO()
+  val followupFinder = new MongoFollowupFinder()
+}
+
+class SQLFollowupFinderSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with FollowupFinderSpec {
+  val commentDao = new SQLCommitCommentDAO(sqlDatabase)
+  val followupDao = new SQLFollowupDAO(sqlDatabase)
+  val commitInfoDao = new SQLCommitInfoDAO(sqlDatabase)
+  val userDao = new SQLUserDAO(sqlDatabase)
+  val followupFinder = new SQLFollowupFinder(sqlDatabase)
+
+  def withSchemas = List(new SQLLikeDAO(sqlDatabase), commentDao, followupDao, commitInfoDao, userDao)
 }
