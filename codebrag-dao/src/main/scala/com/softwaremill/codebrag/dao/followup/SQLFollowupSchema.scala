@@ -3,6 +3,7 @@ package com.softwaremill.codebrag.dao.followup
 import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import org.bson.types.ObjectId
 import scala.slick.model.ForeignKeyAction
+import org.joda.time.DateTime
 
 trait SQLFollowupSchema {
   val database: SQLDatabase
@@ -17,18 +18,20 @@ trait SQLFollowupSchema {
     threadFileName: Option[String],
     threadLineNumber: Option[Int],
     lastReactionId: ObjectId,
+    lastReactionCreatedDate: DateTime,
     lastReactionAuthor: ObjectId)
 
   protected class Followups(tag: Tag) extends Table[SQLFollowup](tag, "followups") {
-    def id                  = column[ObjectId]("id", O.PrimaryKey)
-    def receivingUserId     = column[ObjectId]("receiving_user_id")
-    def threadCommitId      = column[ObjectId]("thread_commit_id")
-    def threadFileName      = column[Option[String]]("thread_file_name")
-    def threadLineNumber    = column[Option[Int]]("thread_line_number")
-    def lastReactionId      = column[ObjectId]("last_reaction_id")
-    def lastReactionAuthor  = column[ObjectId]("last_reaction_author")
+    def id                      = column[ObjectId]("id", O.PrimaryKey)
+    def receivingUserId         = column[ObjectId]("receiving_user_id")
+    def threadCommitId          = column[ObjectId]("thread_commit_id")
+    def threadFileName          = column[Option[String]]("thread_file_name")
+    def threadLineNumber        = column[Option[Int]]("thread_line_number")
+    def lastReactionId          = column[ObjectId]("last_reaction_id")
+    def lastReactionCreatedDate = column[DateTime]("last_reaction_created_date")
+    def lastReactionAuthor      = column[ObjectId]("last_reaction_author")
 
-    def * = (id, receivingUserId, threadCommitId, threadFileName, threadLineNumber, lastReactionId, lastReactionAuthor) <>
+    def * = (id, receivingUserId, threadCommitId, threadFileName, threadLineNumber, lastReactionId, lastReactionCreatedDate, lastReactionAuthor) <>
       (SQLFollowup.tupled, SQLFollowup.unapply)
   }
 

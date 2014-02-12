@@ -35,8 +35,8 @@ class SQLFollowupDAO(val database: SQLDatabase) extends FollowupDAO with SQLFoll
       case Some(existing) => {
         followups
           .filter(existingFollowupFilter)
-          .map(f => (f.lastReactionId, f.lastReactionAuthor))
-          .update(followup.reaction.id, followup.reaction.authorId)
+          .map(f => (f.lastReactionId, f.lastReactionCreatedDate, f.lastReactionAuthor))
+          .update(followup.reaction.id, followup.reaction.postingTime, followup.reaction.authorId)
 
         existing.id
       }
@@ -49,6 +49,7 @@ class SQLFollowupDAO(val database: SQLDatabase) extends FollowupDAO with SQLFoll
           followup.reaction.fileName,
           followup.reaction.lineNumber,
           followup.reaction.id,
+          followup.reaction.postingTime,
           followup.reaction.authorId
         )
 
