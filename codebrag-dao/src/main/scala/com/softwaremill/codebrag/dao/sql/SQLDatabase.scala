@@ -31,7 +31,9 @@ case class SQLDatabase(db: scala.slick.jdbc.JdbcBackend.Database, driver: JdbcPr
         daos.internalUserDao.schemas ++
         daos.invitationDao.schemas ++
         daos.likeDao.schemas ++
-        daos.userDao.schemas
+        daos.userDao.schemas ++
+        daos.repoStatusDao.schemas ++
+        daos.heartbeatDao.schemas
 
     try {
       db.withTransaction { implicit session =>

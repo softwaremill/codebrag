@@ -30,7 +30,7 @@ trait Daos {
   def invitationDao: InvitationDAO
   def eventDao: EventDAO
   def repoStatusDao: RepositoryStatusDAO
-  def heartbeatStore: HeartbeatDAO
+  def heartbeatDao: HeartbeatDAO
 
   lazy val instanceSettingsDao = new FileBasedInstanceSettingsDAO
 
@@ -55,7 +55,7 @@ trait MongoDaos extends Daos {
   lazy val invitationDao = new MongoInvitationDAO
   lazy val eventDao = new MongoEventDAO
   lazy val repoStatusDao = new MongoRepositoryStatusDAO
-  lazy val heartbeatStore = new MongoHeartbeatDAO(clock)
+  lazy val heartbeatDao = new MongoHeartbeatDAO(clock)
 
   lazy val notificationCountFinder = new MongoNotificationCountFinder
   lazy val followupFinder = new MongoFollowupFinder
@@ -75,7 +75,7 @@ trait SQLDaos extends Daos {
   lazy val invitationDao = new SQLInvitationDAO(sqlDatabase)
   lazy val eventDao = new SQLEventDAO(sqlDatabase)
   lazy val repoStatusDao = new SQLRepositoryStatusDAO(sqlDatabase)
-  lazy val heartbeatStore = new SQLHeartbeatDAO(sqlDatabase, clock)
+  lazy val heartbeatDao = new SQLHeartbeatDAO(sqlDatabase, clock)
 
   lazy val notificationCountFinder = new SQLNotificationCountFinder(sqlDatabase)
   lazy val followupFinder = new SQLFollowupFinder(sqlDatabase, userDao)
