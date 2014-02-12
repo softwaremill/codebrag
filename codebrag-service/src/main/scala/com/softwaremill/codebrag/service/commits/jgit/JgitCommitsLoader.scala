@@ -1,60 +1,55 @@
 package com.softwaremill.codebrag.service.commits.jgit
 
-import com.softwaremill.codebrag.service.commits.{RepoData, CommitsLoader}
+import com.softwaremill.codebrag.service.commits.CommitsLoader
 import com.softwaremill.codebrag.domain.{RepositoryStatus, CommitInfo}
 import com.typesafe.scalalogging.slf4j.Logging
-import scala.collection.JavaConversions._
 import com.softwaremill.codebrag.dao.RepositoryStatusDAO
-import org.eclipse.jgit.lib.{Constants, ObjectId}
-import org.eclipse.jgit.api.LogCommand
+import org.eclipse.jgit.lib.ObjectId
+import com.softwaremill.codebrag.repository.{GitSvnRepository, GitRepository, Repository}
+import com.softwaremill.codebrag.repository.config.{GitSvnRepoConfig, GitRepoConfig, RepoConfig}
 
-class JgitCommitsLoader(jGitFacade: JgitFacade, internalDirTree: InternalDirTree, converter: JgitLogConverter,
-                              repoStatusDao: RepositoryStatusDAO, repoUpdater : RepoUpdater)
-  extends CommitsLoader with Logging {
 
-  def loadMissingCommits(repoData: RepoData): List[CommitInfo] = {
-    if(repoData.credentialsValid) {
-      loadCommits(repoData)
-    } else {
-      dontLoadCommits
-    }
+class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositoryStatusDAO) extends CommitsLoader with Logging {
+
+  def loadNewCommits(repoConfig: RepoConfig): List[CommitInfo] = {
+    val repo = RepoFromConfig.build(repoConfig)
+    val newCommits = updateAndGetCommits(repo)
+    converter.toCommitInfos(newCommits, repo.repo)
   }
 
-  private def loadCommits(repoData: RepoData): List[CommitInfo] = {
-    val logCommand = try {
-      val updateResult = updateRepository(repoData)
-      val currentHead = ObjectId.toString(updateResult.getRepository.resolve(Constants.HEAD)) 
-      val repoReadyStatus = RepositoryStatus.ready(repoData.repositoryName).withHeadId(currentHead)
-      repoStatusDao.updateRepoStatus(repoReadyStatus)
-      updateResult
+  private def updateAndGetCommits(repo: Repository) = {
+    val lastKnownCommitSHA = repoStatusDao.get(repo.repoName)
+    try {
+      repo.pullChanges
+      val newCommits = repo.getCommits(lastKnownCommitSHA)
+      updateRepoReadyStatus(repo)
+      newCommits
     } catch {
       case e: Exception => {
-        val repoNotReadyStatus = RepositoryStatus.notReady(repoData.repositoryName, Some(e.getMessage))
-        repoStatusDao.updateRepoStatus(repoNotReadyStatus)
+        updateRepoNotReadyStatus(repo, e)
+        logger.debug("Could not pull repo or load new commits", e)
         throw e
       }
     }
-    converter.toCommitInfos(logCommand.call().toList, logCommand.getRepository)
   }
 
+  private def updateRepoNotReadyStatus(repo: Repository, cause: Exception) {
+    val repoNotReadyStatus = RepositoryStatus.notReady(repo.repoName, Some(cause.getMessage))
+    repoStatusDao.updateRepoStatus(repoNotReadyStatus)
+  }
 
-  def updateRepository(repoData: RepoData) = {
-    val localPath = internalDirTree.getPath(repoData)
-    val logCommand = if (!internalDirTree.containsRepo(repoData)) {
-      repoUpdater.cloneFreshRepo(localPath, repoData)
-    } else {
-      repoUpdater.pullRepoChanges(localPath, repoData, fetchPreviousHead(repoData))
+  private def updateRepoReadyStatus(repo: Repository) {
+    val currentHead = ObjectId.toString(repo.currentHead)
+    val repoReadyStatus = RepositoryStatus.ready(repo.repoName).withHeadId(currentHead)
+    repoStatusDao.updateRepoStatus(repoReadyStatus)
+  }
+
+  private object RepoFromConfig {
+    def build(config: RepoConfig) = {
+      config match {
+        case gitConfig: GitRepoConfig => new GitRepository(gitConfig)
+        case gitSvnConfig: GitSvnRepoConfig => new GitSvnRepository(gitSvnConfig)
+      }
     }
-    logCommand
   }
-
-  private def dontLoadCommits = {
-    logger.warn("Invalid repository data, can't import commits")
-    List.empty
-  }
-
-  private def fetchPreviousHead(repoData: RepoData): Option[ObjectId] = {
-    repoStatusDao.get(repoData.repositoryName).map(ObjectId.fromString(_))
-  }
-
 }
