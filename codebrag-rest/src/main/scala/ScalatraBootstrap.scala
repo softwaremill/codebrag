@@ -30,10 +30,14 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     }
 
     val beans = if (_config.storageType == _config.StorageType.Embedded) {
-      new Beans with EventingConfiguration with SQLDaos {
+      val beansWithSQL = new Beans with EventingConfiguration with SQLDaos {
         val config = _config
         val sqlDatabase = SQLDatabase.createEmbedded(config)
       }
+
+      beansWithSQL.sqlDatabase.createTablesIfNeeded(beansWithSQL)
+
+      beansWithSQL
     } else {
       MongoInit.initialize(_config)
       new Beans with EventingConfiguration with MongoDaos {

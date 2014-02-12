@@ -5,10 +5,10 @@ import org.joda.time.{DateTimeZone, DateTime}
 import org.bson.types.ObjectId
 import java.io.File
 import scala.slick.jdbc.JdbcBackend._
-import com.softwaremill.codebrag.dao.DaoConfig
+import com.softwaremill.codebrag.dao.{SQLDaos, DaoConfig}
 import com.typesafe.scalalogging.slf4j.Logging
 
-case class SQLDatabase(db: scala.slick.jdbc.JdbcBackend.Database, driver: JdbcProfile) {
+case class SQLDatabase(db: scala.slick.jdbc.JdbcBackend.Database, driver: JdbcProfile) extends Logging {
   import driver.simple._
 
   implicit val dateTimeColumnType = MappedColumnType.base[DateTime, java.sql.Timestamp](
@@ -20,6 +20,31 @@ case class SQLDatabase(db: scala.slick.jdbc.JdbcBackend.Database, driver: JdbcPr
     oi => oi.toString,
     x => new ObjectId(x)
   )
+
+  def createTablesIfNeeded(daos: SQLDaos) {
+    val allSchemas =
+      daos.commentDao.schemas ++
+        daos.commitInfoDao.schemas ++
+        daos.commitReviewTaskDao.schemas ++
+        daos.eventDao.schemas ++
+        daos.followupDao.schemas ++
+        daos.internalUserDao.schemas ++
+        daos.invitationDao.schemas ++
+        daos.likeDao.schemas ++
+        daos.userDao.schemas
+
+    try {
+      db.withTransaction { implicit session =>
+        allSchemas.foreach { _.create }
+      }
+
+      logger.info("Schemas created")
+    } catch {
+      case e: Exception => logger.info(s"Cannot create schema because of ${e.getMessage}. This is probably because the " +
+        s"schema already exist. We are not concerned in doing it in a nicer way right now because we are shortly " +
+        s"moving to FlyWay anyway.")
+    }
+  }
 }
 
 object SQLDatabase extends Logging {
