@@ -6,11 +6,10 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.dao.reporting.views.{CommitReactionsView, ReactionsView, CommentView, ReactionView}
-import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler}
+import com.softwaremill.codebrag.domain.builder.{UserAssembler, LikeAssembler, CommentAssembler}
 import com.softwaremill.codebrag.dao.user.MongoUserDAO
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, MongoCommitCommentDAO}
-import com.softwaremill.codebrag.dao.finders.reaction.MongoReactionFinder
 
 class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers with ReactionFinderVerifyHelpers {
 
@@ -23,6 +22,10 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
 
   val John = User(oid(2), Authentication.basic("john", "pass"), "John", "john@doe.com", "123abc", "http://john.doe.com/avatar")
   val Mary = User(oid(3), Authentication.basic("mary", "pass"), "Mary", "mary@smith.com", "123abc", "http://mary.com/avatar")
+
+  val user = UserAssembler.randomUser.withFullName("John Doe").get
+  val commitId = ObjectIdTestUtils.oid(100)
+  val nonExistingAuthorId = ObjectIdTestUtils.oid(10)
 
   val StoredCommitComments = List(
     CommentAssembler.commentFor(CommitId).withAuthorId(John.id).withMessage("Monster class").get,
@@ -53,6 +56,8 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     StoredInlineLikes.foreach(likeDao.save)
 
     List(John, Mary).foreach(userDao.add)
+
+    userDao.add(user)
   }
 
   it should "be empty if there are no comments for a commit" taggedAs (RequiresDb) in {
@@ -149,6 +154,42 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     // then
     val Some(comments) = commentsView.entireCommitReactions.comments
     comments(0).asInstanceOf[CommentView].authorAvatarUrl should equal(None)
+  }
+
+  it should "find like by id" in {
+    // given
+    val like = LikeAssembler.likeFor(commitId).withAuthorId(user.id).get
+    likeDao.save(like)
+
+    // when
+    val found = reactionsFinder.findLikeById(like.id)
+
+    found.get.id should equal(like.id.toString)
+    found.get.authorId should equal(user.id.toString)
+    found.get.authorName should equal(user.name)
+  }
+
+  it should "find like by id with empty user name when like author not found" in {
+    // given
+    val like = LikeAssembler.likeFor(commitId).withAuthorId(nonExistingAuthorId).get
+    likeDao.save(like)
+
+    // when
+    val found = reactionsFinder.findLikeById(like.id)
+
+    found.get.id should equal(like.id.toString)
+    found.get.authorId should equal(nonExistingAuthorId.toString)
+    found.get.authorName should be('empty)
+  }
+
+  it should "return None if like not found" in {
+    // given
+    val nonExistingLikeId = ObjectIdTestUtils.oid(200)
+
+    // when
+    val found = reactionsFinder.findLikeById(nonExistingLikeId)
+
+    found should be('empty)
   }
 
 }

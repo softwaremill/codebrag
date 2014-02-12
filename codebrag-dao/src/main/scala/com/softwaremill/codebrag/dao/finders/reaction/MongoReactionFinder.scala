@@ -9,7 +9,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.{LikeRecord, UserRecord}
 import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, MongoCommitCommentDAO}
 
-class MongoReactionFinder extends ReactionFinder with UserReactionToViewMapper with LikesFinder {
+class MongoReactionFinder extends ReactionFinder with UserReactionToViewMapper with Logging {
 
   def findReactionsForCommit(commitId: ObjectId) = {
 
@@ -32,10 +32,6 @@ class MongoReactionFinder extends ReactionFinder with UserReactionToViewMapper w
     CommitReactionsView(entireReactionsView, inlineReactionsView)
   }
 
-}
-
-trait LikesFinder extends Logging {
-
   def findLikeById(likeId: ObjectId): Option[LikeView] = {
     LikeRecord.where(_.id eqs likeId).get() match {
       case Some(like) => {
@@ -54,55 +50,6 @@ trait LikesFinder extends Logging {
 
 }
 
-trait UserReactionToViewMapper {
 
-  def mapInlineReactionsToView(reactions: List[UserReaction], domainToView: (UserReaction, AuthorData) => ReactionView): Map[String, Map[String, ReactionsView]] = {
-    val usersCached = findAllUsersIn(reactions)
-    val byFiles = reactions.groupBy(_.fileName.get)
-    val byFileAndLineNumber = byFiles.map({
-      case (fileName, fileReactions) => (fileName, fileReactions.groupBy(_.lineNumber.get))
-    })
-
-    byFileAndLineNumber.map({
-      case (fileName, reactionsForFile) =>
-        (fileName, reactionsForFile.map({
-          case (lineNumber, lineReactions) => {
-            val lineReactionsViews = lineReactions.map(reaction => {
-              val authorData = findUserDetails(usersCached, reaction.authorId)
-              domainToView(reaction, authorData)
-            })
-            val reactionsByType = lineReactionsViews.groupBy(_.reactionType)
-            (lineNumber.toString, ReactionsView(reactionsByType.get("comment"), reactionsByType.get("like")))
-          }
-        }))
-    })
-  }
-
-  def mapCommitReactionsToView(reactions: List[UserReaction], domainToView: (UserReaction, AuthorData) => ReactionView): ReactionsView = {
-    val usersCached = findAllUsersIn(reactions)
-    val reactionsByType = reactions.map(reaction => {
-      val authorData = findUserDetails(usersCached, reaction.authorId)
-      domainToView(reaction, authorData)
-    }).groupBy(_.reactionType)
-    ReactionsView(reactionsByType.get("comment"), reactionsByType.get("like"))
-  }
-
-  private def findAllUsersIn(reactions: List[UserReaction]): List[(ObjectId, String, Option[String])] = {
-    UserRecord.select(_.id, _.name, _.userSettings.subfield(_.avatarUrl)).where(_.id in reactions.map(_.authorId)).fetch()
-    .map {
-      case (id, name, avatarOpt) => (id, name, avatarOpt)
-    }
-  }
-
-  private def findUserDetails(commenters: List[(ObjectId, String, Option[String])], commenterId: ObjectId) = {
-    commenters.find(_._1 == commenterId) match {
-      case Some(author) => AuthorData(author._2, author._1.toString, author._3)
-      case None => AuthorData("Unknown author", "")
-    }
-  }
-
-  case class AuthorData(authorName: String, authorId: String, avatarUrl: Option[String] = None)
-
-}
 
 
