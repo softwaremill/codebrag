@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.domain.builder
 
-import com.softwaremill.codebrag.domain.{UserSettings, Authentication, User}
+import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, UserSettings, Authentication, User}
 import org.bson.types.ObjectId
 
 class UserAssembler(var user: User) {
@@ -21,7 +21,7 @@ class UserAssembler(var user: User) {
   }
 
   def withEmail(email: String) = {
-    user = user.copy(email = email)
+    user = user.copy(emailLowerCase = email)
     this
   }
 
@@ -52,6 +52,7 @@ object UserAssembler {
   def randomUser = new UserAssembler(createRandomUser())
 
   private def createRandomUser() = {
-    User(new ObjectId, Authentication("Basic", "Sofokles", "sofokles", "token", "salt"), "Sofokles Mill", "sofo@sml.com", "token", UserSettings("http://avatar.com/1.jpg"), None)
+    User(new ObjectId, Authentication("Basic", "Sofokles", "sofokles", "token", "salt"), "Sofokles Mill", "sofo@sml.com", "token",
+      UserSettings("http://avatar.com/1.jpg"), LastUserNotificationDispatch(None, None))
   }
 }

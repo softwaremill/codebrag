@@ -69,7 +69,7 @@ class ScheduleDelaysCalculatorSpec extends FlatSpec with MockitoSugar with Shoul
 
   private def delayTo(string: String) = {
     val expectedNextSendTime = dateTime(string)
-    (clock: Clock) => expectedNextSendTime.getMillis - clock.currentDateTime.getMillis
+    (clock: Clock) => expectedNextSendTime.getMillis - clock.now.getMillis
   }
 
   private def clockAt(string: String) = {

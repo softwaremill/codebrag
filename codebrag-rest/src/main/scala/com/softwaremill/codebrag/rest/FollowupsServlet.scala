@@ -3,12 +3,11 @@ package com.softwaremill.codebrag.rest
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra.swagger.{SwaggerSupport, Swagger}
 import org.scalatra.json.JacksonJsonSupport
-import com.softwaremill.codebrag.dao.reporting._
-import scala.Some
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.views.SingleFollowupView
 import com.softwaremill.codebrag.service.followups.FollowupService
 import org.scalatra.NotFound
+import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
+import com.softwaremill.codebrag.dao.finders.views.SingleFollowupView
 
 class FollowupsServlet(val authenticator: Authenticator,
                        val swagger: Swagger,

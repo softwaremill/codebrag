@@ -12,6 +12,9 @@ import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler
 import org.mockito.Mockito._
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.domain.Followup
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, LikeDAO, CommitCommentDAO}
+import com.softwaremill.codebrag.dao.followup.FollowupDAO
 
 class FollowupsGeneratorForReactionsPriorUserRegistrationSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterEach with MockitoSugar with ClockSpec {
 
@@ -28,7 +31,7 @@ class FollowupsGeneratorForReactionsPriorUserRegistrationSpec extends FlatSpec w
   var followupsGenerator: FollowupsGeneratorForReactionsPriorUserRegistration = _
 
   val UserBob = NewUserRegistered(UserAssembler.randomUser.get)
-  val ConfiguredTimeBack = clock.currentDateTime.minusDays(config.replayFollowupsForPastCommitsTimeInDays)
+  val ConfiguredTimeBack = clock.now.minusDays(config.replayFollowupsForPastCommitsTimeInDays)
   val BobCommits = List(CommitInfoAssembler.randomCommit.withAuthorEmail(UserBob.email).withAuthorName(UserBob.fullName).get)
   val BobCommitsIds = BobCommits.map(_.id)
 
@@ -50,7 +53,7 @@ class FollowupsGeneratorForReactionsPriorUserRegistrationSpec extends FlatSpec w
   it should "not recreate any followups if user has no commits in configured time" in {
     // given
     val user = NewUserRegistered(UserAssembler.randomUser.get)
-    val timeBack = clock.currentDateTime.minusDays(config.replayFollowupsForPastCommitsTimeInDays)
+    val timeBack = clock.now.minusDays(config.replayFollowupsForPastCommitsTimeInDays)
     when(commitInfoDao.findLastCommitsAuthoredByUserSince(user, timeBack)).thenReturn(List.empty)
 
     // when
@@ -94,6 +97,6 @@ class FollowupsGeneratorForReactionsPriorUserRegistrationSpec extends FlatSpec w
   }
 
 
-  private def like4minsAgo = LikeAssembler.likeFor(BobCommitsIds.head).postedAt(clock.currentDateTime.minusMinutes(4)).get
-  private def comment2minsAgo = CommentAssembler.commentFor(BobCommitsIds.head).postedAt(clock.currentDateTime.minusMinutes(2)).get
+  private def like4minsAgo = LikeAssembler.likeFor(BobCommitsIds.head).postedAt(clock.now.minusMinutes(4)).get
+  private def comment2minsAgo = CommentAssembler.commentFor(BobCommitsIds.head).postedAt(clock.now.minusMinutes(2)).get
 }

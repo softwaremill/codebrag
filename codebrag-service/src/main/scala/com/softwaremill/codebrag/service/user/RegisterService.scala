@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.service.user
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.domain.{UserSettings, User, Authentication}
 import java.util.UUID
 import com.softwaremill.codebrag.service.invitations.InvitationService
 import com.softwaremill.codebrag.service.notification.NotificationService
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationService: InvitationService, notificationService: NotificationService) extends Logging {
 

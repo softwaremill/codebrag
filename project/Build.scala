@@ -151,6 +151,9 @@ object Dependencies {
   val egitGithubApi = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.3"
   val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "2.3.1.201302201838-r"
   val dispatch = "net.databinder.dispatch" %% "dispatch-core" % "0.9.5"
+
+  val slick = "com.typesafe.slick" %% "slick" % "2.0.0"
+  val h2 = "com.h2database" % "h2" % "1.3.175"
 }
 
 object SmlCodebragBuild extends Build {
@@ -236,7 +239,7 @@ object SmlCodebragBuild extends Build {
   lazy val dao: Project = Project(
     "codebrag-dao",
     file("codebrag-dao"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(typesafeConfig))
+    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(typesafeConfig, slick, h2))
   ) dependsOn(domain % "test->test;compile->compile", common)
 
   lazy val service: Project = Project(

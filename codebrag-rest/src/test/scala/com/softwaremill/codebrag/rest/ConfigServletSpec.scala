@@ -5,10 +5,10 @@ import com.softwaremill.codebrag.AuthenticatableServletSpec
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfterEach
-import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 
 class ConfigServletSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {

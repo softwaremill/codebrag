@@ -4,26 +4,30 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.Utils
 import org.joda.time.DateTime
 
-case class User(id: ObjectId, authentication: Authentication, name: String, email: String, token: String, settings: UserSettings,
-                notifications: Option[LastUserNotificationDispatch])
+/**
+ * @param token Used by "remember me" - set in a cookie.
+ */
+case class User(id: ObjectId, authentication: Authentication, name: String, 
+                emailLowerCase: String, token: String, settings: UserSettings,
+                notifications: LastUserNotificationDispatch)
 
 object User {
   def apply(authentication: Authentication, name: String, email: String, token: String, avatarUrl: String) = {
-    new User(null, authentication, name, email, token, UserSettings(avatarUrl), None)
+    new User(null, authentication, name, email, token, UserSettings(avatarUrl), LastUserNotificationDispatch(None, None))
   }
 
   def apply(id: ObjectId, authentication: Authentication, name: String, email: String, token: String, avatarUrl: String) = {
-    new User(id, authentication, name, email, token, UserSettings(avatarUrl), None)
+    new User(id, authentication, name, email, token, UserSettings(avatarUrl), LastUserNotificationDispatch(None, None))
   }
 
   def apply(id: ObjectId, authentication: Authentication, name: String, email: String, token: String, settings: UserSettings) = {
-    new User(id, authentication, name, email, token, settings, None)
+    new User(id, authentication, name, email, token, settings, LastUserNotificationDispatch(None, None))
   }
 
   implicit object UserLikeRegularUser extends UserLike[User] {
     def userFullName(userLike: User) = userLike.name
 
-    def userEmail(userLike: User) = userLike.email
+    def userEmail(userLike: User) = userLike.emailLowerCase
   }
 
 }
@@ -36,7 +40,7 @@ trait UserLike[T] {
 
 case class Authentication(provider: String, username: String, usernameLowerCase: String, token: String, salt: String)
 
-object Authentication {
+object Authentication extends ((String, String, String, String, String) => Authentication) {
   def github(username: String, accessToken: String) = {
     Authentication("GitHub", username, username.toLowerCase, accessToken, "")
   }

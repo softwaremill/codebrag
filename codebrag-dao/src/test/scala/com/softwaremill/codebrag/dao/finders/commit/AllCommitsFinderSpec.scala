@@ -1,17 +1,21 @@
 package com.softwaremill.codebrag.dao.finders.commit
 
 import com.softwaremill.codebrag.dao._
-import com.softwaremill.codebrag.test.mongo.ClearDataAfterTest
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.common.LoadMoreCriteria
 import com.softwaremill.codebrag.domain.builder.{CommitInfoAssembler, UserAssembler}
 import com.softwaremill.codebrag.domain.{CommitReviewTask, CommitInfo, User}
 import org.bson.types.ObjectId
 import LoadMoreCriteria.PagingDirection
+import com.softwaremill.codebrag.dao.user.MongoUserDAO
+import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
+import com.softwaremill.codebrag.dao.reviewtask.{CommitReviewTaskDAO, MongoCommitReviewTaskDAO}
+import org.scalatest.mock.MockitoSugar
+import org.mockito.Mockito._
 
-class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest with ShouldMatchers {
-
-  val finder = new AllCommitsFinder
+class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers with MockitoSugar {
+  var finder: AllCommitsFinder = _
 
   val commitDao = new MongoCommitInfoDAO
   val reviewTaskDao = new MongoCommitReviewTaskDAO
@@ -33,6 +37,8 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     storeCommits(commitOne, commitTwo, commitThree)
     storeReviewTasksFor(reviewingUserId, commitOne)
 
+    initFinder(Set(commitOne.id))
+
     // when
     val allCommitsView = finder.findAllCommits(threeFromStart, reviewingUserId)
 
@@ -44,6 +50,8 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     // given
     storeCommits(commitOne, commitTwo, commitThree)
     storeReviewTasksFor(reviewingUserId, commitOne)
+
+    initFinder(Set(commitOne.id))
 
     // when
     val nextTwoAfterFirst = LoadMoreCriteria(commitOne.id, PagingDirection.Right, 2)
@@ -58,6 +66,8 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     storeCommits(commitOne, commitTwo, commitThree)
     storeReviewTasksFor(reviewingUserId, commitOne)
 
+    initFinder(Set(commitOne.id))
+
     // when
     val previousTwoFromLast = LoadMoreCriteria(commitThree.id, PagingDirection.Left, 2)
     val commitsView = finder.findAllCommits(previousTwoFromLast, reviewingUserId)
@@ -70,6 +80,8 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     // given
     storeUser(commitAuthor)
     storeCommits(commitOne)
+
+    initFinder(Set())
 
     // when
     val commitsView = finder.findAllCommits(threeFromStart, reviewingUserId)
@@ -86,6 +98,8 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     storeCommits(commitOne, commitTwo, commitThree)
     storeReviewTasksFor(reviewingUserId, commitTwo, commitThree)
 
+    initFinder(Set(commitTwo.id, commitThree.id))
+
     // when
     val commitsView = finder.findAllCommits(threeFromStart, reviewingUserId)
 
@@ -100,6 +114,8 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     // given
     storeCommits(commitOne, commitTwo, commitThree)
 
+    initFinder(Set())
+
     // when
     val twoInContext = LoadMoreCriteria(commitThree.id, PagingDirection.Radial, 2)
     val commitsView = finder.findAllCommits(twoInContext, reviewingUserId)
@@ -112,12 +128,21 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearDataAfterTest wit
     // given
     storeCommits(commitOne, commitTwo, commitThree)
 
+    initFinder(Set())
+
     // when
     val oneInContext = LoadMoreCriteria(commitOne.id, PagingDirection.Radial, 1)
     val commitsView = finder.findAllCommits(oneInContext, reviewingUserId)
 
     // then
     commitsView.commits.map(_.id) should equal(List(commitOne, commitTwo).map(_.id.toString))
+  }
+
+  def initFinder(commitPendingReviewForReviewingUserId: Set[ObjectId]) {
+    val mockCommitReviewTaskDAO = mock[CommitReviewTaskDAO]
+    when(mockCommitReviewTaskDAO.commitsPendingReviewFor(reviewingUserId)).thenReturn(commitPendingReviewForReviewingUserId)
+
+    finder = new AllCommitsFinder(mockCommitReviewTaskDAO, commitDao, userDao)
   }
 
   private def storeUser(user: User) = userDao.add(user)

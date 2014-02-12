@@ -3,7 +3,6 @@ package com.softwaremill.codebrag.service.invitations
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.{UserDAO, InvitationDAO}
 import com.softwaremill.codebrag.service.email.{Email, EmailService}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
@@ -15,6 +14,8 @@ import com.softwaremill.codebrag.service.templates.{EmailContentWithSubject, Ema
 import com.softwaremill.codebrag.common.ClockSpec
 import org.joda.time.Hours
 import com.softwaremill.codebrag.domain.builder.UserAssembler
+import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.invitation.InvitationDAO
 
 class InvitationServiceSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
@@ -49,7 +50,7 @@ class InvitationServiceSpec
 
   it should "positively verify invitation" in {
     //given
-    val expirationInFuture = clock.currentDateTimeUTC.plusHours(1)
+    val expirationInFuture = clock.nowUtc.plusHours(1)
     when(invitationDAO.findByCode(code)).thenReturn(Some(Invitation(code, new ObjectId(), expirationInFuture)))
 
     //when
@@ -61,7 +62,7 @@ class InvitationServiceSpec
 
   it should "negatively verify invitation when invitation expired" in {
     //given
-    val expirationTimeInThePast = clock.currentDateTimeUTC.minusHours(1)
+    val expirationTimeInThePast = clock.nowUtc.minusHours(1)
     when(invitationDAO.findByCode(code)).thenReturn(Some(Invitation(code, new ObjectId(), expirationTimeInThePast)))
 
     //when
@@ -109,7 +110,7 @@ class InvitationServiceSpec
     val invitationCaptor = ArgumentCaptor.forClass(classOf[Invitation])
     verify(invitationDAO).save(invitationCaptor.capture())
     invitationCaptor.getValue.invitationSender should be(id)
-    invitationCaptor.getValue.expiryDate should be(clock.currentDateTimeUTC.plus(config.invitationExpiryTime))
+    invitationCaptor.getValue.expiryDate should be(clock.nowUtc.plus(config.invitationExpiryTime))
   }
 
   it should "send email with invitation message" in {

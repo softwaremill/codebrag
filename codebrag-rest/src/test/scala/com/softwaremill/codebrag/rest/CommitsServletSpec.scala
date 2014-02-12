@@ -5,9 +5,7 @@ import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import com.softwaremill.codebrag.AuthenticatableServletSpec
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
-import com.softwaremill.codebrag.dao.{UserDAO, CommitInfoDAO}
 import org.mockito.Mockito._
-import com.softwaremill.codebrag.dao.reporting.MongoReactionFinder
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import com.softwaremill.codebrag.activities.{CommitReviewActivity, AddCommentActivity}
 import org.bson.types.ObjectId
@@ -17,6 +15,9 @@ import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.usecase.UnlikeUseCase
 import com.softwaremill.codebrag.dao.finders.commit.{AllCommitsFinder, ReviewableCommitsListFinder}
 import com.softwaremill.codebrag.common.LoadMoreCriteria.PagingDirection
+import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
@@ -28,7 +29,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var allCommitsFinder = mock[AllCommitsFinder]
 
   var diffService = mock[DiffWithCommentsService]
-  var userReactionFinder = mock[MongoReactionFinder]
+  var userReactionFinder = mock[ReactionFinder]
   var userDao = mock[UserDAO]
   var commitReviewActivity = mock[CommitReviewActivity]
   val UserJson = someUser()

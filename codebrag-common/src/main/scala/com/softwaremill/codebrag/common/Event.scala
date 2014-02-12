@@ -19,7 +19,7 @@ trait StatisticEvent extends Event {
 
   def eventType: String
 
-  def userId: Option[ObjectId]
+  def userId: ObjectId
 
   def toEventStream: String
 

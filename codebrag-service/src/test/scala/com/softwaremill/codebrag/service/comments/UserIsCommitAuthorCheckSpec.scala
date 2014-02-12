@@ -3,12 +3,13 @@ package com.softwaremill.codebrag.service.comments
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.{UserDAO, CommitInfoDAO}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.Like
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
+import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 
 class UserIsCommitAuthorCheckSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 

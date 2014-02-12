@@ -1,12 +1,12 @@
 package com.softwaremill.codebrag.service.comments
 
-import com.softwaremill.codebrag.dao.{LikeDAO, CommitCommentDAO}
 import com.softwaremill.codebrag.domain.{UserReaction, Like, Comment}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.comments.command.{IncomingLike, IncomingComment}
 import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.domain.reactions.{UnlikeEvent, LikeEvent}
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.dao.reaction.{LikeDAO, CommitCommentDAO}
 
 class UserReactionService(commentDao: CommitCommentDAO,
                           likeDao: LikeDAO,
@@ -14,7 +14,7 @@ class UserReactionService(commentDao: CommitCommentDAO,
                           eventBus: EventBus)(implicit clock: Clock) extends Logging {
 
   def storeLike(like: IncomingLike): Either[String, Like] = {
-    val likeDomainObject = Like(new ObjectId, like.commitId, like.authorId, clock.currentDateTimeUTC, like.fileName, like.lineNumber)
+    val likeDomainObject = Like(new ObjectId, like.commitId, like.authorId, clock.nowUtc, like.fileName, like.lineNumber)
     val valid = likeValidator.isLikeValid(likeDomainObject)
     valid.right.map(_ => {
       save(likeDomainObject)
@@ -23,7 +23,7 @@ class UserReactionService(commentDao: CommitCommentDAO,
   }
 
   def storeComment(comment: IncomingComment): Comment = {
-    val commentDomainObject = Comment(new ObjectId, comment.commitId, comment.authorId, clock.currentDateTimeUTC, comment.message, comment.fileName, comment.lineNumber)
+    val commentDomainObject = Comment(new ObjectId, comment.commitId, comment.authorId, clock.nowUtc, comment.message, comment.fileName, comment.lineNumber)
     save(commentDomainObject)
     commentDomainObject
   }

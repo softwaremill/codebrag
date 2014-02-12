@@ -4,12 +4,12 @@ import org.bson.types.ObjectId
 
 case class InternalUser(id: ObjectId, name: String)
 
-object InternalUser {
+// `extends` to get `tupled`
+object InternalUser extends ((ObjectId, String) => InternalUser) {
 
   val WelcomeFollowupsAuthorName = "Codebrag"
 
   def apply(name: String) = {
     new InternalUser(new ObjectId, name)
   }
-
 }

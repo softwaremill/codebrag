@@ -13,7 +13,7 @@ import org.joda.time.DateTime
  */
 case class CommitsUpdatedEvent(firstTime: Boolean, newCommits: List[UpdatedCommit])(implicit clock: Clock) extends Event {
 
-  def timestamp: DateTime = clock.currentDateTimeUTC
+  def timestamp: DateTime = clock.nowUtc
 
   def userId: Option[ObjectId] = None
 

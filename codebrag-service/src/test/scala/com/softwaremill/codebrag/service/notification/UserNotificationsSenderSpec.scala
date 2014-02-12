@@ -4,13 +4,14 @@ import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.common.{ClockSpec, Clock}
-import com.softwaremill.codebrag.dao.UserDAO
-import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import com.softwaremill.codebrag.service.config.{ConfigWithDefault, CodebragConfig}
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import org.mockito.Mockito._
+import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
+import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
+import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 
 class UserNotificationsSenderSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
@@ -35,7 +36,7 @@ class UserNotificationsSenderSpec
   it should "not send notification when user has notifications disabled" in {
     // given
     val user = UserAssembler.randomUser.withEmailNotificationsDisabled().get
-    val heartbeats = List((user.id, clock.currentDateTimeUTC.minusHours(1)))
+    val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
     when(userDao.findById(user.id)).thenReturn(Some(user))
 
     // when
@@ -47,8 +48,8 @@ class UserNotificationsSenderSpec
 
   it should "not send notification when user has no commits or followups waiting" in {
     // given
-    val user = UserAssembler.randomUser.get.copy(notifications = None)
-    val heartbeats = List((user.id, clock.currentDateTimeUTC.minusHours(1)))
+    val user = UserAssembler.randomUser.get.copy(notifications = LastUserNotificationDispatch(None, None))
+    val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
     when(userDao.findById(user.id)).thenReturn(Some(user))
     when(notificationCountFinder.getCountersSince(heartbeats.head._2, user.id)).thenReturn(NoCommitsAndFollowups)
 
@@ -87,7 +88,7 @@ class UserNotificationsSenderSpec
   it should "send notification when user has commits or followups" in {
     // given
     val user = UserAssembler.randomUser.get
-    val heartbeats = List((user.id, clock.currentDateTimeUTC.minusHours(1)))
+    val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
     when(userDao.findById(user.id)).thenReturn(Some(user))
     when(notificationCountFinder.getCountersSince(heartbeats.head._2, user.id)).thenReturn(SomeCommitsAndFollowups)
 

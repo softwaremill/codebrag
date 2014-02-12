@@ -2,12 +2,12 @@ package com.softwaremill.codebrag.service.diff
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.CommitInfoDAO
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.scalatest.mock.MockitoSugar
 import org.mockito.BDDMockito._
 import com.softwaremill.codebrag.domain.CommitFileInfo
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 
 class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers with MockitoSugar {
 

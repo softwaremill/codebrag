@@ -1,20 +1,18 @@
 package com.softwaremill.codebrag.dao.finders.commit
 
-import com.softwaremill.codebrag.dao.reporting.views.{CommitListView, CommitView}
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.CommitReviewTaskRecord
-import com.foursquare.rogue.LiftRogue._
-
+import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
+import com.softwaremill.codebrag.dao.finders.views.CommitView
 
 trait CommitReviewedByUserMarker {
 
   def markAsReviewed(commitsViews: List[CommitView], userId: ObjectId) = {
-    val remainingToReview = commitsPendingReviewFor(userId)
-    CommitListView(commitsViews.map(markIfReviewed(_, remainingToReview)), 0, 0)
+    val remainingToReview = commitReviewTaskDAO.commitsPendingReviewFor(userId)
+    commitsViews.map(markIfReviewed(_, remainingToReview))
   }
 
   def markAsReviewed(commitView: CommitView, userId: ObjectId) = {
-    val remainingToReview = commitsPendingReviewFor(userId)
+    val remainingToReview = commitReviewTaskDAO.commitsPendingReviewFor(userId)
     markIfReviewed(commitView, remainingToReview)
   }
 
@@ -25,9 +23,5 @@ trait CommitReviewedByUserMarker {
       commitView.copy(pendingReview = false)
   }
 
-  private def commitsPendingReviewFor(userId: ObjectId) = {
-    val userReviewTasks = CommitReviewTaskRecord.where(_.userId eqs userId).fetch()
-    userReviewTasks.map(_.commitId.get).toSet
-  }
-
+  def commitReviewTaskDAO: CommitReviewTaskDAO
 }

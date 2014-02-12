@@ -3,13 +3,13 @@ package com.softwaremill.codebrag.service.user
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.UserDAO
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.common.{ClockSpec, EventBus}
 import com.softwaremill.codebrag.service.commits.CommitReviewTaskGenerator
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.service.followups.{FollowupsGeneratorForReactionsPriorUserRegistration, WelcomeFollowupsGenerator}
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class NewUserAdderTest
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {

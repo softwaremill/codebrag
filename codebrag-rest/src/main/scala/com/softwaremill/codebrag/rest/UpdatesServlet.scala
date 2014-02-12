@@ -1,12 +1,12 @@
 package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.service.user.Authenticator
-import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.HeartbeatStore
 import com.softwaremill.codebrag.common.Clock
+import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
+import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
 
-class UpdatesServlet(val authenticator: Authenticator, finder: NotificationCountFinder, heartbeat: HeartbeatStore, clock: Clock) extends JsonServletWithAuthentication {
+class UpdatesServlet(val authenticator: Authenticator, finder: NotificationCountFinder, heartbeat: HeartbeatDAO, clock: Clock) extends JsonServletWithAuthentication {
   before() {
     haltIfNotAuthenticated()
   }
@@ -15,7 +15,7 @@ class UpdatesServlet(val authenticator: Authenticator, finder: NotificationCount
     val userId = new ObjectId(user.id)
     heartbeat.update(userId)
     val counters = finder.getCounters(userId)
-    UpdateNotification(clock.currentTimeMillis, counters.pendingCommitCount, counters.followupCount)
+    UpdateNotification(clock.nowMillis, counters.pendingCommitCount, counters.followupCount)
   }
 
 }

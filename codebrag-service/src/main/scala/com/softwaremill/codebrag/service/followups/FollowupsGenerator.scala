@@ -1,8 +1,10 @@
 package com.softwaremill.codebrag.service.followups
 
-import com.softwaremill.codebrag.dao.{FollowupWithReactionsDAO, CommitInfoDAO, UserDAO, FollowupDAO}
 import akka.actor.Actor
 import com.softwaremill.codebrag.domain.reactions.{UnlikeEvent, LikeEvent}
+import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.followup.{FollowupWithReactionsDAO, FollowupDAO}
 
 class FollowupsGenerator(followupDaoArg: FollowupDAO, userDaoArg: UserDAO, commitInfoDaoArg: CommitInfoDAO, followupWithReactionsDaoArg: FollowupWithReactionsDAO) extends Actor with FollowupsGeneratorActions {
 

@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.service.user
 
-import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.domain.Authentication
 import com.softwaremill.codebrag.service.commits.CommitReviewTaskGeneratorActions
 import com.softwaremill.codebrag.common.EventBus
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 trait Authenticator {
 

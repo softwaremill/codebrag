@@ -1,17 +1,20 @@
 package com.softwaremill.codebrag.service.followups
 
-import com.softwaremill.codebrag.dao._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain._
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.reaction.CommitCommentDAO
+import com.softwaremill.codebrag.dao.followup.FollowupDAO
 
 class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, commitCommentDao: CommitCommentDAO, userDao: UserDAO)
   extends Logging {
 
   def deleteUserFollowup(userId: ObjectId, followupId: ObjectId): Either[String, Unit] = {
-    followupDao.findById(followupId) match {
-      case Some(followup) => {
-        if(followup.isOwner(userId)) {
+    followupDao.findReceivingUserId(followupId) match {
+      case Some(receivingUserId) => {
+        if(receivingUserId == userId) {
           Right(followupDao.delete(followupId))
         } else {
           Left("User not allowed to delete followup")

@@ -1,13 +1,13 @@
 package com.softwaremill.codebrag.rest
 
 import org.scalatra.{Forbidden, ScalatraServlet, SeeOther}
-import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.service.user.{NewUserAdder, GitHubAuthService, Authenticator}
 import com.softwaremill.codebrag.domain.{User, Authentication}
 import java.util.UUID
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.auth.AuthenticationSupport
 import com.softwaremill.codebrag.service.config.{CodebragConfig, GithubConfig}
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 
 class GithubAuthorizationServlet(val authenticator: Authenticator,

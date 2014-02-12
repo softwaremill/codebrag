@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.service.user
 
-import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, UserDAO}
+import com.softwaremill.codebrag.dao.ObjectIdTestUtils
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
@@ -11,6 +11,7 @@ import com.softwaremill.codebrag.service.data.UserJson
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.service.commits.CommitReviewTaskGeneratorActions
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with MockEventBus {
 
@@ -70,7 +71,7 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
     val Some(user) = authenticator.authenticate(fixtureLogin, fixturePassword)
 
     user.fullName should be(fixtureUser.name)
-    user.email should be(fixtureUser.email)
+    user.email should be(fixtureUser.emailLowerCase)
   }
 
   it should "return None if user credentials don't match" in {

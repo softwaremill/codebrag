@@ -6,9 +6,9 @@ import com.softwaremill.codebrag.domain.User
 import com.softwaremill.codebrag.service.templates.{EmailTemplates, TemplateEngine}
 import com.softwaremill.codebrag.service.templates.EmailTemplates._
 import com.softwaremill.codebrag.service.config.CodebragConfig
-import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import com.softwaremill.codebrag.common.Clock
 import org.joda.time.format.DateTimeFormat
+import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
 
 class NotificationService(emailScheduler: EmailScheduler, templateEngine: TemplateEngine, codebragConfig: CodebragConfig, notificationCountFinder: NotificationCountFinder, clock: Clock) extends Logging {
 
@@ -18,7 +18,7 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: Templa
     val noOfCommits = notificationCountFinder.getCounters(user.id).pendingCommitCount
     val context: Map[String, Any] = prepareContextForWelcomeNotification(user, noOfCommits)
     val template = templateEngine.getEmailTemplate(WelcomeToCodebrag, context)
-    emailScheduler.scheduleInstant(Email(List(user.email), template.subject, template.content))
+    emailScheduler.scheduleInstant(Email(List(user.emailLowerCase), template.subject, template.content))
   }
 
 
@@ -29,7 +29,7 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: Templa
       "application_url" -> codebragConfig.applicationUrl
     )
     val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.UserNotifications, templateParams)
-    val email = Email(List(user.email), resolvedTemplate.subject, resolvedTemplate.content)
+    val email = Email(List(user.emailLowerCase), resolvedTemplate.subject, resolvedTemplate.content)
     emailScheduler.scheduleInstant(email)
   }
 
@@ -38,10 +38,10 @@ class NotificationService(emailScheduler: EmailScheduler, templateEngine: Templa
       "username" -> user.name,
       "commit_followup_message" -> translate(commitCount, followupCount, isTotalCount = true),
       "application_url" -> codebragConfig.applicationUrl,
-      "date" -> clock.currentDateTime.toString(DateTimeFormat.forPattern("yyyy-MM-dd"))
+      "date" -> clock.now.toString(DateTimeFormat.forPattern("yyyy-MM-dd"))
     )
     val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.DailyDigest, templateParams)
-    val email = Email(List(user.email), resolvedTemplate.subject, resolvedTemplate.content)
+    val email = Email(List(user.emailLowerCase), resolvedTemplate.subject, resolvedTemplate.content)
     emailScheduler.scheduleInstant(email)
   }
 

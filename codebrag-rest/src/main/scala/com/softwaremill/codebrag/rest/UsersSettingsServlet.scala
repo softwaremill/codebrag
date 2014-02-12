@@ -2,15 +2,15 @@ package com.softwaremill.codebrag.rest
 
 import org.scalatra._
 import com.softwaremill.codebrag.service.user.Authenticator
-import com.softwaremill.codebrag.dao.UserDAO
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.usecase.{ChangeUserSettingsUseCase, IncomingSettings}
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class UsersSettingsServlet(val authenticator: Authenticator, userDao: UserDAO, changeUserSettings: ChangeUserSettingsUseCase) extends JsonServletWithAuthentication with Logging {
 
   get("/") {
-    haltIfNotAuthenticated
+    haltIfNotAuthenticated()
     userDao.findById(new ObjectId(user.id)) match {
       case Some(user) => Map("userSettings" -> user.settings)
       case None => NotFound

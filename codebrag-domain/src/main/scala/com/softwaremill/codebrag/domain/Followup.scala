@@ -2,13 +2,7 @@ package com.softwaremill.codebrag.domain
 
 import org.bson.types.ObjectId
 
-case class Followup(receivingUserId: ObjectId, reaction: UserReaction) {
-
-  def isOwner(userId: ObjectId) = {
-    this.receivingUserId == userId
-  }
-
-}
+case class Followup(receivingUserId: ObjectId, reaction: UserReaction)
 
 case class FollowupWithReactions(followupId: ObjectId, ownerId: ObjectId, thread: ThreadDetails, lastReaction: UserReaction, allReactions: List[UserReaction]) {
 

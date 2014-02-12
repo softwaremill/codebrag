@@ -15,11 +15,15 @@ import scala.Some
 import com.softwaremill.codebrag.domain.Like
 import com.softwaremill.codebrag.service.templates.{PlainTextTemplates, TemplateEngine}
 import com.softwaremill.codebrag.common.ClockSpec
+import com.softwaremill.codebrag.dao.user.InternalUserDAO
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.reaction.{LikeDAO, CommitCommentDAO}
+import com.softwaremill.codebrag.dao.followup.FollowupDAO
 
 class WelcomeFollowupsGeneratorSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
 
-  var internalUserDao: MongoInternalUserDAO = _
+  var internalUserDao: InternalUserDAO = _
   var commentsDao: CommitCommentDAO = _
   var likesDao: LikeDAO = _
   var followupsDao: FollowupDAO = _
@@ -33,7 +37,7 @@ class WelcomeFollowupsGeneratorSpec
   val registeredUserData = NewUserRegistered(newUser)
 
   override def beforeEach() {
-    internalUserDao = mock[MongoInternalUserDAO]
+    internalUserDao = mock[InternalUserDAO]
     commentsDao = mock[CommitCommentDAO]
     likesDao = mock[LikeDAO]
     followupsDao = mock[FollowupDAO]

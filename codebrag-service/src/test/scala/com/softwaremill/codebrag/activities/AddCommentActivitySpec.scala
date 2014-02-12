@@ -36,7 +36,7 @@ class AddCommentActivitySpec
     val message: String = "Comment"
     
     val newComment = IncomingComment(commitId, authorId, message)
-    val expected = Comment(ObjectId.get(), commitId, authorId, clock.currentDateTime, message)
+    val expected = Comment(ObjectId.get(), commitId, authorId, clock.now, message)
     
     when(userReactionService.storeComment(newComment)).thenReturn(expected)
     

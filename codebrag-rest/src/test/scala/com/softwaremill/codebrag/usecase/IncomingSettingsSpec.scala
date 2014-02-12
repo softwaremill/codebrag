@@ -6,9 +6,9 @@ import org.scalatest.matchers.ShouldMatchers
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.domain.UserSettings
 import org.mockito.Matchers
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class IncomingSettingsSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 

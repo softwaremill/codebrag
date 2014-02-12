@@ -9,11 +9,11 @@ import org.mockito.Mockito._
 import org.mockito.Matchers._
 import org.json4s.JsonDSL._
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
-import com.softwaremill.codebrag.dao.UserDAO
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.typesafe.config.ConfigFactory
 import java.util.Properties
 import com.softwaremill.codebrag.domain.builder.UserAssembler
+import com.softwaremill.codebrag.dao.user.UserDAO
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
@@ -72,7 +72,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     userIsAuthenticatedAs(someUser())
     get("/all") {
       status should be(200)
-      val expectedBody = Map("registeredUsers" -> actualUsers.map{user => Map("name" -> user.name, "email" -> user.email)})
+      val expectedBody = Map("registeredUsers" -> actualUsers.map{user => Map("name" -> user.name, "email" -> user.emailLowerCase)})
       body should be(asJson(expectedBody))
     }
   }

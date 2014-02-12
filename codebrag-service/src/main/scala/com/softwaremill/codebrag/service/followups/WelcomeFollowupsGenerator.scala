@@ -8,9 +8,13 @@ import com.softwaremill.codebrag.domain.Comment
 import com.softwaremill.codebrag.domain.Followup
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.service.templates.{PlainTextTemplates, TemplateEngine}
+import com.softwaremill.codebrag.dao.user.InternalUserDAO
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.reaction.{LikeDAO, CommitCommentDAO}
+import com.softwaremill.codebrag.dao.followup.FollowupDAO
 
 class WelcomeFollowupsGenerator(
-  internalUserDao: MongoInternalUserDAO,
+  internalUserDao: InternalUserDAO,
   commentsDao: CommitCommentDAO,
   likesDao: LikeDAO,
   followupsDao: FollowupDAO,

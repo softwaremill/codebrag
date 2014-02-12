@@ -9,9 +9,9 @@ case class NewUserRegistered(id: ObjectId, login: String, fullName: String, emai
 
   def eventType = NewUserRegistered.EventType
 
-  def timestamp: DateTime = clock.currentDateTimeUTC
+  def timestamp: DateTime = clock.nowUtc
 
-  def userId: Option[ObjectId] = Some(id)
+  def userId = id
 
   def toEventStream: String = s"New user $fullName was registered"
 
@@ -22,7 +22,7 @@ object NewUserRegistered {
   val EventType = "UserRegistered"
 
   def apply(user: User)(implicit clock: Clock) = {
-    new NewUserRegistered(user.id, user.authentication.usernameLowerCase, user.name, user.email)(clock)
+    new NewUserRegistered(user.id, user.authentication.usernameLowerCase, user.name, user.emailLowerCase)(clock)
   }
 
   implicit object UserLikeNewUserRegisteredEvent extends UserLike[NewUserRegistered] {

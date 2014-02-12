@@ -1,10 +1,11 @@
 package com.softwaremill.codebrag.activities
 
 import com.softwaremill.codebrag.domain.CommitReviewTask
-import com.softwaremill.codebrag.dao.{CommitInfoDAO, CommitReviewTaskDAO}
 import com.softwaremill.codebrag.common.{EventBus, Clock}
 import com.softwaremill.codebrag.domain.reactions.CommitReviewedEvent
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
 
 /**
  * Handles user activity when user wants to mark given commit as reviewed

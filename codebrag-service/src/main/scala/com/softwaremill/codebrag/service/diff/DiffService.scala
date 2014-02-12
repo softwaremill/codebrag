@@ -1,9 +1,9 @@
 package com.softwaremill.codebrag.service.diff
 
-import com.softwaremill.codebrag.dao.CommitInfoDAO
 import annotation.tailrec
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff}
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 
 class DiffService(commitInfoDao: CommitInfoDAO) {
 

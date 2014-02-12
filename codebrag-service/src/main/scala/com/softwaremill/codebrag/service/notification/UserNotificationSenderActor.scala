@@ -2,19 +2,20 @@ package com.softwaremill.codebrag.service.notification
 
 import akka.actor.{ActorRef, Props, ActorSystem, Actor}
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.dao.{UserDAO, HeartbeatStore}
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
-import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, User}
 import com.softwaremill.codebrag.common.Clock
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import scala.concurrent.duration.FiniteDuration
 import com.softwaremill.codebrag.common.scheduling.ScheduleDelaysCalculator
+import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
+import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
+import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 
 class UserNotificationSenderActor(actorSystem: ActorSystem,
-                                  heartbeatStore: HeartbeatStore,
+                                  heartbeatStore: HeartbeatDAO,
                                   val notificationCounts: NotificationCountFinder,
                                   val userDAO: UserDAO,
                                   val clock: Clock,
@@ -43,7 +44,7 @@ class UserNotificationSenderActor(actorSystem: ActorSystem,
 object UserNotificationSenderActor extends Logging {
 
   def initialize(actorSystem: ActorSystem,
-                 heartbeatStore: HeartbeatStore,
+                 heartbeatStore: HeartbeatDAO,
                  notificationCountFinder: NotificationCountFinder,
                  userDAO: UserDAO,
                  clock: Clock,
@@ -63,7 +64,7 @@ object UserNotificationSenderActor extends Logging {
     import scala.concurrent.duration._
 
     val initialDelay = ScheduleDelaysCalculator.delayToGivenTimeInMillis(config.dailyDigestSendHour, config.dailyDigestSendMinute)(clock).millis
-    val dateAtDelay = ScheduleDelaysCalculator.dateAtDelay(clock.currentDateTime, initialDelay)
+    val dateAtDelay = ScheduleDelaysCalculator.dateAtDelay(clock.now, initialDelay)
     logger.debug(s"Scheduling initial daily digest sending at $dateAtDelay")
     actorSystem.scheduler.scheduleOnce(initialDelay, receiver, SendDailyDigest)
   }
@@ -73,7 +74,7 @@ object UserNotificationSenderActor extends Logging {
     import scala.concurrent.duration._
 
     val nextSendOutDelay = ScheduleDelaysCalculator.delayInMillis(config.dailyDigestSendInterval)(clock).millis
-    val dateAtDelay = clock.currentDateTime.plusMillis(nextSendOutDelay.toMillis.toInt)
+    val dateAtDelay = clock.now.plusMillis(nextSendOutDelay.toMillis.toInt)
     logger.debug(s"Scheduling next daily digest sending at $dateAtDelay")
     actorSystem.scheduler.scheduleOnce(nextSendOutDelay, receiver, SendDailyDigest)
   }
@@ -103,7 +104,7 @@ trait UserNotificationsSender extends Logging {
   def config: CodebragConfig
 
   def sendUserNotifications(heartbeats: List[(ObjectId, DateTime)]) {
-    def userIsOffline(heartbeat: DateTime) = heartbeat.isBefore(clock.currentDateTimeUTC.minus(config.userOfflinePeriod))
+    def userIsOffline(heartbeat: DateTime) = heartbeat.isBefore(clock.nowUtc.minus(config.userOfflinePeriod))
 
     var emailsScheduled = 0
 
@@ -129,19 +130,17 @@ trait UserNotificationsSender extends Logging {
     userHasNotificationsEnabled match {
       case true => {
         val needsCommitNotification = counters.pendingCommitCount > 0 && (user.notifications match {
-          case None => true
-          case Some(LastUserNotificationDispatch(None, _)) => true
-          case Some(LastUserNotificationDispatch(Some(date), _)) => date.isBefore(heartbeat)
+          case LastUserNotificationDispatch(None, _) => true
+          case LastUserNotificationDispatch(Some(date), _) => date.isBefore(heartbeat)
         })
         val needsFollowupNotification = counters.followupCount > 0 && (user.notifications match {
-          case None => true
-          case Some(LastUserNotificationDispatch(_, None)) => true
-          case Some(LastUserNotificationDispatch(_, Some(date))) => date.isBefore(heartbeat)
+          case LastUserNotificationDispatch(_, None) => true
+          case LastUserNotificationDispatch(_, Some(date)) => date.isBefore(heartbeat)
         })
         needsCommitNotification || needsFollowupNotification
       }
       case false => {
-        logger.debug(s"Not sending email to ${user.email} - user has notifications disabled")
+        logger.debug(s"Not sending email to ${user.emailLowerCase} - user has notifications disabled")
         false
       }
     }
@@ -153,8 +152,8 @@ trait UserNotificationsSender extends Logging {
   }
 
   private def updateLastNotificationsDispatch(user: User, counters: NotificationCountersView) {
-    val commitDate = if (counters.pendingCommitCount > 0) Some(clock.currentDateTimeUTC) else None
-    val followupDate = if (counters.followupCount > 0) Some(clock.currentDateTimeUTC) else None
+    val commitDate = if (counters.pendingCommitCount > 0) Some(clock.nowUtc) else None
+    val followupDate = if (counters.followupCount > 0) Some(clock.nowUtc) else None
     if (commitDate.isDefined || followupDate.isDefined) {
       userDAO.rememberNotifications(user.id, LastUserNotificationDispatch(commitDate, followupDate))
     }
@@ -169,10 +168,10 @@ trait UserNotificationsSender extends Logging {
             if(counters.nonEmpty) {
               notificationService.sendDailyDigest(user, counters.pendingCommitCount, counters.followupCount)
             } else {
-              logger.debug(s"Not sending email to ${user.email} - no commits and followups waiting for this user")
+              logger.debug(s"Not sending email to ${user.emailLowerCase} - no commits and followups waiting for this user")
             }
           }
-          case false => logger.debug(s"Not sending email to ${user.email} - user has daily digest emails disabled")
+          case false => logger.debug(s"Not sending email to ${user.emailLowerCase} - user has daily digest emails disabled")
         }
       }
     }

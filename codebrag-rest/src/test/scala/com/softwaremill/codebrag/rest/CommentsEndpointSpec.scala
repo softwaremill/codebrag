@@ -4,7 +4,6 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.AuthenticatableServletSpec
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
-import com.softwaremill.codebrag.dao.UserDAO
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import com.softwaremill.codebrag.activities.AddCommentActivity
@@ -15,8 +14,9 @@ import org.mockito.ArgumentCaptor
 import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterEach
 import scala.Some
-import com.softwaremill.codebrag.dao.reporting.views.CommentView
 import com.softwaremill.codebrag.service.comments.command.IncomingComment
+import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.finders.views.CommentView
 
 
 class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {
@@ -95,7 +95,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {
       // then
       status should be(200)
-      asJson(AddCommentResponse(CommentView(createdComment.id.toString, user.name, user.id.toString, createdComment.message, createdComment.postingTime.toDate)))
+      asJson(AddCommentResponse(CommentView(createdComment.id.toString, user.name, user.id.toString, createdComment.message, createdComment.postingTime.toDate, user.settings.avatarUrl)))
     }
   }
 

@@ -1,10 +1,12 @@
 package com.softwaremill.codebrag.tools
 
-import com.softwaremill.codebrag.dao.{MongoUserDAO, MongoConfig, MongoInit}
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.common.Utils
 import java.io.File
 import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.dao.user.MongoUserDAO
+import com.softwaremill.codebrag.dao.mongo.MongoInit
+import com.softwaremill.codebrag.dao.DaoConfig
 
 object ChangeUserPassword {
 
@@ -61,7 +63,7 @@ object ChangeUserPassword {
   }
 
   private def initializeMongoConnection {
-    val config = new MongoConfig {
+    val config = new DaoConfig {
       def rootConfig = ConfigFactory.load()
     }
     MongoInit.initializeWithoutIndexCheck(config)

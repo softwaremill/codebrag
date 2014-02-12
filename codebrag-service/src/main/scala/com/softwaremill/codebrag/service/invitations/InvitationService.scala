@@ -1,6 +1,5 @@
 package com.softwaremill.codebrag.service.invitations
 
-import com.softwaremill.codebrag.dao.{UserDAO, InvitationDAO}
 import com.softwaremill.codebrag.common.{Clock, Utils}
 import com.softwaremill.codebrag.domain.{User, Invitation}
 import org.bson.types.ObjectId
@@ -8,6 +7,8 @@ import com.softwaremill.codebrag.service.email.{EmailService, Email}
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.service.templates.{EmailTemplates, TemplateEngine}
 import org.joda.time.{Minutes, Hours}
+import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.invitation.InvitationDAO
 
 class InvitationService(
                          invitationDAO: InvitationDAO,
@@ -50,7 +51,7 @@ class InvitationService(
 
   def verify(code: String): Boolean = {
     invitationDAO.findByCode(code) match {
-      case Some(inv) => inv.isValid(clock.currentDateTimeUTC)
+      case Some(inv) => inv.isValid(clock.nowUtc)
       case None => false
     }
   }
@@ -60,7 +61,7 @@ class InvitationService(
   }
 
   private def saveToDb(hash: String, invitationSenderId: ObjectId) {
-    val expirationTime = clock.currentDateTimeUTC.plus(config.invitationExpiryTime)
+    val expirationTime = clock.nowUtc.plus(config.invitationExpiryTime)
     invitationDAO.save(Invitation(hash, invitationSenderId, expirationTime))
   }
 

@@ -8,6 +8,9 @@ import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.common.Clock
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.config.CodebragConfig
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.reaction.{LikeDAO, CommitCommentDAO}
+import com.softwaremill.codebrag.dao.followup.FollowupDAO
 
 class FollowupsGeneratorForReactionsPriorUserRegistration(
   commentsDao: CommitCommentDAO,
@@ -38,7 +41,7 @@ class FollowupsGeneratorForReactionsPriorUserRegistration(
   }
 
   private def findRecentUserCommits(newUser: NewUserRegistered): List[ObjectId] = {
-    val timeRangeForCommits = clock.currentDateTime.minusDays(codebragConfig.replayFollowupsForPastCommitsTimeInDays)
+    val timeRangeForCommits = clock.now.minusDays(codebragConfig.replayFollowupsForPastCommitsTimeInDays)
     commitInfoDao.findLastCommitsAuthoredByUserSince(newUser, timeRangeForCommits).map(_.id)
   }
 

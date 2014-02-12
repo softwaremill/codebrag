@@ -1,33 +1,57 @@
-import com.softwaremill.codebrag.dao.MongoInit
+import com.softwaremill.codebrag.dao.mongo.MongoInit
+import com.softwaremill.codebrag.dao.{SQLDaos, MongoDaos}
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
+import com.softwaremill.codebrag.dao.user.InternalUserDAO
 import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
-import com.softwaremill.codebrag.stats.data.InstanceRunStatistics
-import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsSendingScheduler}
-import com.softwaremill.codebrag.{InstanceContext, EventingConfiguration, Beans}
+import com.softwaremill.codebrag.stats.StatsSendingScheduler
+import com.softwaremill.codebrag._
+import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.slf4j.Logging
 import java.util.Locale
 import org.scalatra._
 import javax.servlet.ServletContext
-import scala.util.parsing.json.JSON
 
 /**
  * This is the ScalatraBootstrap codebrag file. You can use it to mount servlets or
  * filters. It's also a good place to put initialization code which needs to
  * run at application start (e.g. database configurations), and init params.
  */
-class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration with Logging {
+class ScalatraBootstrap extends LifeCycle with Logging {
   val Prefix = "/rest/"
 
   override def init(context: ServletContext) {
     Locale.setDefault(Locale.US) // set default locale to prevent Scalatra from sending cookie expiration date in polish format :)
 
-    MongoInit.initialize(config)
-    ensureInternalCodebragUserExists
+    val _config = new Config {
+      def rootConfig = ConfigFactory.load()
+    }
+
+    val beans = if (_config.storageType == _config.StorageType.Embedded) {
+      val beansWithSQL = new Beans with EventingConfiguration with SQLDaos {
+        val config = _config
+        val sqlDatabase = SQLDatabase.createEmbedded(config)
+      }
+
+      beansWithSQL.sqlDatabase.createTablesIfNeeded(beansWithSQL)
+
+      beansWithSQL
+    } else {
+      MongoInit.initialize(_config)
+      new Beans with EventingConfiguration with MongoDaos {
+        val config = _config
+      }
+    }
+
+    import beans._
+
+    setupEvents()
+    ensureInternalCodebragUserExists(beans.internalUserDao)
 
     if(config.userNotifications) {
-      UserNotificationSenderActor.initialize(actorSystem, heartbeatStore, notificationCountFinder, userDao, clock, notificationService, config)
+      UserNotificationSenderActor.initialize(actorSystem, heartbeatDao, notificationCountFinder, userDao, clock, notificationService, config)
     }
 
     if(config.sendStats) {
@@ -49,23 +73,24 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
     context.mount(new ConfigServlet(config, authenticator), Prefix + "config")
     context.mount(new InvitationServlet(authenticator, invitationsService), Prefix + "invitation")
     context.mount(new RepositorySyncServlet(actorSystem, repositoryUpdateActor), RepositorySyncServlet.Mapping)
-    context.mount(new UpdatesServlet(authenticator, notificationCountFinder, heartbeatStore, clock), Prefix + UpdatesServlet.Mapping)
+    context.mount(new UpdatesServlet(authenticator, notificationCountFinder, heartbeatDao, clock), Prefix + UpdatesServlet.Mapping)
     context.mount(new RepoStatusServlet(authenticator, repoDataProducer, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
 
     if (config.demo) {
       context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")
     }
 
-    InstanceContext.put(context, this)
+    InstanceContext.put(context, beans)
   }
 
-
-  def ensureInternalCodebragUserExists {
+  private def ensureInternalCodebragUserExists(internalUserDao: InternalUserDAO) {
     internalUserDao.createIfNotExists(InternalUser(InternalUser.WelcomeFollowupsAuthorName))
   }
 
   override def destroy(context: ServletContext) {
     super.destroy(context)
+
+    val actorSystem = InstanceContext.get(context).actorSystem
     actorSystem.shutdown()
     actorSystem.awaitTermination()
   }
