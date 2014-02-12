@@ -1,10 +1,7 @@
 package com.softwaremill.codebrag.dao.finders.followup
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao._
 import com.foursquare.rogue.LiftRogue._
-import com.softwaremill.codebrag.dao.reporting.views._
-import scala.Some
 import net.liftweb.mongodb.record.MongoRecord
 import com.softwaremill.codebrag.dao.user.{LikeRecord, CommentRecord, UserReactionRecord, UserRecord}
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoRecord

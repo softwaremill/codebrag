@@ -33,7 +33,7 @@ import com.softwaremill.codebrag.dao.followup.{MongoFollowupWithReactionsDAO, Mo
 import com.softwaremill.codebrag.dao.finders.followup.MongoFollowupFinder
 import com.softwaremill.codebrag.dao.finders.notification.MongoNotificationCountFinder
 import com.softwaremill.codebrag.dao.finders.StatsEventsFinder
-import com.softwaremill.codebrag.dao.finders.reaction.MongoReactionFinder
+import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 
@@ -120,7 +120,7 @@ trait Finders {
 
   lazy val notificationCountFinder = new MongoNotificationCountFinder
 
-  lazy val reactionFinder = new MongoReactionFinder(userDao, commentDao, likeDao)
+  lazy val reactionFinder = new ReactionFinder(userDao, commentDao, likeDao)
 
   lazy val allCommitsFinder = new AllCommitsFinder(commitReviewTaskDao, commitInfoDao, userDao)
   lazy val reviewableCommitsFinder = new ReviewableCommitsListFinder(commitReviewTaskDao, commitInfoDao, userDao)

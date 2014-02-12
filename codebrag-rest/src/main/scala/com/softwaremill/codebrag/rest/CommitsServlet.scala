@@ -5,7 +5,6 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import json.JacksonJsonSupport
 import swagger.{Swagger, SwaggerSupport}
 
-import com.softwaremill.codebrag.dao.reporting._
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import com.softwaremill.codebrag.activities.{CommitReviewActivity, AddCommentActivity}
 import com.softwaremill.codebrag.service.comments.UserReactionService

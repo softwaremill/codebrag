@@ -3,11 +3,9 @@ package com.softwaremill.codebrag.dao.finders.followup
 import com.softwaremill.codebrag.dao.followup.SQLFollowupSchema
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reaction.SQLReactionSchema
-import com.softwaremill.codebrag.dao.reporting.views._
-import com.softwaremill.codebrag.domain.{Like, Comment, UserReaction}
+import com.softwaremill.codebrag.domain.UserReaction
 import com.softwaremill.codebrag.dao.user.{UserDAO, PartialUserDetails}
 import com.softwaremill.codebrag.dao.commitinfo.SQLCommitInfoSchema
-import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.dao.finders.views._
 import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.dao.finders.views.FollowupsByCommitListView

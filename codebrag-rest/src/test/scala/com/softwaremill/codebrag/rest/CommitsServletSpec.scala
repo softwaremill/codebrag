@@ -17,7 +17,7 @@ import com.softwaremill.codebrag.dao.finders.commit.{AllCommitsFinder, Reviewabl
 import com.softwaremill.codebrag.common.LoadMoreCriteria.PagingDirection
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.dao.finders.reaction.MongoReactionFinder
+import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
@@ -29,7 +29,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var allCommitsFinder = mock[AllCommitsFinder]
 
   var diffService = mock[DiffWithCommentsService]
-  var userReactionFinder = mock[MongoReactionFinder]
+  var userReactionFinder = mock[ReactionFinder]
   var userDao = mock[UserDAO]
   var commitReviewActivity = mock[CommitReviewActivity]
   val UserJson = someUser()
