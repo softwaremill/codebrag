@@ -1,7 +1,6 @@
 package com.softwaremill.codebrag.dao.reporting.views
 
 import java.util.Date
-import com.softwaremill.codebrag.domain.UserReactionTypeEnum
 
 case class SingleFollowupView(followupId: String, date: Date, commit: FollowupCommitView, reaction: FollowupLastReactionView)
 
