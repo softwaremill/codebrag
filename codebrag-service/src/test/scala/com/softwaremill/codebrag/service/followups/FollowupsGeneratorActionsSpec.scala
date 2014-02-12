@@ -17,7 +17,7 @@ import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
 import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.dao.followup.FollowupDAO
+import com.softwaremill.codebrag.dao.followup.{FollowupWithReactionsDAO, FollowupDAO}
 
 class FollowupsGeneratorActionsSpec
   extends FlatSpec with ShouldMatchers with BeforeAndAfterEach with MockitoSugar with ClockSpec {
