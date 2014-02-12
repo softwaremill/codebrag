@@ -2,22 +2,16 @@ package com.softwaremill.codebrag.service.updater
 
 import akka.actor._
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.service.commits.{RepoData, CommitImportService}
-import scala.Some
+import com.softwaremill.codebrag.service.commits.CommitImportService
 import com.softwaremill.codebrag.service.updater.LocalRepositoryUpdater.RepositoryUpdateFailed
+import com.softwaremill.codebrag.repository.config.RepoConfig
 
-class LocalRepositoryUpdater(importService: CommitImportService, actorSystem: ActorSystem) extends Actor with Logging {
-
-  private var repoData: Option[RepoData] = None
+class LocalRepositoryUpdater(importService: CommitImportService, repoConfig: RepoConfig, actorSystem: ActorSystem) extends Actor with Logging {
 
   def receive = {
-    case LocalRepositoryUpdater.RefreshRepoData(newRepoData) => {
-      repoData = Some(newRepoData)
-      logger.debug("Repository credentials refreshed")
-    }
     case LocalRepositoryUpdater.UpdateCommand(schedule) => {
       try {
-        repoData.foreach(importService.importRepoCommits)
+        importService.importRepoCommits(repoConfig)
         sender ! LocalRepositoryUpdater.RepositoryUpdateSucceeded("Repository synchronized")
       } catch {
         case e: Exception => {
@@ -43,8 +37,6 @@ object LocalRepositoryUpdater {
   val NextUpdatesInterval = 45 seconds
 
   case class UpdateCommand(scheduleRecurring: Boolean)
-
-  case class RefreshRepoData(newRepoData: RepoData)
 
   case class RepositoryUpdateSucceeded(message: String)
 
