@@ -2,30 +2,26 @@ package com.softwaremill.codebrag.dao.finders.notification
 
 import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler, CommitInfoAssembler}
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import scala.util.Random
-import com.softwaremill.codebrag.common.FixtureTimeClock
-import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
-import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
-import com.softwaremill.codebrag.dao.reviewtask.{CommitReviewTaskRecord, MongoCommitReviewTaskDAO}
-import com.softwaremill.codebrag.dao.followup.MongoFollowupDAO
-import com.softwaremill.codebrag.dao.finders.notification.{NotificationCountFinder, MongoNotificationCountFinder}
+import com.softwaremill.codebrag.common.{RealTimeClock, FixtureTimeClock}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.commitinfo.{SQLCommitInfoDAO, CommitInfoDAO, MongoCommitInfoDAO}
+import com.softwaremill.codebrag.dao.reviewtask.{SQLCommitReviewTaskDAO, CommitReviewTaskDAO, CommitReviewTaskRecord, MongoCommitReviewTaskDAO}
+import com.softwaremill.codebrag.dao.followup._
+import org.scalatest.FlatSpec
+import com.softwaremill.codebrag.domain.Followup
+import com.softwaremill.codebrag.domain.CommitReviewTask
+import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 
-class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers with MongoNotificationCountFinderSpecFixture {
+trait NotificationCountFinderSpec extends FlatSpec with ShouldMatchers with NotificationCountFinderSpecFixture {
 
-  val followupDao = new MongoFollowupDAO
-  val commitInfoDao = new MongoCommitInfoDAO
-  val reviewTaskDao = new MongoCommitReviewTaskDAO
-  var notificationCountFinder: NotificationCountFinder = _
-
-  override def beforeEach() {
-    super.beforeEach()
-    notificationCountFinder = new MongoNotificationCountFinder
-  }
+  def followupDao: FollowupDAO
+  def commitInfoDao: CommitInfoDAO
+  def reviewTaskDao: CommitReviewTaskDAO
+  def notificationCountFinder: NotificationCountFinder
 
   "getCounters" should "return empty counters if no data found" taggedAs RequiresDb in {
     // given no data for Bruce
@@ -139,13 +135,7 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearMongo
     counters.pendingCommitCount should equal(3)
   }
 
-  private def givenReviewTaskFor(userId: ObjectId, date: DateTime) {
-    CommitReviewTaskRecord.createRecord
-      .userId(userId)
-      .commitId(CommitInfoAssembler.randomCommit.get.id)
-      .id(new ObjectId(date.toDate))
-      .save
-  }
+  def givenReviewTaskFor(userId: ObjectId, date: DateTime)
 
   private def givenFollowupsFor(userId: ObjectId, count: Int) {
     val authorId = new ObjectId
@@ -165,7 +155,7 @@ class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearMongo
 
 }
 
-trait MongoNotificationCountFinderSpecFixture {
+trait NotificationCountFinderSpecFixture {
 
   val UserBruceId = new ObjectId
   val UserSofoklesId = new ObjectId
@@ -176,4 +166,33 @@ trait MongoNotificationCountFinderSpecFixture {
   val date = DateTime.now()
   val LastCommenterName = "Mary"
 
+}
+
+class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with NotificationCountFinderSpec {
+  val followupDao = new MongoFollowupDAO()
+  val commitInfoDao = new MongoCommitInfoDAO()
+  val reviewTaskDao = new MongoCommitReviewTaskDAO()
+  val notificationCountFinder = new MongoNotificationCountFinder()
+
+  def givenReviewTaskFor(userId: ObjectId, date: DateTime) {
+    CommitReviewTaskRecord.createRecord
+      .userId(userId)
+      .commitId(CommitInfoAssembler.randomCommit.get.id)
+      .id(new ObjectId(date.toDate))
+      .save
+  }
+}
+
+class SQLNotificationCountFinderSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with NotificationCountFinderSpec {
+  val followupDao = new SQLFollowupDAO(sqlDatabase)
+  val commitInfoDao = new SQLCommitInfoDAO(sqlDatabase)
+  val reviewTaskDao = new SQLCommitReviewTaskDAO(sqlDatabase, RealTimeClock)
+  val notificationCountFinder = new SQLNotificationCountFinder(sqlDatabase)
+
+  def withSchemas = List(followupDao, commitInfoDao, reviewTaskDao)
+
+  def givenReviewTaskFor(userId: ObjectId, date: DateTime) {
+    new SQLCommitReviewTaskDAO(sqlDatabase, new FixtureTimeClock(date.getMillis))
+      .save(CommitReviewTask(CommitInfoAssembler.randomCommit.get.id, userId))
+  }
 }
