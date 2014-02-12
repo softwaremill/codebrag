@@ -24,7 +24,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
   implicit lazy val clock = RealTimeClock
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator
-  val self = this
+  lazy val self = this
   lazy val eventBus = new AkkaEventBus(actorSystem)
   lazy val swagger = new CodebragSwagger
   lazy val ghService = new GitHubAuthService(config)

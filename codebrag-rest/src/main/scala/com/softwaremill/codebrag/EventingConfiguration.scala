@@ -26,14 +26,16 @@ trait EventingConfiguration extends ActorSystemSupport {
   def followupWithReactionsDao: FollowupWithReactionsDAO
   def eventDao: EventDAO
 
-  val eventLogger = actorSystem.actorOf(Props(classOf[EventLogger]))
-  val reviewTaskGeneratorActor = actorSystem.actorOf(Props(new CommitReviewTaskGenerator(userDao, commitReviewTaskDao, commitInfoDao)))
-  val followupGeneratorActor = actorSystem.actorOf(Props(new FollowupsGenerator(followupDao, userDao, commitInfoDao, followupWithReactionsDao: FollowupWithReactionsDAO)))
-  val statsEventsCollector = actorSystem.actorOf(Props(new StatisticEventsCollector(eventDao)))
+  lazy val eventLogger = actorSystem.actorOf(Props(classOf[EventLogger]))
+  lazy val reviewTaskGeneratorActor = actorSystem.actorOf(Props(new CommitReviewTaskGenerator(userDao, commitReviewTaskDao, commitInfoDao)))
+  lazy val followupGeneratorActor = actorSystem.actorOf(Props(new FollowupsGenerator(followupDao, userDao, commitInfoDao, followupWithReactionsDao: FollowupWithReactionsDAO)))
+  lazy val statsEventsCollector = actorSystem.actorOf(Props(new StatisticEventsCollector(eventDao)))
 
-  actorSystem.eventStream.subscribe(eventLogger, classOf[Event])
-  actorSystem.eventStream.subscribe(reviewTaskGeneratorActor, classOf[CommitsUpdatedEvent])
-  actorSystem.eventStream.subscribe(followupGeneratorActor, classOf[LikeEvent])
-  actorSystem.eventStream.subscribe(followupGeneratorActor, classOf[UnlikeEvent])
-  actorSystem.eventStream.subscribe(statsEventsCollector, classOf[StatisticEvent])
+  def setupEvents() {
+    actorSystem.eventStream.subscribe(eventLogger, classOf[Event])
+    actorSystem.eventStream.subscribe(reviewTaskGeneratorActor, classOf[CommitsUpdatedEvent])
+    actorSystem.eventStream.subscribe(followupGeneratorActor, classOf[LikeEvent])
+    actorSystem.eventStream.subscribe(followupGeneratorActor, classOf[UnlikeEvent])
+    actorSystem.eventStream.subscribe(statsEventsCollector, classOf[StatisticEvent])
+  }
 }
