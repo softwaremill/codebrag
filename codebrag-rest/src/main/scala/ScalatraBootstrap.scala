@@ -1,4 +1,5 @@
 import com.softwaremill.codebrag.dao.mongo.MongoInit
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.dao.user.InternalUserDAO
 import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.rest._
@@ -27,13 +28,20 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       def rootConfig = ConfigFactory.load()
     }
 
-    val beans = new Beans with EventingConfiguration with MongoDaos {
-      val config = _config
+    val beans = if (_config.storageType == _config.StorageType.Embedded) {
+      new Beans with EventingConfiguration with SQLDaos {
+        val config = _config
+        val sqlDatabase = SQLDatabase.createEmbedded(config)
+      }
+    } else {
+      MongoInit.initialize(_config)
+      new Beans with EventingConfiguration with MongoDaos {
+        val config = _config
+      }
     }
 
     import beans._
 
-    MongoInit.initialize(config)
     ensureInternalCodebragUserExists(beans.internalUserDao)
 
     if(config.userNotifications) {
