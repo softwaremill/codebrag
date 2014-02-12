@@ -28,16 +28,8 @@ trait UserDataEnhancer {
     commit.copy(authorAvatarUrl = commitAuthorAvatarUrl)
   }
 
-  def enhanceWithUserData(commits: List[CommitView]) = {
-    val authors = findCommitsAuthors(commits)
-    commits.map(commit => {
-      val commitAuthorAvatarUrl = authorAvatar(authors.find(commitAuthoredByUser(commit, _)))
-      commit.copy(authorAvatarUrl = commitAuthorAvatarUrl)
-    })
-  }
-
   def enhanceWithUserData(commitsList: CommitListView) = {
-    val authors = findCommitsAuthors(commitsList)
+    val authors = findCommitsAuthors(commitsList.commits)
     val commitsWithAvatars = commitsList.commits.map(commit => {
       val commitAuthorAvatarUrl = authorAvatar(authors.find(commitAuthoredByUser(commit, _)))
       commit.copy(authorAvatarUrl = commitAuthorAvatarUrl)
@@ -46,8 +38,6 @@ trait UserDataEnhancer {
   }
 
   private def findCommitAuthor(commit: CommitView): Option[PartialUserDetails] = findCommitsAuthors(List(commit)).headOption
-
-  private def findCommitsAuthors(commitsList: CommitListView): List[PartialUserDetails] = findCommitsAuthors(commitsList.commits)
 
   private def findCommitsAuthors(commits: List[CommitView]): List[PartialUserDetails] = {
     val userNames = commits.map(_.authorName).toSet

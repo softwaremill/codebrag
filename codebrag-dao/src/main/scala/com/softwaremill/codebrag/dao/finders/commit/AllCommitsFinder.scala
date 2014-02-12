@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
 
 class AllCommitsFinder(val commitReviewTaskDAO: CommitReviewTaskDAO, val commitInfoDAO: CommitInfoDAO)
-  extends UserDataEnhancer with CommitReviewedByUserMarker with Logging {
+  extends CommitsFinder with CommitReviewedByUserMarker with Logging {
 
   import CommitInfoToViewConverter._
   import ListSliceLoader._
@@ -15,11 +15,7 @@ class AllCommitsFinder(val commitReviewTaskDAO: CommitReviewTaskDAO, val commitI
 
   def findAllCommits(paging: LoadMoreCriteria, userId: ObjectId) = {
     val allCommitsIds = commitInfoDAO.findAllIds()
-    val commitsSlice = loadSliceUsing(paging, allCommitsIds, commitInfoDAO.findPartialCommitInfo)
-    val commits = toCommitViews(commitsSlice)
-    val numOlder = countOlderCommits(allCommitsIds.map(_.toString), commits)
-    val numNewer = countNewerCommits(allCommitsIds.map(_.toString), commits)
-    enhanceWithUserData(markAsReviewed(commits, userId).copy(older = numOlder, newer = numNewer))
+    findCommits(allCommitsIds, paging, markAsReviewed(_, userId))
   }
 
   def findCommitById(commitId: ObjectId, userId: ObjectId) = {
