@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao.reporting
+package com.softwaremill.codebrag.dao.finders.followup
 
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain._
@@ -13,6 +13,7 @@ import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTes
 import com.softwaremill.codebrag.dao.commitinfo.{MongoCommitInfoDAO, CommitInfoDAO}
 import com.softwaremill.codebrag.dao.reaction.{MongoCommitCommentDAO, CommitCommentDAO}
 import com.softwaremill.codebrag.dao.followup.{MongoFollowupDAO, FollowupDAO}
+import com.softwaremill.codebrag.dao.finders.followup.{MongoFollowupFinder, FollowupFinder}
 
 class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 

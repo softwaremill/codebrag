@@ -31,6 +31,7 @@ import com.softwaremill.codebrag.dao.events.MongoEventDAO
 import com.softwaremill.codebrag.dao.heartbeat.MongoHeartbeatDAO
 import com.softwaremill.codebrag.dao.repositorystatus.MongoRepositoryStatusDAO
 import com.softwaremill.codebrag.dao.followup.{MongoFollowupWithReactionsDAO, MongoFollowupDAO}
+import com.softwaremill.codebrag.dao.finders.followup.MongoFollowupFinder
 
 trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
 

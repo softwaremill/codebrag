@@ -9,6 +9,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.SingleFollowupView
 import com.softwaremill.codebrag.service.followups.FollowupService
 import org.scalatra.NotFound
+import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 
 class FollowupsServlet(val authenticator: Authenticator,
                        val swagger: Swagger,
