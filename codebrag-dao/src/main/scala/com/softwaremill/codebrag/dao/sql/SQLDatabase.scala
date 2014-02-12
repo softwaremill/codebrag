@@ -49,10 +49,10 @@ case class SQLDatabase(db: scala.slick.jdbc.JdbcBackend.Database, driver: JdbcPr
 
 object SQLDatabase extends Logging {
   def createEmbedded(config: DaoConfig) = {
-    val fullPath = new File(config.embeddedDataDir).getAbsolutePath
+    val fullPath = new File(config.embeddedDataDir, "codebrag").getCanonicalPath
     logger.info(s"Using an embedded database, with data files located at: $fullPath")
 
-    val connectionString = s"jdbc:h2:$fullPath;DB_CLOSE_DELAY=-1"
+    val connectionString = s"jdbc:h2:file:$fullPath"
     val db = Database.forURL(connectionString, driver="org.h2.Driver")
     SQLDatabase(db, scala.slick.driver.H2Driver)
   }
