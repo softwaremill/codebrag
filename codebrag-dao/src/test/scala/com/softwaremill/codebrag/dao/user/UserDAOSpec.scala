@@ -378,7 +378,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     userFound.settings.appTourDone should equal(true)
   }
 
-  it should "find partial details" taggedAs RequiresDb in {
+  it should "find partial details by name/email" taggedAs RequiresDb in {
     // when
     val partial1 = userDAO.findPartialUserDetails(List("User Name 1"), List("user1@sml.com", "user2@sml.com"))
     val partial2 = userDAO.findPartialUserDetails(List("User Name 1", "User Name 3"), Nil)
@@ -386,6 +386,19 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     // then
     partial1.map(_.name).toSet should be (Set("User Name 1", "User Name 2"))
     partial2.map(_.name).toSet should be (Set("User Name 1", "User Name 3"))
+  }
+
+  it should "find partial details by id" taggedAs RequiresDb in {
+    // given
+    val users = userDAO.findAll().take(2)
+    val ids = users.map(_.id)
+
+    // when
+    val partial = userDAO.findPartialUserDetails(ids)
+
+    // then
+    partial should have size (2)
+    partial.map(_.name).toSet should be (users.map(_.name).toSet)
   }
 }
 

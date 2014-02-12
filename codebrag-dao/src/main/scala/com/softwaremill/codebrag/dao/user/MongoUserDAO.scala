@@ -44,7 +44,7 @@ class MongoUserDAO extends UserDAO {
   }
 
   def changeAuthentication(id: ObjectId, authentication: Authentication) {
-    UserRecord.asRegularUser.where(_.id eqs id).modify(_.authentication setTo (authentication)).updateOne()
+    UserRecord.asRegularUser.where(_.id eqs id).modify(_.authentication setTo authentication).updateOne()
   }
 
   def rememberNotifications(id: ObjectId, notifications: LastUserNotificationDispatch) {
@@ -66,6 +66,16 @@ class MongoUserDAO extends UserDAO {
       .map { case (username, email, avatarOpt) =>
         PartialUserDetails(username, email, avatarOpt.getOrElse(UserSettings.defaultAvatarUrl(email)))
       }
+  }
+
+  def findPartialUserDetails(ids: Iterable[ObjectId]) = {
+    UserRecord
+      .select(_.name, _.email, _.userSettings.subfield(_.avatarUrl))
+      .where(_.id in ids)
+      .fetch()
+      .map { case (username, email, avatarOpt) =>
+      PartialUserDetails(username, email, avatarOpt.getOrElse(UserSettings.defaultAvatarUrl(email)))
+    }
   }
 
   private object UserImplicits {

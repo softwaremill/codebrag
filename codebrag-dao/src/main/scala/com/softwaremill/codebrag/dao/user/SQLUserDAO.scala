@@ -76,9 +76,14 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with WithSQLSchemas 
     userSettings.where(_.userId === id).update(toSQLSettings(id, newSettings))
   }
 
-  def findPartialUserDetails(names: Iterable[String], emails: Iterable[String]) = db.withTransaction { implicit session =>
+  def findPartialUserDetails(names: Iterable[String], emails: Iterable[String]) =
+    findPartialUserDetails(u => (u.name inSet names.toSet) || (u.emailLowerCase inSet emails.toSet))
+
+  def findPartialUserDetails(ids: Iterable[ObjectId]) = findPartialUserDetails(_.id inSet ids.toSet)
+
+  private def findPartialUserDetails(condition: Users => Column[Boolean]) = db.withTransaction { implicit session =>
     val q = for {
-      u <- users if (u.name inSet names.toSet) || (u.emailLowerCase inSet emails.toSet)
+      u <- users if condition(u)
       s <- u.settings
     } yield (u.name, u.emailLowerCase, s.avatarUrl)
 
