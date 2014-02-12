@@ -1,10 +1,10 @@
 package com.softwaremill.codebrag.stats
 
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.dao.reporting.StatsEventsFinder
 import com.softwaremill.codebrag.domain.InstanceSettings
 import com.softwaremill.codebrag.stats.data.DailyStatistics
 import com.softwaremill.codebrag.dao.instance.InstanceSettingsDAO
+import com.softwaremill.codebrag.dao.finders.StatsEventsFinder
 
 class StatsAggregator(val statsFinder: StatsEventsFinder, val instanceSettingsDao: InstanceSettingsDAO) {
 

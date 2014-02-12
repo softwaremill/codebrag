@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao.reporting
+package com.softwaremill.codebrag.dao.finders
 
 import org.scalatest.matchers.ShouldMatchers
 import org.joda.time.{DateTimeZone, DateTime}

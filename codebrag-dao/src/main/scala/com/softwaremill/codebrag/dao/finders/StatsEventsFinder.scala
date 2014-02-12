@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao.reporting
+package com.softwaremill.codebrag.dao.finders
 
 import org.joda.time.{DateTimeZone, DateTime}
 import com.softwaremill.codebrag.domain.reactions.{LikeEvent, CommentAddedEvent, CommitReviewedEvent}
