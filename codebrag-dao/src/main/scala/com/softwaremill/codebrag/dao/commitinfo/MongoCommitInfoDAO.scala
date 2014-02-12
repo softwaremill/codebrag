@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.dao.commitinfo
 
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord}
-import com.softwaremill.codebrag.domain.{UserLike, CommitFileInfo, CommitInfo}
+import com.softwaremill.codebrag.domain.{UserLike, CommitInfo}
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{BsonRecordListField, MongoListField, DateField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
@@ -10,7 +10,6 @@ import org.bson.types.ObjectId
 import net.liftweb.json.JsonDSL._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.mongo.LongStringField
-import com.softwaremill.codebrag.dao.finders.commit.CommitInfoToViewConverter._
 import com.softwaremill.codebrag.domain.CommitFileInfo
 
 

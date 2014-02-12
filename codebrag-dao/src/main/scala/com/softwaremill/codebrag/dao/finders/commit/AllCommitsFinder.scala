@@ -9,10 +9,6 @@ import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
 class AllCommitsFinder(val commitReviewTaskDAO: CommitReviewTaskDAO, val commitInfoDAO: CommitInfoDAO)
   extends CommitsFinder with CommitReviewedByUserMarker with Logging {
 
-  import CommitInfoToViewConverter._
-  import ListSliceLoader._
-  import OutOfPageCommitCounter._
-
   def findAllCommits(paging: LoadMoreCriteria, userId: ObjectId) = {
     val allCommitsIds = commitInfoDAO.findAllIds()
     findCommits(allCommitsIds, paging, markAsReviewed(_, userId))
