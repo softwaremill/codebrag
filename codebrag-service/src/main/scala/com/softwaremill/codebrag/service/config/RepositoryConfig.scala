@@ -1,40 +1,16 @@
 package com.softwaremill.codebrag.service.config
 
 import com.typesafe.config.Config
+import com.softwaremill.codebrag.repository.config.{GitSvnRepoConfig, GitRepoConfig}
 
 trait RepositoryConfig {
+
   def rootConfig: Config
+  private val repositoryConfigSection = rootConfig.getConfig("repository")
 
-  private lazy val repositoryConfig = rootConfig.getConfig("repository")
+  val repositoryConfig = repositoryConfigSection.getString("type") match {
+    case "git" => new GitRepoConfig(repositoryConfigSection)
+    case "git-svn" => new GitSvnRepoConfig(repositoryConfigSection)
+  }
 
-  lazy val repositoryType = repositoryConfig.getString("type")
-
-  private lazy val githubRepositoryConfig = repositoryConfig.getConfig("github")
-
-  lazy val githubRepositoryOwner = githubRepositoryConfig.getString("owner")
-  lazy val githubRepositoryName = githubRepositoryConfig.getString("name")
-  lazy val githubRepositoryBranch = githubRepositoryConfig.getString("branch")
-  lazy val githubRepositorySyncUserLogin = githubRepositoryConfig.getString("sync-user-login")
-
-  private lazy val gitHttpsRepositoryConfig = repositoryConfig.getConfig("git-https")
-
-  lazy val gitHttpsRepositoryName = gitHttpsRepositoryConfig.getString("name")
-  lazy val gitHttpsRepositoryUri = gitHttpsRepositoryConfig.getString("uri")
-  lazy val gitHttpsRepositoryBranch = gitHttpsRepositoryConfig.getString("branch")
-  lazy val gitHttpsRepositoryUsername = gitHttpsRepositoryConfig.getString("username")
-  lazy val gitHttpsRepositoryPassword = gitHttpsRepositoryConfig.getString("password")
-
-  private lazy val gitSshRepositoryConfig = repositoryConfig.getConfig("git-ssh")
-
-  lazy val gitSshRepositoryName = gitSshRepositoryConfig.getString("name")
-  lazy val gitSshRepositoryUri = gitSshRepositoryConfig.getString("uri")
-  lazy val gitSshRepositoryBranch = gitSshRepositoryConfig.getString("branch")
-  lazy val gitSshPassphrase = gitSshRepositoryConfig.getString("passphrase")
-
-  private lazy val svnRepositoryConfig = repositoryConfig.getConfig("svn")
-
-  lazy val svnRepositoryName = svnRepositoryConfig.getString("name")
-  lazy val svnRepositoryUri = svnRepositoryConfig.getString("uri")
-  lazy val svnRepositoryUsername = svnRepositoryConfig.getString("username")
-  lazy val svnRepositoryPassword = svnRepositoryConfig.getString("password")
 }
