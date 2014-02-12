@@ -1,10 +1,11 @@
 import com.softwaremill.codebrag.dao.mongo.MongoInit
+import com.softwaremill.codebrag.dao.user.InternalUserDAO
 import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.stats.StatsSendingScheduler
-import com.softwaremill.codebrag.{MongoDaos, InstanceContext, EventingConfiguration, Beans}
+import com.softwaremill.codebrag._
 import com.typesafe.scalalogging.slf4j.Logging
 import java.util.Locale
 import org.scalatra._
@@ -15,14 +16,17 @@ import javax.servlet.ServletContext
  * filters. It's also a good place to put initialization code which needs to
  * run at application start (e.g. database configurations), and init params.
  */
-class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration with Logging with MongoDaos {
+class ScalatraBootstrap extends LifeCycle with Logging {
   val Prefix = "/rest/"
 
   override def init(context: ServletContext) {
     Locale.setDefault(Locale.US) // set default locale to prevent Scalatra from sending cookie expiration date in polish format :)
 
+    val beans = new Beans with EventingConfiguration with MongoDaos {}
+    import beans._
+
     MongoInit.initialize(config)
-    ensureInternalCodebragUserExists()
+    ensureInternalCodebragUserExists(beans.internalUserDao)
 
     if(config.userNotifications) {
       UserNotificationSenderActor.initialize(actorSystem, heartbeatStore, notificationCountFinder, userDao, clock, notificationService, config)
@@ -54,16 +58,17 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
       context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")
     }
 
-    InstanceContext.put(context, this)
+    InstanceContext.put(context, beans)
   }
 
-
-  def ensureInternalCodebragUserExists() {
+  private def ensureInternalCodebragUserExists(internalUserDao: InternalUserDAO) {
     internalUserDao.createIfNotExists(InternalUser(InternalUser.WelcomeFollowupsAuthorName))
   }
 
   override def destroy(context: ServletContext) {
     super.destroy(context)
+
+    val actorSystem = InstanceContext.get(context).actorSystem
     actorSystem.shutdown()
     actorSystem.awaitTermination()
   }
