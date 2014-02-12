@@ -13,29 +13,16 @@ import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.config._
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.usecase.{ChangeUserSettingsUseCase, UnlikeUseCase}
-import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
 import com.softwaremill.codebrag.service.invitations.{DefaultUniqueHashGenerator, InvitationService}
 import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
 import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
-import com.softwaremill.codebrag.dao.user.{MongoInternalUserDAO, MongoUserDAO}
 import com.softwaremill.codebrag.dao.mongo.MongoConfig
-import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
-import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, MongoCommitCommentDAO}
-import com.softwaremill.codebrag.dao.instance.FileBasedInstanceSettingsDAO
-import com.softwaremill.codebrag.dao.invitation.MongoInvitationDAO
-import com.softwaremill.codebrag.dao.reviewtask.MongoCommitReviewTaskDAO
-import com.softwaremill.codebrag.dao.events.MongoEventDAO
 import com.softwaremill.codebrag.dao.heartbeat.MongoHeartbeatDAO
 import com.softwaremill.codebrag.dao.repositorystatus.MongoRepositoryStatusDAO
-import com.softwaremill.codebrag.dao.followup.{MongoFollowupWithReactionsDAO, MongoFollowupDAO}
-import com.softwaremill.codebrag.dao.finders.followup.MongoFollowupFinder
-import com.softwaremill.codebrag.dao.finders.notification.MongoNotificationCountFinder
-import com.softwaremill.codebrag.dao.finders.StatsEventsFinder
-import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 
-trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos {
+trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
   lazy val config = new MongoConfig with RepositoryConfig with GithubConfig with CodebragConfig with EmailConfig with CodebragStatsConfig {
     def rootConfig = ConfigFactory.load()
@@ -90,43 +77,5 @@ trait Beans extends ActorSystemSupport with CommitsModule with Finders with Daos
 
   lazy val statsHTTPRequestSender = new StatsHTTPRequestSender(config)
   lazy val instanceRunStatsSender = new InstanceRunStatsSender(statsHTTPRequestSender)
-
-}
-
-trait Daos {
-
-  lazy val userDao = new MongoUserDAO
-  lazy val internalUserDao = new MongoInternalUserDAO
-
-  lazy val commitInfoDao = new MongoCommitInfoDAO
-  lazy val followupDao = new MongoFollowupDAO
-  lazy val followupWithReactionsDao = new MongoFollowupWithReactionsDAO(commentDao, likeDao)
-
-  lazy val likeDao = new MongoLikeDAO
-  lazy val commentDao = new MongoCommitCommentDAO
-
-  lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
-
-  lazy val invitationDao = new MongoInvitationDAO
-
-  lazy val instanceSettingsDao = new FileBasedInstanceSettingsDAO
-
-  lazy val eventDao = new MongoEventDAO
-
-}
-
-trait Finders {
-  this: Daos =>
-
-  lazy val notificationCountFinder = new MongoNotificationCountFinder
-
-  lazy val reactionFinder = new ReactionFinder(userDao, commentDao, likeDao)
-
-  lazy val allCommitsFinder = new AllCommitsFinder(commitReviewTaskDao, commitInfoDao, userDao)
-  lazy val reviewableCommitsFinder = new ReviewableCommitsListFinder(commitReviewTaskDao, commitInfoDao, userDao)
-
-  lazy val followupFinder = new MongoFollowupFinder
-
-  lazy val statsFinder = new StatsEventsFinder(eventDao)
 
 }

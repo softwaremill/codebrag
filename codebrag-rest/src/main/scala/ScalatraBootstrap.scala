@@ -3,28 +3,26 @@ import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
-import com.softwaremill.codebrag.stats.data.InstanceRunStatistics
-import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsSendingScheduler}
-import com.softwaremill.codebrag.{InstanceContext, EventingConfiguration, Beans}
+import com.softwaremill.codebrag.stats.StatsSendingScheduler
+import com.softwaremill.codebrag.{MongoDaos, InstanceContext, EventingConfiguration, Beans}
 import com.typesafe.scalalogging.slf4j.Logging
 import java.util.Locale
 import org.scalatra._
 import javax.servlet.ServletContext
-import scala.util.parsing.json.JSON
 
 /**
  * This is the ScalatraBootstrap codebrag file. You can use it to mount servlets or
  * filters. It's also a good place to put initialization code which needs to
  * run at application start (e.g. database configurations), and init params.
  */
-class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration with Logging {
+class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration with Logging with MongoDaos {
   val Prefix = "/rest/"
 
   override def init(context: ServletContext) {
     Locale.setDefault(Locale.US) // set default locale to prevent Scalatra from sending cookie expiration date in polish format :)
 
     MongoInit.initialize(config)
-    ensureInternalCodebragUserExists
+    ensureInternalCodebragUserExists()
 
     if(config.userNotifications) {
       UserNotificationSenderActor.initialize(actorSystem, heartbeatStore, notificationCountFinder, userDao, clock, notificationService, config)
@@ -60,7 +58,7 @@ class ScalatraBootstrap extends LifeCycle with Beans with EventingConfiguration 
   }
 
 
-  def ensureInternalCodebragUserExists {
+  def ensureInternalCodebragUserExists() {
     internalUserDao.createIfNotExists(InternalUser(InternalUser.WelcomeFollowupsAuthorName))
   }
 
