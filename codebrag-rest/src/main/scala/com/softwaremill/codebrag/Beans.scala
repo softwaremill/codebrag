@@ -10,23 +10,18 @@ import service.commits._
 import com.softwaremill.codebrag.service.user._
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
-import com.softwaremill.codebrag.service.config._
-import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.usecase.{ChangeUserSettingsUseCase, UnlikeUseCase}
 import com.softwaremill.codebrag.service.invitations.{DefaultUniqueHashGenerator, InvitationService}
 import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
 import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
-import com.softwaremill.codebrag.dao.mongo.MongoConfig
 import com.softwaremill.codebrag.dao.heartbeat.MongoHeartbeatDAO
 import com.softwaremill.codebrag.dao.repositorystatus.MongoRepositoryStatusDAO
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
-  lazy val config = new MongoConfig with RepositoryConfig with GithubConfig with CodebragConfig with EmailConfig with CodebragStatsConfig {
-    def rootConfig = ConfigFactory.load()
-  }
+  def config: Config
 
   implicit lazy val clock = RealTimeClock
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator

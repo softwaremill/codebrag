@@ -6,6 +6,7 @@ import com.softwaremill.codebrag.service.notification.UserNotificationSenderActo
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.stats.StatsSendingScheduler
 import com.softwaremill.codebrag._
+import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.slf4j.Logging
 import java.util.Locale
 import org.scalatra._
@@ -22,7 +23,14 @@ class ScalatraBootstrap extends LifeCycle with Logging {
   override def init(context: ServletContext) {
     Locale.setDefault(Locale.US) // set default locale to prevent Scalatra from sending cookie expiration date in polish format :)
 
-    val beans = new Beans with EventingConfiguration with MongoDaos {}
+    val _config = new Config {
+      def rootConfig = ConfigFactory.load()
+    }
+
+    val beans = new Beans with EventingConfiguration with MongoDaos {
+      val config = _config
+    }
+
     import beans._
 
     MongoInit.initialize(config)
