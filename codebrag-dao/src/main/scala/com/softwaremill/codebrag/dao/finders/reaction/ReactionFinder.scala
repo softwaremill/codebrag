@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.finders.reaction
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{Like, Comment, UserReaction}
 import com.softwaremill.codebrag.dao.user.{UserDAO, PartialUserDetails}
-import com.softwaremill.codebrag.dao.reaction.{LikeDAO, CommitCommentDAO, MongoLikeDAO}
+import com.softwaremill.codebrag.dao.reaction.{LikeDAO, CommitCommentDAO}
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.finders.views.{CommentView, LikeView, CommitReactionsView}
 
@@ -35,7 +35,7 @@ class ReactionFinder(val userDAO: UserDAO, commitCommentDAO: CommitCommentDAO, l
     val comments = commitCommentDAO.findCommentsForCommits(commitId)
     val (inlineComments, entireComments) = comments.partition(c => c.fileName.isDefined && c.lineNumber.isDefined)
 
-    val likes = new MongoLikeDAO().findLikesForCommits(commitId)
+    val likes = likeDAO.findLikesForCommits(commitId)
     val (inlineLikes, entireLikes) = likes.partition(l => l.fileName.isDefined && l.lineNumber.isDefined)
 
     val inlineReactionsView = mapInlineReactionsToView(inlineComments ++ inlineLikes, reactionToView)
