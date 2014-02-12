@@ -121,8 +121,8 @@ trait Finders {
 
   lazy val reactionFinder = new MongoReactionFinder
 
-  lazy val allCommitsFinder = new AllCommitsFinder(commitReviewTaskDao, commitInfoDao)
-  lazy val reviewableCommitsFinder = new ReviewableCommitsListFinder(commitReviewTaskDao, commitInfoDao)
+  lazy val allCommitsFinder = new AllCommitsFinder(commitReviewTaskDao, commitInfoDao, userDao)
+  lazy val reviewableCommitsFinder = new ReviewableCommitsListFinder(commitReviewTaskDao, commitInfoDao, userDao)
 
   lazy val followupFinder = new MongoFollowupFinder
 
