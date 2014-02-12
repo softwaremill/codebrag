@@ -5,7 +5,7 @@ import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.reaction.{LikeDAO, CommitCommentDAO}
-import com.softwaremill.codebrag.dao.followup.{LastReactionRecord, FollowupRecord}
+import com.softwaremill.codebrag.dao.followup.FollowupRecord
 
 trait FollowupWithReactionsDAO extends Logging {
 
@@ -47,7 +47,6 @@ class MongoFollowupWithReactionsDAO(commentsDao: CommitCommentDAO, likeDao: Like
   def update(followup: FollowupWithReactions) {
     FollowupRecord.where(_.id eqs followup.followupId).findAndModify(_.lastReaction.subfield(_.reactionId) setTo followup.lastReaction.id)
       .and(_.lastReaction.subfield(_.reactionAuthorId) setTo followup.lastReaction.authorId)
-      .and(_.lastReaction.subfield(_.reactionType) setTo LastReactionRecord.ReactionTypeEnum(followup.lastReaction.reactionType.id))
       .and(_.reactions setTo followup.allReactions.map(_.id)).updateOne(true)
   }
 

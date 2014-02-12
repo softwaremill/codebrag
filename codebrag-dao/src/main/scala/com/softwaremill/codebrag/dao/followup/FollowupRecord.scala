@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.dao.followup
 
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field._
-import net.liftweb.record.field.{OptionalIntField, OptionalStringField, EnumNameField}
+import net.liftweb.record.field.{OptionalIntField, OptionalStringField}
 import net.liftweb.common.Box
 import com.foursquare.rogue.LiftRogue._
 import net.liftweb.json.JsonDSL._
@@ -42,19 +42,10 @@ class LastReactionRecord extends BsonRecord[LastReactionRecord] {
 
   object reactionId extends ObjectIdField(this)
 
-  object reactionType extends EnumNameField(this, LastReactionRecord.ReactionTypeEnum)
-
   object reactionAuthorId extends ObjectIdField(this)
 }
 
-object LastReactionRecord extends LastReactionRecord with BsonMetaRecord[LastReactionRecord] {
-
-  object ReactionTypeEnum extends Enumeration {
-    type ReactionTypeEnum = Value
-    val Like, Comment = Value
-  }
-
-}
+object LastReactionRecord extends LastReactionRecord with BsonMetaRecord[LastReactionRecord]
 
 class ThreadIdRecord extends BsonRecord[ThreadIdRecord] {
   def meta = ThreadIdRecord

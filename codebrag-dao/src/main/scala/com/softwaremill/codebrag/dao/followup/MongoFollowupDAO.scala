@@ -39,7 +39,6 @@ class MongoFollowupDAO extends FollowupDAO {
   def buildModificationQuery(followup: Followup, query: Query[FollowupRecord, FollowupRecord, rogue.InitialState]) = {
     query.findAndModify(_.lastReaction.subfield(_.reactionId) setTo followup.reaction.id)
       .and(_.lastReaction.subfield(_.reactionAuthorId) setTo followup.reaction.authorId)
-      .and(_.lastReaction.subfield(_.reactionType) setTo LastReactionRecord.ReactionTypeEnum(followup.reaction.reactionType.id))
       .and(_.reactions push followup.reaction.id)
   }
 
@@ -52,7 +51,6 @@ class MongoFollowupDAO extends FollowupDAO {
     val lastReactionRecord = LastReactionRecord.createRecord
       .reactionAuthorId(followup.reaction.authorId)
       .reactionId(followup.reaction.id)
-      .reactionType(LastReactionRecord.ReactionTypeEnum(followup.reaction.reactionType.id))
 
     val threadDetailsRecord = (followup.reaction.fileName, followup.reaction.lineNumber) match {
       case (Some(fileName), Some(lineNumber)) => ThreadIdRecord.createRecord.commitId(followup.reaction.commitId).fileName(fileName).lineNumber(lineNumber)
