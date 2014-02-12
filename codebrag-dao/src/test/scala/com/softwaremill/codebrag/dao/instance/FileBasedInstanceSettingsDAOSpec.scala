@@ -1,11 +1,10 @@
-package com.softwaremill.codebrag.dao
+package com.softwaremill.codebrag.dao.instance
 
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, FlatSpec}
 import java.util.UUID
 import java.io.File
 import org.scalatest.matchers.ShouldMatchers
 import scala.io.Source
-import com.softwaremill.codebrag.dao.instance.FileBasedInstanceSettingsDAO
 
 class FileBasedInstanceSettingsDAOSpec extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach with ShouldMatchers {
 
