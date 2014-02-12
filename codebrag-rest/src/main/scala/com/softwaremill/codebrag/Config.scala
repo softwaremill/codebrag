@@ -1,10 +1,10 @@
 package com.softwaremill.codebrag
 
-import com.softwaremill.codebrag.dao.mongo.MongoConfig
 import com.softwaremill.codebrag.service.config._
+import com.softwaremill.codebrag.dao.DaoConfig
 
 trait Config
-  extends MongoConfig
+  extends DaoConfig
   with RepositoryConfig
   with GithubConfig
   with CodebragConfig

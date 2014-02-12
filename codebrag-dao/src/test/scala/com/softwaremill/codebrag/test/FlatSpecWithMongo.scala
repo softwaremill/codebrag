@@ -3,12 +3,12 @@ package com.softwaremill.codebrag.test
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, FlatSpec}
 import com.mongodb.Mongo
 import com.typesafe.config.Config
-import com.softwaremill.codebrag.dao.mongo.{MongoConfig, MongoInit}
-import com.softwaremill.codebrag.test.MongoRunner
+import com.softwaremill.codebrag.dao.mongo.MongoInit
+import com.softwaremill.codebrag.dao.DaoConfig
 
 trait FlatSpecWithMongo extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
-  object TestMongoConfig extends MongoConfig {
+  object TestMongoConfig extends DaoConfig {
 
     def rootConfig: Config = null
 

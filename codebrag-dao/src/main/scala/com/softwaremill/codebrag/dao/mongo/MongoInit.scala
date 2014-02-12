@@ -6,15 +6,16 @@ import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.JavaConversions
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoRecord
 import com.softwaremill.codebrag.dao.followup.FollowupRecord
+import com.softwaremill.codebrag.dao.DaoConfig
 
 object MongoInit extends Logging {
-  def initialize(mongoConfig: MongoConfig) {
-    initializeWithoutIndexCheck(mongoConfig)
+  def initialize(daoConfig: DaoConfig) {
+    initializeWithoutIndexCheck(daoConfig)
     ensureMongoIndexes()
   }
 
-  def initializeWithoutIndexCheck(mongoConfig: MongoConfig) {
-    MongoDB.defineDb(DefaultMongoIdentifier, createMongo(asServerAdresses(mongoConfig.mongoServers)), mongoConfig.mongoDatabase)
+  def initializeWithoutIndexCheck(daoConfig: DaoConfig) {
+    MongoDB.defineDb(DefaultMongoIdentifier, createMongo(asServerAdresses(daoConfig.mongoServers)), daoConfig.mongoDatabase)
   }
 
   def ensureMongoIndexes() {

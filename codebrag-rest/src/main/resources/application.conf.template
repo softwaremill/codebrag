@@ -1,6 +1,14 @@
+storage {
+    type = "mongo"
+}
+
 mongo {
     servers = "localhost:27017"
     database = "codebrag"
+}
+
+embedded {
+    datadir = "."
 }
 
 repository {
