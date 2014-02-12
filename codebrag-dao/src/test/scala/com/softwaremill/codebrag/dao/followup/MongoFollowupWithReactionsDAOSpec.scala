@@ -2,11 +2,11 @@ package com.softwaremill.codebrag.dao.followup
 
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{ThreadDetails, Followup}
-import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler}
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, MongoCommitCommentDAO}
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils
+import com.softwaremill.codebrag.common.RealTimeClock
 
 class MongoFollowupWithReactionsDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 
@@ -19,7 +19,7 @@ class MongoFollowupWithReactionsDAOSpec extends FlatSpecWithMongo with ClearMong
   val userId = ObjectIdTestUtils.oid(200)
   val anotherUserId = ObjectIdTestUtils.oid(300)
 
-  val baseDate = DateTime.now
+  val baseDate = RealTimeClock.nowUtc
   val comment = CommentAssembler.commentFor(commitId).withFileNameAndLineNumber("file.txt", 10).withDate(baseDate).get
   val firstLike = LikeAssembler.likeFor(commitId).withFileNameAndLineNumber("file.txt", 10).withDate(baseDate.plusHours(1)).get
   val secondLike = LikeAssembler.likeFor(commitId).withFileNameAndLineNumber("file.txt", 10).withDate(baseDate.plusHours(2)).get
