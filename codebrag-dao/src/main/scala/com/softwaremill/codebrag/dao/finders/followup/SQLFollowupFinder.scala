@@ -64,7 +64,7 @@ class SQLFollowupFinder(val database: SQLDatabase) extends FollowupFinder with S
       s <- u.settings
     } yield (u.id, u.name, u.emailLowerCase, s.avatarUrl)
 
-    q.list().map(t => t._1 -> PartialUserDetails(t._2, t._3, t._4)).toMap
+    q.list().map(t => t._1 -> PartialUserDetails(t._1, t._2, t._3, t._4)).toMap
   }
 
   private def findUserFollowups(userId: ObjectId)(implicit session: Session): List[SQLFollowup] = {
@@ -109,7 +109,7 @@ class SQLFollowupFinder(val database: SQLDatabase) extends FollowupFinder with S
       author <- (for {
         u <- users if u.id === reaction.authorId
         s <- u.settings
-      } yield (u.name, u.emailLowerCase, s.avatarUrl)).firstOption.map(PartialUserDetails.tupled)
+      } yield (u.id, u.name, u.emailLowerCase, s.avatarUrl)).firstOption.map(PartialUserDetails.tupled)
       commit <- commitInfos.filter(_.id === followup.threadCommitId).firstOption()
     } yield recordsToFollowupView(commit, reaction, author, followup)
 

@@ -85,7 +85,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with WithSQLSchemas 
     val q = for {
       u <- users if condition(u)
       s <- u.settings
-    } yield (u.name, u.emailLowerCase, s.avatarUrl)
+    } yield (u.id, u.name, u.emailLowerCase, s.avatarUrl)
 
     q.list().map(PartialUserDetails.tupled)
   }

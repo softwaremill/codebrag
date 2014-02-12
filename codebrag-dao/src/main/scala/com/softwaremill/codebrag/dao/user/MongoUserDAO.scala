@@ -61,20 +61,20 @@ class MongoUserDAO extends UserDAO {
 
   def findPartialUserDetails(names: Iterable[String], emails: Iterable[String]) = {
     UserRecord
-      .select(_.name, _.email, _.userSettings.subfield(_.avatarUrl))
+      .select(_.id, _.name, _.email, _.userSettings.subfield(_.avatarUrl))
       .or(_.where(_.name in names), _.where(_.email in emails)).fetch()
-      .map { case (username, email, avatarOpt) =>
-        PartialUserDetails(username, email, avatarOpt.getOrElse(UserSettings.defaultAvatarUrl(email)))
+      .map { case (id, username, email, avatarOpt) =>
+        PartialUserDetails(id, username, email, avatarOpt.getOrElse(UserSettings.defaultAvatarUrl(email)))
       }
   }
 
   def findPartialUserDetails(ids: Iterable[ObjectId]) = {
     UserRecord
-      .select(_.name, _.email, _.userSettings.subfield(_.avatarUrl))
+      .select(_.id, _.name, _.email, _.userSettings.subfield(_.avatarUrl))
       .where(_.id in ids)
       .fetch()
-      .map { case (username, email, avatarOpt) =>
-      PartialUserDetails(username, email, avatarOpt.getOrElse(UserSettings.defaultAvatarUrl(email)))
+      .map { case (id, username, email, avatarOpt) =>
+      PartialUserDetails(id, username, email, avatarOpt.getOrElse(UserSettings.defaultAvatarUrl(email)))
     }
   }
 
