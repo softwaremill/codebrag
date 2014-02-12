@@ -15,6 +15,8 @@ import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder
 import com.softwaremill.codebrag.dao.finders.StatsEventsFinder
 import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.common.Clock
+import com.softwaremill.codebrag.dao.repositorystatus.{SQLRepositoryStatusDAO, RepositoryStatusDAO, MongoRepositoryStatusDAO}
+import com.softwaremill.codebrag.dao.heartbeat.{SQLHeartbeatDAO, HeartbeatDAO, MongoHeartbeatDAO}
 
 trait Daos {
   def userDao: UserDAO
@@ -27,6 +29,8 @@ trait Daos {
   def commitReviewTaskDao: CommitReviewTaskDAO
   def invitationDao: InvitationDAO
   def eventDao: EventDAO
+  def repoStatusDao: RepositoryStatusDAO
+  def heartbeatStore: HeartbeatDAO
 
   lazy val instanceSettingsDao = new FileBasedInstanceSettingsDAO
 
@@ -50,9 +54,13 @@ trait MongoDaos extends Daos {
   lazy val commitReviewTaskDao = new MongoCommitReviewTaskDAO
   lazy val invitationDao = new MongoInvitationDAO
   lazy val eventDao = new MongoEventDAO
+  lazy val repoStatusDao = new MongoRepositoryStatusDAO
+  lazy val heartbeatStore = new MongoHeartbeatDAO(clock)
 
   lazy val notificationCountFinder = new MongoNotificationCountFinder
   lazy val followupFinder = new MongoFollowupFinder
+
+  def clock: Clock
 }
 
 trait SQLDaos extends Daos {
@@ -66,6 +74,8 @@ trait SQLDaos extends Daos {
   lazy val commitReviewTaskDao = new SQLCommitReviewTaskDAO(sqlDatabase, clock)
   lazy val invitationDao = new SQLInvitationDAO(sqlDatabase)
   lazy val eventDao = new SQLEventDAO(sqlDatabase)
+  lazy val repoStatusDao = new SQLRepositoryStatusDAO(sqlDatabase)
+  lazy val heartbeatStore = new SQLHeartbeatDAO(sqlDatabase, clock)
 
   lazy val notificationCountFinder = new SQLNotificationCountFinder(sqlDatabase)
   lazy val followupFinder = new SQLFollowupFinder(sqlDatabase, userDao)
