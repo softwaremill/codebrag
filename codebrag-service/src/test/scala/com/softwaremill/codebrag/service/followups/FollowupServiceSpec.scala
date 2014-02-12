@@ -4,7 +4,6 @@ import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.mockito.BDDMockito._
 import org.mockito.Mockito._
-import org.mockito.Matchers
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.dao._
 import com.softwaremill.codebrag.domain._
