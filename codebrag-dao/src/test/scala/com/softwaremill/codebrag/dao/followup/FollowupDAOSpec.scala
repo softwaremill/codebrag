@@ -225,3 +225,33 @@ class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTes
     )
   }
 }
+
+class SQLFollowupDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with FollowupDAOSpec {
+  val followupDao = new SQLFollowupDAO(sqlDatabase)
+
+  def findAllStoredFollowups() = {
+    class Temp extends { val database = sqlDatabase } with SQLFollowupSchema {
+      import database.driver.simple._
+      import database._
+
+      val list = db.withTransaction { implicit session =>
+        val followupIdToReactionIds = followupsReactions.list().groupBy(_._1).map { case (k, v) => (k, v.map(_._2)) }
+        followups.list().map { f =>
+          StoredFollowup(
+            f.id,
+            f.receivingUserId,
+            f.lastReactionId,
+            f.threadFileName,
+            f.threadLineNumber,
+            followupIdToReactionIds(f.id)
+          )
+        }
+      }
+    }
+
+    new Temp().list
+  }
+
+  def withSchemas = List(followupDao)
+}
+
