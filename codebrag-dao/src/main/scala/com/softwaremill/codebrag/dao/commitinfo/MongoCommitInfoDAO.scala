@@ -51,6 +51,10 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
     CommitInfoRecord.select(_.sha).fetch().toSet
   }
 
+  override def findAllIds(): List[ObjectId] = {
+    CommitInfoRecord.select(_.id).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
+  }
+
   override def hasCommits: Boolean = {
     CommitInfoRecord.count() > 0
   }

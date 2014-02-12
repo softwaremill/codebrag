@@ -196,6 +196,23 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
     commits.map(_.id) should be (List(c5.id, c3.id, c4.id))
   }
 
+  it should "find all commit ids" taggedAs RequiresDb in {
+    // given
+    val date = new DateTime()
+
+    val c1 = randomCommit.withAuthorDate(date.minusDays(1)).withCommitDate(date.minusDays(2)).get; commitInfoDAO.storeCommit(c1)
+    val c2 = randomCommit.withAuthorDate(date.minusDays(2)).withCommitDate(date.minusDays(3)).get; commitInfoDAO.storeCommit(c2)
+    val c3 = randomCommit.withAuthorDate(date.minusDays(4)).withCommitDate(date.minusDays(4)).get; commitInfoDAO.storeCommit(c3)
+    val c4 = randomCommit.withAuthorDate(date.minusDays(3)).withCommitDate(date.minusDays(4)).get; commitInfoDAO.storeCommit(c4)
+    val c5 = randomCommit.withAuthorDate(date.minusDays(5)).withCommitDate(date.minusDays(5)).get; commitInfoDAO.storeCommit(c5)
+
+    // when
+    val commits = commitInfoDAO.findAllIds()
+
+    // then
+    commits should be (List(c5.id, c3.id, c4.id, c2.id, c1.id))
+  }
+
   def buildCommitWithMatchingUserEmail(user: User, date: DateTime, sha: String) = {
     CommitInfoAssembler.randomCommit.withAuthorEmail(user.emailLowerCase).withAuthorDate(date).withSha(sha).get
   }

@@ -16,6 +16,8 @@ trait CommitInfoDAO {
 
   def findAllSha(): Set[String]
 
+  def findAllIds(): List[ObjectId]
+
   def findLastSha(): Option[String]
 
   def findLastCommitsNotAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo]

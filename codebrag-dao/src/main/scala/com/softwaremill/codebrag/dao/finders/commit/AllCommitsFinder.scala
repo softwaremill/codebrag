@@ -3,8 +3,7 @@ package com.softwaremill.codebrag.dao.finders.commit
 import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.LoadMoreCriteria
-import com.foursquare.rogue.LiftRogue._
-import com.softwaremill.codebrag.dao.commitinfo.{CommitInfoDAO, CommitInfoRecord}
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
 
 class AllCommitsFinder(val commitReviewTaskDAO: CommitReviewTaskDAO, val commitInfoDAO: CommitInfoDAO)
@@ -15,7 +14,7 @@ class AllCommitsFinder(val commitReviewTaskDAO: CommitReviewTaskDAO, val commitI
   import OutOfPageCommitCounter._
 
   def findAllCommits(paging: LoadMoreCriteria, userId: ObjectId) = {
-    val allCommitsIds = CommitInfoRecord.select(_.id).orderAsc(_.committerDate).andAsc(_.authorDate).fetch()
+    val allCommitsIds = commitInfoDAO.findAllIds()
     val commitsSlice = loadSliceUsing(paging, allCommitsIds, commitInfoDAO.findPartialCommitInfo)
     val commits = toCommitViews(commitsSlice)
     val numOlder = countOlderCommits(allCommitsIds.map(_.toString), commits)

@@ -31,6 +31,10 @@ class SQLCommitInfoDAO(database: SQLDatabase) extends CommitInfoDAO with WithSQL
 
   def findAllSha() = db.withTransaction { implicit session => commitInfos.map(_.sha).list().toSet }
 
+  def findAllIds() = db.withTransaction { implicit session =>
+    commitInfos.map(c => (c.id, c.commitDate, c.authorDate)).sortBy(t => (t._2.asc, t._3.asc)).list().map(_._1)
+  }
+
   def findLastSha() = db.withTransaction { implicit session =>
     commitInfos.map { ci => (ci.sha, ci.commitDate, ci.authorDate) }
       .sortBy(d => (d._2.desc, d._3.desc))
