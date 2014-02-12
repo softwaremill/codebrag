@@ -6,6 +6,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.{RequiresDb, ObjectIdTestUtils}
 import org.scalatest.FlatSpec
+import com.softwaremill.codebrag.common.RealTimeClock
 
 trait CommitReviewTaskDAOSpec extends FlatSpec with ShouldMatchers {
 
@@ -83,7 +84,7 @@ class MongoCommitReviewTaskDAOSpec extends FlatSpecWithMongo with ClearMongoData
 }
 
 class SQLCommitReviewTaskDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with CommitReviewTaskDAOSpec {
-  val commitToReviewDao = new SQLCommitReviewTaskDAO(sqlDatabase)
+  val commitToReviewDao = new SQLCommitReviewTaskDAO(sqlDatabase, RealTimeClock)
 
   def withSchemas = List(commitToReviewDao)
 }

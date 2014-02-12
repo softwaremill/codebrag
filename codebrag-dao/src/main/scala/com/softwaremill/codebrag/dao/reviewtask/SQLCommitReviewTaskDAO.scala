@@ -4,8 +4,11 @@ import com.softwaremill.codebrag.dao.sql.{WithSQLSchemas, SQLDatabase}
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import scala.slick.driver.JdbcProfile
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.common.Clock
 
-class SQLCommitReviewTaskDAO(val database: SQLDatabase) extends CommitReviewTaskDAO with WithSQLSchemas with SQLCommitReviewTaskSchema {
+class SQLCommitReviewTaskDAO(val database: SQLDatabase, clock: Clock)
+  extends CommitReviewTaskDAO with WithSQLSchemas with SQLCommitReviewTaskSchema {
+
   import database.driver.simple._
   import database._
 
@@ -15,7 +18,7 @@ class SQLCommitReviewTaskDAO(val database: SQLDatabase) extends CommitReviewTask
         c => c.commitId === toReview.commitId && c.userId === toReview.userId).length).first()
 
       if (existing == 0) {
-        commitReviewTasks += toReview
+        commitReviewTasks += SQLCommitReviewTask(toReview.commitId, toReview.userId, clock.nowUtc)
       }
     }
   }
