@@ -28,7 +28,8 @@ class MongoRepositoryStatusDAO extends RepositoryStatusDAO with Logging {
 
   def get(repoName: String) = {
     RepositoryStatusRecord.where(_.repoName eqs repoName).get() match {
-      case Some(record) => Some(record.sha.get)
+      //TODO: what if SHA not available -> simple fix, will be refactored next
+      case Some(record) => if(record.sha.get.nonEmpty) Some(record.sha.get) else None
       case None => None
     }
   }
