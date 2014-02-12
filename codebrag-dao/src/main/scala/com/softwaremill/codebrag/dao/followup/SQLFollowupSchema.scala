@@ -1,11 +1,10 @@
 package com.softwaremill.codebrag.dao.followup
 
-import com.softwaremill.codebrag.dao.sql.{WithSQLSchemas, SQLDatabase}
-import scala.slick.driver.JdbcProfile
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import org.bson.types.ObjectId
 import scala.slick.model.ForeignKeyAction
 
-trait SQLFollowupSchema extends WithSQLSchemas {
+trait SQLFollowupSchema {
   val database: SQLDatabase
 
   import database.driver.simple._
@@ -46,6 +45,4 @@ trait SQLFollowupSchema extends WithSQLSchemas {
   }
 
   protected val followupsReactions = TableQuery[FollowupsReactions]
-
-  def schemas: Iterable[JdbcProfile#DDLInvoker] = List(followups.ddl, followupsReactions.ddl)
 }

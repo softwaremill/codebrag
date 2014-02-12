@@ -1,19 +1,22 @@
 package com.softwaremill.codebrag.dao.followup
 
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{ThreadDetails, Followup}
+import com.softwaremill.codebrag.domain.ThreadDetails
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler}
-import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
-import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, MongoCommitCommentDAO}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.reaction._
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils
 import com.softwaremill.codebrag.common.RealTimeClock
+import org.scalatest.FlatSpec
+import com.softwaremill.codebrag.domain.Followup
+import scala.Some
 
-class MongoFollowupWithReactionsDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
+trait FollowupWithReactionsDAOSpec extends FlatSpec with ShouldMatchers {
 
-  val commentDao = new MongoCommitCommentDAO
-  val likeDao = new MongoLikeDAO
-  val followupDao = new MongoFollowupDAO
-  val followupWithReactionsDao = new MongoFollowupWithReactionsDAO(commentDao, likeDao)
+  def commentDao: CommitCommentDAO
+  def likeDao: LikeDAO
+  def followupDao: FollowupDAO
+  def followupWithReactionsDao: FollowupWithReactionsDAO
 
   val commitId = ObjectIdTestUtils.oid(100)
   val userId = ObjectIdTestUtils.oid(200)
@@ -95,4 +98,20 @@ class MongoFollowupWithReactionsDAOSpec extends FlatSpecWithMongo with ClearMong
     followupDao.createOrUpdateExisting(Followup(userId, secondLike))
   }
 
+}
+
+class MongoFollowupWithReactionsDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with FollowupWithReactionsDAOSpec {
+  val commentDao = new MongoCommitCommentDAO()
+  val likeDao = new MongoLikeDAO()
+  val followupDao = new MongoFollowupDAO()
+  val followupWithReactionsDao = new MongoFollowupWithReactionsDAO(commentDao, likeDao)
+}
+
+class SQLFollowupWithReactionsDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with FollowupWithReactionsDAOSpec {
+  val commentDao = new SQLCommitCommentDAO(sqlDatabase)
+  val likeDao = new SQLLikeDAO(sqlDatabase)
+  val followupDao = new SQLFollowupDAO(sqlDatabase)
+  val followupWithReactionsDao = new SQLFollowupWithReactionsDAO(sqlDatabase, commentDao, likeDao)
+
+  def withSchemas = List(commentDao, likeDao, followupDao)
 }

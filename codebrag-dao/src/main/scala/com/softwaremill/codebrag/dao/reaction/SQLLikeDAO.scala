@@ -38,7 +38,7 @@ class SQLLikeDAO(val database: SQLDatabase) extends LikeDAO with WithSQLSchemas 
     }
   }
 
-  private class Likes(tag: Tag) extends Table[Like](tag, "comments") with ReactionTable {
+  private class Likes(tag: Tag) extends Table[Like](tag, "likes") with ReactionTable {
     def * = (id, commitId, authorId, postingTime, fileName, lineNumber) <>
       (Like.tupled, Like.unapply)
   }

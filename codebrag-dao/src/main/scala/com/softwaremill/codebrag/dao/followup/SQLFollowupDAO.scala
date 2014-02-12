@@ -1,10 +1,11 @@
 package com.softwaremill.codebrag.dao.followup
 
-import com.softwaremill.codebrag.dao.sql.SQLDatabase
+import com.softwaremill.codebrag.dao.sql.{WithSQLSchemas, SQLDatabase}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.Followup
+import scala.slick.driver.JdbcProfile
 
-class SQLFollowupDAO(val database: SQLDatabase) extends FollowupDAO with SQLFollowupSchema {
+class SQLFollowupDAO(val database: SQLDatabase) extends FollowupDAO with SQLFollowupSchema with WithSQLSchemas {
   import database.driver.simple._
   import database._
 
@@ -65,4 +66,6 @@ class SQLFollowupDAO(val database: SQLDatabase) extends FollowupDAO with SQLFoll
       followups.filter(_.id === followupId).delete
     }
   }
+
+  def schemas: Iterable[JdbcProfile#DDLInvoker] = List(followups.ddl, followupsReactions.ddl)
 }

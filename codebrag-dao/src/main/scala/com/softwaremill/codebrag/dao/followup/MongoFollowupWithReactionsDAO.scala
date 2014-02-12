@@ -23,12 +23,6 @@ class MongoFollowupWithReactionsDAO(commentsDao: CommitCommentDAO, likeDao: Like
      }
    }
 
-   def determineLastReaction(allReactions: List[UserReaction with Product with Serializable]) = {
-     allReactions.max(new Ordering[UserReaction] {
-       def compare(x: UserReaction, y: UserReaction): Int = x.postingTime.compareTo(y.postingTime)
-     })
-   }
-
    def findAllContainingReaction(reactionId: ObjectId) = {
      FollowupRecord.where(_.reactions contains reactionId).fetch().map(buildDomainObject)
    }
