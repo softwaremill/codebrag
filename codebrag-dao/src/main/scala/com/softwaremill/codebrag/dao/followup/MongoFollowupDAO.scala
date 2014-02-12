@@ -3,17 +3,14 @@ package com.softwaremill.codebrag.dao.followup
 import com.softwaremill.codebrag.domain.Followup
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
-import scala.None
 import com.foursquare.rogue.Query
 import com.foursquare.rogue
-import org.joda.time.DateTime
 
 class MongoFollowupDAO extends FollowupDAO {
 
-
-  def findById(followupId: ObjectId): Option[Followup] = {
+  def findReceivingUserId(followupId: ObjectId): Option[ObjectId] = {
     FollowupRecord.where(_.id eqs followupId).get() match {
-      case Some(record) => Some(toFollowup(record))
+      case Some(record) => Some(record.receivingUserId.get)
       case None => None
     }
   }
@@ -48,11 +45,6 @@ class MongoFollowupDAO extends FollowupDAO {
 
   override def delete(followupId: ObjectId) {
     FollowupRecord.where(_.id eqs followupId).findAndDeleteOne()
-  }
-
-  private def toFollowup(record: FollowupRecord) = {
-    // TODO: if reaction is needed, fill it using like/comment daos
-    Followup(record.receivingUserId.get, null)
   }
 
   private def toRecord(followup: Followup): FollowupRecord = {

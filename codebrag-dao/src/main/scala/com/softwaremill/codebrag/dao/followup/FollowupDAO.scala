@@ -5,7 +5,7 @@ import org.bson.types.ObjectId
 
 trait FollowupDAO {
 
-  def findById(followupId: ObjectId): Option[Followup]
+  def findReceivingUserId(followupId: ObjectId): Option[ObjectId]
 
   def createOrUpdateExisting(followup: Followup): ObjectId
 
