@@ -2,7 +2,6 @@ package com.softwaremill.codebrag
 
 import com.softwaremill.codebrag.activities.{CommitReviewActivity, AddCommentActivity}
 import com.softwaremill.codebrag.common.{RealTimeClock, ObjectIdGenerator, IdGenerator}
-import com.softwaremill.codebrag.dao.reporting._
 import com.softwaremill.codebrag.rest.CodebragSwagger
 import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
@@ -121,7 +120,7 @@ trait Finders {
 
   lazy val notificationCountFinder = new MongoNotificationCountFinder
 
-  lazy val reactionFinder = new MongoReactionFinder(userDao)
+  lazy val reactionFinder = new MongoReactionFinder(userDao, commentDao, likeDao)
 
   lazy val allCommitsFinder = new AllCommitsFinder(commitReviewTaskDao, commitInfoDao, userDao)
   lazy val reviewableCommitsFinder = new ReviewableCommitsListFinder(commitReviewTaskDao, commitInfoDao, userDao)

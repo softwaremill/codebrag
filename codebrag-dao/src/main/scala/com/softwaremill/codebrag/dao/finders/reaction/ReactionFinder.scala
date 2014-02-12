@@ -1,12 +1,46 @@
 package com.softwaremill.codebrag.dao.finders.reaction
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.views.{CommitReactionsView, LikeView, NotificationCountersView}
+import com.softwaremill.codebrag.dao.reporting.views.{CommentView, CommitReactionsView, LikeView}
+import com.softwaremill.codebrag.domain.{Like, Comment, UserReaction}
+import com.softwaremill.codebrag.dao.user.{UserDAO, PartialUserDetails}
+import com.softwaremill.codebrag.dao.reaction.{LikeDAO, CommitCommentDAO, MongoLikeDAO}
+import com.typesafe.scalalogging.slf4j.Logging
 
-trait ReactionFinder {
+class ReactionFinder(val userDAO: UserDAO, commitCommentDAO: CommitCommentDAO, likeDAO: LikeDAO)
+  extends Logging with UserReactionToViewMapper {
 
-  def findReactionsForCommit(commitId: ObjectId): CommitReactionsView
+  def findLikeById(likeId: ObjectId) = {
+    likeDAO.findById(likeId).map { like =>
+      userDAO.findById(like.authorId) match {
+        case Some(author) => {
+          LikeView(like.id.toString, author.name, like.authorId.toString, like.postingTime.toDate, like.fileName, like.lineNumber)
+        }
+        case None => {
+          logger.warn(s"Cannot find author with Id ${like.authorId} for like $likeId")
+          LikeView(like.id.toString, "", like.authorId.toString, like.postingTime.toDate, like.fileName, like.lineNumber)
+        }
+      }
+    }
+  }
 
-  def findLikeById(likeId: ObjectId): Option[LikeView]
+  def findReactionsForCommit(commitId: ObjectId) = {
+    def reactionToView(reaction: UserReaction, author: PartialUserDetails) = {
+      reaction match {
+        case comment: Comment => CommentView(comment.id.toString, author.name, author.id.toString, comment.message, comment.postingTime.toDate, author.avatarUrl)
+        case like: Like => LikeView(reaction.id.toString, author.name, author.id.toString, reaction.postingTime.toDate)
+      }
+    }
 
+    val comments = commitCommentDAO.findCommentsForCommits(commitId)
+    val (inlineComments, entireComments) = comments.partition(c => c.fileName.isDefined && c.lineNumber.isDefined)
+
+    val likes = new MongoLikeDAO().findLikesForCommits(commitId)
+    val (inlineLikes, entireLikes) = likes.partition(l => l.fileName.isDefined && l.lineNumber.isDefined)
+
+    val inlineReactionsView = mapInlineReactionsToView(inlineComments ++ inlineLikes, reactionToView)
+    val entireReactionsView = mapCommitReactionsToView(entireComments ++ entireLikes, reactionToView)
+
+    CommitReactionsView(entireReactionsView, inlineReactionsView)
+  }
 }

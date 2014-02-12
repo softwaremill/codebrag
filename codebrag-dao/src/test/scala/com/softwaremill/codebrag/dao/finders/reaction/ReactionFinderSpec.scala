@@ -5,18 +5,25 @@ import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.dao.reporting.views.{CommitReactionsView, ReactionsView, CommentView, ReactionView}
+import com.softwaremill.codebrag.dao.reporting.views.ReactionView
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, LikeAssembler, CommentAssembler}
+import com.softwaremill.codebrag.dao.reaction._
+import org.scalatest.BeforeAndAfterEach
 import com.softwaremill.codebrag.dao.user.MongoUserDAO
-import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
-import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, MongoCommitCommentDAO}
+import com.softwaremill.codebrag.dao.reporting.views.CommentView
+import scala.Some
+import com.softwaremill.codebrag.dao.reporting.views.CommitReactionsView
+import com.softwaremill.codebrag.dao.reporting.views.ReactionsView
+import com.softwaremill.codebrag.test.{ClearMongoDataAfterTest, FlatSpecWithMongo}
 
-class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers with ReactionFinderVerifyHelpers {
+class ReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers
+  with ReactionFinderVerifyHelpers with BeforeAndAfterEach {
 
-  val userDao = new MongoUserDAO
-  val commentDao = new MongoCommitCommentDAO
-  val likeDao = new MongoLikeDAO
-  var reactionsFinder: MongoReactionFinder = _
+  val userDao = new MongoUserDAO()
+  val commentDao = new MongoCommitCommentDAO()
+  val likeDao = new MongoLikeDAO()
+
+  val reactionsFinder = new ReactionFinder(userDao, commentDao, likeDao)
 
   val CommitId = oid(1)
 
@@ -48,7 +55,6 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
 
   override def beforeEach() {
     super.beforeEach()
-    reactionsFinder = new MongoReactionFinder(userDao)
 
     StoredCommitComments.foreach(commentDao.save)
     StoredInlineComments.foreach(commentDao.save)
@@ -60,7 +66,7 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     userDao.add(user)
   }
 
-  it should "be empty if there are no comments for a commit" taggedAs (RequiresDb) in {
+  it should "be empty if there are no comments for a commit" taggedAs RequiresDb in {
     // given
     val commitWithNoCommentsId = oid(20)
 
@@ -71,7 +77,7 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     commentList.entireCommitReactions.comments should be(None)
   }
 
-  it should "contain reactions for whole commit" taggedAs (RequiresDb) in {
+  it should "contain reactions for whole commit" taggedAs RequiresDb in {
     // given
 
     // when
@@ -82,7 +88,7 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     commentMessagesWithAuthors(commitComments) should be(Set(("Monster class", "John"), ("Fix it ASAP", "Mary")))
   }
 
-  it should "contain inline comments grouped by file and line" taggedAs (RequiresDb) in {
+  it should "contain inline comments grouped by file and line" taggedAs RequiresDb in {
     // when
     val reactionsView = reactionsFinder.findReactionsForCommit(CommitId)
 
@@ -100,7 +106,7 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
 
   }
 
-  it should "contain inline likes grouped by file and line" taggedAs (RequiresDb) in {
+  it should "contain inline likes grouped by file and line" taggedAs RequiresDb in {
     // when
     val reactionsView = reactionsFinder.findReactionsForCommit(CommitId)
 
@@ -113,7 +119,7 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     reactions.inlineReactions(fileName)(lineNumber.toString).likes
   }
 
-  it should "have comments ordered by date starting from the oldest" taggedAs (RequiresDb) in {
+  it should "have comments ordered by date starting from the oldest" taggedAs RequiresDb in {
     // given
     val baseDate = DateTime.now
     val inlineComments = List(
@@ -130,7 +136,7 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     orderedCommentMessagesFor(fileComments, "Exception.scala", 10) should be(List("You'd better refactor that", "Man, it's Monday"))
   }
 
-  it should "return author avatar, full name and id in comment" in {
+  it should "return author avatar, full name and id in comment" taggedAs RequiresDb in {
     // when
     val commentsView = reactionsFinder.findReactionsForCommit(CommitId)
 
@@ -139,10 +145,10 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     val comment = comments(0).asInstanceOf[CommentView]
     comment.authorId should equal(John.id.toString)
     comment.authorName should equal(John.name)
-    comment.authorAvatarUrl should equal(Some(John.settings.avatarUrl))
+    comment.authorAvatarUrl should equal(John.settings.avatarUrl)
   }
 
-  it should "return empty string as author avatar if author not registered in codebrag" in {
+  it should "return empty string as author avatar if author not registered in codebrag" taggedAs RequiresDb in {
     // given
     val dummyCommitId = ObjectIdTestUtils.oid(123123)
     val commentFromNonexistingUser = CommentAssembler.commentFor(dummyCommitId).withAuthorId(ObjectIdTestUtils.oid(1111111)).get
@@ -153,10 +159,10 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
 
     // then
     val Some(comments) = commentsView.entireCommitReactions.comments
-    comments(0).asInstanceOf[CommentView].authorAvatarUrl should equal(None)
+    comments(0).asInstanceOf[CommentView].authorAvatarUrl should equal("")
   }
 
-  it should "find like by id" in {
+  it should "find like by id" taggedAs RequiresDb in {
     // given
     val like = LikeAssembler.likeFor(commitId).withAuthorId(user.id).get
     likeDao.save(like)
@@ -169,7 +175,7 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     found.get.authorName should equal(user.name)
   }
 
-  it should "find like by id with empty user name when like author not found" in {
+  it should "find like by id with empty user name when like author not found" taggedAs RequiresDb in {
     // given
     val like = LikeAssembler.likeFor(commitId).withAuthorId(nonExistingAuthorId).get
     likeDao.save(like)
@@ -182,7 +188,7 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
     found.get.authorName should be('empty)
   }
 
-  it should "return None if like not found" in {
+  it should "return None if like not found" taggedAs RequiresDb in {
     // given
     val nonExistingLikeId = ObjectIdTestUtils.oid(200)
 

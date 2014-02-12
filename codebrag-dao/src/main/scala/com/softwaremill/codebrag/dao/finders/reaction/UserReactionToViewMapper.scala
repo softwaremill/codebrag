@@ -7,9 +7,9 @@ import com.softwaremill.codebrag.dao.user.{PartialUserDetails, UserDAO}
 
 trait UserReactionToViewMapper {
 
-  def userDAO: UserDAO
+  protected def userDAO: UserDAO
 
-  def mapInlineReactionsToView(reactions: List[UserReaction], domainToView: (UserReaction, PartialUserDetails) => ReactionView): Map[String, Map[String, ReactionsView]] = {
+  protected def mapInlineReactionsToView(reactions: List[UserReaction], domainToView: (UserReaction, PartialUserDetails) => ReactionView): Map[String, Map[String, ReactionsView]] = {
     val usersCached = findAllUsersIn(reactions)
     val byFiles = reactions.groupBy(_.fileName.get)
     val byFileAndLineNumber = byFiles.map({
@@ -31,7 +31,7 @@ trait UserReactionToViewMapper {
     })
   }
 
-  def mapCommitReactionsToView(reactions: List[UserReaction], domainToView: (UserReaction, PartialUserDetails) => ReactionView): ReactionsView = {
+  protected def mapCommitReactionsToView(reactions: List[UserReaction], domainToView: (UserReaction, PartialUserDetails) => ReactionView): ReactionsView = {
     val usersCached = findAllUsersIn(reactions)
     val reactionsByType = reactions.map(reaction => {
       val authorData = findUserDetails(usersCached, reaction.authorId)
