@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag
+package com.softwaremill.codebrag.dao
 
 import com.softwaremill.codebrag.dao.user._
 import com.softwaremill.codebrag.dao.commitinfo.{SQLCommitInfoDAO, MongoCommitInfoDAO, CommitInfoDAO}

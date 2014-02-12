@@ -18,6 +18,7 @@ import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
 import com.softwaremill.codebrag.dao.heartbeat.MongoHeartbeatDAO
 import com.softwaremill.codebrag.dao.repositorystatus.MongoRepositoryStatusDAO
+import com.softwaremill.codebrag.dao.Daos
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
