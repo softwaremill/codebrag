@@ -1,11 +1,12 @@
-package com.softwaremill.codebrag.dao.reporting
+package com.softwaremill.codebrag.dao.finders.reaction
 
-import com.softwaremill.codebrag.dao.{ObjectIdTestUtils}
+import com.softwaremill.codebrag.dao.ObjectIdTestUtils
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, UserAssembler}
 import com.softwaremill.codebrag.dao.user.MongoUserDAO
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.reaction.MongoLikeDAO
+import com.softwaremill.codebrag.dao.finders.reaction.LikesFinder
 
 class LikesFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers {
 

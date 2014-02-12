@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao.reporting
+package com.softwaremill.codebrag.dao.finders.reaction
 
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import com.softwaremill.codebrag.dao._
@@ -10,6 +10,7 @@ import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler
 import com.softwaremill.codebrag.dao.user.MongoUserDAO
 import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, MongoCommitCommentDAO}
+import com.softwaremill.codebrag.dao.finders.reaction.MongoReactionFinder
 
 class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers with ReactionFinderVerifyHelpers {
 

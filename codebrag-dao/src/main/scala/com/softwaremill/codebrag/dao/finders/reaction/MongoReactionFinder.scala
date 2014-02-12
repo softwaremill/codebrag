@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao.reporting
+package com.softwaremill.codebrag.dao.finders.reaction
 
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._

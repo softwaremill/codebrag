@@ -5,6 +5,7 @@ import org.scalatest.{FlatSpec, BeforeAndAfterEach}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.dao.reporting.views._
 import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff}
+import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinderVerifyHelpers
 
 class CommitDetailsViewSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with ReactionFinderVerifyHelpers {
 

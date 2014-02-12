@@ -12,6 +12,7 @@ import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.usecase.UnlikeUseCase
 import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 
 class CommitsServlet(val authenticator: Authenticator,
                      val reviewableCommitsListFinder: ReviewableCommitsListFinder,
