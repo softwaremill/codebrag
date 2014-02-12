@@ -39,4 +39,5 @@ trait UserDAO {
 
   def findCommitAuthor(commit: CommitInfo): Option[User]
 
+  def findPartialUserDetails(names: Iterable[String], emails: Iterable[String]): Iterable[PartialUserDetails]
 }

@@ -78,6 +78,15 @@ class SQLUserDAO(database: SQLDatabase) extends UserDAO with WithSQLSchemas {
     userSettings.where(_.userId === id).update(toSQLSettings(id, newSettings))
   }
 
+  def findPartialUserDetails(names: Iterable[String], emails: Iterable[String]) = db.withTransaction { implicit session =>
+    val q = for {
+      u <- users if (u.name inSet names.toSet) || (u.emailLowerCase inSet emails.toSet)
+      s <- u.settings
+    } yield (u.name, u.emailLowerCase, s.avatarUrl)
+
+    q.list().map(PartialUserDetails.tupled)
+  }
+
   private case class SQLAuth(id: ObjectId, provider: String, username: String, usernameLowerCase: String, token: String, salt: String) {
     def toAuth = Authentication(provider, username, usernameLowerCase, token, salt)
   }

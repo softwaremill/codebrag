@@ -377,6 +377,16 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     userFound.settings.emailNotificationsEnabled should equal(true)
     userFound.settings.appTourDone should equal(true)
   }
+
+  it should "find partial details" taggedAs RequiresDb in {
+    // when
+    val partial1 = userDAO.findPartialUserDetails(List("User Name 1"), List("user1@sml.com", "user2@sml.com"))
+    val partial2 = userDAO.findPartialUserDetails(List("User Name 1", "User Name 3"), Nil)
+
+    // then
+    partial1.map(_.name).toSet should be (Set("User Name 1", "User Name 2"))
+    partial2.map(_.name).toSet should be (Set("User Name 1", "User Name 3"))
+  }
 }
 
 class MongoUserDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with UserDAOSpec {

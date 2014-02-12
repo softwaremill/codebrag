@@ -125,7 +125,7 @@ class ReviewableCommitsListFinderSpec extends FlatSpecWithMongo with ClearMongoD
     val mockCommitReviewTaskDAO = mock[CommitReviewTaskDAO]
     when(mockCommitReviewTaskDAO.commitsPendingReviewFor(reviewingUserId)).thenReturn(commitPendingReviewForReviewingUserId)
 
-    finder = new ReviewableCommitsListFinder(mockCommitReviewTaskDAO, commitDao)
+    finder = new ReviewableCommitsListFinder(mockCommitReviewTaskDAO, commitDao, userDao)
   }
 
   private def storeUser(user: User) = userDao.add(user)

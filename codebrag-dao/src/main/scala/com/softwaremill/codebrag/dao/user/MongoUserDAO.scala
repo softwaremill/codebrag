@@ -59,6 +59,15 @@ class MongoUserDAO extends UserDAO {
     UserRecord.asRegularUser.where(_.id eqs userId).modify(_.userSettings setTo toRecord(newSettings)).updateOne()
   }
 
+  def findPartialUserDetails(names: Iterable[String], emails: Iterable[String]) = {
+    UserRecord
+      .select(_.name, _.email, _.userSettings.subfield(_.avatarUrl))
+      .or(_.where(_.name in names), _.where(_.email in emails)).fetch()
+      .map { case (username, email, avatarOpt) =>
+        PartialUserDetails(username, email, avatarOpt.getOrElse(UserSettings.defaultAvatarUrl(email)))
+      }
+  }
+
   private object UserImplicits {
     implicit def fromRecord(user: UserRecord): User = {
       new User(user.id.get, user.authentication.get, user.name.get, user.email.get, user.token.get, user.userSettings.get, user.notifications.get)
