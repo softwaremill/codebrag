@@ -1,7 +1,6 @@
 package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.AuthenticatableServletSpec
-import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.BDDMockito._
 import org.mockito.Matchers._
@@ -10,6 +9,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.common.{ClockSpec, Clock}
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
+import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
 
 class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
 

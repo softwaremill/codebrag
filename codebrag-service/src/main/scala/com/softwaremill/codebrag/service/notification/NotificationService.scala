@@ -6,9 +6,9 @@ import com.softwaremill.codebrag.domain.User
 import com.softwaremill.codebrag.service.templates.{EmailTemplates, TemplateEngine}
 import com.softwaremill.codebrag.service.templates.EmailTemplates._
 import com.softwaremill.codebrag.service.config.CodebragConfig
-import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import com.softwaremill.codebrag.common.Clock
 import org.joda.time.format.DateTimeFormat
+import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
 
 class NotificationService(emailScheduler: EmailScheduler, templateEngine: TemplateEngine, codebragConfig: CodebragConfig, notificationCountFinder: NotificationCountFinder, clock: Clock) extends Logging {
 

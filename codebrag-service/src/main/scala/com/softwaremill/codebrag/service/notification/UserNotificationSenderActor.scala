@@ -4,7 +4,6 @@ import akka.actor.{ActorRef, Props, ActorSystem, Actor}
 import com.typesafe.scalalogging.slf4j.Logging
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, User}
 import com.softwaremill.codebrag.common.Clock
@@ -13,6 +12,7 @@ import scala.concurrent.duration.FiniteDuration
 import com.softwaremill.codebrag.common.scheduling.ScheduleDelaysCalculator
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
+import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
 
 class UserNotificationSenderActor(actorSystem: ActorSystem,
                                   heartbeatStore: HeartbeatDAO,

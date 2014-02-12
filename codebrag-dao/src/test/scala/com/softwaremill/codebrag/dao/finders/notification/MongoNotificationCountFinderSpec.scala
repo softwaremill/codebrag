@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao.reporting
+package com.softwaremill.codebrag.dao.finders.notification
 
 import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
@@ -13,6 +13,7 @@ import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTes
 import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
 import com.softwaremill.codebrag.dao.reviewtask.{CommitReviewTaskRecord, MongoCommitReviewTaskDAO}
 import com.softwaremill.codebrag.dao.followup.MongoFollowupDAO
+import com.softwaremill.codebrag.dao.finders.notification.{NotificationCountFinder, MongoNotificationCountFinder}
 
 class MongoNotificationCountFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers with MongoNotificationCountFinderSpecFixture {
 

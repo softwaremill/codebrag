@@ -9,12 +9,12 @@ import com.softwaremill.codebrag.service.config.CodebragConfig
 import org.mockito.{Matchers, ArgumentCaptor, Mockito}
 import Mockito._
 import Matchers._
-import com.softwaremill.codebrag.dao.reporting.NotificationCountFinder
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.service.notification
+import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
 
 class NotificationServiceSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with ClockSpec {
