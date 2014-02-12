@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.domain.{Comment, ThreadDetails}
 import org.bson.types.ObjectId
 import scala.slick.driver.JdbcProfile
 
-class SQLCommitCommentDAO(val database: SQLDatabase) extends CommitCommentDAO with WithSQLSchemas with SQLReactionDAO {
+class SQLCommitCommentDAO(val database: SQLDatabase) extends CommitCommentDAO with WithSQLSchemas with SQLReactionSchema {
   import database.driver.simple._
   import database._
 
@@ -25,15 +25,6 @@ class SQLCommitCommentDAO(val database: SQLDatabase) extends CommitCommentDAO wi
       .filter(c => c.commitId === thread.commitId && positionFilter(thread, c))
       .list()
   }
-
-  private class Comments(tag: Tag) extends Table[Comment](tag, "comments") with ReactionTable {
-    def message = column[String]("message")
-
-    def * = (id, commitId, authorId, postingTime, message, fileName, lineNumber) <>
-      (Comment.tupled, Comment.unapply)
-  }
-
-  private val comments = TableQuery[Comments]
 
   def schemas: Iterable[JdbcProfile#DDLInvoker] = List(comments.ddl)
 }
