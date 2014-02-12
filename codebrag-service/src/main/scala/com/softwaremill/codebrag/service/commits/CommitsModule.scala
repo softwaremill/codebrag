@@ -6,21 +6,13 @@ import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.service.config.{RepositoryConfig, CodebragConfig}
 
 trait CommitsModule {
+
+  lazy val commitsLoader = new JgitCommitsLoader(new JgitLogConverter, repoStatusDao)
+
   lazy val commitImportService = new CommitImportService(
-    new JgitCommitsLoader(
-      new JgitFacade,
-      new InternalDirTree(config),
-      new JgitLogConverter,
-      repoStatusDao,
-      repoDataProducer.getRepoTypeFromConfiguration match {
-        case SvnRepoType  => new GitSvnRepoUpdater(new JgitFacade)
-        case _            => new JgitRepoUpdater(new JgitFacade)
-      }
-    ),
+    commitsLoader,
     commitInfoDao,
     eventBus)(clock)
-
-  lazy val repoDataProducer = new RepoDataProducer(userDao, config)
 
   def commitInfoDao: CommitInfoDAO
   def repoStatusDao: RepositoryStatusDAO
