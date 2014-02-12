@@ -48,7 +48,7 @@ class MongoReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfter
 
   override def beforeEach() {
     super.beforeEach()
-    reactionsFinder = new MongoReactionFinder
+    reactionsFinder = new MongoReactionFinder(userDao)
 
     StoredCommitComments.foreach(commentDao.save)
     StoredInlineComments.foreach(commentDao.save)

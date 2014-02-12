@@ -5,7 +5,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reaction.SQLReactionSchema
 import com.softwaremill.codebrag.dao.reporting.views._
 import com.softwaremill.codebrag.domain.{Like, Comment, UserReaction}
-import com.softwaremill.codebrag.dao.user.{PartialUserDetails, SQLUserSchema}
+import com.softwaremill.codebrag.dao.user.{UserDAO, PartialUserDetails}
 import com.softwaremill.codebrag.dao.commitinfo.SQLCommitInfoSchema
 import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.dao.reporting.views.FollowupsByCommitListView
@@ -13,8 +13,8 @@ import com.softwaremill.codebrag.dao.reporting.views.FollowupReactionsView
 import com.softwaremill.codebrag.dao.reporting.views.FollowupsByCommitView
 import com.softwaremill.codebrag.dao.reporting.views.FollowupCommitView
 
-class SQLFollowupFinder(val database: SQLDatabase) extends FollowupFinder with SQLFollowupSchema 
-  with SQLReactionSchema with SQLUserSchema with SQLCommitInfoSchema {
+class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends FollowupFinder with SQLFollowupSchema
+  with SQLReactionSchema with SQLCommitInfoSchema {
                                             
   import database.driver.simple._
   import database._
@@ -58,13 +58,7 @@ class SQLFollowupFinder(val database: SQLDatabase) extends FollowupFinder with S
 
   private def findReactionAuthors(lastReactions: Map[ObjectId, UserReaction])(implicit session: Session) = {
     val reactionAuthorsIds = lastReactions.map(_._2.authorId).toSet
-
-    val q = for {
-      u <- users if u.id inSet reactionAuthorsIds
-      s <- u.settings
-    } yield (u.id, u.name, u.emailLowerCase, s.avatarUrl)
-
-    q.list().map(t => t._1 -> PartialUserDetails(t._1, t._2, t._3, t._4)).toMap
+    userDAO.findPartialUserDetails(reactionAuthorsIds).map(pud => pud.id -> pud).toMap
   }
 
   private def findUserFollowups(userId: ObjectId)(implicit session: Session): List[SQLFollowup] = {
@@ -106,10 +100,7 @@ class SQLFollowupFinder(val database: SQLDatabase) extends FollowupFinder with S
     val r = for {
       followup <- followups.filter(f => f.receivingUserId === userId && f.id === followupId).firstOption
       reaction <- findLastReaction(followup.lastReactionId)
-      author <- (for {
-        u <- users if u.id === reaction.authorId
-        s <- u.settings
-      } yield (u.id, u.name, u.emailLowerCase, s.avatarUrl)).firstOption.map(PartialUserDetails.tupled)
+      author <- userDAO.findPartialUserDetails(List(reaction.authorId)).headOption
       commit <- commitInfos.filter(_.id === followup.threadCommitId).firstOption()
     } yield recordsToFollowupView(commit, reaction, author, followup)
 

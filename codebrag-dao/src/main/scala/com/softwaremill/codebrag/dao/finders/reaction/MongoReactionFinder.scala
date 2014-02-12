@@ -6,17 +6,17 @@ import com.softwaremill.codebrag.domain.{Like, UserReaction, Comment}
 import com.softwaremill.codebrag.dao.reporting.views._
 import scala.Some
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.dao.user.{LikeRecord, UserRecord}
+import com.softwaremill.codebrag.dao.user.{UserDAO, PartialUserDetails, LikeRecord, UserRecord}
 import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, MongoCommitCommentDAO}
 
-class MongoReactionFinder extends ReactionFinder with UserReactionToViewMapper with Logging {
+class MongoReactionFinder(val userDAO: UserDAO) extends ReactionFinder with UserReactionToViewMapper with Logging {
 
   def findReactionsForCommit(commitId: ObjectId) = {
 
-    def reactionToView(reaction: UserReaction, authorData: AuthorData) = {
+    def reactionToView(reaction: UserReaction, author: PartialUserDetails) = {
       reaction match {
-        case comment: Comment => CommentView(comment.id.toString, authorData.authorName, authorData.authorId, comment.message, comment.postingTime.toDate, authorData.avatarUrl)
-        case like: Like => LikeView(reaction.id.toString, authorData.authorName, authorData.authorId, reaction.postingTime.toDate)
+        case comment: Comment => CommentView(comment.id.toString, author.name, author.id.toString, comment.message, comment.postingTime.toDate, author.avatarUrl)
+        case like: Like => LikeView(reaction.id.toString, author.name, author.id.toString, reaction.postingTime.toDate)
       }
     }
 
@@ -37,7 +37,7 @@ class MongoReactionFinder extends ReactionFinder with UserReactionToViewMapper w
       case Some(like) => {
         val author = UserRecord.where(_.id eqs like.authorId.get).get()
         val likeView = if(author.isEmpty) {
-          logger.warn(s"Cannot find author with Id ${like.authorId.get} for like ${likeId}")
+          logger.warn(s"Cannot find author with Id ${like.authorId.get} for like $likeId")
           LikeView(like.id.get.toString, "", like.authorId.get.toString, like.date.get, like.fileName.get, like.lineNumber.get)
         } else {
           LikeView(like.id.get.toString, author.get.name.get, like.authorId.get.toString, like.date.get, like.fileName.get, like.lineNumber.get)

@@ -232,7 +232,7 @@ class SQLFollowupFinderSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest w
   val followupDao = new SQLFollowupDAO(sqlDatabase)
   val commitInfoDao = new SQLCommitInfoDAO(sqlDatabase)
   val userDao = new SQLUserDAO(sqlDatabase)
-  val followupFinder = new SQLFollowupFinder(sqlDatabase)
+  val followupFinder = new SQLFollowupFinder(sqlDatabase, userDao)
 
   def withSchemas = List(new SQLLikeDAO(sqlDatabase), commentDao, followupDao, commitInfoDao, userDao)
 }
