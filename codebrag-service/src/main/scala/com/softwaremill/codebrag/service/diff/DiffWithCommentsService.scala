@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.service.diff
 
-import com.softwaremill.codebrag.dao.reporting.{MongoReactionFinder}
+import com.softwaremill.codebrag.dao.reporting.MongoReactionFinder
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.{CommitView, CommitDetailsView}
 import com.softwaremill.codebrag.dao.finders.commit.AllCommitsFinder

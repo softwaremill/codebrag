@@ -14,7 +14,6 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reporting.views.NotificationCountersView
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.common.ClockSpec
-import com.softwaremill.codebrag.service.notification
 
 class NotificationServiceSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with ClockSpec {

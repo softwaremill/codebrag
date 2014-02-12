@@ -2,7 +2,6 @@ package com.softwaremill.codebrag.stats
 
 import akka.actor.Actor
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.service.config.CodebragStatsConfig
 import com.softwaremill.codebrag.common.Clock
 
 class StatsSenderActor(statsAggregator: StatsAggregator, httpSender: StatsHTTPRequestSender) extends Actor with Logging {
