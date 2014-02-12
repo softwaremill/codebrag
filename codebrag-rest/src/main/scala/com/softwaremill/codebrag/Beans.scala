@@ -3,7 +3,6 @@ package com.softwaremill.codebrag
 import com.softwaremill.codebrag.activities.{CommitReviewActivity, AddCommentActivity}
 import com.softwaremill.codebrag.common.{RealTimeClock, ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.dao.reporting._
-import dao._
 import com.softwaremill.codebrag.rest.CodebragSwagger
 import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
@@ -28,7 +27,7 @@ import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, MongoCommitCommentD
 import com.softwaremill.codebrag.dao.instance.FileBasedInstanceSettingsDAO
 import com.softwaremill.codebrag.dao.invitation.MongoInvitationDAO
 import com.softwaremill.codebrag.dao.reviewtask.MongoCommitReviewTaskDAO
-import com.softwaremill.codebrag.dao.events.{MongoEventDAO, EventDAO}
+import com.softwaremill.codebrag.dao.events.MongoEventDAO
 import com.softwaremill.codebrag.dao.heartbeat.MongoHeartbeatDAO
 import com.softwaremill.codebrag.dao.repositorystatus.MongoRepositoryStatusDAO
 import com.softwaremill.codebrag.dao.followup.{MongoFollowupWithReactionsDAO, MongoFollowupDAO}
@@ -120,8 +119,8 @@ trait Finders {
 
   lazy val reactionFinder = new MongoReactionFinder
 
-  lazy val allCommitsFinder = new AllCommitsFinder(commitReviewTaskDao)
-  lazy val reviewableCommitsFinder = new ReviewableCommitsListFinder(commitReviewTaskDao)
+  lazy val allCommitsFinder = new AllCommitsFinder(commitReviewTaskDao, commitInfoDao)
+  lazy val reviewableCommitsFinder = new ReviewableCommitsListFinder(commitReviewTaskDao, commitInfoDao)
 
   lazy val followupFinder = new MongoFollowupFinder
 

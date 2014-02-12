@@ -62,6 +62,14 @@ class SQLCommitInfoDAO(database: SQLDatabase) extends CommitInfoDAO with WithSQL
       .sortBy(_.authorDate.asc)
     }
 
+  def findPartialCommitInfo(ids: List[ObjectId]) = db.withTransaction { implicit session =>
+    commitInfos
+      .filter(_.id inSet ids.toSet)
+      .sortBy(c => (c.commitDate.asc, c.authorDate.asc))
+      .list()
+      .map(_.toPartialCommitDetails)
+  }
+
   private case class SQLCommitInfo(
     id: ObjectId, sha: String, message: String, authorName: String, authorEmail: String,
     committerName: String, committerEmail: String, authorDate: DateTime, commitDate: DateTime) {
@@ -70,6 +78,8 @@ class SQLCommitInfoDAO(database: SQLDatabase) extends CommitInfoDAO with WithSQL
       id, sha, message, authorName, authorEmail, committerName, committerEmail, authorDate, commitDate,
       sps.map(_.parent), sfs.map(f => CommitFileInfo(f.filename, f.status, f.patch))
     )
+
+    def toPartialCommitDetails = PartialCommitInfo(id, sha, message, authorName, authorEmail, authorDate.toDate)
   }
 
   private case class SQLCommitInfoFile(commitId: ObjectId, filename: String, status: String, patch: String)

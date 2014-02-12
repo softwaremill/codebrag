@@ -15,7 +15,7 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
 
   val FixtureTime = new DateTime(23333333)
 
-  it should "find a stored commit" taggedAs(RequiresDb) in {
+  it should "find a stored commit" taggedAs RequiresDb in {
     // given
     val commit = randomCommit.get
     commitInfoDAO.storeCommit(commit)
@@ -27,7 +27,7 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
     foundCommit should be(Some(commit.copy()))
   }
 
-  it should "find stored commit by its id" taggedAs(RequiresDb) in {
+  it should "find stored commit by its id" taggedAs RequiresDb in {
     // given
     val commit = randomCommit.get
     commitInfoDAO.storeCommit(commit)
@@ -39,7 +39,7 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
     foundCommit should be(Some(commit.copy()))
   }
 
-  it should "store a single commit" taggedAs(RequiresDb) in {
+  it should "store a single commit" taggedAs RequiresDb in {
     // given
     val commit = randomCommit.get
 
@@ -50,14 +50,14 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
     commitInfoDAO.findBySha(commit.sha) should be('defined)
   }
 
-  it should "return false in hasCommits when empty" taggedAs(RequiresDb) in {
+  it should "return false in hasCommits when empty" taggedAs RequiresDb in {
     // given empty db
 
     // then
     commitInfoDAO.hasCommits should be(false)
   }
 
-  it should "return true in hasCommits when not empty" taggedAs(RequiresDb) in {
+  it should "return true in hasCommits when not empty" taggedAs RequiresDb in {
     // given
     commitInfoDAO.storeCommit(randomCommit.get)
 
@@ -65,7 +65,7 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
     commitInfoDAO.hasCommits should be(true)
   }
 
-  it should "retrieve commit sha with last commit + author date" taggedAs(RequiresDb) in {
+  it should "retrieve commit sha with last commit + author date" taggedAs RequiresDb in {
     // given
     val date = new DateTime()
 
@@ -85,11 +85,11 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
     lastSha should equal (Some(expectedLastCommit.sha))
   }
 
-  it should "find all commits SHA" taggedAs(RequiresDb) in {
+  it should "find all commits SHA" taggedAs RequiresDb in {
     // given
     val commits = List(CommitInfoAssembler.randomCommit.withSha("111").get, CommitInfoAssembler.randomCommit.withSha("222").get)
     commits.foreach {
-      commitInfoDAO.storeCommit(_)
+      commitInfoDAO.storeCommit
     }
 
     // when
@@ -99,7 +99,7 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
     commitsSha should equal(commits.map(_.sha).toSet)
   }
 
-  it should "find last commits (ordered) for user" taggedAs(RequiresDb) in {
+  it should "find last commits (ordered) for user" taggedAs RequiresDb in {
     // given
     val tenDaysAgo = DateTime.now.minusDays(10)
     val John = UserAssembler.randomUser.withEmail("john@codebrag.com").get
@@ -125,7 +125,7 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
     atMostTenCommitsNotByBob.map(_.sha) should be(List("7", "6", "3", "1"))
   }
 
-  it should "find last commit authored by user" in {
+  it should "find last commit authored by user" taggedAs RequiresDb in {
     // given
     val tenDaysAgo = DateTime.now.minusDays(10)
     val John = UserAssembler.randomUser.withFullName("John Doe").get
@@ -151,7 +151,7 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
     noCommitByAlice should be('empty)
   }
 
-  it should "find user commits authored since given date" in {
+  it should "find user commits authored since given date" taggedAs RequiresDb in {
     // given
     val hourAgo = DateTime.now.minusDays(10)
     val John = UserAssembler.randomUser.withFullName("John Doe").get
@@ -176,6 +176,24 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
     commitsByBobSince10mins.map(_.sha) should be(List("4"))
     commitsByBobSince16mins.map(_.sha) should be('empty)
     commitsByBobSince15minsAnd1Sec.map(_.sha) should be('empty)
+  }
+
+  it should "find partial commit info" taggedAs RequiresDb in {
+    // given
+    val date = new DateTime()
+
+    commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusDays(1)).withCommitDate(date.minusDays(2)).get)
+    commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusDays(2)).withCommitDate(date.minusDays(3)).get)
+
+    val c3 = randomCommit.withAuthorDate(date.minusDays(4)).withCommitDate(date.minusDays(4)).get; commitInfoDAO.storeCommit(c3)
+    val c4 = randomCommit.withAuthorDate(date.minusDays(3)).withCommitDate(date.minusDays(4)).get; commitInfoDAO.storeCommit(c4)
+    val c5 = randomCommit.withAuthorDate(date.minusDays(5)).withCommitDate(date.minusDays(5)).get; commitInfoDAO.storeCommit(c5)
+
+    // when
+    val commits = commitInfoDAO.findPartialCommitInfo(List(c3.id, c4.id, c5.id))
+
+    // then
+    commits.map(_.id) should be (List(c5.id, c3.id, c4.id))
   }
 
   def buildCommitWithMatchingUserEmail(user: User, date: DateTime, sha: String) = {

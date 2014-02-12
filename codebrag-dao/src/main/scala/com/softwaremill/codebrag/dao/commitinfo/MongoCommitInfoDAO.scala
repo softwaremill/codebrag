@@ -10,6 +10,8 @@ import org.bson.types.ObjectId
 import net.liftweb.json.JsonDSL._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.mongo.LongStringField
+import com.softwaremill.codebrag.dao.finders.commit.CommitInfoToViewConverter._
+import com.softwaremill.codebrag.domain.CommitFileInfo
 
 
 class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
@@ -51,6 +53,16 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
 
   override def hasCommits: Boolean = {
     CommitInfoRecord.count() > 0
+  }
+
+  override def findPartialCommitInfo(ids: List[ObjectId]) = {
+    CommitInfoRecord
+      .select(_.id, _.sha, _.message, _.authorName, _.authorEmail, _.authorDate)
+      .where(_.id in ids)
+      .orderAsc(_.committerDate)
+      .andAsc(_.authorDate)
+      .fetch()
+      .map(PartialCommitInfo.tupled)
   }
 
   private object CommitInfoImplicits {

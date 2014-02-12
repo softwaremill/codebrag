@@ -142,7 +142,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTes
     val mockCommitReviewTaskDAO = mock[CommitReviewTaskDAO]
     when(mockCommitReviewTaskDAO.commitsPendingReviewFor(reviewingUserId)).thenReturn(commitPendingReviewForReviewingUserId)
 
-    finder = new AllCommitsFinder(mockCommitReviewTaskDAO)
+    finder = new AllCommitsFinder(mockCommitReviewTaskDAO, commitDao)
   }
 
   private def storeUser(user: User) = userDao.add(user)

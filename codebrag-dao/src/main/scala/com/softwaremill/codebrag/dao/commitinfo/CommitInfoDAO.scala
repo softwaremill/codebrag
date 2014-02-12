@@ -24,4 +24,6 @@ trait CommitInfoDAO {
 
   def findLastCommitsAuthoredByUserSince[T](user: T, date: DateTime)(implicit userLike: UserLike[T]): List[CommitInfo]
 
+  def findPartialCommitInfo(ids: List[ObjectId]): List[PartialCommitInfo]
+
 }
