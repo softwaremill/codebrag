@@ -10,4 +10,18 @@ trait RepositoryConfig {
 
   val repositoryConfig = new RepoConfig(repositoryConfigSection)
 
+  // for user/pass
+  val username = getOptional("username")
+  val password = getOptional("password")
+
+  // for SSH
+  val passphrase = getOptional("passphrase")
+
+  private def getOptional(path: String, default: Option[String] = None) = {
+    if(repositoryConfigSection.hasPath(path)) {
+      Some(repositoryConfigSection.getString(path))
+    } else {
+      default
+    }
+  }
 }
