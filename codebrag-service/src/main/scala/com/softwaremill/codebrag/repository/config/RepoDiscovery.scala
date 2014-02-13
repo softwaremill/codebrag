@@ -9,11 +9,11 @@ trait RepoDiscovery {
 
   def repositoryConfig: RepositoryConfig
 
-  private val rootDir = Paths.get(repositoryConfig.repositoriesRoot).resolve("repos")
+  private lazy val rootDir = Paths.get(repositoryConfig.repositoriesRoot).resolve("repos")
 
-  val repoName = discoverRepoDirName(rootDir)
-  val repoLocation = discoverRepoAbsolutePath(rootDir, repoName)
-  val repoType = discoverRepoType(repoLocation)
+  lazy val repoName = discoverRepoDirName(rootDir)
+  lazy val repoLocation = discoverRepoAbsolutePath(rootDir, repoName)
+  lazy val repoType = discoverRepoType(repoLocation)
 
 
   private def discoverRepoDirName(rootDir: Path) = {
