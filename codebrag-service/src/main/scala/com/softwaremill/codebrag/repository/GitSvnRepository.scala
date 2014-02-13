@@ -2,10 +2,12 @@ package com.softwaremill.codebrag.repository
 
 import org.apache.commons.lang3.SystemUtils
 import scala.sys.process._
-import java.nio.file.Paths
-import com.softwaremill.codebrag.repository.config.GitSvnRepoConfig
+import java.nio.file.{Path, Paths}
+import com.softwaremill.codebrag.repository.config.{UserPassCredentials, GitSvnRepoConfig}
 
 class GitSvnRepository(val repoConfig: GitSvnRepoConfig) extends Repository {
+
+  private val CommandBase = "git svn rebase --quiet"
 
   def pullChanges {
     try {
@@ -18,22 +20,24 @@ class GitSvnRepository(val repoConfig: GitSvnRepoConfig) extends Repository {
 
   private def runPullCommand = {
     val repoPath = Paths.get(repoConfig.repoLocation)
-    repoConfig.credentials match {
-      case Some(c) => {
-        callOsCommand(s"echo ${c.pass}") #| Process(s"git svn rebase --quiet --username ${c.user}", repoPath.toFile) !< ProcessLogger(logger info _)
+    if(repoConfig.credentials.isDefined) {
+      repoConfig.credentials.get match {
+        case c: UserPassCredentials => runWithUserPassCredentials(repoPath, c)
+        case _ => runWithNoCredentials(repoPath)
       }
-      case None => {
-        Process(s"git svn rebase --quiet", repoPath.toFile) !< ProcessLogger(logger info _)
-      }
+    } else {
+      runWithNoCredentials(repoPath)
     }
   }
 
-  private def callOsCommand(command: String): String = {
-    if (SystemUtils.IS_OS_WINDOWS) {
-      "cmd /c " + command
-    } else {
-      command
-    }
+  private def runWithUserPassCredentials(repoPath: Path, c: UserPassCredentials) {
+    callOsCommand(s"echo ${c.pass}") #| Process(s"${CommandBase} --username ${c.user}", repoPath.toFile) !< ProcessLogger(logger info _)
+    def callOsCommand(command: String) = if (SystemUtils.IS_OS_WINDOWS) s"cmd /c ${command}" else command
   }
+
+  private def runWithNoCredentials(repoPath: Path) {
+    Process(CommandBase, repoPath.toFile) !< ProcessLogger(logger info _)
+  }
+
 
 }
