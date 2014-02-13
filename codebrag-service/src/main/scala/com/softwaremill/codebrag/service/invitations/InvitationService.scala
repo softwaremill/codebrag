@@ -51,7 +51,7 @@ class InvitationService(
 
   def verify(code: String): Boolean = {
     invitationDAO.findByCode(code) match {
-      case Some(inv) => inv.isValid(clock.currentDateTimeUTC)
+      case Some(inv) => inv.isValid(clock.nowUtc)
       case None => false
     }
   }

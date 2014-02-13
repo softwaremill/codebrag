@@ -1,11 +1,10 @@
 package com.softwaremill.codebrag.service.commits.jgit
 
-import com.softwaremill.codebrag.service.commits.{RepoData, CommitsLoader}
+import com.softwaremill.codebrag.service.commits.CommitsLoader
 import com.softwaremill.codebrag.domain.{RepositoryStatus, CommitInfo}
 import com.typesafe.scalalogging.slf4j.Logging
-import scala.collection.JavaConversions._
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
-import org.eclipse.jgit.lib.{Constants, ObjectId}
+import org.eclipse.jgit.lib.ObjectId
 import com.softwaremill.codebrag.repository.{GitSvnRepository, GitRepository, Repository}
 import com.softwaremill.codebrag.repository.config.{GitSvnRepoConfig, GitRepoConfig, RepoConfig}
 

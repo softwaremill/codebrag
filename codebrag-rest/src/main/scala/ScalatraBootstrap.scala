@@ -1,16 +1,18 @@
-import com.softwaremill.codebrag.dao.MongoInit
+import com.softwaremill.codebrag.dao.mongo.MongoInit
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
+import com.softwaremill.codebrag.dao.user.InternalUserDAO
+import com.softwaremill.codebrag.dao.{MongoDaos, SQLDaos}
 import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
-import com.softwaremill.codebrag.stats.data.InstanceRunStatistics
-import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsSendingScheduler}
-import com.softwaremill.codebrag.{InstanceContext, EventingConfiguration, Beans}
+import com.softwaremill.codebrag.stats.StatsSendingScheduler
+import com.softwaremill.codebrag.{AllConfig, InstanceContext, EventingConfiguration, Beans}
+import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.slf4j.Logging
 import java.util.Locale
 import org.scalatra._
 import javax.servlet.ServletContext
-import scala.util.parsing.json.JSON
 
 /**
  * This is the ScalatraBootstrap codebrag file. You can use it to mount servlets or
@@ -70,7 +72,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new ConfigServlet(config, authenticator), Prefix + "config")
     context.mount(new InvitationServlet(authenticator, invitationsService), Prefix + "invitation")
     context.mount(new RepositorySyncServlet(actorSystem, repositoryUpdateActor), RepositorySyncServlet.Mapping)
-    context.mount(new UpdatesServlet(authenticator, notificationCountFinder, heartbeatStore, clock), Prefix + UpdatesServlet.Mapping)
+    context.mount(new UpdatesServlet(authenticator, notificationCountFinder, heartbeatDao, clock), Prefix + UpdatesServlet.Mapping)
     context.mount(new RepoStatusServlet(authenticator, config.repositoryConfig, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
 
     if (config.demo) {

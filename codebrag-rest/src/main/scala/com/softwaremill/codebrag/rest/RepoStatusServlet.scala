@@ -1,10 +1,10 @@
 package com.softwaremill.codebrag.rest
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.dao.RepositoryStatusDAO
 import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.domain.RepositoryStatus
 import com.softwaremill.codebrag.repository.config.RepoConfig
+import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 
 class RepoStatusServlet(val authenticator: Authenticator, repoConfig: RepoConfig, repoStatusDao: RepositoryStatusDAO) extends JsonServletWithAuthentication with Logging {
 
