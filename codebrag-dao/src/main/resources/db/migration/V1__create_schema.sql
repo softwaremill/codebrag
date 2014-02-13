@@ -73,6 +73,8 @@ CREATE TABLE "followups"(
 );
 ALTER TABLE "followups" ADD CONSTRAINT "followups_id" PRIMARY KEY("id");
 
+CREATE INDEX "followups_search" ON "followups"("receiving_user_id", "thread_commit_id", "thread_file_name", "thread_line_number");
+
 CREATE TABLE "followups_reactions"(
     "followup_id" VARCHAR NOT NULL,
     "reaction_id" VARCHAR NOT NULL
@@ -95,6 +97,8 @@ CREATE TABLE "commit_infos"(
     "commit_date" TIMESTAMP NOT NULL
 );
 ALTER TABLE "commit_infos" ADD CONSTRAINT "commit_infos_id" PRIMARY KEY("id");
+
+CREATE INDEX "commit_infos_dates" ON "commit_infos"("commit_date", "author_date");
 
 CREATE TABLE "commit_infos_files"(
     "commit_info_id" VARCHAR NOT NULL,
