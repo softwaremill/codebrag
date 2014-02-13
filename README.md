@@ -69,3 +69,12 @@ Create distribution
 ````
 java -Dconfig.file=[path to .conf file] -Dlogback.configurationFile=logback.xml -jar codebrag-dist-assembly-[version].jar
 ````
+
+H2 console
+---
+
+When using the embedded SQL storage, it may be useful to browse the tables. H2 provides a console, which can be run
+as follows:
+
+1. If you have a fat jar, simply run `java -cp codebrag.jar org.h2.tools.Console`, and point the console at your database file
+2. From SBT, run: `codebrag-dao/run-h2-console`. This will use your settings file to automatically determine where your database is.

@@ -217,7 +217,8 @@ object SmlCodebragBuild extends Build {
     }
   })
 
-
+  val runH2Console = TaskKey[Unit]("run-h2-console", "Runs the H2 console using the data file from the local config file")
+  val runH2ConsoleSettings = fullRunTask(runH2Console, Compile, "com.softwaremill.codebrag.dao.sql.H2Console")
 
   lazy val parent: Project = Project(
     "codebrag-root",
@@ -240,7 +241,7 @@ object SmlCodebragBuild extends Build {
   lazy val dao: Project = Project(
     "codebrag-dao",
     file("codebrag-dao"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(typesafeConfig, slick, h2, flyway))
+    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(typesafeConfig, slick, h2, flyway), runH2ConsoleSettings)
   ) dependsOn(domain % "test->test;compile->compile", common)
 
   lazy val service: Project = Project(
