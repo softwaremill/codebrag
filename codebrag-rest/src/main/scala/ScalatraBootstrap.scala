@@ -25,7 +25,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
   override def init(context: ServletContext) {
     Locale.setDefault(Locale.US) // set default locale to prevent Scalatra from sending cookie expiration date in polish format :)
 
-    val _config = new Config {
+    val _config = new CodebragConfig {
       def rootConfig = ConfigFactory.load()
     }
 
