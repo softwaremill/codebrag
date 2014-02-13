@@ -1,11 +1,10 @@
 package com.softwaremill.codebrag.dao.reaction
 
-import com.softwaremill.codebrag.dao.sql.{SQLDatabase, WithSQLSchemas}
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.domain.{Comment, ThreadDetails}
 import org.bson.types.ObjectId
-import scala.slick.driver.JdbcProfile
 
-class SQLCommitCommentDAO(val database: SQLDatabase) extends CommitCommentDAO with WithSQLSchemas with SQLReactionSchema {
+class SQLCommitCommentDAO(val database: SQLDatabase) extends CommitCommentDAO with SQLReactionSchema {
   import database.driver.simple._
   import database._
 
@@ -25,6 +24,4 @@ class SQLCommitCommentDAO(val database: SQLDatabase) extends CommitCommentDAO wi
       .filter(c => c.commitId === thread.commitId && positionFilter(thread, c))
       .list()
   }
-
-  def schemas: Iterable[JdbcProfile#DDLInvoker] = List(comments.ddl)
 }

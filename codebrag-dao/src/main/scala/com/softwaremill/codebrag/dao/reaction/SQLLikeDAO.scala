@@ -1,11 +1,10 @@
 package com.softwaremill.codebrag.dao.reaction
 
-import com.softwaremill.codebrag.dao.sql.{WithSQLSchemas, SQLDatabase}
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{Like, ThreadDetails}
-import scala.slick.driver.JdbcProfile
 
-class SQLLikeDAO(val database: SQLDatabase) extends LikeDAO with WithSQLSchemas with SQLReactionSchema {
+class SQLLikeDAO(val database: SQLDatabase) extends LikeDAO with SQLReactionSchema {
   import database.driver.simple._
   import database._
 
@@ -37,6 +36,4 @@ class SQLLikeDAO(val database: SQLDatabase) extends LikeDAO with WithSQLSchemas 
       likes.filter(c => c.id === likeId).delete
     }
   }
-
-  def schemas: Iterable[JdbcProfile#DDLInvoker] = List(likes.ddl)
 }

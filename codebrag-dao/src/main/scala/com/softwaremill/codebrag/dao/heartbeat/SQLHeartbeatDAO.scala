@@ -1,12 +1,11 @@
 package com.softwaremill.codebrag.dao.heartbeat
 
-import com.softwaremill.codebrag.dao.sql.{WithSQLSchemas, SQLDatabase}
-import scala.slick.driver.JdbcProfile
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.Clock
 import org.joda.time.DateTime
 
-class SQLHeartbeatDAO(database: SQLDatabase, clock: Clock) extends HeartbeatDAO with WithSQLSchemas {
+class SQLHeartbeatDAO(database: SQLDatabase, clock: Clock) extends HeartbeatDAO {
   import database.driver.simple._
   import database._
 
@@ -37,6 +36,4 @@ class SQLHeartbeatDAO(database: SQLDatabase, clock: Clock) extends HeartbeatDAO 
   }
 
   private val heartbeats = TableQuery[Heartbeats]
-
-  def schemas: Iterable[JdbcProfile#DDLInvoker] = List(heartbeats.ddl)
 }

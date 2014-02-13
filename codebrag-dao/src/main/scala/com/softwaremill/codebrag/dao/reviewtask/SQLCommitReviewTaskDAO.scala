@@ -1,13 +1,12 @@
 package com.softwaremill.codebrag.dao.reviewtask
 
-import com.softwaremill.codebrag.dao.sql.{WithSQLSchemas, SQLDatabase}
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.domain.CommitReviewTask
-import scala.slick.driver.JdbcProfile
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.Clock
 
 class SQLCommitReviewTaskDAO(val database: SQLDatabase, clock: Clock)
-  extends CommitReviewTaskDAO with WithSQLSchemas with SQLCommitReviewTaskSchema {
+  extends CommitReviewTaskDAO with SQLCommitReviewTaskSchema {
 
   import database.driver.simple._
   import database._
@@ -32,6 +31,4 @@ class SQLCommitReviewTaskDAO(val database: SQLDatabase, clock: Clock)
   def commitsPendingReviewFor(userId: ObjectId) = db.withTransaction { implicit session =>
     commitReviewTasks.filter(c => c.userId === userId).map(_.commitId).list().toSet
   }
-
-  def schemas: Iterable[JdbcProfile#DDLInvoker] = List(commitReviewTasks.ddl)
 }
