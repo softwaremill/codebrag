@@ -20,7 +20,7 @@ import com.softwaremill.codebrag.dao.Daos
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
-  def config: CodebragConfig
+  def config: AllConfig
 
   implicit lazy val clock = RealTimeClock
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator
