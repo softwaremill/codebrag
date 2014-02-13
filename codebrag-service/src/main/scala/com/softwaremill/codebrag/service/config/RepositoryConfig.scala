@@ -2,9 +2,12 @@ package com.softwaremill.codebrag.service.config
 
 import com.typesafe.config.Config
 
-trait RepositoryConfig {
+trait RepositoryConfig extends ConfigWithDefault {
 
   def rootConfig: Config
+
+  // directory containing cloned repo dir
+  val repositoriesRoot = getString("repository.repos-root", ".")
 
   // for user/pass
   val username = getOptional("username")
