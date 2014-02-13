@@ -154,6 +154,7 @@ object Dependencies {
 
   val slick = "com.typesafe.slick" %% "slick" % "2.0.0"
   val h2 = "com.h2database" % "h2" % "1.3.175"
+  val flyway = "com.googlecode.flyway" % "flyway-core" % "2.3"
 }
 
 object SmlCodebragBuild extends Build {
@@ -239,7 +240,7 @@ object SmlCodebragBuild extends Build {
   lazy val dao: Project = Project(
     "codebrag-dao",
     file("codebrag-dao"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(typesafeConfig, slick, h2))
+    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(typesafeConfig, slick, h2, flyway))
   ) dependsOn(domain % "test->test;compile->compile", common)
 
   lazy val service: Project = Project(
