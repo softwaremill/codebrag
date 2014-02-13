@@ -126,6 +126,4 @@ class MongoRepositoryStatusDAOSpec extends FlatSpecWithMongo with ClearMongoData
 
 class SQLRepositoryStatusDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with RepositoryStatusDAOSpec {
   val repositoryStatusDAO = new SQLRepositoryStatusDAO(sqlDatabase)
-
-  def withSchemas = List(repositoryStatusDAO)
 }

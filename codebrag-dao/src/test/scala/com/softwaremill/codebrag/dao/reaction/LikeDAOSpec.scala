@@ -133,6 +133,4 @@ class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest wi
 
 class SQLLikeDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with LikeDAOSpec {
   val likeDao = new SQLLikeDAO(sqlDatabase)
-
-  def withSchemas = List(likeDao)
 }

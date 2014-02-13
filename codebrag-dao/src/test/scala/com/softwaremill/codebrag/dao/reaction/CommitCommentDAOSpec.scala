@@ -122,6 +122,4 @@ class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearMongoDataAft
 
 class SQLCommitCommentDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with CommitCommentDAOSpec {
   val commentDao = new SQLCommitCommentDAO(sqlDatabase)
-
-  def withSchemas = List(commentDao)
 }

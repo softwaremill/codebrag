@@ -85,6 +85,4 @@ class MongoCommitReviewTaskDAOSpec extends FlatSpecWithMongo with ClearMongoData
 
 class SQLCommitReviewTaskDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with CommitReviewTaskDAOSpec {
   val commitToReviewDao = new SQLCommitReviewTaskDAO(sqlDatabase, RealTimeClock)
-
-  def withSchemas = List(commitToReviewDao)
 }

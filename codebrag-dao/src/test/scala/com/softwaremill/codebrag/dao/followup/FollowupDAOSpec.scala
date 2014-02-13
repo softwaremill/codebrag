@@ -251,7 +251,5 @@ class SQLFollowupDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with
 
     new Temp().list
   }
-
-  def withSchemas = List(followupDao)
 }
 

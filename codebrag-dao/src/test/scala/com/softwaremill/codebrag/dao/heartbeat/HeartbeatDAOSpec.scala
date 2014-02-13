@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.heartbeat
 import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import org.joda.time.{DateTime, DateTimeZone}
-import com.softwaremill.codebrag.common.{RealTimeClock, FixtureTimeClock, Clock}
+import com.softwaremill.codebrag.common.{FixtureTimeClock, Clock}
 import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.{RequiresDb, ObjectIdTestUtils}
 import org.scalatest.FlatSpec
@@ -90,6 +90,4 @@ class MongoHeartbeatDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTe
 
 class SQLHeartbeatDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with HeartbeatDAOSpec {
   def heartbeatDAO(clock: Clock) = new SQLHeartbeatDAO(sqlDatabase, clock)
-
-  def withSchemas = List(heartbeatDAO(RealTimeClock))
 }
