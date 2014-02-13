@@ -189,8 +189,6 @@ class SQLNotificationCountFinderSpec extends FlatSpecWithSQL with ClearSQLDataAf
   val reviewTaskDao = new SQLCommitReviewTaskDAO(sqlDatabase, RealTimeClock)
   val notificationCountFinder = new SQLNotificationCountFinder(sqlDatabase)
 
-  def withSchemas = List(followupDao, commitInfoDao, reviewTaskDao)
-
   def givenReviewTaskFor(userId: ObjectId, date: DateTime) {
     new SQLCommitReviewTaskDAO(sqlDatabase, new FixtureTimeClock(date.getMillis))
       .save(CommitReviewTask(CommitInfoAssembler.randomCommit.get.id, userId))

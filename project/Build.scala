@@ -154,6 +154,7 @@ object Dependencies {
 
   val slick = "com.typesafe.slick" %% "slick" % "2.0.0"
   val h2 = "com.h2database" % "h2" % "1.3.175"
+  val flyway = "com.googlecode.flyway" % "flyway-core" % "2.3"
 }
 
 object SmlCodebragBuild extends Build {
@@ -216,7 +217,8 @@ object SmlCodebragBuild extends Build {
     }
   })
 
-
+  val runH2Console = TaskKey[Unit]("run-h2-console", "Runs the H2 console using the data file from the local config file")
+  val runH2ConsoleSettings = fullRunTask(runH2Console, Compile, "com.softwaremill.codebrag.dao.sql.H2Console")
 
   lazy val parent: Project = Project(
     "codebrag-root",
@@ -239,7 +241,7 @@ object SmlCodebragBuild extends Build {
   lazy val dao: Project = Project(
     "codebrag-dao",
     file("codebrag-dao"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(typesafeConfig, slick, h2))
+    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(typesafeConfig, slick, h2, flyway), runH2ConsoleSettings)
   ) dependsOn(domain % "test->test;compile->compile", common)
 
   lazy val service: Project = Project(

@@ -98,6 +98,4 @@ class MongoEventDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest w
 
 class SQLEventDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with EventDAOSpec {
   val eventDAO = new SQLEventDAO(sqlDatabase)
-
-  def withSchemas = List(eventDAO)
 }

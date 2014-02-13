@@ -6,7 +6,6 @@ import java.util.Scanner
 import java.util.regex.Pattern
 import com.google.common.io.Files
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.test.KillableProcess
 
 class MongoRunner(process: KillableProcess, temporaryDataDir: File, port: Int, pidFile: String, verbose: Boolean) extends Logging {
 

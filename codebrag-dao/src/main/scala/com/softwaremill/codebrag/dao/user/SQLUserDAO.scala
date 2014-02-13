@@ -2,10 +2,9 @@ package com.softwaremill.codebrag.dao.user
 
 import com.softwaremill.codebrag.domain._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.sql.{WithSQLSchemas, SQLDatabase}
-import scala.slick.driver.JdbcProfile
+import com.softwaremill.codebrag.dao.sql.{SQLDatabase}
 
-class SQLUserDAO(val database: SQLDatabase) extends UserDAO with WithSQLSchemas with SQLUserSchema {
+class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
   import database.driver.simple._
   import database._
 
@@ -100,6 +99,4 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with WithSQLSchemas 
 
     q.firstOption.map(untuple)
   }
-
-  def schemas: List[JdbcProfile#DDLInvoker] = List(lastNotifs.ddl, userSettings.ddl, auths.ddl, users.ddl)
 }

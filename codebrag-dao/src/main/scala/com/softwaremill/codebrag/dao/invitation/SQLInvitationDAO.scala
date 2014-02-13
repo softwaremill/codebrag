@@ -1,12 +1,12 @@
 package com.softwaremill.codebrag.dao.invitation
 
-import com.softwaremill.codebrag.dao.sql.{WithSQLSchemas, SQLDatabase}
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.domain.Invitation
 import scala.slick.driver.JdbcProfile
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 
-class SQLInvitationDAO(database: SQLDatabase) extends InvitationDAO with WithSQLSchemas {
+class SQLInvitationDAO(database: SQLDatabase) extends InvitationDAO {
   import database.driver.simple._
   import database._
 
@@ -33,6 +33,4 @@ class SQLInvitationDAO(database: SQLDatabase) extends InvitationDAO with WithSQL
   }
 
   private val invitations = TableQuery[Invitations]
-
-  def schemas: Iterable[JdbcProfile#DDLInvoker] = List(invitations.ddl)
 }

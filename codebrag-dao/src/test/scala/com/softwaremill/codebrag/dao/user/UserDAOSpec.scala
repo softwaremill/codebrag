@@ -417,6 +417,4 @@ class MongoUserDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest wi
 class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with UserDAOSpec {
   val userDAO = new SQLUserDAO(sqlDatabase)
   var internalUserDAO = new SQLInternalUserDAO(sqlDatabase)
-
-  def withSchemas = List(userDAO)
 }

@@ -63,6 +63,4 @@ class MongoInvitationDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterT
 
 class SQLInvitationDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with InvitationDAOSpec {
   val invitationDAO = new SQLInvitationDAO(sqlDatabase)
-
-  def withSchemas = List(invitationDAO)
 }

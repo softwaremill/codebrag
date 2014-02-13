@@ -1,12 +1,11 @@
 package com.softwaremill.codebrag.dao.events
 
-import com.softwaremill.codebrag.dao.sql.{WithSQLSchemas, SQLDatabase}
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.common.StatisticEvent
-import scala.slick.driver.JdbcProfile
 import org.bson.types.ObjectId
 
-class SQLEventDAO(database: SQLDatabase) extends EventDAO with WithSQLSchemas {
+class SQLEventDAO(database: SQLDatabase) extends EventDAO {
   import database.driver.simple._
   import database._
 
@@ -40,6 +39,4 @@ class SQLEventDAO(database: SQLDatabase) extends EventDAO with WithSQLSchemas {
   }
 
   private val events = TableQuery[Events]
-
-  def schemas: Iterable[JdbcProfile#DDLInvoker] = List(events.ddl)
 }

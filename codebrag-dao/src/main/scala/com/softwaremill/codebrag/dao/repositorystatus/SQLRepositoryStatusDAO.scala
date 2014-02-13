@@ -1,10 +1,9 @@
 package com.softwaremill.codebrag.dao.repositorystatus
 
-import com.softwaremill.codebrag.dao.sql.{WithSQLSchemas, SQLDatabase}
-import scala.slick.driver.JdbcProfile
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.domain.RepositoryStatus
 
-class SQLRepositoryStatusDAO(database: SQLDatabase) extends RepositoryStatusDAO with WithSQLSchemas {
+class SQLRepositoryStatusDAO(database: SQLDatabase) extends RepositoryStatusDAO {
   import database.driver.simple._
   import database._
 
@@ -38,6 +37,4 @@ class SQLRepositoryStatusDAO(database: SQLDatabase) extends RepositoryStatusDAO 
   }
 
   private val repoStatuses = TableQuery[RepoStatuses]
-
-  def schemas: Iterable[JdbcProfile#DDLInvoker] = List(repoStatuses.ddl)
 }

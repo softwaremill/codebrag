@@ -112,6 +112,4 @@ class SQLFollowupWithReactionsDAOSpec extends FlatSpecWithSQL with ClearSQLDataA
   val likeDao = new SQLLikeDAO(sqlDatabase)
   val followupDao = new SQLFollowupDAO(sqlDatabase)
   val followupWithReactionsDao = new SQLFollowupWithReactionsDAO(sqlDatabase, commentDao, likeDao)
-
-  def withSchemas = List(commentDao, likeDao, followupDao)
 }

@@ -1,12 +1,11 @@
 package com.softwaremill.codebrag.dao.commitinfo
 
-import com.softwaremill.codebrag.dao.sql.{WithSQLSchemas, SQLDatabase}
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.{CommitInfo, UserLike}
 import org.bson.types.ObjectId
-import scala.slick.driver.JdbcProfile
 
-class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with WithSQLSchemas with SQLCommitInfoSchema {
+class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQLCommitInfoSchema {
   import database.driver.simple._
   import database._
 
@@ -98,6 +97,4 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with Wit
   }
 
   private def orderByDatesDesc(ci: CommitInfos) = (ci.commitDate.desc, ci.authorDate.desc)
-
-  def schemas: Iterable[JdbcProfile#DDLInvoker] = List(commitInfos.ddl, commitInfosFiles.ddl, commitInfosParents.ddl)
 }

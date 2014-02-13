@@ -228,6 +228,4 @@ class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterT
 
 class SQLCommitInfoDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with CommitInfoDAOSpec {
   var commitInfoDAO = new SQLCommitInfoDAO(sqlDatabase)
-
-  def withSchemas = List(commitInfoDAO)
 }
