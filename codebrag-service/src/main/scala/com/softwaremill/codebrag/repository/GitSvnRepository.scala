@@ -3,9 +3,9 @@ package com.softwaremill.codebrag.repository
 import org.apache.commons.lang3.SystemUtils
 import scala.sys.process._
 import java.nio.file.{Path, Paths}
-import com.softwaremill.codebrag.repository.config.{UserPassCredentials, GitSvnRepoConfig}
+import com.softwaremill.codebrag.repository.config.{RepoConfig, UserPassCredentials}
 
-class GitSvnRepository(val repoConfig: GitSvnRepoConfig) extends Repository {
+class GitSvnRepository(val repoConfig: RepoConfig) extends Repository {
 
   private val CommandBase = "git svn rebase --quiet"
 

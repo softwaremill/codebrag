@@ -2,8 +2,7 @@ package com.softwaremill.codebrag.repository
 
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.transport.{URIish, CredentialItem, UsernamePasswordCredentialsProvider, CredentialsProvider}
-import com.softwaremill.codebrag.service.config._
-import com.softwaremill.codebrag.repository.config.{UserPassCredentials, GitRepoConfig, PassphraseCredentials}
+import com.softwaremill.codebrag.repository.config.{RepoConfig, UserPassCredentials, PassphraseCredentials}
 
 /**
  * Encapsulates all required operations on already initialized git repo
@@ -11,7 +10,7 @@ import com.softwaremill.codebrag.repository.config.{UserPassCredentials, GitRepo
  * either all or only those to specified commit (starting from HEAD)
  * @param repoConfig repository config required to work on repo (location, credentials)
  */
-class GitRepository(val repoConfig: GitRepoConfig) extends Repository {
+class GitRepository(val repoConfig: RepoConfig) extends Repository {
 
   def repoConfig2 = repoConfig
   val name = repoConfig.repoName

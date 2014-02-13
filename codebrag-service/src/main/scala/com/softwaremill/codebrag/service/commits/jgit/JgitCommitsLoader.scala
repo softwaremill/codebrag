@@ -6,7 +6,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 import org.eclipse.jgit.lib.ObjectId
 import com.softwaremill.codebrag.repository.{GitSvnRepository, GitRepository, Repository}
-import com.softwaremill.codebrag.repository.config.{GitSvnRepoConfig, GitRepoConfig, RepoConfig}
+import com.softwaremill.codebrag.repository.config.RepoConfig
 
 
 class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositoryStatusDAO) extends CommitsLoader with Logging {
@@ -46,9 +46,9 @@ class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositorySt
 
   private object RepoFromConfig {
     def build(config: RepoConfig) = {
-      config match {
-        case gitConfig: GitRepoConfig => new GitRepository(gitConfig)
-        case gitSvnConfig: GitSvnRepoConfig => new GitSvnRepository(gitSvnConfig)
+      config.repoType match {
+        case "git" => new GitRepository(config)
+        case "git-svn" => new GitSvnRepository(config)
       }
     }
   }

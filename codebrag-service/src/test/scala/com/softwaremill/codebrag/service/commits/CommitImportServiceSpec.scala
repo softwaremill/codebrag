@@ -25,10 +25,11 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   val repoName = "project"
   val EmptyCommitsList = List[CommitInfo]()
 
-  val repoConfig = new RepoConfig {
+  val repoConfig = {
     val props = new util.HashMap[String, String]()
     props.put("repository.location", "/home/repo")
-    protected def repositoryConfig = ConfigFactory.parseMap(props)
+    val testConfig = ConfigFactory.parseMap(props)
+    new RepoConfig(testConfig)
   }
 
   before {
