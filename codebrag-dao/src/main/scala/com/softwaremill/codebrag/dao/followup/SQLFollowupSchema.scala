@@ -41,8 +41,8 @@ trait SQLFollowupSchema {
     def followupId = column[ObjectId]("followup_id")
     def reactionId = column[ObjectId]("reaction_id")
 
-    def pk = primaryKey("FOLLOWUP_REACTIONS_PK", (followupId, reactionId))
-    def followup = foreignKey("FOLLOWUP_REACTIONS_FK", followupId, followups)(_.id, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
+    def pk = primaryKey("followup_reactions_pk", (followupId, reactionId))
+    def followup = foreignKey("followup_reactions_fk", followupId, followups)(_.id, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
 
     def * = (followupId, reactionId)
   }

@@ -75,9 +75,9 @@ trait SQLUserSchema {
     def token           = column[String]("token")
     def regular         = column[Boolean]("regular")
 
-    def auth = foreignKey("AUTH_FK", id, auths)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
-    def settings = foreignKey("SETTINGS_FK", id, userSettings)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
-    def lastNotif = foreignKey("LAST_NOTIFS_FK", id, lastNotifs)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
+    def auth = foreignKey("auth_fk", id, auths)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
+    def settings = foreignKey("settings_fk", id, userSettings)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
+    def lastNotif = foreignKey("last_notifs_fk", id, lastNotifs)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
 
     def * = (id, name, emailLowerCase, token, regular)
   }

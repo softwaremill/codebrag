@@ -50,7 +50,7 @@ trait SQLCommitInfoSchema {
     def status = column[String]("status")
     def patch = column[String]("patch")
 
-    def commitInfo = foreignKey("COMMIT_INFO_FILES_FK", commitInfoId, commitInfos)(_.id)
+    def commitInfo = foreignKey("commit_info_files_fk", commitInfoId, commitInfos)(_.id)
 
     def * = (commitInfoId, filename, status, patch) <> (SQLCommitInfoFile.tupled, SQLCommitInfoFile.unapply)
   }
@@ -61,7 +61,7 @@ trait SQLCommitInfoSchema {
     def commitInfoId = column[ObjectId]("commit_info_id")
     def parent = column[String]("parent")
 
-    def commitInfo = foreignKey("COMMIT_INFO_PARENTS_FK", commitInfoId, commitInfos)(_.id)
+    def commitInfo = foreignKey("commit_info_parents_fk", commitInfoId, commitInfos)(_.id)
 
     def * = (commitInfoId, parent) <> (SQLCommitInfoParent.tupled, SQLCommitInfoParent.unapply)
   }
