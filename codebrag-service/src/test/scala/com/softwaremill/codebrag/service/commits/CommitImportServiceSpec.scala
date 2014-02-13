@@ -14,6 +14,7 @@ import com.softwaremill.codebrag.repository.config.RepoConfig
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.service.config.RepositoryConfig
 
 class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with MockEventBus with ClockSpec {
 
@@ -26,9 +27,11 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   val EmptyCommitsList = List[CommitInfo]()
 
   val repoConfig = {
-    val props = new util.HashMap[String, String]()
-    props.put("repository.location", "/home/repo")
-    val testConfig = ConfigFactory.parseMap(props)
+    val testConfig = new RepositoryConfig {
+      val props = new util.HashMap[String, String]()
+      props.put("repository.location", "/home/repo")
+      def rootConfig = ConfigFactory.parseMap(props)
+    }
     new RepoConfig(testConfig)
   }
 

@@ -8,7 +8,7 @@ trait RepositoryConfig {
   def rootConfig: Config
   private val repositoryConfigSection = rootConfig.getConfig("repository")
 
-  val repositoryConfig = new RepoConfig(repositoryConfigSection)
+  val repositoryConfig = new RepoConfig(this)
 
   // for user/pass
   val username = getOptional("username")
