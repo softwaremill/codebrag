@@ -3,6 +3,7 @@ package com.softwaremill.codebrag.test
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, FlatSpec}
 import scala.slick.jdbc.JdbcBackend.Database
 import com.softwaremill.codebrag.dao.sql.{WithSQLSchemas, SQLDatabase}
+import scala.slick.jdbc.StaticQuery
 
 trait FlatSpecWithSQL extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach {
   private val connectionString = "jdbc:h2:mem:cb_test" + this.getClass.getSimpleName + ";DB_CLOSE_DELAY=-1"
@@ -30,13 +31,11 @@ trait FlatSpecWithSQL extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
 
   private def dropAll() {
     db.withSession { implicit session =>
-      schemas.reverse.foreach { _.drop }
+      StaticQuery.updateNA("DROP ALL OBJECTS").execute()
     }
   }
 
   private def createAll() {
-    db.withSession { implicit session =>
-      schemas.foreach { _.create }
-    }
+    SQLDatabase.updateSchema(connectionString)
   }
 }

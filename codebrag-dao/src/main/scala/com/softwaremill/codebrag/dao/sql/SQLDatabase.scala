@@ -7,6 +7,7 @@ import java.io.File
 import scala.slick.jdbc.JdbcBackend._
 import com.softwaremill.codebrag.dao.{SQLDaos, DaoConfig}
 import com.typesafe.scalalogging.slf4j.Logging
+import com.googlecode.flyway.core.Flyway
 
 case class SQLDatabase(db: scala.slick.jdbc.JdbcBackend.Database, driver: JdbcProfile) extends Logging {
   import driver.simple._
@@ -59,5 +60,15 @@ object SQLDatabase extends Logging {
   def createEmbedded(config: DaoConfig) = {
     val db = Database.forURL(connectionString(config), driver="org.h2.Driver")
     SQLDatabase(db, scala.slick.driver.H2Driver)
+  }
+
+  def updateSchema(config: DaoConfig) {
+    updateSchema(connectionString(config))
+  }
+
+  def updateSchema(connectionString: String) {
+    val flyway = new Flyway()
+    flyway.setDataSource(connectionString, "", "")
+    flyway.migrate()
   }
 }
