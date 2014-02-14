@@ -11,31 +11,11 @@ mongo {
     database = "codebrag"
 }
 
-repository {
-    type = "git-ssh"    // git-https, git-ssh or svn (experimental)
-
-    git-https {
-        name = "codebrag"
-        uri = "https://github.com/softwaremill/codebrag.git"
-        branch = "refs/heads/master"
-        username = ""
-        password = ""
-    }
-
-    git-ssh {
-        name = "codebrag"
-        uri = "git@github.com:softwaremill/codebrag.git"
-        branch = "refs/heads/master"
-        passphrase = ""
-    }
-
-    svn {
-        name = "codebrag"
-        uri = ""
-        username = ""
-        password = ""
-    }
-}
+// this section is required only if you need to pass credentials on every repo update
+//repository {
+//    username = "johndoe"
+//    password = "secret"
+//}
 
 codebrag {
     demo = false
