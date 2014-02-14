@@ -34,6 +34,7 @@ class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositorySt
   }
 
   private def updateRepoNotReadyStatus(repo: Repository, cause: Exception) {
+    logger.debug(s"Saving repository-not-ready status data to DB with message: ${cause.getMessage}")
     val repoNotReadyStatus = RepositoryStatus.notReady(repo.repoName, Some(cause.getMessage))
     repoStatusDao.updateRepoStatus(repoNotReadyStatus)
   }
