@@ -4,14 +4,13 @@ import com.softwaremill.codebrag.service.config.RepositoryConfig
 import java.nio.file.{Path, Paths}
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import java.io.File
-import com.typesafe.config.ConfigFactory
 
 object RepoDataDiscovery {
 
   def discoverRepoDataFromConfig(repositoryConfig: RepositoryConfig) = {
     val rootDir = resolveRootDir(repositoryConfig)
-    val repoName = discoverRepoDirName(rootDir)
-    val repoLocation = discoverRepoAbsolutePath(rootDir, repoName)
+    val repoName = discoverRepoName(rootDir)
+    val repoLocation = discoverRepoLocation(rootDir, repoName)
     val repoType = discoverRepoType(repoLocation)
     val credentials = resolveCredentials(repositoryConfig)
     RepoData(repoLocation, repoName, repoType, credentials)
@@ -35,7 +34,7 @@ object RepoDataDiscovery {
     rootDir
   }
 
-  private def discoverRepoDirName(rootDir: Path) = {
+  private def discoverRepoName(rootDir: Path) = {
     val potentialRepoDirs = rootDir.toFile.listFiles.filter(_.isDirectory).map(_.getName)
     val reposRootDir = rootDir.toFile.getCanonicalPath
     if(potentialRepoDirs.isEmpty) {
@@ -47,8 +46,8 @@ object RepoDataDiscovery {
     potentialRepoDirs.head
   }
 
-  private def discoverRepoAbsolutePath(rootDir: Path, repoName: String) = {
-    rootDir.resolve(repoName).toAbsolutePath.toString
+  private def discoverRepoLocation(rootDir: Path, repoName: String) = {
+    rootDir.resolve(repoName).toFile.getCanonicalPath
   }
 
   private def discoverRepoType(repoLocation: String) = {
