@@ -9,7 +9,7 @@ In short:
 2. Edit `codebrag.conf` for advanced settings
 2. Run `run.sh`
 
-That's it!
+Enjoy!
 
 ## Prerequisites
 
@@ -29,59 +29,60 @@ Should you encounter any issues with installation:
 
 ## 1. Connect your repository
 
-Edit the `codebrag.conf` file to configure:
+We suport Git and SVN repositories, both standalone and in the cloud (e.g. Github, Bitbucket).
 
-* Your repository (Git or SVN)
-* Email server
+*** NOTE: *** At this moment you can connect one repository per Codebrag instance. Support for multiple repositories is coming very soon.
 
-and other settings.
 
 <br>
 
-### 1.2. "repository" section
+### 1.1. Git repository
 
-Set the `type` property to one of these values:
-
-* `git-https` - git via https (with user/password provided)
-* `git-ssh` - git via ssh (with keys)
-* `svn` - subversion (experimental)
-
-##### 1.2.1. Git via HTTPS
-
-To use Codebrag with git via https please configure repository section as follows:
-
-	repository {
-	    type = "git-https"
-	    git-https {
-	        name = "..."			// e.g. codebrag
-	        uri = "..."				// e.g. https://github.com/sml/codebrag.git
-	        branch = "..." 			// e.g. "refs/heads/master"
-	        username = "..."
-	        password = "..."
-	    }
-	}
+Checkout your repository to `codebrag/repos`:
 	
-*** NOTE: *** Leave `username` and `password` empty for public repository.
+	cd codebrag/repos
+	git clone git://yourcompany.com/path/to/project-abc.git
 
-##### 1.2.2. Git via SSH
+And, that's it (usually). Codebrag will automatically use this repository.
 
-Configuration for git repository with authentication via ssh (keys):
+##### 1.1.1. Git - manual authentication (optional)
 
-	repository {
-	    type = "git-ssh"
-	    git-ssh {
-	        name = "..."			
-	        uri ="..." 				// e.g.	git@github.com:sml/codebrag.git
-	        branch ="..."  			
-	        passphrase ="..." 		// leave empty if not required
-	    }
+If, for some reason, your repository requires authentication **every time** you execute a command, you need to provide username/password or passphrase in `codebrag.conf`:
+
+	repositories {
+		
+		git-https {
+			name = "project-abc"	# directory name in codebrag/repos
+			username = "emanresu"
+			password = "drowssap"
+		}
+		
+		# or
+		
+		git-ssh {
+			name = "project-abc"
+			passphrase = "esarhpssap"
+		}
 	}
 
-*** NOTE: *** Test your repository ssh connection and add host to `known-hosts`, otherwise Codebrag will not be able to authenticate. You may also want to create ssh configuration in the `~/.ssh/config` file.
 
-##### 1.2.3. SVN repository (experimental)
+#### 1.2. SVN repository
 
-You can also use Codebrag with SVN repositories although *** this is an experimental feature *** still in development. Configuration for SVN:
+Checkout your repository to `codebrag/repos`:
+	
+	cd codebrag/repos
+	git svn clone git://yourcompany.com/path/to/project-abc.git
+
+*** NOTE: *** Use `git svn clone` command as in the example below. **Do not** perform `svn checkout` instead, cause Codebrag **will not** be able to connect to such a repository.
+
+*** NOTE: *** You need **Git version 1.7 or higher** to do this. [Download here](http://git-scm.com/) or install package for your server's OS.
+
+##### 1.2.1. SVN - manual authentication (optional)
+
+If, for some reason, your repository requires authentication **every time** you execute a command, you need to provide username/password or passphrase in `codebrag.conf`:
+
+	TODO
+
 
 	repository {
 	    type = "svn"
