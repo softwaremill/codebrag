@@ -9,13 +9,8 @@ class GitSvnRepository(val repoConfig: RepoData) extends Repository {
 
   private val CommandBase = "git svn rebase --quiet"
 
-  def pullChanges {
-    try {
-      runPullCommand
-      logger.debug(s"Changes pulled succesfully")
-    } catch {
-      case e: Exception => throw new RuntimeException(s"Cannot pull changes for repo: ${repoConfig.repoLocation}", e)
-    }
+  protected def pullChangesForRepo {
+    runPullCommand
   }
 
   private def runPullCommand = {

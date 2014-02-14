@@ -23,16 +23,10 @@ class GitRepository(val repoConfig: RepoData) extends Repository {
     }
   }
 
-  def pullChanges {
-    logger.debug(s"Pulling changes for ${repoConfig.repoLocation}")
-    try {
-      val pullCommand = new Git(repo).pull()
-      credentialsProvider.foreach(pullCommand.setCredentialsProvider(_))
-      pullCommand.call()
-      logger.debug(s"Changes pulled succesfully")
-    } catch {
-      case e: Exception => throw new RuntimeException(s"Cannot pull changes for repo: ${repoConfig.repoLocation}", e)
-    }
+  protected def pullChangesForRepo {
+    val pullCommand = new Git(repo).pull()
+    credentialsProvider.foreach(pullCommand.setCredentialsProvider(_))
+    pullCommand.call()
   }
 
   private class SshPassphraseCredentialsProvider(passphrase: String) extends CredentialsProvider {

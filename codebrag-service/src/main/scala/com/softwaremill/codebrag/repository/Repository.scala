@@ -7,6 +7,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import java.io.File
 import org.eclipse.jgit.errors.MissingObjectException
 import com.softwaremill.codebrag.repository.config.{RepoData}
+import org.eclipse.jgit.api.Git
 
 trait Repository extends Logging {
 
@@ -14,7 +15,15 @@ trait Repository extends Logging {
   val repo = buildRepository
   val repoName = repoConfig.repoName
 
-  def pullChanges
+  def pullChanges {
+    logger.debug(s"Pulling changes for ${repoConfig.repoLocation}")
+    try {
+      pullChangesForRepo
+      logger.debug(s"Changes pulled succesfully")
+    } catch {
+      case e: Exception => throw new RuntimeException(s"Cannot pull changes for repo: ${repoConfig.repoLocation}", e)
+    }
+  }
 
   def currentHead = {
     repo.resolve(Constants.HEAD)
@@ -28,6 +37,8 @@ trait Repository extends Logging {
     logger.debug(s"Got ${commits.size} commit(s)")
     commits
   }
+
+  protected def pullChangesForRepo
 
   private def buildRepository = {
     try {
