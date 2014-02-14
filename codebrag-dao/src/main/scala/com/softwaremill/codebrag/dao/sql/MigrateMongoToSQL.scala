@@ -18,7 +18,7 @@ import com.softwaremill.codebrag.domain.Like
 import com.softwaremill.codebrag.domain.Invitation
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskRecord
 
-class MigrateMongoToSQL {
+object MigrateMongoToSQL extends App {
   val config = new DaoConfig {
     def rootConfig = ConfigFactory.load()
   }
