@@ -6,8 +6,7 @@ import org.eclipse.jgit.revwalk.{RevWalk, RevCommit}
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import java.io.File
 import org.eclipse.jgit.errors.MissingObjectException
-import com.softwaremill.codebrag.repository.config.{RepoData}
-import org.eclipse.jgit.api.Git
+import com.softwaremill.codebrag.repository.config.RepoData
 
 trait Repository extends Logging {
 
@@ -21,7 +20,10 @@ trait Repository extends Logging {
       pullChangesForRepo
       logger.debug(s"Changes pulled succesfully")
     } catch {
-      case e: Exception => throw new RuntimeException(s"Cannot pull changes for repo: ${repoConfig.repoLocation}", e)
+      case e: Exception => {
+        logger.error(s"Cannot pull changes for repo ${repoConfig.repoLocation} because of: ${e.getMessage}")
+        throw e
+      }
     }
   }
 

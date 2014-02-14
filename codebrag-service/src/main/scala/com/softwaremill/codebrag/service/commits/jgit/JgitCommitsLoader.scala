@@ -27,7 +27,7 @@ class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositorySt
     } catch {
       case e: Exception => {
         updateRepoNotReadyStatus(repo, e)
-        logger.debug("Could not pull repo or load new commits", e)
+        logger.error(s"Could not pull repo or load new commits: ${e.getMessage}")
         throw e
       }
     }
