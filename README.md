@@ -73,8 +73,41 @@ java -Dconfig.file=[path to .conf file] -Dlogback.configurationFile=logback.xml 
 H2 console
 ---
 
+Web console
+===
+
 When using the embedded SQL storage, it may be useful to browse the tables. H2 provides a console, which can be run
 as follows:
 
 1. If you have a fat jar, simply run `java -cp codebrag.jar org.h2.tools.Console`, and point the console at your database file
 2. From SBT, run: `codebrag-dao/run-h2-console`. This will use your settings file to automatically determine where your database is.
+
+Command line console
+===
+
+TBD
+
+Migrating from Mongo to H2
+---
+
+1. stop codebrag
+2. add the following to your configuration:
+
+````
+storage {
+    type = "embedded"
+
+    embedded {
+        datadir = "/Users/adamw/projects/codebrag/data"
+    }
+}
+````
+
+3. run:
+
+````
+java -Dconfig.file=codebrag.conf -cp codebrag.jar com.softwaremill.codebrag.dao.sql.MigrateMongoToSQL
+````
+
+4. stop Mongo
+5. start Codebrag, and live in a Mongo-free world
