@@ -13,11 +13,15 @@ object BackupScheduler extends Logging {
     import actorSystem.dispatcher
 
     val initialDelay = ScheduleDelaysCalculator.delayToGivenTimeInMillis(config.embeddedBackupHour, 0)(clock).millis
-    actorSystem.scheduler.schedule(initialDelay, 24.hours, new Runnable {
+    val scheduledBackups = actorSystem.scheduler.schedule(initialDelay, 24.hours, new Runnable {
       def run() {
         sqlEmbeddedDbBackup.backup()
       }
     })
+
+    // On termination, Akka tries to run all scheduled tasks. We don't want that to happen for backups, as the
+    // backup may take a while, is interrupted by the shutdown process, and we end up with a corrupt backup file.
+    actorSystem.registerOnTermination(scheduledBackups.cancel())
 
     logger.info(s"Scheduled embedded database backups to run every day at ${config.embeddedBackupHour}:00 UTC.")
   }
