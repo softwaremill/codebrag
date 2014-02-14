@@ -3,16 +3,18 @@
 
 ##Installation Overview
 
-1. Edit `codebrag.conf` to configure repository, mail server, etc.
+In short:
+
+1. Connect your repository
+2. Edit `codebrag.conf` for advanced settings
 2. Run `run.sh`
-3. Create your account
+
+That's it!
 
 ## Prerequisites
 
 * Java 1.7 installed. [Download here](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html) or install package for your server's OS.
-* MongoDB version 2.4.x installed. Follow these [Installation instructions](http://docs.mongodb.org/manual/installation/) or install package for your server's OS.
 
-*** NOTE: *** If you want to use **Codebrag** with **SVN** you need to install **Git**. [Download here](http://git-scm.com/) or install package for your server's OS.
 
 ##Questions? Help?
 Should you encounter any issues with installation:
@@ -25,21 +27,14 @@ Should you encounter any issues with installation:
 <div style="page-break-after: always;"></div>
 
 
-## 1. Configure Codebrag
+## 1. Connect your repository
 
 Edit the `codebrag.conf` file to configure:
 
-* Path to MongoDB
 * Your repository (Git or SVN)
 * Email server
 
 and other settings.
-
-<br>
-
-### 1.1. "mongo" section
-
-Set `servers` and `database` properties to point to your MongoDB installation.
 
 <br>
 
@@ -100,7 +95,7 @@ You can also use Codebrag with SVN repositories although *** this is an experime
 
 <br>
 
-### 1.3. "email" section
+**### 1.3. "email" section
 
 Setup your email server so that Codebrag can send emails with invitations and notifications:
 
