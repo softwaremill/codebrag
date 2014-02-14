@@ -29,5 +29,5 @@ trait DaoConfig extends Logging {
   lazy val mongoServers: String = rootConfig.getString("mongo.servers")
   lazy val mongoDatabase: String = rootConfig.getString("mongo.database")
 
-  lazy val embeddedDataDir: String = rootConfig.getString("embedded.datadir")
+  lazy val embeddedDataDir: String = rootConfig.getString("storage.embedded.datadir")
 }
