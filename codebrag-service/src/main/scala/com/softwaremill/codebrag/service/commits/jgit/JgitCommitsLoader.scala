@@ -5,14 +5,14 @@ import com.softwaremill.codebrag.domain.{RepositoryStatus, CommitInfo}
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 import org.eclipse.jgit.lib.ObjectId
-import com.softwaremill.codebrag.repository.{GitSvnRepository, GitRepository, Repository}
-import com.softwaremill.codebrag.repository.config.RepoConfig
+import com.softwaremill.codebrag.repository.Repository
+import com.softwaremill.codebrag.repository.config.RepoData
 
 
 class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositoryStatusDAO) extends CommitsLoader with Logging {
 
-  def loadNewCommits(repoConfig: RepoConfig): List[CommitInfo] = {
-    val repo = RepoFromConfig.build(repoConfig)
+  def loadNewCommits(repoConfig: RepoData): List[CommitInfo] = {
+    val repo = repoConfig.buildRepository
     val newCommits = updateAndGetCommits(repo)
     converter.toCommitInfos(newCommits, repo.repo)
   }
@@ -42,15 +42,6 @@ class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositorySt
     val currentHead = ObjectId.toString(repo.currentHead)
     val repoReadyStatus = RepositoryStatus.ready(repo.repoName).withHeadId(currentHead)
     repoStatusDao.updateRepoStatus(repoReadyStatus)
-  }
-
-  private object RepoFromConfig {
-    def build(config: RepoConfig) = {
-      config.repoType match {
-        case "git" => new GitRepository(config)
-        case "git-svn" => new GitSvnRepository(config)
-      }
-    }
   }
 
 }

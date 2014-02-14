@@ -3,9 +3,9 @@ package com.softwaremill.codebrag.repository
 import org.apache.commons.lang3.SystemUtils
 import scala.sys.process._
 import java.nio.file.{Path, Paths}
-import com.softwaremill.codebrag.repository.config.{RepoConfig, UserPassCredentials}
+import com.softwaremill.codebrag.repository.config.{RepoData, UserPassCredentials}
 
-class GitSvnRepository(val repoConfig: RepoConfig) extends Repository {
+class GitSvnRepository(val repoConfig: RepoData) extends Repository {
 
   private val CommandBase = "git svn rebase --quiet"
 
@@ -20,8 +20,8 @@ class GitSvnRepository(val repoConfig: RepoConfig) extends Repository {
 
   private def runPullCommand = {
     val repoPath = Paths.get(repoConfig.repoLocation)
-    if(repoConfig.credentials.isDefined) {
-      repoConfig.credentials.get match {
+    if(repoConfig.repoCredentials.isDefined) {
+      repoConfig.repoCredentials.get match {
         case c: UserPassCredentials => runWithUserPassCredentials(repoPath, c)
         case _ => runWithNoCredentials(repoPath)
       }

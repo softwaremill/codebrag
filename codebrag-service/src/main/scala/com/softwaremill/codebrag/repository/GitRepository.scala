@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.repository
 
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.transport.{URIish, CredentialItem, UsernamePasswordCredentialsProvider, CredentialsProvider}
-import com.softwaremill.codebrag.repository.config.{RepoConfig, UserPassCredentials, PassphraseCredentials}
+import com.softwaremill.codebrag.repository.config.{RepoData, UserPassCredentials, PassphraseCredentials}
 
 /**
  * Encapsulates all required operations on already initialized git repo
@@ -10,12 +10,12 @@ import com.softwaremill.codebrag.repository.config.{RepoConfig, UserPassCredenti
  * either all or only those to specified commit (starting from HEAD)
  * @param repoConfig repository config required to work on repo (location, credentials)
  */
-class GitRepository(val repoConfig: RepoConfig) extends Repository {
+class GitRepository(val repoConfig: RepoData) extends Repository {
 
   val name = repoConfig.repoName
 
   private val credentialsProvider = {
-    repoConfig.credentials.map { c =>
+    repoConfig.repoCredentials.map { c =>
       c match {
         case ssh: PassphraseCredentials => new SshPassphraseCredentialsProvider(ssh.phrase)
         case userpass: UserPassCredentials => new UsernamePasswordCredentialsProvider(userpass.user, userpass.pass)

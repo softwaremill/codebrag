@@ -6,11 +6,11 @@ import org.eclipse.jgit.revwalk.{RevWalk, RevCommit}
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import java.io.File
 import org.eclipse.jgit.errors.MissingObjectException
-import com.softwaremill.codebrag.repository.config.RepoConfig
+import com.softwaremill.codebrag.repository.config.{RepoData}
 
 trait Repository extends Logging {
 
-  def repoConfig: RepoConfig
+  def repoConfig: RepoData
   val repo = buildRepository
   val repoName = repoConfig.repoName
 

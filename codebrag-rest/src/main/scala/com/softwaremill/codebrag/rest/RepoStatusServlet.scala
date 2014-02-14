@@ -3,16 +3,16 @@ package com.softwaremill.codebrag.rest
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.domain.RepositoryStatus
-import com.softwaremill.codebrag.repository.config.RepoConfig
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
+import com.softwaremill.codebrag.repository.config.RepoData
 
-class RepoStatusServlet(val authenticator: Authenticator, repoConfig: RepoConfig, repoStatusDao: RepositoryStatusDAO) extends JsonServletWithAuthentication with Logging {
+class RepoStatusServlet(val authenticator: Authenticator, repoData: RepoData, repoStatusDao: RepositoryStatusDAO) extends JsonServletWithAuthentication with Logging {
 
   get("/") {
-    getRepositoryStatus(repoConfig)
+    getRepositoryStatus(repoData)
   }
 
-  private def getRepositoryStatus(repoConfig: RepoConfig): Map[String, RepositoryStatus] = {
+  private def getRepositoryStatus(repoConfig: RepoData): Map[String, RepositoryStatus] = {
     repoStatusDao.getRepoStatus(repoConfig.repoName) match {
       case Some(status) => Map("repoStatus" -> status)
       case None => {

@@ -3,7 +3,7 @@ import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.dao.user.InternalUserDAO
 import com.softwaremill.codebrag.dao.{MongoDaos, SQLDaos}
 import com.softwaremill.codebrag.domain.InternalUser
-import com.softwaremill.codebrag.repository.config.RepoConfig
+import com.softwaremill.codebrag.repository.config.RepoDataDiscovery
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
@@ -29,7 +29,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     val _config = new AllConfig {
       def rootConfig = ConfigFactory.load()
     }
-    val repositoryConfig = new RepoConfig(_config)
+    val repositoryData = RepoDataDiscovery.discoverRepoDataFromConfig(_config)
 
     val beans = if (_config.storageType == _config.StorageType.Embedded) {
       SQLDatabase.updateSchema(_config)
@@ -60,7 +60,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       logger.info("Sending anonymous statistics was disabled - not scheduling stats calculation")
     }
 
-    val repositoryUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, repositoryConfig, commitImportService)
+    val repositoryUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, repositoryData, commitImportService)
     context.mount(new UsersServlet(authenticator, registerService, userDao, config, swagger), Prefix + "users")
     context.mount(new UsersSettingsServlet(authenticator, userDao, changeUserSettingsUseCase), Prefix + "users/settings")
     context.mount(new CommitsServlet(authenticator, reviewableCommitsFinder, allCommitsFinder, reactionFinder, commentActivity,
@@ -72,7 +72,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new InvitationServlet(authenticator, invitationsService), Prefix + "invitation")
     context.mount(new RepositorySyncServlet(actorSystem, repositoryUpdateActor), RepositorySyncServlet.Mapping)
     context.mount(new UpdatesServlet(authenticator, notificationCountFinder, heartbeatDao, clock), Prefix + UpdatesServlet.Mapping)
-    context.mount(new RepoStatusServlet(authenticator, repositoryConfig, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
+    context.mount(new RepoStatusServlet(authenticator, repositoryData, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
 
     if (config.demo) {
       context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")

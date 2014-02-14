@@ -4,9 +4,9 @@ import akka.actor._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.commits.CommitImportService
 import com.softwaremill.codebrag.service.updater.LocalRepositoryUpdater.RepositoryUpdateFailed
-import com.softwaremill.codebrag.repository.config.RepoConfig
+import com.softwaremill.codebrag.repository.config.RepoData
 
-class LocalRepositoryUpdater(importService: CommitImportService, repoConfig: RepoConfig, actorSystem: ActorSystem) extends Actor with Logging {
+class LocalRepositoryUpdater(importService: CommitImportService, repoConfig: RepoData, actorSystem: ActorSystem) extends Actor with Logging {
 
   def receive = {
     case LocalRepositoryUpdater.UpdateCommand(schedule) => {
