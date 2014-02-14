@@ -218,7 +218,7 @@ object SmlCodebragBuild extends Build {
   })
 
   val runH2Console = TaskKey[Unit]("run-h2-console", "Runs the H2 console using the data file from the local config file")
-  val runH2ConsoleSettings = fullRunTask(runH2Console, Compile, "com.softwaremill.codebrag.dao.sql.H2Console")
+  val runH2ConsoleSettings = fullRunTask(runH2Console, Compile, "com.softwaremill.codebrag.dao.sql.H2BrowserConsole")
 
   lazy val parent: Project = Project(
     "codebrag-root",
