@@ -3,6 +3,7 @@ storage {
 
     embedded {
         datadir = "./data"
+        backup-hour = 5
     }
 }
 

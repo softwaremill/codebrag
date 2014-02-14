@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.sql
 import com.softwaremill.codebrag.dao.DaoConfig
 import com.typesafe.config.ConfigFactory
 
-object H2Console extends App {
+object H2BrowserConsole extends App {
   val config = new DaoConfig {
     def rootConfig = ConfigFactory.load()
   }

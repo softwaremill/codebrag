@@ -1,14 +1,15 @@
+import com.softwaremill.codebrag.backup.BackupScheduler
 import com.softwaremill.codebrag.dao.mongo.MongoInit
-import com.softwaremill.codebrag.dao.sql.SQLDatabase
+import com.softwaremill.codebrag.dao.{SQLDaos, MongoDaos}
+import com.softwaremill.codebrag.dao.sql.{SQLEmbeddedDbBackup, SQLDatabase}
 import com.softwaremill.codebrag.dao.user.InternalUserDAO
-import com.softwaremill.codebrag.dao.{MongoDaos, SQLDaos}
 import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.repository.config.RepoDataDiscovery
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.stats.StatsSendingScheduler
-import com.softwaremill.codebrag.{AllConfig, InstanceContext, EventingConfiguration, Beans}
+import com.softwaremill.codebrag._
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.slf4j.Logging
 import java.util.Locale
@@ -31,12 +32,16 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     }
     val repositoryData = RepoDataDiscovery.discoverRepoDataFromConfig(_config)
 
-    val beans = if (_config.storageType == _config.StorageType.Embedded) {
+    val beans = if (_config.isEmbeddedStorage) {
       SQLDatabase.updateSchema(_config)
-      new Beans with EventingConfiguration with SQLDaos {
+      val b = new Beans with EventingConfiguration with SQLDaos {
         val config = _config
         val sqlDatabase = SQLDatabase.createEmbedded(config)
       }
+
+      BackupScheduler.initialize(b.actorSystem, new SQLEmbeddedDbBackup(b.sqlDatabase, b.config, b.clock), b.config, b.clock)
+
+      b
     } else {
       MongoInit.initialize(_config)
       new Beans with EventingConfiguration with MongoDaos {
