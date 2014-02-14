@@ -38,7 +38,6 @@ repository {
 }
 
 codebrag {
-    local-git-storage-path = "."
     demo = false
     application-url = "http://codebrag:8080"
     invitation-expiry-time = "24 hours"
