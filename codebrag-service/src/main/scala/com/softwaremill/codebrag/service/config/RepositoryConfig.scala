@@ -7,21 +7,21 @@ trait RepositoryConfig extends ConfigWithDefault {
   def rootConfig: Config
 
   // directory containing cloned repo dir
-  val repositoriesRoot = getString("repository.repos-root", ".")
+  val repositoriesRoot = getString("repository.repos-root", "repos")
 
   // for user/pass
-  val username = getOptional("username")
-  val password = getOptional("password")
+  val username = getOptional("repository.username")
+  val password = getOptional("repository.password")
 
   // for SSH
-  val passphrase = getOptional("passphrase")
+  val passphrase = getOptional("repository.passphrase")
 
-  private def getOptional(path: String, default: Option[String] = None) = {
-    val repositoryConfigSection = rootConfig.getConfig("repository")
-    if(repositoryConfigSection.hasPath(path)) {
-      Some(repositoryConfigSection.getString(path))
+  private def getOptional(fullPath: String, default: Option[String] = None) = {
+    if(rootConfig.hasPath(fullPath)) {
+      Some(rootConfig.getString(fullPath))
     } else {
       default
     }
   }
+
 }
