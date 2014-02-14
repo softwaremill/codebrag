@@ -26,6 +26,8 @@ trait DaoConfig extends Logging {
     }
   }
 
+  lazy val isEmbeddedStorage = storageType == StorageType.Embedded
+
   lazy val mongoServers: String = rootConfig.getString("mongo.servers")
   lazy val mongoDatabase: String = rootConfig.getString("mongo.database")
 

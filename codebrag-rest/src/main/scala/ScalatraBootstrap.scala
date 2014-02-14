@@ -1,6 +1,7 @@
+import com.softwaremill.codebrag.backup.BackupScheduler
 import com.softwaremill.codebrag.dao.mongo.MongoInit
 import com.softwaremill.codebrag.dao.{SQLDaos, MongoDaos}
-import com.softwaremill.codebrag.dao.sql.SQLDatabase
+import com.softwaremill.codebrag.dao.sql.{SQLEmbeddedDbBackup, SQLDatabase}
 import com.softwaremill.codebrag.dao.user.InternalUserDAO
 import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.rest._
@@ -29,12 +30,16 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       def rootConfig = ConfigFactory.load()
     }
 
-    val beans = if (_config.storageType == _config.StorageType.Embedded) {
+    val beans = if (_config.isEmbeddedStorage) {
       SQLDatabase.updateSchema(_config)
-      new Beans with EventingConfiguration with SQLDaos {
+      val b = new Beans with EventingConfiguration with SQLDaos {
         val config = _config
         val sqlDatabase = SQLDatabase.createEmbedded(config)
       }
+
+      BackupScheduler.initialize(b.actorSystem, new SQLEmbeddedDbBackup(b.sqlDatabase, b.config, b.clock), b.config, b.clock)
+
+      b
     } else {
       MongoInit.initialize(_config)
       new Beans with EventingConfiguration with MongoDaos {
