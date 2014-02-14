@@ -12,7 +12,6 @@ import com.softwaremill.codebrag.repository.config.{RepoConfig, UserPassCredenti
  */
 class GitRepository(val repoConfig: RepoConfig) extends Repository {
 
-  def repoConfig2 = repoConfig
   val name = repoConfig.repoName
 
   private val credentialsProvider = {
