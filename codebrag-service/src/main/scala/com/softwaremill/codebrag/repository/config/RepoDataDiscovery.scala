@@ -29,19 +29,20 @@ object RepoDataDiscovery {
   private def resolveRootDir(repositoryConfig: RepositoryConfig) = {
     val rootDir = Paths.get(repositoryConfig.repositoriesRoot)
     if(!rootDir.toFile.isDirectory) {
-      throw new RuntimeException(s"Cannot find base directory for repositories (repos-root): ${repositoryConfig.repositoriesRoot}. Please ")
+      val path = rootDir.toFile.getCanonicalPath
+      throw new RuntimeException(s"Cannot find base directory for repositories: ${path}")
     }
     rootDir
   }
 
   private def discoverRepoDirName(rootDir: Path) = {
     val potentialRepoDirs = rootDir.toFile.listFiles.filter(_.isDirectory).map(_.getName)
-    val reposRootDir = rootDir.toFile.getAbsolutePath
+    val reposRootDir = rootDir.toFile.getCanonicalPath
     if(potentialRepoDirs.isEmpty) {
-      throw new RuntimeException(s"Repository directory not found in ${reposRootDir}. Please clone your repository.")
+      throw new RuntimeException(s"Repository directory not found in ${reposRootDir}. Please clone your repository as a directory inside ${reposRootDir}")
     }
     if(potentialRepoDirs.size > 1) {
-      throw new RuntimeException(s"More than one directory found in ${reposRootDir}. Only one repository can exist.")
+      throw new RuntimeException(s"More than one directory found in ${reposRootDir}. Only one repository directory can exist there")
     }
     potentialRepoDirs.head
   }
