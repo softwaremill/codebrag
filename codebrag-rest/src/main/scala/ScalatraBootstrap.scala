@@ -4,8 +4,9 @@ import com.softwaremill.codebrag.dao.{SQLDaos, MongoDaos}
 import com.softwaremill.codebrag.dao.sql.{SQLEmbeddedDbBackup, SQLDatabase}
 import com.softwaremill.codebrag.dao.user.InternalUserDAO
 import com.softwaremill.codebrag.domain.InternalUser
-import com.softwaremill.codebrag.repository.config.RepoDataDiscovery
+import com.softwaremill.codebrag.repository.config.{RepoData, RepoDataDiscovery}
 import com.softwaremill.codebrag.rest._
+import com.softwaremill.codebrag.service.config.RepositoryConfig
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.stats.StatsSendingScheduler
@@ -30,7 +31,8 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     val _config = new AllConfig {
       def rootConfig = ConfigFactory.load()
     }
-    val repositoryData = RepoDataDiscovery.discoverRepoDataFromConfig(_config)
+
+    val repositoryData = discoverRepositoryOrExit(_config)
 
     val beans = if (_config.isEmbeddedStorage) {
       SQLDatabase.updateSchema(_config)
@@ -88,6 +90,18 @@ class ScalatraBootstrap extends LifeCycle with Logging {
 
   private def ensureInternalCodebragUserExists(internalUserDao: InternalUserDAO) {
     internalUserDao.createIfNotExists(InternalUser(InternalUser.WelcomeFollowupsAuthorName))
+  }
+
+  private def discoverRepositoryOrExit(repoConfig: RepositoryConfig) = {
+    try {
+      RepoDataDiscovery.discoverRepoDataFromConfig(repoConfig)
+    } catch {
+      case e: Exception => {
+        logger.error(e.getMessage)
+        logger.error("Codebrag cannot continue, exiting")
+        sys.exit(1)
+      }
+    }
   }
 
   override def destroy(context: ServletContext) {
