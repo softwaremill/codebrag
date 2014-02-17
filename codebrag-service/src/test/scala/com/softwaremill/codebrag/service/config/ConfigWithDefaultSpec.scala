@@ -3,6 +3,7 @@ package com.softwaremill.codebrag.service.config
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import com.typesafe.config.{ConfigParseOptions, ConfigResolveOptions, ConfigFactory}
+import java.util
 
 class ConfigWithDefaultSpec extends FlatSpec with ShouldMatchers {
 
@@ -32,6 +33,11 @@ class ConfigWithDefaultSpec extends FlatSpec with ShouldMatchers {
     new Spec("codebrag.stringNotExists", "defaultString", "defaultString", config.getString)
   )
 
+  val optionalStrings = List(
+    new Spec("codebrag.optionalStringDefined", None, Some("defined"), config.getOptionalString),
+    new Spec("codebrag.optionalStringUndefined", None, None, config.getOptionalString)
+  )
+
   for (spec <- booleans) {
     doTest(spec)
   }
@@ -41,6 +47,10 @@ class ConfigWithDefaultSpec extends FlatSpec with ShouldMatchers {
   }
 
   for (spec <- strings) {
+    doTest(spec)
+  }
+
+  for (spec <- optionalStrings) {
     doTest(spec)
   }
 
@@ -56,4 +66,5 @@ class ConfigWithDefaultSpec extends FlatSpec with ShouldMatchers {
       actual should be(spec.expectedValue)
     }
   }
+
 }
