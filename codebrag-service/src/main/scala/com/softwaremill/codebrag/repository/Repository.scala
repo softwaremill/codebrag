@@ -14,7 +14,7 @@ trait Repository extends Logging {
   val repo = buildRepository
   val repoName = repoConfig.repoName
 
-  def pullChanges {
+  def pullChanges() {
     logger.debug(s"Pulling changes for ${repoConfig.repoLocation}")
     try {
       pullChangesForRepo

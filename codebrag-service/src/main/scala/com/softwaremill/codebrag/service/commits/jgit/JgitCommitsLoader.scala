@@ -20,7 +20,7 @@ class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositorySt
   private def updateAndGetCommits(repo: Repository) = {
     val lastKnownCommitSHA = repoStatusDao.get(repo.repoName)
     try {
-      repo.pullChanges
+      repo.pullChanges()
       val newCommits = repo.getCommits(lastKnownCommitSHA)
       updateRepoReadyStatus(repo)
       newCommits
