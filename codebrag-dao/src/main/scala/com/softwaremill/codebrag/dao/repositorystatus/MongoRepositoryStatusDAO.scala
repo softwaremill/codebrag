@@ -21,15 +21,14 @@ class MongoRepositoryStatusDAO extends RepositoryStatusDAO with Logging {
 
   def getRepoStatus(repoName: String) = {
     RepositoryStatusRecord.where(_.repoName eqs repoName).get() match {
-      case Some(record) => Some(RepositoryStatus(repoName, Option(record.sha.get), record.repoReady.get, record.repoStatusError.get))
+      case Some(record) => Some(RepositoryStatus(repoName, record.sha.get, record.repoReady.get, record.repoStatusError.get))
       case None => None
     }
   }
 
   def get(repoName: String) = {
     RepositoryStatusRecord.where(_.repoName eqs repoName).get() match {
-      //TODO: what if SHA not available -> simple fix, will be refactored next
-      case Some(record) => if(record.sha.get.nonEmpty) Some(record.sha.get) else None
+      case Some(record) => record.sha.get
       case None => None
     }
   }
@@ -40,7 +39,7 @@ class RepositoryStatusRecord extends MongoRecord[RepositoryStatusRecord] with Ob
 
   def meta = RepositoryStatusRecord
 
-  object sha extends LongStringField(this)
+  object sha extends OptionalLongStringField(this)
 
   object repoName extends LongStringField(this)
 

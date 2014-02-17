@@ -102,6 +102,7 @@ trait RepositoryStatusDAOSpec extends FlatSpec with ShouldMatchers {
     val Some(storedStatus) = repositoryStatusDAO.getRepoStatus(repoName)
     storedStatus.ready should be(false)
     storedStatus.error should be(Some(errorMsg))
+    storedStatus.headId should be(None)
   }
 
   it should "update head id and keep repo status unchanged" in {
