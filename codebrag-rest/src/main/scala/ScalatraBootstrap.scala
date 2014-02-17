@@ -34,23 +34,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
 
     val repositoryData = discoverRepositoryOrExit(_config)
 
-    val beans = if (_config.isEmbeddedStorage) {
-      SQLDatabase.updateSchema(_config)
-      val b = new Beans with EventingConfiguration with SQLDaos {
-        val config = _config
-        val sqlDatabase = SQLDatabase.createEmbedded(config)
-      }
-
-      BackupScheduler.initialize(b.actorSystem, new SQLEmbeddedDbBackup(b.sqlDatabase, b.config, b.clock), b.config, b.clock)
-
-      b
-    } else {
-      MongoInit.initialize(_config)
-      new Beans with EventingConfiguration with MongoDaos {
-        val config = _config
-      }
-    }
-
+    val beans = initializeBeans(_config)
     import beans._
 
     setupEvents()
@@ -86,6 +70,24 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     }
 
     InstanceContext.put(context, beans)
+  }
+
+
+  def initializeBeans(_config: AllConfig): Beans with EventingConfiguration = {
+    if (_config.isEmbeddedStorage) {
+      SQLDatabase.updateSchema(_config)
+      val beans = new Beans with EventingConfiguration with SQLDaos {
+        val config = _config
+        val sqlDatabase = SQLDatabase.createEmbedded(config)
+      }
+      BackupScheduler.initialize(beans.actorSystem, new SQLEmbeddedDbBackup(beans.sqlDatabase, beans.config, beans.clock), beans.config, beans.clock)
+      beans
+    } else {
+      MongoInit.initialize(_config)
+      new Beans with EventingConfiguration with MongoDaos {
+        val config = _config
+      }
+    }
   }
 
   private def ensureInternalCodebragUserExists(internalUserDao: InternalUserDAO) {
