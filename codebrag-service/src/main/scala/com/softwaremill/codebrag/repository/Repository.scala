@@ -10,18 +10,18 @@ import com.softwaremill.codebrag.repository.config.RepoData
 
 trait Repository extends Logging {
 
-  def repoConfig: RepoData
+  def repoData: RepoData
   val repo = buildRepository
-  val repoName = repoConfig.repoName
+  val repoName = repoData.repoName
 
   def pullChanges() {
-    logger.debug(s"Pulling changes for ${repoConfig.repoLocation}")
+    logger.debug(s"Pulling changes for ${repoData.repoLocation}")
     try {
       pullChangesForRepo
       logger.debug(s"Changes pulled succesfully")
     } catch {
       case e: Exception => {
-        logger.error(s"Cannot pull changes for repo ${repoConfig.repoLocation} because of: ${e.getMessage}")
+        logger.error(s"Cannot pull changes for repo ${repoData.repoLocation} because of: ${e.getMessage}")
         throw e
       }
     }
@@ -44,9 +44,9 @@ trait Repository extends Logging {
 
   private def buildRepository = {
     try {
-      new FileRepositoryBuilder().setGitDir(new File(repoConfig.repoLocation + File.separator + ".git")).setMustExist(true).build()
+      new FileRepositoryBuilder().setGitDir(new File(repoData.repoLocation + File.separator + ".git")).setMustExist(true).build()
     } catch {
-      case e: Exception => throw new RuntimeException(s"Cannot build valid git repository object from ${repoConfig.repoLocation}", e)
+      case e: Exception => throw new RuntimeException(s"Cannot build valid git repository object from ${repoData.repoLocation}", e)
     }
   }
 

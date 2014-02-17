@@ -11,8 +11,8 @@ import com.softwaremill.codebrag.repository.config.RepoData
 
 class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositoryStatusDAO) extends CommitsLoader with Logging {
 
-  def loadNewCommits(repoConfig: RepoData): List[CommitInfo] = {
-    val repo = repoConfig.buildRepository
+  def loadNewCommits(repoData: RepoData): List[CommitInfo] = {
+    val repo = repoData.buildRepository
     val newCommits = updateAndGetCommits(repo)
     converter.toCommitInfos(newCommits, repo.repo)
   }

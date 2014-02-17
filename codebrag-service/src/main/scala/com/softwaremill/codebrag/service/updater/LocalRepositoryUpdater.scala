@@ -6,12 +6,12 @@ import com.softwaremill.codebrag.service.commits.CommitImportService
 import com.softwaremill.codebrag.service.updater.LocalRepositoryUpdater.RepositoryUpdateFailed
 import com.softwaremill.codebrag.repository.config.RepoData
 
-class LocalRepositoryUpdater(importService: CommitImportService, repoConfig: RepoData, actorSystem: ActorSystem) extends Actor with Logging {
+class LocalRepositoryUpdater(importService: CommitImportService, repoData: RepoData, actorSystem: ActorSystem) extends Actor with Logging {
 
   def receive = {
     case LocalRepositoryUpdater.UpdateCommand(schedule) => {
       try {
-        importService.importRepoCommits(repoConfig)
+        importService.importRepoCommits(repoData)
         sender ! LocalRepositoryUpdater.RepositoryUpdateSucceeded("Repository synchronized")
       } catch {
         case e: Exception => {

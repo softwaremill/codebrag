@@ -8,9 +8,9 @@ import com.softwaremill.codebrag.repository.config.RepoData
 
 class CommitImportService(commitsLoader: CommitsLoader, commitInfoDao: CommitInfoDAO, eventBus: EventBus)(implicit clock: Clock) extends Logging {
 
-  def importRepoCommits(repoConfig: RepoData) {
+  def importRepoCommits(repoData: RepoData) {
     logger.debug("Start loading commits")
-    val commitsLoaded = commitsLoader.loadNewCommits(repoConfig)
+    val commitsLoaded = commitsLoader.loadNewCommits(repoData)
     logger.debug(s"Commits loaded: ${commitsLoaded.size}")
     commitsLoaded.foreach(commitInfoDao.storeCommit)
     if (!commitsLoaded.isEmpty) {

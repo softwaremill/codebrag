@@ -12,12 +12,12 @@ class RepoStatusServlet(val authenticator: Authenticator, repoData: RepoData, re
     getRepositoryStatus(repoData)
   }
 
-  private def getRepositoryStatus(repoConfig: RepoData): Map[String, RepositoryStatus] = {
-    repoStatusDao.getRepoStatus(repoConfig.repoName) match {
+  private def getRepositoryStatus(repoData: RepoData): Map[String, RepositoryStatus] = {
+    repoStatusDao.getRepoStatus(repoData.repoName) match {
       case Some(status) => Map("repoStatus" -> status)
       case None => {
-        logger.debug(s"No status found for ${repoConfig.repoName}, assuming it is first run and repo is being cloned at the moment.")
-        Map("repoStatus" -> RepositoryStatus.notReady(repoConfig.repoName))
+        logger.debug(s"No status found for ${repoData.repoName}, assuming it is first run and repo is being cloned at the moment.")
+        Map("repoStatus" -> RepositoryStatus.notReady(repoData.repoName))
       }
     }
   }

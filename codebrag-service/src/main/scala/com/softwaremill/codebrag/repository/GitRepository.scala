@@ -8,14 +8,14 @@ import com.softwaremill.codebrag.repository.config.{RepoData, UserPassCredential
  * Encapsulates all required operations on already initialized git repo
  * It works on current branch only and can pull changes and list commits
  * either all or only those to specified commit (starting from HEAD)
- * @param repoConfig repository config required to work on repo (location, credentials)
+ * @param repoData repository config required to work on repo (location, credentials)
  */
-class GitRepository(val repoConfig: RepoData) extends Repository {
+class GitRepository(val repoData: RepoData) extends Repository {
 
-  val name = repoConfig.repoName
+  val name = repoData.repoName
 
   private val credentialsProvider = {
-    repoConfig.repoCredentials.map { c =>
+    repoData.repoCredentials.map { c =>
       c match {
         case ssh: PassphraseCredentials => new SshPassphraseCredentialsProvider(ssh.phrase)
         case userpass: UserPassCredentials => new UsernamePasswordCredentialsProvider(userpass.user, userpass.pass)

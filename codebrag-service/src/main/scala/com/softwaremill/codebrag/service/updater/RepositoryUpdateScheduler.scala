@@ -9,8 +9,8 @@ object RepositoryUpdateScheduler extends Logging {
 
   private var actor: ActorRef = _
 
-  def initialize(actorSystem: ActorSystem, repoConfig: RepoData, commitImportService: CommitImportService): ActorRef = {
-    actor = actorSystem.actorOf(Props(new LocalRepositoryUpdater(commitImportService, repoConfig, actorSystem)), "repositoryUpdater")
+  def initialize(actorSystem: ActorSystem, repoData: RepoData, commitImportService: CommitImportService): ActorRef = {
+    actor = actorSystem.actorOf(Props(new LocalRepositoryUpdater(commitImportService, repoData, actorSystem)), "repositoryUpdater")
     scheduleRepositorySynchronization(actorSystem)
     actor
   }
