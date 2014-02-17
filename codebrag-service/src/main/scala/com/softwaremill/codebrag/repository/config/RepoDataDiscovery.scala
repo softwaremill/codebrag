@@ -35,15 +35,13 @@ object RepoDataDiscovery {
   }
 
   private def discoverRepoName(rootDir: Path) = {
-    val potentialRepoDirs = rootDir.toFile.listFiles.filter(_.isDirectory).map(_.getName)
+    val potentialRepoDirs = rootDir.toFile.listFiles.filter(_.isDirectory).map(_.getName).toList
     val reposRootDir = rootDir.toFile.getCanonicalPath
-    if(potentialRepoDirs.isEmpty) {
-      throw new RuntimeException(s"Repository directory not found in ${reposRootDir}. Please clone your repository as a directory inside ${reposRootDir}")
+    potentialRepoDirs match {
+      case Nil => throw new RuntimeException(s"Repository directory not found in ${reposRootDir}. Please clone your repository as a directory inside ${reposRootDir}")
+      case dir :: Nil => dir
+      case _ => throw new RuntimeException(s"More than one directory found in ${reposRootDir}. Only one repository directory can exist there")
     }
-    if(potentialRepoDirs.size > 1) {
-      throw new RuntimeException(s"More than one directory found in ${reposRootDir}. Only one repository directory can exist there")
-    }
-    potentialRepoDirs.head
   }
 
   private def discoverRepoLocation(rootDir: Path, repoName: String) = {
