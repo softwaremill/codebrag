@@ -21,8 +21,8 @@ trait DaoConfig extends Logging {
         case x => throw new IllegalStateException(s"Unknown storage type $x")
       }
     } else {
-      logger.info("Assuming default storage: mongo")
-      Mongo
+      logger.info("Assuming default storage: embedded")
+      Embedded
     }
   }
 
