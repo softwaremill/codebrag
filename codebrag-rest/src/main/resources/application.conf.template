@@ -12,7 +12,7 @@ repository {
 codebrag {
     data-dir = "./data"
     repos-root = "./repos"
-    send-anon-usage-data = "true"
+    send-anon-usage-data = true
     web-server-port = 8080
 }
 
