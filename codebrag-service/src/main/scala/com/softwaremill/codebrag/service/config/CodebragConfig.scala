@@ -2,6 +2,7 @@ package com.softwaremill.codebrag.service.config
 
 import org.joda.time._
 import scala.concurrent.duration._
+import com.softwaremill.codebrag.common.config.ConfigWithDefault
 
 trait CodebragConfig extends ConfigWithDefault with CodebragStatsConfig {
 

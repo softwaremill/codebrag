@@ -1,9 +1,8 @@
-package com.softwaremill.codebrag.service.config
+package com.softwaremill.codebrag.common.config
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import com.typesafe.config.{ConfigParseOptions, ConfigResolveOptions, ConfigFactory}
-import java.util
 
 class ConfigWithDefaultSpec extends FlatSpec with ShouldMatchers {
 

@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.config
+package com.softwaremill.codebrag.common.config
 
 import com.typesafe.config.Config
 

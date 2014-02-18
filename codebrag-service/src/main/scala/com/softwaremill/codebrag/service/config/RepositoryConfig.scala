@@ -1,6 +1,7 @@
 package com.softwaremill.codebrag.service.config
 
 import com.typesafe.config.Config
+import com.softwaremill.codebrag.common.config.ConfigWithDefault
 
 /*
   This is repository section from config file. It looks like below:

@@ -4,7 +4,7 @@ import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.common.{ClockSpec, Clock}
-import com.softwaremill.codebrag.service.config.{ConfigWithDefault, CodebragConfig}
+import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import org.mockito.Mockito._
@@ -12,6 +12,7 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
 import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
 import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
+import com.softwaremill.codebrag.common.config.ConfigWithDefault
 
 class UserNotificationsSenderSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {

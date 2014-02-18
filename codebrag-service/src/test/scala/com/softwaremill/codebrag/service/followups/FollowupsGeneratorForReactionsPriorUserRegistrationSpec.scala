@@ -5,7 +5,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.dao._
-import com.softwaremill.codebrag.service.config.{ConfigWithDefault, CodebragConfig}
+import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler, CommitInfoAssembler, UserAssembler}
@@ -15,6 +15,7 @@ import com.softwaremill.codebrag.domain.Followup
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, LikeDAO, CommitCommentDAO}
 import com.softwaremill.codebrag.dao.followup.FollowupDAO
+import com.softwaremill.codebrag.common.config.ConfigWithDefault
 
 class FollowupsGeneratorForReactionsPriorUserRegistrationSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterEach with MockitoSugar with ClockSpec {
 

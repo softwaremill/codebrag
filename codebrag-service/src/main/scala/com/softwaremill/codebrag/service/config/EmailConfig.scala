@@ -1,6 +1,7 @@
 package com.softwaremill.codebrag.service.config
 
 import com.typesafe.config.Config
+import com.softwaremill.codebrag.common.config.ConfigWithDefault
 
 trait EmailConfig extends ConfigWithDefault {
   def rootConfig: Config
