@@ -1,17 +1,3 @@
-storage {
-    type = "mongo"
-
-    embedded {
-        datadir = "./data"
-        backup-hour = 5
-    }
-}
-
-mongo {
-    servers = "localhost:27017"
-    database = "codebrag"
-}
-
 // this section is required only if you need to pass credentials on every repo update
 //repository {
 //    username = "johndoe"
@@ -19,6 +5,7 @@ mongo {
 //}
 
 codebrag {
+    data-dir = "./data"
     demo = false
     application-url = "http://codebrag:8080"
     invitation-expiry-time = "24 hours"

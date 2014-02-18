@@ -3,8 +3,9 @@ package com.softwaremill.codebrag.dao
 import com.typesafe.config.Config
 import scala.Predef._
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.common.config.ConfigWithDefault
 
-trait DaoConfig extends Logging {
+trait DaoConfig extends ConfigWithDefault with Logging {
   def rootConfig: Config
 
   object StorageType extends Enumeration {
@@ -31,6 +32,6 @@ trait DaoConfig extends Logging {
   lazy val mongoServers: String = rootConfig.getString("mongo.servers")
   lazy val mongoDatabase: String = rootConfig.getString("mongo.database")
 
-  lazy val embeddedDataDir: String = rootConfig.getString("storage.embedded.datadir")
-  lazy val embeddedBackupHour: Int = rootConfig.getInt("storage.embedded.backup-hour")
+  lazy val embeddedDataDir: String = getString("codebrag.data-dir", "./data")
+  lazy val embeddedBackupHour: Int = getInt("storage.embedded.backup-hour", 5)
 }
