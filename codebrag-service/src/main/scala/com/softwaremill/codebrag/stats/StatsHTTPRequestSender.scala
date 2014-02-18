@@ -1,10 +1,10 @@
 package com.softwaremill.codebrag.stats
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.service.config.CodebragStatsConfig
+import com.softwaremill.codebrag.service.config.StatsConfig
 import dispatch._
 
-class StatsHTTPRequestSender(config: CodebragStatsConfig) extends Logging {
+class StatsHTTPRequestSender(config: StatsConfig) extends Logging {
 
   def sendDailyStats(jsonData: String) {
     sendRequest(jsonData, config.dailyStatsServerUrl)

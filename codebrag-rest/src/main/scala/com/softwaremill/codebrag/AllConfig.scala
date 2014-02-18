@@ -9,4 +9,4 @@ trait AllConfig
   with GithubConfig
   with CodebragConfig
   with EmailConfig
-  with CodebragStatsConfig
+  with StatsConfig
