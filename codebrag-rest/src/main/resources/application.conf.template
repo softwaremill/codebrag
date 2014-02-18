@@ -1,12 +1,14 @@
-// this section is required only if you need to pass credentials on every repo update
-//repository {
-//    username = "johndoe"
-//    password = "secret"
-//}
+repository {
+#   uncomment either username/password or passphrase - depending on what is your authentication method
+#   username = "johndoe"
+#   password = "secret_password"
+#   passphrase = "secret_passphrase"
+}
 
 codebrag {
     data-dir = "./data"
-    demo = false
+    repos-root = "./repos"
+    web-server-port = 8080
     application-url = "http://codebrag:8080"
     invitation-expiry-time = "24 hours"
     user-email-notifications {
@@ -16,11 +18,6 @@ codebrag {
         daily-digest-hour = 6
     }
     send-anon-usage-data = "true"
-}
-
-web-server {
-    host = "0.0.0.0"
-    port = 8080
 }
 
 // internal SMTP server or external one (e.g. GMail account or http://mandrill.com)

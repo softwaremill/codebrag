@@ -4,15 +4,17 @@ import com.typesafe.config.Config
 import com.softwaremill.codebrag.common.config.ConfigWithDefault
 
 /*
-  This is repository section from config file. It looks like below:
+  This is repository section from config file + repos-root key from codebrag section. It looks like below:
   It can have either username/password keys or passphrase key configured.
-  Also it can have repositories directory set. By default it is set to "./repos"
+  Also it can have repositories directory set (codebrag.repos-root). By default it is set to "./repos"
 
   repository {
     username = "johndoe"
     password = "secret"
+  }
 
-    repos-root = "/your/repos/root"
+  codebrag {
+    repos-root = "./repos"
   }
 
  */
@@ -22,7 +24,7 @@ trait RepositoryConfig extends ConfigWithDefault {
   def rootConfig: Config
 
   // directory containing cloned repo dir
-  val repositoriesRoot = getString("repository.repos-root", "./repos")
+  val repositoriesRoot = getString("codebrag.repos-root", "./repos")
 
   // for user/pass
   val username = getOptionalString("repository.username")
