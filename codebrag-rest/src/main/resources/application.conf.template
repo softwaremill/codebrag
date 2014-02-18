@@ -1,26 +1,27 @@
 repository {
-#   uncomment either username/password or passphrase - depending on what is your authentication method
+
+### Uncomment either username/password or passphrase - depending on your authentication method.
+### You only need to do this if your repository asks for it on every command.
+
 #   username = "johndoe"
 #   password = "secret_password"
+
 #   passphrase = "secret_passphrase"
 }
 
 codebrag {
     data-dir = "./data"
     repos-root = "./repos"
-    web-server-port = 8080
-    application-url = "http://codebrag:8080"
-    invitation-expiry-time = "24 hours"
-    user-email-notifications {
-        enabled = true
-        check-interval = "15 minutes"
-        user-offline-after = "5 minutes"
-        daily-digest-hour = 6
-    }
     send-anon-usage-data = "true"
+    web-server-port = 8080
 }
 
-// internal SMTP server or external one (e.g. GMail account or http://mandrill.com)
+email-notifications {
+    enabled = true
+    daily-digest-hour = 6
+}
+
+### internal SMTP server or external one (e.g. GMail account or http://mandrill.com)
 email {
     smtp-host = "smtp.gmail.com"
     smtp-port = "465"
