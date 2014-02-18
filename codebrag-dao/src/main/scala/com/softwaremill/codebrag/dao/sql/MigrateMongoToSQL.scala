@@ -10,7 +10,6 @@ import com.softwaremill.codebrag.domain._
 import com.softwaremill.codebrag.dao.events.EventRecord
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.dao.followup.{SQLFollowupSchema, FollowupRecord}
-import com.softwaremill.codebrag.dao.heartbeat.HeartbeatRecord
 import com.softwaremill.codebrag.dao.invitation.InvitationRecord
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusRecord
 import com.softwaremill.codebrag.domain.Comment
