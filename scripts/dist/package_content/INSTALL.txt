@@ -1,0 +1,3 @@
+Here be dragons
+
+This file will contain installation instructions for Codebrag v1.2

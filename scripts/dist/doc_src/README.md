@@ -1,0 +1,1 @@
+When changing MD files, please generate PDF version and put it in `package_content/` directory to be included in distribution package

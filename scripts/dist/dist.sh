@@ -15,14 +15,8 @@ DIST_ARCHIVE=codebrag.zip
 DIST_ARCHIVE_PREVIEW=codebrag-preview.zip
 WAR_FILE=$CODEBRAG_ROOT/codebrag-dist/target/scala-2.10/codebrag-dist-assembly*.jar
 CONF_FILE=$CODEBRAG_ROOT/codebrag-rest/src/main/resources/application.conf.template
-DB_MIGRATIONS=$CODEBRAG_ROOT/scripts/mongo_migrations
+PACKAGE_CONTENT_DIR=$CODEBRAG_ROOT/scripts/dist/package_content
 
-GUIDE_FILE=$CODEBRAG_ROOT/scripts/dist/package_content/install_guide.pdf
-LICENSE_FILE=$CODEBRAG_ROOT/scripts/dist/package_content/license.pdf
-LOG_CONF=$CODEBRAG_ROOT/scripts/dist/package_content/logback-example.xml
-RUN_SCRIPT=$CODEBRAG_ROOT/scripts/dist/package_content/run.*
-STOP_SCRIPT=$CODEBRAG_ROOT/scripts/dist/package_content/stop.*
-PASSWD_SCRIPT=$CODEBRAG_ROOT/scripts/dist/package_content/passwd.*
 
 UPLOAD_ARG="upload"
 UPLOAD_PREVIEW_ARG="upload-preview"
@@ -40,31 +34,17 @@ echo "Copying application"
 cp $WAR_FILE $DIST_DIR/codebrag.jar
 echo "Done"
 
-echo "Copying run&stop script"
-cp $RUN_SCRIPT $DIST_DIR
-cp $STOP_SCRIPT $DIST_DIR
-cp $PASSWD_SCRIPT $DIST_DIR
-echo "Done"
-
-echo "Copying instruction and license"
-cp $GUIDE_FILE $DIST_DIR
-cp $LICENSE_FILE $DIST_DIR
-echo "Done"
-
-echo "Copying DB migrations"
-cp -r $DB_MIGRATIONS $DIST_DIR
+echo "Copying package_content to distribution"
+cp -r $PACKAGE_CONTENT_DIR/* $DIST_DIR
 echo "Done"
 
 echo "Copying codebrag configuration file"
 cp $CONF_FILE $DIST_DIR/codebrag.conf
 echo "Done"
 
-echo "Copying logging configuration file"
-cp $LOG_CONF $DIST_DIR/logback.xml
-echo "Done"
-
 echo "Packaging"
 zip -r $DIST_ARCHIVE $DIST_DIR
+rm -r $DIST_DIR
 echo "Done"
 
 # Upload build to S3 if required
