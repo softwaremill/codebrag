@@ -38,7 +38,7 @@ function check_repo_available {
   if [ $SUBDIRS_COUNT -eq 0 ]; then
     echo "ERROR: $REPOS_DIR should contain directory with your repository. Clone your repository into $REPOS_DIR:
  git: git clone git://yourcompany.com/path/to/project-abc.git
- svn: git svn clone git://yourcompany.com/path/to/project-abc.git    # don't use 'svn checkout'"
+ svn: git svn clone http://yourcompany.com/path/to/svn/project    # don't use 'svn checkout'"
     exit 1    
   fi
 
