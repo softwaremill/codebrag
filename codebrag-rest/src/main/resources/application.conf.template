@@ -1,6 +1,6 @@
 repository {
 
-### Uncomment either username/password or passphrase (if your authentication method requires this).
+### Uncomment either username/password or passphrase depending on your authentication method
 
 #   username = "johndoe"
 #   password = "secret_password"
