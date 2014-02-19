@@ -29,15 +29,24 @@ function check_repo_available {
   # check if "repos" exist
   # TODO: read config in case of "repos" set to non-default
   if [ ! -d "$REPOS_DIR" ]; then
-    echo "ERROR: Cannot find directory containing your repo: $REPOS_DIR"
+    echo "ERROR: Cannot find directory containing your repository: $REPOS_DIR"
     exit 1
   fi
 
-  # check if exactly 1 repository directory is present
+  # check if at least 1 repository directory is present
   local SUBDIRS_COUNT=`echo $(find $REPOS_DIR -maxdepth 1 -mindepth 1 -type d -print | wc -l)`
-  if [ $SUBDIRS_COUNT -ne 1 ]; then
-    echo "ERROR: There should be exactyly one repository directory inside $REPOS_DIR cloned, but $SUBDIRS_COUNT directories found"
+  if [ $SUBDIRS_COUNT -eq 0 ]; then
+    echo "ERROR: $REPOS_DIR should contain directory with your repository. Clone your repository into $REPOS_DIR:
+ git: git clone git://yourcompany.com/path/to/project-abc.git
+ svn: git svn clone git://yourcompany.com/path/to/project-abc.git    # don't use 'svn checkout'"
     exit 1    
+  fi
+
+  # check if exactly 1 repository directory is present
+  if [ $SUBDIRS_COUNT -ne 1 ]; then
+    echo "ERROR: $REPOS_DIR directory should contain exactly one directory with your repository ($SUBDIRS_COUNT directories found).
+ At the moment Codebrag supports single repository configuration only."
+    exit 1
   fi
 
   local POTENTIAL_REPO_DIR=$(find $REPOS_DIR -maxdepth 1 -mindepth 1 -type d -print)
@@ -51,7 +60,7 @@ function check_repo_available {
   # check if dir is git repo (contains .git dir)
   local GIT_DIR=$POTENTIAL_REPO_DIR/.git
   if [ ! -d "$GIT_DIR" ]; then
-    echo "ERROR: Looks like $POTENTIAL_REPO_DIR is not Git repository"
+    echo "ERROR: Looks like $POTENTIAL_REPO_DIR is not a git repository"
     exit 1    
   fi
 
