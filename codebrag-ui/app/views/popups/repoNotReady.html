@@ -6,7 +6,7 @@
 <div class="popup-content" ng-show="repoStatus.error">
     <h1 class="failed">{{ repoStatus.error }}</h1>
     <p>Codebrag is having issues with repository state.</p>
-    <p>If this problem persists, contact your administrator.</p>
+    <p>See <a href="http://documentation.codebrag.com/display/CBR12/Installation#Installation-connect-repository">repository setup instructions</a> for help.</p>
 </div>
 <span class="close-btn" ng-show="repoStatus.error && repoStatus.error.length" ng-click="close()"><i class="icon-remove"></i></span>
 
