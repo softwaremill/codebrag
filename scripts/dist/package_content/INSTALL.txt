@@ -1,7 +1,10 @@
+==================================
+
 Welcome to Codebrag!
 
-* Install Guide -> http://documentation.codebrag.com/display/CBR12/Installation
+* INSTALL GUIDE -> http://documentation.codebrag.com/display/CBR12/Installation
 
+==================================
 
 Need help? Questions? We are here:
 
@@ -13,3 +16,4 @@ Need help? Questions? We are here:
 * FAQ -> http://codebrag.com/faq.html
 * User Group -> https://groups.google.com/forum/#!forum/codebrag-users
 
+==================================

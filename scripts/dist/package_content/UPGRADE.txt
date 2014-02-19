@@ -1,3 +1,9 @@
-Here be dragons
+==================================
 
-This file will contain v1.0 to v1.2 upgrade instructions for Codebrag
+Hey, great to see you again!
+
+* UPGRADE INSTRUCTIONS -> http://documentation.codebrag.com/display/CBR12/Upgrade+from+1.0+to+1.2
+
+Ping us at ask@codebrag.com if you need any help with the upgrade process.
+
+==================================
