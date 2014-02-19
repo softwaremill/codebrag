@@ -1,7 +1,6 @@
 repository {
 
-### Uncomment either username/password or passphrase - depending on your authentication method.
-### You only need to do this if your repository asks for it on every command.
+### Uncomment either username/password or passphrase (if your authentication method requires this).
 
 #   username = "johndoe"
 #   password = "secret_password"
