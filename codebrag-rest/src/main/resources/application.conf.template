@@ -14,6 +14,7 @@ codebrag {
     repos-root = "./repos"
     send-anon-usage-data = true
     web-server-port = 8080
+    application-url = "http://localhost:8080"
 }
 
 email-notifications {
