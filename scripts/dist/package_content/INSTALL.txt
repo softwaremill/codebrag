@@ -1,6 +1,6 @@
 ==================================
 
-Welcome to Codebrag!
+Welcome to Codebrag v1.2!
 
 * INSTALL GUIDE -> http://documentation.codebrag.com/display/CBR12/Installation
 
