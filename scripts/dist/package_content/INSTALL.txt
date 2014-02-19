@@ -1,3 +1,15 @@
-Here be dragons
+Welcome to Codebrag!
 
-This file will contain installation instructions for Codebrag v1.2
+* Install Guide -> http://documentation.codebrag.com/display/CBR12/Installation
+
+
+Need help? Questions? We are here:
+
+* ask@codebrag.com
+* http://codebrag.com
+
+* Twitter -> https://twitter.com/codebrag
+
+* FAQ -> http://codebrag.com/faq.html
+* User Group -> https://groups.google.com/forum/#!forum/codebrag-users
+
