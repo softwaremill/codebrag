@@ -13,6 +13,7 @@ import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
+import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 
 class CommitReviewTaskGeneratorActionsSpec
   extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar with ClockSpec {
@@ -22,16 +23,19 @@ class CommitReviewTaskGeneratorActionsSpec
   var userDaoMock: UserDAO = _
   var reviewTaskDaoMock: CommitReviewTaskDAO = _
   var commitInfoDaoMock: CommitInfoDAO = _
+  var repoStatusDaoMock: RepositoryStatusDAO = _
   var generator: CommitReviewTaskGeneratorActions = _
 
   before {
     userDaoMock = mock[UserDAO]
     reviewTaskDaoMock = mock[CommitReviewTaskDAO]
     commitInfoDaoMock = mock[CommitInfoDAO]
+    repoStatusDaoMock = mock[RepositoryStatusDAO]
     generator = new {
       val userDao = userDaoMock
       val commitToReviewDao = reviewTaskDaoMock
       val commitInfoDao = commitInfoDaoMock
+      val repoStatusDao = repoStatusDaoMock
     } with CommitReviewTaskGeneratorActions
   }
 

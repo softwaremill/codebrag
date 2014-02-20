@@ -22,9 +22,7 @@ class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositorySt
     val lastKnownCommitSHA = repoStatusDao.get(repo.repoName)
     try {
       repo.pullChanges()
-      val newCommits = repo.getCommits(lastKnownCommitSHA)
-      updateRepoReadyStatus(repo)
-      newCommits
+      repo.getCommits(lastKnownCommitSHA)
     } catch {
       case e: Exception => {
         updateRepoNotReadyStatus(repo, e)
@@ -38,13 +36,6 @@ class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositorySt
     logger.debug(s"Saving repository-not-ready status data to DB with message: ${cause.getMessage}")
     val repoNotReadyStatus = RepositoryStatus.notReady(repo.repoName, Some(cause.getMessage))
     repoStatusDao.updateRepoStatus(repoNotReadyStatus)
-  }
-
-  private def updateRepoReadyStatus(repo: Repository) {
-    logger.debug(s"Saving repository-ready status data to DB with HEAD: ${repo.currentHead}")
-    val currentHead = ObjectId.toString(repo.currentHead)
-    val repoReadyStatus = RepositoryStatus.ready(repo.repoName).withHeadId(currentHead)
-    repoStatusDao.updateRepoStatus(repoReadyStatus)
   }
 
 }

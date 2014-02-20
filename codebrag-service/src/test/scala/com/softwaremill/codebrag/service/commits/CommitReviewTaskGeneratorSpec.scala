@@ -18,6 +18,7 @@ import com.softwaremill.codebrag.common.{Utils, ClockSpec}
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
+import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 
 class CommitReviewTaskGeneratorSpec
   extends FlatSpec with ShouldMatchers with BeforeAndAfter with BeforeAndAfterAll with MockitoSugar with ClockSpec {
@@ -29,6 +30,7 @@ class CommitReviewTaskGeneratorSpec
   var userDaoMock: UserDAO = _
   var reviewTaskDaoMock: CommitReviewTaskDAO = _
   var commitInfoDaoMock: CommitInfoDAO = _
+  var repoStatusDaoMock: RepositoryStatusDAO = _
   override val fixtureTime = new DateTime(23333333).getMillis
 
   val repoName = "codebrag"
@@ -38,7 +40,8 @@ class CommitReviewTaskGeneratorSpec
     userDaoMock = mock[UserDAO]
     reviewTaskDaoMock = mock[CommitReviewTaskDAO]
     commitInfoDaoMock = mock[CommitInfoDAO]
-    generator = TestActorRef(new CommitReviewTaskGenerator(userDaoMock, reviewTaskDaoMock, commitInfoDaoMock))
+    repoStatusDaoMock = mock[RepositoryStatusDAO]
+    generator = TestActorRef(new CommitReviewTaskGenerator(userDaoMock, reviewTaskDaoMock, commitInfoDaoMock, repoStatusDaoMock))
   }
 
   override protected def afterAll() {

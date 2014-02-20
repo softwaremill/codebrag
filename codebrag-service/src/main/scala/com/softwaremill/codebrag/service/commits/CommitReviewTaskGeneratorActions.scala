@@ -9,12 +9,14 @@ import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
+import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 
 trait CommitReviewTaskGeneratorActions extends Logging {
 
   val userDao: UserDAO
   val commitToReviewDao: CommitReviewTaskDAO
   val commitInfoDao: CommitInfoDAO
+  val repoStatusDao: RepositoryStatusDAO
 
   def handleNewUserRegistered(event: NewUserRegistered) {
     val commitsToReview = commitInfoDao.findLastCommitsNotAuthoredByUser(event, CommitReviewTaskGeneratorActions.LastCommitsToReviewCount)
@@ -26,6 +28,7 @@ trait CommitReviewTaskGeneratorActions extends Logging {
   def handleCommitsUpdated(event: NewCommitsLoadedEvent) {
     val commits = chooseCommitsToGenerateTasksFor(event)
     userDao.findAll().foreach(createAndStoreReviewTasksFor(commits, _))
+    updateRepoReadyStatus(event.repoName, event.currentSHA)
   }
 
   private def chooseCommitsToGenerateTasksFor(event: NewCommitsLoadedEvent): List[LightweightCommitInfo] = {
@@ -42,6 +45,12 @@ trait CommitReviewTaskGeneratorActions extends Logging {
 
   private def constructReviewTasksFor(commits: List[LightweightCommitInfo], user: User) = {
     commits.filterNot(commitAuthoredByUser(_, user)).map(commit => CommitReviewTask(commit.id, user.id))
+  }
+
+  private def updateRepoReadyStatus(repoName: String, currentHEAD: String) {
+    logger.debug(s"Saving repository-ready status data to DB with HEAD: ${repoName}")
+    val repoReadyStatus = RepositoryStatus.ready(repoName).withHeadId(currentHEAD)
+    repoStatusDao.updateRepoStatus(repoReadyStatus)
   }
 
 }

@@ -41,6 +41,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
     val userDao = self.userDao
     val commitInfoDao = self.commitInfoDao
     val commitToReviewDao = self.commitReviewTaskDao
+    val repoStatusDao = self.repoStatusDao
   }
 
   lazy val welcomeFollowupsGenerator = new WelcomeFollowupsGenerator(internalUserDao, commentDao, likeDao, followupDao, commitInfoDao, templateEngine)

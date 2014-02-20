@@ -4,8 +4,7 @@ import akka.actor.Props
 import com.softwaremill.codebrag.common.{Event, StatisticEvent}
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.commits.CommitReviewTaskGenerator
-import com.softwaremill.codebrag.dao._
-import com.softwaremill.codebrag.dao.events.{EventDAO, NewUserRegistered}
+import com.softwaremill.codebrag.dao.events.EventDAO
 import com.softwaremill.codebrag.service.followups.FollowupsGenerator
 import com.softwaremill.codebrag.domain.NewCommitsLoadedEvent
 import com.softwaremill.codebrag.domain.reactions.LikeEvent
@@ -16,6 +15,7 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
 import com.softwaremill.codebrag.dao.followup.{FollowupWithReactionsDAO, FollowupDAO}
+import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 
 trait EventingConfiguration extends ActorSystemSupport {
 
@@ -24,10 +24,11 @@ trait EventingConfiguration extends ActorSystemSupport {
   def commitInfoDao: CommitInfoDAO
   def followupDao: FollowupDAO
   def followupWithReactionsDao: FollowupWithReactionsDAO
+  def repoStatusDao: RepositoryStatusDAO
   def eventDao: EventDAO
 
   lazy val eventLogger = actorSystem.actorOf(Props(classOf[EventLogger]))
-  lazy val reviewTaskGeneratorActor = actorSystem.actorOf(Props(new CommitReviewTaskGenerator(userDao, commitReviewTaskDao, commitInfoDao)))
+  lazy val reviewTaskGeneratorActor = actorSystem.actorOf(Props(new CommitReviewTaskGenerator(userDao, commitReviewTaskDao, commitInfoDao, repoStatusDao)))
   lazy val followupGeneratorActor = actorSystem.actorOf(Props(new FollowupsGenerator(followupDao, userDao, commitInfoDao, followupWithReactionsDao: FollowupWithReactionsDAO)))
   lazy val statsEventsCollector = actorSystem.actorOf(Props(new StatisticEventsCollector(eventDao)))
 
