@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.service.commits
 import org.scalatest.{FlatSpec, BeforeAndAfter}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{CommitsUpdatedEvent, CommitInfo}
+import com.softwaremill.codebrag.domain.{NewCommitsLoadedEvent, CommitInfo}
 import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.common.ClockSpec
 import com.typesafe.config.ConfigFactory
@@ -70,7 +70,7 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
     // then
     eventBus.size() should equal(1)
-    val onlyEvent = getEvents(0).asInstanceOf[CommitsUpdatedEvent]
+    val onlyEvent = getEvents(0).asInstanceOf[NewCommitsLoadedEvent]
     onlyEvent.newCommits.size should equal(2)
     onlyEvent.newCommits(0).id should equal(commitsLoadResult.commits(0).id)
     onlyEvent.newCommits(1).id should equal(commitsLoadResult.commits(1).id)
@@ -98,7 +98,7 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
     service.importRepoCommits(repoData)
 
     // then
-    val onlyEvent = getEvents(0).asInstanceOf[CommitsUpdatedEvent]
+    val onlyEvent = getEvents(0).asInstanceOf[NewCommitsLoadedEvent]
     onlyEvent.firstTime should equal(true)
   }
 
@@ -111,7 +111,7 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
     service.importRepoCommits(repoData)
 
     // then
-    val onlyEvent = getEvents(0).asInstanceOf[CommitsUpdatedEvent]
+    val onlyEvent = getEvents(0).asInstanceOf[NewCommitsLoadedEvent]
     onlyEvent.firstTime should equal(false)
   }
 

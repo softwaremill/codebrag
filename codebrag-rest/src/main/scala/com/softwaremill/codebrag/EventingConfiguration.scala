@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.service.commits.CommitReviewTaskGenerator
 import com.softwaremill.codebrag.dao._
 import com.softwaremill.codebrag.dao.events.{EventDAO, NewUserRegistered}
 import com.softwaremill.codebrag.service.followups.FollowupsGenerator
-import com.softwaremill.codebrag.domain.CommitsUpdatedEvent
+import com.softwaremill.codebrag.domain.NewCommitsLoadedEvent
 import com.softwaremill.codebrag.domain.reactions.LikeEvent
 import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
 import com.softwaremill.codebrag.eventstream.StatisticEventsCollector
@@ -33,7 +33,7 @@ trait EventingConfiguration extends ActorSystemSupport {
 
   def setupEvents() {
     actorSystem.eventStream.subscribe(eventLogger, classOf[Event])
-    actorSystem.eventStream.subscribe(reviewTaskGeneratorActor, classOf[CommitsUpdatedEvent])
+    actorSystem.eventStream.subscribe(reviewTaskGeneratorActor, classOf[NewCommitsLoadedEvent])
     actorSystem.eventStream.subscribe(followupGeneratorActor, classOf[LikeEvent])
     actorSystem.eventStream.subscribe(followupGeneratorActor, classOf[UnlikeEvent])
     actorSystem.eventStream.subscribe(statsEventsCollector, classOf[StatisticEvent])

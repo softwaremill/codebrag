@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.service.commits
 
-import com.softwaremill.codebrag.domain.CommitsUpdatedEvent
+import com.softwaremill.codebrag.domain.NewCommitsLoadedEvent
 import akka.actor.Actor
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.UserDAO
@@ -11,7 +11,7 @@ class CommitReviewTaskGenerator(val userDao: UserDAO, val commitToReviewDao: Com
 with CommitReviewTaskGeneratorActions {
 
   def receive = {
-    case (event: CommitsUpdatedEvent) => handleCommitsUpdated(event)
+    case (event: NewCommitsLoadedEvent) => handleCommitsUpdated(event)
   }
 
 }

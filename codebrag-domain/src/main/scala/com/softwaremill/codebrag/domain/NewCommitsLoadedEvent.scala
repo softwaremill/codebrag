@@ -11,7 +11,7 @@ import org.joda.time.DateTime
  * @param newCommits list of incoming commits
  * @param clock to obtain when event was created
  */
-case class CommitsUpdatedEvent(firstTime: Boolean, newCommits: List[UpdatedCommit])(implicit clock: Clock) extends Event {
+case class NewCommitsLoadedEvent(firstTime: Boolean, newCommits: List[NewCommit])(implicit clock: Clock) extends Event {
 
   def timestamp: DateTime = clock.nowUtc
 
@@ -21,17 +21,17 @@ case class CommitsUpdatedEvent(firstTime: Boolean, newCommits: List[UpdatedCommi
 
 }
 
-case class UpdatedCommit(id: ObjectId, authorName: String, authorEmail: String, commitDate: DateTime)
+case class NewCommit(id: ObjectId, authorName: String, authorEmail: String, commitDate: DateTime)
 
-object UpdatedCommit {
+object NewCommit {
   def apply(commitInfo: CommitInfo) = {
-    new UpdatedCommit(commitInfo.id, commitInfo.authorName, commitInfo.authorEmail, commitInfo.commitDate)
+    new NewCommit(commitInfo.id, commitInfo.authorName, commitInfo.authorEmail, commitInfo.commitDate)
   }
 }
 
 object CommitUpdatedEvent {
-  implicit object CommitLikeUpdatedCommitEvent extends CommitLike[UpdatedCommit] {
-    def authorName(commitLike: UpdatedCommit) = commitLike.authorName
-    def authorEmail(commitLike: UpdatedCommit) = commitLike.authorEmail
+  implicit object CommitLikeUpdatedCommitEvent extends CommitLike[NewCommit] {
+    def authorName(commitLike: NewCommit) = commitLike.authorName
+    def authorEmail(commitLike: NewCommit) = commitLike.authorEmail
   }
 }

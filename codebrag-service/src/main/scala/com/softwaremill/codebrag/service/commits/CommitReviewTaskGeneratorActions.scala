@@ -2,9 +2,9 @@ package com.softwaremill.codebrag.service.commits
 
 import com.softwaremill.codebrag.domain._
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.domain.CommitsUpdatedEvent
+import com.softwaremill.codebrag.domain.NewCommitsLoadedEvent
 import com.softwaremill.codebrag.domain.CommitReviewTask
-import com.softwaremill.codebrag.domain.UpdatedCommit
+import com.softwaremill.codebrag.domain.NewCommit
 import com.softwaremill.codebrag.domain.CommitUpdatedEvent._
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
@@ -25,14 +25,14 @@ trait CommitReviewTaskGeneratorActions extends Logging {
     tasks.foreach(commitToReviewDao.save(_))
   }
 
-  def handleCommitsUpdated(event: CommitsUpdatedEvent) {
+  def handleCommitsUpdated(event: NewCommitsLoadedEvent) {
     val commitsToGenerateTasks = if (event.firstTime)
       event.newCommits.take(CommitReviewTaskGeneratorActions.LastCommitsToReviewCount)
     else event.newCommits
     commitsToGenerateTasks.foreach(createAndStoreReviewTasksFor(_))
   }
 
-  private def createAndStoreReviewTasksFor(commit: UpdatedCommit) {
+  private def createAndStoreReviewTasksFor(commit: NewCommit) {
     val repoUsers = repositoryUsers()
     val tasks = createReviewTasksFor(commit, repoUsers)
     tasks.foreach(commitToReviewDao.save(_))
@@ -43,7 +43,7 @@ trait CommitReviewTaskGeneratorActions extends Logging {
     userDao.findAll()
   }
 
-  private def createReviewTasksFor(commit: UpdatedCommit, users: List[User]) = {
+  private def createReviewTasksFor(commit: NewCommit, users: List[User]) = {
     users.filterNot(commitAuthoredByUser(commit, _)).map(user => CommitReviewTask(commit.id, user.id))
   }
 

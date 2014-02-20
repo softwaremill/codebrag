@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.service.commits
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfter, FlatSpec}
 import akka.testkit.TestActorRef
-import com.softwaremill.codebrag.domain.{CommitReviewTask, UpdatedCommit, CommitsUpdatedEvent}
+import com.softwaremill.codebrag.domain.{CommitReviewTask, NewCommit, NewCommitsLoadedEvent}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import org.scalatest.mock.MockitoSugar
@@ -54,7 +54,7 @@ class CommitReviewTaskGeneratorSpec
     given(userDaoMock.findAll()).willReturn(users)
 
     // when
-    generator ! CommitsUpdatedEvent(firstTime = false, commits)
+    generator ! NewCommitsLoadedEvent(firstTime = false, commits)
 
     // then
     verify(reviewTaskDaoMock, times(22)).save(any[CommitReviewTask])
@@ -67,7 +67,7 @@ class CommitReviewTaskGeneratorSpec
     given(userDaoMock.findAll()).willReturn(users)
 
     // when
-    generator ! CommitsUpdatedEvent(firstTime = false, commits)
+    generator ! NewCommitsLoadedEvent(firstTime = false, commits)
 
     // then
     verify(reviewTaskDaoMock, never()).save(any[CommitReviewTask])
@@ -84,7 +84,7 @@ class CommitReviewTaskGeneratorSpec
     given(userDaoMock.findAll()).willReturn(users)
 
     // when
-    generator ! CommitsUpdatedEvent(firstTime = true, commits)
+    generator ! NewCommitsLoadedEvent(firstTime = true, commits)
 
     // then
     verify(reviewTaskDaoMock, times(2 * CommitReviewTaskGeneratorActions.LastCommitsToReviewCount)).save(any[CommitReviewTask])
@@ -102,7 +102,7 @@ class CommitReviewTaskGeneratorSpec
     given(userDaoMock.findAll()).willReturn(users)
 
     // when
-    generator ! CommitsUpdatedEvent(firstTime = true, commits)
+    generator ! NewCommitsLoadedEvent(firstTime = true, commits)
 
     // then
     verify(reviewTaskDaoMock, times(2 * commitCount)).save(any[CommitReviewTask])
@@ -120,7 +120,7 @@ class CommitReviewTaskGeneratorSpec
     given(userDaoMock.findAll()).willReturn(users)
 
     // when
-    generator ! CommitsUpdatedEvent(firstTime = false, commits)
+    generator ! NewCommitsLoadedEvent(firstTime = false, commits)
 
     // then
     verify(reviewTaskDaoMock).save(CommitReviewTask(commits(0).id, sofokles.id))
@@ -134,7 +134,7 @@ class CommitReviewTaskGeneratorSpec
   }
 
   private def randomCommits(count: Int, date: DateTime = new DateTime()) = {
-    List.fill(count)(UpdatedCommit(new ObjectId(), "Author Name", "author@example.org", date))
+    List.fill(count)(NewCommit(new ObjectId(), "Author Name", "author@example.org", date))
   }
 
 }
