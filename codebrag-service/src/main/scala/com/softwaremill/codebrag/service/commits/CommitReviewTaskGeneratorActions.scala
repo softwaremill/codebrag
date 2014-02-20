@@ -26,30 +26,28 @@ trait CommitReviewTaskGeneratorActions extends Logging {
   }
 
   def handleCommitsUpdated(event: NewCommitsLoadedEvent) {
-    val commitsToGenerateTasks = if (event.firstTime)
+    val commits = chooseCommitsToGenerateTasksFor(event)
+    userDao.findAll().foreach(createAndStoreReviewTasksFor(commits, _))
+  }
+
+  private def chooseCommitsToGenerateTasksFor(event: NewCommitsLoadedEvent): List[NewCommit] = {
+    if (event.firstTime) {
       event.newCommits.take(CommitReviewTaskGeneratorActions.LastCommitsToReviewCount)
-    else event.newCommits
-    commitsToGenerateTasks.foreach(createAndStoreReviewTasksFor(_))
+    } else {
+      event.newCommits
+    }
   }
 
-  private def createAndStoreReviewTasksFor(commit: NewCommit) {
-    val repoUsers = repositoryUsers()
-    val tasks = createReviewTasksFor(commit, repoUsers)
-    tasks.foreach(commitToReviewDao.save(_))
+  private def createAndStoreReviewTasksFor(commits: List[NewCommit], user: User) {
+    constructReviewTasksFor(commits, user).foreach(commitToReviewDao.save(_))
   }
 
-  // TODO: return only repository users instead of all users as soon as permissions model is implemented
-  private def repositoryUsers() = {
-    userDao.findAll()
-  }
-
-  private def createReviewTasksFor(commit: NewCommit, users: List[User]) = {
-    users.filterNot(commitAuthoredByUser(commit, _)).map(user => CommitReviewTask(commit.id, user.id))
+  private def constructReviewTasksFor(commits: List[NewCommit], user: User) = {
+    commits.filterNot(commitAuthoredByUser(_, user)).map(commit => CommitReviewTask(commit.id, user.id))
   }
 
 }
 
 object CommitReviewTaskGeneratorActions {
-
   val LastCommitsToReviewCount = 10
 }
