@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.commits.jgit
 
 import com.softwaremill.codebrag.service.commits.CommitsLoader
-import com.softwaremill.codebrag.domain.{RepositoryStatus, CommitInfo}
+import com.softwaremill.codebrag.domain.{LoadCommitsResult, RepositoryStatus, CommitInfo}
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 import org.eclipse.jgit.lib.ObjectId
@@ -48,5 +48,3 @@ class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositorySt
   }
 
 }
-
-case class LoadCommitsResult(commits: List[CommitInfo], repoName: String, currentRepoHeadSHA: String)

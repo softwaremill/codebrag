@@ -3,19 +3,15 @@ package com.softwaremill.codebrag.service.commits
 import org.scalatest.{FlatSpec, BeforeAndAfter}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{NewCommitsLoadedEvent, CommitInfo}
+import com.softwaremill.codebrag.domain.{LoadCommitsResult, NewCommitsLoadedEvent, CommitInfo}
 import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.common.ClockSpec
-import com.typesafe.config.ConfigFactory
-import java.util
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.service.config.RepositoryConfig
 import com.softwaremill.codebrag.repository.config.RepoData
-import com.softwaremill.codebrag.service.commits.jgit.LoadCommitsResult
 
 class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with MockEventBus with ClockSpec {
 
