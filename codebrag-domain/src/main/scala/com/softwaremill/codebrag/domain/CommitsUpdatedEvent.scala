@@ -23,6 +23,12 @@ case class CommitsUpdatedEvent(firstTime: Boolean, newCommits: List[UpdatedCommi
 
 case class UpdatedCommit(id: ObjectId, authorName: String, authorEmail: String, commitDate: DateTime)
 
+object UpdatedCommit {
+  def apply(commitInfo: CommitInfo) = {
+    new UpdatedCommit(commitInfo.id, commitInfo.authorName, commitInfo.authorEmail, commitInfo.commitDate)
+  }
+}
+
 object CommitUpdatedEvent {
   implicit object CommitLikeUpdatedCommitEvent extends CommitLike[UpdatedCommit] {
     def authorName(commitLike: UpdatedCommit) = commitLike.authorName

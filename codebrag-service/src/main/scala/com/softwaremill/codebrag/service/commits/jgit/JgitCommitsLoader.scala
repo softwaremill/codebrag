@@ -11,10 +11,11 @@ import com.softwaremill.codebrag.repository.config.RepoData
 
 class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositoryStatusDAO) extends CommitsLoader with Logging {
 
-  def loadNewCommits(repoData: RepoData): List[CommitInfo] = {
+  def loadNewCommits(repoData: RepoData) = {
     val repo = repoData.buildRepository
     val newCommits = updateAndGetCommits(repo)
-    converter.toCommitInfos(newCommits, repo.repo)
+    val commitInfos = converter.toCommitInfos(newCommits, repo.repo)
+    LoadCommitsResult(commitInfos, repo.repoName, ObjectId.toString(repo.currentHead))
   }
 
   private def updateAndGetCommits(repo: Repository) = {
@@ -46,3 +47,5 @@ class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositorySt
   }
 
 }
+
+case class LoadCommitsResult(commits: List[CommitInfo], repoName: String, currentRepoHeadSHA: String)

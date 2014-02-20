@@ -10,13 +10,12 @@ class CommitImportService(commitsLoader: CommitsLoader, commitInfoDao: CommitInf
 
   def importRepoCommits(repoData: RepoData) {
     logger.debug("Start loading commits")
-    val commitsLoaded = commitsLoader.loadNewCommits(repoData)
-    logger.debug(s"Commits loaded: ${commitsLoaded.size}")
-    commitsLoaded.foreach(commitInfoDao.storeCommit)
-    if (!commitsLoaded.isEmpty) {
+    val loadCommitsResult = commitsLoader.loadNewCommits(repoData)
+    logger.debug(s"Commits loaded: ${loadCommitsResult.commits.size}")
+    loadCommitsResult.commits.foreach(commitInfoDao.storeCommit)
+    if (!loadCommitsResult.commits.isEmpty) {
       val isFirstImport = !commitInfoDao.hasCommits
-      eventBus.publish(CommitsUpdatedEvent(isFirstImport, commitsLoaded.map(commit =>
-        UpdatedCommit(commit.id, commit.authorName, commit.authorEmail, commit.commitDate))))
+      eventBus.publish(CommitsUpdatedEvent(isFirstImport, loadCommitsResult.commits.map(UpdatedCommit(_))))
     }
     logger.debug("Commits stored. Loading finished.")
   }

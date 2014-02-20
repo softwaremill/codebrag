@@ -15,6 +15,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.service.config.RepositoryConfig
 import com.softwaremill.codebrag.repository.config.RepoData
+import com.softwaremill.codebrag.service.commits.jgit.LoadCommitsResult
 
 class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with MockEventBus with ClockSpec {
 
@@ -24,7 +25,8 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
   val repoOwner = "johndoe"
   val repoName = "project"
-  val EmptyCommitsList = List[CommitInfo]()
+  val currentSHA = "123123123"
+  val EmptyCommitsList = LoadCommitsResult(List.empty[CommitInfo], repoName, currentSHA)
 
   val repoData = new RepoData("/tmp/repo", "my-repo", "git", repoCredentials = None)
 
@@ -48,20 +50,20 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
 
   it should "store all new commits available" in {
-    val commits = freshCommits(5)
-    when(commitsLoader.loadNewCommits(repoData)).thenReturn(commits)
+    val commitsLoadResult = freshCommits(5)
+    when(commitsLoader.loadNewCommits(repoData)).thenReturn(commitsLoadResult)
 
     service.importRepoCommits(repoData)
 
-    commits.foreach(commit => {
+    commitsLoadResult.commits.foreach(commit => {
       verify(commitInfoDao).storeCommit(commit)
     })
   }
 
   it should "publish event with correct data about imported commits" in {
     // given
-    val newCommits = freshCommits(2)
-    when(commitsLoader.loadNewCommits(repoData)).thenReturn(newCommits)
+    val commitsLoadResult = freshCommits(2)
+    when(commitsLoader.loadNewCommits(repoData)).thenReturn(commitsLoadResult)
 
     // when
     service.importRepoCommits(repoData)
@@ -70,10 +72,10 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
     eventBus.size() should equal(1)
     val onlyEvent = getEvents(0).asInstanceOf[CommitsUpdatedEvent]
     onlyEvent.newCommits.size should equal(2)
-    onlyEvent.newCommits(0).id should equal(newCommits(0).id)
-    onlyEvent.newCommits(1).id should equal(newCommits(1).id)
-    onlyEvent.newCommits(0).authorName should equal(newCommits(0).authorName)
-    onlyEvent.newCommits(1).authorName should equal(newCommits(1).authorName)
+    onlyEvent.newCommits(0).id should equal(commitsLoadResult.commits(0).id)
+    onlyEvent.newCommits(1).id should equal(commitsLoadResult.commits(1).id)
+    onlyEvent.newCommits(0).authorName should equal(commitsLoadResult.commits(0).authorName)
+    onlyEvent.newCommits(1).authorName should equal(commitsLoadResult.commits(1).authorName)
   }
 
   it should "not publish event about updated commits when nothing gets updated" in {
@@ -114,9 +116,10 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   }
 
   def freshCommits(commitsNumber: Int) = {
-    (1 to commitsNumber).map( num => {
+    val commits = (1 to commitsNumber).map( num => {
       CommitInfoAssembler.randomCommit.withId(ObjectId.massageToObjectId(num)).get
     }).toList
+    LoadCommitsResult(commits, repoName, currentSHA)
   }
 
 }
