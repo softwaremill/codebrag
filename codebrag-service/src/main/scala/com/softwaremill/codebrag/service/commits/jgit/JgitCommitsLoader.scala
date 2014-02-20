@@ -41,6 +41,7 @@ class JgitCommitsLoader(converter: JgitLogConverter, repoStatusDao: RepositorySt
   }
 
   private def updateRepoReadyStatus(repo: Repository) {
+    logger.debug(s"Saving repository-ready status data to DB with HEAD: ${repo.currentHead}")
     val currentHead = ObjectId.toString(repo.currentHead)
     val repoReadyStatus = RepositoryStatus.ready(repo.repoName).withHeadId(currentHead)
     repoStatusDao.updateRepoStatus(repoReadyStatus)
