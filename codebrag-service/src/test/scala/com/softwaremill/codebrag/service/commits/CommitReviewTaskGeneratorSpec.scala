@@ -31,6 +31,9 @@ class CommitReviewTaskGeneratorSpec
   var commitInfoDaoMock: CommitInfoDAO = _
   override val fixtureTime = new DateTime(23333333).getMillis
 
+  val repoName = "codebrag"
+  val currentHEAD = "123123123"
+
   before {
     userDaoMock = mock[UserDAO]
     reviewTaskDaoMock = mock[CommitReviewTaskDAO]
@@ -54,7 +57,7 @@ class CommitReviewTaskGeneratorSpec
     given(userDaoMock.findAll()).willReturn(users)
 
     // when
-    generator ! NewCommitsLoadedEvent(firstTime = false, commits)
+    generator ! NewCommitsLoadedEvent(firstTime = false, repoName, currentHEAD, commits)
 
     // then
     verify(reviewTaskDaoMock, times(22)).save(any[CommitReviewTask])
@@ -67,7 +70,7 @@ class CommitReviewTaskGeneratorSpec
     given(userDaoMock.findAll()).willReturn(users)
 
     // when
-    generator ! NewCommitsLoadedEvent(firstTime = false, commits)
+    generator ! NewCommitsLoadedEvent(firstTime = false, repoName, currentHEAD, commits)
 
     // then
     verify(reviewTaskDaoMock, never()).save(any[CommitReviewTask])
@@ -84,7 +87,7 @@ class CommitReviewTaskGeneratorSpec
     given(userDaoMock.findAll()).willReturn(users)
 
     // when
-    generator ! NewCommitsLoadedEvent(firstTime = true, commits)
+    generator ! NewCommitsLoadedEvent(firstTime = true, repoName, currentHEAD, commits)
 
     // then
     verify(reviewTaskDaoMock, times(2 * CommitReviewTaskGeneratorActions.LastCommitsToReviewCount)).save(any[CommitReviewTask])
@@ -102,7 +105,7 @@ class CommitReviewTaskGeneratorSpec
     given(userDaoMock.findAll()).willReturn(users)
 
     // when
-    generator ! NewCommitsLoadedEvent(firstTime = true, commits)
+    generator ! NewCommitsLoadedEvent(firstTime = true, repoName, currentHEAD, commits)
 
     // then
     verify(reviewTaskDaoMock, times(2 * commitCount)).save(any[CommitReviewTask])
@@ -120,7 +123,7 @@ class CommitReviewTaskGeneratorSpec
     given(userDaoMock.findAll()).willReturn(users)
 
     // when
-    generator ! NewCommitsLoadedEvent(firstTime = false, commits)
+    generator ! NewCommitsLoadedEvent(firstTime = false, repoName, currentHEAD, commits)
 
     // then
     verify(reviewTaskDaoMock).save(CommitReviewTask(commits(0).id, sofokles.id))
