@@ -4,8 +4,6 @@ import com.softwaremill.codebrag.domain._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.domain.NewCommitsLoadedEvent
 import com.softwaremill.codebrag.domain.CommitReviewTask
-import com.softwaremill.codebrag.domain.NewCommit
-import com.softwaremill.codebrag.domain.CommitUpdatedEvent._
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 import com.softwaremill.codebrag.dao.user.UserDAO
@@ -30,7 +28,7 @@ trait CommitReviewTaskGeneratorActions extends Logging {
     userDao.findAll().foreach(createAndStoreReviewTasksFor(commits, _))
   }
 
-  private def chooseCommitsToGenerateTasksFor(event: NewCommitsLoadedEvent): List[NewCommit] = {
+  private def chooseCommitsToGenerateTasksFor(event: NewCommitsLoadedEvent): List[LightweightCommitInfo] = {
     if (event.firstTime) {
       event.newCommits.take(CommitReviewTaskGeneratorActions.LastCommitsToReviewCount)
     } else {
@@ -38,11 +36,11 @@ trait CommitReviewTaskGeneratorActions extends Logging {
     }
   }
 
-  private def createAndStoreReviewTasksFor(commits: List[NewCommit], user: User) {
+  private def createAndStoreReviewTasksFor(commits: List[LightweightCommitInfo], user: User) {
     constructReviewTasksFor(commits, user).foreach(commitToReviewDao.save(_))
   }
 
-  private def constructReviewTasksFor(commits: List[NewCommit], user: User) = {
+  private def constructReviewTasksFor(commits: List[LightweightCommitInfo], user: User) = {
     commits.filterNot(commitAuthoredByUser(_, user)).map(commit => CommitReviewTask(commit.id, user.id))
   }
 

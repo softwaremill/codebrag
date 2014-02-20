@@ -27,3 +27,19 @@ trait CommitLike[T] {
   def authorName(commitLike: T): String
   def authorEmail(commitLike: T): String
 }
+
+/**
+ * Commit info without all those files and diffs, only basic commit's data
+ */
+case class LightweightCommitInfo(id: ObjectId, sha: String, authorName: String, authorEmail: String, commitDate: DateTime)
+
+object LightweightCommitInfo {
+  def apply(commitInfo: CommitInfo) = {
+    new LightweightCommitInfo(commitInfo.id, commitInfo.sha, commitInfo.authorName, commitInfo.authorEmail, commitInfo.commitDate)
+  }
+
+  implicit object CommitLikeLightweightCommitInfo extends CommitLike[LightweightCommitInfo] {
+    def authorName(commitLike: LightweightCommitInfo) = commitLike.authorName
+    def authorEmail(commitLike: LightweightCommitInfo) = commitLike.authorEmail
+  }
+}

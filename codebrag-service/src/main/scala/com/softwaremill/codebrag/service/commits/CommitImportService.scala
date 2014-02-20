@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.commits
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.domain.{NewCommit, NewCommitsLoadedEvent}
+import com.softwaremill.codebrag.domain.{LightweightCommitInfo, NewCommitsLoadedEvent}
 import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.repository.config.RepoData
@@ -15,7 +15,7 @@ class CommitImportService(commitsLoader: CommitsLoader, commitInfoDao: CommitInf
     loadCommitsResult.commits.foreach(commitInfoDao.storeCommit)
     if (!loadCommitsResult.commits.isEmpty) {
       val isFirstImport = !commitInfoDao.hasCommits   // TODO: don't like this hacky flag, would like to refactor it some day
-      eventBus.publish(NewCommitsLoadedEvent(isFirstImport, loadCommitsResult.commits.map(NewCommit(_))))
+      eventBus.publish(NewCommitsLoadedEvent(isFirstImport, loadCommitsResult.commits.map(LightweightCommitInfo(_))))
     }
     logger.debug("Commits stored. Loading finished.")
   }
