@@ -14,7 +14,7 @@ class CommitImportService(commitsLoader: CommitsLoader, commitInfoDao: CommitInf
     logger.debug(s"Commits loaded: ${loadCommitsResult.commits.size}")
     loadCommitsResult.commits.foreach(commitInfoDao.storeCommit)
     if (!loadCommitsResult.commits.isEmpty) {
-      val isFirstImport = !commitInfoDao.hasCommits
+      val isFirstImport = !commitInfoDao.hasCommits   // TODO: don't like this hacky flag, would like to refactor it some day
       eventBus.publish(NewCommitsLoadedEvent(isFirstImport, loadCommitsResult.commits.map(NewCommit(_))))
     }
     logger.debug("Commits stored. Loading finished.")
