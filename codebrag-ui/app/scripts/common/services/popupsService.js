@@ -20,6 +20,7 @@ angular.module('codebrag.common.services')
 
         this.openRepoNotReadyPopup = function(repoState) {
             var repoStatusModalConfig = {
+                keyboard: false,
                 templateUrl: 'views/popups/repoNotReady.html',
                 controller: 'RepositoryStatusCtrl',
                 resolve: {
