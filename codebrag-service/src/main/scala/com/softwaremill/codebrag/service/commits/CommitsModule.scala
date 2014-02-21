@@ -14,6 +14,7 @@ trait CommitsModule {
   lazy val commitImportService = new CommitImportService(
     commitsLoader,
     commitInfoDao,
+    repoStatusDao,
     eventBus)(clock)
 
   def commitInfoDao: CommitInfoDAO

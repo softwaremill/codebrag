@@ -11,10 +11,6 @@ class LocalRepositoryUpdater(importService: CommitImportService, repoData: RepoD
     case LocalRepositoryUpdater.UpdateCommand(schedule) => {
       try {
         importService.importRepoCommits(repoData)
-      } catch {
-        case e: Exception => {
-          logger.error("Exception while importing commits", e)
-        }
       } finally {
         if (schedule) {
           import actorSystem.dispatcher
