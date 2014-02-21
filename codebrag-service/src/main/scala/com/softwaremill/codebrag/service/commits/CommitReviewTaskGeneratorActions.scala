@@ -48,7 +48,7 @@ trait CommitReviewTaskGeneratorActions extends Logging {
   }
 
   private def updateRepoReadyStatus(repoName: String, currentHEAD: String) {
-    logger.debug(s"Saving repository-ready status data to DB with HEAD: ${repoName}")
+    logger.debug(s"Saving repository-ready status data to DB with HEAD: ${currentHEAD}")
     val repoReadyStatus = RepositoryStatus.ready(repoName).withHeadId(currentHEAD)
     repoStatusDao.updateRepoStatus(repoReadyStatus)
   }
