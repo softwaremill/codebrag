@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.commits.jgit
 
 import org.eclipse.jgit.revwalk.RevCommit
 import com.softwaremill.codebrag.domain.{CommitFileInfo, CommitInfo}
-import org.eclipse.jgit.lib.{PersonIdent, Repository}
+import org.eclipse.jgit.lib.Repository
 import org.joda.time.DateTime
 import com.typesafe.scalalogging.slf4j.Logging
 
@@ -18,8 +18,7 @@ class JgitLogConverter extends Logging with JgitDiffExtractor {
       Some(buildCommitInfo(commit, extractDiffsFromCommit(commit, repository)))
     } catch {
       case e: Exception => {
-        logger.error(s"Cannot import commit with ID ${commit.toObjectId.name()}. Skipping this one")
-        logger.debug("Exception details", e)
+        logger.error(s"Cannot import commit with ID ${commit.toObjectId.name()}. Skipping this one", e.getMessage)
         None
       }
     }
