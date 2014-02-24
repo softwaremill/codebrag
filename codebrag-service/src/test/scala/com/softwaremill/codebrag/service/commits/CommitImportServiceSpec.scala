@@ -52,6 +52,18 @@ class CommitImportServiceSpec
     })
   }
 
+  it should "skip commits that could not be saved and move on" in {
+    val newCommits = newGithubCommits(5)
+    when(commitsLoader.loadMissingCommits(mockRepoData)).thenReturn(newCommits)
+    when(commitInfoDao.storeCommit(any[CommitInfo])).thenThrow(new RuntimeException("Could not store commit"))
+
+    service.importRepoCommits(mockRepoData)
+
+    newCommits.foreach(commit => {
+      verify(commitInfoDao).storeCommit(commit)
+    })
+  }
+
   it should "publish event with correct data about imported commits" in {
     // given
     val newCommits = newGithubCommits(2)
@@ -68,6 +80,22 @@ class CommitImportServiceSpec
     onlyEvent.newCommits(1).id should equal(newCommits(1).id)
     onlyEvent.newCommits(0).authorName should equal(newCommits(0).authorName)
     onlyEvent.newCommits(1).authorName should equal(newCommits(1).authorName)
+  }
+
+  it should "publish event with commits that were really saved (not ones that were imported only)" in {
+    // given
+    val invalidCommit = CommitInfoAssembler.randomCommit.withMessage("Invalid").get
+    val validCommit = CommitInfoAssembler.randomCommit.withMessage("Valid").get
+    given(commitsLoader.loadMissingCommits(mockRepoData)).willReturn(List(invalidCommit, validCommit))
+    when(commitInfoDao.storeCommit(invalidCommit)).thenThrow(new RuntimeException("Cannot store commit"))
+
+    // when
+    service.importRepoCommits(mockRepoData)
+
+    val event = getEvents(0).asInstanceOf[CommitsUpdatedEvent]
+    val commit = event.newCommits.head
+    commit.id should equal(validCommit.id)
+    commit.authorName should equal(validCommit.authorName)
   }
 
   it should "not publish event about updated commits when nothing gets updated" in {
