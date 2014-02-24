@@ -4,13 +4,14 @@ import com.softwaremill.codebrag.dao.{SQLDaos, MongoDaos}
 import com.softwaremill.codebrag.dao.sql.{SQLEmbeddedDbBackup, SQLDatabase}
 import com.softwaremill.codebrag.dao.user.InternalUserDAO
 import com.softwaremill.codebrag.domain.InternalUser
-import com.softwaremill.codebrag.repository.config.{RepoData, RepoDataDiscovery}
+import com.softwaremill.codebrag.repository.config.RepoDataDiscovery
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.config.RepositoryConfig
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.stats.StatsSendingScheduler
 import com.softwaremill.codebrag._
+import com.softwaremill.codebrag.web.TimingFilter
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.slf4j.Logging
 import java.util.Locale
@@ -68,6 +69,8 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     if (config.demo) {
       context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")
     }
+
+    context.mount(new TimingFilter, "/*")
 
     InstanceContext.put(context, beans)
   }
