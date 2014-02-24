@@ -1,10 +1,10 @@
 package com.softwaremill.codebrag.service.commits
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.domain.{RepositoryStatus, LightweightCommitInfo, NewCommitsLoadedEvent}
+import com.softwaremill.codebrag.domain.{RepositoryStatus, NewCommitsLoadedEvent, LightweightCommitInfo, CommitInfo}
 import com.softwaremill.codebrag.common.{Clock, EventBus}
-import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.repository.config.RepoData
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 
 class CommitImportService(commitsLoader: CommitsLoader, commitInfoDao: CommitInfoDAO, repoStatusDao: RepositoryStatusDAO, eventBus: EventBus)(implicit clock: Clock) extends Logging {
@@ -24,10 +24,25 @@ class CommitImportService(commitsLoader: CommitsLoader, commitInfoDao: CommitInf
     logger.debug("Start loading commits")
     val loadCommitsResult = commitsLoader.loadNewCommits(repoData)
     logger.debug(s"Commits loaded: ${loadCommitsResult.commits.size}")
-    loadCommitsResult.commits.foreach(commitInfoDao.storeCommit)
     val isFirstImport = !commitInfoDao.hasCommits   // TODO: don't like this hacky flag, would like to refactor it some day
-    eventBus.publish(NewCommitsLoadedEvent(isFirstImport, loadCommitsResult.repoName, loadCommitsResult.currentRepoHeadSHA, loadCommitsResult.commits.map(LightweightCommitInfo(_))))
+    val storedCommits = storeCommits(loadCommitsResult.commits)
+    eventBus.publish(NewCommitsLoadedEvent(isFirstImport, loadCommitsResult.repoName, loadCommitsResult.currentRepoHeadSHA, storedCommits))
     logger.debug("Commits stored. Loading finished.")
+  }
+
+  def storeCommits(commitsLoaded: List[CommitInfo]): List[LightweightCommitInfo] = {
+    commitsLoaded.flatMap { commit =>
+      try {
+        commitInfoDao.storeCommit(commit)
+        val basicCommitInfo = LightweightCommitInfo(commit)
+        Some(basicCommitInfo)
+      } catch {
+        case e: Exception => {
+          logger.error(s"Cannot store commit ${commit.sha}. Skipping this one", e.getMessage)
+          None
+        }
+      }
+    }
   }
 
   private def updateRepoNotReadyStatus(repoName: String, errorMsg: String) {

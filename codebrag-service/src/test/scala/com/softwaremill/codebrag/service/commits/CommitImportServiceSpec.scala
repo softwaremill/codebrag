@@ -58,6 +58,18 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
     })
   }
 
+  it should "skip commits that could not be saved and move on" in {
+    val loadResult = freshCommits(5)
+    when(commitsLoader.loadNewCommits(repoData)).thenReturn(loadResult)
+    when(commitInfoDao.storeCommit(any[CommitInfo])).thenThrow(new RuntimeException("Could not store commit"))
+
+    service.importRepoCommits(repoData)
+
+    loadResult.commits.foreach(commit => {
+      verify(commitInfoDao).storeCommit(commit)
+    })
+  }
+
   it should "publish event with correct data about imported commits" in {
     // given
     val commitsLoadResult = freshCommits(2)
@@ -74,6 +86,23 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
     onlyEvent.newCommits(1).id should equal(commitsLoadResult.commits(1).id)
     onlyEvent.newCommits(0).authorName should equal(commitsLoadResult.commits(0).authorName)
     onlyEvent.newCommits(1).authorName should equal(commitsLoadResult.commits(1).authorName)
+  }
+
+  it should "publish event with commits that were really saved (not ones that were imported only)" in {
+    // given
+    val invalidCommit = CommitInfoAssembler.randomCommit.withMessage("Invalid").get
+    val validCommit = CommitInfoAssembler.randomCommit.withMessage("Valid").get
+    val loadResult = LoadCommitsResult(List(invalidCommit, validCommit), repoData.repoName, currentSHA)
+    when(commitsLoader.loadNewCommits(repoData)).thenReturn(loadResult)
+    when(commitInfoDao.storeCommit(invalidCommit)).thenThrow(new RuntimeException("Cannot store commit"))
+
+    // when
+    service.importRepoCommits(repoData)
+
+    val event = getEvents(0).asInstanceOf[NewCommitsLoadedEvent]
+    val commit = event.newCommits.head
+    commit.id should equal(validCommit.id)
+    commit.authorName should equal(validCommit.authorName)
   }
 
   it should "publish event about first update if no commits found in dao" in {
