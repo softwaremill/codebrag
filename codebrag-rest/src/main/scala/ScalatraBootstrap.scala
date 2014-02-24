@@ -78,11 +78,11 @@ class ScalatraBootstrap extends LifeCycle with Logging {
 
   def initializeBeans(_config: AllConfig): Beans with EventingConfiguration = {
     if (_config.isEmbeddedStorage) {
-      SQLDatabase.updateSchema(_config)
       val beans = new Beans with EventingConfiguration with SQLDaos {
         val config = _config
         val sqlDatabase = SQLDatabase.createEmbedded(config)
       }
+      beans.sqlDatabase.updateSchema()
       BackupScheduler.initialize(beans.actorSystem, new SQLEmbeddedDbBackup(beans.sqlDatabase, beans.config, beans.clock), beans.config, beans.clock)
       beans
     } else {
@@ -112,7 +112,14 @@ class ScalatraBootstrap extends LifeCycle with Logging {
   override def destroy(context: ServletContext) {
     super.destroy(context)
 
-    val actorSystem = InstanceContext.get(context).actorSystem
+    val beans = InstanceContext.get(context)
+
+    if (beans.config.isEmbeddedStorage) {
+      // I know, ugly, I'm ashamed
+      beans.asInstanceOf[SQLDaos].sqlDatabase.close()
+    }
+
+    val actorSystem = beans.actorSystem
     actorSystem.shutdown()
     actorSystem.awaitTermination()
   }

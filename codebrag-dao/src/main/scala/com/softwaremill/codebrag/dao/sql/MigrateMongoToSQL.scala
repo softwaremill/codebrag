@@ -22,8 +22,8 @@ object MigrateMongoToSQL extends App {
     def rootConfig = ConfigFactory.load()
   }
 
-  SQLDatabase.updateSchema(config)
   val sqlDb = SQLDatabase.createEmbedded(config)
+  sqlDb.updateSchema()
   val sqlDaos = new SQLDaos {
     def clock = RealTimeClock
     def sqlDatabase = sqlDb
