@@ -21,7 +21,7 @@ class GitRepository(val repoData: RepoData) extends Repository {
     }
   }
 
-  protected def pullChangesForRepo {
+  protected def pullChangesForRepo() {
     val pullCommand = new Git(repo).pull()
     credentialsProvider.foreach(pullCommand.setCredentialsProvider)
     pullCommand.call()

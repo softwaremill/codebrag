@@ -9,11 +9,11 @@ class GitSvnRepository(val repoData: RepoData) extends Repository {
 
   private val CommandBase = "git svn rebase --quiet"
 
-  protected def pullChangesForRepo {
+  protected def pullChangesForRepo() {
     runPullCommand
   }
 
-  private def runPullCommand = {
+  private def runPullCommand() {
     val repoPath = Paths.get(repoData.repoLocation)
     if(repoData.repoCredentials.isDefined) {
       repoData.repoCredentials.get match {

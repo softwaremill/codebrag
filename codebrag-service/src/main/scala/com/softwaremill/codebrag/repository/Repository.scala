@@ -17,7 +17,7 @@ trait Repository extends Logging {
   def pullChanges() {
     logger.debug(s"Pulling changes for ${repoData.repoLocation}")
     try {
-      pullChangesForRepo
+      pullChangesForRepo()
       logger.debug(s"Changes pulled succesfully")
     } catch {
       case e: Exception => {
@@ -50,7 +50,7 @@ trait Repository extends Logging {
     commits
   }
 
-  protected def pullChangesForRepo
+  protected def pullChangesForRepo()
 
   private def buildRepository = {
     try {
