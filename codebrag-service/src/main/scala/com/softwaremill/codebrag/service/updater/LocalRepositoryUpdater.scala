@@ -5,7 +5,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.commits.CommitImportService
 import com.softwaremill.codebrag.repository.config.RepoData
 
-class LocalRepositoryUpdater(importService: CommitImportService, repoData: RepoData, actorSystem: ActorSystem) extends Actor with Logging {
+class LocalRepositoryUpdater(importService: CommitImportService, repoData: RepoData) extends Actor with Logging {
 
   def receive = {
     case LocalRepositoryUpdater.UpdateCommand(schedule) => {
@@ -13,9 +13,9 @@ class LocalRepositoryUpdater(importService: CommitImportService, repoData: RepoD
         importService.importRepoCommits(repoData)
       } finally {
         if (schedule) {
-          import actorSystem.dispatcher
+          import context.dispatcher
           logger.debug("Scheduling next update delay to " + LocalRepositoryUpdater.NextUpdatesInterval.toString)
-          actorSystem.scheduler.scheduleOnce(LocalRepositoryUpdater.NextUpdatesInterval, self, LocalRepositoryUpdater.UpdateCommand(scheduleNext = true))
+          context.system.scheduler.scheduleOnce(LocalRepositoryUpdater.NextUpdatesInterval, self, LocalRepositoryUpdater.UpdateCommand(scheduleNext = true))
         }
       }
     }
