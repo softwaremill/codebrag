@@ -4,10 +4,19 @@
 .idea/
 target/
 *.log
-repos
 .DS_Store
-local.conf*
-scripts/dist/codebrag/*
+
+scripts/dist/codebrag/
 scripts/dist/codebrag.zip
-codebrag-ui-grunt/
+
+# local files for dev env
+local.conf*
 .instanceId
+./repos/
+./data/
+
+
+# for codebrag-ui
+codebrag-ui/node_modules
+codebrag-ui/dist
+codebrag-ui/tmp
