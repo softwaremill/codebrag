@@ -28,6 +28,6 @@ trait CommitsFinder extends UserDataEnhancer {
   }
 
   protected def toCommitView(commit: PartialCommitInfo) = {
-    CommitView(commit.id.toString, commit.sha, commit.message, commit.authorName, commit.authorEmail, commit.date)
+    CommitView(commit.id.toString, commit.sha, commit.message, commit.authorName, commit.authorEmail, commit.date.toDate)
   }
 }

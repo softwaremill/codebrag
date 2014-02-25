@@ -20,7 +20,7 @@ trait SQLCommitInfoSchema {
       sps.map(_.parent)
     )
 
-    def toPartialCommitDetails = PartialCommitInfo(id, sha, message, authorName, authorEmail, authorDate.toDate)
+    def toPartialCommitDetails = PartialCommitInfo(id, sha, message, authorName, authorEmail, authorDate)
   }
 
   protected case class SQLCommitInfoParent(commitId: ObjectId, parent: String)

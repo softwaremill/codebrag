@@ -64,7 +64,9 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
       .orderAsc(_.committerDate)
       .andAsc(_.authorDate)
       .fetch()
-      .map(PartialCommitInfo.tupled)
+      .map { commit =>
+        PartialCommitInfo(commit._1, commit._2, commit._3, commit._4, commit._5, new DateTime(commit._6))
+      }
   }
 
   private object CommitInfoImplicits {
