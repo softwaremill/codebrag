@@ -1,16 +1,15 @@
 package com.softwaremill.codebrag.dao.commitinfo
 
-import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord}
+import net.liftweb.mongodb.record.BsonMetaRecord
 import com.softwaremill.codebrag.domain.{UserLike, CommitInfo}
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
-import net.liftweb.mongodb.record.field.{BsonRecordListField, MongoListField, DateField, ObjectIdPk}
+import net.liftweb.mongodb.record.field.{MongoListField, DateField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
 import org.joda.time.{DateTimeZone, DateTime}
 import org.bson.types.ObjectId
 import net.liftweb.json.JsonDSL._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.mongo.LongStringField
-import com.softwaremill.codebrag.domain.CommitFileInfo
 
 
 class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
@@ -73,7 +72,7 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
     implicit def toCommitInfo(record: CommitInfoRecord): CommitInfo = {
       CommitInfo(record.id.get, record.sha.get, record.message.get, record.authorName.get, record.authorEmail.get,
         record.committerName.get, record.committerEmail.get, new DateTime(record.authorDate.get).withZone(DateTimeZone.UTC),
-        new DateTime(record.committerDate.get).withZone(DateTimeZone.UTC), record.parents.get, record.files.get.toList)
+        new DateTime(record.committerDate.get).withZone(DateTimeZone.UTC), record.parents.get)
     }
 
 
@@ -93,7 +92,6 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
         .authorDate(commit.authorDate.toDate)
         .committerDate(commit.commitDate.toDate)
         .parents(commit.parents)
-        .files(commit.files)
     }
 
     implicit def toCommitInfoRecordList(commits: List[CommitInfo]): List[CommitInfoRecord] = {
@@ -102,14 +100,6 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
 
     implicit def toCommitInfoList(commits: List[CommitInfoRecord]): List[CommitInfo] = {
       commits.map(toCommitInfo(_))
-    }
-
-    implicit def toCommitFileInfoList(files: List[CommitFileInfoRecord]): List[CommitFileInfo] = {
-      files.map(file => CommitFileInfo(file.filename.get, file.status.get, file.patch.get))
-    }
-
-    implicit def commitFilesToCommitFilesRecords(files: List[CommitFileInfo]):List[CommitFileInfoRecord]= {
-      files.map(file => CommitFileInfoRecord.createRecord.filename(file.filename).status(file.status).patch(file.patch))
     }
   }
 }
@@ -134,9 +124,6 @@ class CommitInfoRecord extends MongoRecord[CommitInfoRecord] with ObjectIdPk[Com
   object committerDate extends DateField(this)
 
   object parents extends MongoListField[CommitInfoRecord, String](this)
-
-  object files extends BsonRecordListField(this, CommitFileInfoRecord)
-
 }
 
 object CommitInfoRecord extends CommitInfoRecord with MongoMetaRecord[CommitInfoRecord] {
@@ -147,15 +134,3 @@ object CommitInfoRecord extends CommitInfoRecord with MongoMetaRecord[CommitInfo
   }
 }
 
-class CommitFileInfoRecord extends BsonRecord[CommitFileInfoRecord] {
-  def meta = CommitFileInfoRecord
-
-  object filename extends LongStringField(this)
-
-  object status extends LongStringField(this)
-
-  object patch extends LongStringField(this)
-
-}
-
-object CommitFileInfoRecord extends CommitFileInfoRecord with BsonMetaRecord[CommitFileInfoRecord]

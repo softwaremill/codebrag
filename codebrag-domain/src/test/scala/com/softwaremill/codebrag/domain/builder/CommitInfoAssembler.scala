@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.domain.builder
 
-import com.softwaremill.codebrag.domain.{CommitInfo, CommitFileInfo}
+import com.softwaremill.codebrag.domain.CommitInfo
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.{RealTimeClock, Utils}
@@ -33,11 +33,6 @@ class CommitInfoAssembler(var commit: CommitInfo) {
     this
   }
 
-  def withFiles(newFiles: List[CommitFileInfo]) = {
-    commit = commit.copy(files = newFiles)
-    this
-  }
-
   def withAuthorName(newName: String) = {
     commit = commit.copy(authorName = newName)
     this
@@ -67,7 +62,7 @@ object CommitInfoAssembler {
     val committerEmail = Utils.randomString(10)
     val parent = Utils.randomString(10)
     CommitInfo(new ObjectId, sha, message, authorName, authorEmail, committerName, committerEmail,
-      RealTimeClock.nowUtc, RealTimeClock.nowUtc, List(parent), List())
+      RealTimeClock.nowUtc, RealTimeClock.nowUtc, List(parent))
   }
 
 }

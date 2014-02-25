@@ -35,7 +35,7 @@ class CommitReviewActivitySpec
     val userId = ObjectId.get
 
     val task = CommitReviewTask(commitId, userId)
-    val commit = CommitInfo("123456", "A commit", "Author Name", "author@sml.com", "Author Name", "author@sml.com", DateTime.now, DateTime.now, List(), List())
+    val commit = CommitInfo("123456", "A commit", "Author Name", "author@sml.com", "Author Name", "author@sml.com", DateTime.now, DateTime.now, List())
 
     when(commitInfoDao.findByCommitId(commitId)).thenReturn(Some(commit))
 

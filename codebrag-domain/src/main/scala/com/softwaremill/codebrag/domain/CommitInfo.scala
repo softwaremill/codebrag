@@ -5,14 +5,14 @@ import org.bson.types.ObjectId
 
 case class CommitInfo(id: ObjectId, sha: String, message: String, authorName: String, authorEmail: String,
                       committerName: String, committerEmail: String, authorDate: DateTime,
-                      commitDate: DateTime, parents: List[String], files: List[CommitFileInfo])
+                      commitDate: DateTime, parents: List[String])
 
 object CommitInfo {
   def apply(sha: String, message: String, authorName: String, authorEmail: String,
             committerName: String, committerEmail: String, authorDate: DateTime,
-            commitDate: DateTime, parents: List[String], files: List[CommitFileInfo]) = {
+            commitDate: DateTime, parents: List[String]) = {
     new CommitInfo(new ObjectId(), sha, message, authorName, authorEmail, committerName, committerEmail,
-      authorDate, commitDate, parents, files)
+      authorDate, commitDate, parents)
   }
 
   implicit object CommitLikeCommitInfo extends CommitLike[CommitInfo] {

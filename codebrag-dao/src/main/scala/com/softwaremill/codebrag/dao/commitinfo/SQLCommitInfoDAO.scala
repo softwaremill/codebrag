@@ -14,12 +14,10 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQL
   def storeCommit(commit: CommitInfo) = {
     val sci = SQLCommitInfo(commit.id, commit.sha, commit.message, commit.authorName, commit.authorEmail,
       commit.committerName, commit.committerEmail, commit.authorDate, commit.commitDate)
-    val files = commit.files.map(f => SQLCommitInfoFile(commit.id, f.filename, f.status, f.patch))
     val parents = commit.parents.map(p => SQLCommitInfoParent(commit.id, p))
 
     db.withTransaction { implicit session =>
       commitInfos += sci
-      commitInfosFiles ++= files
       commitInfosParents ++= parents
     }
   }
@@ -79,10 +77,9 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQL
     } yield ci
 
     q.firstOption.map { sci =>
-      val files = commitInfosFiles.filter(_.commitInfoId === sci.id).list()
       val parents = commitInfosParents.filter(_.commitInfoId === sci.id).list()
 
-      sci.toCommitInfo(files, parents)
+      sci.toCommitInfo(parents)
     }
   }
 
@@ -90,10 +87,9 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQL
     val commits = commitsQuery.list()
     val commitIds = commits.map(_.id).toSet
 
-    val files = commitInfosFiles.filter(_.commitInfoId inSet commitIds).list().groupBy(_.commitId)
     val parents = commitInfosParents.filter(_.commitInfoId inSet commitIds).list().groupBy(_.commitId)
 
-    commits.map(c => c.toCommitInfo(files.getOrElse(c.id, Nil), parents.getOrElse(c.id, Nil)))
+    commits.map(c => c.toCommitInfo(parents.getOrElse(c.id, Nil)))
   }
 
   private def orderByDatesDesc(ci: CommitInfos) = (ci.commitDate.desc, ci.authorDate.desc)

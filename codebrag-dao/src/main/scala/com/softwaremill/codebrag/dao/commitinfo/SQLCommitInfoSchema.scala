@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.commitinfo
 import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.domain.{CommitFileInfo, CommitInfo}
+import com.softwaremill.codebrag.domain.CommitInfo
 
 trait SQLCommitInfoSchema {
   val database: SQLDatabase
@@ -15,15 +15,13 @@ trait SQLCommitInfoSchema {
     id: ObjectId, sha: String, message: String, authorName: String, authorEmail: String,
     committerName: String, committerEmail: String, authorDate: DateTime, commitDate: DateTime) {
 
-    def toCommitInfo(sfs: List[SQLCommitInfoFile], sps: List[SQLCommitInfoParent]) = CommitInfo(
+    def toCommitInfo(sps: List[SQLCommitInfoParent]) = CommitInfo(
       id, sha, message, authorName, authorEmail, committerName, committerEmail, authorDate, commitDate,
-      sps.map(_.parent), sfs.map(f => CommitFileInfo(f.filename, f.status, f.patch))
+      sps.map(_.parent)
     )
 
     def toPartialCommitDetails = PartialCommitInfo(id, sha, message, authorName, authorEmail, authorDate.toDate)
   }
-
-  protected case class SQLCommitInfoFile(commitId: ObjectId, filename: String, status: String, patch: String)
 
   protected case class SQLCommitInfoParent(commitId: ObjectId, parent: String)
 
@@ -43,19 +41,6 @@ trait SQLCommitInfoSchema {
   }
 
   protected val commitInfos = TableQuery[CommitInfos]
-
-  protected class CommitInfosFiles(tag: Tag) extends Table[SQLCommitInfoFile](tag, "commit_infos_files") {
-    def commitInfoId = column[ObjectId]("commit_info_id")
-    def filename = column[String]("filename")
-    def status = column[String]("status")
-    def patch = column[String]("patch")
-
-    def commitInfo = foreignKey("commit_info_files_fk", commitInfoId, commitInfos)(_.id)
-
-    def * = (commitInfoId, filename, status, patch) <> (SQLCommitInfoFile.tupled, SQLCommitInfoFile.unapply)
-  }
-
-  protected val commitInfosFiles = TableQuery[CommitInfosFiles]
 
   protected class CommitInfosParents(tag: Tag) extends Table[SQLCommitInfoParent](tag, "commit_infos_parents") {
     def commitInfoId = column[ObjectId]("commit_info_id")
