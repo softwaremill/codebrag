@@ -4,7 +4,7 @@ import com.softwaremill.codebrag.dao.{SQLDaos, MongoDaos}
 import com.softwaremill.codebrag.dao.sql.{SQLEmbeddedDbBackup, SQLDatabase}
 import com.softwaremill.codebrag.dao.user.InternalUserDAO
 import com.softwaremill.codebrag.domain.InternalUser
-import com.softwaremill.codebrag.repository.config.RepoDataDiscovery
+import com.softwaremill.codebrag.repository.config.{RepoData, RepoDataDiscovery}
 import com.softwaremill.codebrag.rest._
 import com.softwaremill.codebrag.service.config.RepositoryConfig
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
@@ -33,9 +33,9 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       def rootConfig = ConfigFactory.load()
     }
 
-    val repositoryData = discoverRepositoryOrExit(_config)
+    val _repoData = discoverRepositoryOrExit(_config)
 
-    val beans = initializeBeans(_config)
+    val beans = initializeBeans(_config, _repoData)
     import beans._
 
     setupEvents()
@@ -52,7 +52,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       logger.info("Sending anonymous statistics was disabled - not scheduling stats calculation")
     }
 
-    val repoUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, repositoryData, commitImportService)
+    val repoUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, repoData, commitImportService)
     context.mount(new UsersServlet(authenticator, registerService, userDao, config, swagger), Prefix + "users")
     context.mount(new UsersSettingsServlet(authenticator, userDao, changeUserSettingsUseCase), Prefix + "users/settings")
     context.mount(new CommitsServlet(authenticator, reviewableCommitsFinder, allCommitsFinder, reactionFinder, commentActivity,
@@ -64,7 +64,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new InvitationServlet(authenticator, invitationsService), Prefix + "invitation")
     context.mount(new RepositorySyncServlet(actorSystem, repoUpdateActor), RepositorySyncServlet.Mapping)
     context.mount(new UpdatesServlet(authenticator, notificationCountFinder, heartbeatDao, clock), Prefix + UpdatesServlet.Mapping)
-    context.mount(new RepoStatusServlet(authenticator, repositoryData, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
+    context.mount(new RepoStatusServlet(authenticator, repoData, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
 
     if (config.demo) {
       context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")
@@ -76,11 +76,12 @@ class ScalatraBootstrap extends LifeCycle with Logging {
   }
 
 
-  def initializeBeans(_config: AllConfig): Beans with EventingConfiguration = {
+  def initializeBeans(_config: AllConfig, _repoData: RepoData): Beans with EventingConfiguration = {
     if (_config.isEmbeddedStorage) {
       val beans = new Beans with EventingConfiguration with SQLDaos {
         val config = _config
         val sqlDatabase = SQLDatabase.createEmbedded(config)
+        val repoData = _repoData
       }
       beans.sqlDatabase.updateSchema()
       BackupScheduler.initialize(beans.actorSystem, new SQLEmbeddedDbBackup(beans.sqlDatabase, beans.config, beans.clock), beans.config, beans.clock)
@@ -89,6 +90,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       MongoInit.initialize(_config)
       new Beans with EventingConfiguration with MongoDaos {
         val config = _config
+        val repoData = _repoData
       }
     }
   }
