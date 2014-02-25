@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao.commitinfo
+package com.softwaremill.codebrag.domain
 
 import org.bson.types.ObjectId
 import java.util.Date

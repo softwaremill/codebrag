@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.dao.commitinfo
 
 import net.liftweb.mongodb.record.BsonMetaRecord
-import com.softwaremill.codebrag.domain.{UserLike, CommitInfo}
+import com.softwaremill.codebrag.domain.{PartialCommitInfo, UserLike, CommitInfo}
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{MongoListField, DateField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._

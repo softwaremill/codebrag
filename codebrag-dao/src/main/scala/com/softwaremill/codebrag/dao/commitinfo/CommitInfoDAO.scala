@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao.commitinfo
 
-import com.softwaremill.codebrag.domain.{UserLike, CommitInfo}
+import com.softwaremill.codebrag.domain.{PartialCommitInfo, UserLike, CommitInfo}
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
 

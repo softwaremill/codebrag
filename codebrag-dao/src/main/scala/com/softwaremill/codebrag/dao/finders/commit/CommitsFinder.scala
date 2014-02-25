@@ -1,11 +1,12 @@
 package com.softwaremill.codebrag.dao.finders.commit
 
-import com.softwaremill.codebrag.dao.commitinfo.{PartialCommitInfo, CommitInfoDAO}
+import com.softwaremill.codebrag.dao.commitinfo.{CommitInfoDAO}
 import com.softwaremill.codebrag.common.LoadMoreCriteria
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.finders.commit.ListSliceLoader._
 import com.softwaremill.codebrag.dao.finders.commit.OutOfPageCommitCounter._
 import com.softwaremill.codebrag.dao.finders.views.{CommitView, CommitListView}
+import com.softwaremill.codebrag.domain.PartialCommitInfo
 
 trait CommitsFinder extends UserDataEnhancer {
   def commitInfoDAO: CommitInfoDAO

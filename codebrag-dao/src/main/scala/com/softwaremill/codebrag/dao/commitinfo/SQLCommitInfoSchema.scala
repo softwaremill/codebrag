@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.commitinfo
 import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.domain.CommitInfo
+import com.softwaremill.codebrag.domain.{PartialCommitInfo, CommitInfo}
 
 trait SQLCommitInfoSchema {
   val database: SQLDatabase
