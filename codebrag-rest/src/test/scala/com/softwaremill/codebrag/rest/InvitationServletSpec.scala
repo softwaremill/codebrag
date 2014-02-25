@@ -26,13 +26,13 @@ class InvitationServletSpec extends AuthenticatableServletSpec with BeforeAndAft
   "GET /" should "return invitation message" in {
     //given
     userIsAuthenticatedAs(someUser())
-    val invitation = "invitation message"
-    when(invitationService.createInvitationLink(any[ObjectId])).thenReturn(invitation)
+    val invitationCode = "123abc"
+    when(invitationService.generateInvitationCode(any[ObjectId])).thenReturn(invitationCode)
     //when
     get("/") {
       //then
       status should be(200)
-      body should be("{\"invitationLink\":\""+invitation+"\"}")
+      body should be("{\"invitationCode\":\""+invitationCode+"\"}")
     }
   }
 
@@ -41,7 +41,7 @@ class InvitationServletSpec extends AuthenticatableServletSpec with BeforeAndAft
     userIsAuthenticatedAs(someUser())
 
     val email = "adam@example.org"
-    val invitationLink = "http://codebrag.com/register/123abc123"
+    val invitationLink = "http://codebrag.com/#/register/123abc123"
 
     //when
     val json = s"""{"invitationLink": "${invitationLink}", "emails": ["${email}"]}"""

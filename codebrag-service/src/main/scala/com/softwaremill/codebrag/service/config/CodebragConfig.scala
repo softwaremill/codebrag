@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.common.config.ConfigWithDefault
 trait CodebragConfig extends ConfigWithDefault with StatsConfig with EmailNotificationConfig {
 
   lazy val demo: Boolean = getBoolean("codebrag.demo", default = false)
-  lazy val applicationUrl: String = rootConfig.getString("codebrag.application-url")
+  lazy val applicationUrl: String = getString("codebrag.application-url", "http://localhost:8080")
 
   lazy val invitationExpiryTime: ReadablePeriod = Period.millis(getMilliseconds("codebrag.invitation-expiry-time", 24.hours.toMillis).toInt)
 

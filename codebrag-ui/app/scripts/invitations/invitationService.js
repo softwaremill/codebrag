@@ -1,6 +1,18 @@
 angular.module('codebrag.invitations')
 
-    .service('invitationService', function($http, $q) {
+    .factory('baseAppUrl', function($location) {
+        return function() {
+            var fullUrl = $location.absUrl();
+            var appPath = $location.path();
+            var endIndex = undefined;
+            if(appPath !== '/') {
+                endIndex = fullUrl.indexOf(appPath) + 1;
+            }
+            return fullUrl.slice(0, endIndex);
+        }
+    })
+
+    .service('invitationService', function($http, $q, baseAppUrl) {
 
         this.loadRegisteredUsers = function() {
             return $http.get('rest/users/all').then(function(response) {
@@ -12,7 +24,9 @@ angular.module('codebrag.invitations')
             var dfd = $q.defer();
 
             function success(response) {
-                dfd.resolve(response.data.invitationLink);
+                var invitationCode = response.data.invitationCode;
+                var registrationUrl = baseAppUrl() + 'register/' + invitationCode;
+                dfd.resolve(registrationUrl);
                 return dfd.promise;
             }
 
@@ -38,6 +52,6 @@ angular.module('codebrag.invitations')
                 return !(regexp.test(email));
             });
             return !foundInvalid;
-        }
+        };
 
     });

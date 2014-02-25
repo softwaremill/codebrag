@@ -12,7 +12,7 @@ import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.service.templates.{EmailContentWithSubject, EmailTemplates, TemplateEngine}
 import com.softwaremill.codebrag.common.ClockSpec
-import org.joda.time.Hours
+import org.joda.time.{Period, Hours}
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.invitation.InvitationDAO
@@ -35,9 +35,9 @@ class InvitationServiceSpec
 
   var invitationService: InvitationService = _
 
-  private val appPath = "http://localhost:8080"
-  private val registerUrlBase = appPath + "/#/register/"
-  when(config.applicationUrl).thenReturn(appPath)
+  import scala.concurrent.duration._
+  val invitationExpirationHours = 24
+  when(config.invitationExpiryTime).thenReturn(Period.millis(invitationExpirationHours.hours.toMillis.toInt))
 
   override def beforeEach() {
     invitationDAO = mock[InvitationDAO]
@@ -83,20 +83,20 @@ class InvitationServiceSpec
     verify should be(false)
   }
 
-  it should "create invitation message and save invitation in DAO" in {
+  it should "create invitation code and save invitation in DAO" in {
     //given
     val regCode = "123123123"
     when(userDAO.findById(id)).thenReturn(Some(user))
     when(uniqueHashGenerator.generateUniqueHashCode()).thenReturn(regCode)
 
     //when
-    val invitation = invitationService.createInvitationLink(id)
+    invitationService.generateInvitationCode(id)
 
     //then
-    invitation should equal(registerUrlBase + regCode)
+    verify(invitationDAO).save(Invitation(regCode, user.id, clock.nowUtc.plusHours(invitationExpirationHours)))
   }
 
-  it should "save created invitation with correct sender and expiry date" in {
+  it should "save created code with correct sender and expiry date" in {
     //given
     val regCode = "123123123"
     when(config.invitationExpiryTime).thenReturn(Hours.hours(20))
@@ -104,7 +104,7 @@ class InvitationServiceSpec
     when(uniqueHashGenerator.generateUniqueHashCode()).thenReturn(regCode)
 
     //when
-    invitationService.createInvitationLink(id)
+    invitationService.generateInvitationCode(id)
 
     //then
     val invitationCaptor = ArgumentCaptor.forClass(classOf[Invitation])

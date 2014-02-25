@@ -18,7 +18,7 @@ class InvitationServlet(val authenticator: Authenticator, invitationService: Inv
   }
 
   get("/") {
-    Map("invitationLink" -> invitationService.createInvitationLink(new ObjectId(user.id)))
+    Map("invitationCode" -> invitationService.generateInvitationCode(new ObjectId(user.id)))
   }
 
 }

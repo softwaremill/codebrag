@@ -6,9 +6,9 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.email.{EmailService, Email}
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.service.templates.{EmailTemplates, TemplateEngine}
-import org.joda.time.{Minutes, Hours}
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.invitation.InvitationDAO
+import com.typesafe.scalalogging.slf4j.Logging
 
 class InvitationService(
                          invitationDAO: InvitationDAO,
@@ -16,26 +16,25 @@ class InvitationService(
                          emailService: EmailService,
                          config: CodebragConfig,
                          uniqueHashGenerator: UniqueHashGenerator,
-                         templateEngine: TemplateEngine)(implicit clock: Clock) {
-
-  val registrationUrl = buildRegistrationUrl()
+                         templateEngine: TemplateEngine)(implicit clock: Clock) extends Logging {
 
   def sendInvitation(emailAddresses: List[String], registrationLink: String, invitationSenderId: ObjectId) {
     val option: Option[User] = userDAO.findById(invitationSenderId)
     option match {
       case Some(user) => {
+        logger.debug(s"Sending invitation ${registrationLink} to ${emailAddresses}")
         sendEmail(emailAddresses, invitationMessage(user.name, registrationLink), user.name)
       }
       case None => throw new SecurityException("Invitation sender doesn't exist")
     }
   }
 
-  def createInvitationLink(invitationSenderId: ObjectId): String = {
+  def generateInvitationCode(invitationSenderId: ObjectId): String = {
     userDAO.findById(invitationSenderId) match {
       case Some(user) => {
         val invitationCode: String = uniqueHashGenerator.generateUniqueHashCode()
         saveToDb(invitationCode, invitationSenderId)
-        registrationUrl.urlForCode(invitationCode)
+        invitationCode
       }
       case None => throw new IllegalStateException
     }
@@ -63,21 +62,6 @@ class InvitationService(
   private def saveToDb(hash: String, invitationSenderId: ObjectId) {
     val expirationTime = clock.nowUtc.plus(config.invitationExpiryTime)
     invitationDAO.save(Invitation(hash, invitationSenderId, expirationTime))
-  }
-
-  private def buildRegistrationUrl(): RegistrationUrl = {
-    val url = new StringBuilder(config.applicationUrl)
-    if (!url.endsWith("/")) {
-      url.append("/")
-    }
-    url.append("#/register/{invitationCode}")
-    new RegistrationUrl(url.toString())
-  }
-
-  class RegistrationUrl(url: String) {
-    def urlForCode(invitationCode: String): String = {
-      url.replace("{invitationCode}", invitationCode)
-    }
   }
 
 }
