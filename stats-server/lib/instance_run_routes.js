@@ -10,7 +10,7 @@ var MIDDLEWARES = {
     } else {
       res.send(400, {error: 'Invalid request body'});
     }
-  },
+  }
 
 };
 
@@ -22,6 +22,7 @@ module.exports = function(app, logger, db) {
       var now = moment.utc().startOf('day').toDate();
       var instanceRunData = {
         instanceId: req.body.instanceId,
+        appVersion: req.body.appVersion,
         date: now
       };
 
@@ -48,7 +49,8 @@ module.exports = function(app, logger, db) {
     var docToInsert = {
       $setOnInsert: {
         instanceId: stats.instanceId,
-        runDate: stats.date
+        runDate: stats.date,
+        appVersion: stats.appVersion
       },
       $inc: { runCount: 1 }
     };

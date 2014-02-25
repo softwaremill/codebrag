@@ -5,8 +5,9 @@ import com.softwaremill.codebrag.domain.InstanceSettings
 import com.softwaremill.codebrag.stats.data.DailyStatistics
 import com.softwaremill.codebrag.dao.instance.InstanceSettingsDAO
 import com.softwaremill.codebrag.dao.finders.StatsEventsFinder
+import com.softwaremill.codebrag.service.config.StatsConfig
 
-class StatsAggregator(val statsFinder: StatsEventsFinder, val instanceSettingsDao: InstanceSettingsDAO) {
+class StatsAggregator(val statsFinder: StatsEventsFinder, val instanceSettingsDao: InstanceSettingsDAO, val statsConfig: StatsConfig) {
 
   def getStatsForPreviousDayOf(date: DateTime): Either[String, DailyStatistics] = {
     getStatsFor(date.minusDays(1))
@@ -25,7 +26,7 @@ class StatsAggregator(val statsFinder: StatsEventsFinder, val instanceSettingsDa
       "registeredUsers" -> statsFinder.registeredUsersCount(day),
       "activeUsersCount" -> statsFinder.activeUsersCount(day)
     )
-    DailyStatistics(instanceSettings.uniqueId, day, countersMap)
+    DailyStatistics(instanceSettings.uniqueId, statsConfig.appVersion, day, countersMap)
   }
 
 }

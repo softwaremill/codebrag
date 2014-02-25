@@ -61,7 +61,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder,
     new DiffService(commitInfoDao, diffLoader, repoData))
 
-  lazy val statsAggregator = new StatsAggregator(statsFinder, instanceSettingsDao)
+  lazy val statsAggregator = new StatsAggregator(statsFinder, instanceSettingsDao, config)
 
   lazy val unlikeUseCaseFactory = new UnlikeUseCase(likeValidator, userReactionService)
   lazy val changeUserSettingsUseCase = new ChangeUserSettingsUseCase(userDao)
