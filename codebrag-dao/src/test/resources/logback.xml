@@ -13,6 +13,10 @@
         <appender-ref ref="STDOUT" />
     </logger>
 
+    <logger name="com.mchange" level="INFO">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
     <root level="DEBUG">
         <appender-ref ref="STDOUT" />
     </root>

@@ -8,8 +8,14 @@ import scala.slick.jdbc.JdbcBackend._
 import com.softwaremill.codebrag.dao.DaoConfig
 import com.typesafe.scalalogging.slf4j.Logging
 import com.googlecode.flyway.core.Flyway
+import com.mchange.v2.c3p0.{DataSources, PooledDataSource, ComboPooledDataSource}
+import javax.sql.DataSource
 
-case class SQLDatabase(db: scala.slick.jdbc.JdbcBackend.Database, driver: JdbcProfile) extends Logging {
+case class SQLDatabase(
+  db: scala.slick.jdbc.JdbcBackend.Database,
+  driver: JdbcProfile,
+  ds: DataSource) extends Logging {
+
   import driver.simple._
 
   implicit val dateTimeColumnType = MappedColumnType.base[DateTime, java.sql.Timestamp](
@@ -21,6 +27,16 @@ case class SQLDatabase(db: scala.slick.jdbc.JdbcBackend.Database, driver: JdbcPr
     oi => oi.toString,
     x => new ObjectId(x)
   )
+
+  def updateSchema() {
+    val flyway = new Flyway()
+    flyway.setDataSource(ds)
+    flyway.migrate()
+  }
+
+  def close() {
+    DataSources.destroy(ds)
+  }
 }
 
 object SQLDatabase extends Logging {
@@ -31,18 +47,20 @@ object SQLDatabase extends Logging {
     s"jdbc:h2:file:$fullPath"
   }
 
-  def createEmbedded(config: DaoConfig) = {
-    val db = Database.forURL(connectionString(config), driver="org.h2.Driver")
-    SQLDatabase(db, scala.slick.driver.H2Driver)
+  def createEmbedded(config: DaoConfig): SQLDatabase = {
+    createEmbedded(connectionString(config))
   }
 
-  def updateSchema(config: DaoConfig) {
-    updateSchema(connectionString(config))
+  def createEmbedded(connectionString: String): SQLDatabase = {
+    val ds = createConnectionPool(connectionString)
+    val db = Database.forDataSource(ds)
+    SQLDatabase(db, scala.slick.driver.H2Driver, ds)
   }
 
-  def updateSchema(connectionString: String) {
-    val flyway = new Flyway()
-    flyway.setDataSource(connectionString, "", "")
-    flyway.migrate()
+  private def createConnectionPool(connectionString: String) = {
+    val cpds = new ComboPooledDataSource()
+    cpds.setDriverClass("org.h2.Driver")
+    cpds.setJdbcUrl(connectionString)
+    cpds
   }
 }

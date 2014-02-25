@@ -2,12 +2,12 @@ package uitest.login
 
 import uitest.CodebragUITest
 import org.fest.assertions.Assertions
-import pl.softwaremill.common.util.RichString
 import uitest.pages.RegistrationPage
 import org.openqa.selenium.support.PageFactory
+import com.softwaremill.codebrag.common.Utils
 
 class RegisterTest extends CodebragUITest {
-    final val LOGIN = RichString.generateRandom(5)
+    final val LOGIN = Utils.randomString(5)
     final val EMAIL = LOGIN + "@example.org"
     final val PASSWORD = "test"
 

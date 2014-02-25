@@ -15,17 +15,15 @@ class GitRepository(val repoData: RepoData) extends Repository {
   val name = repoData.repoName
 
   private val credentialsProvider = {
-    repoData.repoCredentials.map { c =>
-      c match {
-        case ssh: PassphraseCredentials => new SshPassphraseCredentialsProvider(ssh.phrase)
-        case userpass: UserPassCredentials => new UsernamePasswordCredentialsProvider(userpass.user, userpass.pass)
-      }
+    repoData.repoCredentials.map {
+      case ssh: PassphraseCredentials => new SshPassphraseCredentialsProvider(ssh.phrase)
+      case userpass: UserPassCredentials => new UsernamePasswordCredentialsProvider(userpass.user, userpass.pass)
     }
   }
 
   protected def pullChangesForRepo {
     val pullCommand = new Git(repo).pull()
-    credentialsProvider.foreach(pullCommand.setCredentialsProvider(_))
+    credentialsProvider.foreach(pullCommand.setCredentialsProvider)
     pullCommand.call()
   }
 
@@ -37,7 +35,7 @@ class GitRepository(val repoData: RepoData) extends Repository {
         items.foreach { item => {
           item match {
             case i: CredentialItem.StringType => i.setValue(passphrase)
-            case _ => {}
+            case _ =>
           }
         }}
       }

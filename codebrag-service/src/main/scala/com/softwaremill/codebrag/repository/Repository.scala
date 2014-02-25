@@ -31,6 +31,16 @@ trait Repository extends Logging {
     repo.resolve(Constants.HEAD)
   }
 
+  def getCommit(sha: String): Option[RevCommit] = {
+    Option(repo.resolve(sha)).flatMap { commitId =>
+      try {
+        Some(new RevWalk(repo).parseCommit(commitId))
+      } catch {
+        case e: MissingObjectException => None
+      }
+    }
+  }
+
   def getCommits(lastKnownCommitSHA: Option[String] = None): List[RevCommit] = {
     val walker = new RevWalk(repo)
     setCommitsRange(walker, lastKnownCommitSHA)

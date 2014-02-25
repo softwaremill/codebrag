@@ -46,7 +46,7 @@ class CommitImportService(commitsLoader: CommitsLoader, commitInfoDao: CommitInf
   }
 
   private def updateRepoNotReadyStatus(repoName: String, errorMsg: String) {
-    logger.debug(s"Saving repository-not-ready status data to DB with message: ${errorMsg}")
+    logger.debug(s"Saving repository-not-ready status data to DB with message: $errorMsg")
     val repoNotReadyStatus = RepositoryStatus.notReady(repoName, Some(errorMsg))
     repoStatusDao.updateRepoStatus(repoNotReadyStatus)
   }
