@@ -26,8 +26,8 @@ object LocalRepositoryUpdater {
 
   import scala.concurrent.duration._
 
-  val InitialDelay = 3 seconds
-  val NextUpdatesInterval = 45 seconds
+  val InitialDelay = 3.seconds
+  val NextUpdatesInterval = 45.seconds
 
   case class UpdateCommand(scheduleRecurring: Boolean)
 
