@@ -4,6 +4,7 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.util.Random
 import org.apache.commons.codec.binary.Hex
+import java.io.File
 
 object Utils {
 
@@ -51,5 +52,9 @@ object Utils {
     }
 
     sb.toString
+  }
+
+  def rmMinusRf(file: File) = {
+    Runtime.getRuntime.exec(Array[String]("rm", "-rf", file.getAbsolutePath)).waitFor == 0
   }
 }
