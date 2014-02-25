@@ -17,6 +17,8 @@ trait CommitsModule {
     repoStatusDao,
     eventBus)(clock)
 
+  lazy val diffLoader = new JgitDiffLoader()
+
   def commitInfoDao: CommitInfoDAO
   def repoStatusDao: RepositoryStatusDAO
   def userDao: UserDAO

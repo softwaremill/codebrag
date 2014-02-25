@@ -52,7 +52,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       logger.info("Sending anonymous statistics was disabled - not scheduling stats calculation")
     }
 
-    val repoActor = RepositoryUpdateScheduler.initialize(actorSystem, repositoryData, commitImportService)
+    val repoActor = RepositoryUpdateScheduler.initialize(actorSystem, repositoryData, commitImportService, diffLoader)
     context.mount(new UsersServlet(authenticator, registerService, userDao, config, swagger), Prefix + "users")
     context.mount(new UsersSettingsServlet(authenticator, userDao, changeUserSettingsUseCase), Prefix + "users/settings")
     context.mount(new CommitsServlet(authenticator, reviewableCommitsFinder, allCommitsFinder, reactionFinder, commentActivity,
