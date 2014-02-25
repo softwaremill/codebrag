@@ -17,6 +17,6 @@ object RepositoryUpdateScheduler extends Logging {
 
   def scheduleRepositorySynchronization(actorSystem: ActorSystem) {
     import actorSystem.dispatcher
-    actorSystem.scheduler.scheduleOnce(LocalRepositoryUpdater.InitialDelay, actor, LocalRepositoryUpdater.UpdateCommand(scheduleRecurring = true))
+    actorSystem.scheduler.scheduleOnce(LocalRepositoryUpdater.InitialDelay, actor, LocalRepositoryUpdater.UpdateCommand(scheduleNext = true))
   }
 }

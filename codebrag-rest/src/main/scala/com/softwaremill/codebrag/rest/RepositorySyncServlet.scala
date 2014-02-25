@@ -18,7 +18,7 @@ class RepositorySyncServlet(system: ActorSystem, repositoryUpdateActor: ActorRef
 
   get("/") {
     new AsyncResult() {
-      val is = repositoryUpdateActor ? LocalRepositoryUpdater.UpdateCommand(scheduleRecurring = false)
+      val is = repositoryUpdateActor ? LocalRepositoryUpdater.UpdateCommand(scheduleNext = false)
     }
   }
 }

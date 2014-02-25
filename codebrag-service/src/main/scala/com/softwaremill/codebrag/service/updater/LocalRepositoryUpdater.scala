@@ -15,7 +15,7 @@ class LocalRepositoryUpdater(importService: CommitImportService, repoData: RepoD
         if (schedule) {
           import actorSystem.dispatcher
           logger.debug("Scheduling next update delay to " + LocalRepositoryUpdater.NextUpdatesInterval.toString)
-          actorSystem.scheduler.scheduleOnce(LocalRepositoryUpdater.NextUpdatesInterval, self, LocalRepositoryUpdater.UpdateCommand(scheduleRecurring = true))
+          actorSystem.scheduler.scheduleOnce(LocalRepositoryUpdater.NextUpdatesInterval, self, LocalRepositoryUpdater.UpdateCommand(scheduleNext = true))
         }
       }
     }
@@ -29,6 +29,6 @@ object LocalRepositoryUpdater {
   val InitialDelay = 3.seconds
   val NextUpdatesInterval = 45.seconds
 
-  case class UpdateCommand(scheduleRecurring: Boolean)
+  case class UpdateCommand(scheduleNext: Boolean)
 
 }
