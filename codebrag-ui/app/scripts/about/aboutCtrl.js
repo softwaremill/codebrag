@@ -6,6 +6,7 @@ angular.module('codebrag.profile')
 
         function exposeVersionNumber(response) {
             $scope.version = response.data.version;
+            $scope.build = response.data.build;
         }
 
     });

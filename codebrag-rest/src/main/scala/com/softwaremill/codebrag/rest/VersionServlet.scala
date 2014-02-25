@@ -2,8 +2,9 @@ package com.softwaremill.codebrag.rest
 
 import com.typesafe.scalalogging.slf4j.Logging
 import scala.io.Source._
+import com.softwaremill.codebrag.service.config.CodebragConfig
 
-class VersionServlet extends JsonServlet with Logging {
+class VersionServlet(config: CodebragConfig) extends JsonServlet with Logging {
 
   val commitShaFile = "version.id"
 
@@ -11,7 +12,7 @@ class VersionServlet extends JsonServlet with Logging {
     try {
       val fileStream = Thread.currentThread().getContextClassLoader.getResourceAsStream(commitShaFile)
       val sha = fromInputStream(fileStream).mkString
-      Map("version" -> sha.trim)
+      Map("build" -> sha.trim, "version" -> config.appVersion)
     } catch {
       case e: Exception => {
         logger.error(s"Could not read ${commitShaFile}", e)
