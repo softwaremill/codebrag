@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.updater
 
 import akka.actor.{ActorRef, Props, ActorSystem}
-import com.softwaremill.codebrag.service.commits.{DiffLoader, CommitImportService}
+import com.softwaremill.codebrag.service.commits.CommitImportService
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.repository.config.RepoData
 
@@ -12,17 +12,16 @@ object RepositoryUpdateScheduler extends Logging {
   def initialize(
     actorSystem: ActorSystem,
     repoData: RepoData,
-    commitImportService: CommitImportService,
-    diffLoader: DiffLoader): ActorRef = {
+    commitImportService: CommitImportService): ActorRef = {
 
-    actor = actorSystem.actorOf(Props(new RepoActor(commitImportService, diffLoader, repoData)),
-      repoData.repoName + "-repo-actor")
+    actor = actorSystem.actorOf(Props(new RepoUpdateActor(commitImportService, repoData)),
+      repoData.repoName + "-repo-update-actor")
     scheduleRepositorySynchronization(actorSystem)
     actor
   }
 
   def scheduleRepositorySynchronization(actorSystem: ActorSystem) {
     import actorSystem.dispatcher
-    actorSystem.scheduler.scheduleOnce(RepoActor.InitialDelay, actor, RepoActor.Update(scheduleNext = true))
+    actorSystem.scheduler.scheduleOnce(RepoUpdateActor.InitialDelay, actor, RepoUpdateActor.Update(scheduleNext = true))
   }
 }

@@ -2,13 +2,13 @@ package com.softwaremill.codebrag.rest
 
 import com.typesafe.scalalogging.slf4j.Logging
 import akka.actor.{ActorSystem, ActorRef}
-import com.softwaremill.codebrag.service.updater.RepoActor
+import com.softwaremill.codebrag.service.updater.RepoUpdateActor
 import org.scalatra.{AsyncResult, FutureSupport}
 import scala.concurrent.ExecutionContext
 import akka.util.Timeout
 import scala.concurrent.duration._
 
-class RepositorySyncServlet(system: ActorSystem, repoActor: ActorRef) extends JsonServlet with Logging with FutureSupport {
+class RepositorySyncServlet(system: ActorSystem, repoUpdateActor: ActorRef) extends JsonServlet with Logging with FutureSupport {
 
   protected implicit def executor: ExecutionContext = system.dispatcher
 
@@ -18,7 +18,7 @@ class RepositorySyncServlet(system: ActorSystem, repoActor: ActorRef) extends Js
 
   get("/") {
     new AsyncResult() {
-      val is = repoActor ? RepoActor.Update(scheduleNext = false)
+      val is = repoUpdateActor ? RepoUpdateActor.Update(scheduleNext = false)
     }
   }
 }
