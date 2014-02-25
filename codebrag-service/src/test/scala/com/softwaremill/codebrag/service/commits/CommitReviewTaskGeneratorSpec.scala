@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.service.commits
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfter, FlatSpec}
 import akka.testkit.TestActorRef
-import com.softwaremill.codebrag.domain.{LightweightCommitInfo, CommitReviewTask, NewCommitsLoadedEvent}
+import com.softwaremill.codebrag.domain.{PartialCommitInfo, CommitReviewTask, NewCommitsLoadedEvent}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import org.scalatest.mock.MockitoSugar
@@ -142,7 +142,7 @@ class CommitReviewTaskGeneratorSpec
   private def randomCommits(count: Int, date: DateTime = new DateTime()) = {
     val authorEmail = "author@example.org"
     val fakeSha = Utils.sha1(authorEmail)
-    List.fill(count)(LightweightCommitInfo(new ObjectId(), fakeSha, "Author Name", authorEmail, date))
+    List.fill(count)(PartialCommitInfo(new ObjectId(), fakeSha, s"message ${count}", "Author Name", authorEmail, date))
   }
 
 }

@@ -31,7 +31,7 @@ trait CommitReviewTaskGeneratorActions extends Logging {
     updateRepoReadyStatus(event.repoName, event.currentSHA)
   }
 
-  private def chooseCommitsToGenerateTasksFor(event: NewCommitsLoadedEvent): List[LightweightCommitInfo] = {
+  private def chooseCommitsToGenerateTasksFor(event: NewCommitsLoadedEvent): List[PartialCommitInfo] = {
     if (event.firstTime) {
       event.newCommits.take(CommitReviewTaskGeneratorActions.LastCommitsToReviewCount)
     } else {
@@ -39,11 +39,11 @@ trait CommitReviewTaskGeneratorActions extends Logging {
     }
   }
 
-  private def createAndStoreReviewTasksFor(commits: List[LightweightCommitInfo], user: User) {
+  private def createAndStoreReviewTasksFor(commits: List[PartialCommitInfo], user: User) {
     constructReviewTasksFor(commits, user).foreach(commitToReviewDao.save(_))
   }
 
-  private def constructReviewTasksFor(commits: List[LightweightCommitInfo], user: User) = {
+  private def constructReviewTasksFor(commits: List[PartialCommitInfo], user: User) = {
     commits.filterNot(commitAuthoredByUser(_, user)).map(commit => CommitReviewTask(commit.id, user.id))
   }
 

@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.commits
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.domain.{RepositoryStatus, NewCommitsLoadedEvent, LightweightCommitInfo, CommitInfo}
+import com.softwaremill.codebrag.domain.{PartialCommitInfo, RepositoryStatus, NewCommitsLoadedEvent, CommitInfo}
 import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.repository.config.RepoData
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
@@ -30,11 +30,11 @@ class CommitImportService(commitsLoader: CommitsLoader, commitInfoDao: CommitInf
     logger.debug("Commits stored. Loading finished.")
   }
 
-  def storeCommits(commitsLoaded: List[CommitInfo]): List[LightweightCommitInfo] = {
+  def storeCommits(commitsLoaded: List[CommitInfo]): List[PartialCommitInfo] = {
     commitsLoaded.flatMap { commit =>
       try {
         commitInfoDao.storeCommit(commit)
-        val basicCommitInfo = LightweightCommitInfo(commit)
+        val basicCommitInfo = PartialCommitInfo(commit)
         Some(basicCommitInfo)
       } catch {
         case e: Exception => {
