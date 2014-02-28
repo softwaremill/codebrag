@@ -1,12 +1,13 @@
 package com.softwaremill.codebrag.repository
 
 import com.typesafe.scalalogging.slf4j.Logging
-import org.eclipse.jgit.lib.Constants
+import org.eclipse.jgit.lib.{ObjectId, Constants}
 import org.eclipse.jgit.revwalk.{RevWalk, RevCommit}
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import java.io.File
 import org.eclipse.jgit.errors.MissingObjectException
 import com.softwaremill.codebrag.repository.config.RepoData
+import scala.collection.JavaConversions._
 
 trait Repository extends Logging {
 
@@ -42,11 +43,17 @@ trait Repository extends Logging {
   }
 
   def getCommits(lastKnownCommitSHA: Option[String] = None): List[RevCommit] = {
+    getCommitsForBranch("refs/heads/master", lastKnownCommitSHA)
+  }
+  
+  def getCommitsForBranch(branchName: String, lastKnownSHA: Option[String]): List[RevCommit] = {
+    val branch = repo.resolve(branchName)
     val walker = new RevWalk(repo)
-    setCommitsRange(walker, lastKnownCommitSHA)
-    val commits =getCommitsAsList(walker)
-    walker.dispose()
-    logger.debug(s"Got ${commits.size} commit(s)")
+    setRangeStart(walker, branch)
+    setRangeEnd(walker, lastKnownSHA)
+    val commits = walker.iterator().toList
+    walker.dispose
+    logger.debug(s"Got ${commits.size} new commit(s) for branch ${branchName}")
     commits
   }
 
@@ -60,13 +67,11 @@ trait Repository extends Logging {
     }
   }
 
-  private def getCommitsAsList(walker: RevWalk) = {
-    import scala.collection.JavaConversions._
-    walker.iterator().toList
+  private def setRangeStart(walker: RevWalk, startingCommit: ObjectId) {
+    walker.markStart(walker.parseCommit(startingCommit))
   }
 
-  private def setCommitsRange(walker: RevWalk, lastKnownCommitSHA: Option[String]) {
-    walker.markStart(walker.parseCommit(currentHead))
+  private def setRangeEnd(walker: RevWalk, lastKnownCommitSHA: Option[String]) {
     lastKnownCommitSHA.foreach { sha =>
       try {
         val lastKnownCommit = repo.resolve(sha)
@@ -76,6 +81,5 @@ trait Repository extends Logging {
       }
     }
   }
-
 }
 
