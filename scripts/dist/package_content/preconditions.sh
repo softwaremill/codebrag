@@ -78,18 +78,15 @@ function check_repo_available {
 ### CHECK PRECONDITIONS
 #######################
 
+if [ -z "$CODEBRAG_HOME" ]; then
+  echo "ERROR: CODEBRAG_HOME env variable must be set"
+  exit 1
+fi
+
+cd $CODEBRAG_HOME
+
 if [[ $(java_not_installed) -eq 0 ]]; then
   echo "Please install required version of Java first"
   exit 1
 fi
 check_repo_available
-
-#######################
-### RUN CODEBRAG
-#######################
-
-CONFIG=${1:-"codebrag.conf"}
-
-echo "Starting Codebrag... (with config:$CONFIG)"
-nohup java -Dfile.encoding=UTF-8 -Dconfig.file=./$CONFIG -Dlogback.configurationFile=./logback.xml -jar codebrag.jar &
-echo "Codebrag started. Logs are written to codebrag.log"
