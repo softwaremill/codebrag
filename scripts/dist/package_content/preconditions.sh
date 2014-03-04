@@ -21,7 +21,7 @@ function check_repo_available {
   local CWD=$(pwd)
 
   # check if repos-root defined in config and set REPOS_DIR accordingly
-  local REPOS_DIR=$(grep --color=never '^\s*repos-root\s*=' codebrag.conf | grep --color=never -o '".*"' | sed 's/"//g' | echo)
+  local REPOS_DIR=$(grep --color=never '^\s*repos-root\s*=' codebrag.conf | grep --color=never -o '".*"' | sed 's/"//g')
 
   # check if "repos" exist and is directory
   if [ ! -d "$REPOS_DIR" ]; then
