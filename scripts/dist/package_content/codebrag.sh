@@ -2,9 +2,14 @@
 # For debugging purposes uncomment next line
 #set -x
 
-if [ -z "$CODEBRAG_HOME" ]; then
-  echo "ERROR: CODEBRAG_HOME env variable must be set"
-  exit 1
+if [ -z $CODEBRAG_HOME ]; then
+  CURRENT_DIR=$(pwd)
+  if [ ! -f "$CURRENT_DIR/codebrag.jar" ]; then
+    echo "ERROR: You need to either have CODEBRAG_HOME env variable set or run Codebrag from its directory"
+    exit 1    
+  else
+    CODEBRAG_HOME=$CURRENT_DIR
+  fi
 fi
 
 APP_NAME="Codebrag"
@@ -21,13 +26,13 @@ start() {
 	STATUS=$?
 	if [ $STATUS -ne 0 ]; then
 		echo "Starting $APP_NAME in $APP_PATH..."
-    $CODEBRAG_HOME/preconditions.sh
+    cd $CODEBRAG_HOME
+    ./preconditions.sh
     CHECK_STATUS=$?
     if [ $CHECK_STATUS -ne 0 ]; then
       echo "Exiting..."
       exit 1
     fi
-        cd $CODEBRAG_HOME
 		nohup $APP_COMMAND > /dev/null 2>&1 &
 		echo PID $!
 		echo $! > $APP_PID
