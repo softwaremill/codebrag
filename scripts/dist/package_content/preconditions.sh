@@ -2,7 +2,7 @@
 
 function java_not_installed {
   local JAVA_VERSION_REQUIRED=7
-  local JAVA_VERSION_CURRENT=`java -version 2>&1 | grep "java version" | awk '{print $3}' | tr -d \" | awk '{split($0,numbers,"."); print numbers[2]}'`
+  local JAVA_VERSION_CURRENT=`java -version 2>&1 | grep --color=never "java version" | awk '{print $3}' | tr -d \" | awk '{split($0,numbers,"."); print numbers[2]}'`
   if [[ -z $JAVA_VERSION_CURRENT || $JAVA_VERSION_CURRENT -lt $JAVA_VERSION_REQUIRED ]]; then
     echo "ERROR: Java in required version $JAVA_VERSION_REQUIRED not found" >&2
     echo 0
@@ -21,13 +21,9 @@ function check_repo_available {
   local CWD=$(pwd)
 
   # check if repos-root defined in config and set REPOS_DIR accordingly
-  local REPOS_DIR=$(grep '^\s*repos-root\s*=' codebrag.conf | grep -o '".*"' | sed 's/"//g')
-  if [ -z "$REPOS_DIR" ]; then
-    REPOS_DIR=$CWD/repos
-  fi
+  local REPOS_DIR=$(grep --color=never '^\s*repos-root\s*=' codebrag.conf | grep --color=never -o '".*"' | sed 's/"//g' | echo)
 
-  # check if "repos" exist
-  # TODO: read config in case of "repos" set to non-default
+  # check if "repos" exist and is directory
   if [ ! -d "$REPOS_DIR" ]; then
     echo "ERROR: Cannot find directory containing your repository: $REPOS_DIR"
     exit 1
