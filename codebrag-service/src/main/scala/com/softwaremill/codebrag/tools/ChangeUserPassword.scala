@@ -29,8 +29,9 @@ object ChangeUserPassword {
     println("#         Yes, we know it's not the best way.           #")
     println("#########################################################")
     val userData = collectInput
-    val db = initializeMongoConnection
-    changePasswordIfUserExists(userData, db)
+    withDB { db =>
+      changePasswordIfUserExists(userData, db)
+    }
     println("Bye!")
   }
 
@@ -73,11 +74,16 @@ object ChangeUserPassword {
     println("User password succesfully changed")
   }
 
-  private def initializeMongoConnection = {
+  private def withDB(doWithDb: SQLDatabase => Unit) {
     val config = new DaoConfig {
       def rootConfig = ConfigFactory.load()
     }
-    SQLDatabase.createEmbedded(config)
+    val db = SQLDatabase.createEmbedded(config)
+    try {
+      doWithDb(db)
+    } finally {
+      db.close()      
+    }
   }
 
   private def haltIfConfigFileDoesntExist {
