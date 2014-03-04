@@ -36,7 +36,7 @@ start() {
 		nohup $APP_COMMAND > /dev/null 2>&1 &
 		echo PID $!
 		echo $! > $APP_PID
-		statusit
+		echo "Logs are written to $CODEBRAG_HOME/logs/codebrag.log"
   else
   	echo "$APP_NAME Already Running"
   fi
@@ -49,7 +49,7 @@ stop() {
 		echo "Stopping $APP_NAME..."
 		kill `cat $APP_PID`
 		rm $APP_PID
-		statusit
+		echo "Done"
 	else
 		echo "$APP_NAME - Already killed"
 	fi
