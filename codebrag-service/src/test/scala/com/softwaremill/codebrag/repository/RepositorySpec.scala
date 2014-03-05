@@ -68,7 +68,7 @@ class RepositorySpec  extends FlatSpec with ShouldMatchers {
       val lastKnownCommits = Map("refs/heads/master" -> masterCommits(tenthCommit))
 
       // when
-      val loadResult = repo.loadSnapshot(lastKnownCommits, perBranchMaxCommitsCount = 5)
+      val loadResult = repo.loadLastKnownRepoState(lastKnownCommits, perBranchMaxCommitsCount = 5)
 
       // then
       val commits = shasForBranch("refs/heads/master", loadResult)
@@ -98,7 +98,7 @@ class RepositorySpec  extends FlatSpec with ShouldMatchers {
       )
 
       // when
-      val loadResult = repo.loadSnapshot(lastKnownCommits, perBranchMaxCommitsCount = 5)
+      val loadResult = repo.loadLastKnownRepoState(lastKnownCommits, perBranchMaxCommitsCount = 5)
 
       // then
       val loadedMasterCommits = shasForBranch("refs/heads/master", loadResult)
@@ -124,7 +124,7 @@ class RepositorySpec  extends FlatSpec with ShouldMatchers {
       )
 
       // when
-      val loadResult = repo.loadSnapshot(lastKnownCommits, perBranchMaxCommitsCount = 5)
+      val loadResult = repo.loadLastKnownRepoState(lastKnownCommits, perBranchMaxCommitsCount = 5)
 
       // then
       loadResult.commits.map(_.branchName) should equal(List("refs/heads/master"))
@@ -141,7 +141,7 @@ class RepositorySpec  extends FlatSpec with ShouldMatchers {
       )
 
       // when
-      val loadResult = repo.loadSnapshot(lastKnownCommits, perBranchMaxCommitsCount = 5)
+      val loadResult = repo.loadLastKnownRepoState(lastKnownCommits, perBranchMaxCommitsCount = 5)
 
       // then
       loadResult.commits.map(_.branchName) should equal(List("refs/heads/master"))
