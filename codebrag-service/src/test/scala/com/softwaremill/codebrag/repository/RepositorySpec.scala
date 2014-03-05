@@ -4,59 +4,74 @@ import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.service.commits.jgit.TemporaryGitRepo
 import com.softwaremill.codebrag.repository.config.RepoData
-import org.eclipse.jgit.lib.ObjectId
 import com.softwaremill.codebrag.domain.MultibranchLoadCommitsResult
 
 class RepositorySpec  extends FlatSpec with ShouldMatchers {
 
-  it should "get all commits for given branch" in {
+  it should "load commits since given SHA for all branches" in {
     TemporaryGitRepo.withGitRepo { gitRepo =>
       // given
-      val shas = createCommits(3, gitRepo)
+      val repo = new TestRepository(repoData(gitRepo))
+      val masterCommits = createCommits(10, gitRepo)
+      gitRepo.checkoutBranch("feature")
+      val featureCommits = createCommits(5, gitRepo)
+      val lastKnownShas = Map(
+        "refs/heads/master" -> masterCommits.drop(5).head,
+        "refs/heads/feature" -> featureCommits.drop(3).head
+      )
 
       // when
-      val repo = new TestRepository(repoData(gitRepo))
-      val commits = repo.getCommitsForBranch("refs/heads/master", None).map(_.getId).map(ObjectId.toString)
+      val loadResult = repo.loadCommitsSince(lastKnownShas)
 
       // then
-      commits should be(shas.reverse)
+      val masterLoadResult = loadResultForBranch("refs/heads/master", loadResult)
+      masterLoadResult.commits.map(_.sha) should equal(masterCommits.takeRight(4).reverse)
+      val branchLoadResult = loadResultForBranch("refs/heads/feature", loadResult)
+      branchLoadResult.commits.map(_.sha) should equal(featureCommits.takeRight(1).reverse)
     }
   }
 
-  it should "get empty list of commits when there are no new commits after last known commit" in {
-    TemporaryGitRepo.withGitRepo { gitRepo =>
-      // given
-      val shas = createCommits(2, gitRepo)
-
-      // when
-      val repo = new TestRepository(repoData(gitRepo))
-      val commits = repo.getCommitsForBranch("refs/heads/master", Some(shas.last)).map(_.getId).map(ObjectId.toString)
-
-      // then
-      commits should be('empty)
-    }
-
-  }
-
-  it should "get commits for different branches" in {
+  it should "load all commits for branches not yet known by Codebrag" in {
     TemporaryGitRepo.withGitRepo { gitRepo =>
     // given
-      val sha1 = createCommits(1, gitRepo).head
-      val sha2 = createCommits(1, gitRepo).head
-      gitRepo.checkoutBranch("other_branch")
-      val sha3 = createCommits(1, gitRepo).head
+      val repo = new TestRepository(repoData(gitRepo))
+      val masterCommits = createCommits(10, gitRepo)
+      gitRepo.checkoutBranch("feature")
+      val featureCommits = createCommits(5, gitRepo)
+      val lastKnownShas = Map(
+        "refs/heads/master" -> masterCommits.drop(5).head
+      )
 
       // when
-      val repo = new TestRepository(repoData(gitRepo))
-      val masterCommits = repo.getCommitsForBranch("refs/heads/master", None).map(_.getId).map(ObjectId.toString)
-      val branchCommits = repo.getCommitsForBranch("refs/heads/other_branch", None).map(_.getId).map(ObjectId.toString)
+      val loadResult = repo.loadCommitsSince(lastKnownShas)
 
       // then
-      masterCommits should be(List(sha2, sha1))
-      branchCommits should be(List(sha3, sha2, sha1))
+      val masterLoadResult = loadResultForBranch("refs/heads/master", loadResult)
+      masterLoadResult.commits.map(_.sha) should equal(masterCommits.takeRight(4).reverse)
+      val branchLoadResult = loadResultForBranch("refs/heads/feature", loadResult)
+      val completeFeatureBranchCommits = masterCommits ++ featureCommits
+      branchLoadResult.commits.map(_.sha) should equal(completeFeatureBranchCommits.reverse)
     }
-
   }
+
+  it should "load nothing for branch when there are no new commits " in {
+    TemporaryGitRepo.withGitRepo { gitRepo =>
+    // given
+      val repo = new TestRepository(repoData(gitRepo))
+      val masterCommits = createCommits(10, gitRepo)
+      val lastKnownShas = Map(
+        "refs/heads/master" -> masterCommits.last
+      )
+
+      // when
+      val loadResult = repo.loadCommitsSince(lastKnownShas)
+
+      // then
+      val masterLoadResult = loadResultForBranch("refs/heads/master", loadResult)
+      masterLoadResult.commits.map(_.sha) should be('empty)
+    }
+  }
+
 
   it should "load repository state up to given branch pointers with limit" in {
     val tenthCommit = 9
@@ -76,11 +91,6 @@ class RepositorySpec  extends FlatSpec with ShouldMatchers {
       commits.length should equal(expectedCommitsSnapshot.length)
       commits should equal(expectedCommitsSnapshot)
     }
-  }
-
-
-  private def dropCommits(masterCommits: List[String], left: Int, right: Int): List[String] = {
-    masterCommits.drop(left).dropRight(right)
   }
 
   it should "load multiple branches state up to given pointers" in {
@@ -149,8 +159,12 @@ class RepositorySpec  extends FlatSpec with ShouldMatchers {
 
   }
 
+  def loadResultForBranch(branchName: String, loadResult: MultibranchLoadCommitsResult) = {
+    loadResult.commits.find(_.branchName == branchName).get
+  }
+
   def shasForBranch(branchName: String, loadResult: MultibranchLoadCommitsResult): List[String] = {
-    loadResult.commits.find(_.branchName == branchName).get.commits.map(_.sha).toList.reverse
+    loadResultForBranch(branchName, loadResult).commits.map(_.sha).toList.reverse
   }
 
   def createCommits(count: Int, repo: TemporaryGitRepo): List[String] = {
@@ -158,6 +172,10 @@ class RepositorySpec  extends FlatSpec with ShouldMatchers {
       repo.createCommit(s"commit_${i}", (s"file_${i}.txt", s"file_${i}_content"))
     }
     shas.toList
+  }
+
+  private def dropCommits(masterCommits: List[String], left: Int, right: Int): List[String] = {
+    masterCommits.drop(left).dropRight(right)
   }
 
   private def repoData(repo: TemporaryGitRepo) = RepoData(repo.tempDir.getAbsolutePath, "temp", "git", None)

@@ -64,6 +64,17 @@ trait Repository extends Logging with RawCommitsConverter {
 
   private implicit def gitObjectIdToString(objId: ObjectId) = ObjectId.toString(objId)
 
+  def loadCommitsSince(lastKnownBranchPointers: Map[String, String]): MultibranchLoadCommitsResult = {
+    val gitRepo = new Git(repo)
+    val allRemoteBranches = gitRepo.branchList().setListMode(ListMode.ALL).call().toList.map(_.getName) // TODO: switch to ListMode.REMOTE
+    val commitsForBranches = allRemoteBranches.map { branchName =>
+      val rawCommits = getCommitsForBranch(branchName, lastKnownBranchPointers.get(branchName))
+      val commitInfos = toPartialCommitInfos(rawCommits, repo)
+      CommitsForBranch(branchName, commitInfos, repo.resolve(branchName))
+    }
+    MultibranchLoadCommitsResult(repoName, commitsForBranches)
+  }
+
   def loadLastKnownRepoState(lastKnownBranchPointers: Map[String, String], perBranchMaxCommitsCount: Int): MultibranchLoadCommitsResult = {
     val commonBranchPointers = CommonBranchesResolver.rejectNonExistingBranches(lastKnownBranchPointers, repo)
     val commitsForBranches = commonBranchPointers.map { case (branchName, branchKnownTop) =>
