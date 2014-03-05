@@ -4,9 +4,12 @@ import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.common.Utils
 import java.io.File
 import com.softwaremill.codebrag.domain.User
-import com.softwaremill.codebrag.dao.user.MongoUserDAO
-import com.softwaremill.codebrag.dao.mongo.MongoInit
+import com.softwaremill.codebrag.dao.user.{UserDAO, SQLUserDAO}
 import com.softwaremill.codebrag.dao.DaoConfig
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
+import org.slf4j.LoggerFactory
+import ch.qos.logback.classic.{Level, Logger}
+import org.slf4j
 
 object ChangeUserPassword {
 
@@ -17,23 +20,32 @@ object ChangeUserPassword {
   }
 
   def main(args: Array[String]) {
-
+    disableLogging
     haltIfConfigFileDoesntExist
 
     println("#########################################################")
     println("# Super-awesome tool to change Codebrag user's password #")
+    println("# NOTICE: Make sure Codebrag is stopped before using it #")
+    println("#         Yes, we know it's not the best way.           #")
     println("#########################################################")
     val userData = collectInput
-    initializeMongoConnection
-    changePasswordIfUserExists(userData)
+    withDB { db =>
+      changePasswordIfUserExists(userData, db)
+    }
     println("Bye!")
   }
 
 
-  private def changePasswordIfUserExists(userData: ChangeUserPassword.UserPassword) {
-    (new MongoUserDAO).findByLoginOrEmail(userData.username) match {
+  def disableLogging {
+    val logger = LoggerFactory.getLogger(slf4j.Logger.ROOT_LOGGER_NAME).asInstanceOf[Logger]
+    logger.setLevel(Level.OFF)
+  }
+
+  private def changePasswordIfUserExists(userData: ChangeUserPassword.UserPassword, db: SQLDatabase) {
+    val userDao = new SQLUserDAO(db)
+    userDao.findByLoginOrEmail(userData.username) match {
       case Some(user) => {
-        updateUserRecord(userData.newPassword, user, new MongoUserDAO)
+        updateUserRecord(userData.newPassword, user, userDao)
       }
       case None => {
         val username = userData.username
@@ -55,18 +67,23 @@ object ChangeUserPassword {
   }
 
 
-  private def updateUserRecord(newPassword: String, user: User, userDao: MongoUserDAO) {
+  private def updateUserRecord(newPassword: String, user: User, userDao: UserDAO) {
     val newPasswordHashed = Utils.sha256(newPassword, user.authentication.salt)
     val auth = user.authentication.copy(token = newPasswordHashed)
     userDao.changeAuthentication(user.id, auth)
     println("User password succesfully changed")
   }
 
-  private def initializeMongoConnection {
+  private def withDB(doWithDb: SQLDatabase => Unit) {
     val config = new DaoConfig {
       def rootConfig = ConfigFactory.load()
     }
-    MongoInit.initializeWithoutIndexCheck(config)
+    val db = SQLDatabase.createEmbedded(config)
+    try {
+      doWithDb(db)
+    } finally {
+      db.close()      
+    }
   }
 
   private def haltIfConfigFileDoesntExist {
