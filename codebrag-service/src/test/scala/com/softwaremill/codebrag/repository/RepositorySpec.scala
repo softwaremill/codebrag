@@ -12,28 +12,25 @@ class RepositorySpec  extends FlatSpec with ShouldMatchers {
   it should "get all commits for given branch" in {
     TemporaryGitRepo.withGitRepo { gitRepo =>
       // given
-      val sha1 = gitRepo.createCommit("test1", ("test1.txt", "testfile1"))
-      val sha2 = gitRepo.createCommit("test2", ("test2.txt", "testfile2"))
-      val sha3 = gitRepo.createCommit("test3", ("test3.txt", "testfile3"))
+      val shas = createCommits(3, gitRepo)
 
       // when
       val repo = new TestRepository(repoData(gitRepo))
       val commits = repo.getCommitsForBranch("refs/heads/master", None).map(_.getId).map(ObjectId.toString)
 
       // then
-      commits should be(List(sha3, sha2, sha1))
+      commits should be(shas.reverse)
     }
   }
 
   it should "get empty list of commits when there are no new commits after last known commit" in {
     TemporaryGitRepo.withGitRepo { gitRepo =>
       // given
-      val sha1 = gitRepo.createCommit("test1", ("test1.txt", "testfile1"))
-      val sha2 = gitRepo.createCommit("test2", ("test2.txt", "testfile2"))
+      val shas = createCommits(2, gitRepo)
 
       // when
       val repo = new TestRepository(repoData(gitRepo))
-      val commits = repo.getCommitsForBranch("refs/heads/master", Some(sha2)).map(_.getId).map(ObjectId.toString)
+      val commits = repo.getCommitsForBranch("refs/heads/master", Some(shas.last)).map(_.getId).map(ObjectId.toString)
 
       // then
       commits should be('empty)
@@ -44,10 +41,10 @@ class RepositorySpec  extends FlatSpec with ShouldMatchers {
   it should "get commits for different branches" in {
     TemporaryGitRepo.withGitRepo { gitRepo =>
     // given
-      val sha1 = gitRepo.createCommit("test1", ("test1.txt", "testfile1"))
-      val sha2 = gitRepo.createCommit("test2", ("test2.txt", "testfile2"))
+      val sha1 = createCommits(1, gitRepo).head
+      val sha2 = createCommits(1, gitRepo).head
       gitRepo.checkoutBranch("other_branch")
-      val sha3 = gitRepo.createCommit("test3", ("test3.txt", "testfile3"))
+      val sha3 = createCommits(1, gitRepo).head
 
       // when
       val repo = new TestRepository(repoData(gitRepo))
