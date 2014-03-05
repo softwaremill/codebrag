@@ -23,6 +23,13 @@ class TemporaryGitRepo(val tempDir: File, repo: Repository) {
     ObjectId.toString(git.commit().setMessage(commitMessage).call().getId)
   }
 
+  def createCommits(count: Int): List[String] = {
+    val shas = for(i <- 1 to count) yield {
+      createCommit(s"commit_${i}", (s"file_${i}.txt", s"file_${i}_content"))
+    }
+    shas.toList
+  }
+
   def checkoutBranch(branchName: String, create: Boolean = true) {
     git.checkout().setName(branchName).setCreateBranch(create).call()
   }

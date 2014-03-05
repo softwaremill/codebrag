@@ -14,7 +14,7 @@ import com.softwaremill.codebrag.domain.{CommitsForBranch, MultibranchLoadCommit
 import com.softwaremill.codebrag.service.commits.jgit.RawCommitsConverter
 import org.eclipse.jgit.revwalk.filter.MaxCountRevFilter
 
-trait Repository extends Logging with RawCommitsConverter {
+trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDeltaLoader {
 
   def repoData: RepoData
   val repo = buildRepository
@@ -51,49 +51,6 @@ trait Repository extends Logging with RawCommitsConverter {
     getCommitsForBranch("refs/heads/master", lastKnownCommitSHA)
   }
   
-  def getCommitsForBranch(branchName: String, lastKnownSHA: Option[String]): List[RevCommit] = {
-    val branch = repo.resolve(branchName)
-    val walker = new RevWalk(repo)
-    setRangeStart(walker, branch)
-    setRangeEnd(walker, lastKnownSHA)
-    val commits = walker.iterator().toList
-    walker.dispose
-    logger.debug(s"Got ${commits.size} new commit(s) for branch ${branchName}")
-    commits
-  }
-
-  private implicit def gitObjectIdToString(objId: ObjectId) = ObjectId.toString(objId)
-
-  def loadCommitsSince(lastKnownBranchPointers: Map[String, String]): MultibranchLoadCommitsResult = {
-    val gitRepo = new Git(repo)
-    val allRemoteBranches = gitRepo.branchList().setListMode(ListMode.ALL).call().toList.map(_.getName) // TODO: switch to ListMode.REMOTE
-    val commitsForBranches = allRemoteBranches.map { branchName =>
-      val rawCommits = getCommitsForBranch(branchName, lastKnownBranchPointers.get(branchName))
-      val commitInfos = toPartialCommitInfos(rawCommits, repo)
-      CommitsForBranch(branchName, commitInfos, repo.resolve(branchName))
-    }
-    MultibranchLoadCommitsResult(repoName, commitsForBranches)
-  }
-
-  def loadLastKnownRepoState(lastKnownBranchPointers: Map[String, String], perBranchMaxCommitsCount: Int): MultibranchLoadCommitsResult = {
-    val commonBranchPointers = CommonBranchesResolver.rejectNonExistingBranches(lastKnownBranchPointers, repo)
-    val commitsForBranches = commonBranchPointers.map { case (branchName, branchKnownTop) =>
-      val rawCommits = getOldBranchCommitsUntil(branchName, branchKnownTop, perBranchMaxCommitsCount)
-      val commitInfos = toPartialCommitInfos(rawCommits, repo)
-      CommitsForBranch(branchName, commitInfos, repo.resolve(branchName))
-    }.toList
-    MultibranchLoadCommitsResult(repoName, commitsForBranches)
-  }
-
-  private def getOldBranchCommitsUntil(branchName: String, untilSHA: String, commitsCount: Int): List[RevCommit] = {
-    val walker = new RevWalk(repo)
-    walker.setRevFilter(MaxCountRevFilter.create(commitsCount))
-    setRangeStart(walker, repo.resolve(untilSHA))
-    val commits = walker.iterator().toList
-    walker.dispose
-    logger.debug(s"Got ${commits.size} old commit(s) for branch ${branchName}")
-    commits
-  }
 
   protected def pullChangesForRepo()
 
@@ -105,29 +62,5 @@ trait Repository extends Logging with RawCommitsConverter {
     }
   }
 
-  private def setRangeStart(walker: RevWalk, startingCommit: ObjectId) {
-    walker.markStart(walker.parseCommit(startingCommit))
-  }
-
-  private def setRangeEnd(walker: RevWalk, lastKnownCommitSHA: Option[String]) {
-    lastKnownCommitSHA.foreach { sha =>
-      try {
-        val lastKnownCommit = repo.resolve(sha)
-        walker.markUninteresting(walker.parseCommit(lastKnownCommit))
-      } catch {
-        case e: MissingObjectException => throw new RuntimeException(s"Cannot find commit with ID $sha", e)
-      }
-    }
-  }
-
-}
-
-
-object CommonBranchesResolver {
-  def rejectNonExistingBranches(knownRepoSnapshot: Map[String, String], repo: FileRepository) = {
-    val gitRepo = new Git(repo)
-    val repoBranches = gitRepo.branchList().setListMode(ListMode.ALL).call().toList.map(_.getName)
-    val commonBranches = repoBranches.intersect(knownRepoSnapshot.keySet.toList)
-    knownRepoSnapshot.filter { b => commonBranches.contains(b._1) }
-  }
+  implicit def gitObjectIdToString(objId: ObjectId) = ObjectId.toString(objId)
 }
