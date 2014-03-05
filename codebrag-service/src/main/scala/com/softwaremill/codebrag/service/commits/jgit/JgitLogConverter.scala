@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.service.commits.jgit
 
 import org.eclipse.jgit.revwalk.RevCommit
-import com.softwaremill.codebrag.domain.CommitInfo
+import com.softwaremill.codebrag.domain.{PartialCommitInfo, CommitInfo}
 import org.eclipse.jgit.lib.Repository
 import org.joda.time.DateTime
 import com.typesafe.scalalogging.slf4j.Logging
@@ -11,6 +11,10 @@ class JgitLogConverter extends Logging {
   def toCommitInfos(jGitCommits: List[RevCommit], repository: Repository): List[CommitInfo] = {
     val commitsOptions = jGitCommits.map(buildCommitInfoSafely(_, repository))
     commitsOptions.filter(_.isDefined).map(_.get)
+  }
+
+  def toPartialCommitInfos(jGitCommits: List[RevCommit], repository: Repository): List[PartialCommitInfo] = {
+    jGitCommits.flatMap(buildCommitInfoSafely(_, repository)).map(PartialCommitInfo(_))
   }
 
   def buildCommitInfoSafely(commit: RevCommit, repository: Repository): Option[CommitInfo] = {
