@@ -43,3 +43,12 @@ class JgitLogConverter extends Logging {
   }
 
 }
+
+/**
+ * Will replace old converter soon
+ */
+trait RawCommitsConverter {
+  def toPartialCommitInfos(jGitCommits: List[RevCommit], repository: Repository): List[PartialCommitInfo] = {
+    (new JgitLogConverter).toPartialCommitInfos(jGitCommits, repository)
+  }
+}

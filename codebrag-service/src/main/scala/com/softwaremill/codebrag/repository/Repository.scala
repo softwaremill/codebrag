@@ -3,13 +3,18 @@ package com.softwaremill.codebrag.repository
 import com.typesafe.scalalogging.slf4j.Logging
 import org.eclipse.jgit.lib.{ObjectId, Constants}
 import org.eclipse.jgit.revwalk.{RevWalk, RevCommit}
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import org.eclipse.jgit.storage.file.{FileRepository, FileRepositoryBuilder}
 import java.io.File
 import org.eclipse.jgit.errors.MissingObjectException
 import com.softwaremill.codebrag.repository.config.RepoData
 import scala.collection.JavaConversions._
+import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.api.ListBranchCommand.ListMode
+import com.softwaremill.codebrag.domain.{CommitsForBranch, MultibranchLoadCommitsResult}
+import com.softwaremill.codebrag.service.commits.jgit.RawCommitsConverter
+import org.eclipse.jgit.revwalk.filter.MaxCountRevFilter
 
-trait Repository extends Logging {
+trait Repository extends Logging with RawCommitsConverter {
 
   def repoData: RepoData
   val repo = buildRepository
@@ -57,6 +62,28 @@ trait Repository extends Logging {
     commits
   }
 
+  private implicit def gitObjectIdToString(objId: ObjectId) = ObjectId.toString(objId)
+
+  def loadSnapshot(lastKnownBranchPointers: Map[String, String], perBranchMaxCommitsCount: Int): MultibranchLoadCommitsResult = {
+    val commonBranchPointers = CommonBranchesResolver.rejectNonExistingBranches(lastKnownBranchPointers, repo)
+    val commitsForBranches = commonBranchPointers.map { case (branchName, branchKnownTop) =>
+      val rawCommits = getOldBranchCommitsUntil(branchName, branchKnownTop, perBranchMaxCommitsCount)
+      val commitInfos = toPartialCommitInfos(rawCommits, repo)
+      CommitsForBranch(branchName, commitInfos, repo.resolve(branchName))
+    }.toList
+    MultibranchLoadCommitsResult(repoName, commitsForBranches)
+  }
+
+  private def getOldBranchCommitsUntil(branchName: String, untilSHA: String, commitsCount: Int): List[RevCommit] = {
+    val walker = new RevWalk(repo)
+    walker.setRevFilter(MaxCountRevFilter.create(commitsCount))
+    setRangeStart(walker, repo.resolve(untilSHA))
+    val commits = walker.iterator().toList
+    walker.dispose
+    logger.debug(s"Got ${commits.size} old commit(s) for branch ${branchName}")
+    commits
+  }
+
   protected def pullChangesForRepo()
 
   private def buildRepository = {
@@ -81,5 +108,15 @@ trait Repository extends Logging {
       }
     }
   }
+
 }
 
+
+object CommonBranchesResolver {
+  def rejectNonExistingBranches(knownRepoSnapshot: Map[String, String], repo: FileRepository) = {
+    val gitRepo = new Git(repo)
+    val repoBranches = gitRepo.branchList().setListMode(ListMode.ALL).call().toList.map(_.getName)
+    val commonBranches = repoBranches.intersect(knownRepoSnapshot.keySet.toList)
+    knownRepoSnapshot.filter { b => commonBranches.contains(b._1) }
+  }
+}

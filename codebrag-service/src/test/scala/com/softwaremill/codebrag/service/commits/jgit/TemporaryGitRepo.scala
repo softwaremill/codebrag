@@ -23,8 +23,8 @@ class TemporaryGitRepo(val tempDir: File, repo: Repository) {
     ObjectId.toString(git.commit().setMessage(commitMessage).call().getId)
   }
 
-  def checkoutBranch(branchName: String) {
-    git.checkout().setName(branchName).setCreateBranch(true).call()
+  def checkoutBranch(branchName: String, create: Boolean = true) {
+    git.checkout().setName(branchName).setCreateBranch(create).call()
   }
 
   private def setFileContent(file: File, content: String) {
