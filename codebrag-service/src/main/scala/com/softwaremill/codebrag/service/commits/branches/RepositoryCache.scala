@@ -44,7 +44,7 @@ class RepositoryCache(backend: PersistentBackendForCache) extends Logging {
     }
   }
 
-  def initializeWith(repository: Repository, lastKnownBranchPointers: Map[String, String]) {
+  def initializeWith(repository: Repository) {
     logger.debug(s"Initializing repo cache")
     val savedState = backend.loadBranchesState()
     val loadResult = repository.loadLastKnownRepoState(savedState, MaxCommitsPerBranchCount)
