@@ -24,7 +24,7 @@ class PersistentBackendForCache(commitInfoDao: CommitInfoDAO, repoStatusDao: Rep
   private def persistBranchesState(loadResult: MultibranchLoadCommitsResult) {
     loadResult.commits.foreach { branch =>
       repoStatusDao.storeBranchState(branch.branchName, branch.currentBranchSHA)
-      logger.debug(s"Current branch SHA (persisted) is ${branch.currentBranchSHA}")
+      logger.debug(s"Persisted SHA ${branch.currentBranchSHA} for ${branch.branchName}")
     }
   }
 
