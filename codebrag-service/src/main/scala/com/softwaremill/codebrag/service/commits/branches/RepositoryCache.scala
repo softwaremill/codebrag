@@ -8,14 +8,17 @@ import com.softwaremill.codebrag.domain.MultibranchLoadCommitsResult
 /**
  * Keeps commits (SHA) for all repository branches
  */
-class RepositoryCache extends Logging {
+class RepositoryCache(backend: PersistentBackendForCache) extends Logging {
 
+  // TODO: make configurable
   private val MaxCommitsPerBranchCount = 10
+
 
   // TODO: probably change this
   private val commits = new scala.collection.mutable.HashMap[String, List[String]]
 
   def addCommits(loadResult: MultibranchLoadCommitsResult) {
+    backend.persist(loadResult)
     loadResult.commits.foreach { branchCommits =>
       val commitsShas = branchCommits.commits.map(_.sha)
       addCommitsToBranch(commitsShas, branchCommits.branchName)
@@ -41,11 +44,10 @@ class RepositoryCache extends Logging {
     }
   }
 
-  def getBranchPointer(branchName: String): Option[String] = commits.get(branchName).map(_.head)
-
   def initializeWith(repository: Repository, lastKnownBranchPointers: Map[String, String]) {
     logger.debug(s"Initializing repo cache")
-    val loadResult = repository.loadLastKnownRepoState(lastKnownBranchPointers, MaxCommitsPerBranchCount)
+    val savedState = backend.loadBranchesState()
+    val loadResult = repository.loadLastKnownRepoState(savedState, MaxCommitsPerBranchCount)
     loadResult.commits.foreach { branchCommits =>
       val commitsShas = branchCommits.commits.map(_.sha)
       logger.debug(s"Adding ${commitsShas.size} commits to ${branchCommits.branchName}")
