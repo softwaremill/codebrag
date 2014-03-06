@@ -2,39 +2,34 @@ package com.softwaremill.codebrag.dao.finders.commit
 
 import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.common.LoadMoreCriteria
+import com.softwaremill.codebrag.common.{ClockSpec, LoadMoreCriteria}
 import com.softwaremill.codebrag.domain.builder.{CommitInfoAssembler, UserAssembler}
 import com.softwaremill.codebrag.domain.{CommitReviewTask, CommitInfo, User}
 import org.bson.types.ObjectId
 import LoadMoreCriteria.PagingDirection
-import com.softwaremill.codebrag.dao.user.MongoUserDAO
-import com.softwaremill.codebrag.test.{FlatSpecWithMongo, ClearMongoDataAfterTest}
-import com.softwaremill.codebrag.dao.commitinfo.MongoCommitInfoDAO
-import com.softwaremill.codebrag.dao.reviewtask.{CommitReviewTaskDAO, MongoCommitReviewTaskDAO}
+import com.softwaremill.codebrag.dao.user.{SQLUserDAO, UserDAO, MongoUserDAO}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.dao.commitinfo.{SQLCommitInfoDAO, CommitInfoDAO, MongoCommitInfoDAO}
+import com.softwaremill.codebrag.dao.reviewtask.{SQLCommitReviewTaskDAO, CommitReviewTaskDAO, MongoCommitReviewTaskDAO}
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
+import org.scalatest.FlatSpec
 
-class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers with MockitoSugar {
+trait AllCommitsFinderSpec extends FlatSpec with ShouldMatchers with MockitoSugar {
   var finder: AllCommitsFinder = _
 
-  val commitDao = new MongoCommitInfoDAO
-  val reviewTaskDao = new MongoCommitReviewTaskDAO
-  val userDao = new MongoUserDAO
+  def commitDao: CommitInfoDAO
+  def reviewTaskDao: CommitReviewTaskDAO
+  def userDao: UserDAO
 
   val reviewingUserId = ObjectIdTestUtils.oid(100)
   val threeFromStart = LoadMoreCriteria.fromBeginning(3)
 
   val commitAuthor = UserAssembler.randomUser.withAvatarUrl("http://avatar.com").withFullName("John Doe").get
 
-  val commitOne = CommitInfoAssembler.randomCommit.withAuthorName(commitAuthor.name).get
-  val commitTwo = CommitInfoAssembler.randomCommit.withAuthorName(commitAuthor.name).get
-  val commitThree = CommitInfoAssembler.randomCommit.withAuthorName(commitAuthor.name).get
-
-  val ThreeCommitIdsList = List(commitOne, commitTwo, commitThree).map(_.id.toString)
-
   it should "find all commits when user only subset of commits to review" taggedAs RequiresDb in {
     // given
-    storeCommits(commitOne, commitTwo, commitThree)
+    val List(commitOne, commitTwo, commitThree) = storeCommits(3, commitAuthor)
     storeReviewTasksFor(reviewingUserId, commitOne)
 
     initFinder(Set(commitOne.id))
@@ -43,12 +38,13 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTes
     val allCommitsView = finder.findAllCommits(threeFromStart, reviewingUserId)
 
     // then
-    allCommitsView.commits.map(_.id) should equal(ThreeCommitIdsList)
+    val allIds = List(commitOne, commitTwo, commitThree).map(_.id.toString)
+    allCommitsView.commits.map(_.id) should be(allIds)
   }
 
   it should "return next page from all commits" taggedAs RequiresDb in {
     // given
-    storeCommits(commitOne, commitTwo, commitThree)
+    val List(commitOne, commitTwo, commitThree) = storeCommits(3, commitAuthor)
     storeReviewTasksFor(reviewingUserId, commitOne)
 
     initFinder(Set(commitOne.id))
@@ -58,12 +54,13 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTes
     val commitsView = finder.findAllCommits(nextTwoAfterFirst, reviewingUserId)
 
     // then
-    commitsView.commits.map(_.id) should equal(List(commitTwo, commitThree).map(_.id.toString))
+    val nextIds = List(commitTwo, commitThree).map(_.id.toString)
+    commitsView.commits.map(_.id) should equal(nextIds)
   }
 
   it should "return previous page from all commits" taggedAs RequiresDb in {
     // given
-    storeCommits(commitOne, commitTwo, commitThree)
+    val List(commitOne, commitTwo, commitThree) = storeCommits(3, commitAuthor)
     storeReviewTasksFor(reviewingUserId, commitOne)
 
     initFinder(Set(commitOne.id))
@@ -79,7 +76,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTes
   it should "return commits view containing user data" taggedAs RequiresDb in {
     // given
     storeUser(commitAuthor)
-    storeCommits(commitOne)
+    storeCommits(1, commitAuthor)
 
     initFinder(Set())
 
@@ -95,7 +92,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTes
   it should "mark commits as pending review if not reviewed by user" taggedAs RequiresDb in {
     // given
     storeUser(commitAuthor)
-    storeCommits(commitOne, commitTwo, commitThree)
+    val List(_, commitTwo, commitThree) = storeCommits(3, commitAuthor)
     storeReviewTasksFor(reviewingUserId, commitTwo, commitThree)
 
     initFinder(Set(commitTwo.id, commitThree.id))
@@ -112,7 +109,7 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTes
 
   it should "find commit with surroundings" taggedAs RequiresDb in {
     // given
-    storeCommits(commitOne, commitTwo, commitThree)
+    val List(commitOne, commitTwo, commitThree) = storeCommits(3, commitAuthor)
 
     initFinder(Set())
 
@@ -121,12 +118,13 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTes
     val commitsView = finder.findAllCommits(twoInContext, reviewingUserId)
 
     // then
-    commitsView.commits.map(_.id) should equal(ThreeCommitIdsList)
+    val allIds = List(commitOne, commitTwo, commitThree).map(_.id.toString)
+    commitsView.commits.map(_.id) should equal(allIds)
   }
 
   it should "find first commit with surroundings" taggedAs RequiresDb in {
     // given
-    storeCommits(commitOne, commitTwo, commitThree)
+    val List(commitOne, commitTwo, _) = storeCommits(3, commitAuthor)
 
     initFinder(Set())
 
@@ -147,9 +145,27 @@ class AllCommitsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTes
 
   private def storeUser(user: User) = userDao.add(user)
 
-  private def storeCommits(commits: CommitInfo*) = commits.foreach(commitDao.storeCommit)
+  private def storeCommits(count: Int, commitAuthor: User) = {
+    val storedCommits = for(i <- 1 to count) yield {
+      val commit = CommitInfoAssembler.randomCommit.withAuthorName(commitAuthor.name).get
+      commitDao.storeCommit(commit)
+    }
+    storedCommits.toList
+  }
 
   private def storeReviewTasksFor(userId: ObjectId, commits: CommitInfo*) = {
     commits.foreach(commit => reviewTaskDao.save(CommitReviewTask(commit.id, userId)))
   }
+}
+
+class MongoAllCommitsFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with AllCommitsFinderSpec {
+  val commitDao = new MongoCommitInfoDAO
+  val reviewTaskDao = new MongoCommitReviewTaskDAO
+  val userDao = new MongoUserDAO
+}
+
+class SQLAllCommitsFinderSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with AllCommitsFinderSpec with ClockSpec {
+  val commitDao = new SQLCommitInfoDAO(sqlDatabase)
+  val reviewTaskDao = new SQLCommitReviewTaskDAO(sqlDatabase, clock)
+  val userDao = new SQLUserDAO(sqlDatabase)
 }
