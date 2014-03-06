@@ -4,12 +4,11 @@ import com.softwaremill.codebrag.service.commits.jgit.RawCommitsConverter
 import org.eclipse.jgit.revwalk.{RevWalk, RevCommit}
 import com.softwaremill.codebrag.domain.{CommitsForBranch, MultibranchLoadCommitsResult}
 import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.api.ListBranchCommand.ListMode
 import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.errors.MissingObjectException
 import scala.collection.JavaConversions._
 
-trait RepositoryDeltaLoader extends RawCommitsConverter {
+trait RepositoryDeltaLoader extends RawCommitsConverter with BranchListModeSelector {
 
   self: Repository =>
 
@@ -26,7 +25,7 @@ trait RepositoryDeltaLoader extends RawCommitsConverter {
 
   def loadCommitsSince(lastKnownBranchPointers: Map[String, String]): MultibranchLoadCommitsResult = {
     val gitRepo = new Git(repo)
-    val allRemoteBranches = gitRepo.branchList().setListMode(ListMode.ALL).call().toList.map(_.getName) // TODO: switch to ListMode.REMOTE
+    val allRemoteBranches = gitRepo.branchList().setListMode(branchListMode).call().toList.map(_.getName) // TODO: switch to ListMode.REMOTE
     val commitsForBranches = allRemoteBranches.map { branchName =>
         val rawCommits = getCommitsForBranch(branchName, lastKnownBranchPointers.get(branchName))
         val commitInfos = toPartialCommitInfos(rawCommits, repo)
