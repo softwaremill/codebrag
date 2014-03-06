@@ -48,13 +48,11 @@ trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
   it should "have followups for given commit grouped together" in {
     // given
     val now = DateTime.now
-    val commit = CommitInfoAssembler.randomCommit.get
-    commitInfoDao.storeCommit(commit)
+    val commit = commitInfoDao.storeCommit(CommitInfoAssembler.randomCommit.get)
     val entireCommitFollowup = createFollowupWithDependenciesFor(commit, JohnId, now, ThreadDetails(commit.id))
     val firstInlineFollowup = createFollowupWithDependenciesFor(commit, JohnId, now.plusHours(2), ThreadDetails(commit.id, Some(20), Some("file.txt")))
 
-    val anotherCommit = CommitInfoAssembler.randomCommit.get
-    commitInfoDao.storeCommit(anotherCommit)
+    val anotherCommit = commitInfoDao.storeCommit(CommitInfoAssembler.randomCommit.get)
     val anotherCommitFollowup = createFollowupWithDependenciesFor(anotherCommit, JohnId, now.plusHours(1), ThreadDetails(anotherCommit.id))
 
 
@@ -76,12 +74,10 @@ trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
   it should "have correct commit data for followup groups" in {
     // given
     val now = DateTime.now
-    val commit = CommitInfoAssembler.randomCommit.get
-    commitInfoDao.storeCommit(commit)
+    val commit = commitInfoDao.storeCommit(CommitInfoAssembler.randomCommit.get)
     createFollowupWithDependenciesFor(commit, JohnId, now, ThreadDetails(commit.id))
 
-    val anotherCommit = CommitInfoAssembler.randomCommit.get
-    commitInfoDao.storeCommit(anotherCommit)
+    val anotherCommit = commitInfoDao.storeCommit(CommitInfoAssembler.randomCommit.get)
     createFollowupWithDependenciesFor(anotherCommit, JohnId, now.plusHours(1), ThreadDetails(anotherCommit.id))
 
     // when
@@ -106,8 +102,7 @@ trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
   it should "have correct reactions data for followup" in {
     // given
     val now = DateTime.now
-    val commit = CommitInfoAssembler.randomCommit.get
-    commitInfoDao.storeCommit(commit)
+    val commit = commitInfoDao.storeCommit(CommitInfoAssembler.randomCommit.get)
     val firstInlineFollowup = createFollowupWithDependenciesFor(commit, JohnId, now.plusHours(1), ThreadDetails(commit.id, Some(20), Some("file.txt")))
     val secondInlineFollowup = createFollowupWithDependenciesFor(commit, JohnId, now.plusHours(2), ThreadDetails(commit.id, Some(20), Some("file.txt")))
 
@@ -128,8 +123,7 @@ trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
 
   it should "find all follow-ups only for given user" taggedAs RequiresDb in {
     // given
-    val commit = CommitInfoAssembler.randomCommit.get
-    commitInfoDao.storeCommit(commit)
+    val commit = commitInfoDao.storeCommit(CommitInfoAssembler.randomCommit.get)
     val johnFollowup = createFollowupWithDependenciesFor(commit, JohnId)
     createFollowupWithDependenciesFor(commit, BobId)
 
@@ -144,8 +138,7 @@ trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
 
   it should "find followup by id for given user" taggedAs RequiresDb in {
     // given
-    val commit = CommitInfoAssembler.randomCommit.get
-    commitInfoDao.storeCommit(commit)
+    val commit = commitInfoDao.storeCommit(CommitInfoAssembler.randomCommit.get)
     val johnFollowup = createFollowupWithDependenciesFor(commit, JohnId)
 
     // when
@@ -157,8 +150,7 @@ trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
 
   it should "not find followup by id for another user" taggedAs RequiresDb in {
     // given
-    val commit = CommitInfoAssembler.randomCommit.get
-    commitInfoDao.storeCommit(commit)
+    val commit = commitInfoDao.storeCommit(CommitInfoAssembler.randomCommit.get)
     val johnFollowup = createFollowupWithDependenciesFor(commit, JohnId)
 
     // when & then
@@ -168,8 +160,7 @@ trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
   it should "have follow-ups for commit in newest-first order" taggedAs RequiresDb in {
     // given
     val now = DateTime.now
-    val commit = CommitInfoAssembler.randomCommit.get
-    commitInfoDao.storeCommit(commit)
+    val commit = commitInfoDao.storeCommit(CommitInfoAssembler.randomCommit.get)
     createFollowupWithDependenciesFor(commit, JohnId, now, ThreadDetails(commit.id))
     createFollowupWithDependenciesFor(commit, JohnId, now.plusHours(2), ThreadDetails(commit.id, Some(20), Some("file.txt")))
 
@@ -186,12 +177,10 @@ trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
     // given
     val now = DateTime.now
 
-    val commit = CommitInfoAssembler.randomCommit.get
-    commitInfoDao.storeCommit(commit)
+    val commit = commitInfoDao.storeCommit(CommitInfoAssembler.randomCommit.get)
     createFollowupWithDependenciesFor(commit, JohnId, now, ThreadDetails(commit.id))
 
-    val anotherCommit = CommitInfoAssembler.randomCommit.get
-    commitInfoDao.storeCommit(anotherCommit)
+    val anotherCommit = commitInfoDao.storeCommit(CommitInfoAssembler.randomCommit.get)
     createFollowupWithDependenciesFor(anotherCommit, JohnId, now.plusHours(1), ThreadDetails(anotherCommit.id))
 
     // when
@@ -205,8 +194,7 @@ trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
   it should "have reaction containing valid type and comment message" in {
     // given
     val now = DateTime.now
-    val commit = CommitInfoAssembler.randomCommit.get
-    commitInfoDao.storeCommit(commit)
+    val commit = commitInfoDao.storeCommit(CommitInfoAssembler.randomCommit.get)
     val created = createFollowupWithDependenciesFor(commit, JohnId, now, ThreadDetails(commit.id))
 
     // when
