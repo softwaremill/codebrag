@@ -61,7 +61,7 @@ checkpid(){
   local STATUS=9
   if [ -f $APP_PID ]; then
 		#echo "Is Running if you can see next line with $APP_NAME"
-		ps -fp `cat $APP_PID` | grep $APP_FILE > $TMP_FILE
+		ps -fp `cat $APP_PID` | grep --color=never $APP_FILE > $TMP_FILE
 		if [ -f $TMP_FILE -a -s $TMP_FILE ] ;
 			then
 				STATUS=0
