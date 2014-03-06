@@ -25,13 +25,16 @@ trait RepositoryDeltaLoader extends RawCommitsConverter with BranchListModeSelec
 
   def loadCommitsSince(lastKnownBranchPointers: Map[String, String]): MultibranchLoadCommitsResult = {
     val gitRepo = new Git(repo)
-    val allRemoteBranches = gitRepo.branchList().setListMode(branchListMode).call().toList.map(_.getName) // TODO: switch to ListMode.REMOTE
-    val commitsForBranches = allRemoteBranches.map { branchName =>
+    val commitsForBranches = remoteBranches(gitRepo).map { branchName =>
         val rawCommits = getCommitsForBranch(branchName, lastKnownBranchPointers.get(branchName))
         val commitInfos = toPartialCommitInfos(rawCommits, repo)
         CommitsForBranch(branchName, commitInfos, repo.resolve(branchName))
       }
     MultibranchLoadCommitsResult(repoName, commitsForBranches)
+  }
+
+  private def remoteBranches(gitRepo: Git): List[String] = {
+    gitRepo.branchList().setListMode(branchListMode).call().toList.map(_.getName).filterNot(_ == "refs/remotes/origin/HEAD")
   }
 
   private def setRangeStart(walker: RevWalk, startingCommit: ObjectId) {
