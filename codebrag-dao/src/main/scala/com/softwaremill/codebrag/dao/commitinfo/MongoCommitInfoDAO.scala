@@ -1,6 +1,5 @@
 package com.softwaremill.codebrag.dao.commitinfo
 
-import net.liftweb.mongodb.record.BsonMetaRecord
 import com.softwaremill.codebrag.domain.{PartialCommitInfo, UserLike, CommitInfo}
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.{MongoListField, DateField, ObjectIdPk}
@@ -16,8 +15,20 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
 
   import CommitInfoImplicits._
 
-  override def storeCommit(commit: CommitInfo) {
-    commit.save
+  override def storeCommit(commit: CommitInfo) = {
+    val record = CommitInfoRecord.createRecord
+      .id(new ObjectId)
+      .sha(commit.sha)
+      .message(commit.message)
+      .authorName(commit.authorName)
+      .authorEmail(commit.authorEmail)
+      .committerName(commit.committerName)
+      .committerEmail(commit.committerEmail)
+      .authorDate(commit.authorDate.toDate)
+      .committerDate(commit.commitDate.toDate)
+      .parents(commit.parents)
+    record.save
+    record
   }
 
   override def findBySha(sha: String): Option[CommitInfo] = {
@@ -80,24 +91,6 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
 
     implicit def toCommitInfo(record: Option[CommitInfoRecord]): Option[CommitInfo] = {
       record.map(toCommitInfo(_))
-    }
-
-    implicit def toCommitInfoRecord(commit: CommitInfo): CommitInfoRecord = {
-      CommitInfoRecord.createRecord
-        .id(commit.id)
-        .sha(commit.sha)
-        .message(commit.message)
-        .authorName(commit.authorName)
-        .authorEmail(commit.authorEmail)
-        .committerName(commit.committerName)
-        .committerEmail(commit.committerEmail)
-        .authorDate(commit.authorDate.toDate)
-        .committerDate(commit.commitDate.toDate)
-        .parents(commit.parents)
-    }
-
-    implicit def toCommitInfoRecordList(commits: List[CommitInfo]): List[CommitInfoRecord] = {
-      commits.map(toCommitInfoRecord(_))
     }
 
     implicit def toCommitInfoList(commits: List[CommitInfoRecord]): List[CommitInfo] = {

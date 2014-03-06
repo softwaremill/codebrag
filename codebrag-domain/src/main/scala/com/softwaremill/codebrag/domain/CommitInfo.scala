@@ -11,7 +11,7 @@ object CommitInfo {
   def apply(sha: String, message: String, authorName: String, authorEmail: String,
             committerName: String, committerEmail: String, authorDate: DateTime,
             commitDate: DateTime, parents: List[String]) = {
-    new CommitInfo(new ObjectId(), sha, message, authorName, authorEmail, committerName, committerEmail,
+    new CommitInfo(null, sha, message, authorName, authorEmail, committerName, committerEmail,
       authorDate, commitDate, parents)
   }
 

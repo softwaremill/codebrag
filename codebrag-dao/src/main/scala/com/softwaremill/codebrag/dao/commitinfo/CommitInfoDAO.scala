@@ -8,7 +8,7 @@ trait CommitInfoDAO {
 
   def hasCommits: Boolean
 
-  def storeCommit(commit: CommitInfo)
+  def storeCommit(commit: CommitInfo): CommitInfo
 
   def findBySha(sha: String): Option[CommitInfo]
 

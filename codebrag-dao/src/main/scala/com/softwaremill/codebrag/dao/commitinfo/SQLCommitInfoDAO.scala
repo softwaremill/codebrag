@@ -12,14 +12,15 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQL
   def hasCommits = db.withTransaction { implicit session => Query(commitInfos.length).first > 0 }
 
   def storeCommit(commit: CommitInfo) = {
-    val sci = SQLCommitInfo(commit.id, commit.sha, commit.message, commit.authorName, commit.authorEmail,
+    val sci = SQLCommitInfo(new ObjectId, commit.sha, commit.message, commit.authorName, commit.authorEmail,
       commit.committerName, commit.committerEmail, commit.authorDate, commit.commitDate)
-    val parents = commit.parents.map(p => SQLCommitInfoParent(commit.id, p))
+    val parents = commit.parents.map(p => SQLCommitInfoParent(sci.id, p))
 
     db.withTransaction { implicit session =>
       commitInfos += sci
       commitInfosParents ++= parents
     }
+    sci.toCommitInfo(parents)
   }
 
   def findBySha(sha: String) = findOneWhere(_.sha === sha)
