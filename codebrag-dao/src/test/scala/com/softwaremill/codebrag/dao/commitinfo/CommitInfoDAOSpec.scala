@@ -17,26 +17,24 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
 
   it should "find a stored commit" taggedAs RequiresDb in {
     // given
-    val commit = randomCommit.get
-    commitInfoDAO.storeCommit(commit)
+    val stored = commitInfoDAO.storeCommit(randomCommit.get)
 
     // when
-    val foundCommit = commitInfoDAO.findBySha(commit.sha)
+    val foundCommit = commitInfoDAO.findBySha(stored.sha)
 
     // then
-    foundCommit should be(Some(commit.copy()))
+    foundCommit should be(Some(stored))
   }
 
   it should "find stored commit by its id" taggedAs RequiresDb in {
     // given
-    val commit = randomCommit.get
-    commitInfoDAO.storeCommit(commit)
+    val stored = commitInfoDAO.storeCommit(randomCommit.get)
 
     // when
-    val foundCommit = commitInfoDAO.findByCommitId(commit.id)
+    val foundCommit = commitInfoDAO.findByCommitId(stored.id)
 
     // then
-    foundCommit should be(Some(commit.copy()))
+    foundCommit should be(Some(stored))
   }
 
   it should "store a single commit" taggedAs RequiresDb in {
@@ -185,32 +183,35 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
     commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusDays(1)).withCommitDate(date.minusDays(2)).get)
     commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusDays(2)).withCommitDate(date.minusDays(3)).get)
 
-    val c3 = randomCommit.withAuthorDate(date.minusDays(4)).withCommitDate(date.minusDays(4)).get; commitInfoDAO.storeCommit(c3)
-    val c4 = randomCommit.withAuthorDate(date.minusDays(3)).withCommitDate(date.minusDays(4)).get; commitInfoDAO.storeCommit(c4)
-    val c5 = randomCommit.withAuthorDate(date.minusDays(5)).withCommitDate(date.minusDays(5)).get; commitInfoDAO.storeCommit(c5)
+    val c3 = randomCommit.withAuthorDate(date.minusDays(4)).withCommitDate(date.minusDays(4)).get
+    val c3Stored = commitInfoDAO.storeCommit(c3)
+    val c4 = randomCommit.withAuthorDate(date.minusDays(3)).withCommitDate(date.minusDays(4)).get
+    val c4Stored = commitInfoDAO.storeCommit(c4)
+    val c5 = randomCommit.withAuthorDate(date.minusDays(5)).withCommitDate(date.minusDays(5)).get
+    val c5Stored = commitInfoDAO.storeCommit(c5)
 
     // when
-    val commits = commitInfoDAO.findPartialCommitInfo(List(c3.id, c4.id, c5.id))
+    val commits = commitInfoDAO.findPartialCommitInfo(List(c3Stored.id, c4Stored.id, c5Stored.id))
 
     // then
-    commits.map(_.id) should be (List(c5.id, c3.id, c4.id))
+    commits.map(_.id) should be (List(c5Stored.id, c3Stored.id, c4Stored.id))
   }
 
-  it should "find all commit ids" taggedAs RequiresDb in {
+  it should "find all commit ids in reversed order" taggedAs RequiresDb in {
     // given
     val date = new DateTime()
 
-    val c1 = randomCommit.withAuthorDate(date.minusDays(1)).withCommitDate(date.minusDays(2)).get; commitInfoDAO.storeCommit(c1)
-    val c2 = randomCommit.withAuthorDate(date.minusDays(2)).withCommitDate(date.minusDays(3)).get; commitInfoDAO.storeCommit(c2)
-    val c3 = randomCommit.withAuthorDate(date.minusDays(4)).withCommitDate(date.minusDays(4)).get; commitInfoDAO.storeCommit(c3)
-    val c4 = randomCommit.withAuthorDate(date.minusDays(3)).withCommitDate(date.minusDays(4)).get; commitInfoDAO.storeCommit(c4)
-    val c5 = randomCommit.withAuthorDate(date.minusDays(5)).withCommitDate(date.minusDays(5)).get; commitInfoDAO.storeCommit(c5)
+    val c1 = commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusDays(1)).withCommitDate(date.minusDays(2)).get)
+    val c2 = commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusDays(2)).withCommitDate(date.minusDays(3)).get)
+    val c3 = commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusDays(4)).withCommitDate(date.minusDays(4)).get)
+    val c4 = commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusDays(3)).withCommitDate(date.minusDays(4)).get)
+    val c5 = commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusDays(5)).withCommitDate(date.minusDays(5)).get)
 
     // when
     val commits = commitInfoDAO.findAllIds()
 
     // then
-    commits should be (List(c5.id, c3.id, c4.id, c2.id, c1.id))
+    commits should be (List(c1, c2, c4, c3, c5).map(_.id).reverse)
   }
 
   def buildCommitWithMatchingUserEmail(user: User, date: DateTime, sha: String) = {
