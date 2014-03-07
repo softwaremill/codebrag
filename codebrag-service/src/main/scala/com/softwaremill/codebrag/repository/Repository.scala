@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.repository
 
 import com.typesafe.scalalogging.slf4j.Logging
-import org.eclipse.jgit.lib.Constants
+import org.eclipse.jgit.lib.{ObjectId, Constants}
 import org.eclipse.jgit.revwalk.{RevWalk, RevCommit}
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import java.io.File
@@ -18,7 +18,8 @@ trait Repository extends Logging {
     logger.debug(s"Pulling changes for ${repoData.repoLocation}")
     try {
       pullChangesForRepo()
-      logger.debug(s"Changes pulled succesfully")
+      val commit = repo.resolve("HEAD")
+      logger.debug(s"Changes pulled succesfully. Current repo HEAD is ${ObjectId.toString(commit)}")
     } catch {
       case e: Exception => {
         logger.error(s"Cannot pull changes for repo ${repoData.repoLocation} because of: ${e.getMessage}")
@@ -66,8 +67,11 @@ trait Repository extends Logging {
   }
 
   private def setCommitsRange(walker: RevWalk, lastKnownCommitSHA: Option[String]) {
+    val head = currentHead
+    logger.debug(s"Getting commits starting from HEAD: ${ObjectId.toString(head)}")
     walker.markStart(walker.parseCommit(currentHead))
     lastKnownCommitSHA.foreach { sha =>
+      logger.debug(s"Last known commit is ${sha}")
       try {
         val lastKnownCommit = repo.resolve(sha)
         walker.markUninteresting(walker.parseCommit(lastKnownCommit))
