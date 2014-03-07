@@ -64,3 +64,14 @@ trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDe
 
   implicit def gitObjectIdToString(objId: ObjectId) = ObjectId.toString(objId)
 }
+
+object Repository {
+
+  def buildUsing(data: RepoData) = {
+    data.repoType match {
+      case "git" => new GitRepository(data)
+      case "git-svn" => new GitSvnRepository(data)
+    }
+  }
+
+}
