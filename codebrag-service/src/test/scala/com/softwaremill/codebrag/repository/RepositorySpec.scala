@@ -12,6 +12,8 @@ trait RepositorySpec {
     protected def pullChangesForRepo() = ???
   }
 
+  def testRepo(repo: TemporaryGitRepo) = new TestRepository(repoData(repo))
+
   def repoData(repo: TemporaryGitRepo) = RepoData(repo.tempDir.getAbsolutePath, "temp", "git", None)
 
   def loadResultForBranch(branchName: String, loadResult: MultibranchLoadCommitsResult) = {

@@ -6,8 +6,9 @@ import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.service.commits.DiffLoader
 import com.softwaremill.codebrag.repository.config.RepoData
+import com.softwaremill.codebrag.repository.Repository
 
-class DiffService(commitInfoDao: CommitInfoDAO, diffLoader: DiffLoader, repoData: RepoData) {
+class DiffService(commitInfoDao: CommitInfoDAO, diffLoader: DiffLoader, repository: Repository) {
 
   val IrrelevantLineIndicator = -1
   val LineTypeHeader = "header"
@@ -57,7 +58,7 @@ class DiffService(commitInfoDao: CommitInfoDAO, diffLoader: DiffLoader, repoData
   def getFilesWithDiffs(commitId: String): Either[String, List[CommitFileDiff]] = {
     val result = for {
       commit <- commitInfoDao.findByCommitId(new ObjectId(commitId))
-      diff <- diffLoader.loadDiff(commit.sha, repoData)
+      diff <- diffLoader.loadDiff(commit.sha, repository)
     } yield Right(diff.map(file => {
         val patch = cutGitHeaders(file.patch)
         val diffLines = parseDiff(patch)

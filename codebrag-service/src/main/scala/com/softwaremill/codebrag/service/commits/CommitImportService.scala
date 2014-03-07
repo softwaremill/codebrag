@@ -6,16 +6,17 @@ import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.repository.config.RepoData
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
+import com.softwaremill.codebrag.repository.Repository
 
 class CommitImportService(commitsLoader: CommitsLoader, commitInfoDao: CommitInfoDAO, repoStatusDao: RepositoryStatusDAO, eventBus: EventBus)(implicit clock: Clock) extends Logging {
 
-  def importRepoCommits(repoData: RepoData) {
+  def importRepoCommits(repository: Repository) {
     try {
-      doImport(repoData)
+      doImport(repository.repoData)
     } catch {
       case e: Exception => {
         logger.error("Cannot import repository commits", e)
-        updateRepoNotReadyStatus(repoData.repoName, e.getMessage)
+        updateRepoNotReadyStatus(repository.repoName, e.getMessage)
       }
     }
   }

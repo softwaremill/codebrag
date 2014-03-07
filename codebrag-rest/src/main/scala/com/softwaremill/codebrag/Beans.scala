@@ -17,12 +17,12 @@ import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
 import com.softwaremill.codebrag.dao.Daos
-import com.softwaremill.codebrag.repository.config.RepoData
+import com.softwaremill.codebrag.repository.Repository
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
   def config: AllConfig
-  def repoData: RepoData
+  def repository: Repository
 
   implicit lazy val clock = RealTimeClock
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator
@@ -59,7 +59,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService, notificationService)
 
   lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder,
-    new DiffService(commitInfoDao, diffLoader, repoData))
+    new DiffService(commitInfoDao, diffLoader, repository))
 
   lazy val statsAggregator = new StatsAggregator(statsFinder, instanceSettingsDao, config)
 

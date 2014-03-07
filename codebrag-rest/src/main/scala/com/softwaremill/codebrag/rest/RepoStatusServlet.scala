@@ -5,11 +5,12 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.domain.RepositoryStatus
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 import com.softwaremill.codebrag.repository.config.RepoData
+import com.softwaremill.codebrag.repository.Repository
 
-class RepoStatusServlet(val authenticator: Authenticator, repoData: RepoData, repoStatusDao: RepositoryStatusDAO) extends JsonServletWithAuthentication with Logging {
+class RepoStatusServlet(val authenticator: Authenticator, repository: Repository, repoStatusDao: RepositoryStatusDAO) extends JsonServletWithAuthentication with Logging {
 
   get("/") {
-    getRepositoryStatus(repoData)
+    getRepositoryStatus(repository.repoData)
   }
 
   private def getRepositoryStatus(repoData: RepoData): Map[String, RepositoryStatus] = {

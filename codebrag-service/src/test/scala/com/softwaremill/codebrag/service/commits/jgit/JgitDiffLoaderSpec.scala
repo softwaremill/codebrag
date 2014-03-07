@@ -2,10 +2,10 @@ package com.softwaremill.codebrag.service.commits.jgit
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.repository.config.RepoData
 import java.io.{PrintWriter, File}
+import com.softwaremill.codebrag.repository.RepositorySpec
 
-class JgitDiffLoaderSpec extends FlatSpec with ShouldMatchers {
+class JgitDiffLoaderSpec extends FlatSpec with ShouldMatchers with RepositorySpec {
   it should "get the diff of the given commit" in {
     TemporaryGitRepo.withGitRepo { gitRepo =>
       // given
@@ -14,8 +14,7 @@ class JgitDiffLoaderSpec extends FlatSpec with ShouldMatchers {
       gitRepo.createCommit("test1", ("test.txt", "AAA\nBBB\nxxx\nDDD\nEEE"))
 
       // when
-      val filesOpt = new JgitDiffLoader().loadDiff(sha2,
-        RepoData(gitRepo.tempDir.getAbsolutePath, "temp", "git", None))
+      val filesOpt = new JgitDiffLoader().loadDiff(sha2, testRepo(gitRepo))
 
       // then
       filesOpt should be ('defined)
@@ -46,7 +45,7 @@ class JgitDiffLoaderSpec extends FlatSpec with ShouldMatchers {
 
       // when
       val filesOpt = new JgitDiffLoader().loadDiff("5876164cee034bf50ef2424d4d1e67300385b1e7", // another SHA
-        RepoData(gitRepo.tempDir.getAbsolutePath, "temp", "git", None))
+        testRepo(gitRepo))
 
       // then
       filesOpt should be (None)

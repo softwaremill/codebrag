@@ -5,15 +5,16 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.service.commits.{DiffLoader, CommitImportService}
 import com.softwaremill.codebrag.repository.config.RepoData
 import RepoUpdateActor._
+import com.softwaremill.codebrag.repository.Repository
 
 class RepoUpdateActor(
   importService: CommitImportService,
-  repoData: RepoData) extends Actor with Logging {
+  repository: Repository) extends Actor with Logging {
   
   def receive = {
     case Update(scheduleNext) => {
       try {
-        importService.importRepoCommits(repoData)
+        importService.importRepoCommits(repository)
       } finally {
         if (scheduleNext) {
           import context.dispatcher

@@ -13,6 +13,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.repository.config.RepoData
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
+import com.softwaremill.codebrag.repository.Repository
 
 class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with MockEventBus with ClockSpec {
 
@@ -23,8 +24,15 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
   val repoOwner = "johndoe"
   val currentSHA = "123123123"
-  val repoData = new RepoData("/tmp/repo", "my-repo", "git", repoCredentials = None)
-  val EmptyCommitsList = LoadCommitsResult(List.empty[CommitInfo], repoData.repoName, currentSHA)
+  val _repoData = new RepoData("/tmp/repo", "my-repo", "git", repoCredentials = None)
+
+  val repository = new Repository {
+    def repoData = _repoData
+    def repo = ???
+    protected def pullChangesForRepo() = ???
+  }
+
+  val EmptyCommitsList = LoadCommitsResult(List.empty[CommitInfo], _repoData.repoName, currentSHA)
 
 
   before {
@@ -37,10 +45,10 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
   it should "not store anything when no new commits available" in {
     // given
-    when(commitsLoader.loadNewCommits(repoData)).thenReturn(EmptyCommitsList)
+    when(commitsLoader.loadNewCommits(_repoData)).thenReturn(EmptyCommitsList)
 
     // when
-    service.importRepoCommits(repoData)
+    service.importRepoCommits(repository)
 
     // then
     verify(commitInfoDao, never).storeCommit(any[CommitInfo])
@@ -49,9 +57,9 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
   it should "store all new commits available" in {
     val commitsLoadResult = freshCommits(5)
-    when(commitsLoader.loadNewCommits(repoData)).thenReturn(commitsLoadResult)
+    when(commitsLoader.loadNewCommits(_repoData)).thenReturn(commitsLoadResult)
 
-    service.importRepoCommits(repoData)
+    service.importRepoCommits(repository)
 
     commitsLoadResult.commits.foreach(commit => {
       verify(commitInfoDao).storeCommit(commit)
@@ -60,10 +68,10 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
   it should "skip commits that could not be saved and move on" in {
     val loadResult = freshCommits(5)
-    when(commitsLoader.loadNewCommits(repoData)).thenReturn(loadResult)
+    when(commitsLoader.loadNewCommits(_repoData)).thenReturn(loadResult)
     when(commitInfoDao.storeCommit(any[CommitInfo])).thenThrow(new RuntimeException("Could not store commit"))
 
-    service.importRepoCommits(repoData)
+    service.importRepoCommits(repository)
 
     loadResult.commits.foreach(commit => {
       verify(commitInfoDao).storeCommit(commit)
@@ -73,10 +81,10 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   it should "publish event with correct data about imported commits" in {
     // given
     val commitsLoadResult = freshCommits(2)
-    when(commitsLoader.loadNewCommits(repoData)).thenReturn(commitsLoadResult)
+    when(commitsLoader.loadNewCommits(_repoData)).thenReturn(commitsLoadResult)
 
     // when
-    service.importRepoCommits(repoData)
+    service.importRepoCommits(repository)
 
     // then
     eventBus.size() should equal(1)
@@ -92,12 +100,12 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
     // given
     val invalidCommit = CommitInfoAssembler.randomCommit.withMessage("Invalid").get
     val validCommit = CommitInfoAssembler.randomCommit.withMessage("Valid").get
-    val loadResult = LoadCommitsResult(List(invalidCommit, validCommit), repoData.repoName, currentSHA)
-    when(commitsLoader.loadNewCommits(repoData)).thenReturn(loadResult)
+    val loadResult = LoadCommitsResult(List(invalidCommit, validCommit), _repoData.repoName, currentSHA)
+    when(commitsLoader.loadNewCommits(_repoData)).thenReturn(loadResult)
     when(commitInfoDao.storeCommit(invalidCommit)).thenThrow(new RuntimeException("Cannot store commit"))
 
     // when
-    service.importRepoCommits(repoData)
+    service.importRepoCommits(repository)
 
     val event = getEvents(0).asInstanceOf[NewCommitsLoadedEvent]
     val commit = event.newCommits.head
@@ -108,10 +116,10 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   it should "publish event about first update if no commits found in dao" in {
     // given
     val newCommits = freshCommits(2)
-    when(commitsLoader.loadNewCommits(repoData)).thenReturn(newCommits)
+    when(commitsLoader.loadNewCommits(_repoData)).thenReturn(newCommits)
     when(commitInfoDao.hasCommits).thenReturn(false)
     // when
-    service.importRepoCommits(repoData)
+    service.importRepoCommits(repository)
 
     // then
     val onlyEvent = getEvents(0).asInstanceOf[NewCommitsLoadedEvent]
@@ -121,10 +129,10 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   it should "publish event about non-first update if some commits found in dao" in {
     // given
     val newCommits = freshCommits(2)
-    when(commitsLoader.loadNewCommits(repoData)).thenReturn(newCommits)
+    when(commitsLoader.loadNewCommits(_repoData)).thenReturn(newCommits)
     when(commitInfoDao.hasCommits).thenReturn(true)
     // when
-    service.importRepoCommits(repoData)
+    service.importRepoCommits(repository)
 
     // then
     val onlyEvent = getEvents(0).asInstanceOf[NewCommitsLoadedEvent]
@@ -133,13 +141,13 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
   it should "catch exception and update repo status in DB accordingly" in {
     // given
-    when(commitsLoader.loadNewCommits(repoData)).thenThrow(new RuntimeException("ooops"))
+    when(commitsLoader.loadNewCommits(_repoData)).thenThrow(new RuntimeException("ooops"))
 
     // when
-    service.importRepoCommits(repoData)
+    service.importRepoCommits(repository)
 
     // then
-    val expectedStatus = RepositoryStatus.notReady(repoData.repoName, Some("ooops"))
+    val expectedStatus = RepositoryStatus.notReady(_repoData.repoName, Some("ooops"))
     verify(repoStatusDao).updateRepoStatus(expectedStatus)
   }
 
@@ -147,7 +155,7 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
     val commits = (1 to commitsNumber).map( num => {
       CommitInfoAssembler.randomCommit.withId(ObjectId.massageToObjectId(num)).get
     }).toList
-    LoadCommitsResult(commits, repoData.repoName, currentSHA)
+    LoadCommitsResult(commits, _repoData.repoName, currentSHA)
   }
 
 }
