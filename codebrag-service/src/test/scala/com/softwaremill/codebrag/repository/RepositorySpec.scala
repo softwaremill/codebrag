@@ -7,9 +7,9 @@ import org.eclipse.jgit.api.ListBranchCommand.ListMode
 
 trait RepositorySpec {
 
-  class TestRepository(val repoData: RepoData) extends Repository {
-    protected def pullChangesForRepo() = ???
+  class TestRepository(val repoData: RepoData) extends Repository with RepositoryAutoBuilder {
     override def branchListMode = ListMode.ALL  // because it's temp repo with only local branches
+    protected def pullChangesForRepo() = ???
   }
 
   def repoData(repo: TemporaryGitRepo) = RepoData(repo.tempDir.getAbsolutePath, "temp", "git", None)

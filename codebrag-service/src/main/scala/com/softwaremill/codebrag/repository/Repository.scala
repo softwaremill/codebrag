@@ -17,7 +17,7 @@ import org.eclipse.jgit.revwalk.filter.MaxCountRevFilter
 trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDeltaLoader {
 
   def repoData: RepoData
-  val repo = buildRepository
+  def repo: FileRepository
   val repoName = repoData.repoName
 
   def pullChanges() {
@@ -53,14 +53,6 @@ trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDe
   
 
   protected def pullChangesForRepo()
-
-  private def buildRepository = {
-    try {
-      new FileRepositoryBuilder().setGitDir(new File(repoData.repoLocation + File.separator + ".git")).setMustExist(true).build()
-    } catch {
-      case e: Exception => throw new RuntimeException(s"Cannot build valid git repository object from ${repoData.repoLocation}", e)
-    }
-  }
 
   implicit def gitObjectIdToString(objId: ObjectId) = ObjectId.toString(objId)
 }
