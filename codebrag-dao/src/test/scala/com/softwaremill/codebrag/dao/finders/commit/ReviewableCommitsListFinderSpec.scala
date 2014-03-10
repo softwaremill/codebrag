@@ -3,10 +3,11 @@ package com.softwaremill.codebrag.dao.finders.commit
 import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
-import com.softwaremill.codebrag.common.{ClockSpec, LoadMoreCriteria}
+import com.softwaremill.codebrag.common.{ClockSpec}
 import com.softwaremill.codebrag.domain.{User, CommitInfo}
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.common.LoadMoreCriteria.PagingDirection
+import com.softwaremill.codebrag.common.paging.PagingCriteria
+import PagingCriteria.Direction
 import com.softwaremill.codebrag.dao.user.{SQLUserDAO, UserDAO, MongoUserDAO}
 import com.softwaremill.codebrag.test.{FlatSpecWithSQL, ClearSQLDataAfterTest, FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.commitinfo.{SQLCommitInfoDAO, CommitInfoDAO, MongoCommitInfoDAO}
@@ -25,7 +26,7 @@ trait ReviewableCommitsListFinderSpec extends FlatSpec with ShouldMatchers with 
   def userDao: UserDAO
 
   val reviewingUserId = ObjectIdTestUtils.oid(100)
-  val paging = LoadMoreCriteria.fromBeginning(2)
+  val paging = PagingCriteria.fromBeginning[ObjectId](2)
 
   val commitAuthor = UserAssembler.randomUser.withAvatarUrl("http://avatar.com").withFullName("John Doe").get
 
@@ -64,7 +65,7 @@ trait ReviewableCommitsListFinderSpec extends FlatSpec with ShouldMatchers with 
     initFinder(Set(commitOne.id, commitTwo.id, commitThree.id))
 
     // when
-    val twoCommitsOnPage = LoadMoreCriteria.fromBeginning(2)
+    val twoCommitsOnPage = PagingCriteria.fromBeginning[ObjectId](2)
     val commitsView = finder.findCommitsToReviewFor(reviewingUserId, twoCommitsOnPage)
 
     // then
@@ -79,7 +80,7 @@ trait ReviewableCommitsListFinderSpec extends FlatSpec with ShouldMatchers with 
     initFinder(Set(commitOne.id, commitTwo.id, commitThree.id))
 
     // when
-    val oneCommitToReview = LoadMoreCriteria.fromBeginning(1)
+    val oneCommitToReview = PagingCriteria.fromBeginning[ObjectId](1)
     val commitsView = finder.findCommitsToReviewFor(reviewingUserId, oneCommitToReview)
 
     // then
@@ -94,7 +95,7 @@ trait ReviewableCommitsListFinderSpec extends FlatSpec with ShouldMatchers with 
     initFinder(Set(commitOne.id, commitTwo.id, commitThree.id))
 
     // when
-    val nextAfterSecondCommit = LoadMoreCriteria(commitTwo.id, PagingDirection.Right, 2)
+    val nextAfterSecondCommit = PagingCriteria(commitTwo.id, Direction.Right, 2)
     val commitsView = finder.findCommitsToReviewFor(reviewingUserId, nextAfterSecondCommit)
 
     // then

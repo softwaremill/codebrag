@@ -1,15 +1,16 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.common.LoadMoreCriteria
 import org.scalatra.NotFound
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import CommitsEndpoint._
 import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
-import LoadMoreCriteria.PagingDirection
+import com.softwaremill.codebrag.common.paging.PagingCriteria
+import PagingCriteria.Direction
 import com.softwaremill.codebrag.activities.CommitReviewActivity
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
+import com.softwaremill.codebrag.common.paging.PagingCriteria
 
 trait CommitsEndpoint extends JsonServletWithAuthentication {
 
@@ -56,8 +57,8 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     val limit = params.getOrElse(LimitParamName, DefaultPageLimit.toString).toInt
     val currentUserId = new ObjectId(user.id)
     val criteria = params.get("id") match {
-      case Some(commitId) => LoadMoreCriteria(new ObjectId(commitId), PagingDirection.Radial, limit)
-      case None => LoadMoreCriteria.fromEnd(limit)
+      case Some(commitId) => PagingCriteria(new ObjectId(commitId), Direction.Radial, limit)
+      case None => PagingCriteria.fromEnd[ObjectId](limit)
     }
     allCommitsFinder.findAllCommits(criteria, currentUserId)
   }
@@ -72,11 +73,11 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     val limit = params.getOrElse(LimitParamName, CommitsEndpoint.DefaultPageLimit.toString).toInt
 
     if(maxId.isDefined) {
-      LoadMoreCriteria(maxId, PagingDirection.Left, limit)
+      PagingCriteria(maxId, Direction.Left, limit)
     } else if(minId.isDefined) {
-      LoadMoreCriteria(minId, PagingDirection.Right, limit)
+      PagingCriteria(minId, Direction.Right, limit)
     } else {
-      LoadMoreCriteria.fromBeginning(limit)
+      PagingCriteria.fromBeginning[ObjectId](limit)
     }
   }
 

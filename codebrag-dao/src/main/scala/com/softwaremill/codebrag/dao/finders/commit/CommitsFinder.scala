@@ -1,23 +1,22 @@
 package com.softwaremill.codebrag.dao.finders.commit
 
 import com.softwaremill.codebrag.dao.commitinfo.{CommitInfoDAO}
-import com.softwaremill.codebrag.common.LoadMoreCriteria
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.finders.commit.ListSliceLoader._
 import com.softwaremill.codebrag.dao.finders.commit.OutOfPageCommitCounter._
 import com.softwaremill.codebrag.dao.finders.views.{CommitView, CommitListView}
 import com.softwaremill.codebrag.domain.PartialCommitInfo
+import com.softwaremill.codebrag.common.paging.PagingCriteria
 
 trait CommitsFinder extends UserDataEnhancer {
   def commitInfoDAO: CommitInfoDAO
 
   def findCommits(
     ids: List[ObjectId],
-    paging: LoadMoreCriteria,
+    paging: PagingCriteria[ObjectId],
     transformCommits: List[CommitView] => List[CommitView]) = {
 
-    val commitsSlice = loadSliceUsing(paging, ids, commitInfoDAO.findPartialCommitInfo)
-    val commits = toCommitViews(commitsSlice)
+    val pageOfCommits = commitInfoDAO.findPartialCommitInfo(paging.extractPageFrom(ids))
+    val commits = toCommitViews(pageOfCommits)
     val numOlder = countOlderCommits(ids.map(_.toString), commits)
     val numNewer = countNewerCommits(ids.map(_.toString), commits)
     enhanceWithUserData(CommitListView(transformCommits(commits), numOlder, numNewer))

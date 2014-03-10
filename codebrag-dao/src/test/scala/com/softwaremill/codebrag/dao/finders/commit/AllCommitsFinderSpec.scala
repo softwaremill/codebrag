@@ -2,11 +2,12 @@ package com.softwaremill.codebrag.dao.finders.commit
 
 import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.common.{ClockSpec, LoadMoreCriteria}
+import com.softwaremill.codebrag.common.{ClockSpec}
 import com.softwaremill.codebrag.domain.builder.{CommitInfoAssembler, UserAssembler}
 import com.softwaremill.codebrag.domain.{CommitReviewTask, CommitInfo, User}
 import org.bson.types.ObjectId
-import LoadMoreCriteria.PagingDirection
+import com.softwaremill.codebrag.common.paging.PagingCriteria
+import PagingCriteria.Direction
 import com.softwaremill.codebrag.dao.user.{SQLUserDAO, UserDAO, MongoUserDAO}
 import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
 import com.softwaremill.codebrag.dao.commitinfo.{SQLCommitInfoDAO, CommitInfoDAO, MongoCommitInfoDAO}
@@ -23,7 +24,7 @@ trait AllCommitsFinderSpec extends FlatSpec with ShouldMatchers with MockitoSuga
   def userDao: UserDAO
 
   val reviewingUserId = ObjectIdTestUtils.oid(100)
-  val threeFromStart = LoadMoreCriteria.fromBeginning(3)
+  val threeFromStart = PagingCriteria.fromBeginning[ObjectId](3)
 
   val commitAuthor = UserAssembler.randomUser.withAvatarUrl("http://avatar.com").withFullName("John Doe").get
 
@@ -50,7 +51,7 @@ trait AllCommitsFinderSpec extends FlatSpec with ShouldMatchers with MockitoSuga
     initFinder(Set(commitOne.id))
 
     // when
-    val nextTwoAfterFirst = LoadMoreCriteria(commitOne.id, PagingDirection.Right, 2)
+    val nextTwoAfterFirst = PagingCriteria(commitOne.id, Direction.Right, 2)
     val commitsView = finder.findAllCommits(nextTwoAfterFirst, reviewingUserId)
 
     // then
@@ -66,7 +67,7 @@ trait AllCommitsFinderSpec extends FlatSpec with ShouldMatchers with MockitoSuga
     initFinder(Set(commitOne.id))
 
     // when
-    val previousTwoFromLast = LoadMoreCriteria(commitThree.id, PagingDirection.Left, 2)
+    val previousTwoFromLast = PagingCriteria(commitThree.id, Direction.Left, 2)
     val commitsView = finder.findAllCommits(previousTwoFromLast, reviewingUserId)
 
     // then
@@ -114,7 +115,7 @@ trait AllCommitsFinderSpec extends FlatSpec with ShouldMatchers with MockitoSuga
     initFinder(Set())
 
     // when
-    val twoInContext = LoadMoreCriteria(commitThree.id, PagingDirection.Radial, 2)
+    val twoInContext = PagingCriteria(commitThree.id, Direction.Radial, 2)
     val commitsView = finder.findAllCommits(twoInContext, reviewingUserId)
 
     // then
@@ -129,7 +130,7 @@ trait AllCommitsFinderSpec extends FlatSpec with ShouldMatchers with MockitoSuga
     initFinder(Set())
 
     // when
-    val oneInContext = LoadMoreCriteria(commitOne.id, PagingDirection.Radial, 1)
+    val oneInContext = PagingCriteria(commitOne.id, Direction.Radial, 1)
     val commitsView = finder.findAllCommits(oneInContext, reviewingUserId)
 
     // then

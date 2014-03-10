@@ -2,17 +2,17 @@ package com.softwaremill.codebrag.dao.finders.commit
 
 import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.common.LoadMoreCriteria
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.common.paging.PagingCriteria
 
 class AllCommitsFinder(
   val commitReviewTaskDAO: CommitReviewTaskDAO,
   val commitInfoDAO: CommitInfoDAO,
   val userDAO: UserDAO) extends CommitsFinder with CommitReviewedByUserMarker with Logging {
 
-  def findAllCommits(paging: LoadMoreCriteria, userId: ObjectId) = {
+  def findAllCommits(paging: PagingCriteria[ObjectId], userId: ObjectId) = {
     val allCommitsIds = commitInfoDAO.findAllIds()
     findCommits(allCommitsIds, paging, markAsReviewed(_, userId))
   }
