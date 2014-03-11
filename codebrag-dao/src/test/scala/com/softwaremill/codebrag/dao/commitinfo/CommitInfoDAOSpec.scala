@@ -97,6 +97,18 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
     commitsSha should equal(commits.map(_.sha).toSet)
   }
 
+  it should "find stored commits by their SHAs" in {
+    // given
+    val commits = List(CommitInfoAssembler.randomCommit.withSha("111").get, CommitInfoAssembler.randomCommit.withSha("222").get)
+    commits.map(commitInfoDAO.storeCommit)
+
+    // when
+    val commitsBySha = commitInfoDAO.findByShaList(commits.map(_.sha))
+
+    // then
+    commitsBySha.map(_.sha) should equal(commits.map(_.sha))
+  }
+
   it should "find last commits (ordered) for user" taggedAs RequiresDb in {
     // given
     val tenDaysAgo = DateTime.now.minusDays(10)

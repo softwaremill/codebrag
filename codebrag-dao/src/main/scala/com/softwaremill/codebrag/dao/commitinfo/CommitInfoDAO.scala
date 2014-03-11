@@ -12,6 +12,8 @@ trait CommitInfoDAO {
 
   def findBySha(sha: String): Option[CommitInfo]
 
+  def findByShaList(shaList: List[String]): List[PartialCommitInfo]
+
   def findByCommitId(commitId: ObjectId): Option[CommitInfo]
 
   def findAllSha(): Set[String]

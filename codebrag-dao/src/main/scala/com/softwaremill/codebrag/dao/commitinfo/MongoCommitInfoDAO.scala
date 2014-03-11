@@ -25,6 +25,10 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
     CommitInfoRecord where (_.sha eqs sha) get()
   }
 
+  override def findByShaList(shaList: List[String]): List[PartialCommitInfo] = {
+    CommitInfoRecord where (_.sha in shaList) fetch() map toPartialCommitInfo
+  }
+
   override def findByCommitId(commitId: ObjectId): Option[CommitInfo] = {
     CommitInfoRecord where (_.id eqs commitId) get()
   }
@@ -81,6 +85,10 @@ class MongoCommitInfoDAO extends CommitInfoDAO with Logging {
 
     implicit def toCommitInfo(record: Option[CommitInfoRecord]): Option[CommitInfo] = {
       record.map(toCommitInfo(_))
+    }
+
+    implicit def toPartialCommitInfo(record: CommitInfoRecord): PartialCommitInfo = {
+      PartialCommitInfo(toCommitInfo(record))
     }
 
     implicit def toCommitInfoRecord(commit: CommitInfo): CommitInfoRecord = {

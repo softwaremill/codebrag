@@ -25,6 +25,14 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQL
 
   def findBySha(sha: String) = findOneWhere(_.sha === sha)
 
+  def findByShaList(shaList: List[String]) = db.withTransaction { implicit session =>
+    commitInfos
+      .filter(_.sha inSet shaList.toSet)
+      .sortBy(c => (c.commitDate.asc, c.authorDate.asc))
+      .list()
+      .map(_.toPartialCommitDetails)
+  }
+
   def findByCommitId(commitId: ObjectId) = findOneWhere(_.id === commitId)
 
   def findAllSha() = db.withTransaction { implicit session => commitInfos.map(_.sha).list().toSet }
