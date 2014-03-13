@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao.finders.commit
+package com.softwaremill.codebrag.activities.finders
 
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO

@@ -1,10 +1,11 @@
-package com.softwaremill.codebrag.dao.finders.commit
+package com.softwaremill.codebrag.activities.finders
 
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 import com.softwaremill.codebrag.dao.user.{UserDAO, PartialUserDetails}
 import com.softwaremill.codebrag.dao.finders.views.{CommitView, CommitListView}
 
 trait UserDataEnhancer {
+
   def userDAO: UserDAO
 
   def enhanceWithUserData(commit: CommitView) = {
