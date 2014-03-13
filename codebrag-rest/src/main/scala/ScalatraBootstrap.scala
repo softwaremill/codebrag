@@ -40,6 +40,9 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     val beans = initializeBeans(_config, _repository)
     import beans._
 
+    repositoryStateCache.initializeWith(_repository)
+    // TODO: initialize user reviewed cache too? or on first login if missing?
+
     setupEvents()
     ensureInternalCodebragUserExists(beans.internalUserDao)
 
