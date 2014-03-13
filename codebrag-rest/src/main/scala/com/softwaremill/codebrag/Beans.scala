@@ -19,6 +19,7 @@ import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequest
 import com.softwaremill.codebrag.dao.Daos
 import com.softwaremill.codebrag.service.commits.branches.{ReviewedCommitsCache, PersistentBackendForCache, RepositoryCache}
 import com.softwaremill.codebrag.repository.Repository
+import com.softwaremill.codebrag.activities.finders.{AllCommitsFinder, ToReviewCommitsFinder}
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
@@ -72,4 +73,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
   lazy val repositoryStateCache = new RepositoryCache(new PersistentBackendForCache(commitInfoDao, repoStatusDao))
   lazy val reviewedCommitsCache = new ReviewedCommitsCache
+
+  lazy val toReviewCommitsFinder = new ToReviewCommitsFinder(repositoryStateCache, reviewedCommitsCache, commitInfoDao, userDao)
+  lazy val allCommitsFinder = new AllCommitsFinder(repositoryStateCache, reviewedCommitsCache, commitInfoDao, userDao)
 }

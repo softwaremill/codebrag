@@ -11,7 +11,6 @@ import com.softwaremill.codebrag.dao.instance.FileBasedInstanceSettingsDAO
 import com.softwaremill.codebrag.dao.finders.notification.{SQLNotificationCountFinder, MongoNotificationCountFinder, NotificationCountFinder}
 import com.softwaremill.codebrag.dao.finders.followup.{SQLFollowupFinder, MongoFollowupFinder, FollowupFinder}
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
-import com.softwaremill.codebrag.dao.finders.commit.{ReviewableCommitsListFinder, AllCommitsFinder}
 import com.softwaremill.codebrag.dao.finders.StatsEventsFinder
 import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.common.Clock
@@ -38,8 +37,6 @@ trait Daos {
   def followupFinder: FollowupFinder
 
   lazy val reactionFinder = new ReactionFinder(userDao, commentDao, likeDao)
-  lazy val allCommitsFinder = new AllCommitsFinder(commitReviewTaskDao, commitInfoDao, userDao)
-  lazy val reviewableCommitsFinder = new ReviewableCommitsListFinder(commitReviewTaskDao, commitInfoDao, userDao)
   lazy val statsFinder = new StatsEventsFinder(eventDao)
 }
 

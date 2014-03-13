@@ -12,21 +12,21 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.usecase.UnlikeUseCase
-import com.softwaremill.codebrag.dao.finders.commit.{AllCommitsFinder, ReviewableCommitsListFinder}
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import PagingCriteria.Direction
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 import com.softwaremill.codebrag.common.paging.PagingCriteria
-
+import com.softwaremill.codebrag.activities.finders.{AllCommitsFinder, ToReviewCommitsFinder}
+import CommitsEndpoint._
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
   var commentActivity = mock[AddCommentActivity]
   var commitsInfoDao = mock[CommitInfoDAO]
 
-  var reviewableCommitsFinder = mock[ReviewableCommitsListFinder]
+  var toReviewCommitsFinder = mock[ToReviewCommitsFinder]
   var allCommitsFinder = mock[AllCommitsFinder]
 
   var diffService = mock[DiffWithCommentsService]
@@ -41,7 +41,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     super.beforeEach
     diffService = mock[DiffWithCommentsService]
     allCommitsFinder = mock[AllCommitsFinder]
-    reviewableCommitsFinder = mock[ReviewableCommitsListFinder]
+    toReviewCommitsFinder = mock[ToReviewCommitsFinder]
     addServlet(new TestableCommitsServlet(fakeAuthenticator, fakeScentry), "/*")
   }
 
@@ -66,29 +66,29 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET / with filter=all" should "load all commits" in {
     val userId = givenStandardAuthenticatedUser()
-    val criteria = PagingCriteria.fromBeginning[ObjectId](CommitsEndpoint.DefaultPageLimit)
+    val criteria = PagingCriteria.fromBeginning[String](CommitsEndpoint.DefaultPageLimit)
 
     get("/?filter=all") {
-      verify(allCommitsFinder).findAllCommits(criteria, userId)
+      verify(allCommitsFinder).find(userId, TemporaryBranchUsed, criteria)
     }
   }
 
   "GET / with filter=to_review" should "load commits to review" in {
     val userId = givenStandardAuthenticatedUser()
-    val criteria = PagingCriteria.fromBeginning[ObjectId](CommitsEndpoint.DefaultPageLimit)
+    val criteria = PagingCriteria.fromBeginning[String](CommitsEndpoint.DefaultPageLimit)
 
     get("/?filter=to_review") {
-      verify(reviewableCommitsFinder).findCommitsToReviewFor(userId, criteria)
+      verify(toReviewCommitsFinder).find(userId, TemporaryBranchUsed, criteria)
     }
   }
 
   "GET / with context=true" should "load commits with surroundings" in {
     val userId = givenStandardAuthenticatedUser()
-    val commitId = new ObjectId
+    val commitId = "123456"
 
     get("/?context=true&id=" + commitId.toString) {
       val criteria = PagingCriteria(commitId, Direction.Radial, CommitsEndpoint.DefaultPageLimit)
-      verify(allCommitsFinder).findAllCommits(criteria, userId)
+      verify(allCommitsFinder).find(userId, TemporaryBranchUsed, criteria)
     }
   }
 
@@ -96,21 +96,21 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val userId = givenStandardAuthenticatedUser()
 
     get("/?context=true") {
-      val criteria = PagingCriteria.fromEnd[ObjectId](CommitsEndpoint.DefaultPageLimit)
-      verify(allCommitsFinder).findAllCommits(criteria, userId)
+      val criteria = PagingCriteria.fromEnd[String](CommitsEndpoint.DefaultPageLimit)
+      verify(allCommitsFinder).find(userId, TemporaryBranchUsed, criteria)
     }
   }
 
   "GET / with paging criteria" should "call service with proper criteria object" in {
     val userId = givenStandardAuthenticatedUser()
-    val lastKnownCommitId = new ObjectId
+    val lastKnownCommitId = "123456"
     get("/?filter=to_review&limit=10&min_id=" + lastKnownCommitId.toString) {
       val criteria = PagingCriteria(lastKnownCommitId, Direction.Right, 10)
-      verify(reviewableCommitsFinder).findCommitsToReviewFor(userId, criteria)
+      verify(toReviewCommitsFinder).find(userId, TemporaryBranchUsed, criteria)
     }
     get("/?filter=to_review&limit=10&max_id=" + lastKnownCommitId.toString) {
       val criteria = PagingCriteria(lastKnownCommitId, Direction.Left, 10)
-      verify(reviewableCommitsFinder).findCommitsToReviewFor(userId, criteria)
+      verify(toReviewCommitsFinder).find(userId, TemporaryBranchUsed, criteria)
     }
   }
 
@@ -121,7 +121,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends CommitsServlet(fakeAuthenticator, reviewableCommitsFinder, allCommitsFinder, userReactionFinder, commentActivity,
+    extends CommitsServlet(fakeAuthenticator, toReviewCommitsFinder, allCommitsFinder, userReactionFinder, commentActivity,
       commitReviewActivity, userReactionService, userDao, new CodebragSwagger, diffService, unlikeUseCaseFactory) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
