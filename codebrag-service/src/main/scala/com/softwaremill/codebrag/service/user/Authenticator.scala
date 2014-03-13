@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.user
 
 import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.domain.Authentication
-import com.softwaremill.codebrag.service.commits.CommitReviewTaskGeneratorActions
+import com.softwaremill.codebrag.service.commits.AfterUserRegisteredHook
 import com.softwaremill.codebrag.common.EventBus
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.UserDAO
@@ -26,7 +26,7 @@ trait Authenticator {
 
 }
 
-class UserPasswordAuthenticator(val userDAO: UserDAO, eventBus: EventBus, reviewTaskGenerator: CommitReviewTaskGeneratorActions) extends Authenticator with Logging {
+class UserPasswordAuthenticator(val userDAO: UserDAO, eventBus: EventBus) extends Authenticator with Logging {
 
   def authenticate(login: String, nonEncryptedPassword: String): Option[UserJson] = {
     val userOpt = userDAO.findByLoginOrEmail(login)

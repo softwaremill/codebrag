@@ -10,7 +10,7 @@ import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.service.data.UserJson
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.events.MockEventBus
-import com.softwaremill.codebrag.service.commits.CommitReviewTaskGeneratorActions
+import com.softwaremill.codebrag.service.commits.AfterUserRegisteredHook
 import com.softwaremill.codebrag.dao.user.UserDAO
 
 class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with MockEventBus {
@@ -18,7 +18,6 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
   var userDAO: UserDAO = _
   var authenticator: Authenticator = _
   var userDAOMock: UserDAO = _
-  var reviewTaskGeneratorMock: CommitReviewTaskGeneratorActions = _
   val fixtureLogin = "johndoe"
   val fixturePassword = "password"
   val fixtureUserId: ObjectId = ObjectIdTestUtils.oid(123)
@@ -27,8 +26,7 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
   before {
     eventBus.clear()
     userDAOMock = mock[UserDAO]
-    reviewTaskGeneratorMock = mock[CommitReviewTaskGeneratorActions]
-    authenticator = new UserPasswordAuthenticator(userDAOMock, eventBus, reviewTaskGeneratorMock)
+    authenticator = new UserPasswordAuthenticator(userDAOMock, eventBus)
   }
 
   it should "call dao to authenticate user" in {
