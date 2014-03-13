@@ -1,7 +1,5 @@
 package com.softwaremill.codebrag.domain
 
-case class LoadCommitsResult(commits: List[CommitInfo], repoName: String, currentRepoHeadSHA: String)
-
 case class MultibranchLoadCommitsResult(repoName: String, commits: List[CommitsForBranch]) {
   def uniqueCommits = commits.flatMap(_.commits).toSet
 }
