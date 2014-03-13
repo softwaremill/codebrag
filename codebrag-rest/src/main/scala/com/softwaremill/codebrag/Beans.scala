@@ -17,6 +17,7 @@ import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
 import com.softwaremill.codebrag.dao.Daos
+import com.softwaremill.codebrag.service.commits.branches.{ReviewedCommitsCache, PersistentBackendForCache, RepositoryCache}
 import com.softwaremill.codebrag.repository.Repository
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
@@ -39,27 +40,22 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val invitationsService = new InvitationService(invitationDao, userDao, emailService, config, DefaultUniqueHashGenerator, templateEngine)
   lazy val notificationService = new NotificationService(emailScheduler, templateEngine, config, notificationCountFinder, clock)
 
-  lazy val reviewTaskGenerator = new CommitReviewTaskGeneratorActions {
-    val userDao = self.userDao
-    val commitInfoDao = self.commitInfoDao
-    val commitToReviewDao = self.commitReviewTaskDao
-    val repoStatusDao = self.repoStatusDao
-  }
 
   lazy val welcomeFollowupsGenerator = new WelcomeFollowupsGenerator(internalUserDao, commentDao, likeDao, followupDao, commitInfoDao, templateEngine)
   lazy val followupGeneratorForPriorReactions = new FollowupsGeneratorForReactionsPriorUserRegistration(commentDao, likeDao, followupDao, commitInfoDao, config)
 
-  lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus, reviewTaskGenerator)
+  lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus)
   lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
   lazy val commentActivity = new AddCommentActivity(userReactionService, followupService, eventBus)
 
   lazy val commitReviewActivity = new CommitReviewActivity(commitReviewTaskDao, commitInfoDao, eventBus)
 
-  lazy val newUserAdder = new NewUserAdder(userDao, eventBus, reviewTaskGenerator, followupGeneratorForPriorReactions, welcomeFollowupsGenerator)
+  lazy val newUserAdder = new NewUserAdder(userDao, eventBus, afterUserRegisteredHook, followupGeneratorForPriorReactions, welcomeFollowupsGenerator)
+  lazy val afterUserRegisteredHook = new AfterUserRegisteredHook(repositoryStateCache, reviewedCommitsCache)
+
   lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService, notificationService)
 
-  lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder,
-    new DiffService(commitInfoDao, diffLoader, repository))
+  lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder, new DiffService(commitInfoDao, diffLoader, repository))
 
   lazy val statsAggregator = new StatsAggregator(statsFinder, instanceSettingsDao, config)
 
@@ -73,4 +69,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
   lazy val statsHTTPRequestSender = new StatsHTTPRequestSender(config)
   lazy val instanceRunStatsSender = new InstanceRunStatsSender(statsHTTPRequestSender)
+
+  lazy val repositoryStateCache = new RepositoryCache(new PersistentBackendForCache(commitInfoDao, repoStatusDao))
+  lazy val reviewedCommitsCache = new ReviewedCommitsCache
 }
