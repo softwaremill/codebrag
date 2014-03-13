@@ -6,10 +6,10 @@ import org.scalatest.matchers.ShouldMatchers
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.common.{ClockSpec, EventBus}
-import com.softwaremill.codebrag.service.commits.CommitReviewTaskGenerator
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.service.followups.{FollowupsGeneratorForReactionsPriorUserRegistration, WelcomeFollowupsGenerator}
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.service.commits.AfterUserRegisteredHook
 
 class NewUserAdderTest
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
@@ -17,7 +17,7 @@ class NewUserAdderTest
   var welcomeFollowupGenerator: WelcomeFollowupsGenerator = _
   var userDao: UserDAO = _
   var eventBus: EventBus = _
-  var reviewTaskGenerator: CommitReviewTaskGenerator = _
+  var afterRegisteredHook: AfterUserRegisteredHook = _
   var followupForPreviousReactionsGenerator: FollowupsGeneratorForReactionsPriorUserRegistration = _
   
   var userAdder: NewUserAdder = _
@@ -26,9 +26,9 @@ class NewUserAdderTest
     welcomeFollowupGenerator = mock[WelcomeFollowupsGenerator]
     userDao = mock[UserDAO]
     eventBus = mock[EventBus]
-    reviewTaskGenerator = mock[CommitReviewTaskGenerator]
+    afterRegisteredHook = mock[AfterUserRegisteredHook]
     followupForPreviousReactionsGenerator = mock[FollowupsGeneratorForReactionsPriorUserRegistration]
-    userAdder = new NewUserAdder(userDao, eventBus, reviewTaskGenerator, followupForPreviousReactionsGenerator, welcomeFollowupGenerator)
+    userAdder = new NewUserAdder(userDao, eventBus, afterRegisteredHook, followupForPreviousReactionsGenerator, welcomeFollowupGenerator)
   }
 
   it should "build new user event using registered user's data" in {
@@ -54,7 +54,7 @@ class NewUserAdderTest
 
     // Then
     val newUserRegistered = NewUserRegistered(user)
-    verify(reviewTaskGenerator).handleNewUserRegistered(newUserRegistered)
+    verify(afterRegisteredHook).run(newUserRegistered)
     verify(followupForPreviousReactionsGenerator).recreateFollowupsForPastComments(newUserRegistered)
     verify(welcomeFollowupGenerator).createWelcomeFollowupFor(newUserRegistered)
   }
