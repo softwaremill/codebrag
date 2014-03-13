@@ -7,12 +7,6 @@ import org.eclipse.jgit.storage.file.{FileRepository, FileRepositoryBuilder}
 import java.io.File
 import org.eclipse.jgit.errors.MissingObjectException
 import com.softwaremill.codebrag.repository.config.RepoData
-import scala.collection.JavaConversions._
-import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.api.ListBranchCommand.ListMode
-import com.softwaremill.codebrag.domain.{CommitsForBranch, MultibranchLoadCommitsResult}
-import com.softwaremill.codebrag.service.commits.jgit.RawCommitsConverter
-import org.eclipse.jgit.revwalk.filter.MaxCountRevFilter
 
 trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDeltaLoader {
 
@@ -50,7 +44,6 @@ trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDe
   def getCommits(lastKnownCommitSHA: Option[String] = None): List[RevCommit] = {
     getCommitsForBranch("refs/heads/master", lastKnownCommitSHA)
   }
-  
 
   protected def pullChangesForRepo()
 
