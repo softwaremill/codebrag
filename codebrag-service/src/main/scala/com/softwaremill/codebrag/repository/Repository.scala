@@ -41,10 +41,6 @@ trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDe
     }
   }
 
-  def getCommits(lastKnownCommitSHA: Option[String] = None): List[RevCommit] = {
-    getCommitsForBranch("refs/heads/master", lastKnownCommitSHA)
-  }
-
   protected def pullChangesForRepo()
 
   implicit def gitObjectIdToString(objId: ObjectId) = ObjectId.toString(objId)
