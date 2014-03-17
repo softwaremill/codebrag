@@ -167,18 +167,12 @@
             <ul class="button-group" ng-controller="NotificationCountersCtrl" ng-show="isLogged()">
                 <li>
                     <a id="commits-btn" ng-click="openCommits()" class="button" active-for-states="commits,commits.list,commits.details">
-                        <div>
-                            <span class="number">{{counters.commitsCount}}<update-indicator watch="commits"/></span>
-                        </div>
-                        commits
+                        <span class="number">{{counters.commitsCount}}<update-indicator watch="commits"/></span> commits
                     </a>
                 </li>
                 <li>
                     <a id="followups-btn" ng-click="openFollowups()" class="button" active-for-states="followups,followups.list,followups.details">
-                        <div>
-                            <span class="number">{{counters.followupsCount}}<update-indicator watch="followups"/></span>
-                        </div>
-                        follow-ups
+                        <span class="number">{{counters.followupsCount}}<update-indicator watch="followups"/></span> follow-ups
                     </a>
                 </li>
             </ul>
