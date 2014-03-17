@@ -4,7 +4,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.commits.branches.{ReviewedCommitsCache, RepositoryCache}
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.domain.{CommitAuthorClassification, PartialCommitInfo}
+import com.softwaremill.codebrag.domain.{User, CommitAuthorClassification, PartialCommitInfo}
 import com.softwaremill.codebrag.dao.finders.views.{CommitListView, CommitView}
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
@@ -23,15 +23,19 @@ class ToReviewCommitsFinder(
   }
 
   private def getSHAsOfCommitsToReview(userId: ObjectId, branchName: String): List[String] = {
-    userDAO.findById(userId).map { user =>
-      val alreadyReviewedCommits = reviewedCommitsCache.reviewedByUser(userId)
-      logger.debug(s"User has ${alreadyReviewedCommits.size} commits already reviewed")
-      val branchCommits = repoCache.getBranchCommits(branchName)
-      import CommitAuthorClassification._
-      val toReview = branchCommits.filterNot(commit => alreadyReviewedCommits.contains(commit) || commitAuthoredByUser(commit, user)).map(_.sha)
-      logger.debug(s"User has ${toReview.size} commits left to review for branch ${branchName}")
-      toReview.reverse // get commits in correct order to display (older first)
-    } getOrElse(List.empty)
+    userDAO.findById(userId).map(findShaToReview(branchName, _)).getOrElse(List.empty)
+  }
+
+
+  def findShaToReview(branchName: String, user: User): List[String] = {
+    import CommitAuthorClassification._
+    val userBoundaryDate = reviewedCommitsCache.getUserStartingDate(user.id)
+    val commitsInBranch = repoCache.getBranchCommits(branchName)
+    val toReview = commitsInBranch
+      .filterNot(commitAuthoredByUser(_, user))
+      // TODO: add step to filter out commits that were already reviewed by number of users
+      .takeWhile( c => c.commitDate.isAfter(userBoundaryDate) || c.commitDate.isEqual(userBoundaryDate))
+    toReview.reverse.map(_.sha)
   }
 
   implicit def partialCommitListToCommitViewList(commits: List[PartialCommitInfo]): List[CommitView] = {
