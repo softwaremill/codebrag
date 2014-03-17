@@ -33,8 +33,8 @@ class RepositoryCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter
   before {
     backend = mock[PersistentBackendForCache]
     cacheConfig = mock[CommitCacheConfig]
-    repoCache = new RepositoryCache(backend, cacheConfig)
     repository = mock[Repository]
+    repoCache = new RepositoryCache(repository, backend, cacheConfig)
 
     when(cacheConfig.maxCommitsCachedPerBranch).thenReturn(10)
   }
@@ -104,7 +104,7 @@ class RepositoryCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter
     when(repository.loadLastKnownRepoState(savedState, cacheConfig.maxCommitsCachedPerBranch)).thenReturn(commitsLoaded)
 
     // when
-    repoCache.initializeWith(repository)
+    repoCache.initialize()
 
     // then
     repoCache.getBranchCommits(MasterBranch).map(_.sha) should be(List("2", "1"))

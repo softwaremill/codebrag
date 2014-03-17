@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.service.config.CommitCacheConfig
 /**
  * Keeps commits (SHA) for all repository branches
  */
-class RepositoryCache(backend: PersistentBackendForCache, config: CommitCacheConfig) extends Logging {
+class RepositoryCache(val repository: Repository, backend: PersistentBackendForCache, config: CommitCacheConfig) extends Logging {
 
   // TODO: consider changing to Map[String, AtomicReference[List[CommitCacheEntry]]]
   private val commits = new scala.collection.mutable.HashMap[String, List[CommitCacheEntry]]
@@ -38,7 +38,7 @@ class RepositoryCache(backend: PersistentBackendForCache, config: CommitCacheCon
     commits.get(branchName).getOrElse(List.empty[CommitCacheEntry])
   }
 
-  def initializeWith(repository: Repository) {
+  def initialize() {
     logger.debug(s"Initializing repo cache")
     val savedState = backend.loadBranchesState()
     val loadResult = repository.loadLastKnownRepoState(savedState, maxCommitsPerBranchCount)
