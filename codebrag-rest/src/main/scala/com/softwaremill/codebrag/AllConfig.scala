@@ -10,3 +10,4 @@ trait AllConfig
   with CodebragConfig
   with EmailConfig
   with StatsConfig
+  with CommitCacheConfig

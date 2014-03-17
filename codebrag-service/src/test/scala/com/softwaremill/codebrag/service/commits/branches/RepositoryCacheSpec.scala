@@ -8,12 +8,13 @@ import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import com.softwaremill.codebrag.domain.CommitsForBranch
 import com.softwaremill.codebrag.repository.Repository
 import org.mockito.Mockito._
-import RepositoryCache._
+import com.softwaremill.codebrag.service.config.CommitCacheConfig
 
 class RepositoryCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
 
   var backend: PersistentBackendForCache = _
   var repoCache: RepositoryCache = _
+  var cacheConfig: CommitCacheConfig = _
   var repository: Repository = _
 
   val MasterBranch: String = "refs/remotes/origin/master"
@@ -31,8 +32,11 @@ class RepositoryCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter
 
   before {
     backend = mock[PersistentBackendForCache]
-    repoCache = new RepositoryCache(backend)
+    cacheConfig = mock[CommitCacheConfig]
+    repoCache = new RepositoryCache(backend, cacheConfig)
     repository = mock[Repository]
+
+    when(cacheConfig.maxCommitsCachedPerBranch).thenReturn(10)
   }
   
   it should "create branch entry and add commits to cache when no branch exists in cache" in {
@@ -97,7 +101,7 @@ class RepositoryCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter
     val masterCommits = List(CommitsForBranch(MasterBranch, Commits, "123abc"))
     val commitsLoaded = MultibranchLoadCommitsResult("codebrag", masterCommits)
     when(backend.loadBranchesState()).thenReturn(savedState)
-    when(repository.loadLastKnownRepoState(savedState, MaxCommitsPerBranchCount)).thenReturn(commitsLoaded)
+    when(repository.loadLastKnownRepoState(savedState, cacheConfig.maxCommitsCachedPerBranch)).thenReturn(commitsLoaded)
 
     // when
     repoCache.initializeWith(repository)
@@ -120,7 +124,7 @@ class RepositoryCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter
 
   it should "store only certain number of newest commits for given branch" in {
     // given
-    val commits = for(i <- (MaxCommitsPerBranchCount + 10) to 1 by -1) yield {
+    val commits = for(i <- (cacheConfig.maxCommitsCachedPerBranch + 10) to 1 by -1) yield {
       PartialCommitInfo(CommitInfoAssembler.randomCommit.withSha(i.toString).get)
     }
     val masterCommits = List(CommitsForBranch(MasterBranch, commits.toList, "123abc"))
@@ -131,7 +135,7 @@ class RepositoryCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter
 
     // then
     val cachedMasterCommits = repoCache.getBranchCommits(MasterBranch)
-    cachedMasterCommits.size should be(MaxCommitsPerBranchCount)
+    cachedMasterCommits.size should be(cacheConfig.maxCommitsCachedPerBranch)
     val expectedCommitsCached = commits.dropRight(10)
     cachedMasterCommits.map(_.sha) should be(expectedCommitsCached.map(_.sha))
   }
