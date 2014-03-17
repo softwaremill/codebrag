@@ -23,7 +23,7 @@ trait SetStartingDateForUser extends Logging {
   val reviewedCommitsCache: ReviewedCommitsCache
 
   private val LastCommitsToReviewCount = 10
-  private val DaysBackToTakeCommits = 7
+  private val DaysBackToTakeCommits = 30
 
   protected def setStartingDate(user: NewUserRegistered) {
     val weekBeforeRegistration = user.timestamp.minusDays(DaysBackToTakeCommits)
