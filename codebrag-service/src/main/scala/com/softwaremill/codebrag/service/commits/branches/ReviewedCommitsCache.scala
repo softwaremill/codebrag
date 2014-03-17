@@ -2,6 +2,8 @@ package com.softwaremill.codebrag.service.commits.branches
 
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
+import scala.collection.mutable
+import org.joda.time.DateTime
 
 class ReviewedCommitsCache extends Logging {
 
@@ -9,6 +11,7 @@ class ReviewedCommitsCache extends Logging {
   // TODO: constraint cache size (need to figure out which commits to remove from cache)
 
   private val commitsPerUser = new scala.collection.mutable.HashMap[ObjectId, Set[CommitCacheEntry]]
+  private val userBounds = new mutable.HashMap[ObjectId, DateTime]
   
   def markCommitsAsReviewedBy(userId: ObjectId, commits: Set[CommitCacheEntry]) {
     logger.debug("THIS IS COMPLETELY IN-MEMORY IMPL. ADD BACKEND TO PERSIST STUFF")
@@ -20,6 +23,12 @@ class ReviewedCommitsCache extends Logging {
     commitsPerUser.put(userId, modifiedCommits)
     logger.debug(s"Reviewed commits count for user ${userId}: ${reviewedByUser(userId).size}")
   }
+
+  def setStartingDateForUser(date: DateTime, userId: ObjectId) {
+    userBounds.put(userId, date)
+  }
+
+  def getUserStartingDate(userId: ObjectId) = userBounds.get(userId).getOrElse(DateTime.now)  // TODO: secure and parametrize it
 
   def reviewedByUser(userId: ObjectId) = {
     commitsPerUser.getOrElse(userId, Set.empty)
