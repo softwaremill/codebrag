@@ -2,21 +2,43 @@
 .items-list
   position: relative;
 
-.sorting
-  border-bottom: 1px solid $main-border-color;
-  padding: 0.77em 0;
+.branch-selector
+  padding: 0.77em 0.38em;
   position: relative;
   text-align: center;
   z-index: 3;
-  & input[type=radio]
-    display:none;
-    margin:10px;
-  & .button.link
-    color: $body-text-color;
+  // & input[type=radio]
+  //   display:none;
+  //   margin:10px;
+  // & .button.link
+  //   color: $body-text-color;
+  //   text-transform: uppercase;
+  //   &:hover
+  //     color: $main-orange-color;
+  //     text-decoration: none;
+  & .columns
+    padding: 0 0.38em;
+  & select
+    background: #e7e0ce;
+    border: 1px solid #e7e0ce;
+    color: #a27d69;
+    float: left;
+    max-width: 20em;
+    margin: 1px 0 0;
+    padding: 0.38em;
     text-transform: uppercase;
-    &:hover
-      color: $main-orange-color;
-      text-decoration: none;
+    color: $main-orange-color;
+    outline: none;
+    & option
+      background: white;
+    &#branch
+      padding-left: 1.15em;
+
+  & label[for="branch"]
+    position: absolute;
+    margin-bottom: 0;
+    & img
+      padding: 11px 0 0 7px;
 
 .list-loader
   position: relative;
