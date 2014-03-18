@@ -11,10 +11,12 @@ import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 import com.softwaremill.codebrag.service.commits.branches.RepositoryCache
 import com.softwaremill.codebrag.repository.Repository
 import org.mockito.Matchers
+import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
 
 class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with MockEventBus with ClockSpec {
 
   var repoStatusDao: RepositoryStatusDAO = _
+  var branchStateDao: BranchStateDAO = _
   var repoCache: RepositoryCache = _
   var repository: Repository = _
   var service: CommitImportService = _
@@ -25,14 +27,15 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   before {
     eventBus.clear()
     repoStatusDao = mock[RepositoryStatusDAO]
+    branchStateDao = mock[BranchStateDAO]
     repoCache = mock[RepositoryCache]
     repository = mock[Repository]
-    service = new CommitImportService(repoStatusDao, eventBus, repoCache)
+    service = new CommitImportService(repoStatusDao, branchStateDao, eventBus, repoCache)
   }
 
   it should "pull changes and load commits from repo since given (saved) state" in {
     // given
-    when(repoStatusDao.loadBranchesState).thenReturn(SavedRepoState)
+    when(branchStateDao.loadBranchesStateAsMap).thenReturn(SavedRepoState)
 
     // when
     service.importRepoCommits(repository)
@@ -44,7 +47,7 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   
   it should "add loaded commits to cache" in {
     // given
-    when(repoStatusDao.loadBranchesState).thenReturn(SavedRepoState)
+    when(branchStateDao.loadBranchesStateAsMap).thenReturn(SavedRepoState)
     when(repository.loadCommitsSince(SavedRepoState)).thenReturn(LoadedCommits)
     
     // when
