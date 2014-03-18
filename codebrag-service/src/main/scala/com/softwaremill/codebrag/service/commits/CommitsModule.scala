@@ -8,12 +8,10 @@ import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
 
 trait CommitsModule {
 
-  lazy val commitImportService = new CommitImportService(repoStatusDao, branchStateDao, eventBus, repositoryStateCache)(clock)
+  lazy val commitImportService = new CommitImportService(repoStatusDao, branchStateDao, repositoryStateCache)
   lazy val diffLoader = new JgitDiffLoader()
 
   def repoStatusDao: RepositoryStatusDAO
   def branchStateDao: BranchStateDAO
-  def eventBus: EventBus
-  def clock: Clock
   def repositoryStateCache: RepositoryCache
 }

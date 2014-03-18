@@ -4,8 +4,6 @@ import org.scalatest.{FlatSpec, BeforeAndAfter}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{RepositoryStatus, MultibranchLoadCommitsResult}
-import com.softwaremill.codebrag.service.events.MockEventBus
-import com.softwaremill.codebrag.common.ClockSpec
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 import com.softwaremill.codebrag.service.commits.branches.RepositoryCache
@@ -13,7 +11,7 @@ import com.softwaremill.codebrag.repository.Repository
 import org.mockito.Matchers
 import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
 
-class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with MockEventBus with ClockSpec {
+class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
 
   var repoStatusDao: RepositoryStatusDAO = _
   var branchStateDao: BranchStateDAO = _
@@ -25,12 +23,11 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   val LoadedCommits = MultibranchLoadCommitsResult("test-repo", List.empty)
 
   before {
-    eventBus.clear()
     repoStatusDao = mock[RepositoryStatusDAO]
     branchStateDao = mock[BranchStateDAO]
     repoCache = mock[RepositoryCache]
     repository = mock[Repository]
-    service = new CommitImportService(repoStatusDao, branchStateDao, eventBus, repoCache)
+    service = new CommitImportService(repoStatusDao, branchStateDao, repoCache)
   }
 
   it should "pull changes and load commits from repo since given (saved) state" in {
