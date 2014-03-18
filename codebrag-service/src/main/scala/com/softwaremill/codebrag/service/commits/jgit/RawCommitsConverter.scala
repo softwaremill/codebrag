@@ -6,18 +6,17 @@ import org.eclipse.jgit.lib.Repository
 import org.joda.time.DateTime
 import com.typesafe.scalalogging.slf4j.Logging
 
-class JgitLogConverter extends Logging {
-
-  def toCommitInfos(jGitCommits: List[RevCommit], repository: Repository): List[CommitInfo] = {
-    val commitsOptions = jGitCommits.map(buildCommitInfoSafely(_, repository))
-    commitsOptions.filter(_.isDefined).map(_.get)
-  }
+trait RawCommitsConverter { self: Logging =>
 
   def toPartialCommitInfos(jGitCommits: List[RevCommit], repository: Repository): List[PartialCommitInfo] = {
-    jGitCommits.flatMap(buildCommitInfoSafely(_, repository)).map(PartialCommitInfo(_))
+    toCommitInfos(jGitCommits, repository).map(PartialCommitInfo(_))
   }
 
-  def buildCommitInfoSafely(commit: RevCommit, repository: Repository): Option[CommitInfo] = {
+  def toCommitInfos(jGitCommits: List[RevCommit], repository: Repository): List[CommitInfo] = {
+    jGitCommits.flatMap(buildCommitInfoSafely(_, repository))
+  }
+
+  private def buildCommitInfoSafely(commit: RevCommit, repository: Repository): Option[CommitInfo] = {
     try {
       Some(buildCommitInfo(commit))
     } catch {
@@ -42,13 +41,4 @@ class JgitLogConverter extends Logging {
       jGitCommit.getParents.map(_.toObjectId.name()).toList)
   }
 
-}
-
-/**
- * Will replace old converter soon
- */
-trait RawCommitsConverter {
-  def toPartialCommitInfos(jGitCommits: List[RevCommit], repository: Repository): List[PartialCommitInfo] = {
-    (new JgitLogConverter).toPartialCommitInfos(jGitCommits, repository)
-  }
 }
