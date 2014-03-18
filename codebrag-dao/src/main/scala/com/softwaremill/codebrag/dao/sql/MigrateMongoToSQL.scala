@@ -135,8 +135,7 @@ object MigrateMongoToSQL extends App {
     println("Migrating repository statuses ... ")
 
     RepositoryStatusRecord.fetch().foreach { rs =>
-      sqlDaos.repoStatusDao.updateRepoStatus(RepositoryStatus(rs.repoName.get, rs.sha.get, rs.repoReady.get,
-        rs.repoStatusError.get))
+      sqlDaos.repoStatusDao.updateRepoStatus(RepositoryStatus(rs.repoName.get, rs.repoReady.get, rs.repoStatusError.get))
     }
   }
 

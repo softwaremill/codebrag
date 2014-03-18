@@ -14,7 +14,7 @@ class CommitImportService(repoStatusDao: RepositoryStatusDAO, eventBus: EventBus
       repository.pullChanges()
       val loaded = repository.loadCommitsSince(repoStatusDao.loadBranchesState)
       cache.addCommits(loaded)
-      updateRepoReadyStatus(repository.repoName, "temp-fix")    // TODO: change repo status update
+      updateRepoReadyStatus(repository.repoName)
     } catch {
       case e: Exception => {
         logger.error("Cannot import repository commits", e)
@@ -29,9 +29,9 @@ class CommitImportService(repoStatusDao: RepositoryStatusDAO, eventBus: EventBus
     repoStatusDao.updateRepoStatus(repoNotReadyStatus)
   }
 
-  private def updateRepoReadyStatus(repoName: String, currentHEAD: String) {
-    logger.debug(s"Saving repository-ready status data to DB with HEAD: ${currentHEAD}")
-    val repoReadyStatus = RepositoryStatus.ready(repoName).withHeadId(currentHEAD)
+  private def updateRepoReadyStatus(repoName: String) {
+    logger.debug(s"Saving repository-ready status data to DB")
+    val repoReadyStatus = RepositoryStatus.ready(repoName)
     repoStatusDao.updateRepoStatus(repoReadyStatus)
   }
 

@@ -13,7 +13,6 @@ class MongoRepositoryStatusDAO extends RepositoryStatusDAO with Logging {
 
   def updateRepoStatus(newStatus: RepositoryStatus) {
     RepositoryStatusRecord.where(_.repoName eqs newStatus.repositoryName)
-      .modifyOpt(newStatus.headId)(_.sha setTo _)
       .modify(_.repoReady setTo newStatus.ready)
       .modify(_.repoStatusError setTo newStatus.error)
       .upsertOne()
@@ -21,14 +20,7 @@ class MongoRepositoryStatusDAO extends RepositoryStatusDAO with Logging {
 
   def getRepoStatus(repoName: String) = {
     RepositoryStatusRecord.where(_.repoName eqs repoName).get() match {
-      case Some(record) => Some(RepositoryStatus(repoName, record.sha.get, record.repoReady.get, record.repoStatusError.get))
-      case None => None
-    }
-  }
-
-  def get(repoName: String) = {
-    RepositoryStatusRecord.where(_.repoName eqs repoName).get() match {
-      case Some(record) => record.sha.get
+      case Some(record) => Some(RepositoryStatus(repoName, record.repoReady.get, record.repoStatusError.get))
       case None => None
     }
   }
@@ -38,8 +30,6 @@ class MongoRepositoryStatusDAO extends RepositoryStatusDAO with Logging {
 class RepositoryStatusRecord extends MongoRecord[RepositoryStatusRecord] with ObjectIdPk[RepositoryStatusRecord] {
 
   def meta = RepositoryStatusRecord
-
-  object sha extends OptionalLongStringField(this)
 
   object repoName extends LongStringField(this)
 
