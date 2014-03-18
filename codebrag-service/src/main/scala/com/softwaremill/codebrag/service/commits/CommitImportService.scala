@@ -14,24 +14,24 @@ class CommitImportService(repoStatusDao: RepositoryStatusDAO, eventBus: EventBus
       repository.pullChanges()
       val loaded = repository.loadCommitsSince(repoStatusDao.loadBranchesState)
       cache.addCommits(loaded)
-      updateRepoReadyStatus(repository.repoName)
+      updateRepoReadyStatus(repository)
     } catch {
       case e: Exception => {
         logger.error("Cannot import repository commits", e)
-        updateRepoNotReadyStatus(repository.repoName, e.getMessage)
+        updateRepoNotReadyStatus(repository, e.getMessage)
       }
     }
   }
 
-  private def updateRepoNotReadyStatus(repoName: String, errorMsg: String) {
+  private def updateRepoNotReadyStatus(repository: Repository, errorMsg: String) {
     logger.debug(s"Saving repository-not-ready status data to DB with message: $errorMsg")
-    val repoNotReadyStatus = RepositoryStatus.notReady(repoName, Some(errorMsg))
+    val repoNotReadyStatus = RepositoryStatus.notReady(repository.repoName, Some(errorMsg))
     repoStatusDao.updateRepoStatus(repoNotReadyStatus)
   }
 
-  private def updateRepoReadyStatus(repoName: String) {
+  private def updateRepoReadyStatus(repository: Repository) {
     logger.debug(s"Saving repository-ready status data to DB")
-    val repoReadyStatus = RepositoryStatus.ready(repoName)
+    val repoReadyStatus = RepositoryStatus.ready(repository.repoName)
     repoStatusDao.updateRepoStatus(repoReadyStatus)
   }
 
