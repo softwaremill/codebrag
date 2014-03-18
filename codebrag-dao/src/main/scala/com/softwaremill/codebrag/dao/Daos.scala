@@ -16,7 +16,7 @@ import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.common.Clock
 import com.softwaremill.codebrag.dao.repositorystatus.{SQLRepositoryStatusDAO, RepositoryStatusDAO, MongoRepositoryStatusDAO}
 import com.softwaremill.codebrag.dao.heartbeat.{SQLHeartbeatDAO, HeartbeatDAO, MongoHeartbeatDAO}
-import com.softwaremill.codebrag.dao.branchsnapshot.InMemoryBranchStateDAO
+import com.softwaremill.codebrag.dao.branchsnapshot.{SQLBranchStateDAO, InMemoryBranchStateDAO}
 
 trait Daos {
   def userDao: UserDAO
@@ -74,7 +74,7 @@ trait SQLDaos extends Daos {
   lazy val invitationDao = new SQLInvitationDAO(sqlDatabase)
   lazy val eventDao = new SQLEventDAO(sqlDatabase)
   lazy val repoStatusDao = new SQLRepositoryStatusDAO(sqlDatabase)
-  lazy val branchStateDao = new InMemoryBranchStateDAO
+  lazy val branchStateDao = new SQLBranchStateDAO(sqlDatabase)
   lazy val heartbeatDao = new SQLHeartbeatDAO(sqlDatabase, clock)
 
   lazy val notificationCountFinder = new SQLNotificationCountFinder(sqlDatabase)
