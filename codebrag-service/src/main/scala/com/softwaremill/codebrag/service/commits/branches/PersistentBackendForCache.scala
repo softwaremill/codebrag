@@ -17,7 +17,7 @@ class PersistentBackendForCache(commitInfoDao: CommitInfoDAO, repoStatusDao: Rep
     val uniqueCommits = loadResult.uniqueCommits
     logger.debug(s"Persisting cache changes: ${uniqueCommits.size} commits")
     uniqueCommits.foreach {
-      c => commitInfoDao.storeCommit(c.toCommitInfo)
+      c => commitInfoDao.storeCommit(c)
     }
   }
 

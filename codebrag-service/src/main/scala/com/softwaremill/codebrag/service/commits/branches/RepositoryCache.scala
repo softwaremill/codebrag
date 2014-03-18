@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.commits.branches
 
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.repository.Repository
-import com.softwaremill.codebrag.domain.{PartialCommitInfo, MultibranchLoadCommitsResult}
+import com.softwaremill.codebrag.domain.{CommitInfo, PartialCommitInfo, MultibranchLoadCommitsResult}
 import com.softwaremill.codebrag.service.config.CommitCacheConfig
 
 /**
@@ -50,8 +50,8 @@ class RepositoryCache(val repository: Repository, backend: PersistentBackendForC
     logger.debug(s"Cache initialized")
   }
 
-  private def partialCommitToCacheEntry(commit: PartialCommitInfo): CommitCacheEntry = {
-    CommitCacheEntry(commit.sha, commit.authorName, commit.authorEmail, commit.date)
+  private def partialCommitToCacheEntry(commit: CommitInfo): CommitCacheEntry = {
+    CommitCacheEntry(commit.sha, commit.authorName, commit.authorEmail, commit.commitDate)
   } 
   
   private def maxCommitsPerBranchCount = config.maxCommitsCachedPerBranch

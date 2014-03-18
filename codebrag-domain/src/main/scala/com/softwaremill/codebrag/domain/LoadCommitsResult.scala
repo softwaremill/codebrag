@@ -4,4 +4,4 @@ case class MultibranchLoadCommitsResult(repoName: String, commits: List[CommitsF
   def uniqueCommits = commits.flatMap(_.commits).toSet
 }
 
-case class CommitsForBranch(branchName: String, commits: List[PartialCommitInfo], currentBranchSHA: String)
+case class CommitsForBranch(branchName: String, commits: List[CommitInfo], currentBranchSHA: String)

@@ -21,13 +21,13 @@ class RepositoryCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter
   val FeatureBranch: String = "refs/remotes/origin/feature"
 
   var Commits = List(
-    PartialCommitInfo(CommitInfoAssembler.randomCommit.withSha("2").get),
-    PartialCommitInfo(CommitInfoAssembler.randomCommit.withSha("1").get)
+    CommitInfoAssembler.randomCommit.withSha("2").get,
+    CommitInfoAssembler.randomCommit.withSha("1").get
   )
 
   var AdditionalCommits = List(
-    PartialCommitInfo(CommitInfoAssembler.randomCommit.withSha("4").get),
-    PartialCommitInfo(CommitInfoAssembler.randomCommit.withSha("3").get)
+    CommitInfoAssembler.randomCommit.withSha("4").get,
+    CommitInfoAssembler.randomCommit.withSha("3").get
   )
 
   before {
@@ -125,7 +125,7 @@ class RepositoryCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter
   it should "store only certain number of newest commits for given branch" in {
     // given
     val commits = for(i <- (cacheConfig.maxCommitsCachedPerBranch + 10) to 1 by -1) yield {
-      PartialCommitInfo(CommitInfoAssembler.randomCommit.withSha(i.toString).get)
+      CommitInfoAssembler.randomCommit.withSha(i.toString).get
     }
     val masterCommits = List(CommitsForBranch(MasterBranch, commits.toList, "123abc"))
     val commitsLoaded = MultibranchLoadCommitsResult("codebrag", masterCommits)
