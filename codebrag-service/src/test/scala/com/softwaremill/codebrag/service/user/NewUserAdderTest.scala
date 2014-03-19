@@ -9,7 +9,6 @@ import com.softwaremill.codebrag.common.{ClockSpec, EventBus}
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.service.followups.{FollowupsGeneratorForReactionsPriorUserRegistration, WelcomeFollowupsGenerator}
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.service.commits.AfterUserRegisteredHook
 
 class NewUserAdderTest
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
@@ -43,7 +42,7 @@ class NewUserAdderTest
     val expectedNewUserEvent = NewUserRegistered(user)
     verify(eventBus).publish(expectedNewUserEvent)
   }
-  
+
   it should "generate review tasks, welcome followups and followups for previous reactions for user" in {
     // Given
     val user = UserAssembler.randomUser.get
