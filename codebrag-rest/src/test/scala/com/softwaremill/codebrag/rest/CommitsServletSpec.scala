@@ -57,10 +57,9 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   "DELETE /:id" should "remove given commit from to review tasks" in {
     val userId = givenStandardAuthenticatedUser()
     val commitId = new ObjectId
-    val reviewTaskToRemove = CommitReviewTask(commitId, userId)
 
     delete("/" + commitId.toString) {
-      verify(commitReviewActivity).markAsReviewed(reviewTaskToRemove)
+      verify(commitReviewActivity).markAsReviewed(commitId, userId)
     }
   }
 

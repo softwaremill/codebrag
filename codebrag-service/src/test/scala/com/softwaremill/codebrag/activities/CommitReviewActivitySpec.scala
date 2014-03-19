@@ -36,8 +36,7 @@ class CommitReviewActivitySpec
     when(commitInfoDao.findByCommitId(commit.id)).thenReturn(Some(commit))
 
     // when
-    val task = CommitReviewTask(commit.id, userId)
-    activity.markAsReviewed(task)
+    activity.markAsReviewed(commit.id, userId)
 
     // then
     verify(eventBus).publish(CommitReviewedEvent(commit, userId))
@@ -50,8 +49,7 @@ class CommitReviewActivitySpec
     when(commitInfoDao.findByCommitId(commit.id)).thenReturn(Some(commit))
 
     // when
-    val task = CommitReviewTask(commit.id, userId)
-    activity.markAsReviewed(task)
+    activity.markAsReviewed(commit.id, userId)
 
     // then
     val expectedCommitReviewed = ReviewedCommit(commit.sha, userId, clock.nowUtc)

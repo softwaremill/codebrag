@@ -3,7 +3,6 @@ package com.softwaremill.codebrag.rest
 import org.scalatra.NotFound
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.CommitReviewTask
 import CommitsEndpoint._
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import PagingCriteria.Direction
@@ -35,8 +34,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   delete("/:id") {
     val commitId = new ObjectId(params("id"))
     val userId = new ObjectId(user.id)
-    val reviewTask = CommitReviewTask(commitId, userId)
-    commitReviewActivity.markAsReviewed(reviewTask)
+    commitReviewActivity.markAsReviewed(commitId, userId)
   }
 
   get("/", allCommits) {
