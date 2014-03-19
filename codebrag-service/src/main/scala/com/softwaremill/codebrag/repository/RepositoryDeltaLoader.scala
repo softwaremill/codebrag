@@ -1,6 +1,5 @@
 package com.softwaremill.codebrag.repository
 
-import com.softwaremill.codebrag.service.commits.jgit.RawCommitsConverter
 import org.eclipse.jgit.revwalk.{RevWalk, RevCommit}
 import com.softwaremill.codebrag.domain.{CommitsForBranch, MultibranchLoadCommitsResult}
 import org.eclipse.jgit.api.Git
@@ -27,7 +26,7 @@ trait RepositoryDeltaLoader extends RawCommitsConverter with BranchListModeSelec
     val gitRepo = new Git(repo)
     val commitsForBranches = remoteBranches(gitRepo).map { branchName =>
         val rawCommits = getCommitsForBranch(branchName, lastKnownBranchPointers.get(branchName))
-        val commitInfos = toCommitInfos(rawCommits, repo)
+        val commitInfos = toCommitInfos(rawCommits)
         CommitsForBranch(branchName, commitInfos, repo.resolve(branchName))
       }
     MultibranchLoadCommitsResult(repoName, commitsForBranches)

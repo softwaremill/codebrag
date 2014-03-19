@@ -1,22 +1,21 @@
-package com.softwaremill.codebrag.service.commits.jgit
+package com.softwaremill.codebrag.repository
 
 import org.eclipse.jgit.revwalk.RevCommit
 import com.softwaremill.codebrag.domain.{PartialCommitInfo, CommitInfo}
-import org.eclipse.jgit.lib.Repository
 import org.joda.time.DateTime
 import com.typesafe.scalalogging.slf4j.Logging
 
-trait RawCommitsConverter { self: Logging =>
+trait RawCommitsConverter { self: Repository with Logging =>
 
-  def toPartialCommitInfos(jGitCommits: List[RevCommit], repository: Repository): List[PartialCommitInfo] = {
-    toCommitInfos(jGitCommits, repository).map(PartialCommitInfo(_))
+  def toPartialCommitInfos(jGitCommits: List[RevCommit]): List[PartialCommitInfo] = {
+    toCommitInfos(jGitCommits).map(PartialCommitInfo(_))
   }
 
-  def toCommitInfos(jGitCommits: List[RevCommit], repository: Repository): List[CommitInfo] = {
-    jGitCommits.flatMap(buildCommitInfoSafely(_, repository))
+  def toCommitInfos(jGitCommits: List[RevCommit]): List[CommitInfo] = {
+    jGitCommits.flatMap(buildCommitInfoSafely(_))
   }
 
-  private def buildCommitInfoSafely(commit: RevCommit, repository: Repository): Option[CommitInfo] = {
+  private def buildCommitInfoSafely(commit: RevCommit): Option[CommitInfo] = {
     try {
       Some(buildCommitInfo(commit))
     } catch {
