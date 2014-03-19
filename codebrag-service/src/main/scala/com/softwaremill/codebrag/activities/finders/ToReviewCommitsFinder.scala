@@ -40,7 +40,7 @@ class ToReviewCommitsFinder(
 
 
   private def userAlreadyReviewed(userId: ObjectId, commit: CommitCacheEntry): Boolean = {
-    reviewedCommitsCache.reviewedByUser(userId).contains(commit)
+    reviewedCommitsCache.reviewedByUser(userId).find(_.sha == commit.sha).nonEmpty
   }
 
   implicit def partialCommitListToCommitViewList(commits: List[PartialCommitInfo]): List[CommitView] = {

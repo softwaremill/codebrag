@@ -33,7 +33,7 @@ trait SetStartingDateForUser extends Logging {
       case Some(last) => getLatestFromBothDates(last.commitDate, weekBeforeRegistration)
       case None => weekBeforeRegistration
     }
-    reviewedCommitsCache.setStartingDateForUser(dateBoundary, user.id)
+    reviewedCommitsCache.setToReviewStartDateForUser(dateBoundary, user.id)
     logger.debug(s"New user ${user.login} registered. To review boundary date set to ${dateBoundary}")
   }
 

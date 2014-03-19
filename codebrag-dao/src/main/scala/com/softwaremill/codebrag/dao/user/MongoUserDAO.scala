@@ -5,10 +5,11 @@ import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, 
 import net.liftweb.mongodb.record.field.{BsonRecordField, ObjectIdPk}
 import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
-import org.joda.time.DateTime
+import org.joda.time.{DateTimeZone, DateTime}
 import net.liftweb.record.field.{BooleanField, OptionalDateTimeField}
 import com.softwaremill.codebrag.dao.mongo.LongStringField
 import com.typesafe.scalalogging.slf4j.Logging
+import org.joda.time.chrono.ISOChronology
 
 class MongoUserDAO extends UserDAO with Logging {
 
@@ -61,7 +62,10 @@ class MongoUserDAO extends UserDAO with Logging {
   }
 
   override def setToReviewStartDate(id: ObjectId, newToReviewDate: DateTime) = {
-    logger.warn("setToReviewStartDate - NOT IMPLEMENTED")
+    findById(id).map(_.settings).foreach { s =>
+      val newSettings = s.copy(toReviewStartDate = Some(newToReviewDate.withZone(DateTimeZone.UTC)))
+      UserRecord.asRegularUser.where(_.id eqs id).modify(_.userSettings setTo toRecord(newSettings)).updateOne()
+    }
   }
 
   def findPartialUserDetails(names: Iterable[String], emails: Iterable[String]) = {
@@ -140,15 +144,20 @@ class MongoUserDAO extends UserDAO with Logging {
     }
 
     implicit def fromRecord(record: UserSettingsRecord): UserSettings = {
-      UserSettings(record.avatarUrl.get, record.emailNotificationsEnabled.get, record.dailyUpdatesEmailEnabled.get, record.appTourDone.get, None)
+      val startDate = record.toReviewStartDate.get.map(new DateTime(_).toDateTime(ISOChronology.getInstanceUTC))
+      UserSettings(record.avatarUrl.get, record.emailNotificationsEnabled.get, record.dailyUpdatesEmailEnabled.get, record.appTourDone.get, startDate)
     }
 
     implicit def toRecord(settings: UserSettings): UserSettingsRecord = {
-      UserSettingsRecord.createRecord
+      val record = UserSettingsRecord.createRecord
         .avatarUrl(settings.avatarUrl)
         .emailNotificationsEnabled(settings.emailNotificationsEnabled)
         .dailyUpdatesEmailEnabled(settings.dailyUpdatesEmailEnabled)
         .appTourDone(settings.appTourDone)
+      settings.toReviewStartDate match {
+        case Some(date) => record.toReviewStartDate(date.toGregorianCalendar)
+        case None => record
+      }
     }
   }
 
@@ -217,6 +226,8 @@ class UserSettingsRecord extends BsonRecord[UserSettingsRecord] {
   object dailyUpdatesEmailEnabled extends BooleanField(this)
 
   object appTourDone extends BooleanField(this)
+
+  object toReviewStartDate extends OptionalDateTimeField(this)
 
 }
 
