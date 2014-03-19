@@ -4,25 +4,31 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.commits.branches.{ReviewedCommitsCache, RepositoryCache}
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.dao.finders.views.{CommitView, CommitListView}
+import com.softwaremill.codebrag.dao.finders.views.CommitListView
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
-import java.util.Date
+import com.softwaremill.codebrag.domain.PartialCommitInfo
+import CommitToViewImplicits._
 
 class AllCommitsFinder(
   repoCache: RepositoryCache,
-  reviewedCommitsCache: ReviewedCommitsCache,
+  val reviewedCommitsCache: ReviewedCommitsCache,
   commitsInfoDao: CommitInfoDAO,
-  val userDAO: UserDAO) extends Logging with UserDataEnhancer {
+  val userDAO: UserDAO) extends Logging with UserDataEnhancer with CommitReviewedByUserMarker {
 
   def find(userId: ObjectId, branchName: String, pagingCriteria: PagingCriteria[String]): CommitListView = {
-    logger.debug("IMPLEMENT ME!")
-    CommitListView(List.empty, 0, 0)
+    val branchCommits = repoCache.getBranchCommits(branchName).map(_.sha)
+    val page = pagingCriteria.extractPageFrom(branchCommits)
+    val commits = commitsInfoDao.findByShaList(page.items)
+    enhanceWithUserData(CommitListView(markAsReviewed(commits, userId), page.beforeCount, page.afterCount))
   }
 
+  // TODO: change to Option
   def find(commitId: ObjectId, userId: ObjectId) = {
-    logger.debug("IMPLEMENT ME!")
-    Right(CommitView("", "", "", "", "", new Date))
+    commitsInfoDao.findByCommitId(commitId) match {
+      case Some(commit) => Right(markAsReviewed(enhanceWithUserData(PartialCommitInfo(commit)), userId))
+      case None => Left("Commit not found")
+    }
   }
 
 }

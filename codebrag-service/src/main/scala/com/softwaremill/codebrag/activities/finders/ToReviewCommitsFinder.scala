@@ -8,6 +8,7 @@ import com.softwaremill.codebrag.domain.{User, CommitAuthorClassification, Parti
 import com.softwaremill.codebrag.dao.finders.views.{CommitListView, CommitView}
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
+import CommitToViewImplicits._
 
 class ToReviewCommitsFinder(
   repoCache: RepositoryCache,
@@ -43,11 +44,4 @@ class ToReviewCommitsFinder(
     reviewedCommitsCache.reviewedByUser(userId).find(_.sha == commit.sha).nonEmpty
   }
 
-  implicit def partialCommitListToCommitViewList(commits: List[PartialCommitInfo]): List[CommitView] = {
-    commits.map(partialCommitToCommitView)
-  }
-
-  implicit def partialCommitToCommitView(commit: PartialCommitInfo): CommitView = {
-    CommitView(commit.id.toString, commit.sha, commit.message, commit.authorName, commit.authorEmail, commit.date.toDate)
-  }
 }
