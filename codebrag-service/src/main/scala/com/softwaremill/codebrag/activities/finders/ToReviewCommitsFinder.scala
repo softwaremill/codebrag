@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.activities.finders
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.service.commits.branches.{ReviewedCommitsCache, RepositoryCache}
+import com.softwaremill.codebrag.service.commits.branches.{CommitCacheEntry, ReviewedCommitsCache, RepositoryCache}
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.domain.{User, CommitAuthorClassification, PartialCommitInfo}
@@ -29,13 +29,18 @@ class ToReviewCommitsFinder(
 
   def findShaToReview(branchName: String, user: User): List[String] = {
     import CommitAuthorClassification._
-    val userBoundaryDate = reviewedCommitsCache.getUserStartingDate(user.id)
+    val userBoundaryDate = reviewedCommitsCache.getToReviewStartDateForUser(user.id)
     val commitsInBranch = repoCache.getBranchCommits(branchName)
     val toReview = commitsInBranch
-      .filterNot(commitAuthoredByUser(_, user))
+      .filterNot(commit => commitAuthoredByUser(commit, user) || userAlreadyReviewed(user.id, commit))
       // TODO: add step to filter out commits that were already reviewed by number of users
       .takeWhile( c => c.commitDate.isAfter(userBoundaryDate) || c.commitDate.isEqual(userBoundaryDate))
     toReview.reverse.map(_.sha)
+  }
+
+
+  private def userAlreadyReviewed(userId: ObjectId, commit: CommitCacheEntry): Boolean = {
+    reviewedCommitsCache.reviewedByUser(userId).contains(commit)
   }
 
   implicit def partialCommitListToCommitViewList(commits: List[PartialCommitInfo]): List[CommitView] = {
