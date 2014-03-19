@@ -20,6 +20,7 @@ import com.softwaremill.codebrag.dao.Daos
 import com.softwaremill.codebrag.service.commits.branches.{ReviewedCommitsCache, PersistentBackendForCache, RepositoryCache}
 import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.activities.finders.{AllCommitsFinder, ToReviewCommitsFinder}
+import com.softwaremill.codebrag.dao.reviewedcommits.InMemoryReviewedCommitsDAO
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
@@ -49,7 +50,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
   lazy val commentActivity = new AddCommentActivity(userReactionService, followupService, eventBus)
 
-  lazy val commitReviewActivity = new CommitReviewActivity(commitReviewTaskDao, commitInfoDao, eventBus)
+  lazy val commitReviewActivity = new CommitReviewActivity(commitReviewTaskDao, commitInfoDao, reviewedCommitsCache, eventBus)
 
   lazy val newUserAdder = new NewUserAdder(userDao, eventBus, afterUserRegisteredHook, followupGeneratorForPriorReactions, welcomeFollowupsGenerator)
   lazy val afterUserRegisteredHook = new AfterUserRegisteredHook(repositoryStateCache, reviewedCommitsCache)
@@ -72,7 +73,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val instanceRunStatsSender = new InstanceRunStatsSender(statsHTTPRequestSender)
 
   lazy val repositoryStateCache = new RepositoryCache(repository, new PersistentBackendForCache(commitInfoDao, branchStateDao), config)
-  lazy val reviewedCommitsCache = new ReviewedCommitsCache
+  lazy val reviewedCommitsCache = new ReviewedCommitsCache(userDao, reviewedCommitsDao)
 
   lazy val toReviewCommitsFinder = new ToReviewCommitsFinder(repositoryStateCache, reviewedCommitsCache, commitInfoDao, userDao)
   lazy val allCommitsFinder = new AllCommitsFinder(repositoryStateCache, reviewedCommitsCache, commitInfoDao, userDao)
