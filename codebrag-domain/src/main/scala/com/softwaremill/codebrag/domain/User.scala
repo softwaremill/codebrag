@@ -62,11 +62,11 @@ object Authentication extends ((String, String, String, String, String) => Authe
 
 case class LastUserNotificationDispatch(commits: Option[DateTime], followups: Option[DateTime])
 
-case class UserSettings(avatarUrl: String, emailNotificationsEnabled: Boolean, dailyUpdatesEmailEnabled: Boolean, appTourDone: Boolean)
+case class UserSettings(avatarUrl: String, emailNotificationsEnabled: Boolean, dailyUpdatesEmailEnabled: Boolean, appTourDone: Boolean, toReviewStartDate: Option[DateTime])
 
 object UserSettings {
 
-  def apply(avatarUrl: String) = new UserSettings(avatarUrl, emailNotificationsEnabled = true, dailyUpdatesEmailEnabled = true, appTourDone = false)
+  def apply(avatarUrl: String) = new UserSettings(avatarUrl, emailNotificationsEnabled = true, dailyUpdatesEmailEnabled = true, appTourDone = false, toReviewStartDate = None)
 
   def defaultAvatarUrl(email: String): String = {
     s"http://www.gravatar.com/avatar/${Utils.md5(email)}.png"

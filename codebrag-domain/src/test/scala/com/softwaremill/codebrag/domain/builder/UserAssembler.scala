@@ -2,6 +2,7 @@ package com.softwaremill.codebrag.domain.builder
 
 import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, UserSettings, Authentication, User}
 import org.bson.types.ObjectId
+import org.joda.time.DateTime
 
 class UserAssembler(var user: User) {
 
@@ -42,6 +43,11 @@ class UserAssembler(var user: User) {
 
   def withWelcomeFollowupNotYetDone() = {
     user = user.copy(settings = user.settings.copy(appTourDone = false))
+    this
+  }
+
+  def withToReviewStartDate(date: DateTime) = {
+    user = user.copy(settings = user.settings.copy(toReviewStartDate = Some(date)))
     this
   }
 

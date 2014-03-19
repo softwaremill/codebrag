@@ -8,8 +8,9 @@ import org.bson.types.ObjectId
 import org.joda.time.DateTime
 import net.liftweb.record.field.{BooleanField, OptionalDateTimeField}
 import com.softwaremill.codebrag.dao.mongo.LongStringField
+import com.typesafe.scalalogging.slf4j.Logging
 
-class MongoUserDAO extends UserDAO {
+class MongoUserDAO extends UserDAO with Logging {
 
   import UserImplicits._
 
@@ -57,6 +58,10 @@ class MongoUserDAO extends UserDAO {
 
   def changeUserSettings(userId: ObjectId, newSettings: UserSettings) {
     UserRecord.asRegularUser.where(_.id eqs userId).modify(_.userSettings setTo toRecord(newSettings)).updateOne()
+  }
+
+  override def setToReviewStartDate(id: ObjectId, newToReviewDate: DateTime) = {
+    logger.warn("setToReviewStartDate - NOT IMPLEMENTED")
   }
 
   def findPartialUserDetails(names: Iterable[String], emails: Iterable[String]) = {
@@ -135,7 +140,7 @@ class MongoUserDAO extends UserDAO {
     }
 
     implicit def fromRecord(record: UserSettingsRecord): UserSettings = {
-      UserSettings(record.avatarUrl.get, record.emailNotificationsEnabled.get, record.dailyUpdatesEmailEnabled.get, record.appTourDone.get)
+      UserSettings(record.avatarUrl.get, record.emailNotificationsEnabled.get, record.dailyUpdatesEmailEnabled.get, record.appTourDone.get, None)
     }
 
     implicit def toRecord(settings: UserSettings): UserSettingsRecord = {

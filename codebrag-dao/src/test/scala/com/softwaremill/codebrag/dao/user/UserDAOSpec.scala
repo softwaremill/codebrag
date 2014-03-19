@@ -10,8 +10,9 @@ import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
 import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, RequiresDb}
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import com.softwaremill.codebrag.test.{FlatSpecWithSQL, FlatSpecWithMongo, ClearSQLDataAfterTest, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.common.{ClockSpec, FixtureTimeClock}
 
-trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with Logging {
+trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with Logging with ClockSpec {
 
   def userDAO: UserDAO
   def internalUserDAO: InternalUserDAO
@@ -376,6 +377,31 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     val Some(userFound) = userDAO.findById(9)
     userFound.settings.emailNotificationsEnabled should equal(true)
     userFound.settings.appTourDone should equal(true)
+  }
+
+  it should "allow to review start date be empty" taggedAs RequiresDb in {
+    // given
+    val userWithEmptyDate = user.copy(settings = user.settings.copy(toReviewStartDate = None))
+    userDAO.add(userWithEmptyDate)
+
+    // when
+    val Some(found) = userDAO.findById(user.id)
+
+    // then
+    found.settings.toReviewStartDate should be('empty)
+  }
+
+  it should "set to review start date for user" taggedAs RequiresDb in {
+    // given
+    userDAO.add(user)
+
+    // when
+    val dateToSet = clock.nowUtc
+    userDAO.setToReviewStartDate(user.id, dateToSet)
+
+    // then
+    val Some(found) = userDAO.findById(user.id)
+    found.settings.toReviewStartDate should be(Some(dateToSet))
   }
 
   it should "find partial details by name/email" taggedAs RequiresDb in {

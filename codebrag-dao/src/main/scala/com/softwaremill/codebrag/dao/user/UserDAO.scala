@@ -2,6 +2,7 @@ package com.softwaremill.codebrag.dao.user
 
 import com.softwaremill.codebrag.domain._
 import org.bson.types.ObjectId
+import org.joda.time.DateTime
 
 trait UserDAO {
   /**
@@ -36,6 +37,8 @@ trait UserDAO {
   def rememberNotifications(id: ObjectId, notifications: LastUserNotificationDispatch)
 
   def changeUserSettings(userID: ObjectId, newSettings: UserSettings)
+
+  def setToReviewStartDate(id: ObjectId, newToReviewDate: DateTime)
 
   def findCommitAuthor(commit: CommitInfo): Option[User]
 

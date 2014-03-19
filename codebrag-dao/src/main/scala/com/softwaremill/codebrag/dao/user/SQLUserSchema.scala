@@ -19,11 +19,11 @@ trait SQLUserSchema {
     auth.token, auth.salt)
 
   protected case class SQLSettings(id: ObjectId, avatarUrl: String, emailNotificationsEnabled: Boolean,
-    dailyUpdatesEmailEnabled: Boolean, appTourDone: Boolean) {
-    def toSettings = UserSettings(avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone)
+    dailyUpdatesEmailEnabled: Boolean, appTourDone: Boolean, toReviewStartDate: Option[DateTime]) {
+    def toSettings = UserSettings(avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone, toReviewStartDate)
   }
   protected def toSQLSettings(id: ObjectId, settings: UserSettings) = SQLSettings(id, settings.avatarUrl,
-    settings.emailNotificationsEnabled, settings.dailyUpdatesEmailEnabled, settings.appTourDone)
+    settings.emailNotificationsEnabled, settings.dailyUpdatesEmailEnabled, settings.appTourDone, settings.toReviewStartDate)
 
   protected case class SQLLastNotif(id: ObjectId, commits: Option[DateTime], followups: Option[DateTime]) {
     def toLastNotif = LastUserNotificationDispatch(commits, followups)
@@ -52,8 +52,9 @@ trait SQLUserSchema {
     def emailNotificationsEnabled = column[Boolean]("email_notif")
     def dailyUpdatesEmailEnabled = column[Boolean]("email_daily_updates")
     def appTourDone = column[Boolean]("app_tour_done")
+    def toReviewStartDate = column[Option[DateTime]]("to_review_start_date")
 
-    def * = (userId, avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone) <> (SQLSettings.tupled, SQLSettings.unapply)
+    def * = (userId, avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone, toReviewStartDate) <> (SQLSettings.tupled, SQLSettings.unapply)
   }
 
   protected val userSettings = TableQuery[Settings]
@@ -69,11 +70,11 @@ trait SQLUserSchema {
   protected val lastNotifs = TableQuery[LastNotifs]
 
   protected class Users(tag: Tag) extends Table[UserTuple](tag, "users") {
-    def id              = column[ObjectId]("id", O.PrimaryKey)
-    def name            = column[String]("name")
-    def emailLowerCase  = column[String]("email_lowercase")
-    def token           = column[String]("token")
-    def regular         = column[Boolean]("regular")
+    def id                = column[ObjectId]("id", O.PrimaryKey)
+    def name              = column[String]("name")
+    def emailLowerCase    = column[String]("email_lowercase")
+    def token             = column[String]("token")
+    def regular           = column[Boolean]("regular")
 
     def auth = foreignKey("auth_fk", id, auths)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
     def settings = foreignKey("settings_fk", id, userSettings)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)

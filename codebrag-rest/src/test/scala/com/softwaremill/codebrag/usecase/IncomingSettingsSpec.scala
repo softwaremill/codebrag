@@ -9,6 +9,7 @@ import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.UserSettings
 import org.mockito.Matchers
 import com.softwaremill.codebrag.dao.user.UserDAO
+import org.joda.time.DateTime
 
 class IncomingSettingsSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
@@ -16,7 +17,8 @@ class IncomingSettingsSpec extends FlatSpec with MockitoSugar with ShouldMatcher
     avatarUrl =  "http://codebrag.com/avatar",
     dailyUpdatesEmailEnabled = true,
     emailNotificationsEnabled = true,
-    appTourDone = false
+    appTourDone = false,
+    toReviewStartDate = Some(DateTime.now)
   )
 
   it should "update only incoming settings" in {

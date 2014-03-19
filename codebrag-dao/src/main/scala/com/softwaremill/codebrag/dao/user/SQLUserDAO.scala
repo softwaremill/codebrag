@@ -2,7 +2,8 @@ package com.softwaremill.codebrag.dao.user
 
 import com.softwaremill.codebrag.domain._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.sql.{SQLDatabase}
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
+import org.joda.time.{DateTimeZone, DateTime}
 
 class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
   import database.driver.simple._
@@ -73,6 +74,13 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
 
   def changeUserSettings(id: ObjectId, newSettings: UserSettings) = db.withTransaction { implicit session =>
     userSettings.where(_.userId === id).update(toSQLSettings(id, newSettings))
+  }
+
+  def setToReviewStartDate(id: ObjectId, newToReviewDate: DateTime) {
+    val toReviewDateAsUTC = newToReviewDate.withZone(DateTimeZone.UTC)
+    db.withTransaction { implicit session =>
+      userSettings.filter(_.userId === id).map(_.toReviewStartDate).update(Some(toReviewDateAsUTC))
+    }
   }
 
   def findPartialUserDetails(names: Iterable[String], emails: Iterable[String]) =
