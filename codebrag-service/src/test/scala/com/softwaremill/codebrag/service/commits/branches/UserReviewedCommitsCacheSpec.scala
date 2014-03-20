@@ -11,7 +11,7 @@ import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.ReviewedCommit
 import org.mockito.Mockito._
 
-class ReviewedCommitsCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with ClockSpec {
+class UserReviewedCommitsCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers with ClockSpec {
 
   var cache: UserReviewedCommitsCache = _
   var userDao: UserDAO = _
