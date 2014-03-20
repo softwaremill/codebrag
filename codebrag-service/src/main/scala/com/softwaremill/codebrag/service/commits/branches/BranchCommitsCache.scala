@@ -8,10 +8,10 @@ import com.softwaremill.codebrag.service.config.CommitCacheConfig
 /**
  * Keeps commits (SHA) for all repository branches
  */
-class RepositoryCache(val repository: Repository, backend: PersistentBackendForCache, config: CommitCacheConfig) extends Logging {
+class BranchCommitsCache(val repository: Repository, backend: PersistentBackendForCache, config: CommitCacheConfig) extends Logging {
 
   // TODO: consider changing to Map[String, AtomicReference[List[CommitCacheEntry]]]
-  private val commits = new scala.collection.mutable.HashMap[String, List[CommitCacheEntry]]
+  private val commits = new scala.collection.mutable.HashMap[String, List[BranchCommitCacheEntry]]
 
   def addCommits(loadResult: MultibranchLoadCommitsResult) {
     backend.persist(loadResult)
@@ -21,7 +21,7 @@ class RepositoryCache(val repository: Repository, backend: PersistentBackendForC
     }
   }
 
-  private def addCommitsToBranch(newCommits: List[CommitCacheEntry], branchName: String) {
+  private def addCommitsToBranch(newCommits: List[BranchCommitCacheEntry], branchName: String) {
     val finalCommits = commits.get(branchName) match {
       case Some(commits) => newCommits ::: commits
       case None => newCommits
@@ -34,8 +34,8 @@ class RepositoryCache(val repository: Repository, backend: PersistentBackendForC
 
   def getAllCommits = commits.flatten(_._2).toSet
 
-  def getBranchCommits(branchName: String): List[CommitCacheEntry] = {
-    commits.get(branchName).getOrElse(List.empty[CommitCacheEntry])
+  def getBranchCommits(branchName: String): List[BranchCommitCacheEntry] = {
+    commits.get(branchName).getOrElse(List.empty[BranchCommitCacheEntry])
   }
 
   def initialize() {
@@ -50,8 +50,8 @@ class RepositoryCache(val repository: Repository, backend: PersistentBackendForC
     logger.debug(s"Cache initialized")
   }
 
-  private def partialCommitToCacheEntry(commit: CommitInfo): CommitCacheEntry = {
-    CommitCacheEntry(commit.sha, commit.authorName, commit.authorEmail, commit.commitDate)
+  private def partialCommitToCacheEntry(commit: CommitInfo): BranchCommitCacheEntry = {
+    BranchCommitCacheEntry(commit.sha, commit.authorName, commit.authorEmail, commit.commitDate)
   } 
   
   private def maxCommitsPerBranchCount = config.maxCommitsCachedPerBranch

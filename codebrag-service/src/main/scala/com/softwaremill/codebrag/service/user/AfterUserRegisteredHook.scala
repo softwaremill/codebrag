@@ -3,12 +3,12 @@ package com.softwaremill.codebrag.service.user
 import com.softwaremill.codebrag.domain._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
-import com.softwaremill.codebrag.service.commits.branches.{UserReviewedCommitsCacheEntry, UserReviewedCommitsCache, RepositoryCache}
+import com.softwaremill.codebrag.service.commits.branches.{UserReviewedCommitsCacheEntry, UserReviewedCommitsCache, BranchCommitsCache}
 import CommitAuthorClassification._
 import org.joda.time.DateTime
 
 class AfterUserRegisteredHook(
-  val repoCache: RepositoryCache,
+  val repoCache: BranchCommitsCache,
   val reviewedCommitsCache: UserReviewedCommitsCache) extends SetStartingDateForUser {
 
   def run(user: NewUserRegistered) {
@@ -19,7 +19,7 @@ class AfterUserRegisteredHook(
 
 trait SetStartingDateForUser extends Logging {
 
-  val repoCache: RepositoryCache
+  val repoCache: BranchCommitsCache
   val reviewedCommitsCache: UserReviewedCommitsCache
 
   private val LastCommitsToReviewCount = 10

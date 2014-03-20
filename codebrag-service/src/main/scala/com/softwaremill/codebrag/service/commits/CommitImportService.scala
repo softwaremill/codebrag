@@ -3,11 +3,11 @@ package com.softwaremill.codebrag.service.commits
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.domain.RepositoryStatus
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
-import com.softwaremill.codebrag.service.commits.branches.RepositoryCache
+import com.softwaremill.codebrag.service.commits.branches.BranchCommitsCache
 import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
 
-class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: BranchStateDAO, cache: RepositoryCache) extends Logging {
+class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: BranchStateDAO, cache: BranchCommitsCache) extends Logging {
 
   def importRepoCommits(repository: Repository) {
     try {

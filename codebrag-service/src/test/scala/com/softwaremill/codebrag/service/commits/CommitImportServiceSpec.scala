@@ -6,7 +6,7 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{RepositoryStatus, MultibranchLoadCommitsResult}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
-import com.softwaremill.codebrag.service.commits.branches.RepositoryCache
+import com.softwaremill.codebrag.service.commits.branches.BranchCommitsCache
 import com.softwaremill.codebrag.repository.Repository
 import org.mockito.Matchers
 import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
@@ -15,7 +15,7 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
   var repoStatusDao: RepositoryStatusDAO = _
   var branchStateDao: BranchStateDAO = _
-  var repoCache: RepositoryCache = _
+  var repoCache: BranchCommitsCache = _
   var repository: Repository = _
   var service: CommitImportService = _
 
@@ -25,7 +25,7 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   before {
     repoStatusDao = mock[RepositoryStatusDAO]
     branchStateDao = mock[BranchStateDAO]
-    repoCache = mock[RepositoryCache]
+    repoCache = mock[BranchCommitsCache]
     repository = mock[Repository]
     service = new CommitImportService(repoStatusDao, branchStateDao, repoCache)
   }
