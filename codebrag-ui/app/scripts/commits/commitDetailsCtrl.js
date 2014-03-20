@@ -17,9 +17,9 @@ angular.module('codebrag.commits')
 
     .controller('CommitDetailsCtrl', function ($stateParams, $state, $scope, commitsService, currentCommit) {
 
-        var commitId = $stateParams.id;
+        var sha = $stateParams.sha;
 
-        commitsService.commitDetails(commitId).then(function (commit) {
+        commitsService.commitDetails(sha).then(function (commit) {
             var current = new codebrag.CurrentCommit(commit);
             $scope.currentCommit = current;
             currentCommit.set(current);

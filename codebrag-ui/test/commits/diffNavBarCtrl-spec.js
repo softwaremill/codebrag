@@ -5,8 +5,8 @@ describe("DiffNavbarController", function () {
     var noopPromise = {then: function(){}};
     var $scope, $q, commitsService;
 
-    var commit = {info: {id: '123'}};
-    var nextCommit = {id: '345'};
+    var commit = {info: {sha: '123'}};
+    var nextCommit = {sha: '345'};
 
     beforeEach(module('codebrag.commits'));
 
@@ -27,7 +27,7 @@ describe("DiffNavbarController", function () {
         $scope.markCurrentCommitAsReviewed();
 
         // Then
-        expect(commitsService.markAsReviewed).toHaveBeenCalledWith(commit.info.id);
+        expect(commitsService.markAsReviewed).toHaveBeenCalledWith(commit.info.sha);
     }));
 
     it('should go to next commit when making current commit reviewed', inject(function($controller, $state, currentCommit) {

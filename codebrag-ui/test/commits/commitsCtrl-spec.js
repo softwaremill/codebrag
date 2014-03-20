@@ -76,7 +76,7 @@ describe("Commits Controller", function () {
 
     it('should load newest commits in all mode when no commit is selected', function() {
         // given
-        $stateParams.id = null;
+        $stateParams.sha = null;
 
         // when
         $scope.listViewMode = 'all';
@@ -88,14 +88,14 @@ describe("Commits Controller", function () {
 
     it('should load commits in all context when commit is selected', function() {
         // given
-        $stateParams.id = '123';
+        $stateParams.sha = '123';
 
         // when
         $scope.listViewMode = 'all';
         $scope.switchListView();
 
         // then
-        expect(commitsService.loadCommits).toHaveBeenCalledWith($stateParams.id);
+        expect(commitsService.loadCommits).toHaveBeenCalledWith($stateParams.sha);
     });
 
     it('should indicate when all commits were reviewed', function() {

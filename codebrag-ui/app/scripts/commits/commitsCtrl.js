@@ -26,8 +26,8 @@ angular.module('codebrag.commits')
             commitsService.loadPreviousCommits();
         };
 
-        $scope.openCommitDetails = function(commitId) {
-            $state.transitionTo('commits.details', {id: commitId});
+        $scope.openCommitDetails = function(sha) {
+            $state.transitionTo('commits.details', {sha: sha});
         };
 
         $scope.allCommitsReviewed = function() {
@@ -46,7 +46,7 @@ angular.module('codebrag.commits')
 
         function loadAllCommits() {
             commitsService.setAllMode();
-            commitsService.loadCommits($stateParams.id).then(function(commits) {
+            commitsService.loadCommits($stateParams.sha).then(function(commits) {
                 $scope.commits = commits;
             })
         }

@@ -2,7 +2,7 @@
 
 describe("CommitDetailsController", function () {
 
-    var selectedCommitId = 123;
+    var selectedCommitSha = 123;
     var noopPromise = {then: function(){}};
     var $scope, $q, commitsService;
 
@@ -14,21 +14,21 @@ describe("CommitDetailsController", function () {
         commitsService = _commitsService_;
     }));
 
-    it('should use commit id provided in $stateParams to load commit data', inject(function($stateParams, $controller) {
+    it('should use commit sha provided in $stateParams to load commit data', inject(function($stateParams, $controller) {
         // Given
-        $stateParams.id = selectedCommitId;
+        $stateParams.sha = selectedCommitSha;
         spyOn(commitsService, 'commitDetails').andReturn(noopPromise);
 
         // when
         $controller('CommitDetailsCtrl', {$scope: $scope, commitsListService: commitsService});
 
         // Then
-        expect(commitsService.commitDetails).toHaveBeenCalledWith(selectedCommitId);
+        expect(commitsService.commitDetails).toHaveBeenCalledWith(selectedCommitSha);
     }));
 
     it('should expose loaded commit in scope', inject(function($controller, $stateParams) {
         // Given
-        $stateParams.id = selectedCommitId;
+        $stateParams.sha = selectedCommitSha;
         var expectedCommitDetails = {commit: {sha: '123'}, diff: [], supressedFiles: []};
         var commitDetails = $q.defer();
         commitDetails.resolve(expectedCommitDetails);

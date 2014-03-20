@@ -106,7 +106,7 @@ angular.module('codebrag.commits')
                 templateUrl: 'views/secured/commits/emptyCommits.html'
             })
             .state('commits.details', {
-                url: '/{id}',
+                url: '/{sha}',
                 templateUrl: 'views/secured/commits/commitDetails.html'
             });
     });
