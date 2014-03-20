@@ -43,7 +43,18 @@ class ReviewedCommitsCache(userDao: UserDAO, reviewedCommitsDao: ReviewedCommits
     addToCache(reviewedCommit)
   }
 
-  def loadUserReviewedCommitsToCache(userId: ObjectId) = lazyInitCacheForUser(userId)
+  def loadUserReviewedCommitsToCache(userId: ObjectId) = {
+    val userCommits = reviewedCommitsPerUser.get(userId)
+    val userStartDate = userToReviewStartDates.get(userId)
+    if(userCommits.isEmpty || userStartDate.isEmpty) {
+      lazyInitCacheForUser(userId)
+    }
+  }
+
+  def initialize() {
+    logger.debug("Initializing cache of reviewed commits for registered users")
+    userDao.findAll().foreach(user => lazyInitCacheForUser(user.id))
+  }
 
   private def lazyInitCacheForUser(userId: ObjectId) {
     logger.debug(s"Not found cache entry for user ${userId}, trying to load reviewed commits from DB and put in cache")
