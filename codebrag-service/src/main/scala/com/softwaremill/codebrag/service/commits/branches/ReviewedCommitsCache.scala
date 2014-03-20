@@ -43,13 +43,19 @@ class ReviewedCommitsCache(userDao: UserDAO, reviewedCommitsDao: ReviewedCommits
     addToCache(reviewedCommit)
   }
 
+  def loadUserReviewedCommitsToCache(userId: ObjectId) = lazyInitCacheForUser(userId)
+
   private def lazyInitCacheForUser(userId: ObjectId) {
     logger.debug(s"Not found cache entry for user ${userId}, trying to load reviewed commits from DB and put in cache")
     val fetched = reviewedCommitsDao.allReviewedByUser(userId)
     reviewedCommitsPerUser.put(userId, fetched)
+    logger.debug(s"User ${userId}, has ${fetched.size} commits reviewed")
     userDao.findById(userId).foreach { user =>
       user.settings.toReviewStartDate match {
-        case Some(date) => userToReviewStartDates.put(userId, date)
+        case Some(date) => {
+          userToReviewStartDates.put(userId, date)
+          logger.debug(s"User ${userId}, has start date set to ${date}")
+        }
         case None => throw new IllegalStateException(s"User ${userId} doesn't have toReviewStartDate set in DB")
       }
     }
