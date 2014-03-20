@@ -14,7 +14,7 @@ import com.typesafe.config.ConfigFactory
 import java.util.Properties
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.service.commits.branches.ReviewedCommitsCache
+import com.softwaremill.codebrag.service.commits.branches.UserReviewedCommitsCache
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 

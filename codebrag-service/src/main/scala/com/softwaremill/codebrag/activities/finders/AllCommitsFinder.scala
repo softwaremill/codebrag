@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.activities.finders
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.service.commits.branches.{ReviewedCommitsCache, RepositoryCache}
+import com.softwaremill.codebrag.service.commits.branches.{UserReviewedCommitsCache, RepositoryCache}
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.finders.views.CommitListView
@@ -12,7 +12,7 @@ import CommitToViewImplicits._
 
 class AllCommitsFinder(
   repoCache: RepositoryCache,
-  val reviewedCommitsCache: ReviewedCommitsCache,
+  val reviewedCommitsCache: UserReviewedCommitsCache,
   commitsInfoDao: CommitInfoDAO,
   val userDAO: UserDAO) extends Logging with UserDataEnhancer with CommitReviewedByUserMarker {
 

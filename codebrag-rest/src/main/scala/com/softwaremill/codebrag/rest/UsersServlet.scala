@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.service.data.UserJson
 import swagger.{Swagger, SwaggerSupport}
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.service.commits.branches.ReviewedCommitsCache
+import com.softwaremill.codebrag.service.commits.branches.UserReviewedCommitsCache
 import org.bson.types.ObjectId
 
 class UsersServlet(val authenticator: Authenticator, registerService: RegisterService, afterLoginHook: AfterUserLoginHook, userDao: UserDAO, config: CodebragConfig, val swagger: Swagger)

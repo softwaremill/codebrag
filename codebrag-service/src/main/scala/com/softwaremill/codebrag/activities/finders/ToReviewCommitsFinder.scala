@@ -1,18 +1,18 @@
 package com.softwaremill.codebrag.activities.finders
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.service.commits.branches.{CommitCacheEntry, ReviewedCommitsCache, RepositoryCache}
+import com.softwaremill.codebrag.service.commits.branches.{CommitCacheEntry, UserReviewedCommitsCache, RepositoryCache}
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.domain.{User, CommitAuthorClassification, PartialCommitInfo}
-import com.softwaremill.codebrag.dao.finders.views.{CommitListView, CommitView}
+import com.softwaremill.codebrag.domain.{User, CommitAuthorClassification}
+import com.softwaremill.codebrag.dao.finders.views.CommitListView
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
 import CommitToViewImplicits._
 
 class ToReviewCommitsFinder(
   repoCache: RepositoryCache,
-  reviewedCommitsCache: ReviewedCommitsCache,
+  reviewedCommitsCache: UserReviewedCommitsCache,
   commitsInfoDao: CommitInfoDAO,
   val userDAO: UserDAO) extends Logging with UserDataEnhancer {
 
@@ -30,7 +30,7 @@ class ToReviewCommitsFinder(
 
   def findShaToReview(branchName: String, user: User): List[String] = {
     import CommitAuthorClassification._
-    val userBoundaryDate = reviewedCommitsCache.getToReviewStartDateForUser(user.id)
+    val userBoundaryDate = reviewedCommitsCache.getUserEntry(user.id).toReviewStartDate
     val commitsInBranch = repoCache.getBranchCommits(branchName)
     val toReview = commitsInBranch
       .filterNot(commit => commitAuthoredByUser(commit, user) || userAlreadyReviewed(user.id, commit))
@@ -41,7 +41,8 @@ class ToReviewCommitsFinder(
 
 
   private def userAlreadyReviewed(userId: ObjectId, commit: CommitCacheEntry): Boolean = {
-    reviewedCommitsCache.reviewedByUser(userId).find(_.sha == commit.sha).nonEmpty
+    val commitsReviewedByUser = reviewedCommitsCache.getUserEntry(userId).commits
+    commitsReviewedByUser.find(_.sha == commit.sha).nonEmpty
   }
 
 }

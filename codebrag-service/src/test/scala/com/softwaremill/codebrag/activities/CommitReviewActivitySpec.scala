@@ -9,20 +9,20 @@ import com.softwaremill.codebrag.domain.{ReviewedCommit, CommitReviewTask}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.reactions.CommitReviewedEvent
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.service.commits.branches.ReviewedCommitsCache
+import com.softwaremill.codebrag.service.commits.branches.UserReviewedCommitsCache
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 
 class CommitReviewActivitySpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
 
-  var reviewedCommitsCache: ReviewedCommitsCache = _
+  var reviewedCommitsCache: UserReviewedCommitsCache = _
   var commitInfoDao: CommitInfoDAO = _
   var eventBus: EventBus = _
 
   var activity: CommitReviewActivity = _
 
   override def beforeEach() {
-    reviewedCommitsCache = mock[ReviewedCommitsCache]
+    reviewedCommitsCache = mock[UserReviewedCommitsCache]
     commitInfoDao = mock[CommitInfoDAO]
     eventBus = mock[EventBus]
 

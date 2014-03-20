@@ -2,12 +2,12 @@ package com.softwaremill.codebrag.activities.finders
 
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.finders.views.CommitView
-import com.softwaremill.codebrag.service.commits.branches.ReviewedCommitsCache
+import com.softwaremill.codebrag.service.commits.branches.UserReviewedCommitsCache
 import com.softwaremill.codebrag.domain.ReviewedCommit
 
 trait CommitReviewedByUserMarker {
 
-  def reviewedCommitsCache: ReviewedCommitsCache
+  def reviewedCommitsCache: UserReviewedCommitsCache
 
   def markAsReviewed(commitsViews: List[CommitView], userId: ObjectId) = {
     val remainingToReview = commitsReviewedByUser(userId)
@@ -26,6 +26,6 @@ trait CommitReviewedByUserMarker {
       commitView.copy(pendingReview = false)
   }
 
-  private def commitsReviewedByUser(userId: ObjectId) = reviewedCommitsCache.reviewedByUser(userId)
+  private def commitsReviewedByUser(userId: ObjectId) = reviewedCommitsCache.getUserEntry(userId).commits
 
 }

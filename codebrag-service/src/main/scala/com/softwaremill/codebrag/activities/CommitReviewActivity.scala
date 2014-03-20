@@ -4,7 +4,7 @@ import com.softwaremill.codebrag.domain.ReviewedCommit
 import com.softwaremill.codebrag.common.{EventBus, Clock}
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.service.commits.branches.ReviewedCommitsCache
+import com.softwaremill.codebrag.service.commits.branches.UserReviewedCommitsCache
 import com.softwaremill.codebrag.domain.reactions.CommitReviewedEvent
 import org.bson.types.ObjectId
 
@@ -13,7 +13,7 @@ import org.bson.types.ObjectId
  */
 class CommitReviewActivity(
   commitDao: CommitInfoDAO,
-  reviewedCommitsCache: ReviewedCommitsCache,
+  reviewedCommitsCache: UserReviewedCommitsCache,
   eventBus: EventBus) (implicit clock: Clock) extends Logging {
 
   def markAsReviewed(commitId: ObjectId, userId: ObjectId) {
