@@ -26,22 +26,22 @@ codebrag.commitsList.mixin.withMarkingAsReviewed = function() {
 
     var self = this;
 
-    this.removeFromListBy = function(commitId) {
-        var toRemove = findIndexOfElementBy(commitId);
+    this.removeFromListBy = function(sha) {
+        var toRemove = findIndexOfElementBy(sha);
         var indexToRemoveAt = this.indexOf(toRemove);
         this.splice(indexToRemoveAt, 1);
         return indexToRemoveAt;
     };
 
-    this.markAsReviewedOnly = function(commitId) {
-        var toMarkAsReviewed = findIndexOfElementBy(commitId);
+    this.markAsReviewedOnly = function(sha) {
+        var toMarkAsReviewed = findIndexOfElementBy(sha);
         toMarkAsReviewed && (toMarkAsReviewed.pendingReview = false);
         return this.indexOf(toMarkAsReviewed);
     };
 
-    function findIndexOfElementBy(commitId) {
+    function findIndexOfElementBy(sha) {
         return _.find(self, function(commit) {
-            return commit.id === commitId;
+            return commit.sha === sha;
         });
     }
 

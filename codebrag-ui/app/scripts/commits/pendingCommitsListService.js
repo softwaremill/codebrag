@@ -24,21 +24,21 @@ angular.module('codebrag.commits')
             });
         }
 
-        function commitDetails(commitId) {
-            return Commits.get({commitId: commitId}).$then(function(response) {
+        function commitDetails(sha) {
+            return Commits.get({sha: sha}).$then(function(response) {
                 return response.data;
             });
         }
 
-        function markAsReviewed(commitId) {
+        function markAsReviewed(sha) {
             function removeGivenAndAppendPrefetchedCommit(prefetchedCommit) {
-                var indexRemoved = commits.removeFromListBy(commitId);
+                var indexRemoved = commits.removeFromListBy(sha);
                 prefetchedCommit && commits.push(prefetchedCommit);
                 eventsEmitter.triggerCounterDecrease();
                 return commits.elementAtIndexOrLast(indexRemoved);
             }
 
-            var commitMarkedAsReviewed =Commits.remove({commitId: commitId}).$then(function() {
+            var commitMarkedAsReviewed =Commits.remove({sha: sha}).$then(function() {
                 return prefetchedCommitPromise;
             });
             var nextCommitToReview = commitMarkedAsReviewed.then(removeGivenAndAppendPrefetchedCommit)

@@ -7,7 +7,7 @@ angular.module('codebrag.commits')
         var loadCommitsToReviewParams = {filter: 'to_review'};
         var loadCommitWithSurroundings = {context: true};
 
-        return $resource('rest/commits/:commitId', {commitId: '@commitId'}, {
+        return $resource('rest/commits/:sha', {}, {
             queryReviewable: {method: 'GET', isArray: false, requestType: commitsListLoadingRequest, params: loadCommitsToReviewParams},
             queryWithSurroundings: {method: 'GET', isArray: false, requestType: commitsListLoadingRequest, params: loadCommitWithSurroundings},
             query: {method: 'GET', isArray: false, requestType: commitsListLoadingRequest},
