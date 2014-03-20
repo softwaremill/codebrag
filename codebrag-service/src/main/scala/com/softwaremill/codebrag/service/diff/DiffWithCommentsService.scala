@@ -7,13 +7,17 @@ import com.softwaremill.codebrag.activities.finders.AllCommitsFinder
 
 class DiffWithCommentsService(commitsFinder: AllCommitsFinder, reactionFinder: ReactionFinder, diffService: DiffService) {
 
-  def diffWithCommentsFor(commitId: ObjectId, userId: ObjectId): Either[String, CommitDetailsView] = {
-    for {
-      commit <- commitsFinder.find(commitId, userId).right
-      diff <- diffService.getFilesWithDiffs(commitId.toString).right
-    } yield {
-      val reactions = reactionFinder.findReactionsForCommit(commitId)
-      CommitDetailsView.buildFrom(commit, reactions, diff)
+  def diffWithCommentsFor(sha: String, userId: ObjectId): Either[String, CommitDetailsView] = {
+    commitsFinder.find(sha, userId) match {
+      case Right(commit) => {
+        for {
+          diff <- diffService.getFilesWithDiffs(commit.id.toString).right
+        } yield {
+          val reactions = reactionFinder.findReactionsForCommit(new ObjectId(commit.id))
+          CommitDetailsView.buildFrom(commit, reactions, diff)
+        }
+      }
+      case Left(error) => Left(error)
     }
   }
 }

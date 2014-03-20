@@ -47,19 +47,19 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   "GET /:id" should "load given commit details" in {
     val userId = givenStandardAuthenticatedUser()
-    val commitId = new ObjectId
+    val commitSha = "12345"
 
-    get("/" + commitId.toString) {
-      verify(diffService).diffWithCommentsFor(commitId, userId)
+    get("/" + commitSha) {
+      verify(diffService).diffWithCommentsFor(commitSha, userId)
     }
   }
 
   "DELETE /:id" should "remove given commit from to review tasks" in {
     val userId = givenStandardAuthenticatedUser()
-    val commitId = new ObjectId
+    val commitSha = "12345"
 
-    delete("/" + commitId.toString) {
-      verify(commitReviewActivity).markAsReviewed(commitId, userId)
+    delete("/" + commitSha) {
+      verify(commitReviewActivity).markAsReviewed(commitSha, userId)
     }
   }
 

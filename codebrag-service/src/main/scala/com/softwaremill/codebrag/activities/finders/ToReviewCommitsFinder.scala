@@ -14,7 +14,7 @@ class ToReviewCommitsFinder(
   repoCache: BranchCommitsCache,
   reviewedCommitsCache: UserReviewedCommitsCache,
   commitsInfoDao: CommitInfoDAO,
-  val userDAO: UserDAO) extends Logging with UserDataEnhancer {
+  val userDao: UserDAO) extends Logging with UserDataEnhancer {
 
   def find(userId: ObjectId, branchName: String, pagingCriteria: PagingCriteria[String]): CommitListView = {
     val toReview = getSHAsOfCommitsToReview(userId, branchName)
@@ -24,7 +24,7 @@ class ToReviewCommitsFinder(
   }
 
   private def getSHAsOfCommitsToReview(userId: ObjectId, branchName: String): List[String] = {
-    userDAO.findById(userId).map(findShaToReview(branchName, _)).getOrElse(List.empty)
+    userDao.findById(userId).map(findShaToReview(branchName, _)).getOrElse(List.empty)
   }
 
 

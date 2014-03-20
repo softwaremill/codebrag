@@ -23,44 +23,41 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     haltIfNotAuthenticated
   }
 
-  get("/:id") {
-    val commitId = params("id")
-    diffService.diffWithCommentsFor(new ObjectId(commitId), new ObjectId(user.id)) match {
+  get("/:sha") {
+    val commitSha = params("sha")
+    diffService.diffWithCommentsFor(commitSha, userId) match {
       case Right(commitWithComments) => commitWithComments
       case Left(error) => NotFound(error)
     }
   }
 
-  delete("/:id") {
-    val commitId = new ObjectId(params("id"))
-    val userId = new ObjectId(user.id)
-    commitReviewActivity.markAsReviewed(commitId, userId)
+  delete("/:sha") {
+    commitReviewActivity.markAsReviewed(params("sha"), userId)
   }
 
   get("/", allCommits) {
     val paging = extractPagingCriteria
     logger.debug(s"Attempting to fetch all commits with possible paging: ${paging}")
-    val currentUserId = new ObjectId(user.id)
-    allCommitsFinder.find(currentUserId, TemporaryBranchUsed, paging)
+    allCommitsFinder.find(userId, TemporaryBranchUsed, paging)
   }
 
   get("/", commitsToReview) {
     val paging = extractPagingCriteria
     logger.debug(s"Attempting to fetch commits to review with possible paging: ${paging}")
-    val currentUserId = new ObjectId(user.id)
-    reviewableCommitsListFinder.find(currentUserId, TemporaryBranchUsed, paging)
+    reviewableCommitsListFinder.find(userId, TemporaryBranchUsed, paging)
   }
 
   get("/", contextualCommits) {
     val limit = params.getOrElse(LimitParamName, DefaultPageLimit.toString).toInt
-    val currentUserId = new ObjectId(user.id)
     val paging = params.get("id") match { // TODO: change to SHA
       case Some(commitSha) => PagingCriteria(commitSha, Direction.Radial, limit)
       case None => PagingCriteria.fromEnd[String](limit)
     }
     logger.debug(s"Attempting to fetch commits in context: ${paging}")
-    allCommitsFinder.find(currentUserId, TemporaryBranchUsed, paging)
+    allCommitsFinder.find(userId, TemporaryBranchUsed, paging)
   }
+
+  private def userId = new ObjectId(user.id)
 
   private def contextualCommits = params.get(ContextParamName).isDefined
   private def commitsToReview = params.get(FilterParamName).isDefined && params(FilterParamName) == ToReviewCommitsFilter

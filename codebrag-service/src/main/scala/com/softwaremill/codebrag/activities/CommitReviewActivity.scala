@@ -16,8 +16,8 @@ class CommitReviewActivity(
   reviewedCommitsCache: UserReviewedCommitsCache,
   eventBus: EventBus) (implicit clock: Clock) extends Logging {
 
-  def markAsReviewed(commitId: ObjectId, userId: ObjectId) {
-    commitDao.findByCommitId(commitId).foreach { commit =>
+  def markAsReviewed(sha: String, userId: ObjectId) {
+    commitDao.findBySha(sha).foreach { commit =>
       val reviewedCommit = ReviewedCommit(commit.sha, userId, clock.nowUtc)
       reviewedCommitsCache.markCommitAsReviewed(reviewedCommit)
       eventBus.publish(CommitReviewedEvent(commit, userId))

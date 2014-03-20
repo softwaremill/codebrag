@@ -33,10 +33,10 @@ class CommitReviewActivitySpec
     // given
     val userId = ObjectId.get
     val commit = CommitInfoAssembler.randomCommit.get
-    when(commitInfoDao.findByCommitId(commit.id)).thenReturn(Some(commit))
+    when(commitInfoDao.findBySha(commit.sha)).thenReturn(Some(commit))
 
     // when
-    activity.markAsReviewed(commit.id, userId)
+    activity.markAsReviewed(commit.sha, userId)
 
     // then
     verify(eventBus).publish(CommitReviewedEvent(commit, userId))
@@ -46,10 +46,10 @@ class CommitReviewActivitySpec
     // given
     val userId = ObjectId.get
     val commit = CommitInfoAssembler.randomCommit.get
-    when(commitInfoDao.findByCommitId(commit.id)).thenReturn(Some(commit))
+    when(commitInfoDao.findBySha(commit.sha)).thenReturn(Some(commit))
 
     // when
-    activity.markAsReviewed(commit.id, userId)
+    activity.markAsReviewed(commit.sha, userId)
 
     // then
     val expectedCommitReviewed = ReviewedCommit(commit.sha, userId, clock.nowUtc)

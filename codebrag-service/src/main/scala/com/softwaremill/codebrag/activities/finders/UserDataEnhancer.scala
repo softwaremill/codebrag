@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.dao.finders.views.{CommitView, CommitListView}
 
 trait UserDataEnhancer {
 
-  def userDAO: UserDAO
+  def userDao: UserDAO
 
   def enhanceWithUserData(commit: CommitView) = {
     val commitAuthorOpt = findCommitAuthor(commit)
@@ -28,7 +28,7 @@ trait UserDataEnhancer {
   private def findCommitsAuthors(commits: List[CommitView]): Iterable[PartialUserDetails] = {
     val userNames = commits.map(_.authorName).toSet
     val userEmails = commits.map(_.authorEmail).toSet
-    userDAO.findPartialUserDetails(userNames, userEmails)
+    userDao.findPartialUserDetails(userNames, userEmails)
   }
 
   private def authorAvatar(authorOpt: Option[PartialUserDetails]): String = {
