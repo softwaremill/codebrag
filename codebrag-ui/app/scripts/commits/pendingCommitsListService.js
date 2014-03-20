@@ -48,7 +48,7 @@ angular.module('codebrag.commits')
 
         function loadNextCommits() {
             if(!commits.length) return;
-            var options = {min_id: commits.last().id, limit: pageLimit, filter: 'to_review'};
+            var options = {min_id: commits.last().sha, limit: pageLimit, filter: 'to_review'};
             Commits.query(options).$then(function(response) {
                 commits.appendAll(response.data.commits);
                 nextCommits = response.data.newer;
@@ -68,7 +68,7 @@ angular.module('codebrag.commits')
 
         function _prefetchOneMoreCommit() {
             if(!commits.length) return;
-            var options = {min_id: commits.last().id, limit: 1, filter: 'to_review'};
+            var options = {min_id: commits.last().sha, limit: 1, filter: 'to_review'};
             prefetchedCommitPromise = Commits.querySilent(options).$then(function(response) {
                 if(!response.data.commits.length) nextCommits = 0;
                 return response.data.commits.shift();

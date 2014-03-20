@@ -74,7 +74,7 @@ describe("CommitsListService", function () {
         var prefetchedCommitId = '123';
         var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 30, 0, 22);
         $httpBackend.whenGET('rest/commits?filter=to_review&limit=7').respond(commitsResponse);
-        $httpBackend.whenGET('rest/commits?filter=to_review&limit=1&min_id=7').respond({commits: [{id: prefetchedCommitId}]});
+        $httpBackend.whenGET('rest/commits?filter=to_review&limit=1&min_id=7').respond({commits: [{id: prefetchedCommitId, sha: prefetchedCommitId}]});
         $httpBackend.expectDELETE('rest/commits/3').respond('');
         $httpBackend.expectGET('rest/commits?filter=to_review&limit=1&min_id=123').respond({commits: []});
         var commitIdToReview = 3;
@@ -95,7 +95,7 @@ describe("CommitsListService", function () {
         var prefetchedCommitId = '123';
         var commitsResponse = buildCommitsResponse([1, 2, 3, 4, 5, 6, 7], 8, 0, 5);
         $httpBackend.whenGET('rest/commits?filter=to_review&limit=7').respond(commitsResponse);
-        $httpBackend.whenGET('rest/commits?filter=to_review&limit=1&min_id=7').respond({commits: [{id: prefetchedCommitId}]});
+        $httpBackend.whenGET('rest/commits?filter=to_review&limit=1&min_id=7').respond({commits: [{id: prefetchedCommitId, sha: prefetchedCommitId}]});
         $httpBackend.whenDELETE('rest/commits/3').respond('');
         $httpBackend.whenGET('rest/commits?filter=to_review&limit=1&min_id=123').respond({commits: []});
         var commitIdToReview = 3;
@@ -114,7 +114,7 @@ describe("CommitsListService", function () {
 
     function buildCommitsResponse(commitsIds, totalCount, older, newer) {
         var commits = commitsIds.map(function(id) {
-            return {id: id, msg: 'Commit ' + id, pendingReview: true};
+            return {id: id, sha: id, msg: 'Commit ' + id, pendingReview: true};
         });
         return {commits: commits, totalCount: totalCount, older: older, newer: newer};
     }
