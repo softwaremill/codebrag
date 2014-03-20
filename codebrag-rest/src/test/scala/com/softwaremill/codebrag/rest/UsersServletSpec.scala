@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.AuthenticatableServletSpec
-import com.softwaremill.codebrag.service.user.{RegisterService, Authenticator}
+import com.softwaremill.codebrag.service.user.{AfterUserLoginHook, RegisterService, Authenticator}
 import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
@@ -14,10 +14,12 @@ import com.typesafe.config.ConfigFactory
 import java.util.Properties
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.service.commits.branches.ReviewedCommitsCache
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
   val registerService = mock[RegisterService]
+  val afterUserLoginHook = mock[AfterUserLoginHook]
   var userDao: UserDAO = _
   var config: CodebragConfig = _
 
@@ -123,7 +125,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends UsersServlet(fakeAuthenticator, registerService, userDao, config, new CodebragSwagger) {
+    extends UsersServlet(fakeAuthenticator, registerService, afterUserLoginHook, userDao, config, new CodebragSwagger) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

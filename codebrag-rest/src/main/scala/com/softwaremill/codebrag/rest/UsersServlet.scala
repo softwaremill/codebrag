@@ -1,22 +1,24 @@
 package com.softwaremill.codebrag.rest
 
 import org.scalatra._
-import com.softwaremill.codebrag.service.user.{RegisterService, Authenticator}
+import com.softwaremill.codebrag.service.user.{AfterUserLoginHook, RegisterService, Authenticator}
 import com.softwaremill.codebrag.service.data.UserJson
 import swagger.{Swagger, SwaggerSupport}
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.service.commits.branches.ReviewedCommitsCache
+import org.bson.types.ObjectId
 
-class UsersServlet(val authenticator: Authenticator, registerService: RegisterService, userDao: UserDAO, config: CodebragConfig, val swagger: Swagger)
+class UsersServlet(val authenticator: Authenticator, registerService: RegisterService, afterLoginHook: AfterUserLoginHook, userDao: UserDAO, config: CodebragConfig, val swagger: Swagger)
   extends JsonServletWithAuthentication with UsersServletSwaggerDefinition with CookieSupport {
 
   post(operation(loginOperation)) {
-    val userOpt: Option[UserJson] = authenticate()
-    userOpt match {
-      case Some(loggedUser) =>
+    authenticate() match {
+      case Some(loggedUser) => {
+        afterLoginHook.postLogin(loggedUser)
         loggedUser
-      case _ =>
-        halt(401, "Invalid login and/or password")
+      }
+      case _ => halt(401, "Invalid login and/or password")
     }
   }
 
