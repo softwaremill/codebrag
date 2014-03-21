@@ -1,14 +1,11 @@
 package com.softwaremill.codebrag.service.diff
 
 import annotation.tailrec
-import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff}
-import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.service.commits.DiffLoader
-import com.softwaremill.codebrag.repository.config.RepoData
 import com.softwaremill.codebrag.repository.Repository
 
-class DiffService(commitInfoDao: CommitInfoDAO, diffLoader: DiffLoader, repository: Repository) {
+class DiffService(diffLoader: DiffLoader, repository: Repository) {
 
   val IrrelevantLineIndicator = -1
   val LineTypeHeader = "header"
@@ -55,17 +52,15 @@ class DiffService(commitInfoDao: CommitInfoDAO, diffLoader: DiffLoader, reposito
     }
   }
 
-  def getFilesWithDiffs(commitId: String): Either[String, List[CommitFileDiff]] = {
+  def getFilesWithDiffs(sha: String): Either[String, List[CommitFileDiff]] = {
     val result = for {
-      commit <- commitInfoDao.findByCommitId(new ObjectId(commitId))
-      diff <- diffLoader.loadDiff(commit.sha, repository)
+      diff <- diffLoader.loadDiff(sha, repository)
     } yield Right(diff.map(file => {
         val patch = cutGitHeaders(file.patch)
         val diffLines = parseDiff(patch)
         val lineTypeCounts = diffLines.groupBy(_.lineType).map(group => (group._1, group._2.size))
         CommitFileDiff(file.filename, file.status, diffLines, FileDiffStats(lineTypeCounts.getOrElse(LineTypeAdded, 0), lineTypeCounts.getOrElse(LineTypeRemoved, 0)))
       }))
-
     result.getOrElse(Left("No such commit"))
   }
 }

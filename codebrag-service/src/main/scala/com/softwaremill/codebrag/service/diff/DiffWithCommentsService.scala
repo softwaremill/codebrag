@@ -11,7 +11,7 @@ class DiffWithCommentsService(commitsFinder: AllCommitsFinder, reactionFinder: R
     commitsFinder.find(sha, userId) match {
       case Right(commit) => {
         for {
-          diff <- diffService.getFilesWithDiffs(commit.id.toString).right
+          diff <- diffService.getFilesWithDiffs(sha).right
         } yield {
           val reactions = reactionFinder.findReactionsForCommit(new ObjectId(commit.id))
           CommitDetailsView.buildFrom(commit, reactions, diff)

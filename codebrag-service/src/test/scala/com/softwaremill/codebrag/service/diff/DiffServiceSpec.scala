@@ -2,13 +2,12 @@ package com.softwaremill.codebrag.service.diff
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.scalatest.mock.MockitoSugar
 import org.mockito.BDDMockito._
 import com.softwaremill.codebrag.domain.CommitFileInfo
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
-import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.service.commits.DiffLoader
+import com.softwaremill.codebrag.repository.Repository
 
 class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers with MockitoSugar {
 
@@ -16,7 +15,6 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
   val EmptyParentsList = List.empty
   val EmptyFilesList = List.empty
-  val FixtureCommitId = oid(1)
   val IrrelevantLineIndicator = -1
   val StatusAdded = "added"
   val FileWithPatchHeaders = CommitFileInfo("file3.txt", "",
@@ -52,19 +50,20 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
   var service: DiffService = _
 
+  var repository: Repository = _
+
   var diffLoader: DiffLoader = _
-  var dao: CommitInfoDAO = _
 
   before {
-    dao = mock[CommitInfoDAO]
     diffLoader = mock[DiffLoader]
-    service = new DiffService(dao, diffLoader, null)
+    repository = mock[Repository]
+    service = new DiffService(diffLoader, repository)
   }
 
   it should "produce data for each line in diff" in {
     val lines = service.parseDiff(SampleDiff)
 
-    lines should have size (17)
+    lines should have size 17
   }
 
   it should "contain proper number of rows with information headers" in {
@@ -72,7 +71,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
     val infoLines = lines.filter(_.line.startsWith("@@"))
 
-    infoLines should have size (2)
+    infoLines should have size 2
   }
 
   it should "contain proper number of removed lines" in {
@@ -80,7 +79,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
     val removedLines = lines.filter(_.line.startsWith("-"))
 
-    removedLines should have size (2)
+    removedLines should have size 2
   }
 
   it should "container proper number of added lines" in {
@@ -88,7 +87,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
     val addedLines = lines.filter(_.line.startsWith("+"))
 
-    addedLines should have size (2)
+    addedLines should have size 2
   }
 
   it should "assign proper line numbers to diff lines" in {
@@ -120,11 +119,10 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   it should "be right when finds commit" in {
     //given
     val commit = CommitInfoAssembler.randomCommit.get
-    given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
-    given(diffLoader.loadDiff(commit.sha, null)).willReturn(Some(Nil))
+    given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(Nil))
 
     //when
-    val filesEither = service.getFilesWithDiffs(FixtureCommitId.toString)
+    val filesEither = service.getFilesWithDiffs(commit.sha)
 
     //then
     filesEither should be('right)
@@ -150,14 +148,13 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
                                                   | }
                                                   | ]""".stripMargin)
     val commit = CommitInfoAssembler.randomCommit.get
-    given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
-    given(diffLoader.loadDiff(commit.sha, null)).willReturn(Some(List(file1, file2)))
+    given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(List(file1, file2)))
 
     //when
-    val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
+    val Right(files) = service.getFilesWithDiffs(commit.sha)
 
     //then
-    files should have size (2)
+    files should have size 2
     files(0).filename should be("file1.txt")
     files(0).lines(0).line should equal("@@ -2,7 +2,7 @@")
     files(0).lines(2).line should equal("        \"user\":")
@@ -172,11 +169,10 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
                                                  |+               "age": 32,
                                                  |                "id":1""".stripMargin)
     val commit = CommitInfoAssembler.randomCommit.get
-    given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
-    given(diffLoader.loadDiff(commit.sha, null)).willReturn(Some(List(file)))
+    given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(List(file)))
 
     //when
-    val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
+    val Right(files) = service.getFilesWithDiffs(commit.sha)
 
     //then
     files(0).diffStats.added should equal(3)
@@ -186,11 +182,10 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
   it should "cut git headers" in {
     // given
     val commit = CommitInfoAssembler.randomCommit.get
-    given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
-    given(diffLoader.loadDiff(commit.sha, null)).willReturn(Some(List(FileWithPatchHeaders)))
+    given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(List(FileWithPatchHeaders)))
 
     // when
-    val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
+    val Right(files) = service.getFilesWithDiffs(commit.sha)
 
     // then
     files(0).lines.length should equal(6)
@@ -204,10 +199,11 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
   it should "return information when commit is missing" in {
     //given
-    given(dao.findByCommitId(FixtureCommitId)).willReturn(None)
+    val nonExistingSHA = "123123123"
+    given(diffLoader.loadDiff(nonExistingSHA, repository)).willReturn(None)
 
     //when
-    val files = service.getFilesWithDiffs(FixtureCommitId.toString)
+    val files = service.getFilesWithDiffs(nonExistingSHA)
 
     //then
     files should be('left)
@@ -217,11 +213,10 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     //given
     val file = CommitFileInfo("filename.txt", "", null)
     val commit = CommitInfoAssembler.randomCommit.get
-    given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
-    given(diffLoader.loadDiff(commit.sha, null)).willReturn(Some(List(file)))
+    given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(List(file)))
 
     //when
-    val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
+    val Right(files) = service.getFilesWithDiffs(commit.sha)
 
     //then
     files(0).lines should be ('empty)
@@ -231,11 +226,10 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     //given
     val file = CommitFileInfo("filename.txt", "", "")
     val commit = CommitInfoAssembler.randomCommit.get
-    given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
-    given(diffLoader.loadDiff(commit.sha, null)).willReturn(Some(List(file)))
+    given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(List(file)))
 
     //when
-    val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
+    val Right(files) = service.getFilesWithDiffs(commit.sha)
 
     //then
     files(0).lines should be ('empty)
@@ -245,11 +239,10 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     //given
     val file = CommitFileInfo("filename.txt", StatusAdded, "")
     val commit = CommitInfoAssembler.randomCommit.get
-    given(dao.findByCommitId(FixtureCommitId)).willReturn(Some(commit))
-    given(diffLoader.loadDiff(commit.sha, null)).willReturn(Some(List(file)))
+    given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(List(file)))
 
     //when
-    val Right(files) = service.getFilesWithDiffs(FixtureCommitId.toString)
+    val Right(files) = service.getFilesWithDiffs(commit.sha)
 
     //then
     files(0).status should be (StatusAdded)
