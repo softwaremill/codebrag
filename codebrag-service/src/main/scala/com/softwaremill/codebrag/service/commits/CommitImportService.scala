@@ -12,6 +12,11 @@ class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: Br
   def importRepoCommits(repository: Repository) {
     try {
       repository.pullChanges()
+    } catch {
+      // TODO: refactor a bit and  add info to user that remote repository is unavailable
+      case e: Exception => logger.error("Cannot pull changes from upstream", e)
+    }
+    try {
       val loaded = repository.loadCommitsSince(branchStateDao.loadBranchesStateAsMap)
       cache.addCommits(loaded)
       updateRepoReadyStatus(repository)
