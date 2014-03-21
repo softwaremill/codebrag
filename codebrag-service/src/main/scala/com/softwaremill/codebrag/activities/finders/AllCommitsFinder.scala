@@ -17,7 +17,7 @@ class AllCommitsFinder(
   val userDao: UserDAO) extends Logging with UserDataEnhancer with CommitReviewedByUserMarker {
 
   def find(userId: ObjectId, branchName: String, pagingCriteria: PagingCriteria[String]): CommitListView = {
-    val branchCommits = repoCache.getBranchCommits(branchName).map(_.sha)
+    val branchCommits = repoCache.getBranchCommits(branchName).map(_.sha).reverse
     val page = pagingCriteria.extractPageFrom(branchCommits)
     val commits = commitsInfoDao.findByShaList(page.items)
     enhanceWithUserData(CommitListView(markAsReviewed(commits, userId), page.beforeCount, page.afterCount))
