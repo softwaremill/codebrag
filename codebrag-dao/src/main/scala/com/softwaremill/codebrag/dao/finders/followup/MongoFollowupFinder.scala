@@ -29,7 +29,7 @@ class MongoFollowupFinder extends FollowupFinder {
       case (commitId, followups) =>
         val followupsForCommitViews = followups.map(followupToReactionsView(_, lastReactions, reactionAuthors)).sortWith(sortFollowupsForCommitByDate)
         val commit = commits(commitId)
-        val commitView = FollowupCommitView(commit.id.get.toString, commit.authorName.get, commit.message.get, commit.authorDate.get)
+        val commitView = FollowupCommitView(commit.id.get.toString, commit.sha.get, commit.authorName.get, commit.message.get, commit.authorDate.get)
         FollowupsByCommitView(commitView, followupsForCommitViews)
     }
     FollowupsByCommitListView(sortFollowupGroupsByNewest(followupsForCommits))
@@ -74,7 +74,7 @@ class MongoFollowupFinder extends FollowupFinder {
   }
 
   private def recordsToFollowupView(commit: CommitInfoRecord, reaction: UserReactionRecord[_], author: UserRecord, followup: FollowupRecord): SingleFollowupView = {
-    val commitView = FollowupCommitView(commit.id.get.toString, commit.authorName.get, commit.message.get, commit.authorDate.get)
+    val commitView = FollowupCommitView(commit.id.get.toString, commit.sha.get, commit.authorName.get, commit.message.get, commit.authorDate.get)
     val lastReactionView = buildLastReactionView(reaction, author)
     val followupView = SingleFollowupView(followup.id.get.toString, reaction.date.get, commitView, lastReactionView)
     followupView
