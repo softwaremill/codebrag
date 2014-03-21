@@ -23,11 +23,13 @@ object ChangeUserPassword {
     disableLogging
     haltIfConfigFileDoesntExist
 
-    println("#########################################################")
-    println("# Super-awesome tool to change Codebrag user's password #")
-    println("# NOTICE: Make sure Codebrag is stopped before using it #")
-    println("#         Yes, we know it's not the best way.           #")
-    println("#########################################################")
+    println("##########################################################")
+    println("# Super-awesome tool to change Codebrag user's password  #")
+    println("#                                                        #")
+    println("# NOTE: Make sure Codebrag is stopped before using it    #")
+    println("# Otherwise you'll get 'Locked by another process' error #")
+    println("#         Yes, we know it's not the best way ;)          #")
+    println("##########################################################")
     val userData = collectInput
     withDB { db =>
       changePasswordIfUserExists(userData, db)
