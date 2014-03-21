@@ -96,3 +96,13 @@ codebrag.commitsList.mixin.eventsEmitter = function($rootScope, events) {
     }
 
 }
+
+codebrag.commitsList.mixin.urlParams = function(target) {
+    target.urlParams = {
+        min: 'min_sha',
+        max: 'max_sha',
+        selected: 'selected_sha',
+        limit: 'limit',
+        filter: 'filter'
+    }
+};

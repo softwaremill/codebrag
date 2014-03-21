@@ -49,7 +49,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
 
   get("/", contextualCommits) {
     val limit = params.getOrElse(LimitParamName, DefaultPageLimit.toString).toInt
-    val paging = params.get("selected_sha") match {
+    val paging = params.get(SelectedShaParamName) match {
       case Some(commitSha) => PagingCriteria(commitSha, Direction.Radial, limit)
       case None => PagingCriteria.fromEnd[String](limit)
     }
@@ -64,14 +64,14 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   private def allCommits = params.get(FilterParamName).isDefined && params(FilterParamName) == AllCommitsFilter
 
   private def extractPagingCriteria = {
-    val minId = params.get(MinIdParamName)
-    val maxId = params.get(MaxIdParamName)
+    val minSha = params.get(MinShaParamName)
+    val maxSha = params.get(MaxShaParamName)
     val limit = params.getOrElse(LimitParamName, CommitsEndpoint.DefaultPageLimit.toString).toInt
 
-    if(maxId.isDefined) {
-      PagingCriteria(maxId, Direction.Left, limit)
-    } else if(minId.isDefined) {
-      PagingCriteria(minId, Direction.Right, limit)
+    if(maxSha.isDefined) {
+      PagingCriteria(maxSha, Direction.Left, limit)
+    } else if(minSha.isDefined) {
+      PagingCriteria(minSha, Direction.Right, limit)
     } else {
       PagingCriteria.fromBeginning[String](limit)
     }
@@ -91,8 +91,9 @@ object CommitsEndpoint {
   val AllCommitsFilter = "all"
   val ToReviewCommitsFilter = "to_review"
 
-  val MinIdParamName = "min_id"
-  val MaxIdParamName = "max_id"
+  val MinShaParamName = "min_sha"
+  val MaxShaParamName = "max_sha"
+  val SelectedShaParamName = "selected_sha"
 
   val TemporaryBranchUsed = "refs/remotes/origin/master"
 

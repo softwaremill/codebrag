@@ -2,6 +2,8 @@ angular.module('codebrag.commits')
 
     .factory('allCommitsListService', function(Commits, $rootScope, events, $q) {
 
+        var self = this;
+
         var pageLimit = 7;
 
         var nextCommits, previousCommits;
@@ -11,12 +13,15 @@ angular.module('codebrag.commits')
         codebrag.commitsList.mixin.withMarkingAsReviewed.call(commits);
         codebrag.commitsList.mixin.withIndexOperations.call(commits);
 
+        codebrag.commitsList.mixin.urlParams(this);
+
         var eventsEmitter = codebrag.commitsList.mixin.eventsEmitter($rootScope, events);
 
         function loadCommits(sha) {
-            var options = {limit: pageLimit};
-            sha && angular.extend(options, {selected_sha: sha});
-            return Commits.queryWithSurroundings(options).$then(function(response) {
+            var options = {};
+            options[self.urlParams.limit] = pageLimit;
+            options[self.urlParams.selected] = sha;
+            return Commits.queryAllWithSurroundings(options).$then(function(response) {
                 commits.replaceWith(response.data.commits);
                 previousCommits = response.data.older;
                 nextCommits = response.data.newer;
@@ -40,8 +45,10 @@ angular.module('codebrag.commits')
 
         function loadNextCommits() {
             if(!commits.length) return;
-            var options = {min_id: commits.last().sha, limit: pageLimit, filter: 'all'};
-            return Commits.query(options).$then(function(response) {
+            var options = {};
+            options[self.urlParams.min] = commits.last().sha;
+            options[self.urlParams.limit] = pageLimit;
+            return Commits.queryAll(options).$then(function(response) {
                 commits.appendAll(response.data.commits);
                 nextCommits = response.data.newer;
                 eventsEmitter.notifyIfNextCommitsLoaded(response.data.commits.length);
@@ -52,8 +59,10 @@ angular.module('codebrag.commits')
 
         function loadPreviousCommits() {
             if(!commits.length) return;
-            var options = {max_id: commits.first().sha, limit: pageLimit, filter: 'all'};
-            return Commits.query(options).$then(function(response) {
+            var options = {};
+            options[self.urlParams.max] = commits.first().sha;
+            options[self.urlParams.limit] = pageLimit;
+            return Commits.queryAll(options).$then(function(response) {
                 commits.prependAll(response.data.commits);
                 previousCommits = response.data.older;
                 eventsEmitter.notifyIfPreviousCommitsLoaded(response.data.commits.length);
