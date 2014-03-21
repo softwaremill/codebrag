@@ -13,9 +13,9 @@ angular.module('codebrag.commits')
 
         var eventsEmitter = codebrag.commitsList.mixin.eventsEmitter($rootScope, events);
 
-        function loadCommits(commitId) {
+        function loadCommits(sha) {
             var options = {limit: pageLimit};
-            commitId && angular.extend(options, {id: commitId});
+            sha && angular.extend(options, {selected_sha: sha});
             return Commits.queryWithSurroundings(options).$then(function(response) {
                 commits.replaceWith(response.data.commits);
                 previousCommits = response.data.older;
@@ -25,22 +25,22 @@ angular.module('codebrag.commits')
             });
         }
 
-        function commitDetails(commitId) {
-            return Commits.get({commitId: commitId}).$then(function(response) {
+        function commitDetails(sha) {
+            return Commits.get({sha: sha}).$then(function(response) {
                 return response.data;
             });
         }
 
-        function markAsReviewed(commitId) {
-            Commits.remove({commitId: commitId});   // fire and don't wait for response
-            var indexReviewed = commits.markAsReviewedOnly(commitId);
+        function markAsReviewed(sha) {
+            Commits.remove({sha: sha});   // fire and don't wait for response
+            var indexReviewed = commits.markAsReviewedOnly(sha);
             eventsEmitter.triggerCounterDecrease();
             return $q.when(commits.elementAtIndex(indexReviewed + 1));
         }
 
         function loadNextCommits() {
             if(!commits.length) return;
-            var options = {min_id: commits.last().id, limit: pageLimit, filter: 'all'};
+            var options = {min_id: commits.last().sha, limit: pageLimit, filter: 'all'};
             return Commits.query(options).$then(function(response) {
                 commits.appendAll(response.data.commits);
                 nextCommits = response.data.newer;
@@ -52,7 +52,7 @@ angular.module('codebrag.commits')
 
         function loadPreviousCommits() {
             if(!commits.length) return;
-            var options = {max_id: commits.first().id, limit: pageLimit, filter: 'all'};
+            var options = {max_id: commits.first().sha, limit: pageLimit, filter: 'all'};
             return Commits.query(options).$then(function(response) {
                 commits.prependAll(response.data.commits);
                 previousCommits = response.data.older;

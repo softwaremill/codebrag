@@ -49,7 +49,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
 
   get("/", contextualCommits) {
     val limit = params.getOrElse(LimitParamName, DefaultPageLimit.toString).toInt
-    val paging = params.get("id") match { // TODO: change to SHA
+    val paging = params.get("selected_sha") match {
       case Some(commitSha) => PagingCriteria(commitSha, Direction.Radial, limit)
       case None => PagingCriteria.fromEnd[String](limit)
     }
@@ -94,6 +94,6 @@ object CommitsEndpoint {
   val MinIdParamName = "min_id"
   val MaxIdParamName = "max_id"
 
-  val TemporaryBranchUsed = "refs/remotes/origin/multibranch"
+  val TemporaryBranchUsed = "refs/remotes/origin/master"
 
 }
