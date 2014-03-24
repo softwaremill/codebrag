@@ -12,7 +12,7 @@ angular.module('codebrag.notifications', ['codebrag.events', 'codebrag.common', 
 angular.module('codebrag.favicon', ['codebrag.events']);
 
 angular.module('codebrag.commits.comments', ['ui.compat', 'codebrag.events']);
-angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments', 'codebrag.events', 'codebrag.tour']);
+angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments', 'codebrag.events', 'codebrag.tour', 'codebrag.branches']);
 
 angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.tour']);
 
@@ -22,6 +22,8 @@ angular.module('codebrag.profile', ['codebrag.session']);
 
 angular.module('codebrag.tour', ['codebrag.templates', 'codebrag.auth', 'codebrag.profile', 'codebrag.common']);
 
+angular.module('codebrag.branches', ['codebrag.events']);
+
 
 angular.module('codebrag', [
     'codebrag.templates',
@@ -29,6 +31,7 @@ angular.module('codebrag', [
     'codebrag.common',
     'codebrag.session',
     'codebrag.commits',
+    'codebrag.branches',
     'codebrag.followups',
     'codebrag.notifications',
     'codebrag.favicon',

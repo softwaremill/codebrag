@@ -59,9 +59,10 @@ angular.module('codebrag.commits')
         }
 
         function initCtrl() {
-            currentCommit.empty();
-            $scope.listViewMode = 'pending';
-            loadPendingCommits();
+            $scope.switchListView();
+            if(angular.isUndefined($scope.listViewMode)) {
+                $scope.listViewMode = 'pending';
+            }
         }
 
         initCtrl();

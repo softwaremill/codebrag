@@ -95,7 +95,7 @@ codebrag.commitsList.mixin.eventsEmitter = function($rootScope, events) {
         }
     }
 
-}
+};
 
 codebrag.commitsList.mixin.urlParams = function(target) {
     target.urlParams = {
@@ -103,6 +103,7 @@ codebrag.commitsList.mixin.urlParams = function(target) {
         max: 'max_sha',
         selected: 'selected_sha',
         limit: 'limit',
-        filter: 'filter'
+        filter: 'filter',
+        branch: 'branch'
     }
 };

@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .factory('pendingCommitsListService', function(Commits, $rootScope, events, $q) {
+    .factory('pendingCommitsListService', function(Commits, $rootScope, events, branchesService) {
 
         var self = this;
 
@@ -19,7 +19,10 @@ angular.module('codebrag.commits')
         var eventsEmitter = codebrag.commitsList.mixin.eventsEmitter($rootScope, events);
 
         function loadCommits() {
-            return Commits.queryReviewable({limit: pageLimit}).$then(function(response) {
+            var options = {};
+            options[self.urlParams.limit] = pageLimit;
+            options[self.urlParams.branch] = branchesService.selectedBranch();
+            return Commits.queryReviewable(options).$then(function(response) {
                 commits.replaceWith(response.data.commits);
                 nextCommits = response.data.newer;
                 _prefetchOneMoreCommit();
@@ -55,6 +58,7 @@ angular.module('codebrag.commits')
             var options = {};
             options[self.urlParams.min] = commits.last().sha;
             options[self.urlParams.limit] = pageLimit;
+            options[self.urlParams.branch] = branchesService.selectedBranch();
             Commits.queryReviewable(options).$then(function(response) {
                 commits.appendAll(response.data.commits);
                 nextCommits = response.data.newer;
@@ -78,6 +82,7 @@ angular.module('codebrag.commits')
             options[self.urlParams.min] = commits.last().sha;
             options[self.urlParams.limit] = 1;
             options[self.urlParams.filter] = 'to_review';
+            options[self.urlParams.branch] = branchesService.selectedBranch();
             prefetchedCommitPromise = Commits.querySilent(options).$then(function(response) {
                 if(!response.data.commits.length) nextCommits = 0;
                 return response.data.commits.shift();

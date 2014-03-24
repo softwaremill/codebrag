@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .factory('allCommitsListService', function(Commits, $rootScope, events, $q) {
+    .factory('allCommitsListService', function(Commits, $rootScope, events, $q, branchesService) {
 
         var self = this;
 
@@ -21,6 +21,7 @@ angular.module('codebrag.commits')
             var options = {};
             options[self.urlParams.limit] = pageLimit;
             options[self.urlParams.selected] = sha;
+            options[self.urlParams.branch] = branchesService.selectedBranch();
             return Commits.queryAllWithSurroundings(options).$then(function(response) {
                 commits.replaceWith(response.data.commits);
                 previousCommits = response.data.older;
@@ -48,6 +49,7 @@ angular.module('codebrag.commits')
             var options = {};
             options[self.urlParams.min] = commits.last().sha;
             options[self.urlParams.limit] = pageLimit;
+            options[self.urlParams.branch] = branchesService.selectedBranch();
             return Commits.queryAll(options).$then(function(response) {
                 commits.appendAll(response.data.commits);
                 nextCommits = response.data.newer;
@@ -62,6 +64,7 @@ angular.module('codebrag.commits')
             var options = {};
             options[self.urlParams.max] = commits.first().sha;
             options[self.urlParams.limit] = pageLimit;
+            options[self.urlParams.branch] = branchesService.selectedBranch();
             return Commits.queryAll(options).$then(function(response) {
                 commits.prependAll(response.data.commits);
                 previousCommits = response.data.older;
