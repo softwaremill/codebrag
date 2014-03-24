@@ -8,19 +8,21 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.common.{ClockSpec, Clock}
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
-import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
 import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
+import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
+import com.softwaremill.codebrag.activities.finders.ToReviewCommitsFinder
 
 class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
 
-  val countersFinderMock: NotificationCountFinder = mock[NotificationCountFinder]
+  val toReviewCommitsFinderMock: ToReviewCommitsFinder = mock[ToReviewCommitsFinder]
+  val followupFinderMock: FollowupFinder = mock[FollowupFinder]
   val heartbeat: HeartbeatDAO = mock[HeartbeatDAO]
   val user = currentUser(new ObjectId)
   override val fixtureTime = 1000L
 
   override def beforeEach {
     super.beforeEach
-    addServlet(new TestableUpdatesServlet(countersFinderMock, heartbeat, clock), "/*")
+    addServlet(new TestableUpdatesServlet(followupFinderMock, heartbeat, toReviewCommitsFinderMock, clock), "/*")
   }
 
   "GET /" should "respond with HTTP 401 when user is not authenticated" in {
@@ -35,7 +37,8 @@ class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
     userIsAuthenticatedAs(UserJson(user))
     val expectedCommits = 1
     val expectedFollowups = 2
-    given(countersFinderMock.getCounters(any[ObjectId])).willReturn(NotificationCountersView(expectedCommits, expectedFollowups))
+    given(followupFinderMock.countFollowupsForUser(user.id)).willReturn(NotificationCountersView(expectedCommits, expectedFollowups))
+    given(toReviewCommitsFinderMock.count(user.id, "master")).willReturn(expectedCommits)
 
     // when
     get("/") {
@@ -49,7 +52,7 @@ class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
 
   def currentUser(id: ObjectId) = User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde", "avatarUrl")
 
-  class TestableUpdatesServlet(finder: NotificationCountFinder, heartbeat: HeartbeatDAO, clock: Clock) extends UpdatesServlet(fakeAuthenticator, finder, heartbeat, clock) {
+  class TestableUpdatesServlet(followupFinder: FollowupFinder, heartbeat: HeartbeatDAO, commitFinder: ToReviewCommitsFinder, clock: Clock) extends UpdatesServlet(fakeAuthenticator, followupFinder, heartbeat, commitFinder, clock) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

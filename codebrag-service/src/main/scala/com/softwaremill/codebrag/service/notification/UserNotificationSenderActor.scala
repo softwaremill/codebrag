@@ -11,12 +11,12 @@ import scala.concurrent.duration.FiniteDuration
 import com.softwaremill.codebrag.common.scheduling.ScheduleDelaysCalculator
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
-import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
 import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
+import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 
 class UserNotificationSenderActor(actorSystem: ActorSystem,
                                   heartbeatStore: HeartbeatDAO,
-                                  val notificationCounts: NotificationCountFinder,
+                                  val followupFinder: FollowupFinder,
                                   val userDAO: UserDAO,
                                   val clock: Clock,
                                   val notificationService: NotificationService,
@@ -45,14 +45,14 @@ object UserNotificationSenderActor extends Logging {
 
   def initialize(actorSystem: ActorSystem,
                  heartbeatStore: HeartbeatDAO,
-                 notificationCountFinder: NotificationCountFinder,
+                 followupFinder: FollowupFinder,
                  userDAO: UserDAO,
                  clock: Clock,
                  notificationsService: NotificationService,
                  config: CodebragConfig) = {
     logger.debug("Initializing user notification system")
     val actor = actorSystem.actorOf(
-      Props(new UserNotificationSenderActor(actorSystem, heartbeatStore, notificationCountFinder, userDAO, clock, notificationsService, config)),
+      Props(new UserNotificationSenderActor(actorSystem, heartbeatStore, followupFinder, userDAO, clock, notificationsService, config)),
       "notification-scheduler")
 
     scheduleNextNotificationsSendOut(actorSystem, actor, config.notificationsCheckInterval)
@@ -93,7 +93,7 @@ case object SendUserNotifications
 case object SendDailyDigest
 
 trait UserNotificationsSender extends Logging {
-  def notificationCounts: NotificationCountFinder
+  def followupFinder: FollowupFinder
 
   def userDAO: UserDAO
 
@@ -111,7 +111,7 @@ trait UserNotificationsSender extends Logging {
     heartbeats.foreach {
       case (userId, lastHeartbeat) =>
         if (userIsOffline(lastHeartbeat)) {
-          val counters = notificationCounts.getCountersSince(lastHeartbeat, userId)
+          val counters = followupFinder.countFollowupsForUserSince(lastHeartbeat, userId)
           userDAO.findById(userId).foreach(user => {
             if (userShouldBeNotified(lastHeartbeat, user, counters)) {
               sendNotifications(user, counters)
@@ -164,7 +164,7 @@ trait UserNotificationsSender extends Logging {
       user => {
         user.settings.dailyUpdatesEmailEnabled match {
           case true => {
-            val counters = notificationCounts.getCounters(user.id)
+            val counters = followupFinder.countFollowupsForUser(user.id)
             if(counters.nonEmpty) {
               notificationService.sendDailyDigest(user, counters.pendingCommitCount, counters.followupCount)
             } else {

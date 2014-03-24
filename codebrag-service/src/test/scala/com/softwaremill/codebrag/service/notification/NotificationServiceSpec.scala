@@ -12,9 +12,8 @@ import Matchers._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.common.ClockSpec
-import com.softwaremill.codebrag.service.notification
-import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
 import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
+import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 
 class NotificationServiceSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with ClockSpec {
@@ -24,13 +23,13 @@ class NotificationServiceSpec
     val scheduler = mock[EmailScheduler]
     val engine = mock[TemplateEngine]
     val config = mock[CodebragConfig]
-    val countFinder = mock[NotificationCountFinder]
-    val service = new NotificationService(scheduler, engine, config, countFinder, clock)
+    val followupFinder = mock[FollowupFinder]
+    val service = new NotificationService(scheduler, engine, config, followupFinder, clock)
     val emailAddress = "sofo@sml.com"
     val user = UserAssembler.randomUser.get
 
     when(engine.getEmailTemplate(any[EmailTemplates.Value], any[Map[String, Object]])).thenReturn(EmailContentWithSubject("subject", "content"))
-    when(countFinder.getCounters(any[ObjectId])).thenReturn(NotificationCountersView(10, 10))
+    when(followupFinder.countFollowupsForUser(any[ObjectId])).thenReturn(NotificationCountersView(10, 10))
 
     //when
     service.sendWelcomeNotification(user)
@@ -60,11 +59,11 @@ class NotificationServiceSpec
       val engine = new TemplateEngine
       val config = mock[CodebragConfig]
       when(config.applicationUrl).thenReturn("http://test:8080")
-      val countFinder = mock[NotificationCountFinder]
-      val service = new NotificationService(scheduler, engine, config, countFinder, clock)
+      val followupFinder = mock[FollowupFinder]
+      val service = new NotificationService(scheduler, engine, config, followupFinder, clock)
       val user = UserAssembler.randomUser.get
 
-      when(countFinder.getCounters(any[ObjectId])).thenReturn(NotificationCountersView(pair._2, 10))
+      when(followupFinder.countFollowupsForUser(any[ObjectId])).thenReturn(NotificationCountersView(pair._2, 10))
 
       //when
       service.sendWelcomeNotification(user)

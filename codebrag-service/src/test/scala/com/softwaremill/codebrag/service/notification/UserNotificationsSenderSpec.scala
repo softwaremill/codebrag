@@ -10,16 +10,16 @@ import com.softwaremill.codebrag.domain.builder.UserAssembler
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
-import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
 import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 import com.softwaremill.codebrag.common.config.ConfigWithDefault
+import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 
 class UserNotificationsSenderSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
 
   var notificationService: NotificationService = _
   var userDao: UserDAO = _
-  var notificationCountFinder: NotificationCountFinder = _
+  var followupFinder: FollowupFinder = _
   
   var sender: UserNotificationsSender = _
 
@@ -27,11 +27,11 @@ class UserNotificationsSenderSpec
   val NoCommitsAndFollowups = NotificationCountersView(0, 0)
 
   override def beforeEach() {
-    notificationCountFinder = mock[NotificationCountFinder]
+    followupFinder = mock[FollowupFinder]
     userDao = mock[UserDAO]
     notificationService = mock[NotificationService]
     
-    sender = new TestUserNotificationsSender(notificationCountFinder, userDao, notificationService, clock)
+    sender = new TestUserNotificationsSender(followupFinder, userDao, notificationService, clock)
   }
 
   it should "not send notification when user has notifications disabled" in {
@@ -52,7 +52,7 @@ class UserNotificationsSenderSpec
     val user = UserAssembler.randomUser.get.copy(notifications = LastUserNotificationDispatch(None, None))
     val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(notificationCountFinder.getCountersSince(heartbeats.head._2, user.id)).thenReturn(NoCommitsAndFollowups)
+    when(followupFinder.countFollowupsForUserSince(heartbeats.head._2, user.id)).thenReturn(NoCommitsAndFollowups)
 
     // when
     sender.sendUserNotifications(heartbeats)
@@ -64,20 +64,20 @@ class UserNotificationsSenderSpec
   it should "not send daily digest when user has daily digest email disabled" in {
     // given
     val user = UserAssembler.randomUser.withDailyDigestEmailDisabled().get
-    val sender = new TestUserNotificationsSender(notificationCountFinder, userDao, notificationService, clock)
+    val sender = new TestUserNotificationsSender(followupFinder, userDao, notificationService, clock)
 
     // when
     sender.sendDailyDigest(List(user))
 
     // then
     verifyZeroInteractions(notificationService)
-    verifyZeroInteractions(notificationCountFinder)
+    verifyZeroInteractions(followupFinder)
   }
 
   it should "not send daily digest when user has no commits or followups waiting" in {
     // given
     val user = UserAssembler.randomUser.get
-    when(notificationCountFinder.getCounters(user.id)).thenReturn(NoCommitsAndFollowups)
+    when(followupFinder.countFollowupsForUser(user.id)).thenReturn(NoCommitsAndFollowups)
 
     // when
     sender.sendDailyDigest(List(user))
@@ -91,7 +91,7 @@ class UserNotificationsSenderSpec
     val user = UserAssembler.randomUser.get
     val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(notificationCountFinder.getCountersSince(heartbeats.head._2, user.id)).thenReturn(SomeCommitsAndFollowups)
+    when(followupFinder.countFollowupsForUserSince(heartbeats.head._2, user.id)).thenReturn(SomeCommitsAndFollowups)
 
     // when
     sender.sendUserNotifications(heartbeats)
@@ -104,7 +104,7 @@ class UserNotificationsSenderSpec
     // given
     val user = UserAssembler.randomUser.get
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(notificationCountFinder.getCounters(user.id)).thenReturn(SomeCommitsAndFollowups)
+    when(followupFinder.countFollowupsForUser(user.id)).thenReturn(SomeCommitsAndFollowups)
 
     // when
     sender.sendDailyDigest(List(user))
@@ -113,8 +113,8 @@ class UserNotificationsSenderSpec
     verify(notificationService).sendDailyDigest(user, SomeCommitsAndFollowups.pendingCommitCount, SomeCommitsAndFollowups.followupCount)
   }
 
-  class TestUserNotificationsSender(_notificationCounts: NotificationCountFinder, _userDao: UserDAO, _notificationService: NotificationService, _clock: Clock) extends UserNotificationsSender {
-    def notificationCounts = _notificationCounts
+  class TestUserNotificationsSender(_followupFinder: FollowupFinder, _userDao: UserDAO, _notificationService: NotificationService, _clock: Clock) extends UserNotificationsSender {
+    def followupFinder = _followupFinder
     def userDAO = _userDao
     def clock = _clock
     def notificationService = _notificationService

@@ -4,9 +4,16 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.Clock
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
-import com.softwaremill.codebrag.dao.finders.notification.NotificationCountFinder
+import com.softwaremill.codebrag.activities.finders.ToReviewCommitsFinder
+import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 
-class UpdatesServlet(val authenticator: Authenticator, finder: NotificationCountFinder, heartbeat: HeartbeatDAO, clock: Clock) extends JsonServletWithAuthentication {
+class UpdatesServlet(
+  val authenticator: Authenticator,
+  followupFinder: FollowupFinder,
+  heartbeat: HeartbeatDAO,
+  toReviewCommitsFinder: ToReviewCommitsFinder,
+  clock: Clock) extends JsonServletWithAuthentication {
+
   before() {
     haltIfNotAuthenticated()
   }
@@ -14,9 +21,12 @@ class UpdatesServlet(val authenticator: Authenticator, finder: NotificationCount
   get("/") {
     val userId = new ObjectId(user.id)
     heartbeat.update(userId)
-    val counters = finder.getCounters(userId)
-    UpdateNotification(clock.nowMillis, counters.pendingCommitCount, counters.followupCount)
+    val counters = followupFinder.countFollowupsForUser(userId)
+    val toReviewCount = toReviewCommitsFinder.count(userId, extractBranch)
+    UpdateNotification(clock.nowMillis, toReviewCount, counters.followupCount)
   }
+
+  private def extractBranch = params.get("branch").getOrElse("master")
 
 }
 

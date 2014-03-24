@@ -14,12 +14,23 @@ import com.softwaremill.codebrag.domain.Like
 import com.softwaremill.codebrag.domain.Comment
 import com.softwaremill.codebrag.dao.finders.views.FollowupsByCommitView
 import com.softwaremill.codebrag.dao.finders.views.FollowupCommitView
+import org.joda.time.DateTime
 
 class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends FollowupFinder with SQLFollowupSchema
   with SQLReactionSchema with SQLCommitInfoSchema {
                                             
   import database.driver.simple._
   import database._
+
+  def countFollowupsForUser(userId: ObjectId) = db.withTransaction { implicit session =>
+    val followupCount = Query(followups.where(_.receivingUserId === userId).length).first()
+    NotificationCountersView(0, followupCount)
+  }
+
+  def countFollowupsForUserSince(date: DateTime, userId: ObjectId) = db.withTransaction { implicit session =>
+    val followupCount = Query(followups.where(f => f.receivingUserId === userId && f.lastReactionCreatedDate > date).length).first()
+    NotificationCountersView(0, followupCount)
+  }
 
   def findAllFollowupsByCommitForUser(userId: ObjectId): FollowupsByCommitListView = db.withTransaction { implicit session =>
     val followups = findUserFollowups(userId)

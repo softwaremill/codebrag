@@ -47,7 +47,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     ensureInternalCodebragUserExists(beans.internalUserDao)
 
     if(config.userNotifications) {
-      UserNotificationSenderActor.initialize(actorSystem, heartbeatDao, notificationCountFinder, userDao, clock, notificationService, config)
+      UserNotificationSenderActor.initialize(actorSystem, heartbeatDao, followupFinder, userDao, clock, notificationService, config)
     }
 
     if(config.sendStats) {
@@ -68,7 +68,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new ConfigServlet(config, authenticator), Prefix + "config")
     context.mount(new InvitationServlet(authenticator, invitationsService), Prefix + "invitation")
     context.mount(new RepositorySyncServlet(actorSystem, repoUpdateActor), RepositorySyncServlet.Mapping)
-    context.mount(new UpdatesServlet(authenticator, notificationCountFinder, heartbeatDao, clock), Prefix + UpdatesServlet.Mapping)
+    context.mount(new UpdatesServlet(authenticator, followupFinder, heartbeatDao, toReviewCommitsFinder, clock), Prefix + UpdatesServlet.Mapping)
     context.mount(new RepoStatusServlet(authenticator, _repository, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
     context.mount(new AvailableBranchesServlet(authenticator, repositoryStateCache), Prefix + AvailableBranchesServlet.MountPath)
 
