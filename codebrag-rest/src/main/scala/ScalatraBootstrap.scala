@@ -70,6 +70,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new RepositorySyncServlet(actorSystem, repoUpdateActor), RepositorySyncServlet.Mapping)
     context.mount(new UpdatesServlet(authenticator, notificationCountFinder, heartbeatDao, clock), Prefix + UpdatesServlet.Mapping)
     context.mount(new RepoStatusServlet(authenticator, _repository, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
+    context.mount(new AvailableBranchesServlet(authenticator, repositoryStateCache), Prefix + AvailableBranchesServlet.MountPath)
 
     if (config.demo) {
       context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")
