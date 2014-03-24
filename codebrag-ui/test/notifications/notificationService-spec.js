@@ -1,6 +1,6 @@
 'use strict';
 
-ddescribe("Notification service", function () {
+describe("Notification service", function () {
 
     var $httpBackend, $rootScope, $timeout;
     var notificationService, events, branchesService;
