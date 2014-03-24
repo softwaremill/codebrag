@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.activities.finders.AllCommitsFinder
 class DiffWithCommentsService(commitsFinder: AllCommitsFinder, reactionFinder: ReactionFinder, diffService: DiffService) {
 
   def diffWithCommentsFor(sha: String, userId: ObjectId): Either[String, CommitDetailsView] = {
-    commitsFinder.find(sha, userId) match {
+    commitsFinder.findSingle(sha, userId) match {
       case Right(commit) => {
         for {
           diff <- diffService.getFilesWithDiffs(sha).right

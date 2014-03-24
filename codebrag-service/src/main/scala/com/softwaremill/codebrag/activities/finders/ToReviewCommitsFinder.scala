@@ -14,24 +14,27 @@ class ToReviewCommitsFinder(
   repoCache: BranchCommitsCache,
   reviewedCommitsCache: UserReviewedCommitsCache,
   commitsInfoDao: CommitInfoDAO,
-  val userDao: UserDAO) extends Logging with UserDataEnhancer {
+  val userDao: UserDAO) extends Logging with UserDataEnhancer with FullBranchNameResolver {
 
   def find(userId: ObjectId, branchName: String, pagingCriteria: PagingCriteria[String]): CommitListView = {
-    val toReview = getSHAsOfCommitsToReview(userId, branchName)
+    val toReview = getSHAsOfCommitsToReview(userId, resolveFullBranchName(branchName))
     val page = pagingCriteria.extractPageFrom(toReview)
     val commits = commitsInfoDao.findByShaList(page.items)
     enhanceWithUserData(CommitListView(commits, page.beforeCount, page.afterCount))
   }
 
-  private def getSHAsOfCommitsToReview(userId: ObjectId, branchName: String): List[String] = {
-    userDao.findById(userId).map(findShaToReview(branchName, _)).getOrElse(List.empty)
+  def count(userId: ObjectId, branchName: String): Long = {
+    getSHAsOfCommitsToReview(userId, resolveFullBranchName(branchName)).size
   }
 
+  private def getSHAsOfCommitsToReview(userId: ObjectId, fullBranchName: String): List[String] = {
+    userDao.findById(userId).map(findShaToReview(fullBranchName, _)).getOrElse(List.empty)
+  }
 
-  def findShaToReview(branchName: String, user: User): List[String] = {
+  private def findShaToReview(fullBranchName: String, user: User): List[String] = {
     import CommitAuthorClassification._
     val userBoundaryDate = reviewedCommitsCache.getUserEntry(user.id).toReviewStartDate
-    val commitsInBranch = repoCache.getBranchCommits(branchName)
+    val commitsInBranch = repoCache.getBranchCommits(fullBranchName)
     val toReview = commitsInBranch
       .filterNot(commit => commitAuthoredByUser(commit, user) || userAlreadyReviewed(user.id, commit))
       // TODO: add step to filter out commits that were already reviewed by number of users
