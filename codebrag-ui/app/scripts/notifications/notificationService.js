@@ -1,6 +1,6 @@
 angular.module('codebrag.notifications')
 
-    .factory('notificationService', function ($http, $rootScope, events, $timeout) {
+    .factory('notificationService', function ($http, $rootScope, events, $timeout, branchesService, $q) {
 
         var timer;
 
@@ -19,6 +19,8 @@ angular.module('codebrag.notifications')
             askForUpdates().then(function(response) {
                 counters.commitsCount = response.data.commits;
                 counters.followupsCount = response.data.followups;
+                timer = $timeout(pollForStats, defaultPollingInterval);
+            }, function() {
                 timer = $timeout(pollForStats, defaultPollingInterval);
             });
         });
@@ -46,7 +48,12 @@ angular.module('codebrag.notifications')
         });
 
         function askForUpdates() {
-            return $http.get('rest/updates')
+            var currentBranch = branchesService.selectedBranch();
+            if(currentBranch) {
+                return $http.get('rest/updates', {params: {branch: currentBranch}});
+            } else {
+                return $q.reject();
+            }
         }
 
         function calculateDelta(incomingData) {
