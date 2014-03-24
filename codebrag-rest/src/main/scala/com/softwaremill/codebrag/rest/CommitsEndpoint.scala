@@ -38,13 +38,13 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   get("/", allCommits) {
     val paging = extractPagingCriteria
     logger.debug(s"Attempting to fetch all commits with possible paging: ${paging}")
-    allCommitsFinder.find(userId, TemporaryBranchUsed, paging)
+    allCommitsFinder.find(userId, extractBranch, paging)
   }
 
   get("/", commitsToReview) {
     val paging = extractPagingCriteria
     logger.debug(s"Attempting to fetch commits to review with possible paging: ${paging}")
-    reviewableCommitsListFinder.find(userId, TemporaryBranchUsed, paging)
+    reviewableCommitsListFinder.find(userId, extractBranch, paging)
   }
 
   get("/", contextualCommits) {
@@ -54,7 +54,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
       case None => PagingCriteria.fromEnd[String](limit)
     }
     logger.debug(s"Attempting to fetch commits in context: ${paging}")
-    allCommitsFinder.find(userId, TemporaryBranchUsed, paging)
+    allCommitsFinder.find(userId, extractBranch, paging)
   }
 
   private def userId = new ObjectId(user.id)
@@ -77,6 +77,8 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     }
   }
 
+  private def extractBranch = params.get(BranchParamName).getOrElse(MasterBranchName)
+
 }
 
 object CommitsEndpoint {
@@ -86,6 +88,7 @@ object CommitsEndpoint {
 
   val ContextParamName = "context"
   val LimitParamName = "limit"
+  val BranchParamName = "branch"
 
   val FilterParamName = "filter"
   val AllCommitsFilter = "all"
@@ -95,6 +98,6 @@ object CommitsEndpoint {
   val MaxShaParamName = "max_sha"
   val SelectedShaParamName = "selected_sha"
 
-  val TemporaryBranchUsed = "refs/remotes/origin/master"
+  val MasterBranchName = "master"
 
 }
