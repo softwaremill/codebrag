@@ -5,7 +5,6 @@
 .branch-selector
   padding: 0.77em 0.38em;
   position: relative;
-  text-align: center;
   z-index: 3;
   // & input[type=radio]
   //   display:none;
@@ -18,27 +17,50 @@
   //     text-decoration: none;
   & .columns
     padding: 0 0.38em;
-  & select
-    background: #e7e0ce;
-    border: 1px solid #e7e0ce;
-    color: #a27d69;
-    float: left;
-    max-width: 20em;
-    margin: 1px 0 0;
-    padding: 0.38em;
-    text-transform: uppercase;
-    color: $main-orange-color;
-    outline: none;
-    & option
-      background: white;
-    &#branch
-      padding-left: 1.15em;
 
-  & label[for="branch"]
-    position: absolute;
-    margin-bottom: 0;
-    & img
-      padding: 11px 0 0 7px;
+    & .dropdown-btn
+      background-color: #e7e0ce;
+      text-transform: uppercase;
+      border: 1px solid #e7e0ce;
+      color: $main-orange-color;
+      padding: 0.66em 1em;
+      position: relative;
+
+      & span
+        vertical-align: middle;
+        & img
+          vertical-align: top;
+
+      & .dropdown-list
+        position: absolute;
+        background-color: white;
+        border: 1px solid #e4d9b8;
+        box-shadow: 0 0 7px 0 rgba(211,196,160,0.7);
+        z-index: 1000;
+        margin: 0.66em 0 0;
+        padding: 0.66em 0;
+        list-style: none;
+        left: 0;
+        &:before
+          content: "";
+          position: absolute;
+          top: -7px;
+          color: green;
+          width: 0;
+          height: 0;
+          border-left: 6px solid transparent;
+          border-right: 6px solid transparent;
+          border-bottom: 8px solid white;
+          left: 10px;
+
+        & li
+          padding: 0.66em 1.5em;
+          text-transform: none;
+          transition: background-color 300ms;
+          &:hover
+            color: white;
+            background-color: $main-orange-color;
+
 
 .list-loader
   position: relative;
