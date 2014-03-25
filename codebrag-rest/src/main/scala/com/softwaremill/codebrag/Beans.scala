@@ -17,9 +17,9 @@ import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
 import com.softwaremill.codebrag.dao.Daos
-import com.softwaremill.codebrag.service.commits.branches.{UserReviewedCommitsCache, PersistentBackendForCache, BranchCommitsCache}
 import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.activities.finders.{AllCommitsFinder, ToReviewCommitsFinder}
+import com.softwaremill.codebrag.cache.{UserReviewedCommitsCache, PersistentBackendForCache, BranchCommitsCache}
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 

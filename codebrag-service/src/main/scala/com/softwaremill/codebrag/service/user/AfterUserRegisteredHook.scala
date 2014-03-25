@@ -3,9 +3,9 @@ package com.softwaremill.codebrag.service.user
 import com.softwaremill.codebrag.domain._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
-import com.softwaremill.codebrag.service.commits.branches.{UserReviewedCommitsCacheEntry, UserReviewedCommitsCache, BranchCommitsCache}
 import CommitAuthorClassification._
 import org.joda.time.DateTime
+import com.softwaremill.codebrag.cache.{UserReviewedCommitsCacheEntry, UserReviewedCommitsCache, BranchCommitsCache}
 
 class AfterUserRegisteredHook(
   val repoCache: BranchCommitsCache,

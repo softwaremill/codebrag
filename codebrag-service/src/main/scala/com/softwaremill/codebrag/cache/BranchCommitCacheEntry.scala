@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.commits.branches
+package com.softwaremill.codebrag.cache
 
 import com.softwaremill.codebrag.domain.CommitLike
 import org.joda.time.DateTime

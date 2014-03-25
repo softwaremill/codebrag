@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.commits.branches
+package com.softwaremill.codebrag.cache
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers

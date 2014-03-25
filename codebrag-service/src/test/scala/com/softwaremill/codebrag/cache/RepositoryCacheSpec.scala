@@ -1,9 +1,9 @@
-package com.softwaremill.codebrag.service.commits.branches
+package com.softwaremill.codebrag.cache
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{PartialCommitInfo, MultibranchLoadCommitsResult}
+import com.softwaremill.codebrag.domain.MultibranchLoadCommitsResult
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import com.softwaremill.codebrag.domain.CommitsForBranch
 import com.softwaremill.codebrag.repository.Repository

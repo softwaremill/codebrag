@@ -2,9 +2,9 @@ package com.softwaremill.codebrag.activities.finders
 
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.finders.views.CommitView
-import com.softwaremill.codebrag.service.commits.branches.UserReviewedCommitsCache
 import com.softwaremill.codebrag.domain.{CommitAuthorClassification, ReviewedCommit}
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
 
 trait CommitReviewedByUserMarker {
 

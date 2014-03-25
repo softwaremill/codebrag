@@ -6,10 +6,10 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{RepositoryStatus, MultibranchLoadCommitsResult}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
-import com.softwaremill.codebrag.service.commits.branches.BranchCommitsCache
 import com.softwaremill.codebrag.repository.Repository
 import org.mockito.Matchers
 import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
+import com.softwaremill.codebrag.cache.BranchCommitsCache
 
 class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
 

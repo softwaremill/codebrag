@@ -9,8 +9,8 @@ import com.softwaremill.codebrag.domain.{ReviewedCommit, CommitReviewTask}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.reactions.CommitReviewedEvent
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.service.commits.branches.UserReviewedCommitsCache
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
 
 class CommitReviewActivitySpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {

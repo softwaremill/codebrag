@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.service.commits.branches
+package com.softwaremill.codebrag.cache
 
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
