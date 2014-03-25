@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.service.notification
 
-import org.scalatest.FlatSpec
+import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.service.email.{Email, EmailScheduler}
@@ -12,24 +12,35 @@ import Matchers._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.common.ClockSpec
-import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
+import com.softwaremill.codebrag.activities.finders.ToReviewCommitsFinder
 
-class NotificationServiceSpec
-  extends FlatSpec with MockitoSugar with ShouldMatchers with ClockSpec {
+class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with ClockSpec with BeforeAndAfter {
+
+  var scheduler: EmailScheduler = _
+  var engine: TemplateEngine = _
+  var config: CodebragConfig = _
+  var followupFinder: FollowupFinder = _
+  var toReviewCommitsFinder: ToReviewCommitsFinder = _
+
+  var service: NotificationService = _
+
+  val SomeFollowups = 10
+
+  before {
+    scheduler = mock[EmailScheduler]
+    engine = mock[TemplateEngine]
+    config = mock[CodebragConfig]
+    followupFinder = mock[FollowupFinder]
+    toReviewCommitsFinder = mock[ToReviewCommitsFinder]
+    service = new NotificationService(scheduler, engine, config, toReviewCommitsFinder, followupFinder, clock)
+  }
 
   it should "send welcome notification" in {
     //given
-    val scheduler = mock[EmailScheduler]
-    val engine = mock[TemplateEngine]
-    val config = mock[CodebragConfig]
-    val followupFinder = mock[FollowupFinder]
-    val service = new NotificationService(scheduler, engine, config, followupFinder, clock)
     val emailAddress = "sofo@sml.com"
     val user = UserAssembler.randomUser.get
-
     when(engine.getEmailTemplate(any[EmailTemplates.Value], any[Map[String, Object]])).thenReturn(EmailContentWithSubject("subject", "content"))
-    when(followupFinder.countFollowupsForUser(any[ObjectId])).thenReturn(NotificationCountersView(10, 10))
 
     //when
     service.sendWelcomeNotification(user)
@@ -60,10 +71,11 @@ class NotificationServiceSpec
       val config = mock[CodebragConfig]
       when(config.applicationUrl).thenReturn("http://test:8080")
       val followupFinder = mock[FollowupFinder]
-      val service = new NotificationService(scheduler, engine, config, followupFinder, clock)
+      val toReviewCommitsFinder = mock[ToReviewCommitsFinder]
+      val service = new NotificationService(scheduler, engine, config, toReviewCommitsFinder, followupFinder, clock)
       val user = UserAssembler.randomUser.get
 
-      when(followupFinder.countFollowupsForUser(any[ObjectId])).thenReturn(NotificationCountersView(pair._2, 10))
+      when(toReviewCommitsFinder.countForCurrentBranch(any[ObjectId])).thenReturn(pair._2)
 
       //when
       service.sendWelcomeNotification(user)

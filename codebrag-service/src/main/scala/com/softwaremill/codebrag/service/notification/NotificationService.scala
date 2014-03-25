@@ -9,13 +9,20 @@ import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.common.Clock
 import org.joda.time.format.DateTimeFormat
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
+import com.softwaremill.codebrag.activities.finders.ToReviewCommitsFinder
 
-class NotificationService(emailScheduler: EmailScheduler, templateEngine: TemplateEngine, codebragConfig: CodebragConfig, followupFinder: FollowupFinder, clock: Clock) extends Logging {
+class NotificationService(
+  emailScheduler: EmailScheduler,
+  templateEngine: TemplateEngine,
+  codebragConfig: CodebragConfig,
+  toReviewCommitsFinder: ToReviewCommitsFinder,
+  followupFinder: FollowupFinder,
+  clock: Clock) extends Logging {
 
   import NotificationService.CountersToText.translate
 
   def sendWelcomeNotification(user: User) {
-    val noOfCommits = followupFinder.countFollowupsForUser(user.id).pendingCommitCount
+    val noOfCommits = toReviewCommitsFinder.countForCurrentBranch(user.id)
     val context: Map[String, Any] = prepareContextForWelcomeNotification(user, noOfCommits)
     val template = templateEngine.getEmailTemplate(WelcomeToCodebrag, context)
     emailScheduler.scheduleInstant(Email(List(user.emailLowerCase), template.subject, template.content))

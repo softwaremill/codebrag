@@ -3,12 +3,10 @@ package com.softwaremill.codebrag.rest
 import com.softwaremill.codebrag.AuthenticatableServletSpec
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.BDDMockito._
-import org.mockito.Matchers._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.common.{ClockSpec, Clock}
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
-import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 import com.softwaremill.codebrag.activities.finders.ToReviewCommitsFinder
 
@@ -37,7 +35,7 @@ class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
     userIsAuthenticatedAs(UserJson(user))
     val expectedCommits = 1
     val expectedFollowups = 2
-    given(followupFinderMock.countFollowupsForUser(user.id)).willReturn(NotificationCountersView(expectedCommits, expectedFollowups))
+    given(followupFinderMock.countFollowupsForUser(user.id)).willReturn(expectedFollowups)
     given(toReviewCommitsFinderMock.count(user.id, "master")).willReturn(expectedCommits)
 
     // when

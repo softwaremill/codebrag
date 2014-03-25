@@ -16,9 +16,9 @@ import org.joda.time.DateTime
 
 class MongoFollowupFinder extends FollowupFinder {
 
-  def countFollowupsForUserSince(date: DateTime, userId: ObjectId) = NotificationCountersView(0, 0)
+  def countFollowupsForUserSince(date: DateTime, userId: ObjectId) = 0
 
-  def countFollowupsForUser(userId: ObjectId) = NotificationCountersView(0, 0)
+  def countFollowupsForUser(userId: ObjectId) = 0
 
   def findAllFollowupsByCommitForUser(userId: ObjectId): FollowupsByCommitListView = {
     val followupRecords = findUserFollowups(userId)

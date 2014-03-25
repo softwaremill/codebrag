@@ -1,56 +1,61 @@
 package com.softwaremill.codebrag.dao.finders.followup
 
 import com.softwaremill.codebrag.dao._
-import org.scalatest.matchers.ShouldMatchers
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler, CommitInfoAssembler}
 import org.bson.types.ObjectId
 import scala.util.Random
 import com.softwaremill.codebrag.common.FixtureTimeClock
-import com.softwaremill.codebrag.test.FlatSpecWithSQL
-import com.softwaremill.codebrag.dao.commitinfo.SQLCommitInfoDAO
-import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
-import com.softwaremill.codebrag.dao.followup._
-import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 import com.softwaremill.codebrag.domain.Followup
-import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
+import com.softwaremill.codebrag.test.{FlatSpecWithSQL, ClearSQLDataAfterTest}
+import com.softwaremill.codebrag.dao.reaction.SQLCommitCommentDAO
+import com.softwaremill.codebrag.dao.followup.SQLFollowupDAO
+import com.softwaremill.codebrag.dao.commitinfo.SQLCommitInfoDAO
+import com.softwaremill.codebrag.dao.user.SQLUserDAO
+import org.scalatest.matchers.ShouldMatchers
 
-class SQLFollowupsCountFinderSpec extends SQLFollowupFinderSpec with SQLFollowupsCountFinderSpecFixture {
+class SQLFollowupsCountFinderSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with SQLFollowupsCountFinderSpecFixture with ShouldMatchers {
 
-  "getCounters" should "return empty counters if no data found" taggedAs RequiresDb in {
+  val commentDao = new SQLCommitCommentDAO(sqlDatabase)
+  val followupDao = new SQLFollowupDAO(sqlDatabase)
+  val commitInfoDao = new SQLCommitInfoDAO(sqlDatabase)
+  val userDao = new SQLUserDAO(sqlDatabase)
+  val followupFinder = new SQLFollowupFinder(sqlDatabase, userDao)
+
+  it should "return 0 if no followups found" taggedAs RequiresDb in {
     // given no data for Bruce
     givenFollowupsFor(UserSofoklesId, 8)
 
     // when
-    val resultCounters = followupFinder.countFollowupsForUser(UserBruceId)
+    val count = followupFinder.countFollowupsForUser(UserBruceId)
 
     // then
-    resultCounters should equal(NotificationCountersView(0, 0))
+    count should equal(0)
   }
 
-  it should "build counters only for given user" taggedAs RequiresDb in {
+  it should "return followups count only for given user" taggedAs RequiresDb in {
     // given
     givenFollowupsFor(UserBruceId, BruceFollowupCount)
     givenFollowupsFor(UserSofoklesId, 8)
 
     // when
-    val resultCounters = followupFinder.countFollowupsForUser(UserBruceId)
+    val count = followupFinder.countFollowupsForUser(UserBruceId)
 
     // then
-    resultCounters should equal(NotificationCountersView(0, BruceFollowupCount))
+    count should equal(BruceFollowupCount)
   }
 
-  "getCountersSince" should "return zero followups if there are no new followups for the user" taggedAs RequiresDb in {
+  it should "return zero followups if there are no new followups for the user" taggedAs RequiresDb in {
     // given
     val clock = new FixtureTimeClock(DateTime.now.minusDays(1).getMillis)
     val oldLike = LikeAssembler.likeFor(new ObjectId).withId(ObjectIdTestUtils.withDate(clock.nowUtc)).withFileNameAndLineNumber("file.txt", 20).get
     followupDao.createOrUpdateExisting(Followup(UserBruceId, oldLike))
 
     //when
-    val counters = followupFinder.countFollowupsForUserSince(clock.nowUtc.plusDays(2), UserBruceId)
+    val followupsCount = followupFinder.countFollowupsForUserSince(clock.nowUtc.plusDays(2), UserBruceId)
 
     //then
-    counters.followupCount should equal(0)
+    followupsCount should equal(0)
   }
 
 
@@ -61,10 +66,10 @@ class SQLFollowupsCountFinderSpec extends SQLFollowupFinderSpec with SQLFollowup
     followupDao.createOrUpdateExisting(Followup(UserBruceId, oldLike))
 
     //when
-    val counters = followupFinder.countFollowupsForUserSince(clock.nowUtc.minusDays(1), UserBruceId)
+    val followupsCount = followupFinder.countFollowupsForUserSince(clock.nowUtc.minusDays(1), UserBruceId)
 
     //then
-    counters.followupCount should equal(1)
+    followupsCount should equal(1)
   }
 
   it should "return a number of new and updated followups since a given date when new reactions were added to thread" taggedAs RequiresDb in {
@@ -82,10 +87,10 @@ class SQLFollowupsCountFinderSpec extends SQLFollowupFinderSpec with SQLFollowup
 
     //when
     val timeBetweenLatestAndEarliestLike = clock.nowUtc.minusHours(2)
-    val counters = followupFinder.countFollowupsForUserSince(timeBetweenLatestAndEarliestLike, UserBruceId)
+    val followupsCount = followupFinder.countFollowupsForUserSince(timeBetweenLatestAndEarliestLike, UserBruceId)
 
     //then
-    counters.followupCount should equal(2)
+    followupsCount should equal(2)
   }
 
   private def givenFollowupsFor(userId: ObjectId, count: Int) {

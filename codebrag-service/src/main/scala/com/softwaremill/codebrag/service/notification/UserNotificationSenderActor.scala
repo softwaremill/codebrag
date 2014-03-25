@@ -113,7 +113,7 @@ trait UserNotificationsSender extends Logging {
       if (userIsOffline(lastHeartbeat)) {
         userDAO.findById(userId).foreach { user =>
           whenNotificationsEnabled(user) {
-            val followupsCount = followupFinder.countFollowupsForUserSince(lastHeartbeat, user.id).followupCount
+            val followupsCount = followupFinder.countFollowupsForUserSince(lastHeartbeat, user.id)
             if (userShouldBeNotified(lastHeartbeat, user, followupsCount)) {
               sendNotifications(user, followupsCount)
               updateLastNotificationsDispatch(user, followupsCount)
@@ -168,7 +168,7 @@ trait UserNotificationsSender extends Logging {
   }
 
   private def withNonEmptyCountersFor(user: User)(actionBlock: (Long, Long) => Unit) = {
-    val followupsCount = followupFinder.countFollowupsForUser(user.id).followupCount
+    val followupsCount = followupFinder.countFollowupsForUser(user.id)
     val toReviewCommitsCount = toReviewCommitsFinder.countForCurrentBranch(user.id)
     if(followupsCount > 0 || toReviewCommitsCount > 0) {
       actionBlock(followupsCount, toReviewCommitsCount)

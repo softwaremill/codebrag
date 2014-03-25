@@ -23,13 +23,11 @@ class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends Fol
   import database._
 
   def countFollowupsForUser(userId: ObjectId) = db.withTransaction { implicit session =>
-    val followupCount = Query(followups.where(_.receivingUserId === userId).length).first()
-    NotificationCountersView(0, followupCount)
+    Query(followups.where(_.receivingUserId === userId).length).first()
   }
 
   def countFollowupsForUserSince(date: DateTime, userId: ObjectId) = db.withTransaction { implicit session =>
-    val followupCount = Query(followups.where(f => f.receivingUserId === userId && f.lastReactionCreatedDate > date).length).first()
-    NotificationCountersView(0, followupCount)
+    Query(followups.where(f => f.receivingUserId === userId && f.lastReactionCreatedDate > date).length).first()
   }
 
   def findAllFollowupsByCommitForUser(userId: ObjectId): FollowupsByCommitListView = db.withTransaction { implicit session =>

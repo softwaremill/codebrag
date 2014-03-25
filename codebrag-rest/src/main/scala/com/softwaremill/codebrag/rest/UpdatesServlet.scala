@@ -21,9 +21,9 @@ class UpdatesServlet(
   get("/") {
     val userId = new ObjectId(user.id)
     heartbeat.update(userId)
-    val counters = followupFinder.countFollowupsForUser(userId)
+    val followupsCount = followupFinder.countFollowupsForUser(userId)
     val toReviewCount = toReviewCommitsFinder.count(userId, extractBranch)
-    UpdateNotification(clock.nowMillis, toReviewCount, counters.followupCount)
+    UpdateNotification(clock.nowMillis, toReviewCount, followupsCount)
   }
 
   private def extractBranch = params.get("branch").getOrElse("master")

@@ -10,7 +10,6 @@ import com.softwaremill.codebrag.domain.builder.UserAssembler
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
-import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 import com.softwaremill.codebrag.common.config.ConfigWithDefault
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 import com.softwaremill.codebrag.activities.finders.ToReviewCommitsFinder
@@ -25,8 +24,7 @@ class UserNotificationsSenderSpec
 
   var sender: UserNotificationsSender = _
 
-  val SomeCommitsAndFollowups = NotificationCountersView(0, 20)
-  val NoCommitsAndFollowups = NotificationCountersView(0, 0)
+  val SomeFollowups = 20
 
   val NoCommits = 0
   val NoFollowups = 0
@@ -58,7 +56,7 @@ class UserNotificationsSenderSpec
     val user = UserAssembler.randomUser.get.copy(notifications = LastUserNotificationDispatch(None, None))
     val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(followupFinder.countFollowupsForUserSince(heartbeats.head._2, user.id)).thenReturn(NoCommitsAndFollowups)
+    when(followupFinder.countFollowupsForUserSince(heartbeats.head._2, user.id)).thenReturn(NoFollowups)
 
     // when
     sender.sendFollowupsNotification(heartbeats)
@@ -83,7 +81,7 @@ class UserNotificationsSenderSpec
   it should "not send daily digest when user has no commits or followups waiting" in {
     // given
     val user = UserAssembler.randomUser.get
-    when(followupFinder.countFollowupsForUser(user.id)).thenReturn(NoCommitsAndFollowups)
+    when(followupFinder.countFollowupsForUser(user.id)).thenReturn(NoFollowups)
     when(toReviewCommitsFinder.countForCurrentBranch(user.id)).thenReturn(NoCommits)
 
     // when
@@ -98,13 +96,13 @@ class UserNotificationsSenderSpec
     val user = UserAssembler.randomUser.get
     val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(followupFinder.countFollowupsForUserSince(heartbeats.head._2, user.id)).thenReturn(SomeCommitsAndFollowups)
+    when(followupFinder.countFollowupsForUserSince(heartbeats.head._2, user.id)).thenReturn(SomeFollowups)
 
     // when
     sender.sendFollowupsNotification(heartbeats)
 
     // then
-    verify(notificationService).sendCommitsOrFollowupNotification(user, NoCommits, SomeCommitsAndFollowups.followupCount)
+    verify(notificationService).sendCommitsOrFollowupNotification(user, NoCommits, SomeFollowups)
   }
 
   it should "send daily digest when user has commits or followups" in {
@@ -112,13 +110,13 @@ class UserNotificationsSenderSpec
     val user = UserAssembler.randomUser.get
     when(userDao.findById(user.id)).thenReturn(Some(user))
     when(toReviewCommitsFinder.countForCurrentBranch(user.id)).thenReturn(NoCommits)
-    when(followupFinder.countFollowupsForUser(user.id)).thenReturn(SomeCommitsAndFollowups)
+    when(followupFinder.countFollowupsForUser(user.id)).thenReturn(SomeFollowups)
 
     // when
     sender.sendDailyDigest(List(user))
 
     // then
-    verify(notificationService).sendDailyDigest(user, NoCommits, SomeCommitsAndFollowups.followupCount)
+    verify(notificationService).sendDailyDigest(user, NoCommits, SomeFollowups)
   }
 
   class TestUserNotificationsSender(

@@ -39,7 +39,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val emailScheduler = new EmailScheduler(actorSystem, EmailScheduler.createActor(actorSystem, emailService))
   lazy val templateEngine = new TemplateEngine()
   lazy val invitationsService = new InvitationService(invitationDao, userDao, emailService, config, DefaultUniqueHashGenerator, templateEngine)
-  lazy val notificationService = new NotificationService(emailScheduler, templateEngine, config, followupFinder, clock)
+  lazy val notificationService = new NotificationService(emailScheduler, templateEngine, config, toReviewCommitsFinder, followupFinder, clock)
 
 
   lazy val welcomeFollowupsGenerator = new WelcomeFollowupsGenerator(internalUserDao, commentDao, likeDao, followupDao, commitInfoDao, templateEngine)
