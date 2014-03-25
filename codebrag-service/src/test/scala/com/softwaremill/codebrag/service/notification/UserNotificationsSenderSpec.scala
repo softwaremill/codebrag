@@ -13,6 +13,7 @@ import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
 import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 import com.softwaremill.codebrag.common.config.ConfigWithDefault
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
+import com.softwaremill.codebrag.activities.finders.ToReviewCommitsFinder
 
 class UserNotificationsSenderSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
@@ -20,18 +21,23 @@ class UserNotificationsSenderSpec
   var notificationService: NotificationService = _
   var userDao: UserDAO = _
   var followupFinder: FollowupFinder = _
-  
+  var toReviewCommitsFinder: ToReviewCommitsFinder = _
+
   var sender: UserNotificationsSender = _
 
   val SomeCommitsAndFollowups = NotificationCountersView(10, 20)
   val NoCommitsAndFollowups = NotificationCountersView(0, 0)
 
+  val NoCommits = 0
+  val NoFollowups = 0
+
   override def beforeEach() {
     followupFinder = mock[FollowupFinder]
+    toReviewCommitsFinder = mock[ToReviewCommitsFinder]
     userDao = mock[UserDAO]
     notificationService = mock[NotificationService]
     
-    sender = new TestUserNotificationsSender(followupFinder, userDao, notificationService, clock)
+    sender = new TestUserNotificationsSender(followupFinder, toReviewCommitsFinder, userDao, notificationService, clock)
   }
 
   it should "not send notification when user has notifications disabled" in {
@@ -64,7 +70,7 @@ class UserNotificationsSenderSpec
   it should "not send daily digest when user has daily digest email disabled" in {
     // given
     val user = UserAssembler.randomUser.withDailyDigestEmailDisabled().get
-    val sender = new TestUserNotificationsSender(followupFinder, userDao, notificationService, clock)
+    val sender = new TestUserNotificationsSender(followupFinder, toReviewCommitsFinder, userDao, notificationService, clock)
 
     // when
     sender.sendDailyDigest(List(user))
@@ -78,6 +84,7 @@ class UserNotificationsSenderSpec
     // given
     val user = UserAssembler.randomUser.get
     when(followupFinder.countFollowupsForUser(user.id)).thenReturn(NoCommitsAndFollowups)
+    when(toReviewCommitsFinder.countForCurrentBranch(user.id)).thenReturn(NoCommits)
 
     // when
     sender.sendDailyDigest(List(user))
@@ -104,20 +111,22 @@ class UserNotificationsSenderSpec
     // given
     val user = UserAssembler.randomUser.get
     when(userDao.findById(user.id)).thenReturn(Some(user))
+    when(toReviewCommitsFinder.countForCurrentBranch(user.id)).thenReturn(NoCommits)
     when(followupFinder.countFollowupsForUser(user.id)).thenReturn(SomeCommitsAndFollowups)
 
     // when
     sender.sendDailyDigest(List(user))
 
     // then
-    verify(notificationService).sendDailyDigest(user, SomeCommitsAndFollowups.pendingCommitCount, SomeCommitsAndFollowups.followupCount)
+    verify(notificationService).sendDailyDigest(user, NoCommits, SomeCommitsAndFollowups.followupCount)
   }
 
-  class TestUserNotificationsSender(_followupFinder: FollowupFinder, _userDao: UserDAO, _notificationService: NotificationService, _clock: Clock) extends UserNotificationsSender {
-    def followupFinder = _followupFinder
-    def userDAO = _userDao
-    def clock = _clock
-    def notificationService = _notificationService
+  class TestUserNotificationsSender(
+    val followupFinder: FollowupFinder,
+    val toReviewCommitsFinder: ToReviewCommitsFinder,
+    val userDAO: UserDAO,
+    val notificationService: NotificationService,
+    val clock: Clock) extends UserNotificationsSender {
 
     def config = new CodebragConfig with ConfigWithDefault {
       import collection.JavaConversions._

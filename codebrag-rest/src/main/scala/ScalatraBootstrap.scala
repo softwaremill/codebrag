@@ -47,7 +47,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     ensureInternalCodebragUserExists(beans.internalUserDao)
 
     if(config.userNotifications) {
-      UserNotificationSenderActor.initialize(actorSystem, heartbeatDao, followupFinder, userDao, clock, notificationService, config)
+      UserNotificationSenderActor.initialize(actorSystem, heartbeatDao, toReviewCommitsFinder, followupFinder, userDao, clock, notificationService, config)
     }
 
     if(config.sendStats) {

@@ -27,6 +27,11 @@ class ToReviewCommitsFinder(
     getSHAsOfCommitsToReview(userId, resolveFullBranchName(branchName)).size
   }
 
+  def countForCurrentBranch(userId: ObjectId): Long = {
+    val fullBranchName = repoCache.repository.getCheckedOutBranchName
+    count(userId, fullBranchName)
+  }
+
   private def getSHAsOfCommitsToReview(userId: ObjectId, fullBranchName: String): List[String] = {
     userDao.findById(userId).map(findShaToReview(fullBranchName, _)).getOrElse(List.empty)
   }

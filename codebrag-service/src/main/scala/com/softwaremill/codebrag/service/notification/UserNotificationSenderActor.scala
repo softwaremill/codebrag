@@ -13,10 +13,12 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
 import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
+import com.softwaremill.codebrag.activities.finders.ToReviewCommitsFinder
 
 class UserNotificationSenderActor(actorSystem: ActorSystem,
                                   heartbeatStore: HeartbeatDAO,
                                   val followupFinder: FollowupFinder,
+                                  val toReviewCommitsFinder: ToReviewCommitsFinder,
                                   val userDAO: UserDAO,
                                   val clock: Clock,
                                   val notificationService: NotificationService,
@@ -45,6 +47,7 @@ object UserNotificationSenderActor extends Logging {
 
   def initialize(actorSystem: ActorSystem,
                  heartbeatStore: HeartbeatDAO,
+                 toReviewCommitsFinder: ToReviewCommitsFinder,
                  followupFinder: FollowupFinder,
                  userDAO: UserDAO,
                  clock: Clock,
@@ -52,7 +55,7 @@ object UserNotificationSenderActor extends Logging {
                  config: CodebragConfig) = {
     logger.debug("Initializing user notification system")
     val actor = actorSystem.actorOf(
-      Props(new UserNotificationSenderActor(actorSystem, heartbeatStore, followupFinder, userDAO, clock, notificationsService, config)),
+      Props(new UserNotificationSenderActor(actorSystem, heartbeatStore, followupFinder, toReviewCommitsFinder, userDAO, clock, notificationsService, config)),
       "notification-scheduler")
 
     scheduleNextNotificationsSendOut(actorSystem, actor, config.notificationsCheckInterval)
@@ -93,14 +96,12 @@ case object SendUserNotifications
 case object SendDailyDigest
 
 trait UserNotificationsSender extends Logging {
+
   def followupFinder: FollowupFinder
-
+  def toReviewCommitsFinder: ToReviewCommitsFinder
   def userDAO: UserDAO
-
   def clock: Clock
-
   def notificationService: NotificationService
-
   def config: CodebragConfig
 
   def sendUserNotifications(heartbeats: List[(ObjectId, DateTime)]) {
@@ -164,16 +165,23 @@ trait UserNotificationsSender extends Logging {
       user => {
         user.settings.dailyUpdatesEmailEnabled match {
           case true => {
-            val counters = followupFinder.countFollowupsForUser(user.id)
-            if(counters.nonEmpty) {
-              notificationService.sendDailyDigest(user, counters.pendingCommitCount, counters.followupCount)
-            } else {
-              logger.debug(s"Not sending email to ${user.emailLowerCase} - no commits and followups waiting for this user")
+            withNonEmptyCountersFor(user) { (followupsCount, commitsCount) =>
+              notificationService.sendDailyDigest(user, commitsCount, followupsCount)
             }
           }
           case false => logger.debug(s"Not sending email to ${user.emailLowerCase} - user has daily digest emails disabled")
         }
       }
+    }
+  }
+
+  private def withNonEmptyCountersFor(user: User)(actionBlock: (Long, Long) => Unit) = {
+    val followupsCount = followupFinder.countFollowupsForUser(user.id).followupCount
+    val toReviewCommitsCount = toReviewCommitsFinder.countForCurrentBranch(user.id)
+    if(followupsCount > 0 || toReviewCommitsCount > 0) {
+      actionBlock(followupsCount, toReviewCommitsCount)
+    } else {
+      logger.debug(s"Not sending email to ${user.emailLowerCase} - no commits and followups waiting for this user")
     }
   }
 
