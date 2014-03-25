@@ -142,7 +142,7 @@ trait UserNotificationsSender extends Logging {
   }
 
   private def sendNotifications(user: User, followupsCount: Long) = {
-    notificationService.sendCommitsOrFollowupNotification(user, 0, followupsCount)
+    notificationService.sendFollowupNotification(user, followupsCount)
   }
 
   private def updateLastNotificationsDispatch(user: User, followupsCount: Long) {

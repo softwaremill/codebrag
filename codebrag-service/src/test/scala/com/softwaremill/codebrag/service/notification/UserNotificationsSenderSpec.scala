@@ -25,9 +25,9 @@ class UserNotificationsSenderSpec
   var sender: UserNotificationsSender = _
 
   val SomeFollowups = 20
-
-  val NoCommits = 0
   val NoFollowups = 0
+  val SomeCommits = 10
+  val NoCommits = 0
 
   override def beforeEach() {
     followupFinder = mock[FollowupFinder]
@@ -102,21 +102,21 @@ class UserNotificationsSenderSpec
     sender.sendFollowupsNotification(heartbeats)
 
     // then
-    verify(notificationService).sendCommitsOrFollowupNotification(user, NoCommits, SomeFollowups)
+    verify(notificationService).sendFollowupNotification(user, SomeFollowups)
   }
 
   it should "send daily digest when user has commits or followups" in {
     // given
     val user = UserAssembler.randomUser.get
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(toReviewCommitsFinder.countForCurrentBranch(user.id)).thenReturn(NoCommits)
+    when(toReviewCommitsFinder.countForCurrentBranch(user.id)).thenReturn(SomeCommits)
     when(followupFinder.countFollowupsForUser(user.id)).thenReturn(SomeFollowups)
 
     // when
     sender.sendDailyDigest(List(user))
 
     // then
-    verify(notificationService).sendDailyDigest(user, NoCommits, SomeFollowups)
+    verify(notificationService).sendDailyDigest(user, SomeCommits, SomeFollowups)
   }
 
   class TestUserNotificationsSender(

@@ -29,10 +29,10 @@ class NotificationService(
   }
 
 
-  def sendCommitsOrFollowupNotification(user: User, commitCount: Long, followupCount: Long) {
+  def sendFollowupNotification(user: User, followupCount: Long) {
     val templateParams = Map(
       "username" -> user.name,
-      "commit_followup_message" -> translate(commitCount, followupCount, isTotalCount = false),
+      "commit_followup_message" -> translate(0, followupCount, isTotalCount = false),
       "application_url" -> codebragConfig.applicationUrl
     )
     val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.UserNotifications, templateParams)
@@ -53,14 +53,14 @@ class NotificationService(
   }
 
   private def prepareContextForWelcomeNotification(user: User, noOfCommits: Long): Map[String, Any] = {
-    val users = Map("userName" -> user.name, "link" -> codebragConfig.applicationUrl)
+    val params = Map("userName" -> user.name, "link" -> codebragConfig.applicationUrl)
     if (noOfCommits == 1) {
-      return users ++ Map("noOfCommits" -> noOfCommits, "single" -> "true")
+      return params ++ Map("noOfCommits" -> noOfCommits, "single" -> "true")
     }
     if (noOfCommits > 1) {
-      return users ++ Map("noOfCommits" -> noOfCommits)
+      return params ++ Map("noOfCommits" -> noOfCommits)
     }
-    users
+    params
   }
 
 }
