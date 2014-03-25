@@ -11,7 +11,6 @@ import scala.concurrent.duration.FiniteDuration
 import com.softwaremill.codebrag.common.scheduling.ScheduleDelaysCalculator
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
-import com.softwaremill.codebrag.dao.finders.views.NotificationCountersView
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 import com.softwaremill.codebrag.activities.finders.ToReviewCommitsFinder
 
@@ -28,9 +27,9 @@ class UserNotificationSenderActor(actorSystem: ActorSystem,
   import UserNotificationSenderActor._
 
   def receive = {
-    case SendUserNotifications => {
+    case SendFollowupsNotification => {
       logger.debug("Preparing notifications to send out")
-      sendUserNotifications(heartbeatStore.loadAll())
+      sendFollowupsNotification(heartbeatStore.loadAll())
       scheduleNextNotificationsSendOut(actorSystem, self, config.notificationsCheckInterval)
     }
 
@@ -85,13 +84,13 @@ object UserNotificationSenderActor extends Logging {
   private def scheduleNextNotificationsSendOut(actorSystem: ActorSystem, receiver: ActorRef, interval: FiniteDuration) {
     import actorSystem.dispatcher
     logger.debug(s"Scheduling next preparation in $interval")
-    actorSystem.scheduler.scheduleOnce(interval, receiver, SendUserNotifications)
+    actorSystem.scheduler.scheduleOnce(interval, receiver, SendFollowupsNotification)
   }
 
 
 }
 
-case object SendUserNotifications
+case object SendFollowupsNotification
 
 case object SendDailyDigest
 
@@ -104,59 +103,52 @@ trait UserNotificationsSender extends Logging {
   def notificationService: NotificationService
   def config: CodebragConfig
 
-  def sendUserNotifications(heartbeats: List[(ObjectId, DateTime)]) {
+  def sendFollowupsNotification(heartbeats: List[(ObjectId, DateTime)]) {
+
     def userIsOffline(heartbeat: DateTime) = heartbeat.isBefore(clock.nowUtc.minus(config.userOfflinePeriod))
 
     var emailsScheduled = 0
 
-    heartbeats.foreach {
-      case (userId, lastHeartbeat) =>
-        if (userIsOffline(lastHeartbeat)) {
-          val counters = followupFinder.countFollowupsForUserSince(lastHeartbeat, userId)
-          userDAO.findById(userId).foreach(user => {
-            if (userShouldBeNotified(lastHeartbeat, user, counters)) {
-              sendNotifications(user, counters)
-              updateLastNotificationsDispatch(user, counters)
+    heartbeats.foreach { case (userId, lastHeartbeat) =>
+      if (userIsOffline(lastHeartbeat)) {
+        userDAO.findById(userId).foreach { user =>
+          whenNotificationsEnabled(user) {
+            val followupsCount = followupFinder.countFollowupsForUserSince(lastHeartbeat, user.id).followupCount
+            if (userShouldBeNotified(lastHeartbeat, user, followupsCount)) {
+              sendNotifications(user, followupsCount)
+              updateLastNotificationsDispatch(user, followupsCount)
               emailsScheduled += 1
             }
-          })
+          }
         }
+      }
     }
-
     logger.debug(s"Scheduled $emailsScheduled notification emails")
   }
 
-  private def userShouldBeNotified(heartbeat: DateTime, user: User, counters: NotificationCountersView) = {
-    val userHasNotificationsEnabled = user.settings.emailNotificationsEnabled
-    userHasNotificationsEnabled match {
-      case true => {
-        val needsCommitNotification = counters.pendingCommitCount > 0 && (user.notifications match {
-          case LastUserNotificationDispatch(None, _) => true
-          case LastUserNotificationDispatch(Some(date), _) => date.isBefore(heartbeat)
-        })
-        val needsFollowupNotification = counters.followupCount > 0 && (user.notifications match {
-          case LastUserNotificationDispatch(_, None) => true
-          case LastUserNotificationDispatch(_, Some(date)) => date.isBefore(heartbeat)
-        })
-        needsCommitNotification || needsFollowupNotification
-      }
-      case false => {
-        logger.debug(s"Not sending email to ${user.emailLowerCase} - user has notifications disabled")
-        false
-      }
+  private def whenNotificationsEnabled(user: User)(action: => Unit) = {
+    if(user.settings.emailNotificationsEnabled) {
+      action
+    } else {
+      logger.debug(s"Not sending email to ${user.emailLowerCase} - user has notifications disabled")
     }
-
   }
 
-  private def sendNotifications(user: User, counter: NotificationCountersView) = {
-    notificationService.sendCommitsOrFollowupNotification(user, counter.pendingCommitCount, counter.followupCount)
+  private def userShouldBeNotified(heartbeat: DateTime, user: User, followupsCount: Long) = {
+    followupsCount > 0 && (user.notifications match {
+      case LastUserNotificationDispatch(_, None) => true
+      case LastUserNotificationDispatch(_, Some(date)) => date.isBefore(heartbeat)
+    })
   }
 
-  private def updateLastNotificationsDispatch(user: User, counters: NotificationCountersView) {
-    val commitDate = if (counters.pendingCommitCount > 0) Some(clock.nowUtc) else None
-    val followupDate = if (counters.followupCount > 0) Some(clock.nowUtc) else None
-    if (commitDate.isDefined || followupDate.isDefined) {
-      userDAO.rememberNotifications(user.id, LastUserNotificationDispatch(commitDate, followupDate))
+  private def sendNotifications(user: User, followupsCount: Long) = {
+    notificationService.sendCommitsOrFollowupNotification(user, 0, followupsCount)
+  }
+
+  private def updateLastNotificationsDispatch(user: User, followupsCount: Long) {
+    val followupDate = if (followupsCount > 0) Some(clock.nowUtc) else None
+    followupDate.foreach { date =>
+      userDAO.rememberNotifications(user.id, LastUserNotificationDispatch(followupDate, followupDate))
     }
   }
 

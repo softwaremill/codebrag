@@ -25,7 +25,7 @@ class UserNotificationsSenderSpec
 
   var sender: UserNotificationsSender = _
 
-  val SomeCommitsAndFollowups = NotificationCountersView(10, 20)
+  val SomeCommitsAndFollowups = NotificationCountersView(0, 20)
   val NoCommitsAndFollowups = NotificationCountersView(0, 0)
 
   val NoCommits = 0
@@ -47,13 +47,13 @@ class UserNotificationsSenderSpec
     when(userDao.findById(user.id)).thenReturn(Some(user))
 
     // when
-    sender.sendUserNotifications(heartbeats)
+    sender.sendFollowupsNotification(heartbeats)
 
     // then
     verifyZeroInteractions(notificationService)
   }
 
-  it should "not send notification when user has no commits or followups waiting" in {
+  it should "not send notification when user has no followups waiting" in {
     // given
     val user = UserAssembler.randomUser.get.copy(notifications = LastUserNotificationDispatch(None, None))
     val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
@@ -61,7 +61,7 @@ class UserNotificationsSenderSpec
     when(followupFinder.countFollowupsForUserSince(heartbeats.head._2, user.id)).thenReturn(NoCommitsAndFollowups)
 
     // when
-    sender.sendUserNotifications(heartbeats)
+    sender.sendFollowupsNotification(heartbeats)
 
     // then
     verifyZeroInteractions(notificationService)
@@ -93,7 +93,7 @@ class UserNotificationsSenderSpec
     verifyZeroInteractions(notificationService)
   }
 
-  it should "send notification when user has commits or followups" in {
+  it should "send notification when user has new followups" in {
     // given
     val user = UserAssembler.randomUser.get
     val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
@@ -101,10 +101,10 @@ class UserNotificationsSenderSpec
     when(followupFinder.countFollowupsForUserSince(heartbeats.head._2, user.id)).thenReturn(SomeCommitsAndFollowups)
 
     // when
-    sender.sendUserNotifications(heartbeats)
+    sender.sendFollowupsNotification(heartbeats)
 
     // then
-    verify(notificationService).sendCommitsOrFollowupNotification(user, SomeCommitsAndFollowups.pendingCommitCount, SomeCommitsAndFollowups.followupCount)
+    verify(notificationService).sendCommitsOrFollowupNotification(user, NoCommits, SomeCommitsAndFollowups.followupCount)
   }
 
   it should "send daily digest when user has commits or followups" in {
