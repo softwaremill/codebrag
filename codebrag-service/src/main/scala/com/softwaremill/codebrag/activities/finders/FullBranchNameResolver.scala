@@ -2,6 +2,14 @@ package com.softwaremill.codebrag.activities.finders
 
 trait FullBranchNameResolver {
 
-  def resolveFullBranchName(shortName: String) = s"refs/remotes/origin/${shortName}"
+  val FullBranchNamePrefix = "refs/remotes/origin"
+
+  def resolveFullBranchName(branchName: String) = {
+    if(branchName.startsWith(FullBranchNamePrefix)) {
+      branchName
+    } else {
+      s"${FullBranchNamePrefix}/${branchName}"
+    }
+  }
 
 }
