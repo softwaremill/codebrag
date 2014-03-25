@@ -9,12 +9,7 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 
 class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationService: InvitationService, notificationService: NotificationService) extends Logging {
 
-  def firstRegistration: Boolean = {
-    userDao.findAll() match {
-      case x if x.isEmpty => true
-      case _ => false
-    }
-  }
+  def firstRegistration: Boolean = userDao.findAll().isEmpty
 
   def register(login: String, email: String, password: String, invitationCode: String): Either[String, Unit] = {
     logger.info(s"Trying to register $login")
