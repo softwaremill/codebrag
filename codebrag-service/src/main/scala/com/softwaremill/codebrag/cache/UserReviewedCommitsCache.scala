@@ -34,6 +34,15 @@ class UserReviewedCommitsCache(userDao: UserDAO, reviewedCommitsDao: ReviewedCom
     getUserEntry(userId)
   }
 
+  def usersWhoReviewed(sha: String) = {
+    userEntries.flatMap { entry =>
+      entry._2.commits.find(_.sha == sha) match {
+        case Some(found) => Some(entry._1)
+        case None => None
+      }
+    }.toSet
+  }
+
   def initialize() {
     logger.debug("Initializing cache of reviewed commits for registered users")
     userDao.findAll().foreach(user => lazyInitCacheForUser(user.id))

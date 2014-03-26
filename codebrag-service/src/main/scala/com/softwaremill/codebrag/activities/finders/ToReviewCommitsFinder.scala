@@ -14,13 +14,13 @@ class ToReviewCommitsFinder(
   repoCache: BranchCommitsCache,
   reviewedCommitsCache: UserReviewedCommitsCache,
   commitsInfoDao: CommitInfoDAO,
-  val userDao: UserDAO) extends Logging with UserDataEnhancer with FullBranchNameResolver {
+  val userDao: UserDAO) extends Logging with AuthorDataAppender with FullBranchNameResolver {
 
   def find(userId: ObjectId, branchName: String, pagingCriteria: PagingCriteria[String]): CommitListView = {
     val toReview = getSHAsOfCommitsToReview(userId, resolveFullBranchName(branchName))
     val page = pagingCriteria.extractPageFrom(toReview)
     val commits = commitsInfoDao.findByShaList(page.items)
-    enhanceWithUserData(CommitListView(commits, page.beforeCount, page.afterCount))
+    addAuthorData(CommitListView(commits, page.beforeCount, page.afterCount))
   }
 
   def count(userId: ObjectId, branchName: String): Long = {

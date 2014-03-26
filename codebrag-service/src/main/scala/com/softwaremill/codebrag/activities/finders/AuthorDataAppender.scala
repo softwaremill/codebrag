@@ -4,17 +4,17 @@ import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 import com.softwaremill.codebrag.dao.user.{UserDAO, PartialUserDetails}
 import com.softwaremill.codebrag.dao.finders.views.{CommitView, CommitListView}
 
-trait UserDataEnhancer {
+trait AuthorDataAppender {
 
   def userDao: UserDAO
 
-  def enhanceWithUserData(commit: CommitView) = {
+  def addAutorData(commit: CommitView) = {
     val commitAuthorOpt = findCommitAuthor(commit)
     val commitAuthorAvatarUrl = authorAvatar(commitAuthorOpt)
     commit.copy(authorAvatarUrl = commitAuthorAvatarUrl)
   }
 
-  def enhanceWithUserData(commitsList: CommitListView) = {
+  def addAuthorData(commitsList: CommitListView) = {
     val authors = findCommitsAuthors(commitsList.commits)
     val commitsWithAvatars = commitsList.commits.map(commit => {
       val commitAuthorAvatarUrl = authorAvatar(authors.find(commitAuthoredByUser(commit, _)))

@@ -16,7 +16,7 @@ trait CommitReviewedByUserMarker {
     commitsViews.map(markIfReviewed(userId, _, alreadyReviewed))
   }
 
-  def markAsReviewed(commitView: CommitView, userId: ObjectId) = {
+  def addReviewedFlag(commitView: CommitView, userId: ObjectId) = {
     val alreadyReviewed = commitsReviewedByUser(userId)
     markIfReviewed(userId, commitView, alreadyReviewed)
   }

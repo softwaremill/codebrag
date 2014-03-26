@@ -14,20 +14,26 @@ class AllCommitsFinder(
   repoCache: BranchCommitsCache,
   val reviewedCommitsCache: UserReviewedCommitsCache,
   commitsInfoDao: CommitInfoDAO,
-  val userDao: UserDAO) extends Logging with UserDataEnhancer with CommitReviewedByUserMarker with FullBranchNameResolver {
+  val userDao: UserDAO) extends Logging with AuthorDataAppender with CommitReviewedByUserMarker with ReviewersDataAppender with FullBranchNameResolver {
 
   def find(userId: ObjectId, branchName: String, pagingCriteria: PagingCriteria[String]): CommitListView = {
     val branchCommits = repoCache.getBranchCommits(resolveFullBranchName(branchName)).map(_.sha).reverse
     val page = pagingCriteria.extractPageFrom(branchCommits)
     val commits = commitsInfoDao.findByShaList(page.items)
-    enhanceWithUserData(CommitListView(markAsReviewed(commits, userId), page.beforeCount, page.afterCount))
+    addAuthorData(CommitListView(markAsReviewed(commits, userId), page.beforeCount, page.afterCount))
   }
 
   def findSingle(sha: String, userId: ObjectId) = {
     commitsInfoDao.findBySha(sha) match {
-      case Some(commit) => Right(markAsReviewed(enhanceWithUserData(PartialCommitInfo(commit)), userId))
+      case Some(commit) => {
+        val commitView = Option(PartialCommitInfo(commit))
+          .map(addAutorData(_))
+          .map(addReviewersData(_, sha))
+          .map(addReviewedFlag(_, userId))
+        Right(commitView.get)
+      }
       case None => Left("Commit not found")
     }
   }
-
+  
 }
