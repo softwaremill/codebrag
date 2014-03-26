@@ -15,6 +15,12 @@
                     <commit-msg-detailed message="currentCommit.info.message"></commit-msg-detailed>
                 </div>
                 <div class="info-line"><span class="username">{{currentCommit.info.authorName}}</span><span class="time">{{currentCommit.info.date | relativeDate}}</span></div>
+                <div class="commit-name" ng-show="currentCommit.info.reviewers">
+                    Users who reviewed this commit:
+                    <span ng-repeat="reviewer in currentCommit.info.reviewers">
+                        {{reviewer.fullName}}<span ng-show=" ! $last ">, </span>
+                    </span>
+                </div>
             </div>
         </div>
 
