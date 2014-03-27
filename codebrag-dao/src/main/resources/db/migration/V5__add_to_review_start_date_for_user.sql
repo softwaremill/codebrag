@@ -1,1 +1,0 @@
-ALTER TABLE "users_settings" ADD COLUMN "to_review_start_date" TIMESTAMP;
