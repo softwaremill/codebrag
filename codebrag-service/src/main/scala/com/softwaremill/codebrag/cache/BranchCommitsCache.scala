@@ -78,7 +78,7 @@ class PersistentBackendForCache(commitInfoDao: CommitInfoDAO, branchStateDao: Br
     try {
       commitInfoDao.storeCommit(c)
     } catch {
-      case e: Exception => logger.error(s"Could not save commit ${c.sha} in DB - Skipping")
+      case e: Exception => logger.warn(s"Could not save commit ${c.sha} in DB. Probably this one already exists - Skipping")
     }
   }
 
