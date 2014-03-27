@@ -21,6 +21,9 @@
                         {{reviewer.fullName}}<span ng-show=" ! $last ">, </span>
                     </span>
                 </div>
+                <div class="commit-name" ng-hide="currentCommit.info.reviewers.length">
+                    Awaiting review
+                </div>
             </div>
         </div>
 
