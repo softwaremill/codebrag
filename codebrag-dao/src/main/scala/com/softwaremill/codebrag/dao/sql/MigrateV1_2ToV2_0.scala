@@ -60,7 +60,7 @@ trait DetermineToReviewStartDates extends Logging {
       val commitsSorted = commits.toList.sortBy(_.commitDate)
       val dateForUser = commitsSorted match {
         case head :: _ => head.commitDate
-        case Nil => clock.nowUtc
+        case Nil => clock.nowUtc.minusMonths(2)
       }
       logger.debug(s"Setting date for ${user.name} to ${dateForUser}")
       userDao.setToReviewStartDate(user.id, dateForUser)
