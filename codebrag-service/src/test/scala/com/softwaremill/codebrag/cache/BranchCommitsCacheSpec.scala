@@ -10,7 +10,7 @@ import com.softwaremill.codebrag.repository.Repository
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.service.config.CommitCacheConfig
 
-class RepositoryCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
+class BranchCommitsCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
 
   var backend: PersistentBackendForCache = _
   var repoCache: BranchCommitsCache = _
