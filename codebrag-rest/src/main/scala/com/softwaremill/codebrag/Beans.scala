@@ -52,7 +52,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val commitReviewActivity = new CommitReviewActivity(commitInfoDao, reviewedCommitsCache, eventBus)
 
   lazy val newUserAdder = new NewUserAdder(userDao, eventBus, afterUserRegisteredHook, followupGeneratorForPriorReactions, welcomeFollowupsGenerator)
-  lazy val afterUserRegisteredHook = new AfterUserRegisteredHook(repositoryStateCache, reviewedCommitsCache)
+  lazy val afterUserRegisteredHook = new AfterUserRegisteredHook(repositoryStateCache, reviewedCommitsCache, config)
   lazy val afterUserLoginHook = new AfterUserLoginHook(reviewedCommitsCache)
 
   lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService, notificationService)

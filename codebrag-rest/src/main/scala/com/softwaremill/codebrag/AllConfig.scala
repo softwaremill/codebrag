@@ -11,3 +11,4 @@ trait AllConfig
   with EmailConfig
   with StatsConfig
   with CommitCacheConfig
+  with ReviewProcessConfig

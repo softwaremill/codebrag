@@ -1,6 +1,5 @@
 package com.softwaremill.codebrag.service.followups
 
-import com.softwaremill.codebrag.dao._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime

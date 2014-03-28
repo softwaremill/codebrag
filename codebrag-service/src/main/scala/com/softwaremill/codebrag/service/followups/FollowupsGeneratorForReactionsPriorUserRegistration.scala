@@ -1,13 +1,12 @@
 package com.softwaremill.codebrag.service.followups
 
-import com.softwaremill.codebrag.dao._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain._
 import com.softwaremill.codebrag.domain.Followup
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.common.Clock
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.service.config.CodebragConfig
+import com.softwaremill.codebrag.service.config.ReviewProcessConfig
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.reaction.{LikeDAO, CommitCommentDAO}
 import com.softwaremill.codebrag.dao.followup.FollowupDAO
@@ -16,7 +15,7 @@ class FollowupsGeneratorForReactionsPriorUserRegistration(
   commentsDao: CommitCommentDAO,
   likesDao: LikeDAO,
   followupsDao: FollowupDAO,
-  commitInfoDao: CommitInfoDAO, codebragConfig: CodebragConfig)(implicit val clock: Clock) extends Logging {
+  commitInfoDao: CommitInfoDAO, config: ReviewProcessConfig)(implicit val clock: Clock) extends Logging {
 
   def recreateFollowupsForPastComments(newUser: NewUserRegistered) {
     logger.debug("Attempting to create followups for comments already placed in user commits")
@@ -41,7 +40,7 @@ class FollowupsGeneratorForReactionsPriorUserRegistration(
   }
 
   private def findRecentUserCommits(newUser: NewUserRegistered): List[ObjectId] = {
-    val timeRangeForCommits = clock.now.minusDays(codebragConfig.replayFollowupsForPastCommitsTimeInDays)
+    val timeRangeForCommits = clock.now.minusDays(config.daysToRecreateFollowups)
     commitInfoDao.findLastCommitsAuthoredByUserSince(newUser, timeRangeForCommits).map(_.id)
   }
 

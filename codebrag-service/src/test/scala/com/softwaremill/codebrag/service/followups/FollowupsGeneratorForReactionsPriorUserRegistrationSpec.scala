@@ -4,8 +4,7 @@ import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.common.ClockSpec
-import com.softwaremill.codebrag.dao._
-import com.softwaremill.codebrag.service.config.CodebragConfig
+import com.softwaremill.codebrag.service.config.ReviewProcessConfig
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler, CommitInfoAssembler, UserAssembler}
@@ -15,7 +14,6 @@ import com.softwaremill.codebrag.domain.Followup
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.reaction.{MongoLikeDAO, LikeDAO, CommitCommentDAO}
 import com.softwaremill.codebrag.dao.followup.FollowupDAO
-import com.softwaremill.codebrag.common.config.ConfigWithDefault
 
 class FollowupsGeneratorForReactionsPriorUserRegistrationSpec extends FlatSpec with ShouldMatchers with BeforeAndAfterEach with MockitoSugar with ClockSpec {
 
@@ -24,7 +22,7 @@ class FollowupsGeneratorForReactionsPriorUserRegistrationSpec extends FlatSpec w
   var followupsDao: FollowupDAO = _
   var commitInfoDao: CommitInfoDAO = _
 
-  val config = new CodebragConfig with ConfigWithDefault {
+  val config = new ReviewProcessConfig {
     import collection.JavaConversions._
     def rootConfig = ConfigFactory.parseMap(Map.empty[String, String])
   }
@@ -32,7 +30,7 @@ class FollowupsGeneratorForReactionsPriorUserRegistrationSpec extends FlatSpec w
   var followupsGenerator: FollowupsGeneratorForReactionsPriorUserRegistration = _
 
   val UserBob = NewUserRegistered(UserAssembler.randomUser.get)
-  val ConfiguredTimeBack = clock.now.minusDays(config.replayFollowupsForPastCommitsTimeInDays)
+  val ConfiguredTimeBack = clock.now.minusDays(config.daysToRecreateFollowups)
   val BobCommits = List(CommitInfoAssembler.randomCommit.withAuthorEmail(UserBob.email).withAuthorName(UserBob.fullName).get)
   val BobCommitsIds = BobCommits.map(_.id)
 
@@ -54,7 +52,7 @@ class FollowupsGeneratorForReactionsPriorUserRegistrationSpec extends FlatSpec w
   it should "not recreate any followups if user has no commits in configured time" in {
     // given
     val user = NewUserRegistered(UserAssembler.randomUser.get)
-    val timeBack = clock.now.minusDays(config.replayFollowupsForPastCommitsTimeInDays)
+    val timeBack = clock.now.minusDays(config.daysToRecreateFollowups)
     when(commitInfoDao.findLastCommitsAuthoredByUserSince(user, timeBack)).thenReturn(List.empty)
 
     // when

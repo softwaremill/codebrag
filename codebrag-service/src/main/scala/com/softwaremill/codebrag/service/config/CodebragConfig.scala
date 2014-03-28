@@ -11,7 +11,6 @@ trait CodebragConfig extends ConfigWithDefault with StatsConfig with EmailNotifi
 
   lazy val invitationExpiryTime: ReadablePeriod = Period.millis(getMilliseconds("codebrag.invitation-expiry-time", 24.hours.toMillis).toInt)
 
-  lazy val replayFollowupsForPastCommitsTimeInDays = getInt("codebrag.replay-followups-time", 30)
 }
 
 trait EmailNotificationConfig extends ConfigWithDefault {

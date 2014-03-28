@@ -8,13 +8,13 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
 import CommitToViewImplicits._
 import com.softwaremill.codebrag.cache.{UserReviewedCommitsCache, BranchCommitsCache, BranchCommitCacheEntry}
-import com.softwaremill.codebrag.service.config.CommitCacheConfig
+import com.softwaremill.codebrag.service.config.ReviewProcessConfig
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 import com.softwaremill.codebrag.dao.finders.views.CommitListView
 
 class ToReviewCommitsFinder(
-  config: CommitCacheConfig,
+  config: ReviewProcessConfig,
   repoCache: BranchCommitsCache,
   reviewedCommitsCache: UserReviewedCommitsCache,
   commitsInfoDao: CommitInfoDAO,
