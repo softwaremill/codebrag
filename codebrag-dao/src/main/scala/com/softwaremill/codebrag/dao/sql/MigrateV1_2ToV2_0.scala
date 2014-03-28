@@ -14,8 +14,10 @@ import java.util.Comparator
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
+import com.softwaremill.codebrag.dao.reviewedcommits.ReviewedCommitsDAO
+import com.softwaremill.codebrag.domain.ReviewedCommit
 
-object MigrateV1_2ToV2_0 extends App with DetermineToReviewStartDates with CleanpCommitDuplicates {
+object MigrateV1_2ToV2_0 extends App with DetermineToReviewStartDates with CleanpCommitDuplicates with MarkCommitsAsReviewed {
 
   val config = new DaoConfig {
     def rootConfig = ConfigFactory.load()
@@ -32,10 +34,12 @@ object MigrateV1_2ToV2_0 extends App with DetermineToReviewStartDates with Clean
   override def commitDao = sqlDaos.commitInfoDao
   override def taskDao = sqlDaos.commitReviewTaskDao
   override def userDao = sqlDaos.userDao
+  override def reviewedCommitsDao = sqlDaos.reviewedCommitsDao
 
   logger.debug("Codebrag v1.2 to v2.0 database migration")
   cleanupCommitDuplicates(sqlDb)
   setupToReviewStartDates(sqlDb)
+  markAsReviewed(sqlDb)
   logger.debug("Codebrag v1.2 to v2.0 database migration - Done")
 
 }
@@ -46,6 +50,8 @@ trait DetermineToReviewStartDates extends Logging {
   def taskDao: CommitReviewTaskDAO
   def commitDao: CommitInfoDAO
   def clock: Clock
+
+  val DaysToMoveDateBack = 30
 
   implicit val comparator = Ordering.comparatorToOrdering(DateTimeComparator.getInstance.asInstanceOf[Comparator[DateTime]])
 
@@ -60,12 +66,40 @@ trait DetermineToReviewStartDates extends Logging {
       val commitsSorted = commits.toList.sortBy(_.commitDate)
       val dateForUser = commitsSorted match {
         case head :: _ => head.commitDate
-        case Nil => clock.nowUtc.minusMonths(2)
+        case Nil => clock.nowUtc.minusDays(DaysToMoveDateBack)
       }
       logger.debug(s"Setting date for ${user.name} to ${dateForUser}")
       userDao.setToReviewStartDate(user.id, dateForUser)
     }
     logger.debug(s"Setting to review start dates for users - Done")
+  }
+
+}
+
+trait MarkCommitsAsReviewed extends Logging {
+
+  def userDao: UserDAO
+  def taskDao: CommitReviewTaskDAO
+  def commitDao: CommitInfoDAO
+  def reviewedCommitsDao: ReviewedCommitsDAO
+  def clock: Clock
+
+  def markAsReviewed(sqlDb: SQLDatabase) {
+    logger.debug(s"Mark commits user reviewed as done")
+    sqlDb.db.withDynSession {
+      (Q.u + "CREATE TABLE \"reviewed_commits\"(\"user_id\" VARCHAR NOT NULL, \"sha\" VARCHAR NOT NULL, \"review_date\" TIMESTAMP NOT NULL)").execute()
+      (Q.u + "ALTER TABLE \"reviewed_commits\" ADD CONSTRAINT \"reviewed_commits_id\" PRIMARY KEY(\"user_id\", \"sha\")").execute()
+    }
+    userDao.findAll().foreach { user =>
+      val reviewTasksPending = taskDao.commitsPendingReviewFor(user.id)
+      val allCommitIds = commitDao.findAllIds()
+      val reviewedCommits = allCommitIds.filterNot(reviewTasksPending.contains)
+      reviewedCommits
+        .flatMap(commitDao.findByCommitId)
+        .map( c=> ReviewedCommit.apply(c.sha, user.id, clock.nowUtc))
+        .foreach(reviewedCommitsDao.storeReviewedCommit)
+    }
+    logger.debug(s"Mark commits user reviewed as done - Done")
   }
 
 }
