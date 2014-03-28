@@ -58,7 +58,7 @@ trait DetermineToReviewStartDates extends Logging {
   def setupToReviewStartDates(sqlDb: SQLDatabase) = {
     logger.debug(s"Setting to review start dates for users")
     sqlDb.db.withDynSession {
-      (Q.u + "ALTER TABLE \"users_settings\" ADD COLUMN \"to_review_start_date\" TIMESTAMP").execute
+      (Q.u + "ALTER TABLE \"users_settings\" ADD COLUMN IF NOT EXISTS \"to_review_start_date\" TIMESTAMP").execute
     }
 
     userDao.findAll().foreach {user =>
@@ -85,12 +85,13 @@ trait MarkCommitsAsReviewed extends Logging {
   def clock: Clock
 
   def markAsReviewed(sqlDb: SQLDatabase) {
-    logger.debug(s"Mark commits user reviewed as done")
+    logger.debug(s"Migrate reviewed commits")
     sqlDb.db.withDynSession {
-      (Q.u + "CREATE TABLE \"reviewed_commits\"(\"user_id\" VARCHAR NOT NULL, \"sha\" VARCHAR NOT NULL, \"review_date\" TIMESTAMP NOT NULL)").execute()
-      (Q.u + "ALTER TABLE \"reviewed_commits\" ADD CONSTRAINT \"reviewed_commits_id\" PRIMARY KEY(\"user_id\", \"sha\")").execute()
+      (Q.u + "CREATE TABLE IF NOT EXISTS \"reviewed_commits\" (\"user_id\" VARCHAR NOT NULL, \"sha\" VARCHAR NOT NULL, \"review_date\" TIMESTAMP NOT NULL)").execute()
+      (Q.u + "ALTER TABLE \"reviewed_commits\" ADD CONSTRAINT IF NOT EXISTS \"reviewed_commits_id\" PRIMARY KEY(\"user_id\", \"sha\")").execute()
     }
     userDao.findAll().foreach { user =>
+      logger.debug(s"Migrate reviewed commits for user ${user.name}")
       val reviewTasksPending = taskDao.commitsPendingReviewFor(user.id)
       val allCommitIds = commitDao.findAllIds()
       val reviewedCommits = allCommitIds.filterNot(reviewTasksPending.contains)
@@ -98,8 +99,9 @@ trait MarkCommitsAsReviewed extends Logging {
         .flatMap(commitDao.findByCommitId)
         .map( c=> ReviewedCommit.apply(c.sha, user.id, clock.nowUtc))
         .foreach(reviewedCommitsDao.storeReviewedCommit)
+      logger.debug(s"Migrate reviewed commits for user ${user.name} - Done")
     }
-    logger.debug(s"Mark commits user reviewed as done - Done")
+    logger.debug(s"Migrate reviewed commits - Done")
   }
 
 }
