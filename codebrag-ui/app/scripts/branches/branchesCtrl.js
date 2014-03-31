@@ -17,6 +17,8 @@ angular.module('codebrag.branches')
             return branchesService.selectedBranch() === branch;
         };
 
+        $scope.selectedBranch = branchesService.selectedBranch;
+
     });
 
 

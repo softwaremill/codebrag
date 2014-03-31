@@ -1,13 +1,26 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, commitsService, $stateParams, $state, currentCommit, events, pageTourService) {
+    .controller('CommitsCtrl', function ($scope, commitsService, $stateParams, $state, currentCommit, events, pageTourService, notificationService) {
 
         $scope.$on(events.reloadCommitsList, function() {
             initCtrl();
         });
 
-        $scope.switchListView = function() {
+        $scope.switchListView = function(newMode) {
+            newMode && ($scope.listViewMode = newMode);
+            if(angular.isUndefined($scope.listViewMode)) {
+                $scope.listViewMode = 'pending';
+            }
             $scope.listViewMode === 'all' ? loadAllCommits() : loadPendingCommits();
+        };
+
+        $scope.displaySelectedMode = function() {
+            return $scope.listViewMode === 'all' ? 'all' : $scope.toReviewLabel();
+        };
+
+        $scope.toReviewLabel = function() {
+            var commitsCount = notificationService.counters.commitsCount;
+            return 'to review (' + commitsCount + ')';
         };
 
         $scope.hasNextCommits = function() {
@@ -60,9 +73,6 @@ angular.module('codebrag.commits')
 
         function initCtrl() {
             $scope.switchListView();
-            if(angular.isUndefined($scope.listViewMode)) {
-                $scope.listViewMode = 'pending';
-            }
         }
 
         initCtrl();

@@ -8,16 +8,18 @@ describe("Commits Controller", function () {
         $rootScope,
         $q,
         commitsService,
+        notificationService,
         $stateParams,
         events;
 
-    beforeEach(module('codebrag.commits'));
+    beforeEach(module('codebrag.commits', 'codebrag.notifications'));
 
-    beforeEach(inject(function(_$rootScope_, _$q_, $controller, _commitsService_, _$stateParams_, _events_) {
+    beforeEach(inject(function(_$rootScope_, _$q_, $controller, _commitsService_, _$stateParams_, _events_, _notificationService_) {
         $scope = _$rootScope_.$new();
         $rootScope = _$rootScope_;
         $q = _$q_;
         commitsService = _commitsService_;
+        notificationService = _notificationService_;
         $stateParams = _$stateParams_;
         events = _events_;
     }));
@@ -50,8 +52,7 @@ describe("Commits Controller", function () {
         commitsService.loadCommits.reset(); // reset spy call counter
 
         // When
-        $scope.listViewMode = 'pending';
-        $scope.switchListView();
+        $scope.switchListView('pending');
         $scope.$apply();
 
         // then
@@ -65,8 +66,7 @@ describe("Commits Controller", function () {
         commitsService.loadCommits.andReturn(commits.promise);
 
         // When
-        $scope.listViewMode = 'pending';
-        $scope.switchListView();
+        $scope.switchListView('pending');
         $scope.$apply();
 
         //Then
@@ -78,8 +78,7 @@ describe("Commits Controller", function () {
         $stateParams.sha = null;
 
         // when
-        $scope.listViewMode = 'all';
-        $scope.switchListView();
+        $scope.switchListView('all');
 
         // then
         expect(commitsService.loadCommits).toHaveBeenCalledWith();
@@ -90,8 +89,7 @@ describe("Commits Controller", function () {
         $stateParams.sha = '123';
 
         // when
-        $scope.listViewMode = 'all';
-        $scope.switchListView();
+        $scope.switchListView('all');
 
         // then
         expect(commitsService.loadCommits).toHaveBeenCalledWith($stateParams.sha);
@@ -118,4 +116,17 @@ describe("Commits Controller", function () {
         expect(result).toBeTruthy();
     });
 
+    it('should return correct label (with counter) for reviewed commits', function() {
+        // given
+        notificationService.counters = {commitsCount: 10};
+
+        // when
+        var toReviewLabel = $scope.displaySelectedMode();
+        $scope.switchListView('all');
+        var allLabel = $scope.displaySelectedMode();
+
+        // then
+        expect(toReviewLabel).toBe('to review (10)');
+        expect(allLabel).toBe('all');
+    });
 });
