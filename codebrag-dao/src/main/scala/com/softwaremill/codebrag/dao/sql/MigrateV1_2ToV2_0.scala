@@ -15,7 +15,7 @@ import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.reviewtask.CommitReviewTaskDAO
 import com.softwaremill.codebrag.dao.reviewedcommits.ReviewedCommitsDAO
-import com.softwaremill.codebrag.domain.ReviewedCommit
+import com.softwaremill.codebrag.domain.{CommitAuthorClassification, ReviewedCommit}
 
 object MigrateV1_2ToV2_0 extends App with DetermineToReviewStartDates with CleanpCommitDuplicates with MarkCommitsAsReviewed {
 
@@ -93,10 +93,10 @@ trait MarkCommitsAsReviewed extends Logging {
     userDao.findAll().foreach { user =>
       logger.debug(s"Migrate reviewed commits for user ${user.name}")
       val reviewTasksPending = taskDao.commitsPendingReviewFor(user.id)
-      val allCommitIds = commitDao.findAllIds()
-      val reviewedCommits = allCommitIds.filterNot(reviewTasksPending.contains)
-      reviewedCommits
+      commitDao.findAllIds()
+        .filterNot(reviewTasksPending.contains)
         .flatMap(commitDao.findByCommitId)
+        .filterNot(CommitAuthorClassification.commitAuthoredByUser(_, user))
         .map( c=> ReviewedCommit.apply(c.sha, user.id, clock.nowUtc))
         .foreach(reviewedCommitsDao.storeReviewedCommit)
       logger.debug(s"Migrate reviewed commits for user ${user.name} - Done")
