@@ -5,7 +5,14 @@
         </div>
     </div>
     <div class="diff-container clearfix" ng-show="currentCommit">
-        <div class="reviewers-info">Awaiting review
+        <div class="reviewers-info" ng-show="currentCommit.info.reviewers.length">
+            Users who reviewed this commit:
+            <span ng-repeat="reviewer in currentCommit.info.reviewers">
+                {{reviewer.fullName}}<span ng-show=" ! $last ">, </span>
+            </span>
+        </div>
+        <div class="reviewers-info" ng-hide="currentCommit.info.reviewers.length">
+            Awaiting review
         </div>
         <div class="authored-box">
             <div class="author-box"><user-avatar url="currentCommit.info.authorAvatarUrl"></user-avatar></div>
@@ -18,10 +25,6 @@
                 </div>
                 <div class="info-line"><span class="username">{{currentCommit.info.authorName}}</span><span class="time">{{currentCommit.info.date | relativeDate}}</span></div>
                 <div class="commit-name" ng-show="currentCommit.info.reviewers">
-                    Users who reviewed this commit:
-                    <span ng-repeat="reviewer in currentCommit.info.reviewers">
-                        {{reviewer.fullName}}<span ng-show=" ! $last ">, </span>
-                    </span>
                 </div>
                 <div class="commit-name" ng-hide="currentCommit.info.reviewers.length">
                     Awaiting review
