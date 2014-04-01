@@ -6,8 +6,9 @@ import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
 import com.softwaremill.codebrag.cache.BranchCommitsCache
+import com.softwaremill.codebrag.service.config.CommitCacheConfig
 
-class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: BranchStateDAO, cache: BranchCommitsCache) extends Logging {
+class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: BranchStateDAO, cache: BranchCommitsCache, config: CommitCacheConfig) extends Logging {
 
   def importRepoCommits(repository: Repository) {
     try {
@@ -17,7 +18,7 @@ class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: Br
       case e: Exception => logger.error("Cannot pull changes from upstream", e)
     }
     try {
-      val loaded = repository.loadCommitsSince(branchStateDao.loadBranchesStateAsMap)
+      val loaded = repository.loadCommitsSince(branchStateDao.loadBranchesStateAsMap, config.maxCommitsCachedPerBranch)
       cache.addCommits(loaded)
       updateRepoReadyStatus(repository)
     } catch {

@@ -6,6 +6,8 @@ import com.softwaremill.codebrag.service.commits.jgit.TemporaryGitRepo
 
 class RepositoryDeltaLoaderSpec  extends FlatSpec with ShouldMatchers with RepositorySpec {
 
+  private val MaxCommitsForNewBranch = 15
+
   it should "load commits since given SHA for all branches" in {
     TemporaryGitRepo.withGitRepo { gitRepo =>
     // given
@@ -19,7 +21,7 @@ class RepositoryDeltaLoaderSpec  extends FlatSpec with ShouldMatchers with Repos
       )
 
       // when
-      val loadResult = repo.loadCommitsSince(lastKnownShas)
+      val loadResult = repo.loadCommitsSince(lastKnownShas, MaxCommitsForNewBranch)
 
       // then
       val masterLoadResult = loadResultForBranch("refs/heads/master", loadResult)
@@ -29,26 +31,26 @@ class RepositoryDeltaLoaderSpec  extends FlatSpec with ShouldMatchers with Repos
     }
   }
 
-  it should "load all commits for branches not yet known by Codebrag" in {
+  it should "load max number of last commits for branches not yet known by Codebrag" in {
     TemporaryGitRepo.withGitRepo { gitRepo =>
     // given
       val repo = new TestRepository(repoData(gitRepo))
       val masterCommits = gitRepo.createCommits(10)
       gitRepo.checkoutBranch("feature")
-      val featureCommits = gitRepo.createCommits(5)
+      val featureCommits = gitRepo.createCommits(10)
       val lastKnownShas = Map(
         "refs/heads/master" -> masterCommits.drop(5).head
       )
 
       // when
-      val loadResult = repo.loadCommitsSince(lastKnownShas)
+      val loadResult = repo.loadCommitsSince(lastKnownShas, MaxCommitsForNewBranch)
 
       // then
       val masterLoadResult = loadResultForBranch("refs/heads/master", loadResult)
       masterLoadResult.commits.map(_.sha) should equal(masterCommits.takeRight(4).reverse)
       val branchLoadResult = loadResultForBranch("refs/heads/feature", loadResult)
       val completeFeatureBranchCommits = masterCommits ++ featureCommits
-      branchLoadResult.commits.map(_.sha) should equal(completeFeatureBranchCommits.reverse)
+      branchLoadResult.commits.map(_.sha) should equal(completeFeatureBranchCommits.takeRight(MaxCommitsForNewBranch).reverse)
     }
   }
 
@@ -62,7 +64,7 @@ class RepositoryDeltaLoaderSpec  extends FlatSpec with ShouldMatchers with Repos
       )
 
       // when
-      val loadResult = repo.loadCommitsSince(lastKnownShas)
+      val loadResult = repo.loadCommitsSince(lastKnownShas, MaxCommitsForNewBranch)
 
       // then
       val masterLoadResult = loadResultForBranch("refs/heads/master", loadResult)

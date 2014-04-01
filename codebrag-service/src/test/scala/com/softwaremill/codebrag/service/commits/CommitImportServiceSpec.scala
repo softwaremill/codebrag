@@ -10,6 +10,7 @@ import com.softwaremill.codebrag.repository.Repository
 import org.mockito.Matchers
 import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
 import com.softwaremill.codebrag.cache.BranchCommitsCache
+import com.softwaremill.codebrag.service.config.CommitCacheConfig
 
 class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
 
@@ -18,8 +19,10 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   var repoCache: BranchCommitsCache = _
   var repository: Repository = _
   var service: CommitImportService = _
+  var config: CommitCacheConfig = _
 
   val SavedRepoState = Map.empty[String, String]
+  val MaxCommitsForNewBranch = 100
   val LoadedCommits = MultibranchLoadCommitsResult("test-repo", List.empty)
 
   before {
@@ -27,7 +30,9 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
     branchStateDao = mock[BranchStateDAO]
     repoCache = mock[BranchCommitsCache]
     repository = mock[Repository]
-    service = new CommitImportService(repoStatusDao, branchStateDao, repoCache)
+    config = mock[CommitCacheConfig]
+    when(config.maxCommitsCachedPerBranch).thenReturn(MaxCommitsForNewBranch)
+    service = new CommitImportService(repoStatusDao, branchStateDao, repoCache, config)
   }
 
   it should "pull changes and load commits from repo since given (saved) state" in {
@@ -39,13 +44,13 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
     // then
     verify(repository).pullChanges()
-    verify(repository).loadCommitsSince(SavedRepoState)
+    verify(repository).loadCommitsSince(SavedRepoState, config.maxCommitsCachedPerBranch)
   }
   
   it should "add loaded commits to cache" in {
     // given
     when(branchStateDao.loadBranchesStateAsMap).thenReturn(SavedRepoState)
-    when(repository.loadCommitsSince(SavedRepoState)).thenReturn(LoadedCommits)
+    when(repository.loadCommitsSince(SavedRepoState, config.maxCommitsCachedPerBranch)).thenReturn(LoadedCommits)
     
     // when
     service.importRepoCommits(repository)
@@ -56,7 +61,7 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
   it should "update repo status to not-ready when commits import failed" in {
     // given
-    when(repository.loadCommitsSince(Matchers.any[Map[String, String]])).thenThrow(new RuntimeException("oops"))
+    when(repository.loadCommitsSince(Matchers.any[Map[String, String]], Matchers.anyInt())).thenThrow(new RuntimeException("oops"))
 
     // when
     service.importRepoCommits(repository)
