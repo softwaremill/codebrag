@@ -24,11 +24,6 @@
                     <commit-msg-detailed message="currentCommit.info.message"></commit-msg-detailed>
                 </div>
                 <div class="info-line"><span class="username">{{currentCommit.info.authorName}}</span><span class="time">{{currentCommit.info.date | relativeDate}}</span></div>
-                <div class="commit-name" ng-show="currentCommit.info.reviewers">
-                </div>
-                <div class="commit-name" ng-hide="currentCommit.info.reviewers.length">
-                    Awaiting review
-                </div>
             </div>
         </div>
 
