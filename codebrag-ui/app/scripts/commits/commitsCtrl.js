@@ -72,6 +72,7 @@ angular.module('codebrag.commits')
         }
 
         function initCtrl() {
+            currentCommit.empty();
             $scope.switchListView();
         }
 

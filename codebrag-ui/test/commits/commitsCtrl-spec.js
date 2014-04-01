@@ -43,7 +43,7 @@ describe("Commits Controller", function () {
 
         // then
         expect($scope.listViewMode).toBe('pending');
-        expect(currentCommit.get()).toBe('dummy commit');
+        expect(currentCommit.get()).toBeNull();
         expect(commitsService.loadCommits).toHaveBeenCalled();
     }));
 
