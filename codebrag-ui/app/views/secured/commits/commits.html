@@ -43,8 +43,8 @@
                         </span>
                     </div>
                     <!--commit info start-->
-                    <div class="commit-container" ng-repeat="commit in commits" mark-current="commit.id"
-                         state-param-name="id" ng-click="openCommitDetails(commit.sha)" ng-class="{reviewed: !!!commit.pendingReview}">
+                    <div class="commit-container" ng-repeat="commit in commits" mark-current="commit.sha"
+                         state-param-name="sha" ng-click="openCommitDetails(commit.sha)" ng-class="{reviewed: !!!commit.pendingReview}">
                         <div class="authored-box">
                             <div class="author-box"><user-avatar url="commit.authorAvatarUrl"></user-avatar></div>
                             <div class="info-box">
