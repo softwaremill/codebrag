@@ -10,6 +10,7 @@ describe("Displaying reviewers list", function () {
 
     var testData = [
         {reviewers: [], expected: 'Awaiting review'},
+        {reviewers: [Bob], expected: 'Bob reviewed this commit'},
         {reviewers: [currentUser], expected: 'You reviewed this commit'},
         {reviewers: [currentUser, Bob], expected: '2 people including you reviewed this commit'},
         {reviewers: [Bob, Alice, John], expected: '3 people reviewed this commit'}
