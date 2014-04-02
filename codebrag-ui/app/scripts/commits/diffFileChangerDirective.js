@@ -29,7 +29,8 @@ angular.module('codebrag.commits')
         return {
             restrict: 'E',
             scope: {},
-            template: '<select id="file-changer" class="file-changer"></select>',
+            transclude: true,
+            template: '<label for="file-changer" ng-transclude></label><select id="file-changer" class="file-changer"></select>',
             link: function (scope, el) {
                 var select = el.find('select');
 
