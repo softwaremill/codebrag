@@ -35,4 +35,3 @@ angular.module('codebrag.commits')
 
     });
 
-
