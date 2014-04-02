@@ -2,11 +2,17 @@ package com.softwaremill.codebrag.dao.finders.views
 
 import java.util.Date
 import com.softwaremill.codebrag.domain.{User, CommitLike}
+import com.softwaremill.codebrag.dao.finders.views.CommitReviewState.CommitReviewState
 
 case class CommitListView(commits: List[CommitView], older: Int, newer: Int)
 
 case class CommitView(id: String, sha: String, message: String, authorName: String, authorEmail: String,
-                      date: Date, pendingReview: Boolean = true, authorAvatarUrl: String = "", reviewers: Option[Set[CommitReviewerView]] = None)
+                      date: Date, state: CommitReviewState = CommitReviewState.AwaitingReview, authorAvatarUrl: String = "", reviewers: Option[Set[CommitReviewerView]] = None)
+
+object CommitReviewState extends Enumeration {
+  type CommitReviewState = Value
+  val Reviewed, AwaitingReview, ReviewNotRequired = Value
+}
 
 case class CommitReviewerView(id: String, fullName: String)
 

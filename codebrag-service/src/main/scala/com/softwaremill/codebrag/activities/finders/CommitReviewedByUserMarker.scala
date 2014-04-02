@@ -1,10 +1,11 @@
 package com.softwaremill.codebrag.activities.finders
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.finders.views.CommitView
+import com.softwaremill.codebrag.dao.finders.views.{CommitReviewState, CommitView}
 import com.softwaremill.codebrag.domain.{CommitAuthorClassification, ReviewedCommit}
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
+import com.softwaremill.codebrag.cache.{BranchCommitsCache, UserReviewedCommitsCache}
+import org.joda.time.DateTime
 
 trait CommitReviewedByUserMarker {
 
@@ -12,28 +13,39 @@ trait CommitReviewedByUserMarker {
   def userDao: UserDAO
 
   def markAsReviewed(commitsViews: List[CommitView], userId: ObjectId) = {
-    val alreadyReviewed = commitsReviewedByUser(userId)
-    commitsViews.map(markIfReviewed(userId, _, alreadyReviewed))
+    commitsViews.map(markIfReviewed(userId, _))
   }
 
   def addReviewedFlag(commitView: CommitView, userId: ObjectId) = {
-    val alreadyReviewed = commitsReviewedByUser(userId)
-    markIfReviewed(userId, commitView, alreadyReviewed)
+    markIfReviewed(userId, commitView)
   }
 
-  private def markIfReviewed(userId: ObjectId, commitView: CommitView, alreadyReviewed: Set[ReviewedCommit]) = {
-    val userIsAuthor = userDao.findById(userId) match {
-      case Some(user) => CommitAuthorClassification.commitAuthoredByUser(commitView, user)
+  private def markIfReviewed(userId: ObjectId, commitView: CommitView) = {
+    val commitState = if(isUserAnAuthor(commitView, userId)|| isReviewNotRequired(commitView, userId)) {
+      CommitReviewState.ReviewNotRequired
+    } else if(commitAlreadyReviewedByUser(commitView, userId)) {
+      CommitReviewState.Reviewed
+    } else {
+      CommitReviewState.AwaitingReview
+    }
+    commitView.copy(state = commitState)
+  }
+
+  private def commitAlreadyReviewedByUser(commit: CommitView, userId: ObjectId) = {
+    reviewedCommitsCache.getUserEntry(userId).commits.find(_.sha == commit.sha).nonEmpty
+  }
+  
+  private def isUserAnAuthor(commit: CommitView, userId: ObjectId) = {
+    userDao.findById(userId) match {
+      case Some(user) => CommitAuthorClassification.commitAuthoredByUser(commit, user)
       case None => true  // should not happen, but if yes mark user as author
     }
-    val toReview = if(userIsAuthor) {
-      false
-    } else {
-      alreadyReviewed.find(_.sha == commitView.sha).isEmpty
-    }
-    commitView.copy(pendingReview = toReview)
   }
 
-  private def commitsReviewedByUser(userId: ObjectId) = reviewedCommitsCache.getUserEntry(userId).commits
+  private def isReviewNotRequired(commit: CommitView, userId: ObjectId) = {
+    val userDate = reviewedCommitsCache.getUserEntry(userId).toReviewStartDate
+    val commitDate = new DateTime(commit.date)
+    !commitDate.isBefore(userDate)
+  }
 
 }
