@@ -45,7 +45,7 @@ class ToReviewCommitsFinder(
     val commitsInBranch = repoCache.getBranchCommits(fullBranchName)
     commitsInBranch
       .filterNot(userOrDoneCommits(_, user))
-      .takeWhile(commitsEarlierThanUserDate(_, userBoundaryDate))
+      .takeWhile(commitsAfterUserDate(_, userBoundaryDate))
       .filter(notYetFullyReviewed)
       .map(_.sha)
       .reverse
@@ -56,7 +56,7 @@ class ToReviewCommitsFinder(
   }
 
 
-  def commitsEarlierThanUserDate(commitEntry: BranchCommitCacheEntry, userBoundaryDate: DateTime): Boolean = {
+  def commitsAfterUserDate(commitEntry: BranchCommitCacheEntry, userBoundaryDate: DateTime): Boolean = {
     commitEntry.commitDate.isAfter(userBoundaryDate) || commitEntry.commitDate.isEqual(userBoundaryDate)
   }
 
