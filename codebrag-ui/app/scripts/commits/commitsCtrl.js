@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, commitsService, $stateParams, $state, currentCommit, events, pageTourService, notificationService) {
+    .controller('CommitsCtrl', function ($scope, commitsService, $stateParams, $state, events, pageTourService, notificationService) {
 
         $scope.$on(events.reloadCommitsList, function() {
             initCtrl();
@@ -60,14 +60,20 @@ angular.module('codebrag.commits')
         function loadAllCommits() {
             commitsService.setAllMode();
             commitsService.loadCommits($stateParams.sha).then(function(commits) {
-                $scope.commits = commits;
+                $scope.commits = commits.map(function(c) {
+                    codebrag.commit.mixins.withReviewStateMethods.call(c);
+                    return c;
+                });
             })
         }
 
         function loadPendingCommits() {
             commitsService.setToReviewMode();
             commitsService.loadCommits().then(function(commits) {
-                $scope.commits = commits;
+                $scope.commits = commits.map(function(c) {
+                    codebrag.commit.mixins.withReviewStateMethods.call(c);
+                    return c;
+                });
             });
         }
 

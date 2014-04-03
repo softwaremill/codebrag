@@ -9,6 +9,8 @@ codebrag.CurrentCommit = function(commitData) {
 
     this.info = commitData.commit;
 
+    codebrag.commit.mixins.withReviewStateMethods.call(this.info);
+
     this.diff = commitData.diff;
 
     this.supressedFiles = commitData.supressedFiles;
