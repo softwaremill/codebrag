@@ -21,10 +21,10 @@ trait CommitReviewedByUserMarker {
   }
 
   private def markIfReviewed(userId: ObjectId, commitView: CommitView) = {
-    val commitState = if(isUserAnAuthor(commitView, userId)|| isReviewNotRequired(commitView, userId)) {
-      CommitReviewState.ReviewNotRequired
-    } else if(commitAlreadyReviewedByUser(commitView, userId)) {
+    val commitState = if(commitAlreadyReviewedByUser(commitView, userId)) {
       CommitReviewState.Reviewed
+    } else if(isUserAnAuthor(commitView, userId)|| reviewIsNotRequired(commitView, userId)) {
+      CommitReviewState.ReviewNotRequired
     } else {
       CommitReviewState.AwaitingReview
     }
@@ -42,10 +42,10 @@ trait CommitReviewedByUserMarker {
     }
   }
 
-  private def isReviewNotRequired(commit: CommitView, userId: ObjectId) = {
+  private def reviewIsNotRequired(commit: CommitView, userId: ObjectId) = {
     val userDate = reviewedCommitsCache.getUserEntry(userId).toReviewStartDate
     val commitDate = new DateTime(commit.date)
-    !commitDate.isBefore(userDate)
+    commitDate.isBefore(userDate)
   }
 
 }
