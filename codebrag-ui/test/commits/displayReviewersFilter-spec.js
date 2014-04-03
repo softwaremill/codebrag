@@ -9,6 +9,7 @@ describe("Displaying reviewers list", function () {
     var formatter = codebrag.formatters.reviewersListFormatter(currentUser);
 
     var testData = [
+        {reviewers: undefined, expected: undefined},
         {reviewers: [], expected: 'Awaiting review'},
         {reviewers: [Bob], expected: 'Bob reviewed this commit'},
         {reviewers: [currentUser], expected: 'You reviewed this commit'},

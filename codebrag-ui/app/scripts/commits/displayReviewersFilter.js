@@ -21,6 +21,7 @@ codebrag.formatters.reviewersListFormatter = function(currentUser) {
     }
 
     return function(list) {
+        if(!list) return;
         if(list.length == 0) return 'Awaiting review';
         if(list.length == 1) return formatSingleReviewer(list);
         return formatMultipleReviewers(list);
