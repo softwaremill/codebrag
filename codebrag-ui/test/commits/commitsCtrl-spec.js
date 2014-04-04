@@ -10,11 +10,12 @@ describe("Commits Controller", function () {
         commitsService,
         notificationService,
         $stateParams,
-        events;
+        events,
+        currentCommit;
 
     beforeEach(module('codebrag.commits', 'codebrag.notifications'));
 
-    beforeEach(inject(function(_$rootScope_, _$q_, $controller, _commitsService_, _$stateParams_, _events_, _notificationService_) {
+    beforeEach(inject(function(_$rootScope_, _$q_, $controller, _commitsService_, _$stateParams_, _events_, _notificationService_, _currentCommit_) {
         $scope = _$rootScope_.$new();
         $rootScope = _$rootScope_;
         $q = _$q_;
@@ -22,6 +23,7 @@ describe("Commits Controller", function () {
         notificationService = _notificationService_;
         $stateParams = _$stateParams_;
         events = _events_;
+        currentCommit = _currentCommit_;
     }));
 
     beforeEach(inject(function($controller) {
@@ -128,5 +130,17 @@ describe("Commits Controller", function () {
         // then
         expect(toReviewLabel).toBe('to review (10)');
         expect(allLabel).toBe('all');
+    });
+
+    it('should clear current commit when opening another commit details', function() {
+        // Given
+        var sha = '123';
+        spyOn(currentCommit, 'empty');
+
+        // When
+        $scope.openCommitDetails(sha);
+
+        // Then
+        expect(currentCommit.empty).toHaveBeenCalled();
     });
 });

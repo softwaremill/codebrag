@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, commitsService, $stateParams, $state, events, pageTourService, notificationService) {
+    .controller('CommitsCtrl', function ($scope, currentCommit, commitsService, $stateParams, $state, events, pageTourService, notificationService) {
 
         $scope.$on(events.reloadCommitsList, function() {
             initCtrl();
@@ -40,6 +40,7 @@ angular.module('codebrag.commits')
         };
 
         $scope.openCommitDetails = function(sha) {
+            currentCommit.empty();
             $state.transitionTo('commits.details', {sha: sha});
         };
 
