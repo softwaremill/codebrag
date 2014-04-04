@@ -1,6 +1,6 @@
 angular.module('codebrag.notifications')
 
-    .controller('NotificationCountersCtrl', function ($scope, notificationService, $state, $rootScope, events) {
+    .controller('NotificationCountersCtrl', function ($scope, notificationService, $state, $rootScope, events, currentCommit) {
 
         $scope.counters = notificationService.counters;
 
@@ -11,6 +11,7 @@ angular.module('codebrag.notifications')
         };
 
         $scope.openCommits = function() {
+            currentCommit.empty();
             $rootScope.$broadcast(events.reloadCommitsList);
             $rootScope.$broadcast(events.expandList);
             $state.transitionTo('commits.list');
