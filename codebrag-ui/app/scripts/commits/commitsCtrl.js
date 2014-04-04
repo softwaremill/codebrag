@@ -60,20 +60,14 @@ angular.module('codebrag.commits')
         function loadAllCommits() {
             commitsService.setAllMode();
             commitsService.loadCommits($stateParams.sha).then(function(commits) {
-                $scope.commits = commits.map(function(c) {
-                    codebrag.commit.mixins.withReviewStateMethods.call(c);
-                    return c;
-                });
+                $scope.commits = commits;
             })
         }
 
         function loadPendingCommits() {
             commitsService.setToReviewMode();
             commitsService.loadCommits().then(function(commits) {
-                $scope.commits = commits.map(function(c) {
-                    codebrag.commit.mixins.withReviewStateMethods.call(c);
-                    return c;
-                });
+                $scope.commits = commits;
             });
         }
 

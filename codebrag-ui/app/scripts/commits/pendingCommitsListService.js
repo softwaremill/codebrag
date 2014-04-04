@@ -23,7 +23,8 @@ angular.module('codebrag.commits')
             options[self.urlParams.limit] = pageLimit;
             options[self.urlParams.branch] = branchesService.selectedBranch();
             return Commits.queryReviewable(options).$then(function(response) {
-                commits.replaceWith(response.data.commits);
+                var list = _mixInreviewStateMethods(response.data.commits);
+                commits.replaceWith(list);
                 nextCommits = response.data.newer;
                 _prefetchOneMoreCommit();
                 eventsEmitter.triggerAsyncCommitsCounterRefresh();
@@ -40,7 +41,7 @@ angular.module('codebrag.commits')
         function markAsReviewed(sha) {
             function removeGivenAndAppendPrefetchedCommit(prefetchedCommit) {
                 var indexRemoved = commits.removeFromListBy(sha);
-                prefetchedCommit && commits.push(prefetchedCommit);
+                prefetchedCommit && commits.push(_mixInreviewStateMethods(prefetchedCommit));
                 eventsEmitter.triggerCounterDecrease();
                 return commits.elementAtIndexOrLast(indexRemoved);
             }
@@ -60,7 +61,8 @@ angular.module('codebrag.commits')
             options[self.urlParams.limit] = pageLimit;
             options[self.urlParams.branch] = branchesService.selectedBranch();
             Commits.queryReviewable(options).$then(function(response) {
-                commits.appendAll(response.data.commits);
+                var list = _mixInreviewStateMethods(response.data.commits);
+                commits.appendAll(list);
                 nextCommits = response.data.newer;
                 eventsEmitter.notifyIfNextCommitsLoaded(response.data.commits.length);
                 eventsEmitter.triggerAsyncCommitsCounterRefresh();
@@ -87,6 +89,18 @@ angular.module('codebrag.commits')
                 if(!response.data.commits.length) nextCommits = 0;
                 return response.data.commits.shift();
             });
+        }
+
+        function _mixInreviewStateMethods(commits) {
+            if(commits instanceof Array) {
+                return commits.map(function(c) {
+                    codebrag.commit.mixins.withReviewStateMethods.call(c);
+                    return c
+                });
+            } else {
+                codebrag.commit.mixins.withReviewStateMethods.call(commits);
+                return commits;
+            }
         }
 
         return {
