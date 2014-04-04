@@ -76,5 +76,5 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val reviewedCommitsCache = new UserReviewedCommitsCache(userDao, reviewedCommitsDao)
 
   lazy val toReviewCommitsFinder = new ToReviewCommitsFinder(config, repositoryStateCache, reviewedCommitsCache, commitInfoDao, userDao)
-  lazy val allCommitsFinder = new AllCommitsFinder(repositoryStateCache, reviewedCommitsCache, commitInfoDao, userDao)
+  lazy val allCommitsFinder = new AllCommitsFinder(repositoryStateCache, reviewedCommitsCache, commitInfoDao, userDao, config)
 }

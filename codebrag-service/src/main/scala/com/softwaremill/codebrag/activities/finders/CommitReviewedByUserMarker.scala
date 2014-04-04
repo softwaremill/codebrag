@@ -4,13 +4,15 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.finders.views.{CommitReviewState, CommitView}
 import com.softwaremill.codebrag.domain.{CommitAuthorClassification, ReviewedCommit}
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.cache.{BranchCommitsCache, UserReviewedCommitsCache}
+import com.softwaremill.codebrag.cache.{BranchCommitCacheEntry, BranchCommitsCache, UserReviewedCommitsCache}
 import org.joda.time.DateTime
+import com.softwaremill.codebrag.service.config.ReviewProcessConfig
 
 trait CommitReviewedByUserMarker {
 
   def reviewedCommitsCache: UserReviewedCommitsCache
   def userDao: UserDAO
+  def config: ReviewProcessConfig
 
   def markAsReviewed(commitsViews: List[CommitView], userId: ObjectId) = {
     commitsViews.map(markIfReviewed(userId, _))
@@ -23,7 +25,7 @@ trait CommitReviewedByUserMarker {
   private def markIfReviewed(userId: ObjectId, commitView: CommitView) = {
     val commitState = if(commitAlreadyReviewedByUser(commitView, userId)) {
       CommitReviewState.Reviewed
-    } else if(isUserAnAuthor(commitView, userId)|| reviewIsNotRequired(commitView, userId)) {
+    } else if(isUserAnAuthor(commitView, userId) || reviewIsNotRequired(commitView, userId) || fullyReviewed(commitView)) {
       CommitReviewState.ReviewNotRequired
     } else {
       CommitReviewState.AwaitingReview
@@ -34,7 +36,11 @@ trait CommitReviewedByUserMarker {
   private def commitAlreadyReviewedByUser(commit: CommitView, userId: ObjectId) = {
     reviewedCommitsCache.getUserEntry(userId).commits.find(_.sha == commit.sha).nonEmpty
   }
-  
+
+  def fullyReviewed(commit: CommitView): Boolean = {
+    reviewedCommitsCache.usersWhoReviewed(commit.sha).size >= config.requiredReviewersCount
+  }
+
   private def isUserAnAuthor(commit: CommitView, userId: ObjectId) = {
     userDao.findById(userId) match {
       case Some(user) => CommitAuthorClassification.commitAuthoredByUser(commit, user)
