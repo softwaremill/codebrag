@@ -27,7 +27,7 @@ trait EmailNotificationConfig extends ConfigWithDefault {
 }
 
 trait StatsConfig extends ConfigWithDefault {
-  lazy val appVersion = getString("codebrag.version", "1.2")
+  lazy val appVersion = getString("codebrag.version", "2.0-pre")
   lazy val sendStats = getBoolean("codebrag.send-anon-usage-data", true)
   lazy val statsSendHour = getInt("codebrag.stats-send-hour", 3)
   lazy val statsSendMinute = getInt("codebrag.stats-send-minute", 0)
