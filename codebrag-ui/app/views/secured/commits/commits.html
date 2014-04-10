@@ -14,8 +14,8 @@
                         <dropdown selected="displaySelectedMode(counters.commitsCount)">
                             <ul>
                                 <li ng-click="switchListView('pending')">
-                                    <i class="icon-info-sign"><div class="help-info">"To Review" list shows your colleagues' recent commits awaiting your review</div></i>
-                                    {{ toReviewLabel() }}
+                                    <i class="icon-info-sign help-bubble"><div class="help-info">"To Review" list shows your colleagues' recent commits awaiting your review</div></i>
+                                    <span>{{ toReviewLabel() }}</span>
                                 </li>
                                 <li ng-click="switchListView('all')">all</li>
                             </ul>

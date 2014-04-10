@@ -256,3 +256,36 @@ i
   border-top: 0.38em solid $header-text-color;
   height: 0;
   width: 0;
+
+// bubble displayed on mouse-over.
+// Add this class to element you want to have bubble and as a child create '.help-info'
+.help-bubble
+  .help-info
+    height: 0;
+    opacity: 0;
+    padding: 0;
+    width: 0;
+
+  &:hover .help-info
+    font-family: 'PT Sans', Tahoma, sans-serif;
+    position: absolute;
+    color: #a27d69;
+    background-color: #ece7d9;
+    height: auto;
+    opacity: 1;
+    padding: 0.66em 1.5em;
+    border: 1px solid #dad1b9;
+    margin: 8px 0 0 -11px;
+    width: 200px;
+    &:before
+      content: "";
+      position: absolute;
+      top: -7px;
+      color: green;
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 8px solid #ece7d9;
+      left: 10px;
+
