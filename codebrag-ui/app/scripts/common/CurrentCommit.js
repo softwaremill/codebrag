@@ -118,6 +118,10 @@ codebrag.CurrentCommit.prototype = {
         if(_.isUndefined(this.lineReactions[fileName][lineNumber][reactionType])) {
             this.lineReactions[fileName][lineNumber][reactionType] = [];
         }
+    },
+
+    hasAtLeastReviewers: function(count) {
+        return this.info.reviewers.length >= count
     }
 
 };
