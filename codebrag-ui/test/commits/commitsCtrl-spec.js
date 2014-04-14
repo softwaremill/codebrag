@@ -8,19 +8,19 @@ describe("Commits Controller", function () {
         $rootScope,
         $q,
         commitsService,
-        notificationService,
+        countersService,
         $stateParams,
         events,
         currentCommit;
 
     beforeEach(module('codebrag.commits', 'codebrag.notifications'));
 
-    beforeEach(inject(function(_$rootScope_, _$q_, $controller, _commitsService_, _$stateParams_, _events_, _notificationService_, _currentCommit_) {
+    beforeEach(inject(function(_$rootScope_, _$q_, $controller, _commitsService_, _$stateParams_, _events_, _countersService_, _currentCommit_) {
         $scope = _$rootScope_.$new();
         $rootScope = _$rootScope_;
         $q = _$q_;
         commitsService = _commitsService_;
-        notificationService = _notificationService_;
+        countersService = _countersService_;
         $stateParams = _$stateParams_;
         events = _events_;
         currentCommit = _currentCommit_;
@@ -120,7 +120,7 @@ describe("Commits Controller", function () {
 
     it('should return correct label (with counter) for reviewed commits', function() {
         // given
-        notificationService.counters = {commitsCount: 10};
+        spyOn(countersService.commitsCounter, 'currentCount').andReturn(20);
 
         // when
         var toReviewLabel = $scope.displaySelectedMode();
@@ -128,7 +128,7 @@ describe("Commits Controller", function () {
         var allLabel = $scope.displaySelectedMode();
 
         // then
-        expect(toReviewLabel).toBe('to review (10)');
+        expect(toReviewLabel).toBe('to review (20)');
         expect(allLabel).toBe('all');
     });
 

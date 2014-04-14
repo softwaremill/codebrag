@@ -34,7 +34,6 @@ describe("Branches Controller", function () {
         var allBranchesPromise = $q.when(allBranches);
         spyOn(branchesService, 'allBranches').andReturn(allBranchesPromise);
         spyOn(branchesService, 'selectBranch');
-        spyOn($rootScope, "$broadcast");
 
         // when
         $controller('BranchesCtrl', {$scope: $scope, branchesService: branchesService});
@@ -43,7 +42,6 @@ describe("Branches Controller", function () {
 
         // then
         expect(branchesService.selectBranch).toHaveBeenCalledWith("feature");
-        expect($rootScope.$broadcast).toHaveBeenCalledWith(events.reloadCommitsList);
     });
 
 });

@@ -1,9 +1,10 @@
 angular.module('codebrag.branches')
 
-    .factory('branchesService', function($http, $q) {
+    .factory('branchesService', function($http, $q, $rootScope, events) {
 
-        var branchesList;
-        var currentBranch;
+        var branchesList,
+            currentBranch,
+            dataReady = $q.defer();
 
         function loadAvailableBranches() {
             return $http.get('rest/branches').then(function useBranches(response) {
@@ -11,6 +12,7 @@ angular.module('codebrag.branches')
                 if(angular.isUndefined(currentBranch)) {
                     currentBranch = response.data.current;
                 }
+                dataReady.resolve();
                 return branchesList;
             });
         }
@@ -27,14 +29,22 @@ angular.module('codebrag.branches')
             var found = branchesList.filter(function(branch) {
                 return branch === branchName
             });
-            (found.length > 0) && (currentBranch = found[0]);
+            if(found.length > 0) {
+                currentBranch = found[0];
+                $rootScope.$broadcast(events.branches.branchChanged, currentBranch);
+            }
         }
 
         function selectedBranch() {
             return currentBranch;
         }
 
+        function ready() {
+            return dataReady.promise;
+        }
+
         return {
+            ready: ready,
             fetchBranches: loadAvailableBranches,
             allBranches: allBranches,
             selectBranch: selectBranch,

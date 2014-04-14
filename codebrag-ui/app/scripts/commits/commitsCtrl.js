@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, currentCommit, commitsService, $stateParams, $state, events, pageTourService, notificationService) {
+    .controller('CommitsCtrl', function ($scope, currentCommit, commitsService, $stateParams, $state, events, pageTourService, countersService) {
 
         $scope.$on(events.reloadCommitsList, function() {
             initCtrl();
@@ -19,8 +19,7 @@ angular.module('codebrag.commits')
         };
 
         $scope.toReviewLabel = function() {
-            var commitsCount = notificationService.counters.commitsCount;
-            return 'to review (' + commitsCount + ')';
+            return 'to review (' + countersService.commitsCounter.currentCount() + ')';
         };
 
         $scope.hasNextCommits = function() {

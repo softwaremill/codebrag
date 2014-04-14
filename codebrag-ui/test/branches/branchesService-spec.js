@@ -1,15 +1,16 @@
 describe("Branches service", function () {
 
     var $httpBackend, $q, $rootScope;
-    var branchesService;
+    var branchesService, events;
 
     beforeEach(module('codebrag.branches'));
 
-    beforeEach(inject(function (_$httpBackend_, _$q_, _branchesService_, _$rootScope_) {
+    beforeEach(inject(function (_$httpBackend_, _$q_, _branchesService_, _$rootScope_, _events_) {
         $httpBackend = _$httpBackend_;
         $q = _$q_;
         $rootScope = _$rootScope_;
         branchesService = _branchesService_;
+        events = _events_;
     }));
 
     afterEach(inject(function (_$httpBackend_) {
@@ -59,6 +60,7 @@ describe("Branches service", function () {
 
     it('should change currently selected branch', function() {
         // given
+        spyOn($rootScope, '$broadcast').andCallThrough();
         var allBranches = ['master', 'feature', 'bugfix'];
         var branchesResponse = {branches: allBranches, current: 'master'};
         $httpBackend.expectGET('rest/branches').respond(branchesResponse);
@@ -70,7 +72,7 @@ describe("Branches service", function () {
 
         // then
         expect(branchesService.selectedBranch()).toBe('feature');
-
+        expect($rootScope.$broadcast).toHaveBeenCalledWith(events.branches.branchChanged, 'feature');
     });
 
 });

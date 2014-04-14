@@ -9,10 +9,17 @@ angular.module('codebrag.auth', ['codebrag.events']);
 
 angular.module('codebrag.session', ['ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.common']);
 angular.module('codebrag.notifications', ['codebrag.events', 'codebrag.common', 'codebrag.templates']);
-angular.module('codebrag.favicon', ['codebrag.events']);
+angular.module('codebrag.favicon', ['codebrag.events', 'codebrag.counters']);
 
 angular.module('codebrag.commits.comments', ['ui.compat', 'codebrag.events']);
-angular.module('codebrag.commits', ['ngResource', 'codebrag.auth', 'codebrag.commits.comments', 'codebrag.events', 'codebrag.tour', 'codebrag.branches']);
+angular.module('codebrag.commits', [
+    'ngResource',
+    'codebrag.auth',
+    'codebrag.commits.comments',
+    'codebrag.events',
+    'codebrag.tour',
+    'codebrag.branches',
+    'codebrag.counters']);
 
 angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.tour']);
 
@@ -24,8 +31,11 @@ angular.module('codebrag.tour', ['codebrag.templates', 'codebrag.auth', 'codebra
 
 angular.module('codebrag.branches', ['codebrag.events']);
 
+angular.module('codebrag.counters', ['codebrag.branches', 'codebrag.events']);
+
 
 angular.module('codebrag', [
+    'codebrag.counters',
     'codebrag.templates',
     'codebrag.auth',
     'codebrag.common',
@@ -58,11 +68,6 @@ angular.module('codebrag')
                 authService.requestCurrentUser();
             }
         }
-    });
-
-angular.module('codebrag.favicon')
-    .run(function(faviconChangeService) {
-        faviconChangeService.setupNotificationWatchers();
     });
 
 angular.module('codebrag.auth')

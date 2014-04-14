@@ -25,5 +25,9 @@ angular.module('codebrag.events', []).constant('events', {
 
     diffScrolledWithFileChange: 'codebrag:diffScrolledWithFileChange',
     diffFileSelected: 'codebrag:diffFileSelected',
-    diffDOMHeightChanged: 'codebrag:diffDOMHeightChanged'
+    diffDOMHeightChanged: 'codebrag:diffDOMHeightChanged',
+
+    branches: {
+        branchChanged: 'codebrag:branchChanged'
+    }
 });
