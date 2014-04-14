@@ -57,7 +57,7 @@ stop() {
 
 checkpid(){
   # Should Not Be altered
-  local TMP_FILE="/tmp/status_$APP_FILENAME"
+  local TMP_FILE="$APP_PATH/status_$APP_FILENAME"
   local STATUS=9
   if [ -f $APP_PID ]; then
 		#echo "Is Running if you can see next line with $APP_NAME"
