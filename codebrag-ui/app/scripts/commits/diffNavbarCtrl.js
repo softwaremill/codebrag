@@ -16,12 +16,13 @@ angular.module('codebrag.commits')
 
         $scope.$watch(commitAvailable, function(commit) {
             $scope.currentCommit = commit;
-            $scope.readableCommitStatus = mapCommitStatus(commit);
+            $scope.currentCommit && ($scope.readableCommitStatus = mapCommitStatus(commit));
         });
 
         function mapCommitStatus(commit) {
             if(angular.isUndefined(mapCommitStatus.statusMap)) {
                 mapCommitStatus.statusMap = {
+                    AwaitingUserReview: 'Mark commit as reviewed',
                     ReviewedByUser: 'Reviewed by me',
                     AwaitingOthersReview: 'Your commit - awaiting review',
                     ReviewedByOthers: 'Reviewed by others'

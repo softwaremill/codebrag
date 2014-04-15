@@ -5,7 +5,7 @@ describe("DiffNavbarController", function () {
     var noopPromise = {then: function(){}};
     var $scope, $q, commitsService;
 
-    var commit = {info: {sha: '123'}};
+    var commit = {info: {sha: '123', state: 'AwaitingUserReview'}};
     var nextCommit = {sha: '345'};
 
     beforeEach(module('codebrag.commits'));
@@ -65,6 +65,18 @@ describe("DiffNavbarController", function () {
         // Then
         expect($state.transitionTo).toHaveBeenCalledWith('commits.list');
         expect(currentCommit.get()).toBeNull();
+    }));
+
+    it('should resolve readable status for current commit', inject(function($controller, currentCommit) {
+        // Given
+        currentCommit.set(commit);
+
+        // When
+        $controller('DiffNavbarCtrl', {$scope: $scope});
+        $scope.$apply();
+
+        // Then
+        expect($scope.readableCommitStatus).toBe('Mark commit as reviewed');
     }));
 
 });
