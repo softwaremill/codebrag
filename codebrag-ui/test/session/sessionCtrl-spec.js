@@ -1,10 +1,14 @@
-'use strict';
+ 'use strict';
 
 describe("Session Controller", function () {
 
-    beforeEach(module('codebrag.session'), module('codebrag.common.services'));
+    var scope, $httpBackend, ctrl, authSrv, $q, $rootScope, $window;
 
-    var scope, $httpBackend, ctrl, authSrv, $q, $rootScope;
+    beforeEach(module(function($provide) {
+        $provide.value('$window', $window = angular.mock.createMockWindow());
+    }));
+
+    beforeEach(module('codebrag.session'), module('codebrag.common.services'));
 
     beforeEach(inject(function (_$httpBackend_, _$rootScope_, $routeParams, configService, $controller, authService, _$q_) {
         $httpBackend = _$httpBackend_;
@@ -134,11 +138,9 @@ describe("Session Controller", function () {
     }));
 
 
-    it('Calling logout should log out from angular layer', inject(function ($state, events) {
+    it('Calling logout should log out and redirect to /', inject(function ($state, events, $window) {
         // Given
-        spyOn($state, 'transitionTo');
         spyOn(authSrv, 'logout').andReturn($q.when());
-        spyOn($rootScope, '$broadcast');
 
         // When
         scope.logout();
@@ -146,7 +148,7 @@ describe("Session Controller", function () {
 
         // Then
         expect(authSrv.logout).toHaveBeenCalled();
-        expect($rootScope.$broadcast).toHaveBeenCalledWith(events.resetNotifications);
+        expect($window.location).toBe('/');
     }));
 
 });

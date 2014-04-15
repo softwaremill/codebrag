@@ -41,8 +41,7 @@ angular.module('codebrag.session')
 
         $scope.logout = function () {
             authService.logout().then(function () {
-                $rootScope.$broadcast(events.resetNotifications);
-                $state.transitionTo('home');
+                $window.location = '/';
             });
         };
 
