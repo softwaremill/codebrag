@@ -16,13 +16,13 @@ class AllCommitsFinder(
   val reviewedCommitsCache: UserReviewedCommitsCache,
   commitsInfoDao: CommitInfoDAO,
   val userDao: UserDAO,
-  val config: ReviewProcessConfig) extends Logging with AuthorDataAppender with CommitReviewedByUserMarker with ReviewersDataAppender with FullBranchNameResolver {
+  val config: ReviewProcessConfig) extends Logging with AuthorDataAppender with CommitReviewStateAppender with ReviewersDataAppender with FullBranchNameResolver {
 
   def find(userId: ObjectId, branchName: String, pagingCriteria: PagingCriteria[String]): CommitListView = {
     val branchCommits = repoCache.getBranchCommits(resolveFullBranchName(branchName)).map(_.sha).reverse
     val page = pagingCriteria.extractPageFrom(branchCommits)
     val commits = commitsInfoDao.findByShaList(page.items)
-    addAuthorData(CommitListView(markAsReviewed(commits, userId), page.beforeCount, page.afterCount))
+    addAuthorData(CommitListView(setCommitsReviewStates(commits, userId), page.beforeCount, page.afterCount))
   }
 
   def findSingle(sha: String, userId: ObjectId) = {
@@ -31,7 +31,7 @@ class AllCommitsFinder(
         val commitView = Option(PartialCommitInfo(commit))
           .map(addAutorData(_))
           .map(addReviewersData(_, sha))
-          .map(addReviewedFlag(_, userId))
+          .map(setCommitReviewState(_, userId))
         Right(commitView.get)
       }
       case None => Left("Commit not found")

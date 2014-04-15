@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.activities.finders
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.domain.{PartialCommitInfo, User}
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
 import CommitToViewImplicits._
@@ -11,7 +11,7 @@ import com.softwaremill.codebrag.cache.{UserReviewedCommitsCache, BranchCommitsC
 import com.softwaremill.codebrag.service.config.ReviewProcessConfig
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
-import com.softwaremill.codebrag.dao.finders.views.CommitListView
+import com.softwaremill.codebrag.dao.finders.views.{CommitState, CommitListView}
 
 class ToReviewCommitsFinder(
   config: ReviewProcessConfig,
@@ -24,7 +24,8 @@ class ToReviewCommitsFinder(
     val toReview = getSHAsOfCommitsToReview(userId, resolveFullBranchName(branchName))
     val page = pagingCriteria.extractPageFrom(toReview)
     val commits = commitsInfoDao.findByShaList(page.items)
-    addAuthorData(CommitListView(commits, page.beforeCount, page.afterCount))
+    val asToReview = markAsToReview(commits)
+    addAuthorData(CommitListView(asToReview, page.beforeCount, page.afterCount))
   }
 
   def count(userId: ObjectId, branchName: String): Long = {
@@ -34,6 +35,10 @@ class ToReviewCommitsFinder(
   def countForCurrentBranch(userId: ObjectId): Long = {
     val fullBranchName = repoCache.repository.getCheckedOutBranchName
     count(userId, fullBranchName)
+  }
+
+  private def markAsToReview(commits: List[PartialCommitInfo]) = {
+    partialCommitListToCommitViewList(commits).map(_.copy(state = CommitState.AwaitingUserReview))
   }
 
   private def getSHAsOfCommitsToReview(userId: ObjectId, fullBranchName: String): List[String] = {

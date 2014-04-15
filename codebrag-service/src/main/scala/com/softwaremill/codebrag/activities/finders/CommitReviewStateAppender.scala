@@ -1,40 +1,46 @@
 package com.softwaremill.codebrag.activities.finders
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.finders.views.{CommitReviewState, CommitView}
+import com.softwaremill.codebrag.dao.finders.views.{CommitState, CommitView}
 import com.softwaremill.codebrag.domain.{CommitAuthorClassification, ReviewedCommit}
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.cache.{BranchCommitCacheEntry, BranchCommitsCache, UserReviewedCommitsCache}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.service.config.ReviewProcessConfig
 
-trait CommitReviewedByUserMarker {
+trait CommitReviewStateAppender {
 
   def reviewedCommitsCache: UserReviewedCommitsCache
   def userDao: UserDAO
   def config: ReviewProcessConfig
 
-  def markAsReviewed(commitsViews: List[CommitView], userId: ObjectId) = {
-    commitsViews.map(markIfReviewed(userId, _))
+  def setCommitsReviewStates(commitsViews: List[CommitView], userId: ObjectId) = {
+    commitsViews.map(setCommitReviewState(_, userId))
   }
 
-  def addReviewedFlag(commitView: CommitView, userId: ObjectId) = {
-    markIfReviewed(userId, commitView)
-  }
-
-  private def markIfReviewed(userId: ObjectId, commitView: CommitView) = {
-    val commitState = if(commitAlreadyReviewedByUser(commitView, userId)) {
-      CommitReviewState.Reviewed
-    } else if(isUserAnAuthor(commitView, userId) || reviewIsNotRequired(commitView, userId) || fullyReviewed(commitView)) {
-      CommitReviewState.ReviewNotRequired
+  def setCommitReviewState(commitView: CommitView, userId: ObjectId) = {
+    val resultState = if(commitToOldForUser(commitView, userId)) {
+      CommitState.NotApplicable
     } else {
-      CommitReviewState.AwaitingReview
+      if(reviewedByUser(commitView, userId)) {
+        CommitState.ReviewedByUser
+      } else {
+        if(fullyReviewed(commitView)) {
+          CommitState.ReviewedByOthers
+        } else {
+          if(isUserAnAuthor(commitView, userId)) {
+            CommitState.AwaitingOthersReview
+          } else {
+            CommitState.AwaitingUserReview
+          }
+        }
+      }
     }
-    commitView.copy(state = commitState)
+    commitView.copy(state = resultState)
   }
 
-  private def commitAlreadyReviewedByUser(commit: CommitView, userId: ObjectId) = {
-    reviewedCommitsCache.getUserEntry(userId).commits.find(_.sha == commit.sha).nonEmpty
+  def reviewedByUser(commitView: CommitView, userId: ObjectId): Boolean = {
+    reviewedCommitsCache.reviewedByUser(commitView.sha, userId)
   }
 
   def fullyReviewed(commit: CommitView): Boolean = {
@@ -48,7 +54,7 @@ trait CommitReviewedByUserMarker {
     }
   }
 
-  private def reviewIsNotRequired(commit: CommitView, userId: ObjectId) = {
+  private def commitToOldForUser(commit: CommitView, userId: ObjectId) = {
     val userDate = reviewedCommitsCache.getUserEntry(userId).toReviewStartDate
     val commitDate = new DateTime(commit.date)
     commitDate.isBefore(userDate)
