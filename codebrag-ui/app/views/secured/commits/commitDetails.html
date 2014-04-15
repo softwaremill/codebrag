@@ -5,7 +5,7 @@
         </div>
     </div>
     <div class="diff-container clearfix" ng-show="currentCommit">
-        <div class="reviewers-info help-bubble">
+        <div class="reviewers-info help-bubble" ng-show="currentCommit.hasAtLeastReviewers(1)">
             <span>{{ currentCommit.info.reviewers | displayReviewers }}</span>
             <div class="help-info" ng-show="currentCommit.hasAtLeastReviewers(2)">
                 <ul class="reviewers-list">

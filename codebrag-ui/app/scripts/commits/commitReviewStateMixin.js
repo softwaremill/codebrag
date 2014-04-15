@@ -8,13 +8,10 @@ var codebrag = codebrag || {};
 
     function withReviewStateMethods() {
         this.isToReview = function() {
-            return this.state === 'AwaitingReview';
+            return this.state === 'AwaitingUserReview';
         };
-        this.isReviewNotRequired = function() {
-            return this.state === 'ReviewNotRequired';
-        };
-        this.isAlreadyReviewed = function() {
-            return this.state === 'Reviewed';
+        this.isNotApplicable = function() {
+            return this.state === 'NotApplicable';
         }
     }
 
