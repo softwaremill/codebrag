@@ -19,24 +19,24 @@ trait CommitReviewStateAppender {
   }
 
   def setCommitReviewState(commitView: CommitView, userId: ObjectId) = {
-    val resultState = if(commitToOldForUser(commitView, userId)) {
-      CommitState.NotApplicable
-    } else {
-      if(reviewedByUser(commitView, userId)) {
-        CommitState.ReviewedByUser
-      } else {
-        if(fullyReviewed(commitView)) {
-          CommitState.ReviewedByOthers
-        } else {
-          if(isUserAnAuthor(commitView, userId)) {
-            CommitState.AwaitingOthersReview
-          } else {
-            CommitState.AwaitingUserReview
-          }
-        }
-      }
+    commitView.copy(state = calculateState(commitView, userId))
+  }
+
+
+  def calculateState(commitView: CommitView, userId: ObjectId): CommitState.Value = {
+    if(commitTooOldForUser(commitView, userId)) {
+      return CommitState.NotApplicable
     }
-    commitView.copy(state = resultState)
+    if (reviewedByUser(commitView, userId)) {
+      return CommitState.ReviewedByUser
+    }
+    if(fullyReviewed(commitView)) {
+      return CommitState.ReviewedByOthers
+    }
+    if(isUserAnAuthor(commitView, userId)) {
+      return CommitState.AwaitingOthersReview
+    }
+    CommitState.AwaitingUserReview
   }
 
   def reviewedByUser(commitView: CommitView, userId: ObjectId): Boolean = {
@@ -54,7 +54,7 @@ trait CommitReviewStateAppender {
     }
   }
 
-  private def commitToOldForUser(commit: CommitView, userId: ObjectId) = {
+  private def commitTooOldForUser(commit: CommitView, userId: ObjectId) = {
     val userDate = reviewedCommitsCache.getUserEntry(userId).toReviewStartDate
     val commitDate = new DateTime(commit.date)
     commitDate.isBefore(userDate)
