@@ -19,11 +19,11 @@ trait CommitReviewStateAppender {
   }
 
   def setCommitReviewState(commitView: CommitView, userId: ObjectId) = {
-    commitView.copy(state = calculateState(commitView, userId))
+    commitView.copy(state = calculateReviewState(commitView, userId))
   }
 
 
-  def calculateState(commitView: CommitView, userId: ObjectId): CommitState.Value = {
+  private def calculateReviewState(commitView: CommitView, userId: ObjectId): CommitState.Value = {
     if(commitTooOldForUser(commitView, userId)) {
       return CommitState.NotApplicable
     }
