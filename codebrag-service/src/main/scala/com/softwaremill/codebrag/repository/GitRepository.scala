@@ -20,8 +20,14 @@ class GitRepository(val repoData: RepoData) extends Repository with RepositoryAu
   }
 
   protected def pullChangesForRepo() {
-    val pullCommand = new Git(repo).pull()
-    credentialsProvider.foreach(pullCommand.setCredentialsProvider)
+    val git = new Git(repo)
+    val fetchCommand = git.fetch().setRemoveDeletedRefs(true) // need co call fetch first as pull doesn't have an option to purge removed branches
+    val pullCommand = git.pull()
+    credentialsProvider.foreach { p =>
+      fetchCommand.setCredentialsProvider(p)
+      pullCommand.setCredentialsProvider(p)
+    }
+    fetchCommand.call()
     pullCommand.call()
   }
 
