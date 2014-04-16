@@ -18,6 +18,14 @@
       position: relative;
       cursor: pointer;
 
+      & .selected
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis
+
+        & .selected-label
+          text-overflow: ellipsis
+
       &:hover
         & ul
           display: block;

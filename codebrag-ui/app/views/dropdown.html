@@ -1,7 +1,9 @@
 <div class="dropdown-btn">
-    <span ng-show="icon">
-        <img ng-src="{{ icon }}"/>
-    </span>
-    <span>{{ selected }}</span>
+    <div class="selected">
+        <span ng-show="icon">
+            <img ng-src="{{ icon }}"/>
+        </span>
+        <span class="selected-label">{{ selected }}</span>
+    </div>
     <section ng-transclude></section>
 </div>
