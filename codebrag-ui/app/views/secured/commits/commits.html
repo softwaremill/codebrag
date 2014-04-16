@@ -5,7 +5,7 @@
                 <div class="branch-selector row">
                     <div class="small-6 large-6 columns" ng-controller="BranchesCtrl">
                         <dropdown selected="selectedBranch()" icon="assets/images/branch.png">
-                            <ul>
+                            <ul class="branches-list">
                                 <li ng-repeat="branch in branches" ng-click="selectBranch(branch)">{{branch}}</li>
                             </ul>
                         </dropdown>
