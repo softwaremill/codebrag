@@ -4,7 +4,7 @@ angular.module('codebrag.branches')
 
         $scope.branches = [];
 
-        branchesService.allBranches().then(function(list) {
+        branchesService.fetchBranches().then(function(list) {
             $scope.branches = list;
         });
 

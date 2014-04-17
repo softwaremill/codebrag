@@ -18,7 +18,7 @@ describe("Branches Controller", function () {
         // given
         var allBranches = ['master', 'feature', 'bugfix'];
         var allBranchesPromise = $q.when(allBranches);
-        spyOn(branchesService, 'allBranches').andReturn(allBranchesPromise);
+        spyOn(branchesService, 'fetchBranches').andReturn(allBranchesPromise);
 
         // when
         $controller('BranchesCtrl', {$scope: $scope, branchesService: branchesService});
@@ -32,7 +32,7 @@ describe("Branches Controller", function () {
         // given
         var allBranches = ['master', 'feature', 'bugfix'];
         var allBranchesPromise = $q.when(allBranches);
-        spyOn(branchesService, 'allBranches').andReturn(allBranchesPromise);
+        spyOn(branchesService, 'fetchBranches').andReturn(allBranchesPromise);
         spyOn(branchesService, 'selectBranch');
 
         // when

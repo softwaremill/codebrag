@@ -35,7 +35,7 @@ describe("Branches service", function () {
             expectedBranchesList = result;
         });
         $rootScope.$apply();
-        expect(expectedBranchesList).toBe(allBranches);
+        expect(expectedBranchesList).toEqual(allBranches);
     });
 
     it('get available branches locally if they were previously loaded', function() {
@@ -55,7 +55,7 @@ describe("Branches service", function () {
             expectedBranchesList = result;
         });
         $rootScope.$apply();
-        expect(expectedBranchesList).toBe(allBranches);
+        expect(expectedBranchesList).toEqual(allBranches);
     });
 
     it('should change currently selected branch', function() {
