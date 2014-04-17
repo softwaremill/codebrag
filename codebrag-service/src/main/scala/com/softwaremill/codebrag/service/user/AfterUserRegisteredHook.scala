@@ -47,6 +47,6 @@ trait SetStartingDateForUser extends Logging {
     }
   }
 
-  private def currentBranch = repoCache.repository.getCheckedOutBranchName
+  private def currentBranch = repoCache.repository.getCheckedOutBranchFullName
 
 }

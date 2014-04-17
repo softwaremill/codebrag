@@ -1,14 +1,14 @@
 package com.softwaremill.codebrag.activities.finders
 
+import com.softwaremill.codebrag.repository.BranchesSelector._
+
 trait FullBranchNameResolver {
 
-  val FullBranchNamePrefix = "refs/remotes/origin"
-
   def resolveFullBranchName(branchName: String) = {
-    if(branchName.startsWith(FullBranchNamePrefix)) {
+    if(branchName.startsWith(RemoteBranchPrefix)) {
       branchName
     } else {
-      s"${FullBranchNamePrefix}/${branchName}"
+      s"${RemoteBranchPrefix}${branchName}"
     }
   }
 

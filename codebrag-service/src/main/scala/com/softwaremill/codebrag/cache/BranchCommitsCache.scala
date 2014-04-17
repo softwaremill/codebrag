@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.cache
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.repository.Repository
+import com.softwaremill.codebrag.repository.{BranchesSelector, Repository}
 import com.softwaremill.codebrag.domain.{BranchState, CommitInfo, MultibranchLoadCommitsResult}
 import com.softwaremill.codebrag.service.config.CommitCacheConfig
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
@@ -26,7 +26,7 @@ class BranchCommitsCache(val repository: Repository, backend: PersistentBackendF
   }
 
   def cleanupStaleBranches() {
-    val staleBranches = repository.findStaleBranches(getBranchNames.toSet)
+    val staleBranches = repository.findStaleBranchesFullNames(getFullBranchNames.toSet)
     logger.debug(s"Purging stale branches from cache ${staleBranches}")
     staleBranches.foreach(commits.remove)
     backend.remove(staleBranches)
@@ -40,7 +40,11 @@ class BranchCommitsCache(val repository: Repository, backend: PersistentBackendF
     logger.debug(s"Number of commits in ${branchName}: ${getBranchCommits(branchName).size}")
   }
 
-  def getBranchNames = commits.keySet
+  def getFullBranchNames = commits.keySet
+
+  def getShortBranchNames = getFullBranchNames.map(_.replace(BranchesSelector.RemoteBranchPrefix, ""))
+
+  def getCheckedOutBranchShortName = repository.getCheckedOutBranchFullName.replace(BranchesSelector.RemoteBranchPrefix, "")
 
   def getAllCommits = commits.flatten(_._2.get).toSet
 

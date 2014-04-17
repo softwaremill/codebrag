@@ -32,7 +32,7 @@ trait RepositorySnapshotLoader extends RawCommitsConverter with BranchesSelector
   }
 
   private def rejectNonExistingBranches(knownRepoSnapshot: Map[String, String]) = {
-    val commonBranches = remoteBranches.intersect(knownRepoSnapshot.keySet)
+    val commonBranches = remoteBranchesFullNames.intersect(knownRepoSnapshot.keySet)
     knownRepoSnapshot.filter { b => commonBranches.contains(b._1) }
   }
 

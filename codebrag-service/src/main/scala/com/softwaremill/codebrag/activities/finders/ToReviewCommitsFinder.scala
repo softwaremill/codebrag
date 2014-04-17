@@ -33,7 +33,7 @@ class ToReviewCommitsFinder(
   }
 
   def countForCurrentBranch(userId: ObjectId): Long = {
-    val fullBranchName = repoCache.repository.getCheckedOutBranchName
+    val fullBranchName = repoCache.repository.getCheckedOutBranchFullName
     count(userId, fullBranchName)
   }
 

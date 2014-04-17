@@ -48,7 +48,7 @@ class BranchCommitsCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAf
     repoCache.addCommits(commitsLoaded)
 
     // then
-    repoCache.getBranchNames should be(Set(MasterBranch))
+    repoCache.getFullBranchNames should be(Set(MasterBranch))
     repoCache.getBranchCommits(MasterBranch).map(_.sha) should be(List("2", "1"))
   }
 
@@ -80,7 +80,7 @@ class BranchCommitsCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAf
     repoCache.addCommits(commitsLoaded)
 
     // then
-    repoCache.getBranchNames should be(Set(MasterBranch, FeatureBranch))
+    repoCache.getFullBranchNames should be(Set(MasterBranch, FeatureBranch))
   }
 
   it should "get commits for branch or empty list if no such branch exists" in {

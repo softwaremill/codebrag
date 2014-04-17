@@ -41,16 +41,6 @@ trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDe
     }
   }
 
-  def getCheckedOutBranchName = {
-    val shortBranchName = repo.getBranch
-    import scala.collection.JavaConversions._
-    val branches = (new Git(repo)).branchList().setListMode(branchListMode).call().toList
-    branches.map(_.getName).find(_.endsWith("/" + shortBranchName)) match {
-      case Some(branch) => branch
-      case None => throw new RuntimeException("Cannot determine currently checked out branch")
-    }
-  }
-
   protected def pullChangesForRepo()
 
   implicit def gitObjectIdToString(objId: ObjectId) = ObjectId.toString(objId)
