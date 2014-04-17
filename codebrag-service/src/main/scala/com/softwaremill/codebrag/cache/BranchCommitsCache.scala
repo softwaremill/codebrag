@@ -25,6 +25,13 @@ class BranchCommitsCache(val repository: Repository, backend: PersistentBackendF
     }
   }
 
+  def cleanupStaleBranches() {
+    val staleBranches = repository.findStaleBranches(getBranchNames.toSet)
+    logger.debug(s"Purging stale branches from cache ${staleBranches}")
+    staleBranches.foreach(commits.remove)
+    backend.remove(staleBranches)
+  }
+
   private def addCommitsToBranch(newCommits: List[BranchCommitCacheEntry], branchName: String) {
     commits.get(branchName) match {
       case Some(branchCommits) => branchCommits.set((newCommits ::: branchCommits.get()).take(maxCommitsPerBranchCount))
@@ -66,6 +73,11 @@ class PersistentBackendForCache(commitInfoDao: CommitInfoDAO, branchStateDao: Br
   def persist(loadResult: MultibranchLoadCommitsResult) {
     persistUniqueCommits(loadResult)
     persistBranchesState(loadResult)
+  }
+
+  def remove(branches: Set[String]) {
+    logger.debug(s"Removing branches from DB: ${branches}")
+    branchStateDao.removeBranches(branches)
   }
 
 
