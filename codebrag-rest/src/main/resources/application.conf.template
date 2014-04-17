@@ -11,6 +11,7 @@ repository {
 codebrag {
     data-dir = "./data"
     repos-root = "./repos"
+    required-reviewers-count = 1
     send-anon-usage-data = true
     web-server-port = 8080
     application-url = "http://localhost:8080"
