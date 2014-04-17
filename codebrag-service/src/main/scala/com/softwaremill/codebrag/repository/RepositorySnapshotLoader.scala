@@ -7,7 +7,7 @@ import org.eclipse.jgit.api.Git
 import scala.collection.JavaConversions._
 
 
-trait RepositorySnapshotLoader extends RawCommitsConverter with BranchListModeSelector {
+trait RepositorySnapshotLoader extends RawCommitsConverter with BranchesSelector {
 
   self: Repository =>
 
@@ -32,9 +32,7 @@ trait RepositorySnapshotLoader extends RawCommitsConverter with BranchListModeSe
   }
 
   private def rejectNonExistingBranches(knownRepoSnapshot: Map[String, String]) = {
-    val gitRepo = new Git(repo)
-    val repoBranches = gitRepo.branchList().setListMode(branchListMode).call().toList.map(_.getName)
-    val commonBranches = repoBranches.intersect(knownRepoSnapshot.keySet.toList)
+    val commonBranches = remoteBranches.intersect(knownRepoSnapshot.keySet)
     knownRepoSnapshot.filter { b => commonBranches.contains(b._1) }
   }
 

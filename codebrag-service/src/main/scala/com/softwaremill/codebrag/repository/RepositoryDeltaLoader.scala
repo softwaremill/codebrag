@@ -8,7 +8,7 @@ import org.eclipse.jgit.errors.MissingObjectException
 import scala.collection.JavaConversions._
 import org.eclipse.jgit.revwalk.filter.MaxCountRevFilter
 
-trait RepositoryDeltaLoader extends RawCommitsConverter with BranchListModeSelector {
+trait RepositoryDeltaLoader extends RawCommitsConverter with BranchesSelector {
 
   self: Repository =>
 
@@ -24,17 +24,12 @@ trait RepositoryDeltaLoader extends RawCommitsConverter with BranchListModeSelec
   }
 
   def loadCommitsSince(lastKnownBranchPointers: Map[String, String], maxCommitsForNewBranch: Int): MultibranchLoadCommitsResult = {
-    val gitRepo = new Git(repo)
-    val commitsForBranches = remoteBranches(gitRepo).map { branchName =>
+    val commitsForBranches = remoteBranches.map { branchName =>
         val rawCommits = getCommitsForBranch(branchName, lastKnownBranchPointers.get(branchName), maxCommitsForNewBranch)
         val commitInfos = toCommitInfos(rawCommits)
         CommitsForBranch(branchName, commitInfos, repo.resolve(branchName))
       }
-    MultibranchLoadCommitsResult(repoName, commitsForBranches)
-  }
-
-  private def remoteBranches(gitRepo: Git): List[String] = {
-    gitRepo.branchList().setListMode(branchListMode).call().toList.map(_.getName).filterNot(_ == "refs/remotes/origin/HEAD")
+    MultibranchLoadCommitsResult(repoName, commitsForBranches.toList)
   }
 
   private def setRangeStart(walker: RevWalk, startingCommit: ObjectId) {
