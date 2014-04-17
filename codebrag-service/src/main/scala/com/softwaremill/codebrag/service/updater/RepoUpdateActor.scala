@@ -2,19 +2,17 @@ package com.softwaremill.codebrag.service.updater
 
 import akka.actor._
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.service.commits.{DiffLoader, CommitImportService}
-import com.softwaremill.codebrag.repository.config.RepoData
+import com.softwaremill.codebrag.service.commits.CommitImportService
 import RepoUpdateActor._
 import com.softwaremill.codebrag.repository.Repository
 
-class RepoUpdateActor(
-  importService: CommitImportService,
-  repository: Repository) extends Actor with Logging {
-  
+class RepoUpdateActor(importService: CommitImportService, repository: Repository) extends Actor with Logging {
+
   def receive = {
     case Update(scheduleNext) => {
       try {
         importService.importRepoCommits(repository)
+        importService.cleanupStaleBranches()
       } finally {
         if (scheduleNext) {
           import context.dispatcher
