@@ -79,6 +79,21 @@ trait BranchStateDAOSpec extends FlatSpec with ShouldMatchers {
 
   }
 
+  it should "remove given branches" in {
+    // given
+    val masterState = BranchState(MasterBranchName, MasterSHA)
+    val featureState = BranchState(FeatureBranchName, FeatureSHA)
+    List(masterState, featureState).foreach(branchStateDao.storeBranchState)
+
+    // when
+    branchStateDao.removeBranches(Set(FeatureBranchName, "NonExistingBranch"))
+
+    // then
+    val allStates = branchStateDao.loadBranchesStateAsMap
+    val expectedStatesMap = Map(MasterBranchName -> MasterSHA)
+    allStates should be(expectedStatesMap)
+  }
+
 }
 
 class SQLBranchStateDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with BranchStateDAOSpec {

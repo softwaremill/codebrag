@@ -12,6 +12,8 @@ trait BranchStateDAO {
 
   def loadBranchesStateAsMap: Map[String, String]
 
+  def removeBranches(branches: Set[String])
+
 }
 
 class InMemoryBranchStateDAO extends BranchStateDAO {
@@ -30,4 +32,8 @@ class InMemoryBranchStateDAO extends BranchStateDAO {
 
   def loadBranchesStateAsMap =  loadBranchesState.map( b => (b.fullBranchName, b.sha)).toMap
 
+  def removeBranches(branches: Set[String]) {
+    val toRemove = storage.filter(b => branches.contains(b.fullBranchName))
+    toRemove.foreach(storage.remove)
+  }
 }

@@ -33,6 +33,12 @@ class SQLBranchStateDAO(database: SQLDatabase) extends BranchStateDAO {
 
   def loadBranchesStateAsMap = loadBranchesState.map(b => (b.fullBranchName, b.sha)).toMap
 
+  override def removeBranches(branches: Set[String]) {
+    db.withTransaction { implicit session =>
+      branchStates.filter(_.branchName inSet branches).delete
+    }
+  }
+
   private class BranchStates(tag: Tag) extends Table[BranchState](tag, "branch_states") {
 
     def branchName = column[String]("branch_name", O.PrimaryKey)
@@ -42,4 +48,5 @@ class SQLBranchStateDAO(database: SQLDatabase) extends BranchStateDAO {
   }
 
   private val branchStates = TableQuery[BranchStates]
+
 }
