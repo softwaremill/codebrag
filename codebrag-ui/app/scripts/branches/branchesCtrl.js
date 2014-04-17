@@ -16,7 +16,6 @@ angular.module('codebrag.branches')
 
         function init() {
             branchesService.fetchBranches().then(function(list) {
-                console.log('init branches', list);
                 $scope.branches = list;
             });
         }
