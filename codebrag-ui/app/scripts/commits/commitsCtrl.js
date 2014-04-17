@@ -7,7 +7,10 @@ angular.module('codebrag.commits')
         });
 
         $scope.switchListView = function(newMode) {
-            newMode && ($scope.listViewMode = newMode);
+            if(newMode && newMode === $scope.listViewMode) return;
+            if(newMode) {
+                $scope.listViewMode = newMode;
+            }
             if(angular.isUndefined($scope.listViewMode)) {
                 $scope.listViewMode = 'pending';
             }
