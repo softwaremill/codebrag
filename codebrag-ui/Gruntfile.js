@@ -131,6 +131,15 @@ module.exports = function (grunt) {
             }
         },
 
+        rev: {
+            files: {
+                src: [
+                    'dist/webapp/**/*.js',
+                    'dist/webapp/**/*.css'
+                ]
+            }
+        },
+
         usemin: {
             html: ['dist/webapp/index.html'],
             options: {
@@ -251,6 +260,7 @@ module.exports = function (grunt) {
         'copy:index',
         'useminPrepare',
         'concat',
+        'rev',
         'usemin',
         'preprocess:nobackend'
     ]);
