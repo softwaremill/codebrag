@@ -1,6 +1,7 @@
 angular.module('codebrag.counters').factory('countersService', function($http, $timeout, $rootScope, Counter, branchesService, events) {
 
     var pollingInterval = 10000,
+        syncTimer,
         commitsCounter = new Counter(),
         followupsCounter = new Counter();
 
@@ -16,13 +17,13 @@ angular.module('codebrag.counters').factory('countersService', function($http, $
 
     function initPolling(which, branch) {
         var currentBranch = branch || branchesService.selectedBranch();
-        initPolling.syncTimer && $timeout.cancel(initPolling.syncTimer);
         fetchCounters(currentBranch)
             .then(reInitializeCounters(which), angular.noop)
             .then(scheduleNextSync);
 
         function scheduleNextSync() {
-            initPolling.syncTimer = $timeout(function() {
+            syncTimer && $timeout.cancel(syncTimer);
+            syncTimer = $timeout(function() {
                 fetchCounters(currentBranch)
                     .then(updateIncomingCounters)
                     .then(scheduleNextSync)
@@ -50,9 +51,8 @@ angular.module('codebrag.counters').factory('countersService', function($http, $
         $rootScope.$on(events.branches.branchChanged, function(e, branch) {
             initPolling({commits: true}, branch);
         });
-        $rootScope.$on('codebrag:commitsListFilterChanged', function(e, branch) {
-            console.log('init polling');
-            initPolling({commits: true}, branch);
+        $rootScope.$on(events.commitsListFilterChanged, function() {
+            initPolling({commits: true});
         });
         $rootScope.$on(events.commitReviewed, function() {
             commitsCounter.decrease();
