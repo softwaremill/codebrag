@@ -50,6 +50,10 @@ angular.module('codebrag.counters').factory('countersService', function($http, $
         $rootScope.$on(events.branches.branchChanged, function(e, branch) {
             initPolling({commits: true}, branch);
         });
+        $rootScope.$on('codebrag:commitsListFilterChanged', function(e, branch) {
+            console.log('init polling');
+            initPolling({commits: true}, branch);
+        });
         $rootScope.$on(events.commitReviewed, function() {
             commitsCounter.decrease();
         });

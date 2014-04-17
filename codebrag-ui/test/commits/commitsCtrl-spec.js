@@ -51,6 +51,7 @@ describe("Commits Controller", function () {
 
     it('should load pending commits when view switched to pending', function() {
         // given
+        $scope.switchListView('all');
         commitsService.loadCommits.reset(); // reset spy call counter
 
         // When
@@ -66,6 +67,7 @@ describe("Commits Controller", function () {
         var commits = $q.defer();
         commits.resolve(pendingCommits);
         commitsService.loadCommits.andReturn(commits.promise);
+        $scope.switchListView('all');
 
         // When
         $scope.switchListView('pending');
@@ -143,4 +145,17 @@ describe("Commits Controller", function () {
         // Then
         expect(currentCommit.empty).toHaveBeenCalled();
     });
+
+    it('should fire event when commits list filter changed', function() {
+        // given
+        spyOn($rootScope, '$broadcast').andCallThrough();
+        $scope.switchListView('pending');
+
+        // When
+        $scope.switchListView('all');
+        $scope.$apply();
+
+        // then
+        expect($rootScope.$broadcast).toHaveBeenCalledWith(events.commitsListFilterChanged);
+    })
 });

@@ -8,6 +8,7 @@ angular.module('codebrag.events', []).constant('events', {
     reloadCommitsList: 'codebrag:reloadCommitsList',
     reloadFollowupsList: 'codebrag:reloadFollowupsList',
 
+    commitsListFilterChanged: 'codebrag:commitsListFilterChanged',
     commitReviewed: 'codebrag:commitReviewed',
     followupDone: 'codebrag:followupDone',
     refreshCommitsCounter: 'codebrag:refreshCommitsCounter',
