@@ -27,7 +27,6 @@ angular.module('codebrag.commits')
                 commits.replaceWith(list);
                 nextCommits = response.data.newer;
                 _prefetchOneMoreCommit();
-                eventsEmitter.triggerAsyncCommitsCounterRefresh();
                 return commits;
             });
         }
@@ -42,7 +41,7 @@ angular.module('codebrag.commits')
             function removeGivenAndAppendPrefetchedCommit(prefetchedCommit) {
                 var indexRemoved = commits.removeFromListBy(sha);
                 prefetchedCommit && commits.push(_mixInreviewStateMethods(prefetchedCommit));
-                eventsEmitter.triggerCounterDecrease();
+                eventsEmitter.triggerCommitReviewedEvent();
                 return commits.elementAtIndexOrLast(indexRemoved);
             }
 
@@ -65,7 +64,6 @@ angular.module('codebrag.commits')
                 commits.appendAll(list);
                 nextCommits = response.data.newer;
                 eventsEmitter.notifyIfNextCommitsLoaded(response.data.commits.length);
-                eventsEmitter.triggerAsyncCommitsCounterRefresh();
                 _prefetchOneMoreCommit();
             });
         }

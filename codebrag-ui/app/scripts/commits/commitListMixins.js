@@ -87,11 +87,8 @@ codebrag.commitsList.mixin.eventsEmitter = function($rootScope, events) {
         notifyIfPreviousCommitsLoaded: function(count) {
             count && $rootScope.$broadcast(events.previousCommitsLoaded);
         },
-        triggerCounterDecrease: function() {
+        triggerCommitReviewedEvent: function() {
             $rootScope.$broadcast(events.commitReviewed);
-        },
-        triggerAsyncCommitsCounterRefresh: function() {
-            $rootScope.$broadcast(events.refreshCommitsCounter);
         }
     }
 

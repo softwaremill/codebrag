@@ -32,7 +32,13 @@ angular.module('codebrag.common.directives')
                     }
                 });
 
-                scope.$on(events.expandList, function() {
+                scope.$on(events.commitsTabOpened, function() {
+                    expand(el);
+                });
+                scope.$on(events.followupsTabOpened, function() {
+                    expand(el);
+                });
+                scope.$on(events.branches.branchChanged, function() {
                     expand(el);
                 })
             }

@@ -45,7 +45,7 @@ describe("Follow-ups Controller", function () {
         // when
         $controller('FollowupsCtrl', {$scope: scope});
         spy.reset();
-        $rootScope.$broadcast(events.reloadFollowupsList);
+        $rootScope.$broadcast(events.followupsTabOpened);
 
         // then
         expect(followupsService.allFollowups).toHaveBeenCalled();

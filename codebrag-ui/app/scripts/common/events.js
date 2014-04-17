@@ -5,21 +5,15 @@ angular.module('codebrag.events', []).constant('events', {
     httpError: 'codebrag:httpError',
     authError: 'codebrag:authError',
 
-    reloadCommitsList: 'codebrag:reloadCommitsList',
-    reloadFollowupsList: 'codebrag:reloadFollowupsList',
+    commitsTabOpened: 'codebrag:commitsTabOpened',
+    followupsTabOpened: 'codebrag:followupsTabOpened',
 
     commitsListFilterChanged: 'codebrag:commitsListFilterChanged',
     commitReviewed: 'codebrag:commitReviewed',
     followupDone: 'codebrag:followupDone',
-    refreshCommitsCounter: 'codebrag:refreshCommitsCounter',
-    refreshFollowupsCounter: 'codebrag:refreshFollowupsCounter',
-
-    updatesWaiting: 'codebrag:updatesWaiting',
-    resetNotifications: 'codebrag:resetNotifications',
 
     closeForm: 'codebrag:closeForm',
     scrollOnly: 'codebrag:scrollOnly',
-    expandList: 'codebrag:expandList',
 
     nextCommitsLoaded: 'codebrag:nextCommitsLoaded',
     previousCommitsLoaded: 'codebrag:previousCommitsLoaded',

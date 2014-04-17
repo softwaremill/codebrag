@@ -4,13 +4,8 @@ angular.module('codebrag.branches')
 
         $scope.branches = [];
 
-        branchesService.fetchBranches().then(function(list) {
-            $scope.branches = list;
-        });
-
         $scope.selectBranch = function(selected) {
             branchesService.selectBranch(selected);
-            $rootScope.$broadcast(events.reloadCommitsList);
         };
 
         $scope.isSelected = function(branch) {
@@ -18,6 +13,17 @@ angular.module('codebrag.branches')
         };
 
         $scope.selectedBranch = branchesService.selectedBranch;
+
+        function init() {
+            branchesService.fetchBranches().then(function(list) {
+                console.log('init branches', list);
+                $scope.branches = list;
+            });
+        }
+
+        init();
+
+        $scope.$on(events.commitsTabOpened, init);
 
     });
 

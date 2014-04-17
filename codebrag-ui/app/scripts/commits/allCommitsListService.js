@@ -27,7 +27,6 @@ angular.module('codebrag.commits')
                 commits.replaceWith(list);
                 previousCommits = response.data.older;
                 nextCommits = response.data.newer;
-                eventsEmitter.triggerAsyncCommitsCounterRefresh();
                 return commits;
             });
         }
@@ -41,7 +40,7 @@ angular.module('codebrag.commits')
         function markAsReviewed(sha) {
             Commits.remove({sha: sha});   // fire and don't wait for response
             var indexReviewed = commits.markAsReviewedOnly(sha);
-            eventsEmitter.triggerCounterDecrease();
+            eventsEmitter.triggerCommitReviewedEvent();
             return $q.when(commits.elementAtIndex(indexReviewed + 1));
         }
 
@@ -56,7 +55,6 @@ angular.module('codebrag.commits')
                 commits.appendAll(list);
                 nextCommits = response.data.newer;
                 eventsEmitter.notifyIfNextCommitsLoaded(response.data.commits.length);
-                eventsEmitter.triggerAsyncCommitsCounterRefresh();
                 return commits;
             });
         }
@@ -72,7 +70,6 @@ angular.module('codebrag.commits')
                 commits.prependAll(list);
                 previousCommits = response.data.older;
                 eventsEmitter.notifyIfPreviousCommitsLoaded(response.data.commits.length);
-                eventsEmitter.triggerAsyncCommitsCounterRefresh();
                 return commits;
             });
         }

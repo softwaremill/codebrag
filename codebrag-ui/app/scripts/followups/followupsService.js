@@ -9,7 +9,6 @@ angular.module('codebrag.followups')
             return _httpRequest('GET').then(function(response) {
                 followupsListLocal.addAll(response.data.followupsByCommit);
                 listFetched = true;
-                triggerAsyncFollowupsCounterRefresh();
                 return followupsListLocal.collection;
             });
         }
@@ -45,10 +44,6 @@ angular.module('codebrag.followups')
 
         function triggerCounterDecrease() {
             $rootScope.$broadcast(events.followupDone);
-        }
-
-        function triggerAsyncFollowupsCounterRefresh() {
-            $rootScope.$broadcast(events.refreshFollowupsCounter);
         }
 
         return {

@@ -41,7 +41,7 @@ describe("Commits Controller", function () {
         currentCommit.set('dummy commit');
 
         // when
-        $rootScope.$broadcast(events.reloadCommitsList);
+        $rootScope.$broadcast(events.commitsTabOpened);
 
         // then
         expect($scope.listViewMode).toBe('pending');

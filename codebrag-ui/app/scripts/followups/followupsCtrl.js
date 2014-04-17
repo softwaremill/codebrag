@@ -2,9 +2,7 @@ angular.module('codebrag.followups')
 
     .controller('FollowupsCtrl', function ($scope, $http, followupsService, pageTourService, events) {
 
-        $scope.$on(events.reloadFollowupsList, function() {
-            initCtrl();
-        });
+        $scope.$on(events.followupsTabOpened, initCtrl);
 
 
         $scope.pageTourForFollowupsVisible = function() {

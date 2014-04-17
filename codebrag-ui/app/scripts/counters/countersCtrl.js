@@ -22,16 +22,14 @@ angular.module('codebrag.counters')
 
         $scope.openFollowups = function() {
             countersService.reloadCounters({followups: true});
-            $rootScope.$broadcast(events.reloadFollowupsList);
-            $rootScope.$broadcast(events.expandList);
+            $rootScope.$broadcast(events.followupsTabOpened);
             $state.transitionTo('followups.list');
         };
 
         $scope.openCommits = function() {
             countersService.reloadCounters({commits: true});
             currentCommit.empty();
-            $rootScope.$broadcast(events.reloadCommitsList);
-            $rootScope.$broadcast(events.expandList);
+            $rootScope.$broadcast(events.commitsTabOpened);
             $state.transitionTo('commits.list');
         };
     });

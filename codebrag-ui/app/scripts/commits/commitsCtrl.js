@@ -2,9 +2,8 @@ angular.module('codebrag.commits')
 
     .controller('CommitsCtrl', function ($scope, $rootScope, currentCommit, commitsService, $stateParams, $state, events, pageTourService, countersService) {
 
-        $scope.$on(events.reloadCommitsList, function() {
-            initCtrl();
-        });
+        $scope.$on(events.branches.branchChanged, initCtrl);
+        $scope.$on(events.commitsTabOpened, initCtrl);
 
         $scope.switchListView = function(newMode) {
             if(newMode && newMode === $scope.listViewMode) return;

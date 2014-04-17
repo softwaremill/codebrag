@@ -28,20 +28,6 @@ describe("Followups service", function () {
     }));
 
 
-    it('should trigger counterupdate after loading follow-ups', inject(function (followupsService, events) {
-        // Given
-        $httpBackend.whenGET('rest/followups/').respond({followupsByCommit: followups});
-        var listener = jasmine.createSpy('listener');
-        rootScope.$on(events.refreshFollowupsCounter, listener);
-
-        // When
-        followupsService.allFollowups();
-        $httpBackend.flush();
-
-        // Then
-        expect(listener).toHaveBeenCalledWith(jasmine.any(Object));
-    }));
-
     it('should trigger counter decrease when followup removed', inject(function (followupsService, events) {
         // Given
         $httpBackend.whenGET('rest/followups/').respond({followupsByCommit: followups});
