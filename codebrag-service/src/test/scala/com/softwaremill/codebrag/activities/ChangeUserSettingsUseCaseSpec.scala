@@ -28,7 +28,7 @@ class ChangeUserSettingsUseCaseSpec extends FlatSpec with MockitoSugar with Shou
     when(userDao.findById(user.id)).thenReturn(Some(user))
     
     // when
-    changeUserSettings.execute(UserJson(user), dummySettings)
+    changeUserSettings.execute(user.id, dummySettings)
     
     // then
     verify(userDao).changeUserSettings(Matchers.eq(user.id), Matchers.any[UserSettings])
@@ -40,7 +40,7 @@ class ChangeUserSettingsUseCaseSpec extends FlatSpec with MockitoSugar with Shou
     when(userDao.findById(nonExistingUser.id)).thenReturn(None)
 
     // when
-    val result = changeUserSettings.execute(UserJson(nonExistingUser), dummySettings)
+    val result = changeUserSettings.execute(nonExistingUser.id, dummySettings)
 
     // then
     result.isLeft should be(true)

@@ -1,6 +1,5 @@
 package com.softwaremill.codebrag.activities
 
-import com.softwaremill.codebrag.service.data.UserJson
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.UserSettings
 import com.typesafe.scalalogging.slf4j.Logging
@@ -8,20 +7,25 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 
 class ChangeUserSettingsUseCase(userDao: UserDAO) extends Logging {
 
-  def execute(user: UserJson, newSettings: IncomingSettings): Either[String, Unit] = {
-    val userId = new ObjectId(user.id)
+  type ChangeUserSettingsResult = Either[String, UserSettings]
+
+  def execute(userId: ObjectId, newSettings: IncomingSettings): ChangeUserSettingsResult = {
     userDao.findById(userId) match {
       case Some(userFound) => {
         val mergedSettings = newSettings.applyTo(userFound.settings)
         logger.debug(s"Updating settings for user ${userId} to ${mergedSettings}")
         userDao.changeUserSettings(userId, mergedSettings)
-        Right()
+        Right(mergedSettings)
       }
       case None => {
         logger.debug(s"Could not find user ${userId}")
         Left("User not found")
       }
     }
+  }
+
+  protected def ifCanExecute(block: => ChangeUserSettingsResult)(implicit userId: ObjectId, settings: IncomingSettings): ChangeUserSettingsResult = {
+    block
   }
 
 }
