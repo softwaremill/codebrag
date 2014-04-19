@@ -12,21 +12,21 @@ import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
 
-class CommitReviewActivitySpec
+class ReviewCommitUseCaseSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
 
   var reviewedCommitsCache: UserReviewedCommitsCache = _
   var commitInfoDao: CommitInfoDAO = _
   var eventBus: EventBus = _
 
-  var activity: CommitReviewActivity = _
+  var useCase: ReviewCommitUseCase = _
 
   override def beforeEach() {
     reviewedCommitsCache = mock[UserReviewedCommitsCache]
     commitInfoDao = mock[CommitInfoDAO]
     eventBus = mock[EventBus]
 
-    activity = new CommitReviewActivity(commitInfoDao, reviewedCommitsCache, eventBus)
+    useCase = new ReviewCommitUseCase(commitInfoDao, reviewedCommitsCache, eventBus)
   }
 
   it should "generate commit reviewed event" in {
@@ -36,7 +36,7 @@ class CommitReviewActivitySpec
     when(commitInfoDao.findBySha(commit.sha)).thenReturn(Some(commit))
 
     // when
-    activity.markAsReviewed(commit.sha, userId)
+    useCase.markAsReviewed(commit.sha, userId)
 
     // then
     verify(eventBus).publish(CommitReviewedEvent(commit, userId))
@@ -49,7 +49,7 @@ class CommitReviewActivitySpec
     when(commitInfoDao.findBySha(commit.sha)).thenReturn(Some(commit))
 
     // when
-    activity.markAsReviewed(commit.sha, userId)
+    useCase.markAsReviewed(commit.sha, userId)
 
     // then
     val expectedCommitReviewed = ReviewedCommit(commit.sha, userId, clock.nowUtc)

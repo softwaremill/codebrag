@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.domain.reactions.CommentAddedEvent
 
-class AddCommentActivity(
+class AddCommentUseCase(
   userReactionService: UserReactionService,
   followupService: FollowupService,
   eventBus: EventBus)

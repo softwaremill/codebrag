@@ -6,7 +6,7 @@ import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import com.softwaremill.codebrag.activities.AddCommentActivity
+import com.softwaremill.codebrag.activities.AddCommentUseCase
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain._
 import org.scalatra.swagger.SwaggerEngine
@@ -21,7 +21,7 @@ import com.softwaremill.codebrag.dao.finders.views.CommentView
 
 class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {
 
-  var commentActivity: AddCommentActivity = _
+  var addCommentUseCase: AddCommentUseCase = _
   var userDao: UserDAO = _
 
   val user = currentUser(new ObjectId)
@@ -29,9 +29,9 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
 
   override def beforeEach {
     super.beforeEach
-    commentActivity = mock[AddCommentActivity]
+    addCommentUseCase = mock[AddCommentUseCase]
     userDao = mock[UserDAO]
-    addServlet(new TestableCommentsEndpoint(fakeAuthenticator, fakeScentry, commentActivity, userDao), "/*")
+    addServlet(new TestableCommentsEndpoint(fakeAuthenticator, fakeScentry, addCommentUseCase, userDao), "/*")
   }
 
   "POST /commits/:id/comments" should "respond with HTTP 401 when user is not authenticated" in {
@@ -47,14 +47,14 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     val dummyComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(commentActivity.addCommentToCommit(any[IncomingComment])).thenReturn(dummyComment)
+    when(addCommentUseCase.addCommentToCommit(any[IncomingComment])).thenReturn(dummyComment)
 
     // when
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {
       // then
       status should be(200)
       val commentArgument = ArgumentCaptor.forClass(classOf[IncomingComment])
-      verify(commentActivity).addCommentToCommit(commentArgument.capture())
+      verify(addCommentUseCase).addCommentToCommit(commentArgument.capture())
       commentArgument.getValue.authorId should equal(user.id)
       commentArgument.getValue.commitId should equal(commitId)
       commentArgument.getValue.message should equal("This is comment body")
@@ -67,14 +67,14 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     val dummyComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body", Some("test_file.txt"), Some(20))
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(commentActivity.addCommentToCommit(any[IncomingComment])).thenReturn(dummyComment)
+    when(addCommentUseCase.addCommentToCommit(any[IncomingComment])).thenReturn(dummyComment)
 
     // when
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {
       // then
       status should be(200)
       val commentArgument = ArgumentCaptor.forClass(classOf[IncomingComment])
-      verify(commentActivity).addCommentToCommit(commentArgument.capture())
+      verify(addCommentUseCase).addCommentToCommit(commentArgument.capture())
       commentArgument.getValue.authorId should equal(user.id)
       commentArgument.getValue.commitId should equal(commitId)
       commentArgument.getValue.message should equal("This is comment body")
@@ -89,7 +89,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     val createdComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(commentActivity.addCommentToCommit(any[IncomingComment])).thenReturn(createdComment)
+    when(addCommentUseCase.addCommentToCommit(any[IncomingComment])).thenReturn(createdComment)
 
     // when
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {
@@ -103,7 +103,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde", "avatarUrl")
   }
 
- class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[UserJson], val commentActivity: AddCommentActivity, val userDao: UserDAO) extends CommentsEndpoint {
+ class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[UserJson], val addCommentUseCase: AddCommentUseCase, val userDao: UserDAO) extends CommentsEndpoint {
 
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
 

@@ -7,7 +7,7 @@ import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
-import com.softwaremill.codebrag.activities.{UnlikeUseCase, CommitReviewActivity, AddCommentActivity}
+import com.softwaremill.codebrag.activities.{UnlikeUseCase, ReviewCommitUseCase, AddCommentUseCase}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.common.paging.PagingCriteria
@@ -22,7 +22,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   import CommitsEndpoint._
 
-  var commentActivity = mock[AddCommentActivity]
+  var commentActivity = mock[AddCommentUseCase]
   var commitsInfoDao = mock[CommitInfoDAO]
 
   var toReviewCommitsFinder = mock[ToReviewCommitsFinder]
@@ -31,7 +31,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var diffService = mock[DiffWithCommentsService]
   var userReactionFinder = mock[ReactionFinder]
   var userDao = mock[UserDAO]
-  var commitReviewActivity = mock[CommitReviewActivity]
+  var reviewCommitUseCase = mock[ReviewCommitUseCase]
   val UserJson = someUser()
   val userReactionService = mock[UserReactionService]
   val unlikeUseCaseFactory = mock[UnlikeUseCase]
@@ -58,7 +58,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val commitSha = "12345"
 
     delete("/" + commitSha) {
-      verify(commitReviewActivity).markAsReviewed(commitSha, userId)
+      verify(reviewCommitUseCase).markAsReviewed(commitSha, userId)
     }
   }
 
@@ -120,7 +120,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
     extends CommitsServlet(fakeAuthenticator, toReviewCommitsFinder, allCommitsFinder, userReactionFinder, commentActivity,
-      commitReviewActivity, userReactionService, userDao, new CodebragSwagger, diffService, unlikeUseCaseFactory) {
+      reviewCommitUseCase, userReactionService, userDao, new CodebragSwagger, diffService, unlikeUseCaseFactory) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag
 
-import com.softwaremill.codebrag.activities.{UnlikeUseCase, ChangeUserSettingsUseCase, CommitReviewActivity, AddCommentActivity}
+import com.softwaremill.codebrag.activities.{UnlikeUseCase, ChangeUserSettingsUseCase, ReviewCommitUseCase, AddCommentUseCase}
 import com.softwaremill.codebrag.common.{RealTimeClock, ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.rest.CodebragSwagger
 import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
@@ -46,9 +46,9 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
   lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus)
   lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
-  lazy val commentActivity = new AddCommentActivity(userReactionService, followupService, eventBus)
+  lazy val addCommentUseCase = new AddCommentUseCase(userReactionService, followupService, eventBus)
 
-  lazy val commitReviewActivity = new CommitReviewActivity(commitInfoDao, reviewedCommitsCache, eventBus)
+  lazy val reviewCommitUseCase = new ReviewCommitUseCase(commitInfoDao, reviewedCommitsCache, eventBus)
 
   lazy val newUserAdder = new NewUserAdder(userDao, eventBus, afterUserRegisteredHook, followupGeneratorForPriorReactions, welcomeFollowupsGenerator)
   lazy val afterUserRegisteredHook = new AfterUserRegisteredHook(repositoryStateCache, reviewedCommitsCache, config)

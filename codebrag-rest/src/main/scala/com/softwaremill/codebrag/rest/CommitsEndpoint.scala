@@ -6,7 +6,7 @@ import org.bson.types.ObjectId
 import CommitsEndpoint._
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import PagingCriteria.Direction
-import com.softwaremill.codebrag.activities.CommitReviewActivity
+import com.softwaremill.codebrag.activities.ReviewCommitUseCase
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.activities.finders.{AllCommitsFinder, ToReviewCommitsFinder}
 
@@ -17,7 +17,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   def reviewableCommitsListFinder: ToReviewCommitsFinder
   def allCommitsFinder: AllCommitsFinder
 
-  def commitReviewActivity: CommitReviewActivity
+  def reviewCommitUseCase: ReviewCommitUseCase
 
   before() {
     haltIfNotAuthenticated
@@ -32,7 +32,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   }
 
   delete("/:sha") {
-    commitReviewActivity.markAsReviewed(params("sha"), userId)
+    reviewCommitUseCase.markAsReviewed(params("sha"), userId)
   }
 
   get("/", allCommits) {

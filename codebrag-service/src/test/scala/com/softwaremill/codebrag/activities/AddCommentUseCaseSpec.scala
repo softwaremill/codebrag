@@ -12,21 +12,21 @@ import com.softwaremill.codebrag.domain.Comment
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.reactions.CommentAddedEvent
 
-class AddCommentActivitySpec
+class AddCommentUseCaseSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
 
   var userReactionService: UserReactionService = _
   var followupService: FollowupService = _
   var eventBus: EventBus = _
 
-  var activity: AddCommentActivity = _
+  var activity: AddCommentUseCase = _
 
   override def beforeEach() {
     userReactionService = mock[UserReactionService]
     followupService = mock[FollowupService]
     eventBus = mock[EventBus]
 
-    activity = new AddCommentActivity(userReactionService, followupService, eventBus)
+    activity = new AddCommentUseCase(userReactionService, followupService, eventBus)
   }
 
   it should "generate commit added event" in {

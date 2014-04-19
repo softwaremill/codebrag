@@ -11,7 +11,7 @@ import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
 /**
  * Handles user activity when user wants to mark given commit as reviewed
  */
-class CommitReviewActivity(
+class ReviewCommitUseCase(
   commitDao: CommitInfoDAO,
   reviewedCommitsCache: UserReviewedCommitsCache,
   eventBus: EventBus) (implicit clock: Clock) extends Logging {
