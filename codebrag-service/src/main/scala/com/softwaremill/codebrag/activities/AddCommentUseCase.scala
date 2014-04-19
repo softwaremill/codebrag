@@ -11,7 +11,7 @@ class AddCommentUseCase(userReactionService: UserReactionService, followupServic
 
   type AddCommentResult = Either[String, Comment]
 
-  def addCommentToCommit(implicit newComment: IncomingComment): AddCommentResult = {
+  def execute(implicit newComment: IncomingComment): AddCommentResult = {
     ifCanExecute {
       val addedComment = userReactionService.storeComment(newComment)
       followupService.generateFollowupsForComment(addedComment)

@@ -17,7 +17,7 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with UserReactionPa
 
   post("/:id/comments", operation(addCommentOperation)) {
     haltIfNotAuthenticated()
-    addCommentUseCase.addCommentToCommit(incomingComment) match {
+    addCommentUseCase.execute(incomingComment) match {
       case Right(comment) => commentToView(comment)
       case Left(err) => halt(400, "Could not add comment to commit")
     }    

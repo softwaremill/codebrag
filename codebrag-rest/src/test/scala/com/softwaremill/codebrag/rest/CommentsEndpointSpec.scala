@@ -47,14 +47,14 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     val dummyComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(addCommentUseCase.addCommentToCommit(any[IncomingComment])).thenReturn(Right(dummyComment))
+    when(addCommentUseCase.execute(any[IncomingComment])).thenReturn(Right(dummyComment))
 
     // when
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {
       // then
       status should be(200)
       val commentArgument = ArgumentCaptor.forClass(classOf[IncomingComment])
-      verify(addCommentUseCase).addCommentToCommit(commentArgument.capture())
+      verify(addCommentUseCase).execute(commentArgument.capture())
       commentArgument.getValue.authorId should equal(user.id)
       commentArgument.getValue.commitId should equal(commitId)
       commentArgument.getValue.message should equal("This is comment body")
@@ -67,14 +67,14 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     val dummyComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body", Some("test_file.txt"), Some(20))
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(addCommentUseCase.addCommentToCommit(any[IncomingComment])).thenReturn(Right(dummyComment))
+    when(addCommentUseCase.execute(any[IncomingComment])).thenReturn(Right(dummyComment))
 
     // when
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {
       // then
       status should be(200)
       val commentArgument = ArgumentCaptor.forClass(classOf[IncomingComment])
-      verify(addCommentUseCase).addCommentToCommit(commentArgument.capture())
+      verify(addCommentUseCase).execute(commentArgument.capture())
       commentArgument.getValue.authorId should equal(user.id)
       commentArgument.getValue.commitId should equal(commitId)
       commentArgument.getValue.message should equal("This is comment body")
@@ -89,7 +89,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     val createdComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(addCommentUseCase.addCommentToCommit(any[IncomingComment])).thenReturn(Right(createdComment))
+    when(addCommentUseCase.execute(any[IncomingComment])).thenReturn(Right(createdComment))
 
     // when
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {
