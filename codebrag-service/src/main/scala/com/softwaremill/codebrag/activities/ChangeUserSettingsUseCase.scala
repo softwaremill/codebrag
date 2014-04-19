@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.usecase
+package com.softwaremill.codebrag.activities
 
 import com.softwaremill.codebrag.service.data.UserJson
 import org.bson.types.ObjectId

@@ -4,8 +4,8 @@ import org.scalatra._
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.usecase.{ChangeUserSettingsUseCase, IncomingSettings}
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.activities.{IncomingSettings, ChangeUserSettingsUseCase}
 
 class UsersSettingsServlet(val authenticator: Authenticator, userDao: UserDAO, changeUserSettings: ChangeUserSettingsUseCase) extends JsonServletWithAuthentication with Logging {
 

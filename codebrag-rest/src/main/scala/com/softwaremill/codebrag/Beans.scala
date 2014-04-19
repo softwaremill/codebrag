@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag
 
-import com.softwaremill.codebrag.activities.{CommitReviewActivity, AddCommentActivity}
+import com.softwaremill.codebrag.activities.{UnlikeUseCase, ChangeUserSettingsUseCase, CommitReviewActivity, AddCommentActivity}
 import com.softwaremill.codebrag.common.{RealTimeClock, ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.rest.CodebragSwagger
 import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
@@ -10,7 +10,6 @@ import service.commits._
 import com.softwaremill.codebrag.service.user._
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
-import com.softwaremill.codebrag.usecase.{ChangeUserSettingsUseCase, UnlikeUseCase}
 import com.softwaremill.codebrag.service.invitations.{DefaultUniqueHashGenerator, InvitationService}
 import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
 import com.softwaremill.codebrag.service.notification.NotificationService

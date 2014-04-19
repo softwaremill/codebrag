@@ -1,14 +1,9 @@
-package com.softwaremill.codebrag.usecase
+package com.softwaremill.codebrag.activities
 
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import org.mockito.Mockito._
-import com.softwaremill.codebrag.service.data.UserJson
-import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.UserSettings
-import org.mockito.Matchers
-import com.softwaremill.codebrag.dao.user.UserDAO
 import org.joda.time.DateTime
 
 class IncomingSettingsSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {

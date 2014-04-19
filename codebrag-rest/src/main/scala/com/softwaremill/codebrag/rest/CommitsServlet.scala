@@ -6,9 +6,8 @@ import json.JacksonJsonSupport
 import swagger.{Swagger, SwaggerSupport}
 
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
-import com.softwaremill.codebrag.activities.{CommitReviewActivity, AddCommentActivity}
+import com.softwaremill.codebrag.activities.{UnlikeUseCase, CommitReviewActivity, AddCommentActivity}
 import com.softwaremill.codebrag.service.comments.UserReactionService
-import com.softwaremill.codebrag.usecase.UnlikeUseCase
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 import com.softwaremill.codebrag.activities.finders.{AllCommitsFinder, ToReviewCommitsFinder}

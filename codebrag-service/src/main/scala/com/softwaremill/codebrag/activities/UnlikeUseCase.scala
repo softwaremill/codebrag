@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.usecase
+package com.softwaremill.codebrag.activities
 
 import com.softwaremill.codebrag.service.comments.{UserReactionService, LikeValidator}
 import com.softwaremill.codebrag.service.data.UserJson

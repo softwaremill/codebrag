@@ -7,10 +7,9 @@ import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
-import com.softwaremill.codebrag.activities.{CommitReviewActivity, AddCommentActivity}
+import com.softwaremill.codebrag.activities.{UnlikeUseCase, CommitReviewActivity, AddCommentActivity}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.comments.UserReactionService
-import com.softwaremill.codebrag.usecase.UnlikeUseCase
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import PagingCriteria.Direction
 import com.softwaremill.codebrag.dao.user.UserDAO
