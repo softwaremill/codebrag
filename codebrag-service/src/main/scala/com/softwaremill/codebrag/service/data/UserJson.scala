@@ -1,8 +1,11 @@
 package com.softwaremill.codebrag.service.data
 
 import com.softwaremill.codebrag.domain.{UserSettings, User}
+import org.bson.types.ObjectId
 
-case class UserJson(id: String, login: String, fullName: String, email:String, token: String, settings: UserSettings)
+case class UserJson(id: String, login: String, fullName: String, email:String, token: String, settings: UserSettings) {
+  def userId = new ObjectId(id)
+}
 
 object UserJson {
   def apply(user: User) = {
