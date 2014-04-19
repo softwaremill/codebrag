@@ -47,7 +47,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     val dummyComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(addCommentUseCase.addCommentToCommit(any[IncomingComment])).thenReturn(dummyComment)
+    when(addCommentUseCase.addCommentToCommit(any[IncomingComment])).thenReturn(Right(dummyComment))
 
     // when
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {
@@ -67,7 +67,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     val dummyComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body", Some("test_file.txt"), Some(20))
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(addCommentUseCase.addCommentToCommit(any[IncomingComment])).thenReturn(dummyComment)
+    when(addCommentUseCase.addCommentToCommit(any[IncomingComment])).thenReturn(Right(dummyComment))
 
     // when
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {
@@ -89,7 +89,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     val createdComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
     userIsAuthenticatedAs(UserJson(user))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(addCommentUseCase.addCommentToCommit(any[IncomingComment])).thenReturn(createdComment)
+    when(addCommentUseCase.addCommentToCommit(any[IncomingComment])).thenReturn(Right(createdComment))
 
     // when
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {

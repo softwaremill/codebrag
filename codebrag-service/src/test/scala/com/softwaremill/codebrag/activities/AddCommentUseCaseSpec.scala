@@ -41,7 +41,7 @@ class AddCommentUseCaseSpec
     when(userReactionService.storeComment(newComment)).thenReturn(expected)
     
     // when
-    val actual = activity.addCommentToCommit(newComment)
+    val Right(actual) = activity.addCommentToCommit(newComment)
     
     // then
     verify(userReactionService).storeComment(newComment)

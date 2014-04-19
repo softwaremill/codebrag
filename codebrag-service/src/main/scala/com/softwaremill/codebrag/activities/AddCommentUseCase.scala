@@ -5,18 +5,23 @@ import com.softwaremill.codebrag.service.followups.FollowupService
 import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.domain.reactions.CommentAddedEvent
+import com.softwaremill.codebrag.domain.Comment
 
-class AddCommentUseCase(
-  userReactionService: UserReactionService,
-  followupService: FollowupService,
-  eventBus: EventBus)
-  (implicit clock: Clock) {
+class AddCommentUseCase(userReactionService: UserReactionService, followupService: FollowupService, eventBus: EventBus) (implicit clock: Clock) {
 
-  def addCommentToCommit(newComment: IncomingComment) = {
-    val addedComment = userReactionService.storeComment(newComment)
-    followupService.generateFollowupsForComment(addedComment)
-    eventBus.publish(CommentAddedEvent(addedComment))
-    addedComment
+  type AddCommentResult = Either[String, Comment]
+
+  def addCommentToCommit(implicit newComment: IncomingComment): AddCommentResult = {
+    ifCanExecute {
+      val addedComment = userReactionService.storeComment(newComment)
+      followupService.generateFollowupsForComment(addedComment)
+      eventBus.publish(CommentAddedEvent(addedComment))
+      Right(addedComment)
+    }
+  }
+
+  protected def ifCanExecute(block: => AddCommentResult)(implicit comment: IncomingComment): AddCommentResult = {
+    block
   }
 
 }
