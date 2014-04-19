@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.activities
 
-import com.softwaremill.codebrag.domain.ReviewedCommit
+import com.softwaremill.codebrag.domain.{CommitInfo, ReviewedCommit}
 import com.softwaremill.codebrag.common.{EventBus, Clock}
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
@@ -16,13 +16,25 @@ class ReviewCommitUseCase(
   reviewedCommitsCache: UserReviewedCommitsCache,
   eventBus: EventBus) (implicit clock: Clock) extends Logging {
 
-  def markAsReviewed(sha: String, userId: ObjectId) {
-    commitDao.findBySha(sha).foreach { commit =>
-      val reviewedCommit = ReviewedCommit(commit.sha, userId, clock.nowUtc)
-      reviewedCommitsCache.markCommitAsReviewed(reviewedCommit)
-      eventBus.publish(CommitReviewedEvent(commit, userId))
-    }
+  type ReviewCommitResult = Either[String, Unit]
 
+  def execute(implicit sha: String, userId: ObjectId): ReviewCommitResult = {
+    ifCanExecute {
+      commitDao.findBySha(sha) match {
+        case Some(commit) => Right(review(userId, commit))
+        case None => Left("Cannot find commit to review")
+      }
+    }
+  }
+
+  private def review(userId: ObjectId, commit: CommitInfo) = {
+    val reviewedCommit = ReviewedCommit(commit.sha, userId, clock.nowUtc)
+    reviewedCommitsCache.markCommitAsReviewed(reviewedCommit)
+    eventBus.publish(CommitReviewedEvent(commit, userId))
+  }
+
+  protected def ifCanExecute(block: => ReviewCommitResult)(implicit sha: String, userId: ObjectId): ReviewCommitResult = {
+    block
   }
 
 }

@@ -36,7 +36,7 @@ class ReviewCommitUseCaseSpec
     when(commitInfoDao.findBySha(commit.sha)).thenReturn(Some(commit))
 
     // when
-    useCase.markAsReviewed(commit.sha, userId)
+    useCase.execute(commit.sha, userId)
 
     // then
     verify(eventBus).publish(CommitReviewedEvent(commit, userId))
@@ -49,7 +49,7 @@ class ReviewCommitUseCaseSpec
     when(commitInfoDao.findBySha(commit.sha)).thenReturn(Some(commit))
 
     // when
-    useCase.markAsReviewed(commit.sha, userId)
+    useCase.execute(commit.sha, userId)
 
     // then
     val expectedCommitReviewed = ReviewedCommit(commit.sha, userId, clock.nowUtc)

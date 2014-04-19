@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.rest
 
-import org.scalatra.NotFound
+import org.scalatra.{BadRequest, NotFound}
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import org.bson.types.ObjectId
 import CommitsEndpoint._
@@ -32,7 +32,9 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   }
 
   delete("/:sha") {
-    reviewCommitUseCase.markAsReviewed(params("sha"), userId)
+    reviewCommitUseCase.execute(params("sha"), userId).left.map { err =>
+      BadRequest(Map("err" -> err))
+    }
   }
 
   get("/", allCommits) {

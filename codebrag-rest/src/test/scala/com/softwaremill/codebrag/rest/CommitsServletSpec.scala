@@ -58,7 +58,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val commitSha = "12345"
 
     delete("/" + commitSha) {
-      verify(reviewCommitUseCase).markAsReviewed(commitSha, userId)
+      verify(reviewCommitUseCase).execute(commitSha, userId)
     }
   }
 
