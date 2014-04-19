@@ -13,7 +13,6 @@ import com.softwaremill.codebrag.domain.Comment
 trait CommentsEndpoint extends JsonServletWithAuthentication with UserReactionParametersReader with CommentsEndpointSwaggerDefinition {
 
   def addCommentUseCase: AddCommentUseCase
-  def userDao: UserDAO
 
   post("/:id/comments", operation(addCommentOperation)) {
     haltIfNotAuthenticated()

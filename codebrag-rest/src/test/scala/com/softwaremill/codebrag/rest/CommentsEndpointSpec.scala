@@ -22,7 +22,6 @@ import com.softwaremill.codebrag.dao.finders.views.CommentView
 class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {
 
   var addCommentUseCase: AddCommentUseCase = _
-  var userDao: UserDAO = _
 
   val user = currentUser(new ObjectId)
   val commitId = new ObjectId
@@ -30,8 +29,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
   override def beforeEach {
     super.beforeEach
     addCommentUseCase = mock[AddCommentUseCase]
-    userDao = mock[UserDAO]
-    addServlet(new TestableCommentsEndpoint(fakeAuthenticator, fakeScentry, addCommentUseCase, userDao), "/*")
+    addServlet(new TestableCommentsEndpoint(fakeAuthenticator, fakeScentry, addCommentUseCase), "/*")
   }
 
   "POST /commits/:id/comments" should "respond with HTTP 401 when user is not authenticated" in {
@@ -46,7 +44,6 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     val body = "{\"body\": \"This is comment body\"}"
     val dummyComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
     userIsAuthenticatedAs(UserJson(user))
-    when(userDao.findById(user.id)).thenReturn(Some(user))
     when(addCommentUseCase.execute(any[IncomingComment])).thenReturn(Right(dummyComment))
 
     // when
@@ -66,7 +63,6 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     val body = "{\"body\": \"This is comment body\", \"fileName\": \"test_file.txt\", \"lineNumber\": 20}"
     val dummyComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body", Some("test_file.txt"), Some(20))
     userIsAuthenticatedAs(UserJson(user))
-    when(userDao.findById(user.id)).thenReturn(Some(user))
     when(addCommentUseCase.execute(any[IncomingComment])).thenReturn(Right(dummyComment))
 
     // when
@@ -88,7 +84,6 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     val body = "{\"body\": \"This is comment body\"}"
     val createdComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
     userIsAuthenticatedAs(UserJson(user))
-    when(userDao.findById(user.id)).thenReturn(Some(user))
     when(addCommentUseCase.execute(any[IncomingComment])).thenReturn(Right(createdComment))
 
     // when
@@ -103,7 +98,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde", "avatarUrl")
   }
 
- class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[UserJson], val addCommentUseCase: AddCommentUseCase, val userDao: UserDAO) extends CommentsEndpoint {
+ class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[UserJson], val addCommentUseCase: AddCommentUseCase) extends CommentsEndpoint {
 
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
 
