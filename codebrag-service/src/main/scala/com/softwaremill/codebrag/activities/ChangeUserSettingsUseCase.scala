@@ -9,10 +9,16 @@ class ChangeUserSettingsUseCase(userDao: UserDAO) extends Logging {
 
   type ChangeUserSettingsResult = Either[String, UserSettings]
 
-  def execute(userId: ObjectId, newSettings: IncomingSettings): ChangeUserSettingsResult = {
+  def execute(implicit userId: ObjectId, newSettings: IncomingSettings): ChangeUserSettingsResult = {
+    ifCanExecute {
+      changeSettings(userId, newSettings)
+    }
+  }
+
+  private def changeSettings(userId: ObjectId, settings: IncomingSettings): ChangeUserSettingsResult = {
     userDao.findById(userId) match {
       case Some(userFound) => {
-        val mergedSettings = newSettings.applyTo(userFound.settings)
+        val mergedSettings = settings.applyTo(userFound.settings)
         logger.debug(s"Updating settings for user ${userId} to ${mergedSettings}")
         userDao.changeUserSettings(userId, mergedSettings)
         Right(mergedSettings)
