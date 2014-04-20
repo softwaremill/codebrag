@@ -62,7 +62,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new UsersSettingsServlet(authenticator, userDao, changeUserSettingsUseCase), Prefix + "users/settings")
     context.mount(new CommitsServlet(authenticator, toReviewCommitsFinder, allCommitsFinder, reactionFinder, addCommentUseCase,
       reviewCommitUseCase, userReactionService, userDao, swagger, diffWithCommentsService, unlikeUseCaseFactory, likeUseCase), Prefix + CommitsServlet.MAPPING_PATH)
-    context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupService), Prefix + FollowupsServlet.MappingPath)
+    context.mount(new FollowupsServlet(authenticator, swagger, followupFinder, followupDoneUseCase), Prefix + FollowupsServlet.MappingPath)
     context.mount(new SwaggerApiDoc(swagger), "/api-docs/*")
     context.mount(new VersionServlet(config), Prefix + "version")
     context.mount(new ConfigServlet(config, authenticator), Prefix + "config")

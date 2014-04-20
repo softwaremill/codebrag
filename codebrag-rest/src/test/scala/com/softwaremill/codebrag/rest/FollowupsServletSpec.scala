@@ -9,16 +9,17 @@ import org.mockito.Mockito._
 import com.softwaremill.codebrag.service.followups.FollowupService
 import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
+import com.softwaremill.codebrag.activities.FollowupDoneUseCase
 
 class FollowupsServletSpec extends AuthenticatableServletSpec {
 
   val currentUser = someUser()
   var followupFinder = mock[FollowupFinder]
-  var followupService = mock[FollowupService]
+  var useCase = mock[FollowupDoneUseCase]
 
   override def beforeEach {
     super.beforeEach
-    addServlet(new TestableFollowupsServlet(fakeAuthenticator, fakeScentry, followupFinder, followupService), "/*")
+    addServlet(new TestableFollowupsServlet(fakeAuthenticator, fakeScentry, followupFinder, useCase), "/*")
   }
 
   "GET /" should "call backend for list of followups for authenticated user" in {
@@ -31,8 +32,8 @@ class FollowupsServletSpec extends AuthenticatableServletSpec {
 
 }
 
-class TestableFollowupsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson], followupFinder: FollowupFinder, followupService: FollowupService)
-  extends FollowupsServlet(fakeAuthenticator, new CodebragSwagger, followupFinder, followupService) {
+class TestableFollowupsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson], followupFinder: FollowupFinder, useCase: FollowupDoneUseCase)
+  extends FollowupsServlet(fakeAuthenticator, new CodebragSwagger, followupFinder, useCase) {
   override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
 }
 
