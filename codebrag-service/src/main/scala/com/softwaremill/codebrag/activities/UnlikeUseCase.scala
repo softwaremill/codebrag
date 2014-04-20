@@ -6,14 +6,19 @@ import org.bson.types.ObjectId
 
 class UnlikeUseCase(likeValidator: LikeValidator, userReactionService: UserReactionService) {
 
+  type UnlikeResult = Either[String, Unit]
+
   def execute(currentUser: UserJson, likeId: ObjectId): Either[String, Unit] = {
-    canExecute(currentUser, likeId).right.map(_ => userReactionService.removeLike(likeId))
+    ifCanExecute(currentUser.userId, likeId) {
+      userReactionService.removeLike(likeId)
+      Right()
+    }
   }
 
-  private def canExecute(currentUser: UserJson, likeId: ObjectId): Either[String, Unit] = {
-    likeValidator.canUserDoUnlike(new ObjectId(currentUser.id), likeId) match {
+  protected def ifCanExecute(userId: ObjectId, likeId: ObjectId)(block: => UnlikeResult): UnlikeResult = {
+    likeValidator.canUserDoUnlike(userId, likeId) match  {
+      case Right(_) => block
       case Left(err) => Left(err)
-      case _ => Right()
     }
   }
 
