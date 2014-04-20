@@ -19,6 +19,7 @@ import com.softwaremill.codebrag.dao.Daos
 import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.activities.finders.{AllCommitsFinder, ToReviewCommitsFinder}
 import com.softwaremill.codebrag.cache.{UserReviewedCommitsCache, PersistentBackendForCache, BranchCommitsCache}
+import com.softwaremill.codebrag.licence.LicenceService
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
@@ -61,9 +62,11 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val statsAggregator = new StatsAggregator(statsFinder, instanceSettingsDao, config)
 
   lazy val unlikeUseCaseFactory = new UnlikeUseCase(likeValidator, userReactionService)
-  lazy val likeUseCase = new LikeUseCase(userReactionService)
+  lazy val likeUseCase = new LikeUseCase(userReactionService, licenceService)
   lazy val changeUserSettingsUseCase = new ChangeUserSettingsUseCase(userDao)
   lazy val followupDoneUseCase = new FollowupDoneUseCase(followupService)
+
+  lazy val licenceService = new LicenceService(instanceSettings)
 
   lazy val instanceSettings = instanceSettingsDao.readOrCreate match {
     case Left(error) => throw new RuntimeException(s"Cannot properly initialise Instance settings: $error")

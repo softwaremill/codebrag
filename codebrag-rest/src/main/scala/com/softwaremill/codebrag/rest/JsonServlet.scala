@@ -48,11 +48,4 @@ class JsonServlet extends ScalatraServlet with JacksonJsonSupport with JValueRes
     response.addHeader("Pragma", "no-cache")
   }
 
-  errorHandler = {
-    case t: Exception => {
-      logger.error("Exception during client request processing", t)
-    }
-      halt(500, "Internal server exception")
-  }
-
 }
