@@ -7,18 +7,18 @@ import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.domain.Like
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 import com.softwaremill.codebrag.dao.finders.views.LikeView
-import com.softwaremill.codebrag.activities.UnlikeUseCase
+import com.softwaremill.codebrag.activities.{LikeUseCase, UnlikeUseCase}
 
 trait LikesEndpoint extends JsonServletWithAuthentication with UserReactionParametersReader {
 
   def userReactionService: UserReactionService
   def reactionFinder: ReactionFinder
   def unlikeUseCase: UnlikeUseCase
+  def likeUseCase: LikeUseCase
 
   post("/:id/likes") {
     haltIfNotAuthenticated()
-    val incomingLike = buildIncomingLike
-    userReactionService.storeLike(incomingLike) match {
+    likeUseCase.execute(incomingLike) match {
       case Right(savedLike) => response(savedLike)
       case Left(errMessage) => halt(400, errMessage)
     }
@@ -39,7 +39,7 @@ trait LikesEndpoint extends JsonServletWithAuthentication with UserReactionParam
     }
   }
 
-  private def buildIncomingLike = {
+  private def incomingLike = {
     val params = readReactionParamsFromRequest
     IncomingLike(new ObjectId(params.commitId), new ObjectId(user.id), params.fileName, params.lineNumber)
   }

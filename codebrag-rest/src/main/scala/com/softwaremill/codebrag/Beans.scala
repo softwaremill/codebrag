@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag
 
-import com.softwaremill.codebrag.activities.{UnlikeUseCase, ChangeUserSettingsUseCase, ReviewCommitUseCase, AddCommentUseCase}
+import com.softwaremill.codebrag.activities._
 import com.softwaremill.codebrag.common.{RealTimeClock, ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.rest.CodebragSwagger
 import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
@@ -61,6 +61,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val statsAggregator = new StatsAggregator(statsFinder, instanceSettingsDao, config)
 
   lazy val unlikeUseCaseFactory = new UnlikeUseCase(likeValidator, userReactionService)
+  lazy val likeUseCase = new LikeUseCase(userReactionService)
   lazy val changeUserSettingsUseCase = new ChangeUserSettingsUseCase(userDao)
 
   lazy val instanceSettings = instanceSettingsDao.readOrCreate match {

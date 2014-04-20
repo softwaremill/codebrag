@@ -7,7 +7,7 @@ import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
-import com.softwaremill.codebrag.activities.{UnlikeUseCase, ReviewCommitUseCase, AddCommentUseCase}
+import com.softwaremill.codebrag.activities.{LikeUseCase, UnlikeUseCase, ReviewCommitUseCase, AddCommentUseCase}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.common.paging.PagingCriteria
@@ -35,6 +35,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   val UserJson = someUser()
   val userReactionService = mock[UserReactionService]
   val unlikeUseCaseFactory = mock[UnlikeUseCase]
+  val likeUseCase = mock[LikeUseCase]
 
   override def beforeEach {
     super.beforeEach
@@ -120,7 +121,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
     extends CommitsServlet(fakeAuthenticator, toReviewCommitsFinder, allCommitsFinder, userReactionFinder, commentActivity,
-      reviewCommitUseCase, userReactionService, userDao, new CodebragSwagger, diffService, unlikeUseCaseFactory) {
+      reviewCommitUseCase, userReactionService, userDao, new CodebragSwagger, diffService, unlikeUseCaseFactory, likeUseCase) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 
