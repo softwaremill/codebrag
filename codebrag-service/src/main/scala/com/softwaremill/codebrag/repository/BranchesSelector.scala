@@ -19,13 +19,7 @@ trait BranchesSelector extends BranchListModeSelector {
     locallyCachedBranches.filterNot(branches.contains)
   }
 
-  def getCheckedOutBranchFullName = {
-    val shortBranchName = repo.getBranch
-    remoteBranches.map(_.getName).find(_ == s"${RemoteBranchPrefix}${shortBranchName}") match {
-      case Some(branch) => branch
-      case None => throw new RuntimeException("Cannot determine currently checked out branch")
-    }
-  }
+  def getCheckedOutBranchFullName = s"${RemoteBranchPrefix}${repo.getBranch}"
 
   private def remoteBranches = new Git(repo).branchList().setListMode(branchListMode).call().toList
 
