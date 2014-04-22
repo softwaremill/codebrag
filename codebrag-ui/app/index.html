@@ -121,6 +121,12 @@
     <script type="text/javascript" src="scripts/tour/pageTourCtrl.js"></script>
     <script type="text/javascript" src="scripts/tour/pageTourService.js"></script>
 
+    <!--licence-->
+    <script type="text/javascript" src="scripts/licence/licenceService.js"></script>
+    <script type="text/javascript" src="scripts/licence/licenceExpiryWarningCtrl.js"></script>
+    <script type="text/javascript" src="scripts/licence/licenceInfoCtrl.js"></script>
+
+
     <!--commons -->
     <script type="text/javascript" src="scripts/common/events.js"></script>
     <script type="text/javascript" src="scripts/common/flash.js"></script>
@@ -201,15 +207,21 @@
                     <li class="username" ng-click="openUserProfilePopup()">{{loggedInUser().fullName}} - profile</li>
                     <li class="invite" ng-click="openInvitePopup()">Invite team members</li>
                     <li class="invite" ng-click="openAboutPopup()">About Codebrag</li>
+                    <li class="invite" ng-click="openLicencePopup()">Licence info</li>
                     <li class="logout" ng-click="logout()">Logout</li>
                 </ul>
 
             </div>
         </div>
     </header>
+    <section>
+        <a class="ribbon" ng-controller="LicenceExpiryWarningCtrl" ng-click="displayPopup()" ng-show="visible">
+            <span ng-show="licenceData.valid">Licence expires soon</span>
+            <span ng-show="!licenceData.valid">Oops. Licence expired</span>
+        </a>
+    </section>
     <login-form></login-form>
     <section ui-view></section>
     <div message-popup></div>
-    <early-version-popup></early-version-popup>
 </body>
 </html>

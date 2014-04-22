@@ -57,6 +57,10 @@ angular.module('codebrag.session')
             $rootScope.$broadcast('openUserProfilePopup');
         };
 
+        $scope.openLicencePopup = function () {
+            $rootScope.$broadcast('codebrag:openLicencePopup');
+        };
+
         $scope.openAboutPopup = popupsService.openAboutPopup;
         $scope.openInvitePopup = popupsService.openInvitePopup;
 

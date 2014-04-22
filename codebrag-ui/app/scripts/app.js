@@ -33,6 +33,7 @@ angular.module('codebrag.branches', ['codebrag.events']);
 
 angular.module('codebrag.counters', ['codebrag.branches', 'codebrag.events']);
 
+angular.module('codebrag.licence', ['codebrag.events', 'ui.bootstrap.modal']);
 
 angular.module('codebrag', [
     'codebrag.counters',
@@ -47,7 +48,8 @@ angular.module('codebrag', [
     'codebrag.favicon',
     'codebrag.tour',
     'codebrag.profile',
-    'codebrag.invitations']);
+    'codebrag.invitations',
+    'codebrag.licence']);
 
 angular.module('codebrag')
     .config(function ($provide) {
@@ -55,11 +57,11 @@ angular.module('codebrag')
             return codebrag.uniqueRequestsAwareHttpService($delegate, $q);
         });
     })
-    .run(function($rootScope, repositoryStatusService, pageTourService, authService, $state, branchesService) {
+    .run(function($rootScope, repositoryStatusService, pageTourService, authService, $state, licenceService) {
         repositoryStatusService.checkRepoReady();
         authService.isFirstRegistration().then(openFirstRegistrationIfNeeded);
         pageTourService.initializeTour();
-        branchesService.fetchBranches();
+        licenceService.initialize();
 
         function openFirstRegistrationIfNeeded(firstRegistration) {
             if (firstRegistration) {
