@@ -57,11 +57,12 @@ angular.module('codebrag')
             return codebrag.uniqueRequestsAwareHttpService($delegate, $q);
         });
     })
-    .run(function($rootScope, repositoryStatusService, pageTourService, authService, $state, licenceService) {
+    .run(function($rootScope, repositoryStatusService, pageTourService, authService, $state, licenceService, branchesService) {
         repositoryStatusService.checkRepoReady();
         authService.isFirstRegistration().then(openFirstRegistrationIfNeeded);
         pageTourService.initializeTour();
         licenceService.initialize();
+        branchesService.initialize();
 
         function openFirstRegistrationIfNeeded(firstRegistration) {
             if (firstRegistration) {

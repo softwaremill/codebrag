@@ -8,7 +8,6 @@ angular.module('codebrag.branches')
             push = Array.prototype.push;
 
         function loadAvailableBranches() {
-            dataReady = $q.defer();
             return $http.get('rest/branches').then(function useBranches(response) {
                 branchesList.length = 0;
                 push.apply(branchesList, response.data.branches);
@@ -46,12 +45,17 @@ angular.module('codebrag.branches')
             return dataReady.promise;
         }
 
+        function initialize() {
+            $rootScope.$on(events.loggedIn, loadAvailableBranches);
+        }
+
         return {
             ready: ready,
             fetchBranches: loadAvailableBranches,
             allBranches: allBranches,
             selectBranch: selectBranch,
-            selectedBranch: selectedBranch
+            selectedBranch: selectedBranch,
+            initialize: initialize
         }
 
     });
