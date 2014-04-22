@@ -2,7 +2,7 @@ angular.module('codebrag.licence')
 
     .service('licenceService', function($http, $q, $rootScope, events, $timeout, $modal) {
 
-        var warningDays = 2,
+        var warningDays = 14,
             licenceData = {},
             ready = $q.defer(),
             checkTimer,
