@@ -16,8 +16,7 @@ class LikeUseCase(userReactionService: UserReactionService, licenceService: Lice
   }
 
   protected def ifCanExecute(actionBlock: => LikeResult)(implicit like: IncomingLike): LikeResult = {
-    // TODO: enable & add config param to switch off licence check for our servers etc
-    // licenceService.assertLicenceValid
+    licenceService.interruptIfLicenceExpired
     actionBlock
   }
 }

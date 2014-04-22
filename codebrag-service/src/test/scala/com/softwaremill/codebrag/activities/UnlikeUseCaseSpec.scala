@@ -9,18 +9,20 @@ import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.licence.LicenceService
 
 class UnlikeUseCaseSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
   var likeValidator: LikeValidator = _
   var userReactionService: UserReactionService = _
-
+  var licenceService: LicenceService = _
   var unlikeUseCase: UnlikeUseCase = _
 
   override def beforeEach() {
     likeValidator = mock[LikeValidator]
     userReactionService = mock[UserReactionService]
-    unlikeUseCase = new UnlikeUseCase(likeValidator, userReactionService)
+    licenceService = mock[LicenceService]
+    unlikeUseCase = new UnlikeUseCase(likeValidator, userReactionService, licenceService)
   }
 
   it should "tell when unlike cannot be done due to validation rules" in {

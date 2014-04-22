@@ -4,8 +4,8 @@ angular.module('codebrag.commits')
 
         $scope.markCurrentCommitAsReviewed = function () {
             var shaToRemove = $scope.currentCommit.info.sha;
-            currentCommit.empty();
             commitsService.markAsReviewed(shaToRemove).then(function(nextCommit) {
+                currentCommit.empty();
                 goTo(nextCommit);
             })
         };

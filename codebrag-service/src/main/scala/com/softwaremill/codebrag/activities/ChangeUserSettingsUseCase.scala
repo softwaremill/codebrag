@@ -4,8 +4,9 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.UserSettings
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.licence.LicenceService
 
-class ChangeUserSettingsUseCase(userDao: UserDAO) extends Logging {
+class ChangeUserSettingsUseCase(userDao: UserDAO, licenceService: LicenceService) extends Logging {
 
   type ChangeUserSettingsResult = Either[String, UserSettings]
 
@@ -31,6 +32,7 @@ class ChangeUserSettingsUseCase(userDao: UserDAO) extends Logging {
   }
 
   protected def ifCanExecute(block: => ChangeUserSettingsResult)(implicit userId: ObjectId, settings: IncomingSettings): ChangeUserSettingsResult = {
+    licenceService.interruptIfLicenceExpired
     block
   }
 

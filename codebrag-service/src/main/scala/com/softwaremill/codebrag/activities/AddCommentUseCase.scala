@@ -6,8 +6,9 @@ import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.domain.reactions.CommentAddedEvent
 import com.softwaremill.codebrag.domain.Comment
+import com.softwaremill.codebrag.licence.LicenceService
 
-class AddCommentUseCase(userReactionService: UserReactionService, followupService: FollowupService, eventBus: EventBus) (implicit clock: Clock) {
+class AddCommentUseCase(userReactionService: UserReactionService, followupService: FollowupService, eventBus: EventBus, licenceService: LicenceService) (implicit clock: Clock) {
 
   type AddCommentResult = Either[String, Comment]
 
@@ -21,6 +22,7 @@ class AddCommentUseCase(userReactionService: UserReactionService, followupServic
   }
 
   protected def ifCanExecute(block: => AddCommentResult)(implicit comment: IncomingComment): AddCommentResult = {
+    licenceService.interruptIfLicenceExpired
     block
   }
 

@@ -7,6 +7,7 @@ import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.domain.reactions.CommitReviewedEvent
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
+import com.softwaremill.codebrag.licence.LicenceService
 
 /**
  * Handles user activity when user wants to mark given commit as reviewed
@@ -14,7 +15,7 @@ import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
 class ReviewCommitUseCase(
   commitDao: CommitInfoDAO,
   reviewedCommitsCache: UserReviewedCommitsCache,
-  eventBus: EventBus) (implicit clock: Clock) extends Logging {
+  eventBus: EventBus, licenceService: LicenceService) (implicit clock: Clock) extends Logging {
 
   type ReviewCommitResult = Either[String, Unit]
 
@@ -34,6 +35,7 @@ class ReviewCommitUseCase(
   }
 
   protected def ifCanExecute(block: => ReviewCommitResult)(implicit sha: String, userId: ObjectId): ReviewCommitResult = {
+    licenceService.interruptIfLicenceExpired
     block
   }
 
