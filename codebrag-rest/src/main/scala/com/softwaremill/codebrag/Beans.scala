@@ -66,7 +66,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val changeUserSettingsUseCase = new ChangeUserSettingsUseCase(userDao)
   lazy val followupDoneUseCase = new FollowupDoneUseCase(followupService)
 
-  lazy val licenceService = new LicenceService(instanceSettings, clock)
+  lazy val licenceService = new LicenceService(instanceSettings, config, clock)
 
   lazy val instanceSettings = instanceSettingsDao.readOrCreate match {
     case Left(error) => throw new RuntimeException(s"Cannot properly initialise Instance settings: $error")

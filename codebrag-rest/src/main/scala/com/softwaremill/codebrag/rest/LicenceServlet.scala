@@ -8,7 +8,7 @@ class LicenceServlet(licenceService: LicenceService, val authenticator: Authenti
 
   get("/") {
     haltIfNotAuthenticated()
-    Map("valid" -> licenceService.licenceValid, "expiresAt" -> licenceService.licenceExpiryDate)
+    Map("valid" -> licenceService.licenceValid, "expiresAt" -> licenceService.licenceExpiryDate, "minutesLeft" -> licenceService.minutesToExpire)
   }
 
 }
