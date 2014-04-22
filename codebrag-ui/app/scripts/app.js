@@ -78,6 +78,11 @@ angular.module('codebrag.auth')
         $httpProvider.responseInterceptors.push('httpErrorsInterceptor');
     });
 
+angular.module('codebrag.licence')
+    .config(function ($httpProvider) {
+        $httpProvider.responseInterceptors.push('httpLicenceExpirationStatusInterceptor');
+    });
+
 angular.module('codebrag.session')
     .config(function ($stateProvider, $urlRouterProvider, authenticatedUser) {
         $urlRouterProvider.when('', '/');

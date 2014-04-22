@@ -1,5 +1,5 @@
-angular.module('codebrag.licence').controller('LicenceInfoCtrl', function($scope, licenceService) {
+angular.module('codebrag.licence').controller('LicenceInfoCtrl', function($scope, licenceData) {
 
-    $scope.licenceData = licenceService.getLicenceData();
+    $scope.licenceData = licenceData;
 
 });

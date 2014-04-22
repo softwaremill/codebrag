@@ -9,6 +9,7 @@ angular.module('codebrag.licence')
             checkInterval = 6 * 3600 * 1000; // 6 hours (in millis)
 
         function scheduleLicenceCheck() {
+            ready = $q.defer();
             return loadLicenceData().then(scheduleNextCheck).then(fireEvents).then(function() {
                 ready.resolve();
             });
@@ -23,6 +24,7 @@ angular.module('codebrag.licence')
         function loadLicenceData() {
             return $http.get('rest/licence').then(function(response) {
                 licenceData = response.data;
+                return licenceData;
             });
         }
 
@@ -39,39 +41,41 @@ angular.module('codebrag.licence')
             if(licenceData.valid && daysToWarning < 0) {
                 $rootScope.$broadcast('codebrag:licenceAboutToExpire');
             }
-            if(!licenceData.valid) {
+            if(!licenceData.valid && !fireEvents.initialExpirationEvent) {
                 $rootScope.$broadcast('codebrag:licenceExpired');
+                fireEvents.initialExpirationEvent = true
             }
         }
 
         function initialize() {
             $rootScope.$on(events.loggedIn, scheduleLicenceCheck);
-
             $rootScope.$on('codebrag:openLicencePopup', licencePopup);
-            $rootScope.$on('codebrag:licenceExpired', function() {
-                if(angular.isUndefined(licencePopup.initialDisplay)) {
-                    licencePopup();
-                    licencePopup.initialDisplay = true;
-                }
-            });
+            $rootScope.$on('codebrag:licenceExpired',licencePopup);
         }
 
-        function licencePopup() {
+        function licencePopup(once) {
+            if(licencePopup.displayed) return;
             var repoStatusModalConfig = {
                 backdrop: false,
                 keyboard: true,
                 controller: 'LicenceInfoCtrl',
                 resolve: {
-                    licenceData: serviceReady
+                    licenceData: loadLicenceData
                 },
                 templateUrl: 'views/popups/licenceInfo.html'
             };
-            return $modal.open(repoStatusModalConfig);
+            licencePopup.displayed = true;
+            $modal.open(repoStatusModalConfig).result.then(function() {
+                licencePopup.displayed = false;
+            }, function() {
+                licencePopup.displayed = false;
+            })
         }
 
         return {
             ready: serviceReady,
             getLicenceData: getLicenceData,
+            loadLicenceData: loadLicenceData,
             licencePopup: licencePopup,
             initialize: initialize
         };
