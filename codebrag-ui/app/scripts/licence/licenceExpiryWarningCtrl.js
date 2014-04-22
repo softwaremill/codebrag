@@ -10,6 +10,7 @@ angular.module('codebrag.licence').controller('LicenceExpiryWarningCtrl', functi
 
     $scope.$on('codebrag:licenceExpired', function() {
         $scope.visible = true;
+        $scope.licenceData = licenceService.getLicenceData();
     });
 
     $scope.displayPopup = licenceService.licencePopup;

@@ -2,14 +2,27 @@ angular.module('codebrag.licence')
 
     .service('licenceService', function($http, $q, $rootScope, events, $timeout, $modal) {
 
-        var warningMinutes = 62, // 14 * 24 * 60,
+        var warningDays = 2,
             licenceData = {},
-            ready = $q.defer();
+            ready = $q.defer(),
+            checkTimer,
+            checkInterval = 6 * 3600 * 1000; // 6 hours (in millis)
+
+        function scheduleLicenceCheck() {
+            return loadLicenceData().then(scheduleNextCheck).then(fireEvents).then(function() {
+                ready.resolve();
+            });
+            function scheduleNextCheck() {
+                checkTimer && $timeout.cancel(checkTimer);
+                checkTimer = $timeout(function() {
+                    loadLicenceData().then(scheduleNextCheck).then(fireEvents)
+                }, checkInterval);
+            }
+        }
 
         function loadLicenceData() {
             return $http.get('rest/licence').then(function(response) {
                 licenceData = response.data;
-                ready.resolve(licenceData);
             });
         }
 
@@ -21,32 +34,26 @@ angular.module('codebrag.licence')
             return licenceData;
         }
 
-        function setupExpirationSoonEvent() {
-            var triggerTime = (licenceData.minutesLeft - warningMinutes) * 60 * 1000;
-            $timeout(function() {
-                $rootScope.$broadcast('codebrag:licenceAboutToExpire')
-            }, triggerTime);
-        }
-
-        function setupLicenceExpiredWarning() {
-            var triggerTime = licenceData.minutesLeft * 60 * 1000;
-            $timeout(function() {
+        function fireEvents() {
+            var daysToWarning = licenceData.daysLeft - warningDays;
+            if(licenceData.valid && daysToWarning < 0) {
+                $rootScope.$broadcast('codebrag:licenceAboutToExpire');
+            }
+            if(!licenceData.valid) {
                 $rootScope.$broadcast('codebrag:licenceExpired');
-            }, triggerTime);
+            }
         }
 
         function initialize() {
-            $rootScope.$on(events.loggedIn, function() {
-                loadLicenceData().then(function() {
-                    if(licenceData.valid) {
-                        setupExpirationSoonEvent();
-                    }
-                    setupLicenceExpiredWarning();
-                });
-            });
+            $rootScope.$on(events.loggedIn, scheduleLicenceCheck);
 
             $rootScope.$on('codebrag:openLicencePopup', licencePopup);
-            $rootScope.$on('codebrag:licenceExpired', licencePopup);
+            $rootScope.$on('codebrag:licenceExpired', function() {
+                if(angular.isUndefined(licencePopup.initialDisplay)) {
+                    licencePopup();
+                    licencePopup.initialDisplay = true;
+                }
+            });
         }
 
         function licencePopup() {
