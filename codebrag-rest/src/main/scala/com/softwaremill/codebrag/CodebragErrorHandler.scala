@@ -12,7 +12,10 @@ trait CodebragErrorHandler extends ScalatraBase with Logging {
 
   error {
     case e: LicenceExpiredException => halt(402, Map("error" -> e.getMessage))
-    case _ => halt(500, Map("error" -> "Something went wrong on our side"))
+    case e => {
+      logger.error("Something went wrong", e)
+      halt(500, Map("error" -> "Something went wrong on our side"))
+    }
   }
 
 }
