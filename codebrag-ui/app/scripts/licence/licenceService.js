@@ -9,8 +9,8 @@ angular.module('codebrag.licence')
             checkInterval = 6 * 3600 * 1000; // 6 hours (in millis)
 
         function scheduleLicenceCheck() {
-            ready = $q.defer();
             return loadLicenceData().then(scheduleNextCheck).then(fireEvents).then(function() {
+                console.log('resolved');
                 ready.resolve();
             });
             function scheduleNextCheck() {
@@ -42,6 +42,7 @@ angular.module('codebrag.licence')
                 $rootScope.$broadcast('codebrag:licenceAboutToExpire');
             }
             if(!licenceData.valid && !fireEvents.initialExpirationEvent) {
+                console.log('aaa');
                 $rootScope.$broadcast('codebrag:licenceExpired');
                 fireEvents.initialExpirationEvent = true
             }
