@@ -3,6 +3,6 @@
 Clone your repository here.
 
 git:    git clone git://yourcompany.com/path/to/project-abc.git
-svn:    svn clone http://yourcompany.com/path/to/svn/project-abc project-abc        # Use 'git svn clone', not 'svn checkout'
+svn:    git svn clone http://yourcompany.com/path/to/svn/project-abc project-abc        # Use 'git svn clone', not 'svn checkout'
 
 ==================================
