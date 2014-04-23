@@ -19,7 +19,7 @@ fi
 PACKAGE=$1  # zip package file
 BASE_DIR=$2 # installation base dir
 
-INSTALL_DIR="$BASE_DIR/codebrag"
+INSTALL_DIR="$BASE_DIR/codebrag-2.0"
 BACKUP_DIR="$BASE_DIR/prev_package"
 CONFIG_DIR="$BASE_DIR/config"
 
