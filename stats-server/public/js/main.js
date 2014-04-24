@@ -80,11 +80,12 @@ stats.controller('StatsCtrl', function($scope, statsDataService, $location) {
 
     function toSeries(data) {
       return data.map(function(entry) {
+	var appVersion = entry.appVersion;
         var values = entry.activityDates.map(function(entry) {
           return {
             to: "/Date(" + moment.utc(entry.date).startOf('day').valueOf() + ")/",
             from: "/Date(" + moment.utc(entry.date).endOf('day').valueOf() + ")/",
-            customClass: (entry.active === true ? 'active' : 'inactive')
+            customClass: [(entry.active === true ? 'active' : 'inactive'), (appVersion === '2.0' ? 'v20': '')].join(" ")
           }
         });
 

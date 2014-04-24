@@ -103,6 +103,14 @@ nav li {
     background: #ddd !important;
 }
 
+.gantt-chart .inactive.v20 {
+    background: #edbe72 !important;
+}
+
+.gantt-chart .active.v20 {
+    background: #f90 !important
+}
+
 .legend {
     padding: 0.3em;
 }
