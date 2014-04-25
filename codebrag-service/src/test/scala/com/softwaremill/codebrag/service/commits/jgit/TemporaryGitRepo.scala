@@ -6,9 +6,19 @@ import org.eclipse.jgit.lib.{ObjectId, Repository}
 import com.softwaremill.codebrag.common.Utils
 import java.io.{PrintWriter, File}
 import org.eclipse.jgit.api.Git
+import com.softwaremill.codebrag.repository.GitRepository
+import com.softwaremill.codebrag.repository.config.RepoData
+import org.eclipse.jgit.api.ListBranchCommand.ListMode
 
 class TemporaryGitRepo(val tempDir: File, repo: Repository) {
   private val git = new Git(repo)
+
+  def repository = {
+    val repoData = RepoData(tempDir.getAbsolutePath, tempDir.getName, "git", None)
+    new GitRepository(repoData) {
+      override val BranchListMode = ListMode.ALL
+    }
+  }
 
   /**
    * @return SHA of the commit

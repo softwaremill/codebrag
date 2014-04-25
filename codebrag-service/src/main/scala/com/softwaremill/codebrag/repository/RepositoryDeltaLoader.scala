@@ -8,7 +8,7 @@ import org.eclipse.jgit.errors.MissingObjectException
 import scala.collection.JavaConversions._
 import org.eclipse.jgit.revwalk.filter.MaxCountRevFilter
 
-trait RepositoryDeltaLoader extends RawCommitsConverter with BranchesSelector {
+trait RepositoryDeltaLoader extends RawCommitsConverter {
 
   self: Repository =>
 

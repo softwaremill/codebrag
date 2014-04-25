@@ -7,7 +7,7 @@ import org.eclipse.jgit.api.Git
 import scala.collection.JavaConversions._
 
 
-trait RepositorySnapshotLoader extends RawCommitsConverter with BranchesSelector {
+trait RepositorySnapshotLoader extends RawCommitsConverter {
 
   self: Repository =>
 

@@ -8,7 +8,7 @@ import org.eclipse.jgit.errors.MissingObjectException
 import com.softwaremill.codebrag.repository.config.RepoData
 import org.eclipse.jgit.api.Git
 
-trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDeltaLoader with BranchListModeSelector {
+trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDeltaLoader with BranchesModel {
 
   def repoData: RepoData
   def repo: FileRepository

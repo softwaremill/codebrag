@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.cache
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.repository.{BranchesSelector, Repository}
+import com.softwaremill.codebrag.repository.{GitRepoBranchesModel, Repository}
 import com.softwaremill.codebrag.domain.{BranchState, CommitInfo, MultibranchLoadCommitsResult}
 import com.softwaremill.codebrag.service.config.CommitCacheConfig
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
@@ -42,14 +42,14 @@ class BranchCommitsCache(val repository: Repository, backend: PersistentBackendF
 
   def getFullBranchNames = commits.keySet
 
-  def getShortBranchNames = getFullBranchNames.map(_.replace(BranchesSelector.RemoteBranchPrefix, ""))
+  def getShortBranchNames = getFullBranchNames.map(_.replace(repository.RepositoryBranchPrefix, ""))
 
-  def getCheckedOutBranchShortName = repository.getCheckedOutBranchFullName.replace(BranchesSelector.RemoteBranchPrefix, "")
+  def getCheckedOutBranchShortName = repository.getCheckedOutBranchFullName.replace(repository.RepositoryBranchPrefix, "")
 
   def getAllCommits = commits.flatten(_._2.get).toSet
 
   def getBranchCommits(branchName: String): List[BranchCommitCacheEntry] = {
-    commits.get(branchName).map(_.get).getOrElse(List.empty[BranchCommitCacheEntry])
+    commits.get(repository.resolveFullBranchName(branchName)).map(_.get).getOrElse(List.empty[BranchCommitCacheEntry])
   }
 
   def initialize() {

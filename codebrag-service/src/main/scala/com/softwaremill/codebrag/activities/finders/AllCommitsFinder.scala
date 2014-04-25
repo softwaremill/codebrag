@@ -16,10 +16,10 @@ class AllCommitsFinder(
   val reviewedCommitsCache: UserReviewedCommitsCache,
   commitsInfoDao: CommitInfoDAO,
   val userDao: UserDAO,
-  val config: ReviewProcessConfig) extends Logging with AuthorDataAppender with CommitReviewStateAppender with ReviewersDataAppender with FullBranchNameResolver {
+  val config: ReviewProcessConfig) extends Logging with AuthorDataAppender with CommitReviewStateAppender with ReviewersDataAppender {
 
   def find(userId: ObjectId, branchName: String, pagingCriteria: PagingCriteria[String]): CommitListView = {
-    val branchCommits = repoCache.getBranchCommits(resolveFullBranchName(branchName)).map(_.sha).reverse
+    val branchCommits = repoCache.getBranchCommits(branchName).map(_.sha).reverse
     val page = pagingCriteria.extractPageFrom(branchCommits)
     val commits = commitsInfoDao.findByShaList(page.items)
     addAuthorData(CommitListView(setCommitsReviewStates(commits, userId), page.beforeCount, page.afterCount))

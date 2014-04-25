@@ -10,7 +10,7 @@ import com.softwaremill.codebrag.repository.config.{RepoData, UserPassCredential
  * either all or only those to specified commit (starting from HEAD)
  * @param repoData repository config required to work on repo (location, credentials)
  */
-class GitRepository(val repoData: RepoData) extends Repository with RepositoryAutoBuilder {
+class GitRepository(val repoData: RepoData) extends Repository with RepositoryAutoBuilder with GitRepoBranchesModel {
 
   private val credentialsProvider = {
     repoData.repoCredentials.map {

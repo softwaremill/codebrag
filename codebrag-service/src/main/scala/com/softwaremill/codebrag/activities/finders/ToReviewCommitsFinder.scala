@@ -18,10 +18,10 @@ class ToReviewCommitsFinder(
   repoCache: BranchCommitsCache,
   reviewedCommitsCache: UserReviewedCommitsCache,
   commitsInfoDao: CommitInfoDAO,
-  val userDao: UserDAO) extends Logging with AuthorDataAppender with FullBranchNameResolver {
+  val userDao: UserDAO) extends Logging with AuthorDataAppender {
 
   def find(userId: ObjectId, branchName: String, pagingCriteria: PagingCriteria[String]): CommitListView = {
-    val toReview = getSHAsOfCommitsToReview(userId, resolveFullBranchName(branchName))
+    val toReview = getSHAsOfCommitsToReview(userId, branchName)
     val page = pagingCriteria.extractPageFrom(toReview)
     val commits = commitsInfoDao.findByShaList(page.items)
     val asToReview = markAsToReview(commits)
@@ -29,7 +29,7 @@ class ToReviewCommitsFinder(
   }
 
   def count(userId: ObjectId, branchName: String): Long = {
-    getSHAsOfCommitsToReview(userId, resolveFullBranchName(branchName)).size
+    getSHAsOfCommitsToReview(userId, branchName).size
   }
 
   def countForCurrentBranch(userId: ObjectId): Long = {

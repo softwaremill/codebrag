@@ -5,7 +5,7 @@ import scala.sys.process._
 import java.nio.file.{Path, Paths}
 import com.softwaremill.codebrag.repository.config.{RepoData, UserPassCredentials}
 
-class GitSvnRepository(val repoData: RepoData) extends Repository with RepositoryAutoBuilder {
+class GitSvnRepository(val repoData: RepoData) extends Repository with RepositoryAutoBuilder with GitSvnBranchesModel {
 
   private val CommandBase = "git svn rebase --quiet"
 

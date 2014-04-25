@@ -37,6 +37,8 @@ class BranchCommitsCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAf
     repoCache = new BranchCommitsCache(repository, backend, cacheConfig)
 
     when(cacheConfig.maxCommitsCachedPerBranch).thenReturn(10)
+    when(repository.resolveFullBranchName(MasterBranch)).thenReturn(MasterBranch)
+    when(repository.resolveFullBranchName(FeatureBranch)).thenReturn(FeatureBranch)
   }
   
   it should "create branch entry and add commits to cache when no branch exists in cache" in {
