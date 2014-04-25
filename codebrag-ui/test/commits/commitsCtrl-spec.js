@@ -137,6 +137,7 @@ describe("Commits Controller", function () {
     it('should clear current commit when opening another commit details', function() {
         // Given
         var sha = '123';
+        currentCommit.set({info:{sha: '1234'}});
         spyOn(currentCommit, 'empty');
 
         // When
@@ -144,6 +145,19 @@ describe("Commits Controller", function () {
 
         // Then
         expect(currentCommit.empty).toHaveBeenCalled();
+    });
+
+    it('should not open commit details if current commits attemtps to be reopened', function() {
+        // Given
+        var sha = '123';
+        currentCommit.set({info:{sha: '123'}});
+        spyOn(currentCommit, 'empty');
+
+        // When
+        $scope.openCommitDetails(sha);
+
+        // Then
+        expect(currentCommit.empty).not.toHaveBeenCalled();
     });
 
     it('should fire event when commits list filter changed', function() {

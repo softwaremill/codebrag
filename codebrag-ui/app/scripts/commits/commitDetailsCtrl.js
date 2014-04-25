@@ -11,6 +11,13 @@ angular.module('codebrag.commits')
             },
             empty: function() {
                 currentCommit = null;
+            },
+            isEmpty: function() {
+                return angular.isUndefined(currentCommit) || currentCommit === null;
+            },
+            hasSha: function(sha) {
+                if(this.isEmpty()) return false;
+                return currentCommit.info.sha === sha
             }
         };
     })
