@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.dao.reaction._
 import com.softwaremill.codebrag.dao.reviewtask.{SQLCommitReviewTaskDAO, MongoCommitReviewTaskDAO, CommitReviewTaskDAO}
 import com.softwaremill.codebrag.dao.invitation.{SQLInvitationDAO, MongoInvitationDAO, InvitationDAO}
 import com.softwaremill.codebrag.dao.events.{SQLEventDAO, MongoEventDAO, EventDAO}
-import com.softwaremill.codebrag.dao.instance.FileBasedInstanceSettingsDAO
+import com.softwaremill.codebrag.dao.instance.{InstanceParamsDAO, FileBasedInstanceSettingsDAO}
 import com.softwaremill.codebrag.dao.finders.followup.{SQLFollowupFinder, MongoFollowupFinder, FollowupFinder}
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 import com.softwaremill.codebrag.dao.finders.StatsEventsFinder
@@ -32,6 +32,7 @@ trait Daos {
   def repoStatusDao: RepositoryStatusDAO
   def reviewedCommitsDao: ReviewedCommitsDAO
   def heartbeatDao: HeartbeatDAO
+  def instanceParamsDao: InstanceParamsDAO
 
   lazy val instanceSettingsDao = new FileBasedInstanceSettingsDAO
 
@@ -56,8 +57,10 @@ trait MongoDaos extends Daos {
   lazy val branchStateDao = new InMemoryBranchStateDAO
   lazy val reviewedCommitsDao = new InMemoryReviewedCommitsDAO
   lazy val heartbeatDao = new MongoHeartbeatDAO(clock)
+  lazy val instanceParamsDao = ???
 
   lazy val followupFinder = new MongoFollowupFinder
+
 
   def clock: Clock
 }
@@ -77,6 +80,7 @@ trait SQLDaos extends Daos {
   lazy val branchStateDao = new SQLBranchStateDAO(sqlDatabase)
   lazy val reviewedCommitsDao = new SQLReviewedCommitsDAO(sqlDatabase)
   lazy val heartbeatDao = new SQLHeartbeatDAO(sqlDatabase, clock)
+  lazy val instanceParamsDao = new InstanceParamsDAO(sqlDatabase)
 
   lazy val followupFinder = new SQLFollowupFinder(sqlDatabase, userDao)
 

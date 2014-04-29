@@ -8,7 +8,7 @@ object AuthUtils {
 
   def cookieKey(preKey: String)(implicit request: HttpServletRequest) = {
     // to allow exists few instance on the same host but on different ports
-    preKey + "_" + InstanceContext.getInstanceSettings(request.getServletContext).uniqueId
+    preKey + "_" + InstanceContext.getInstanceSettings(request.getServletContext).value
   }
 
   def scentryAuthKey(implicit request: HttpServletRequest) = {

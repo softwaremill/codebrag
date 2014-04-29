@@ -4,7 +4,7 @@ import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.common.FixtureTimeClock
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.domain.InstanceSettings
+import com.softwaremill.codebrag.domain.{InstanceId, InstanceSettings}
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.config.LicenceConfig
 import org.scalatest.mock.MockitoSugar
@@ -13,7 +13,7 @@ import org.joda.time.format.DateTimeFormat
 
 class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
 
-  var instanceSettings = instanceSettingsFor("10/04/2014")
+  var instanceId = instanceIdFor("10/04/2014")
   var config: LicenceConfig = mock[LicenceConfig]
 
   before {
@@ -35,11 +35,11 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
     val dateFormatted = clock.now.toString("dd/MM/yyyy HH:mm")
 
     it should s"check licence validity for ${dateFormatted} and have result ${validity}" in {
-      new LicenceService(instanceSettings, config, clock).licenceValid should be(validity)
+      new LicenceService(instanceId, config, clock).licenceValid should be(validity)
     }
 
     it should s"check days left for ${dateFormatted} and have result ${daysLeft}" in {
-      new LicenceService(instanceSettings, config, clock).daysToExpire should be(daysLeft)
+      new LicenceService(instanceId, config, clock).daysToExpire should be(daysLeft)
     }
 
   }
@@ -58,6 +58,6 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
 
   private def clockWith(date: String) = new FixtureTimeClock(str2date(date).getMillis)
 
-  private def instanceSettingsFor(date: String) = InstanceSettings(new ObjectId(str2date(date).toDate).toString)
+  private def instanceIdFor(date: String) = InstanceId(new ObjectId(str2date(date).toDate).toString)
 
 }

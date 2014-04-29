@@ -51,7 +51,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     }
 
     if(config.sendStats) {
-      instanceRunStatsSender.sendInstanceRunInfoImmediately(instanceSettings, config.appVersion)
+      instanceRunStatsSender.sendInstanceRunInfoImmediately(InstanceId, config.appVersion)
       StatsSendingScheduler.initialize(actorSystem, statsAggregator, statsHTTPRequestSender, config)
     } else {
       logger.info("Sending anonymous statistics was disabled - not scheduling stats calculation")

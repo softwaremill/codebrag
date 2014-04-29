@@ -4,12 +4,12 @@ import org.joda.time._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.common.Clock
 import com.softwaremill.codebrag.service.config.LicenceConfig
-import com.softwaremill.codebrag.domain.InstanceSettings
+import com.softwaremill.codebrag.domain.InstanceId
 
-class LicenceService(instanceSettings: InstanceSettings, licenceConfig: LicenceConfig, clock: Clock) extends Logging {
+class LicenceService(instanceId: InstanceId, licenceConfig: LicenceConfig, clock: Clock) extends Logging {
 
   logger.debug(s"Setting up licence check")
-  private val date = new DateTime(instanceSettings.uniqueIdAsObjectId.getTime).withTimeAtStartOfDay()
+  private val date = new DateTime(instanceId.creationTime).withTimeAtStartOfDay()
   val licenceExpiryDate = date.plusDays(licenceConfig.expiresInDays - 1).withTime(23, 59, 59, 999)
 
   logger.debug(s"Licence valid?: ${licenceValid}")

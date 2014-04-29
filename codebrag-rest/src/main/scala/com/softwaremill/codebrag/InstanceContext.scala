@@ -13,7 +13,7 @@ object InstanceContext {
   }
 
   def getInstanceSettings(context: ServletContext) = {
-    get(context).instanceSettings
+    get(context).InstanceId
   }
 
 }

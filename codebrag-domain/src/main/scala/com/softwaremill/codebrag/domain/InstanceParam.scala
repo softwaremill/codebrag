@@ -13,6 +13,7 @@ object LicenceKey {
 
 case class InstanceId(value: String) {
   def toInstanceParam = InstanceParam(InstanceId.Key, value)
+  def creationTime = new ObjectId(value).getTime
 }
 object InstanceId {
   val Key = "ID"
