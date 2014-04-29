@@ -7,10 +7,10 @@ import org.apache.commons.codec.binary.Base64
 
 object LicenceEncryptor {
 
-  val SecretString = "qKowZWRHaCGV1cIu"
+  private val SecretString = "qKowZWRHaCGV1cIu"
 
-  val Key = new SecretKeySpec(SecretString.getBytes(StandardCharsets.UTF_8), "AES")
-  val CipherInstance = Cipher.getInstance("AES/ECB/PKCS5Padding")
+  private val Key = new SecretKeySpec(SecretString.getBytes(StandardCharsets.UTF_8), "AES")
+  private val CipherInstance = Cipher.getInstance("AES/ECB/PKCS5Padding")
 
   def encode(licence: LicenceDetails): String = {
     CipherInstance.init(Cipher.ENCRYPT_MODE, Key)
