@@ -1,19 +1,23 @@
 package com.softwaremill.codebrag.domain
 
+import org.bson.types.ObjectId
+
 case class InstanceParam(key: String, value: String)
 
-case class LicenceKeyParam(value: String) {
-  def toInstanceParam = InstanceParam(LicenceKeyParam.Key, value)
+case class LicenceKey(value: String) {
+  def toInstanceParam = InstanceParam(LicenceKey.Key, value)
 }
-object LicenceKeyParam {
+object LicenceKey {
   val Key = "LICENCE"
 }
 
-case class InstanceIdParam(value: String) {
-  def toInstanceParam = InstanceParam(InstanceIdParam.Key, value)
+case class InstanceId(value: String) {
+  def toInstanceParam = InstanceParam(InstanceId.Key, value)
 }
-object InstanceIdParam {
+object InstanceId {
   val Key = "ID"
+
+  def createNew = InstanceId((new ObjectId).toString)
 }
 
 

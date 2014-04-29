@@ -4,7 +4,7 @@ import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.domain.InstanceParam
 import com.typesafe.scalalogging.slf4j.Logging
 
-class SQLInstanceSettingsDAO(database: SQLDatabase) extends Logging {
+class InstanceParamsDAO(database: SQLDatabase) extends Logging {
 
   import database.driver.simple._
   import database._
@@ -24,7 +24,7 @@ class SQLInstanceSettingsDAO(database: SQLDatabase) extends Logging {
     instanceParams.filter(_.key is key).firstOption
   }
 
-  private class InstanceParams(tag: Tag) extends Table[InstanceParam](tag, "settings") {
+  private class InstanceParams(tag: Tag) extends Table[InstanceParam](tag, "instance_params") {
     def key = column[String]("key", O.PrimaryKey)
     def value  = column[String]("value")
 
