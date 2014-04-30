@@ -20,4 +20,14 @@ class LicenceEncryptorSpec extends FlatSpec with ShouldMatchers with ClockSpec {
     result should be(licence)
   }
 
+  it should "throw exception when invalid string passed to decode licence" in {
+    // given
+    val invalidLicenceString = "123abc"
+
+    // when
+    intercept[InvalidLicenceKeyException] {
+      decode(invalidLicenceString)
+    }
+  }
+
 }

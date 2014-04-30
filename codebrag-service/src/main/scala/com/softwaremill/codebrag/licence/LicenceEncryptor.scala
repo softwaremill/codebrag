@@ -4,6 +4,7 @@ import javax.crypto.spec.SecretKeySpec
 import java.nio.charset.StandardCharsets
 import javax.crypto.Cipher
 import org.apache.commons.codec.binary.Base64
+import org.joda.time.DateTime
 
 object LicenceEncryptor {
 
@@ -18,8 +19,19 @@ object LicenceEncryptor {
   }
 
   def decode(licenceKey: String): LicenceDetails = {
-    CipherInstance.init(Cipher.DECRYPT_MODE, Key)
-    LicenceDetails(new String(CipherInstance.doFinal(Base64.decodeBase64(licenceKey))))
+    try {
+      CipherInstance.init(Cipher.DECRYPT_MODE, Key)
+      LicenceDetails(new String(CipherInstance.doFinal(Base64.decodeBase64(licenceKey))))
+    } catch {
+      case e: Exception => throw new InvalidLicenceKeyException(s"Invalid licence key provided ${licenceKey}")
+    }
   }
 
+}
+
+
+object Test extends App {
+
+  val lic = LicenceDetails(DateTime.now.withDate(2014, 10, 10), 165, "Softwaremill")
+  println(LicenceEncryptor.encode(lic))
 }
