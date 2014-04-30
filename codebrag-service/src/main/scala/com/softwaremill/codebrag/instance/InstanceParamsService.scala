@@ -56,7 +56,7 @@ trait ImportFileBasedInstanceId extends Logging {
   private val InstanceIdFilename = ".instanceId"
 
   protected def loadExistingInstanceIdFromFile(): Option[InstanceId] = {
-    if (instanceIdFile.isDefined) {
+    if (instanceIdFile().exists()) {
       Source.fromFile(InstanceIdFilename).getLines().toList match {
         case List(singleLine) => Some(InstanceId(singleLine))
         case _ => None
@@ -66,11 +66,12 @@ trait ImportFileBasedInstanceId extends Logging {
     }
   }
   
-  private def instanceIdFile = Option(new File(InstanceIdFilename))
+  private def instanceIdFile() = new File(InstanceIdFilename)
 
   protected def removeInstanceIdFile = {
     try {
-      instanceIdFile.foreach(_.delete)      
+      val instanceFile = instanceIdFile()
+      if(instanceFile.exists()) instanceFile.delete()
     } catch {
       case e: Exception => logger.warn("Cannot remove old instance file. Leaving it in place.")
     }

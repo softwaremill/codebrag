@@ -8,9 +8,6 @@ import com.softwaremill.codebrag.domain.{InstanceParam, InstanceId}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 
-/**
- * Created by michal on 29.04.14.
- */
 class InstanceParamsServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
 
   var service: InstanceParamsService = _
