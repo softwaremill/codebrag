@@ -9,9 +9,8 @@ import com.softwaremill.codebrag.common.{FixtureTimeClock, ClockSpec}
 
 class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
 
-  val Date = DateTime.now().withDate(2014, 4, 29).withTime(23, 59, 59, 999)
-  val LicenceDetails = Licence(expirationDate = Date, maxUsers = 50, companyName = "SoftwareMill")
-  val LicenceAsJson = """{"expirationDate":"29/04/2014","maxUsers":50,"companyName":"SoftwareMill"}"""
+  val LicenceDetails = Licence(expirationDate = StringDateTestUtils.str2date("19/04/2014 23:59:59:999"), maxUsers = 50, companyName = "SoftwareMill", licenceType = LicenceType.Commercial)
+  val LicenceAsJson = """{"expirationDate":"19/04/2014","maxUsers":50,"companyName":"SoftwareMill","licenceType":"Commercial"}"""
 
   it should "convert licence details to valid JSON string" in {
     LicenceDetails.toJson should be(LicenceAsJson)
@@ -33,9 +32,6 @@ class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
     trial should be(expectedTrialLicence(clock.now))
   }
 
-
-  val lic = Licence(expirationDate = StringDateTestUtils.str2date("19/04/2014 23:59:59:999"), maxUsers = 15, companyName = "Softwaremill")
-
   val testData = List(
     Spec(clockWith("10/04/2014"), fullDaysLeft = 9, true),
     Spec(clockWith("15/04/2014"), fullDaysLeft = 4, true),
@@ -51,11 +47,11 @@ class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
     val dateFormatted = clock.now.toString("dd/MM/yyyy HH:mm:ss:SSS")
 
     it should s"check licence validity for ${dateFormatted} and have result ${validity}" in {
-      lic.valid(clock) should be(validity)
+      LicenceDetails.valid(clock) should be(validity)
     }
 
     it should s"check days left for ${dateFormatted} and have result ${daysLeft}" in {
-      lic.daysToExpire(clock) should be(daysLeft)
+      LicenceDetails.daysToExpire(clock) should be(daysLeft)
     }
 
   }
@@ -66,6 +62,6 @@ class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
 
   private def expectedTrialLicence(date: DateTime) = {
     val expDate = clock.now.plusDays(14).withTime(23, 59, 59, 999)
-    Licence(expDate, maxUsers = 0, companyName = "-")
+    Licence(expDate, maxUsers = 0, companyName = "-", licenceType = LicenceType.Trial)
   }
 }

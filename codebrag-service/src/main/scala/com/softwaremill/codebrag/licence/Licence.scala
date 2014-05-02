@@ -7,8 +7,10 @@ import org.json4s.JsonAST.{JNull, JString}
 import com.softwaremill.codebrag.domain.InstanceId
 import com.softwaremill.codebrag.common.Clock
 import com.typesafe.scalalogging.slf4j.Logging
+import org.json4s.ext.EnumNameSerializer
+import com.softwaremill.codebrag.licence.LicenceType.LicenceType
 
-case class Licence(expirationDate: DateTime, maxUsers: Int, companyName: String) extends Logging {
+case class Licence(expirationDate: DateTime, maxUsers: Int, companyName: String, licenceType: LicenceType = LicenceType.Commercial) extends Logging {
 
   def valid(implicit clock: Clock) = !expirationDate.isBefore(clock.now)
 
@@ -28,7 +30,7 @@ case class Licence(expirationDate: DateTime, maxUsers: Int, companyName: String)
 object Licence {
 
   private val Formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
-  implicit val JsonFormats = org.json4s.DefaultFormats + DateOnlySerializer
+  implicit val JsonFormats = org.json4s.DefaultFormats + DateOnlySerializer + new EnumNameSerializer(LicenceType)
 
   def apply(decodedKey: String) = {
     import org.json4s._
@@ -46,7 +48,7 @@ object Licence {
   def trialLicence(instanceId: InstanceId, days: Int) = {
     val instanceCreationDate = new DateTime(instanceId.creationTime).withTimeAtStartOfDay()
     val licenceExpiryDate = instanceCreationDate.plusDays(days - 1).withTime(23, 59, 59, 999)
-    Licence(licenceExpiryDate, 0, "-")
+    Licence(licenceExpiryDate, 0, "-", LicenceType.Trial)
   }
 
   private object DateOnlySerializer extends CustomSerializer[DateTime](format => ( {
@@ -60,3 +62,7 @@ object Licence {
 }
 
 
+object LicenceType extends Enumeration {
+  type LicenceType = Value
+  val Trial, Commercial = Value
+}
