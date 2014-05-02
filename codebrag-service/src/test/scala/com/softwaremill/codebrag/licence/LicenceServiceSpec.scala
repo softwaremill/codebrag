@@ -2,62 +2,52 @@ package com.softwaremill.codebrag.licence
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.common.FixtureTimeClock
-import org.joda.time.DateTime
-import com.softwaremill.codebrag.domain.{InstanceId, InstanceSettings}
-import org.bson.types.ObjectId
+import com.softwaremill.codebrag.common.ClockSpec
+import com.softwaremill.codebrag.domain.InstanceId
 import com.softwaremill.codebrag.service.config.LicenceConfig
 import org.scalatest.mock.MockitoSugar
-import org.mockito.Mockito._
-import org.joda.time.format.DateTimeFormat
+import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
 
-class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
+class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar with ClockSpec {
 
-  var instanceId = instanceIdFor("10/04/2014")
-  var config: LicenceConfig = mock[LicenceConfig]
+  val ValidLicence = Licence(expirationDate = clock.now.plusDays(2), maxUsers = 50, companyName = "SoftwareMill")
+  val ExpiredLicence = ValidLicence.copy(expirationDate = clock.now.minusDays(2))
 
-  before {
-    when(config.expiresInDays).thenReturn(10) // 19/04/2014 is last valid date
+  it should "read current licence on service initialization" in {
+    // when
+    val service = initializeService(ValidLicence)
+
+    // then
+    service.licenceValid should be(ValidLicence.valid)
+    service.licenceExpiryDate should be(ValidLicence.expirationDate)
+    service.daysToExpire should be(ValidLicence.daysToExpire)
   }
 
-  val testData = List(
-    Spec(clockWith("10/04/2014"), fullDaysLeft = 9, true),
-    Spec(clockWith("15/04/2014"), fullDaysLeft = 4, true),
-    Spec(clockWith("19/04/2014"), fullDaysLeft = 0, true),
-    Spec(clockWith("20/04/2014"), fullDaysLeft = 0, false),
-    Spec(clockWith("25/04/2014"), fullDaysLeft = 0, false),
+  it should "throw exception when licence guard called and licence is expired" in {
+    // given
+    val service = initializeService(ExpiredLicence)
 
-    Spec(clockWith("19/04/2014 23:59"), fullDaysLeft = 0, true),
-    Spec(clockWith("20/04/2014 00:00"), fullDaysLeft = 0, false)
-  )
-
-  testData.foreach { case Spec(clock, daysLeft, validity) =>
-    val dateFormatted = clock.now.toString("dd/MM/yyyy HH:mm")
-
-    it should s"check licence validity for ${dateFormatted} and have result ${validity}" in {
-      new LicenceService(instanceId, config, clock).licenceValid should be(validity)
-    }
-
-    it should s"check days left for ${dateFormatted} and have result ${daysLeft}" in {
-      new LicenceService(instanceId, config, clock).daysToExpire should be(daysLeft)
-    }
-
-  }
-
-  case class Spec(clock: FixtureTimeClock, fullDaysLeft: Int, valid: Boolean)
-
-  private def str2date(date: String) = {
-    if(date.contains(":")) {
-      val formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm")
-      DateTime.parse(date, formatter)
-    } else {
-      val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
-      DateTime.parse(date, formatter).withTime(12, 00, 00, 00)
+    // then
+    intercept[LicenceExpiredException] {
+      service.interruptIfLicenceExpired
     }
   }
 
-  private def clockWith(date: String) = new FixtureTimeClock(str2date(date).getMillis)
+  it should "pass through when licence guard called and licence is valid" in {
+    // given
+    val service = initializeService(ValidLicence)
 
-  private def instanceIdFor(date: String) = InstanceId(new ObjectId(str2date(date).toDate).toString)
+    // then
+    service.interruptIfLicenceExpired
+  }
+
+  private def initializeService(currentLicence: Licence) = {
+    val instanceId = InstanceId("123123123")
+    val config: LicenceConfig = mock[LicenceConfig]
+    val instanceParamsDao: InstanceParamsDAO = mock[InstanceParamsDAO]
+    new LicenceService(instanceId, config, instanceParamsDao) {
+      override protected[licence] def readCurrentLicence() = currentLicence
+    }
+  }
 
 }

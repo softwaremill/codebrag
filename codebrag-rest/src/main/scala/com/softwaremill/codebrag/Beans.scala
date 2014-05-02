@@ -21,7 +21,6 @@ import com.softwaremill.codebrag.activities.finders.{AllCommitsFinder, ToReviewC
 import com.softwaremill.codebrag.cache.{UserReviewedCommitsCache, PersistentBackendForCache, BranchCommitsCache}
 import com.softwaremill.codebrag.licence.LicenceService
 import com.softwaremill.codebrag.instance.InstanceParamsService
-import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
@@ -68,7 +67,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val changeUserSettingsUseCase = new ChangeUserSettingsUseCase(userDao, licenceService)
   lazy val followupDoneUseCase = new FollowupDoneUseCase(followupService, licenceService)
 
-  lazy val licenceService = new LicenceService(InstanceId, config, clock)
+  lazy val licenceService = new LicenceService(InstanceId, config, instanceParamsDao)(clock)
 
   lazy val instanceParamsService = new InstanceParamsService(instanceParamsDao)
   lazy val InstanceId = instanceParamsService.readOrCreateInstanceId

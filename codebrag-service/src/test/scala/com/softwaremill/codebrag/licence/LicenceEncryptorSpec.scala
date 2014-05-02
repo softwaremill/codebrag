@@ -10,8 +10,8 @@ class LicenceEncryptorSpec extends FlatSpec with ShouldMatchers with ClockSpec {
 
   it should "encrypt and decrypt back licence info" in {
     // given
-    val date = clock.now.withTimeAtStartOfDay
-    val licence = LicenceDetails(expirationDate = date, maxUsers = 50, companyName = "SoftwareMill")
+    val date = clock.now.withTime(23, 59, 59, 999)
+    val licence = Licence(expirationDate = date, maxUsers = 50, companyName = "SoftwareMill")
 
     // when
     val result = decode(encode(licence))

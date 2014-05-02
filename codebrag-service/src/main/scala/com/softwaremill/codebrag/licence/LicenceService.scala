@@ -1,21 +1,17 @@
 package com.softwaremill.codebrag.licence
 
-import org.joda.time._
-import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.common.Clock
 import com.softwaremill.codebrag.service.config.LicenceConfig
 import com.softwaremill.codebrag.domain.InstanceId
+import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
 
-class LicenceService(instanceId: InstanceId, licenceConfig: LicenceConfig, clock: Clock) extends Logging {
+class LicenceService(val instanceId: InstanceId, val licenceConfig: LicenceConfig, val instanceParamsDao: InstanceParamsDAO)(implicit clock: Clock) extends LicenceReader {
 
-  logger.debug(s"Setting up licence check")
-  private val date = new DateTime(instanceId.creationTime).withTimeAtStartOfDay()
-  val licenceExpiryDate = date.plusDays(licenceConfig.expiresInDays - 1).withTime(23, 59, 59, 999)
+  private val currentLicence = readCurrentLicence()
 
-  logger.debug(s"Licence valid?: ${licenceValid}")
-  logger.debug(s"Licence countdown start date: ${date}")
-  logger.debug(s"Expiration date: ${licenceExpiryDate}")
-  logger.debug(s"Licence expires in : ${daysToExpire} full days")
+  logger.info(s"Licence valid: ${licenceValid}")
+  logger.info(s"Expiration date: ${currentLicence.expirationDate}")
+  logger.info(s"Licence expires in : ${daysToExpire} full days")
 
   def interruptIfLicenceExpired {
     if(!licenceValid) {
@@ -23,12 +19,10 @@ class LicenceService(instanceId: InstanceId, licenceConfig: LicenceConfig, clock
       throw new LicenceExpiredException
     }
   }
-  
-  def licenceValid = licenceExpiryDate.isAfter(clock.now)
 
-  def daysToExpire = {
-    val days = Days.daysBetween(clock.now.withTimeAtStartOfDay(), licenceExpiryDate).getDays
-    if(days < 0) 0 else days
-  }
+  def licenceValid = currentLicence.valid
+  def licenceExpiryDate = currentLicence.expirationDate
+  def daysToExpire = currentLicence.daysToExpire
 
 }
+

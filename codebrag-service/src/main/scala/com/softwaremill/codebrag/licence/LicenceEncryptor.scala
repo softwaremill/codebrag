@@ -13,15 +13,15 @@ object LicenceEncryptor {
   private val Key = new SecretKeySpec(SecretString.getBytes(StandardCharsets.UTF_8), "AES")
   private val CipherInstance = Cipher.getInstance("AES/ECB/PKCS5Padding")
 
-  def encode(licence: LicenceDetails): String = {
+  def encode(licence: Licence): String = {
     CipherInstance.init(Cipher.ENCRYPT_MODE, Key)
     Base64.encodeBase64String(CipherInstance.doFinal(licence.toJson.getBytes))
   }
 
-  def decode(licenceKey: String): LicenceDetails = {
+  def decode(licenceKey: String): Licence = {
     try {
       CipherInstance.init(Cipher.DECRYPT_MODE, Key)
-      LicenceDetails(new String(CipherInstance.doFinal(Base64.decodeBase64(licenceKey))))
+      Licence(new String(CipherInstance.doFinal(Base64.decodeBase64(licenceKey))))
     } catch {
       case e: Exception => throw new InvalidLicenceKeyException(s"Invalid licence key provided ${licenceKey}")
     }
@@ -32,6 +32,6 @@ object LicenceEncryptor {
 
 object Test extends App {
 
-  val lic = LicenceDetails(DateTime.now.withDate(2014, 10, 10), 165, "Softwaremill")
+  val lic = Licence(DateTime.now.withDate(2014, 10, 10), 165, "Softwaremill")
   println(LicenceEncryptor.encode(lic))
 }
