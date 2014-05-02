@@ -28,10 +28,3 @@ object LicenceEncryptor {
   }
 
 }
-
-
-object Test extends App {
-
-  val lic = Licence(DateTime.now.withDate(2014, 10, 10), 165, "Softwaremill")
-  println(LicenceEncryptor.encode(lic))
-}
