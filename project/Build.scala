@@ -94,7 +94,7 @@ object Dependencies {
   val scalatra = "org.scalatra" %% "scalatra" % scalatraVersion
   val scalatraScalatest = "org.scalatra" %% "scalatra-scalatest" % scalatraVersion % "test"
   val scalatraJson = "org.scalatra" %% "scalatra-json" % scalatraVersion
-  val json4s = "org.json4s" %% "json4s-jackson" % "3.1.0"
+  val json4s = "org.json4s" %% "json4s-jackson" % "3.2.4"
   val json4sExt = "org.json4s" %% "json4s-ext" % "3.2.4"
   val scalatraAuth = "org.scalatra" %% "scalatra-auth" % scalatraVersion  exclude("commons-logging", "commons-logging")
 
