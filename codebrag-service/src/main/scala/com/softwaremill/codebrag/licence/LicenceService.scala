@@ -23,6 +23,8 @@ class LicenceService(val instanceId: InstanceId, val licenceConfig: LicenceConfi
   def licenceValid = currentLicence.valid
   def licenceExpiryDate = currentLicence.expirationDate
   def daysToExpire = currentLicence.daysToExpire
+  def licenceType = currentLicence.licenceType
+  def companyName = currentLicence.companyName
 
 }
 
