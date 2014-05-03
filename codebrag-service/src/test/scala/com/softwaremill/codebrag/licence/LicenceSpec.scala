@@ -10,14 +10,14 @@ import com.softwaremill.codebrag.common.{FixtureTimeClock, ClockSpec}
 class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
 
   val LicenceDetails = Licence(expirationDate = StringDateTestUtils.str2date("19/04/2014 23:59:59:999"), maxUsers = 50, companyName = "SoftwareMill", licenceType = LicenceType.Commercial)
-  val LicenceAsJson = """{"expirationDate":"19/04/2014","maxUsers":50,"companyName":"SoftwareMill","licenceType":"Commercial"}"""
 
-  it should "convert licence details to valid JSON string" in {
-    LicenceDetails.toJson should be(LicenceAsJson)
-  }
-
-  it should "convert licence details JSON back to object" in {
-    Licence(LicenceAsJson) should be(LicenceDetails)
+  it should "encode licence and decode it back" in {
+    // when
+    val encoded = LicenceDetails.encodeLicence
+    val decoded = Licence.decodeLicence(encoded)
+    
+    // then
+    decoded should be(LicenceDetails)
   }
 
   it should "build trial licence using instance id provided" in {
@@ -26,13 +26,13 @@ class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
     val instanceId = InstanceId(oid)
 
     // when
-    val trial = Licence.trialLicence(instanceId, days = 15)
+    val trial = TrialLicence.generate(instanceId, days = 15)
 
     // then
     trial should be(expectedTrialLicence(clock.now))
   }
 
-  val testData = List(
+  val checkValidityTestData = List(
     Spec(clockWith("10/04/2014"), fullDaysLeft = 9, true),
     Spec(clockWith("15/04/2014"), fullDaysLeft = 4, true),
     Spec(clockWith("19/04/2014"), fullDaysLeft = 0, true),
@@ -43,7 +43,7 @@ class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
     Spec(clockWith("20/04/2014 00:00:00:000"), fullDaysLeft = 0, false)
   )
 
-  testData.foreach { case Spec(clock, daysLeft, validity) =>
+  checkValidityTestData.foreach { case Spec(clock, daysLeft, validity) =>
     val dateFormatted = clock.now.toString("dd/MM/yyyy HH:mm:ss:SSS")
 
     it should s"check licence validity for ${dateFormatted} and have result ${validity}" in {

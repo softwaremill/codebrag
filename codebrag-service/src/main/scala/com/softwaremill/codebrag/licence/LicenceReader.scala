@@ -16,11 +16,11 @@ trait LicenceReader extends Logging {
     existingLicence match {
       case Some(licence) => {
         logger.debug("Found licence key. Trying to use one")
-        LicenceEncryptor.decode(licence.value)
+        Licence.decodeLicence(licence.value)
       }
       case None => {
         logger.debug("Licence key not found. Using trial licence")
-        Licence.trialLicence(instanceId, licenceConfig.expiresInDays)
+        TrialLicence.generate(instanceId, licenceConfig.expiresInDays)
       }
     }
   }
