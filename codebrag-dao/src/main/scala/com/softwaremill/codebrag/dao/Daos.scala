@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.dao.reaction._
 import com.softwaremill.codebrag.dao.reviewtask.{SQLCommitReviewTaskDAO, MongoCommitReviewTaskDAO, CommitReviewTaskDAO}
 import com.softwaremill.codebrag.dao.invitation.{SQLInvitationDAO, MongoInvitationDAO, InvitationDAO}
 import com.softwaremill.codebrag.dao.events.{SQLEventDAO, MongoEventDAO, EventDAO}
-import com.softwaremill.codebrag.dao.instance.{InstanceParamsDAO, FileBasedInstanceSettingsDAO}
+import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
 import com.softwaremill.codebrag.dao.finders.followup.{SQLFollowupFinder, MongoFollowupFinder, FollowupFinder}
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 import com.softwaremill.codebrag.dao.finders.StatsEventsFinder
@@ -17,6 +17,7 @@ import com.softwaremill.codebrag.dao.repositorystatus.{SQLRepositoryStatusDAO, R
 import com.softwaremill.codebrag.dao.heartbeat.{SQLHeartbeatDAO, HeartbeatDAO, MongoHeartbeatDAO}
 import com.softwaremill.codebrag.dao.branchsnapshot.{SQLBranchStateDAO, InMemoryBranchStateDAO}
 import com.softwaremill.codebrag.dao.reviewedcommits.{SQLReviewedCommitsDAO, ReviewedCommitsDAO, InMemoryReviewedCommitsDAO}
+import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 trait Daos {
   def userDao: UserDAO
@@ -33,8 +34,6 @@ trait Daos {
   def reviewedCommitsDao: ReviewedCommitsDAO
   def heartbeatDao: HeartbeatDAO
   def instanceParamsDao: InstanceParamsDAO
-
-  lazy val instanceSettingsDao = new FileBasedInstanceSettingsDAO
 
   def followupFinder: FollowupFinder
 
@@ -57,7 +56,9 @@ trait MongoDaos extends Daos {
   lazy val branchStateDao = new InMemoryBranchStateDAO
   lazy val reviewedCommitsDao = new InMemoryReviewedCommitsDAO
   lazy val heartbeatDao = new MongoHeartbeatDAO(clock)
-  lazy val instanceParamsDao = ???
+  lazy val instanceParamsDao = {
+    throw new NotImplementedException()
+  }
 
   lazy val followupFinder = new MongoFollowupFinder
 

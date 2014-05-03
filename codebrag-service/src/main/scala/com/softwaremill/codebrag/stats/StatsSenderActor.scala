@@ -8,11 +8,10 @@ class StatsSenderActor(statsAggregator: StatsAggregator, httpSender: StatsHTTPRe
 
   def receive = {
     case StatsSenderActor.SendStatsCommand(clock: Clock) => {
-      statsAggregator.getStatsForPreviousDayOf(clock.now).right.foreach { stats =>
-        val json = stats.asJson
-        logger.debug(s"Sending statistics: $json")
-        sendStats(json)
-      }
+      val stats = statsAggregator.getStatsForPreviousDayOf(clock.now)
+      val json = stats.asJson
+      logger.debug(s"Sending statistics: $json")
+      sendStats(json)
     }
   }
 
