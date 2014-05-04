@@ -6,7 +6,7 @@ import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
 import com.softwaremill.codebrag.service.config.LicenceConfig
 import org.mockito.Mockito
-import com.softwaremill.codebrag.domain.{InstanceId, LicenceKey}
+import com.softwaremill.codebrag.domain.{InstanceId, InstanceLicence}
 import com.softwaremill.codebrag.common.ClockSpec
 import org.bson.types.ObjectId
 
@@ -28,8 +28,8 @@ class LicenceReaderSpec extends FlatSpec with ShouldMatchers with MockitoSugar w
   
   it should "return current licence from DB if exists" in {
     // given
-    val storedLicenceKey = Some(LicenceKey(EncodedLicence).toInstanceParam)
-    Mockito.when(_instanceParamsDao.findByKey(LicenceKey.Key)).thenReturn(storedLicenceKey)
+    val storedLicenceKey = Some(InstanceLicence(EncodedLicence).toInstanceParam)
+    Mockito.when(_instanceParamsDao.findByKey(InstanceLicence.Key)).thenReturn(storedLicenceKey)
     reader = instantiateLicenceReader
 
     // when
@@ -41,7 +41,7 @@ class LicenceReaderSpec extends FlatSpec with ShouldMatchers with MockitoSugar w
 
   it should "return trial licence if no proper licence exists in DB" in {
     // given
-    Mockito.when(_instanceParamsDao.findByKey(LicenceKey.Key)).thenReturn(None)
+    Mockito.when(_instanceParamsDao.findByKey(InstanceLicence.Key)).thenReturn(None)
     Mockito.when(_licenceConfig.expiresInDays).thenReturn(30)
     reader = instantiateLicenceReader
 
@@ -54,8 +54,8 @@ class LicenceReaderSpec extends FlatSpec with ShouldMatchers with MockitoSugar w
 
   it should "throw exception when stored licence is not valid licence key string" in {
     // given
-    val storedLicenceKey = Some(LicenceKey("invalid_licence_key").toInstanceParam)
-    Mockito.when(_instanceParamsDao.findByKey(LicenceKey.Key)).thenReturn(storedLicenceKey)
+    val storedLicenceKey = Some(InstanceLicence("invalid_licence_key").toInstanceParam)
+    Mockito.when(_instanceParamsDao.findByKey(InstanceLicence.Key)).thenReturn(storedLicenceKey)
     reader = instantiateLicenceReader
 
     // when

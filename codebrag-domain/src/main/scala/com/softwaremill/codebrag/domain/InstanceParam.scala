@@ -4,10 +4,10 @@ import org.bson.types.ObjectId
 
 case class InstanceParam(key: String, value: String)
 
-case class LicenceKey(value: String) {
-  def toInstanceParam = InstanceParam(LicenceKey.Key, value)
+case class InstanceLicence(value: String) {
+  def toInstanceParam = InstanceParam(InstanceLicence.Key, value)
 }
-object LicenceKey {
+object InstanceLicence {
   val Key = "LICENCE"
 }
 
