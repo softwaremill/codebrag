@@ -5,10 +5,10 @@ import org.joda.time.DateTime
 
 object TrialLicenceBuilder {
 
-  def generate(instanceId: InstanceId, days: Int): Licence = {
+  def generate(instanceId: InstanceId, days: Int): LicenceDetails = {
     val instanceCreationDate = new DateTime(instanceId.creationTime).withTimeAtStartOfDay()
     val licenceExpiryDate = instanceCreationDate.plusDays(days - 1).withTime(23, 59, 59, 999)
-    Licence(licenceExpiryDate, 0, "-", LicenceType.Trial)
+    LicenceDetails(licenceExpiryDate, 0, "-", LicenceType.Trial)
   }
 
 }

@@ -16,7 +16,7 @@ trait LicenceReader extends Logging {
     existingLicence match {
       case Some(licence) => {
         logger.debug("Found licence key. Trying to use one")
-        Licence.decodeLicence(licence.value)
+        LicenceDetails.decodeLicence(licence.value)
       }
       case None => {
         logger.debug("Licence key not found. Using trial licence")

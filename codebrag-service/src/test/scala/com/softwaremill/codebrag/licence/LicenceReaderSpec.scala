@@ -18,8 +18,8 @@ class LicenceReaderSpec extends FlatSpec with ShouldMatchers with MockitoSugar w
 
   var reader: LicenceReader = _
   
-  var LicenceDetails = Licence(clock.now.plusMonths(1).withTime(23, 59, 59, 999), 50, "SoftwareMill")
-  var EncodedLicence = LicenceDetails.encodeLicence
+  var Licence = LicenceDetails(clock.now.plusMonths(1).withTime(23, 59, 59, 999), 50, "SoftwareMill")
+  var EncodedLicence = Licence.encodeLicence
 
   before {
     _licenceConfig = mock[LicenceConfig]
@@ -36,7 +36,7 @@ class LicenceReaderSpec extends FlatSpec with ShouldMatchers with MockitoSugar w
     val currentLicence = reader.readCurrentLicence()
 
     // then
-    currentLicence should be(LicenceDetails)
+    currentLicence should be(Licence)
   }
 
   it should "return trial licence if no proper licence exists in DB" in {

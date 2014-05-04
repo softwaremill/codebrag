@@ -7,17 +7,17 @@ import com.softwaremill.codebrag.domain.InstanceId
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.{FixtureTimeClock, ClockSpec}
 
-class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
+class LicenceDetailsSpec extends FlatSpec with ShouldMatchers with ClockSpec {
 
-  val LicenceDetails = Licence(expirationDate = StringDateTestUtils.str2date("19/04/2014 23:59:59:999"), maxUsers = 50, companyName = "SoftwareMill", licenceType = LicenceType.Commercial)
+  val Licence = LicenceDetails(expirationDate = StringDateTestUtils.str2date("19/04/2014 23:59:59:999"), maxUsers = 50, companyName = "SoftwareMill", licenceType = LicenceType.Commercial)
 
   it should "encode licence and decode it back" in {
     // when
-    val encoded = LicenceDetails.encodeLicence
-    val decoded = Licence.decodeLicence(encoded)
+    val encoded = Licence.encodeLicence
+    val decoded = LicenceDetails.decodeLicence(encoded)
     
     // then
-    decoded should be(LicenceDetails)
+    decoded should be(Licence)
   }
 
   it should "build trial licence using instance id provided" in {
@@ -47,11 +47,11 @@ class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
     val dateFormatted = clock.now.toString("dd/MM/yyyy HH:mm:ss:SSS")
 
     it should s"check licence validity for ${dateFormatted} and have result ${validity}" in {
-      LicenceDetails.valid(clock) should be(validity)
+      Licence.valid(clock) should be(validity)
     }
 
     it should s"check days left for ${dateFormatted} and have result ${daysLeft}" in {
-      LicenceDetails.daysToExpire(clock) should be(daysLeft)
+      Licence.daysToExpire(clock) should be(daysLeft)
     }
 
   }
@@ -62,6 +62,6 @@ class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
 
   private def expectedTrialLicence(date: DateTime) = {
     val expDate = clock.now.plusDays(14).withTime(23, 59, 59, 999)
-    Licence(expDate, maxUsers = 0, companyName = "-", licenceType = LicenceType.Trial)
+    LicenceDetails(expDate, maxUsers = 0, companyName = "-", licenceType = LicenceType.Trial)
   }
 }

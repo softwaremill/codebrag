@@ -9,7 +9,7 @@ import org.json4s.CustomSerializer
 import org.json4s.JsonAST.{JNull, JString}
 import org.joda.time.format.DateTimeFormat
 
-case class Licence(expirationDate: DateTime, maxUsers: Int, companyName: String, licenceType: LicenceType = LicenceType.Commercial) extends Logging with ToJsonWriter[Licence] {
+case class LicenceDetails(expirationDate: DateTime, maxUsers: Int, companyName: String, licenceType: LicenceType = LicenceType.Commercial) extends Logging with ToJsonWriter[LicenceDetails] {
 
   def valid(implicit clock: Clock) = !expirationDate.isBefore(clock.now)
 
@@ -25,11 +25,11 @@ case class Licence(expirationDate: DateTime, maxUsers: Int, companyName: String,
 
 }
 
-object Licence extends FromJsonReader {
+object LicenceDetails extends FromJsonReader {
 
   implicit val JsonFormats = org.json4s.DefaultFormats + new EnumNameSerializer(LicenceType) + FullDateSerializer
 
-  def decodeLicence(encoded: String) = fromJson[Licence](LicenceEncryptor.decode(encoded))
+  def decodeLicence(encoded: String) = fromJson[LicenceDetails](LicenceEncryptor.decode(encoded))
 
   private val Formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss:SSS")
 

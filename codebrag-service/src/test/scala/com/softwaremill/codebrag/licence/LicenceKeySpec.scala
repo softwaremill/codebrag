@@ -14,7 +14,7 @@ class LicenceKeySpec extends FlatSpec with ShouldMatchers with ClockSpec {
     val licence = licenceKey.toLicence(companyName = "SoftwareMill")
 
     // then
-    val expectedLicence = Licence(clock.now.plusDays(30).withTime(23, 59, 59, 999), 50, "SoftwareMill", LicenceType.Commercial)
+    val expectedLicence = LicenceDetails(clock.now.plusDays(30).withTime(23, 59, 59, 999), 50, "SoftwareMill", LicenceType.Commercial)
     licence should be(expectedLicence)
   }
 

@@ -10,7 +10,7 @@ import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
 
 class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar with ClockSpec {
 
-  val ValidLicence = Licence(expirationDate = clock.now.plusDays(2), maxUsers = 50, companyName = "SoftwareMill")
+  val ValidLicence = LicenceDetails(expirationDate = clock.now.plusDays(2), maxUsers = 50, companyName = "SoftwareMill")
   val ExpiredLicence = ValidLicence.copy(expirationDate = clock.now.minusDays(2))
 
   it should "read current licence on service initialization" in {
@@ -41,7 +41,7 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
     service.interruptIfLicenceExpired
   }
 
-  private def initializeService(currentLicence: Licence) = {
+  private def initializeService(currentLicence: LicenceDetails) = {
     val instanceId = InstanceId("123123123")
     val config: LicenceConfig = mock[LicenceConfig]
     val instanceParamsDao: InstanceParamsDAO = mock[InstanceParamsDAO]

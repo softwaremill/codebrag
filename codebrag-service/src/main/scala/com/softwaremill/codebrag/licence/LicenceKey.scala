@@ -6,7 +6,7 @@ case class LicenceKey(days: Int, maxUsers: Int) extends ToJsonWriter[LicenceKey]
   
   def toLicence(companyName: String)(implicit clock: Clock) = {
     val expDate = clock.now.plusDays(days).withTime(23, 59, 59, 999)
-    Licence(expDate, maxUsers, companyName, LicenceType.Commercial)
+    LicenceDetails(expDate, maxUsers, companyName, LicenceType.Commercial)
   }
 
   def encodeKey = LicenceEncryptor.encode(toJson)

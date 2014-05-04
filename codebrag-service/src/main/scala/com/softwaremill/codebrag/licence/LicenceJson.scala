@@ -5,7 +5,7 @@ trait ToJsonWriter[T] {
 
   def toJson: String = {
     import org.json4s.jackson.Serialization.{write => writeAsJson}
-    implicit val formats = Licence.JsonFormats
+    implicit val formats = LicenceDetails.JsonFormats
     writeAsJson(this)
   }
 
@@ -16,7 +16,7 @@ trait FromJsonReader {
   protected def fromJson[T: Manifest](jsonString: String) = {
     import org.json4s._
     import org.json4s.jackson.JsonMethods._
-    implicit val formats = Licence.JsonFormats
+    implicit val formats = LicenceDetails.JsonFormats
     try {
       parse(jsonString).extract
     } catch {
