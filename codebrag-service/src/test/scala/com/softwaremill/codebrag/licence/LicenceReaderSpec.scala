@@ -49,7 +49,7 @@ class LicenceReaderSpec extends FlatSpec with ShouldMatchers with MockitoSugar w
     val currentLicence = reader.readCurrentLicence()
 
     // then
-    currentLicence should be(TrialLicence.generate(_InstanceId, 30))
+    currentLicence should be(TrialLicenceBuilder.generate(_InstanceId, 30))
   }
 
   it should "throw exception when stored licence is not valid licence key string" in {

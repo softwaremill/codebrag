@@ -26,7 +26,7 @@ class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
     val instanceId = InstanceId(oid)
 
     // when
-    val trial = TrialLicence.generate(instanceId, days = 15)
+    val trial = TrialLicenceBuilder.generate(instanceId, days = 15)
 
     // then
     trial should be(expectedTrialLicence(clock.now))

@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.licence
 import com.softwaremill.codebrag.domain.InstanceId
 import org.joda.time.DateTime
 
-object TrialLicence {
+object TrialLicenceBuilder {
 
   def generate(instanceId: InstanceId, days: Int): Licence = {
     val instanceCreationDate = new DateTime(instanceId.creationTime).withTimeAtStartOfDay()

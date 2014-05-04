@@ -20,7 +20,7 @@ trait LicenceReader extends Logging {
       }
       case None => {
         logger.debug("Licence key not found. Using trial licence")
-        TrialLicence.generate(instanceId, licenceConfig.expiresInDays)
+        TrialLicenceBuilder.generate(instanceId, licenceConfig.expiresInDays)
       }
     }
   }
