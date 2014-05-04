@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.licence
 
 import com.softwaremill.codebrag.common.Clock
 
-case class LicenceKeyToRegister(days: Int, maxUsers: Int) extends ToJsonWriter[LicenceKeyToRegister]{
+case class LicenceKey(days: Int, maxUsers: Int) extends ToJsonWriter[LicenceKey]{
   
   def toLicence(companyName: String)(implicit clock: Clock) = {
     val expDate = clock.now.plusDays(days).withTime(23, 59, 59, 999)
@@ -13,8 +13,8 @@ case class LicenceKeyToRegister(days: Int, maxUsers: Int) extends ToJsonWriter[L
 
 }
 
-object LicenceKeyToRegister extends FromJsonReader{
+object LicenceKey extends FromJsonReader{
 
-  def decodeKey(encoded: String) = fromJson[LicenceKeyToRegister](LicenceEncryptor.decode(encoded))
+  def decodeKey(encoded: String) = fromJson[LicenceKey](LicenceEncryptor.decode(encoded))
 
 }

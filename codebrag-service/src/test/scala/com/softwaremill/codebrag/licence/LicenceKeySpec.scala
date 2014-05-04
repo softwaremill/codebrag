@@ -4,11 +4,11 @@ import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.common.ClockSpec
 
-class LicenceKeyToRegisterSpec extends FlatSpec with ShouldMatchers with ClockSpec {
+class LicenceKeySpec extends FlatSpec with ShouldMatchers with ClockSpec {
 
   it should "build licence using licence key" in {
     // given
-    val licenceKey = LicenceKeyToRegister(days = 30, maxUsers = 50)
+    val licenceKey = LicenceKey(days = 30, maxUsers = 50)
 
     // when
     val licence = licenceKey.toLicence(companyName = "SoftwareMill")
@@ -20,10 +20,10 @@ class LicenceKeyToRegisterSpec extends FlatSpec with ShouldMatchers with ClockSp
 
   it should "encode and decode it back" in {
     // given
-    val licenceKey = LicenceKeyToRegister(days = 30, maxUsers = 50)
+    val licenceKey = LicenceKey(days = 30, maxUsers = 50)
 
     // when
-    val result = LicenceKeyToRegister.decodeKey(licenceKey.encodeKey)
+    val result = LicenceKey.decodeKey(licenceKey.encodeKey)
 
     // then
     result should be(licenceKey)
