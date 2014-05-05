@@ -76,6 +76,6 @@ class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
 
   private def expectedTrialLicence(date: DateTime) = {
     val expDate = clock.now.plusDays(14).withTime(23, 59, 59, 999)
-    Licence(expDate, maxUsers = 0, companyName = "-", licenceType = LicenceType.Trial)
+    Licence(expDate, maxUsers = 999, companyName = "-", licenceType = LicenceType.Trial)
   }
 }
