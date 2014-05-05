@@ -11,6 +11,7 @@
     <ul ng-show="licenceData.type === 'Commercial'">
         <li>Current licence: Commercial</li>
         <li>Company name: {{ licenceData.companyName }} </li>
+        <li>Allowed users: {{ licenceData.maxUsers }}</li>
         <li>Expires: <b>{{ licenceData.expiresAt | dateOnly }}</b></li>
     </ul>
     <footer class="text-center">
