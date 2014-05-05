@@ -15,7 +15,7 @@ class LicenceServlet(licenceService: LicenceService, registerUseCase: RegisterLi
 
   put("/") {
     haltIfNotAuthenticated()
-    val licenceKey = (parsedBody \ "licenceKey").extract[String]
+    val licenceKey = (parsedBody \ "licenceKey").extractOrElse[String]("")
     logger.debug(s"Trying to register licence key ${licenceKey}")
     registerUseCase.execute(licenceKey) match {
       case Right(licence) => scalatra.Ok(licenceDetailsView)
