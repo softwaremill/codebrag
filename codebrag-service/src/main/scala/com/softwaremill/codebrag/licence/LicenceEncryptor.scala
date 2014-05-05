@@ -4,7 +4,6 @@ import javax.crypto.spec.SecretKeySpec
 import java.nio.charset.StandardCharsets
 import javax.crypto.Cipher
 import org.apache.commons.codec.binary.Base64
-import org.joda.time.DateTime
 
 object LicenceEncryptor {
 
@@ -15,7 +14,7 @@ object LicenceEncryptor {
 
   def encode(licence: Licence): String = {
     CipherInstance.init(Cipher.ENCRYPT_MODE, Key)
-    Base64.encodeBase64String(CipherInstance.doFinal(licence.toJson.getBytes))
+    Base64.encodeBase64String(CipherInstance.doFinal(licence.toJsonString.getBytes))
   }
 
   def decode(licenceKey: String): Licence = {

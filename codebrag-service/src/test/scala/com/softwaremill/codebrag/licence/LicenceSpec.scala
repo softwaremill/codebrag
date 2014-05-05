@@ -10,10 +10,10 @@ import com.softwaremill.codebrag.common.{FixtureTimeClock, ClockSpec}
 class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
 
   val LicenceDetails = Licence(expirationDate = StringDateTestUtils.str2date("19/04/2014 23:59:59:999"), maxUsers = 50, companyName = "SoftwareMill", licenceType = LicenceType.Commercial)
-  val LicenceAsJson = """{"expirationDate":"19/04/2014","maxUsers":50,"companyName":"SoftwareMill","licenceType":"Commercial"}"""
+  val LicenceAsJson = """{"expirationDate":"19/04/2014 23:59:59:999","maxUsers":50,"companyName":"SoftwareMill","licenceType":"Commercial"}"""
 
   it should "convert licence details to valid JSON string" in {
-    LicenceDetails.toJson should be(LicenceAsJson)
+    LicenceDetails.toJsonString should be(LicenceAsJson)
   }
 
   it should "convert licence details JSON back to object" in {
