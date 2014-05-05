@@ -10,7 +10,7 @@ class LicenceServlet(licenceService: LicenceService, registerUseCase: RegisterLi
 
   get("/") {
     haltIfNotAuthenticated()
-    scalatra.Ok(licenceDetails)
+    scalatra.Ok(licenceDetailsView)
   }
 
   put("/") {
@@ -18,22 +18,25 @@ class LicenceServlet(licenceService: LicenceService, registerUseCase: RegisterLi
     val licenceKey = (parsedBody \ "licenceKey").extract[String]
     logger.debug(s"Trying to register licence key ${licenceKey}")
     registerUseCase.execute(licenceKey) match {
-      case Right(licence) => scalatra.Ok(licenceDetails)
-      case Left(msg) => halt(400, Map("error" -> "Invalid licence key provided"))
+      case Right(licence) => scalatra.Ok(licenceDetailsView)
+      case Left(msg) => halt(400, Map("error" -> msg))
     }
   }
 
-  private def licenceDetails = {
+  private def licenceDetailsView = {
     Map(
       "valid" -> licenceService.licenceValid,
       "expiresAt" -> licenceService.licenceExpiryDate,
       "daysLeft" -> licenceService.daysToExpire,
       "type" -> licenceService.licenceType,
-      "companyName" -> licenceService.companyName
+      "companyName" -> licenceService.companyName,
+      "maxUsers" -> licenceService.maxUsers
     )
   }
 
 }
+
+
 
 object LicenceServlet {
   val MountPath = "licence"
