@@ -8,7 +8,9 @@ import com.softwaremill.codebrag.licence.LicenceType.LicenceType
 
 case class Licence(expirationDate: DateTime, maxUsers: Int, companyName: String, licenceType: LicenceType = LicenceType.Commercial) extends Logging {
 
-  def valid(implicit clock: Clock) = !expirationDate.isBefore(clock.now)
+  def valid(users: Int)(implicit clock: Clock) = {
+    users <= maxUsers && !expirationDate.isBefore(clock.now)
+  }
 
   def daysToExpire(implicit clock: Clock) = {
     val days = Days.daysBetween(clock.now.withTimeAtStartOfDay(), expirationDate).getDays

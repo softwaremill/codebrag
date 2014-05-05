@@ -8,25 +8,48 @@ import com.softwaremill.codebrag.service.config.LicenceConfig
 import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
 import org.mockito.Mockito._
+import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.domain.builder.UserAssembler
 
 class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar with ClockSpec {
 
-  val ValidLicence = Licence(expirationDate = clock.now.plusDays(2), maxUsers = 50, companyName = "SoftwareMill")
-  val ExpiredLicence = ValidLicence.copy(expirationDate = clock.now.minusDays(2))
+  var instanceParamsDao: InstanceParamsDAO = _
+  var usersDao: UserDAO = _
+  var config: LicenceConfig = _
+
+  val ValidDateLicence = Licence(expirationDate = clock.now.plusDays(2), maxUsers = 1, companyName = "SoftwareMill")
+  val ExpiredDateLicence = ValidDateLicence.copy(expirationDate = clock.now.minusDays(2))
+
+  before {
+    instanceParamsDao = mock[InstanceParamsDAO]
+    usersDao = mock[UserDAO]
+    config = mock[LicenceConfig]
+    when(usersDao.findAll()).thenReturn(List(UserAssembler.randomUser.get)) // one user in Codebrag
+  }
 
   it should "read current licence on service initialization" in {
     // when
-    val service = initializeService(ValidLicence)
+    val service = initializeService(ValidDateLicence)
 
     // then
-    service.licenceValid should be(ValidLicence.valid)
-    service.licenceExpiryDate should be(ValidLicence.expirationDate)
-    service.daysToExpire should be(ValidLicence.daysToExpire)
+    service.licenceExpiryDate should be(ValidDateLicence.expirationDate)
+    service.daysToExpire should be(ValidDateLicence.daysToExpire)
   }
 
-  it should "throw exception when licence guard called and licence is expired" in {
+  it should "throw exception when licence guard called and licence is expired (due to date constraint)" in {
     // given
-    val service = initializeService(ExpiredLicence)
+    val service = initializeService(ExpiredDateLicence)
+
+    // then
+    intercept[LicenceExpiredException] {
+      service.interruptIfLicenceExpired
+    }
+  }
+
+  it should "throw exception when licence guard called and licence is expired (due to users constraint)" in {
+    // given
+    val licenceWithFewerUsers = ExpiredDateLicence.copy(maxUsers = 0)
+    val service = initializeService(licenceWithFewerUsers)
 
     // then
     intercept[LicenceExpiredException] {
@@ -36,7 +59,7 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
 
   it should "pass through when licence guard called and licence is valid" in {
     // given
-    val service = initializeService(ValidLicence)
+    val service = initializeService(ValidDateLicence)
 
     // then
     service.interruptIfLicenceExpired
@@ -44,9 +67,8 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
 
   it should "update licence in DB and swap current one in running app" in {
     // given
-    val dao = mock[InstanceParamsDAO]
-    val service = initializeService(ValidLicence, dao)
-    val newLicence = ValidLicence.copy(expirationDate = ValidLicence.expirationDate.plusDays(30), maxUsers = 50)
+    val service = initializeService(ValidDateLicence)
+    val newLicence = ValidDateLicence.copy(expirationDate = ValidDateLicence.expirationDate.plusDays(30), maxUsers = 50)
     val expectedLicenceToSave = LicenceKey(LicenceEncryptor.encode(newLicence)).toInstanceParam
 
     // when
@@ -56,14 +78,12 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
     service.licenceExpiryDate should be(newLicence.expirationDate)
     service.maxUsers should be(newLicence.maxUsers)
     service.companyName should be(newLicence.companyName)
-    verify(dao).save(expectedLicenceToSave)
+    verify(instanceParamsDao).save(expectedLicenceToSave)
   }
 
-  private def initializeService(currentLicence: Licence, dao: InstanceParamsDAO = mock[InstanceParamsDAO]) = {
+  private def initializeService(currentLicence: Licence) = {
     val instanceId = InstanceId("123123123")
-    val config: LicenceConfig = mock[LicenceConfig]
-    val instanceParamsDao: InstanceParamsDAO = dao
-    new LicenceService(instanceId, config, instanceParamsDao) {
+    new LicenceService(instanceId, config, instanceParamsDao, usersDao) {
       override protected[licence] def readCurrentLicence() = currentLicence
     }
   }

@@ -5,8 +5,13 @@ import com.softwaremill.codebrag.service.config.LicenceConfig
 import com.softwaremill.codebrag.domain.{LicenceKey, InstanceId}
 import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
 import java.util.concurrent.atomic.AtomicReference
+import com.softwaremill.codebrag.dao.user.UserDAO
 
-class LicenceService(val instanceId: InstanceId, val licenceConfig: LicenceConfig, val instanceParamsDao: InstanceParamsDAO)(implicit clock: Clock) extends LicenceReader {
+class LicenceService(
+                      val instanceId: InstanceId,
+                      val licenceConfig: LicenceConfig,
+                      val instanceParamsDao: InstanceParamsDAO,
+                      val usersDao: UserDAO)(implicit clock: Clock) extends LicenceReader {
 
   private val currentLicence = new AtomicReference[Licence](readCurrentLicence())
 
@@ -28,7 +33,7 @@ class LicenceService(val instanceId: InstanceId, val licenceConfig: LicenceConfi
     logger.debug(s"Licence updated")
   }
 
-  def licenceValid = currentLicence.get.valid
+  def licenceValid = currentLicence.get.valid(usersDao.findAll().size)
   def licenceExpiryDate = currentLicence.get.expirationDate
   def daysToExpire = currentLicence.get.daysToExpire
   def licenceType = currentLicence.get.licenceType

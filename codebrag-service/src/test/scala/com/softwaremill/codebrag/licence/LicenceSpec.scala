@@ -32,7 +32,7 @@ class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
     trial should be(expectedTrialLicence(clock.now))
   }
 
-  val testData = List(
+  val dateValidityTestData = List(
     Spec(clockWith("10/04/2014"), fullDaysLeft = 9, true),
     Spec(clockWith("15/04/2014"), fullDaysLeft = 4, true),
     Spec(clockWith("19/04/2014"), fullDaysLeft = 0, true),
@@ -43,17 +43,31 @@ class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
     Spec(clockWith("20/04/2014 00:00:00:000"), fullDaysLeft = 0, false)
   )
 
-  testData.foreach { case Spec(clock, daysLeft, validity) =>
+  dateValidityTestData.foreach { case Spec(clock, daysLeft, validity) =>
     val dateFormatted = clock.now.toString("dd/MM/yyyy HH:mm:ss:SSS")
 
+    val users = LicenceDetails.maxUsers
+
     it should s"check licence validity for ${dateFormatted} and have result ${validity}" in {
-      LicenceDetails.valid(clock) should be(validity)
+      LicenceDetails.valid(users)(clock) should be(validity)
     }
 
     it should s"check days left for ${dateFormatted} and have result ${daysLeft}" in {
       LicenceDetails.daysToExpire(clock) should be(daysLeft)
     }
 
+  }
+
+  it should "report licence as invalid when date is ok but users count is exceeded" in {
+    // given
+    val exceedingUsersCount = LicenceDetails.maxUsers + 1
+    implicit val clockWithNotExpiredDate = new FixtureTimeClock(LicenceDetails.expirationDate.minusDays(1).getMillis)
+
+    // when
+    val validity = LicenceDetails.valid(exceedingUsersCount)(clockWithNotExpiredDate)
+
+    // then
+    validity should be(false)
   }
 
   case class Spec(clock: FixtureTimeClock, fullDaysLeft: Int, valid: Boolean)
