@@ -16,7 +16,7 @@ trait LicenceReader extends Logging {
     existingLicence match {
       case Some(licence) => {
         logger.debug("Found licence key. Trying to use one")
-        LicenceEncryptor.decode(licence.value)
+        buildLicenceOrFallbackToTrial(licence)
       }
       case None => {
         logger.debug("Licence key not found. Using trial licence")
@@ -25,4 +25,15 @@ trait LicenceReader extends Logging {
     }
   }
 
+
+  def buildLicenceOrFallbackToTrial(licenceKey: LicenceKey): Licence = {
+    try {
+      LicenceEncryptor.decode(licenceKey.value)
+    } catch {
+      case e: InvalidLicenceKeyException => {
+        logger.debug("Could not read licence, falling back to trial licence")
+        Licence.trialLicence(instanceId, licenceConfig.expiresInDays)
+      }
+    }
+  }
 }

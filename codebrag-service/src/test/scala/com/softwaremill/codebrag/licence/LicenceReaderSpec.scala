@@ -52,16 +52,18 @@ class LicenceReaderSpec extends FlatSpec with ShouldMatchers with MockitoSugar w
     currentLicence should be(Licence.trialLicence(_InstanceId, 30))
   }
 
-  it should "throw exception when stored licence is not valid licence key string" in {
+  it should "fall back to trial licence when stored licence is not valid licence key string" in {
     // given
-    val storedLicenceKey = Some(LicenceKey("invalid_licence_key").toInstanceParam)
-    Mockito.when(_instanceParamsDao.findByKey(LicenceKey.Key)).thenReturn(storedLicenceKey)
+    val invalidLicenceStored = Some(LicenceKey("invalid_licence_key").toInstanceParam)
+    Mockito.when(_instanceParamsDao.findByKey(LicenceKey.Key)).thenReturn(invalidLicenceStored)
+    Mockito.when(_licenceConfig.expiresInDays).thenReturn(30)
     reader = instantiateLicenceReader
 
     // when
-    intercept[InvalidLicenceKeyException] {
-      reader.readCurrentLicence()
-    }
+    val currentLicence = reader.readCurrentLicence()
+
+    // then
+    currentLicence should be(Licence.trialLicence(_InstanceId, 30))
   }
 
   private def instantiateLicenceReader = {
