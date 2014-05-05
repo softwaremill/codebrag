@@ -10,7 +10,6 @@ angular.module('codebrag.licence')
 
         function scheduleLicenceCheck() {
             return loadLicenceData().then(scheduleNextCheck).then(fireEvents).then(function() {
-                console.log('resolved');
                 ready.resolve();
             });
             function scheduleNextCheck() {
@@ -39,19 +38,19 @@ angular.module('codebrag.licence')
         function fireEvents() {
             var daysToWarning = licenceData.daysLeft - warningDays;
             if(licenceData.valid && daysToWarning < 0) {
-                $rootScope.$broadcast('codebrag:licenceAboutToExpire');
+                $rootScope.$broadcast(events.licence.licenceAboutToExpire);
             }
             if(!licenceData.valid && !fireEvents.initialExpirationEvent) {
-                console.log('aaa');
-                $rootScope.$broadcast('codebrag:licenceExpired');
+                $rootScope.$broadcast(events.licence.licenceExpired);
                 fireEvents.initialExpirationEvent = true
             }
         }
 
         function initialize() {
             $rootScope.$on(events.loggedIn, scheduleLicenceCheck);
-            $rootScope.$on('codebrag:openLicencePopup', licencePopup);
-            $rootScope.$on('codebrag:licenceExpired',licencePopup);
+            $rootScope.$on(events.licence.openPopup, licencePopup);
+            $rootScope.$on(events.licence.licenceExpired, licencePopup);
+            $rootScope.$on(events.licence.licenceKeyRegistered, scheduleLicenceCheck);
         }
 
         function licencePopup(once) {

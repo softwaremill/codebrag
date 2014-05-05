@@ -12,7 +12,7 @@ angular.module("codebrag.licence")
 
         function error(response) {
             if (shouldBeIntercepted(response)) {
-                $rootScope.$broadcast('codebrag:licenceExpired');
+                $rootScope.$broadcast(events.licence.licenceExpired);
             }
             return $q.reject(response);
         }

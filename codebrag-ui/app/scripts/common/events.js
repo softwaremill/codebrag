@@ -24,5 +24,12 @@ angular.module('codebrag.events', []).constant('events', {
 
     branches: {
         branchChanged: 'codebrag:branchChanged'
+    },
+
+    licence: {
+        openPopup: 'codebrag:openLicencePopup',
+        licenceAboutToExpire: 'codebrag:licenceAboutToExpire',
+        licenceExpired: 'codebrag:licenceExpied',
+        licenceKeyRegistered: 'codebrag:licenceKeyRegistered'
     }
 });

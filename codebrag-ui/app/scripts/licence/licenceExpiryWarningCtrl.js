@@ -1,14 +1,19 @@
-angular.module('codebrag.licence').controller('LicenceExpiryWarningCtrl', function($scope, licenceService) {
+angular.module('codebrag.licence').controller('LicenceExpiryWarningCtrl', function($scope, licenceService, events) {
 
     licenceService.ready().then(function() {
         $scope.licenceData = licenceService.getLicenceData();
     });
 
-    $scope.$on('codebrag:licenceAboutToExpire', function() {
-        $scope.visible = true;
+    $scope.$on(events.licence.licenceKeyRegistered, function() {
+        $scope.visible = false;
     });
 
-    $scope.$on('codebrag:licenceExpired', function() {
+    $scope.$on(events.licence.licenceAboutToExpire, function() {
+        $scope.visible = true;
+        $scope.licenceData = licenceService.getLicenceData();
+    });
+
+    $scope.$on(events.licence.licenceExpired, function() {
         $scope.visible = true;
         $scope.licenceData = licenceService.getLicenceData();
     });

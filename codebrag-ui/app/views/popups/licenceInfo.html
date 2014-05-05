@@ -1,5 +1,6 @@
-<div class="popup-content" style="text-align: left">
-    <h1 class="success">Licence</h1>
+<div class="popup-content" style="text-align: left" ng-hide="enteringKey">
+    <h1 class="text-center">Licence</h1>
+    <h3 class="text-center success" ng-show="registrationStatus.isOk()">Your licence has been registered!</h3>
     <h2 class="text-center text-error" ng-show="!licenceData.valid">Your licence has expired.<br>Codebrag is available in read-only mode.</h2>
     <h3 class="text-center" ng-show="!licenceData.valid">Purchase your licence to continue using Codebrag.</h3>
     <ul ng-show="licenceData.type === 'Trial'">
@@ -9,11 +10,25 @@
     </ul>
     <ul ng-show="licenceData.type === 'Commercial'">
         <li>Current licence: Commercial</li>
-        <li>Company name: {{ licenceData.companyName}} </li>
+        <li>Company name: {{ licenceData.companyName }} </li>
         <li>Expires: <b>{{ licenceData.expiresAt | dateOnly }}</b></li>
     </ul>
     <footer class="text-center">
+        <button class="button light" ng-click="enterKey()">Enter licence key</button>
         <a class="button light" href="http://codebrag.com/pricing.html" target="_blank">Purchase licence</a>
     </footer>
 </div>
+<div class="popup-content" style="text-align: left" ng-show="enteringKey">
+    <h1 class="text-center">Enter your licence key</h1>
+    <h3 class="text-center text-error" ng-show="registrationStatus.isFailed()">{{ registrationStatus.errMsg }}</h3>
+    <form action="" name="licenceForm">
+        <textarea required cols="30" rows="5" ng-model="key">{{ key }}</textarea>
+    </form>
+    <footer class="text-center">
+        <button class="button light" ng-click="register(key)" ng-disabled="licenceForm.$invalid">Register</button>
+        <button class="button light" ng-click="cancel()">Cancel</button>
+    </footer>
+</div>
 <span class="close-btn" ng-click="$close()"><i class="icon-remove"></i></span>
+<span class="close-btn" ng-click="$close()"><i class="icon-remove"></i></span>
+
