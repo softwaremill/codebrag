@@ -1,8 +1,9 @@
 package com.softwaremill.codebrag.activities
 
 import com.softwaremill.codebrag.licence._
+import com.typesafe.scalalogging.slf4j.Logging
 
-class RegisterLicenceUseCase(licenceService: LicenceService) {
+class RegisterLicenceUseCase(licenceService: LicenceService) extends Logging {
 
   type EnterLicenceKeyResult = Either[String, Licence]
   
@@ -12,7 +13,10 @@ class RegisterLicenceUseCase(licenceService: LicenceService) {
       licenceService.updateLicence(licenceDetails)
       Right(licenceDetails)
     } catch {
-      case e: InvalidLicenceKeyException => Left("Licence key is incorrect")
+      case e: InvalidLicenceKeyException => {
+        logger.error("Could not register provided key", e.getMessage)
+        Left("Licence key is incorrect")
+      }
     }
   }
 
