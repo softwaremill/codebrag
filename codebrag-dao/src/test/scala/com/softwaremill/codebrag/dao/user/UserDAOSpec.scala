@@ -19,12 +19,14 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
   val UserIdPrefix = "507f1f77bcf86cd79943901"
 
+  val CreatedUsersSize = 3
+
   implicit def intSuffixToObjectId(suffix: Int): ObjectId = new ObjectId(UserIdPrefix + suffix)
 
   override def beforeEach() {
     super.beforeEach()
 
-    for (i <- 1 to 3) {
+    for (i <- 1 to CreatedUsersSize) {
       val login = "user" + i
       val password = "pass" + i
       val token = "token" + i
@@ -70,6 +72,17 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     // then
     user.id should be(null)
     addedUser.id should not be (null)
+  }
+
+  it should "count all regular users in db" taggedAs (RequiresDb) in {
+    // given
+    internalUserDAO.createIfNotExists(InternalUser("codebrag"))
+
+    // when
+    val count = userDAO.countAll()
+
+    // then
+    count should be(CreatedUsersSize)
   }
 
   it should "add user with existing email" taggedAs (RequiresDb) in {

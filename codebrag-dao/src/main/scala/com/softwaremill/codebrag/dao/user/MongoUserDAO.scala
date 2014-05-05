@@ -87,6 +87,8 @@ class MongoUserDAO extends UserDAO with Logging {
     }
   }
 
+  def countAll() = UserRecord.where(_.regular eqs true).count
+
   private object UserImplicits {
     implicit def fromRecord(user: UserRecord): User = {
       new User(user.id.get, user.authentication.get, user.name.get, user.email.get, user.token.get, user.userSettings.get, user.notifications.get)

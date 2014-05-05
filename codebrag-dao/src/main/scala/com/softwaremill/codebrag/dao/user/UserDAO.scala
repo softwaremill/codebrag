@@ -45,4 +45,6 @@ trait UserDAO {
   def findPartialUserDetails(names: Iterable[String], emails: Iterable[String]): Iterable[PartialUserDetails]
 
   def findPartialUserDetails(ids: Iterable[ObjectId]): Iterable[PartialUserDetails]
+
+  def countAll(): Long
 }

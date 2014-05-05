@@ -88,6 +88,12 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
 
   def findPartialUserDetails(ids: Iterable[ObjectId]) = findPartialUserDetails(_.id inSet ids.toSet)
 
+  def countAll() = {
+    db.withTransaction { implicit session =>
+      Query(users.filter(_.regular is true).length).first().toLong
+    }
+  }
+
   private def findPartialUserDetails(condition: Users => Column[Boolean]) = db.withTransaction { implicit session =>
     val q = for {
       u <- users if condition(u)
