@@ -2,16 +2,15 @@ package com.softwaremill.codebrag.licence
 
 import com.softwaremill.codebrag.common.Clock
 import com.softwaremill.codebrag.service.config.LicenceConfig
-import com.softwaremill.codebrag.domain.InstanceId
+import com.softwaremill.codebrag.domain.{LicenceKey, InstanceId}
 import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
+import java.util.concurrent.atomic.AtomicReference
 
 class LicenceService(val instanceId: InstanceId, val licenceConfig: LicenceConfig, val instanceParamsDao: InstanceParamsDAO)(implicit clock: Clock) extends LicenceReader {
 
-  private val currentLicence = readCurrentLicence()
+  private val currentLicence = new AtomicReference[Licence](readCurrentLicence())
 
-  logger.info(s"Licence valid: ${licenceValid}")
-  logger.info(s"Expiration date: ${currentLicence.expirationDate}")
-  logger.info(s"Licence expires in : ${daysToExpire} full days")
+  logLicenceInfo
 
   def interruptIfLicenceExpired {
     if(!licenceValid) {
@@ -20,11 +19,27 @@ class LicenceService(val instanceId: InstanceId, val licenceConfig: LicenceConfi
     }
   }
 
-  def licenceValid = currentLicence.valid
-  def licenceExpiryDate = currentLicence.expirationDate
-  def daysToExpire = currentLicence.daysToExpire
-  def licenceType = currentLicence.licenceType
-  def companyName = currentLicence.companyName
+  def updateLicence(newLicence: Licence) {
+    logger.debug(s"Updating licence")
+    val encodedLicence = LicenceKey(LicenceEncryptor.encode(newLicence))
+    instanceParamsDao.save(encodedLicence.toInstanceParam)
+    currentLicence.set(newLicence)
+    logLicenceInfo
+    logger.debug(s"Licence updated")
+  }
+
+  def licenceValid = currentLicence.get.valid
+  def licenceExpiryDate = currentLicence.get.expirationDate
+  def daysToExpire = currentLicence.get.daysToExpire
+  def licenceType = currentLicence.get.licenceType
+  def companyName = currentLicence.get.companyName
+  def maxUsers = currentLicence.get.maxUsers
+
+  private def logLicenceInfo {
+    logger.info(s"Licence valid: ${licenceValid}")
+    logger.info(s"Expiration date: ${currentLicence.get.expirationDate}")
+    logger.info(s"Licence expires in : ${daysToExpire} full days")
+  }
 
 }
 
