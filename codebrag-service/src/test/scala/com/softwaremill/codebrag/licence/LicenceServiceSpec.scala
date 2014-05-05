@@ -9,7 +9,6 @@ import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.domain.builder.UserAssembler
 
 class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar with ClockSpec {
 
@@ -17,14 +16,17 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
   var usersDao: UserDAO = _
   var config: LicenceConfig = _
 
-  val ValidDateLicence = Licence(expirationDate = clock.now.plusDays(2), maxUsers = 1, companyName = "SoftwareMill")
+  val UsersCount = 1
+
+  val ValidDateLicence = Licence(expirationDate = clock.now.plusDays(2), maxUsers = UsersCount, companyName = "SoftwareMill")
   val ExpiredDateLicence = ValidDateLicence.copy(expirationDate = clock.now.minusDays(2))
+
 
   before {
     instanceParamsDao = mock[InstanceParamsDAO]
     usersDao = mock[UserDAO]
     config = mock[LicenceConfig]
-    when(usersDao.findAll()).thenReturn(List(UserAssembler.randomUser.get)) // one user in Codebrag
+    when(usersDao.countAll()).thenReturn(UsersCount) // one user in Codebrag
   }
 
   it should "read current licence on service initialization" in {

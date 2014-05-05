@@ -33,7 +33,7 @@ class LicenceService(
     logger.debug(s"Licence updated")
   }
 
-  def licenceValid = currentLicence.get.valid(usersDao.findAll().size)
+  def licenceValid = currentLicence.get.valid(usersDao.countAll().toInt)
   def licenceExpiryDate = currentLicence.get.expirationDate
   def daysToExpire = currentLicence.get.daysToExpire
   def licenceType = currentLicence.get.licenceType
