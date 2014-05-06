@@ -4,11 +4,13 @@ angular.module('codebrag.branches')
 
         var branchesList = [],
             currentBranch,
+            repositoryType,
             dataReady = $q.defer(),
             push = Array.prototype.push;
 
         function loadAvailableBranches() {
             return $http.get('rest/branches').then(function useBranches(response) {
+                repositoryType = response.data.repoType;
                 branchesList.length = 0;
                 push.apply(branchesList, response.data.branches);
                 if(angular.isUndefined(currentBranch)) {
@@ -41,6 +43,10 @@ angular.module('codebrag.branches')
             return currentBranch;
         }
 
+        function repoType() {
+            return repositoryType;
+        }
+
         function ready() {
             return dataReady.promise;
         }
@@ -55,6 +61,7 @@ angular.module('codebrag.branches')
             allBranches: allBranches,
             selectBranch: selectBranch,
             selectedBranch: selectedBranch,
+            repoType: repoType,
             initialize: initialize
         }
 

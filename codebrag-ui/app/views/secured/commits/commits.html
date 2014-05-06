@@ -1,16 +1,16 @@
-<div id="commits-tab-content" class="row" ng-controller="CommitsCtrl" auto-fit-height>
+<div id="commits-tab-content" class="row" auto-fit-height>
     <div class="small-12 large-12 columns">
         <div class="commits-tab-header row">
             <div class="small-3 large-3 columns">
-                <div class="branch-selector row">
-                    <div class="small-6 large-6 columns" ng-controller="BranchesCtrl">
+                <div class="branch-selector row" ng-controller="BranchesCtrl">
+                    <div class="small-6 large-6 columns" ng-show="showBranchesSelector">
                         <dropdown selected="selectedBranch()" icon="assets/images/branch.png">
                             <ul class="branches-list">
                                 <li ng-repeat="branch in branches" ng-click="selectBranch(branch)" ng-class="{'selected': branch === selectedBranch()}">{{branch}}</li>
                             </ul>
                         </dropdown>
                     </div>
-                    <div class="small-6 large-6 columns">
+                    <div class="columns" ng-class="{'small-6 large-6': showBranchesSelector}">
                         <dropdown selected="displaySelectedMode(counters.commitsCount)">
                             <ul>
                                 <li ng-click="switchListView('pending')">
@@ -35,7 +35,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" ng-controller="CommitsCtrl">
             <div class="commits items-list small-3 large-3 columns">
                 <div class="list-loader" http-request-tracker="commitsList">
                     <span class="info">Loading commits...</span>

@@ -8,19 +8,19 @@ describe("Commits Controller", function () {
         $rootScope,
         $q,
         commitsService,
-        countersService,
+        branchesService,
         $stateParams,
         events,
         currentCommit;
 
     beforeEach(module('codebrag.commits', 'codebrag.notifications'));
 
-    beforeEach(inject(function(_$rootScope_, _$q_, $controller, _commitsService_, _$stateParams_, _events_, _countersService_, _currentCommit_) {
+    beforeEach(inject(function(_$rootScope_, _$q_, $controller, _commitsService_, _$stateParams_, _events_, _branchesService_, _currentCommit_) {
         $scope = _$rootScope_.$new();
         $rootScope = _$rootScope_;
         $q = _$q_;
         commitsService = _commitsService_;
-        countersService = _countersService_;
+        branchesService = _branchesService_;
         $stateParams = _$stateParams_;
         events = _events_;
         currentCommit = _currentCommit_;
@@ -28,37 +28,52 @@ describe("Commits Controller", function () {
 
     beforeEach(inject(function($controller) {
         spyOn(commitsService, 'loadCommits').andReturn($q.defer().promise);
-        $controller('CommitsCtrl', {$scope: $scope, commitsListService: commitsService, $stateParams: $stateParams});
+        $controller('CommitsCtrl', {$scope: $scope, commitsListService: commitsService, $stateParams: $stateParams, branchesService: branchesService});
     }));
 
-    it('should have initial list mode set to pending', function() {
-        $rootScope.$broadcast(events.branches.branchChanged);
-        $rootScope.$apply();
-        expect($scope.listViewMode).toBe('pending');
-        expect(commitsService.loadCommits).toHaveBeenCalled();
-    });
+    it('should not load commits before branches service is ready', inject(function($controller) {
+        // given
+        var branchServiceReady = $q.defer();
+        spyOn(branchesService, 'ready').andReturn(branchServiceReady.promise);
 
-    it('should re-initialize controller when event received', inject(function(currentCommit) {
+        // when
+        $controller('CommitsCtrl', {$scope: $scope});
+
+        // then
+        expect(commitsService.loadCommits).not.toHaveBeenCalled();
+    }));
+
+    it('should load pending commits when branches service is ready', inject(function($controller) {
+        // given
+        var branchServiceReady = $q.defer();
+        spyOn(branchesService, 'ready').andReturn(branchServiceReady.promise);
+
+        // when
+        $controller('CommitsCtrl', {$scope: $scope});
+        branchServiceReady.resolve();
+        $rootScope.$digest();
+
+        // then
+        expect(commitsService.loadCommits).toHaveBeenCalled();
+    }));
+
+    it('should re-load commits when "filter changed" event received', inject(function(currentCommit) {
         // given
         currentCommit.set('dummy commit');
 
         // when
-        $rootScope.$broadcast(events.commitsTabOpened);
+        $rootScope.$broadcast(events.commitsListFilterChanged);
 
         // then
-        expect($scope.listViewMode).toBe('pending');
-        expect(currentCommit.get()).toBe('dummy commit');
         expect(commitsService.loadCommits).toHaveBeenCalled();
     }));
 
     it('should load pending commits when view switched to pending', function() {
         // given
-        $scope.switchListView('all');
         commitsService.loadCommits.reset(); // reset spy call counter
 
         // When
-        $scope.switchListView('pending');
-        $scope.$apply();
+        $rootScope.$broadcast(events.commitsListFilterChanged, 'pending');
 
         // then
         expect(commitsService.loadCommits.callCount).toBe(1);
@@ -69,10 +84,9 @@ describe("Commits Controller", function () {
         var commits = $q.defer();
         commits.resolve(pendingCommits);
         commitsService.loadCommits.andReturn(commits.promise);
-        $scope.switchListView('all');
 
         // When
-        $scope.switchListView('pending');
+        $rootScope.$broadcast(events.commitsListFilterChanged, 'pending');
         $scope.$apply();
 
         //Then
@@ -84,7 +98,7 @@ describe("Commits Controller", function () {
         $stateParams.sha = null;
 
         // when
-        $scope.switchListView('all');
+        $rootScope.$broadcast(events.commitsListFilterChanged, 'all');
 
         // then
         expect(commitsService.loadCommits).toHaveBeenCalledWith(null);
@@ -95,7 +109,7 @@ describe("Commits Controller", function () {
         $stateParams.sha = '123';
 
         // when
-        $scope.switchListView('all');
+        $rootScope.$broadcast(events.commitsListFilterChanged, 'all');
 
         // then
         expect(commitsService.loadCommits).toHaveBeenCalledWith($stateParams.sha);
@@ -120,20 +134,6 @@ describe("Commits Controller", function () {
         var result = $scope.hasNextCommits();
 
         expect(result).toBeTruthy();
-    });
-
-    it('should return correct label (with counter) for reviewed commits', function() {
-        // given
-        spyOn(countersService.commitsCounter, 'currentCount').andReturn(20);
-
-        // when
-        var toReviewLabel = $scope.displaySelectedMode();
-        $scope.switchListView('all');
-        var allLabel = $scope.displaySelectedMode();
-
-        // then
-        expect(toReviewLabel).toBe('to review (20)');
-        expect(allLabel).toBe('all');
     });
 
     it('should clear current commit when opening another commit details', function() {
@@ -162,16 +162,4 @@ describe("Commits Controller", function () {
         expect(currentCommit.empty).not.toHaveBeenCalled();
     });
 
-    it('should fire event when commits list filter changed', function() {
-        // given
-        spyOn($rootScope, '$broadcast').andCallThrough();
-        $scope.switchListView('pending');
-
-        // When
-        $scope.switchListView('all');
-        $scope.$apply();
-
-        // then
-        expect($rootScope.$broadcast).toHaveBeenCalledWith(events.commitsListFilterChanged);
-    })
 });

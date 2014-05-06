@@ -1,29 +1,12 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, $rootScope, currentCommit, commitsService, $stateParams, $state, events, pageTourService, countersService, branchesService) {
+    .controller('CommitsCtrl', function ($scope, $rootScope, currentCommit, commitsService, $stateParams, $state, events, pageTourService, branchesService) {
 
-        $scope.$on(events.branches.branchChanged, initCtrl);
-        $scope.$on(events.commitsTabOpened, initCtrl);
+        branchesService.ready().then(loadCommits);
 
-        $scope.switchListView = function(newMode) {
-            if(newMode && newMode === $scope.listViewMode) return;
-            if(newMode) {
-                $scope.listViewMode = newMode;
-            }
-            if(angular.isUndefined($scope.listViewMode)) {
-                $scope.listViewMode = 'pending';
-            }
-            $scope.listViewMode === 'all' ? loadAllCommits() : loadPendingCommits();
-            $rootScope.$broadcast(events.commitsListFilterChanged);
-        };
-
-        $scope.displaySelectedMode = function() {
-            return $scope.listViewMode === 'all' ? 'all' : $scope.toReviewLabel();
-        };
-
-        $scope.toReviewLabel = function() {
-            return 'to review (' + countersService.commitsCounter.currentCount() + ')';
-        };
+        $scope.$on(events.commitsListFilterChanged, function(event, mode) {
+            loadCommits(mode);
+        });
 
         $scope.hasNextCommits = function() {
             return commitsService.hasNextCommits();
@@ -61,6 +44,10 @@ angular.module('codebrag.commits')
             return pageTourService.stepActive('commits') || pageTourService.stepActive('invites');
         };
 
+        function loadCommits(mode) {
+            mode === 'all' ? loadAllCommits() : loadPendingCommits();
+        }
+
         function loadAllCommits() {
             commitsService.setAllMode();
             commitsService.loadCommits($stateParams.sha).then(function(commits) {
@@ -74,11 +61,5 @@ angular.module('codebrag.commits')
                 $scope.commits = commits;
             });
         }
-
-        function initCtrl() {
-            $scope.switchListView();
-        }
-
-        branchesService.ready().then(initCtrl);
 
     });

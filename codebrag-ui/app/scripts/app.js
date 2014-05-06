@@ -29,7 +29,7 @@ angular.module('codebrag.profile', ['codebrag.session']);
 
 angular.module('codebrag.tour', ['codebrag.templates', 'codebrag.auth', 'codebrag.profile', 'codebrag.common']);
 
-angular.module('codebrag.branches', ['codebrag.events']);
+angular.module('codebrag.branches', ['codebrag.counters', 'codebrag.events']);
 
 angular.module('codebrag.counters', ['codebrag.branches', 'codebrag.events']);
 
