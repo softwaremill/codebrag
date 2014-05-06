@@ -6,7 +6,7 @@ import org.joda.time.DateTime
 /**
  * Super awesome licence generation tool
  */
-object HackMyLicence extends App {
+object LicenceGenerator extends App {
 
   private val Formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
 
