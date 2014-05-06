@@ -68,7 +68,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val criteria = PagingCriteria.fromBeginning[String](CommitsEndpoint.DefaultPageLimit)
 
     get(s"/?${FilterParamName}=${AllCommitsFilter}") {
-      verify(allCommitsFinder).find(userId, MasterBranchName, criteria)
+      verify(allCommitsFinder).find(userId, EmptyBranchName, criteria)
     }
   }
 
@@ -77,7 +77,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val criteria = PagingCriteria.fromBeginning[String](CommitsEndpoint.DefaultPageLimit)
 
     get(s"/?${FilterParamName}=${ToReviewCommitsFilter}") {
-      verify(toReviewCommitsFinder).find(userId, MasterBranchName, criteria)
+      verify(toReviewCommitsFinder).find(userId, EmptyBranchName, criteria)
     }
   }
 
@@ -87,7 +87,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
     get(s"/?${ContextParamName}=true&${SelectedShaParamName}=" + commitId.toString) {
       val criteria = PagingCriteria(commitId, Direction.Radial, CommitsEndpoint.DefaultPageLimit)
-      verify(allCommitsFinder).find(userId, MasterBranchName, criteria)
+      verify(allCommitsFinder).find(userId, EmptyBranchName, criteria)
     }
   }
 
@@ -96,7 +96,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
     get(s"/?${ContextParamName}=true") {
       val criteria = PagingCriteria.fromEnd[String](CommitsEndpoint.DefaultPageLimit)
-      verify(allCommitsFinder).find(userId, MasterBranchName, criteria)
+      verify(allCommitsFinder).find(userId, EmptyBranchName, criteria)
     }
   }
 
@@ -105,11 +105,11 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val lastKnownCommitId = "123456"
     get(s"/?${FilterParamName}=${ToReviewCommitsFilter}&${LimitParamName}=10&${MinShaParamName}=" + lastKnownCommitId.toString) {
       val criteria = PagingCriteria(lastKnownCommitId, Direction.Right, 10)
-      verify(toReviewCommitsFinder).find(userId, MasterBranchName, criteria)
+      verify(toReviewCommitsFinder).find(userId, EmptyBranchName, criteria)
     }
     get(s"/?${FilterParamName}=${ToReviewCommitsFilter}&${LimitParamName}=10&${MaxShaParamName}=" + lastKnownCommitId.toString) {
       val criteria = PagingCriteria(lastKnownCommitId, Direction.Left, 10)
-      verify(toReviewCommitsFinder).find(userId, MasterBranchName, criteria)
+      verify(toReviewCommitsFinder).find(userId, EmptyBranchName, criteria)
     }
   }
 

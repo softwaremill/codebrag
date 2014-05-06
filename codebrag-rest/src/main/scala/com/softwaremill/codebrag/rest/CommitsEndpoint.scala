@@ -79,7 +79,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     }
   }
 
-  private def extractBranch = params.get(BranchParamName).getOrElse(MasterBranchName)
+  private def extractBranch = params.get(BranchParamName).getOrElse(EmptyBranchName)
 
 }
 
@@ -100,6 +100,6 @@ object CommitsEndpoint {
   val MaxShaParamName = "max_sha"
   val SelectedShaParamName = "selected_sha"
 
-  val MasterBranchName = "master"
+  val EmptyBranchName = ""
 
 }

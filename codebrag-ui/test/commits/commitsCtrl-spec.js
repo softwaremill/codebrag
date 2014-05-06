@@ -32,6 +32,8 @@ describe("Commits Controller", function () {
     }));
 
     it('should have initial list mode set to pending', function() {
+        $rootScope.$broadcast(events.branches.branchChanged);
+        $rootScope.$apply();
         expect($scope.listViewMode).toBe('pending');
         expect(commitsService.loadCommits).toHaveBeenCalled();
     });
@@ -85,7 +87,7 @@ describe("Commits Controller", function () {
         $scope.switchListView('all');
 
         // then
-        expect(commitsService.loadCommits).toHaveBeenCalledWith();
+        expect(commitsService.loadCommits).toHaveBeenCalledWith(null);
     });
 
     it('should load commits in all context when commit is selected', function() {

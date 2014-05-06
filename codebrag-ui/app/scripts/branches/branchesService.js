@@ -12,7 +12,7 @@ angular.module('codebrag.branches')
                 branchesList.length = 0;
                 push.apply(branchesList, response.data.branches);
                 if(angular.isUndefined(currentBranch)) {
-                    currentBranch = response.data.current;
+                    selectBranch(response.data.current)
                 }
                 dataReady.resolve();
                 return branchesList;

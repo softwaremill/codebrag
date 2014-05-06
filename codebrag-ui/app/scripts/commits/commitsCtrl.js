@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, $rootScope, currentCommit, commitsService, $stateParams, $state, events, pageTourService, countersService) {
+    .controller('CommitsCtrl', function ($scope, $rootScope, currentCommit, commitsService, $stateParams, $state, events, pageTourService, countersService, branchesService) {
 
         $scope.$on(events.branches.branchChanged, initCtrl);
         $scope.$on(events.commitsTabOpened, initCtrl);
@@ -79,6 +79,6 @@ angular.module('codebrag.commits')
             $scope.switchListView();
         }
 
-        initCtrl();
+        branchesService.ready().then(initCtrl);
 
     });
