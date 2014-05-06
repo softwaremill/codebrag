@@ -49,6 +49,20 @@ class RegisterLicenceUseCaseSpec extends FlatSpec with BeforeAndAfter with Mocki
     result should be('left)
   }
 
+  it should "not update existing licence when current licence has already expired date" in {
+    // given
+    val newLicence = Licence(clock.now.minusDays(1), 10, "SoftwareMill")
+    when(userDao.countAll()).thenReturn(newLicence.maxUsers)
+    val encodedLicence = LicenceEncryptor.encode(newLicence)
+
+    // when
+    val result = useCase.execute(encodedLicence)
+
+    // then
+    verifyZeroInteractions(licenceService)
+    result should be('left)
+  }
+
   it should "not update existing licence when invalid JSON key provided" in {
     // given
     val invalidLicenceString = "invalidLicenceString"

@@ -3,8 +3,9 @@ package com.softwaremill.codebrag.activities
 import com.softwaremill.codebrag.licence._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.common.Clock
 
-class RegisterLicenceUseCase(licenceService: LicenceService, userDao: UserDAO) extends Logging {
+class RegisterLicenceUseCase(licenceService: LicenceService, userDao: UserDAO)(implicit clock: Clock) extends Logging {
 
   type EnterLicenceKeyResult = Either[String, Licence]
   
@@ -17,11 +18,13 @@ class RegisterLicenceUseCase(licenceService: LicenceService, userDao: UserDAO) e
 
   def validate(providedKey: String): EnterLicenceKeyResult = {
     decodeKey(providedKey).right.flatMap { licence =>
-      if(userDao.countAll() > licence.maxUsers) {
-        Left("Invalid licence - too many users registered")
-      } else {
-        Right(licence)
+      if(clock.now.isAfter(licence.expirationDate)) {
+        return Left("Licence already expired")
       }
+      if(userDao.countAll() > licence.maxUsers) {
+        return Left("Invalid licence - too many users registered")
+      }
+      Right(licence)
     }
   }
 
