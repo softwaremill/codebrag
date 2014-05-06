@@ -15,10 +15,12 @@ import java.util.Properties
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
+import com.softwaremill.codebrag.activities.{UserToRegister, RegisterNewUserUseCase}
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
   val registerService = mock[RegisterService]
+  val registerUseCase = mock[RegisterNewUserUseCase]
   val afterUserLoginHook = mock[AfterUserLoginHook]
   var userDao: UserDAO = _
   var config: CodebragConfig = _
@@ -104,7 +106,8 @@ class UsersServletSpec extends AuthenticatableServletSpec {
 
   "POST /register" should "call the register service and return 200 if registration is successful" in {
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    when(registerService.register("adamw", "adam@example.org", "123456", "code")).thenReturn(Right(()))
+    val newUser = UserToRegister("adamw", "adam@example.org", "123456", "code")
+    when(registerUseCase.execute(newUser)).thenReturn(Right())
 
     post("/register",
       mapToJson(Map("login" -> "adamw", "email" -> "adam@example.org", "password" -> "123456", "invitationCode" -> "code")),
@@ -115,7 +118,8 @@ class UsersServletSpec extends AuthenticatableServletSpec {
 
   "POST /register" should "call the register service and return 403 if registration is unsuccessful" in {
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    when(registerService.register("adamw", "adam@example.org", "123456", "code")).thenReturn(Left("error"))
+    val newUser = UserToRegister("adamw", "adam@example.org", "123456", "code")
+    when(registerUseCase.execute(newUser)).thenReturn(Left("error"))
 
     post("/register",
       mapToJson(Map("login" -> "adamw", "email" -> "adam@example.org", "password" -> "123456", "invitationCode" -> "code")),
@@ -125,7 +129,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends UsersServlet(fakeAuthenticator, registerService, afterUserLoginHook, userDao, config, new CodebragSwagger) {
+    extends UsersServlet(fakeAuthenticator, registerService, registerUseCase, afterUserLoginHook, userDao, config, new CodebragSwagger) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

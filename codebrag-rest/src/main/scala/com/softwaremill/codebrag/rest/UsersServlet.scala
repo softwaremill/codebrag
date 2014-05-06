@@ -8,9 +8,17 @@ import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.dao.user.UserDAO
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
+import org.scalatra
+import com.softwaremill.codebrag.activities.{UserToRegister, RegisterNewUserUseCase}
 
-class UsersServlet(val authenticator: Authenticator, registerService: RegisterService, afterLoginHook: AfterUserLoginHook, userDao: UserDAO, config: CodebragConfig, val swagger: Swagger)
-  extends JsonServletWithAuthentication with UsersServletSwaggerDefinition with CookieSupport {
+class UsersServlet(
+                    val authenticator: Authenticator,
+                    registerService: RegisterService,
+                    registerUserUseCase: RegisterNewUserUseCase,
+                    afterLoginHook: AfterUserLoginHook,
+                    userDao: UserDAO,
+                    config: CodebragConfig,
+                    val swagger: Swagger) extends JsonServletWithAuthentication with UsersServletSwaggerDefinition with CookieSupport {
 
   post(operation(loginOperation)) {
     authenticate() match {
@@ -45,9 +53,10 @@ class UsersServlet(val authenticator: Authenticator, registerService: RegisterSe
   }
 
   post("/register", operation(registerOperation)) {
-    registerService.register(login, email, password, invitationCode) match {
+    val newUser = UserToRegister(login, email, password, invitationCode)
+    registerUserUseCase.execute(newUser) match {
       case Left(error) => halt(403, error)
-      case Right(()) => true
+      case Right(_) => scalatra.Ok
     }
   }
 
