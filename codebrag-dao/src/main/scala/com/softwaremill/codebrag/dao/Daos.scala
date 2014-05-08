@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.dao.reaction._
 import com.softwaremill.codebrag.dao.reviewtask.{SQLCommitReviewTaskDAO, MongoCommitReviewTaskDAO, CommitReviewTaskDAO}
 import com.softwaremill.codebrag.dao.invitation.{SQLInvitationDAO, MongoInvitationDAO, InvitationDAO}
 import com.softwaremill.codebrag.dao.events.{SQLEventDAO, MongoEventDAO, EventDAO}
-import com.softwaremill.codebrag.dao.instance.{InstanceParamsDAO, FileBasedInstanceSettingsDAO}
+import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
 import com.softwaremill.codebrag.dao.finders.followup.{SQLFollowupFinder, MongoFollowupFinder, FollowupFinder}
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 import com.softwaremill.codebrag.dao.finders.StatsEventsFinder
@@ -34,8 +34,6 @@ trait Daos {
   def heartbeatDao: HeartbeatDAO
   def instanceParamsDao: InstanceParamsDAO
 
-  lazy val instanceSettingsDao = new FileBasedInstanceSettingsDAO
-
   def followupFinder: FollowupFinder
 
   lazy val reactionFinder = new ReactionFinder(userDao, commentDao, likeDao)
@@ -57,7 +55,7 @@ trait MongoDaos extends Daos {
   lazy val branchStateDao = new InMemoryBranchStateDAO
   lazy val reviewedCommitsDao = new InMemoryReviewedCommitsDAO
   lazy val heartbeatDao = new MongoHeartbeatDAO(clock)
-  lazy val instanceParamsDao = ???
+  lazy val instanceParamsDao = throw new NotImplementedError
 
   lazy val followupFinder = new MongoFollowupFinder
 
