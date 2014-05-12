@@ -11,7 +11,7 @@ class UsersSettingsServlet(val authenticator: Authenticator, userDao: UserDAO, c
 
   get("/") {
     haltIfNotAuthenticated()
-    userDao.findById(user.userId) match {
+    userDao.findById(user.idAsObjectId) match {
       case Some(user) => Map("userSettings" -> user.settings)
       case None => NotFound
     }
@@ -19,7 +19,7 @@ class UsersSettingsServlet(val authenticator: Authenticator, userDao: UserDAO, c
 
   put("/") {
     val newSettings = IncomingSettings(extractOptBoolean("emailNotificationsEnabled"), extractOptBoolean("dailyUpdatesEmailEnabled"), extractOptBoolean("appTourDone"))
-    changeUserSettings.execute(user.userId, newSettings).left.map { err =>
+    changeUserSettings.execute(user.idAsObjectId, newSettings).left.map { err =>
       halt(400, Map("error" -> err))
     }
   }

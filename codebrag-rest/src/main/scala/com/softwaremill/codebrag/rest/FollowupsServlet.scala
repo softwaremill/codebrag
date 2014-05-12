@@ -32,7 +32,7 @@ class FollowupsServlet(val authenticator: Authenticator,
 
   delete("/:id") {
     haltIfNotAuthenticated()
-    followupDoneUseCase.execute(user.userId, new ObjectId(params("id")))
+    followupDoneUseCase.execute(user.idAsObjectId, new ObjectId(params("id")))
   }
 }
 

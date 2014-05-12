@@ -10,7 +10,7 @@ class UnlikeUseCase(likeValidator: LikeValidator, userReactionService: UserReact
   type UnlikeResult = Either[String, Unit]
 
   def execute(currentUser: UserJson, likeId: ObjectId): Either[String, Unit] = {
-    ifCanExecute(currentUser.userId, likeId) {
+    ifCanExecute(currentUser.idAsObjectId, likeId) {
       userReactionService.removeLike(likeId)
       Right()
     }

@@ -4,7 +4,7 @@ import com.softwaremill.codebrag.domain.{UserSettings, User}
 import org.bson.types.ObjectId
 
 case class UserJson(id: String, login: String, fullName: String, email:String, token: String, settings: UserSettings) {
-  def userId = new ObjectId(id)
+  def idAsObjectId = new ObjectId(id)
 }
 
 object UserJson {
