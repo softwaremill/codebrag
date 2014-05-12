@@ -35,7 +35,7 @@ class ReviewCommitUseCase(
   }
 
   protected def ifCanExecute(block: => ReviewCommitResult)(implicit sha: String, userId: ObjectId): ReviewCommitResult = {
-    licenceService.interruptIfLicenceExpired
+    licenceService.interruptIfLicenceExpired()
     block
   }
 

@@ -41,7 +41,7 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
 
     // then
     intercept[LicenceExpiredException] {
-      service.interruptIfLicenceExpired
+      service.interruptIfLicenceExpired()
     }
   }
 
@@ -52,7 +52,7 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
 
     // then
     intercept[LicenceExpiredException] {
-      service.interruptIfLicenceExpired
+      service.interruptIfLicenceExpired()
     }
   }
 
@@ -61,7 +61,7 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
     val service = initializeService(ValidDateLicence)
 
     // then
-    service.interruptIfLicenceExpired
+    service.interruptIfLicenceExpired()
   }
 
   it should "update licence in DB and swap current one in running app" in {

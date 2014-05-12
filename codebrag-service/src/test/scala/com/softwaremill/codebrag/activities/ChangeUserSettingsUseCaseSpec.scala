@@ -51,7 +51,7 @@ class ChangeUserSettingsUseCaseSpec extends FlatSpec with MockitoSugar with Shou
   it should "prevent from calling action when licence expired" in {
     // given
     val user = UserAssembler.randomUser.get
-    when(licenceService.interruptIfLicenceExpired).thenThrow(new LicenceExpiredException)
+    when(licenceService.interruptIfLicenceExpired()).thenThrow(new LicenceExpiredException)
     when(userDao.findById(user.id)).thenReturn(Some(user))
 
     // when

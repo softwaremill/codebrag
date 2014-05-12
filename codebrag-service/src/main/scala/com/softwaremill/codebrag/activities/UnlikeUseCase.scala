@@ -17,7 +17,7 @@ class UnlikeUseCase(likeValidator: LikeValidator, userReactionService: UserReact
   }
 
   protected def ifCanExecute(userId: ObjectId, likeId: ObjectId)(block: => UnlikeResult): UnlikeResult = {
-    licenceService.interruptIfLicenceExpired
+    licenceService.interruptIfLicenceExpired()
     likeValidator.canUserDoUnlike(userId, likeId) match  {
       case Right(_) => block
       case Left(err) => Left(err)

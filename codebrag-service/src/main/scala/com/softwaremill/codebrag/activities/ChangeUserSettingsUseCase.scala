@@ -32,7 +32,7 @@ class ChangeUserSettingsUseCase(userDao: UserDAO, licenceService: LicenceService
   }
 
   protected def ifCanExecute(block: => ChangeUserSettingsResult)(implicit userId: ObjectId, settings: IncomingSettings): ChangeUserSettingsResult = {
-    licenceService.interruptIfLicenceExpired
+    licenceService.interruptIfLicenceExpired()
     block
   }
 

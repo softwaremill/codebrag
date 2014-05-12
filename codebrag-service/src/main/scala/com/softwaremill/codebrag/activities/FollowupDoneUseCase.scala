@@ -15,7 +15,7 @@ class FollowupDoneUseCase(followupService: FollowupService, licenceService: Lice
   }
 
   protected def ifCanExecute(userId: ObjectId, followupId: ObjectId)(block: => FollowupDoneResult): FollowupDoneResult = {
-    licenceService.interruptIfLicenceExpired
+    licenceService.interruptIfLicenceExpired()
     block
   }
 

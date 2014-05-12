@@ -22,7 +22,7 @@ class AddCommentUseCase(userReactionService: UserReactionService, followupServic
   }
 
   protected def ifCanExecute(block: => AddCommentResult)(implicit comment: IncomingComment): AddCommentResult = {
-    licenceService.interruptIfLicenceExpired
+    licenceService.interruptIfLicenceExpired()
     block
   }
 

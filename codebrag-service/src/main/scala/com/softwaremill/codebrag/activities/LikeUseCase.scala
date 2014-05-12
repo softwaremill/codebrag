@@ -16,7 +16,7 @@ class LikeUseCase(userReactionService: UserReactionService, licenceService: Lice
   }
 
   protected def ifCanExecute(actionBlock: => LikeResult)(implicit like: IncomingLike): LikeResult = {
-    licenceService.interruptIfLicenceExpired
+    licenceService.interruptIfLicenceExpired()
     actionBlock
   }
 }

@@ -15,7 +15,7 @@ class LicenceService(
 
   logLicenceInfo
 
-  def interruptIfLicenceExpired {
+  def interruptIfLicenceExpired() {
     if(!licenceValid) {
       logger.debug(s"Licence expired at ${licenceExpiryDate}")
       throw new LicenceExpiredException
