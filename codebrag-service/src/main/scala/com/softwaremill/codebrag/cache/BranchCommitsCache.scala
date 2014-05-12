@@ -1,21 +1,22 @@
 package com.softwaremill.codebrag.cache
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.repository.{GitRepoBranchesModel, Repository}
+import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.domain.{BranchState, CommitInfo, MultibranchLoadCommitsResult}
 import com.softwaremill.codebrag.service.config.CommitCacheConfig
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
-import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.ConcurrentHashMap
+import scala.collection.JavaConversions._
 
 /**
  * Keeps commits (SHA) for all repository branches
  */
 class BranchCommitsCache(val repository: Repository, backend: PersistentBackendForCache, config: CommitCacheConfig) extends Logging {
 
-  private type BranchCommits = AtomicReference[List[BranchCommitCacheEntry]]
+  private type BranchCommits = List[BranchCommitCacheEntry]
 
-  private val commits = new scala.collection.mutable.HashMap[String, BranchCommits]
+  private val commits = new ConcurrentHashMap[String, BranchCommits]
 
   def addCommits(loadResult: MultibranchLoadCommitsResult) {
     backend.persist(loadResult)
@@ -33,23 +34,25 @@ class BranchCommitsCache(val repository: Repository, backend: PersistentBackendF
   }
 
   private def addCommitsToBranch(newCommits: List[BranchCommitCacheEntry], branchName: String) {
-    commits.get(branchName) match {
-      case Some(branchCommits) => branchCommits.set((newCommits ::: branchCommits.get()).take(maxCommitsPerBranchCount))
-      case None => commits.put(branchName, new BranchCommits(newCommits.take(maxCommitsPerBranchCount)))
+    Option(commits.get(branchName)) match {
+      case Some(branchCommits) => {
+        commits.put(branchName, (newCommits ::: branchCommits).take(maxCommitsPerBranchCount))
+      }
+      case None => commits.put(branchName, newCommits.take(maxCommitsPerBranchCount))
     }
     logger.debug(s"Number of commits in ${branchName}: ${getBranchCommits(branchName).size}")
   }
 
-  def getFullBranchNames = commits.keySet
+  def getFullBranchNames: Set[String] = commits.keySet.toSet
 
   def getShortBranchNames = getFullBranchNames.map(_.replace(repository.RepositoryBranchPrefix, ""))
 
   def getCheckedOutBranchShortName = repository.getCheckedOutBranchFullName.replace(repository.RepositoryBranchPrefix, "")
 
-  def getAllCommits = commits.flatten(_._2.get).toSet
+  def getAllCommits = commits.flatten(_._2).toSet
 
   def getBranchCommits(branchName: String): List[BranchCommitCacheEntry] = {
-    commits.get(repository.resolveFullBranchName(branchName)).map(_.get).getOrElse(List.empty[BranchCommitCacheEntry])
+    Option(commits.get(repository.resolveFullBranchName(branchName))).getOrElse(List.empty[BranchCommitCacheEntry])
   }
 
   def initialize() {

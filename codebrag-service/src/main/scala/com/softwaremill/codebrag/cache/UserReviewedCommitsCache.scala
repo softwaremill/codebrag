@@ -5,10 +5,12 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain.ReviewedCommit
 import com.softwaremill.codebrag.dao.reviewedcommits.ReviewedCommitsDAO
+import java.util.concurrent.ConcurrentHashMap
+import scala.collection.JavaConversions._
 
 class UserReviewedCommitsCache(userDao: UserDAO, reviewedCommitsDao: ReviewedCommitsDAO) extends Logging {
 
-  private val userEntries = new scala.collection.mutable.HashMap[ObjectId, UserReviewedCommitsCacheEntry]
+  private val userEntries = new ConcurrentHashMap[ObjectId, UserReviewedCommitsCacheEntry]
 
   def addNewUserEntry(newUserEntry: UserReviewedCommitsCacheEntry) {
     userDao.setToReviewStartDate(newUserEntry.userId, newUserEntry.toReviewStartDate)
@@ -16,11 +18,11 @@ class UserReviewedCommitsCache(userDao: UserDAO, reviewedCommitsDao: ReviewedCom
   }
 
   def getUserEntry(userId: ObjectId): UserReviewedCommitsCacheEntry = {
-    userEntries.get(userId) match {
+    Option(userEntries.get(userId)) match {
       case Some(entry) => entry
       case None => {
         lazyInitCacheForUser(userId)
-        userEntries.get(userId).getOrElse(throw new IllegalStateException(s"Cannot find reviewed commits data for user ${userId}"))
+        Option(userEntries.get(userId)).getOrElse(throw new IllegalStateException(s"Cannot find reviewed commits data for user ${userId}"))
       }
     }
   }
@@ -72,7 +74,7 @@ class UserReviewedCommitsCache(userDao: UserDAO, reviewedCommitsDao: ReviewedCom
   }
 
   private def addToCache(reviewedCommit: ReviewedCommit) {
-    userEntries.get(reviewedCommit.userId) match {
+    Option(userEntries.get(reviewedCommit.userId)) match {
       case Some(userEntry) => {
         val updatedEntry = userEntry.copy(commits = userEntry.commits + reviewedCommit)
         userEntries.put(reviewedCommit.userId, updatedEntry)
