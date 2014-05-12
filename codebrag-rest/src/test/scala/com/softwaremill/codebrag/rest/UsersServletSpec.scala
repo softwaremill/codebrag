@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.AuthenticatableServletSpec
-import com.softwaremill.codebrag.service.user.{AfterUserLoginHook, RegisterService, Authenticator}
+import com.softwaremill.codebrag.service.user.{AfterUserLogin, RegisterService, Authenticator}
 import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
@@ -21,7 +21,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
 
   val registerService = mock[RegisterService]
   val registerUseCase = mock[RegisterNewUserUseCase]
-  val afterUserLoginHook = mock[AfterUserLoginHook]
+  val afterUserLoginHook = mock[AfterUserLogin]
   var userDao: UserDAO = _
   var config: CodebragConfig = _
 

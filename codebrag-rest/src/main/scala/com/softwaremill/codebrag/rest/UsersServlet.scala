@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.rest
 
 import org.scalatra._
-import com.softwaremill.codebrag.service.user.{AfterUserLoginHook, RegisterService, Authenticator}
+import com.softwaremill.codebrag.service.user.{AfterUserLogin, RegisterService, Authenticator}
 import com.softwaremill.codebrag.service.data.UserJson
 import swagger.{Swagger, SwaggerSupport}
 import com.softwaremill.codebrag.service.config.CodebragConfig
@@ -15,7 +15,7 @@ class UsersServlet(
                     val authenticator: Authenticator,
                     registerService: RegisterService,
                     registerUserUseCase: RegisterNewUserUseCase,
-                    afterLoginHook: AfterUserLoginHook,
+                    afterLoginHook: AfterUserLogin,
                     userDao: UserDAO,
                     config: CodebragConfig,
                     val swagger: Swagger) extends JsonServletWithAuthentication with UsersServletSwaggerDefinition with CookieSupport {
