@@ -31,7 +31,9 @@ trait ReviewedCommitsDAOSpec extends FlatSpec with ShouldMatchers with ClockSpec
     reviewedCommitsDao.storeReviewedCommit(reviewedCommit)
 
     // when
-    reviewedCommitsDao.storeReviewedCommit(reviewedCommit)
+    intercept[Exception] {
+      reviewedCommitsDao.storeReviewedCommit(reviewedCommit)
+    }
 
     // then
     val reviewedByUser = reviewedCommitsDao.allReviewedByUser(userId)

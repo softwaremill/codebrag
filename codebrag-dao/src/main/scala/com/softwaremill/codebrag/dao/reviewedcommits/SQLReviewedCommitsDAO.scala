@@ -5,7 +5,6 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.ReviewedCommit
 import org.joda.time.{DateTime, DateTimeZone}
 import com.typesafe.scalalogging.slf4j.Logging
-import org.h2.jdbc.JdbcSQLException
 
 class SQLReviewedCommitsDAO(database: SQLDatabase) extends ReviewedCommitsDAO with Logging {
 
@@ -19,13 +18,9 @@ class SQLReviewedCommitsDAO(database: SQLDatabase) extends ReviewedCommitsDAO wi
   }
 
   override def storeReviewedCommit(commit: ReviewedCommit) = {
-    try {
-      db.withTransaction { implicit session =>
-        val reviewedDateAsUTC = commit.date.withZone(DateTimeZone.UTC)
-        reviewedCommits += commit.copy(date = reviewedDateAsUTC)
-      }
-    } catch {
-      case e: JdbcSQLException => logger.error(s"User has this commit already reviewed ${commit}", e)
+    db.withTransaction { implicit session =>
+      val reviewedDateAsUTC = commit.date.withZone(DateTimeZone.UTC)
+      reviewedCommits += commit.copy(date = reviewedDateAsUTC)
     }
   }
 

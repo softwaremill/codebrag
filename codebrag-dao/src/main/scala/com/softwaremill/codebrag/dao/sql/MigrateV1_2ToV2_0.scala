@@ -98,10 +98,18 @@ trait MarkCommitsAsReviewed extends Logging {
         .flatMap(commitDao.findByCommitId)
         .filterNot(CommitAuthorClassification.commitAuthoredByUser(_, user))
         .map( c=> ReviewedCommit.apply(c.sha, user.id, clock.nowUtc))
-        .foreach(reviewedCommitsDao.storeReviewedCommit)
+        .foreach(storeReviewedCommit)
       logger.debug(s"Migrate reviewed commits for user ${user.name} - Done")
     }
     logger.debug(s"Migrate reviewed commits - Done")
+  }
+
+  private def storeReviewedCommit(commit: ReviewedCommit) {
+    try {
+      reviewedCommitsDao.storeReviewedCommit(commit)
+    } catch {
+      case e: Exception => logger.warn(s"Looks like commit ${commit.sha} was already reviewed by user. Skipping.")
+    }
   }
 
 }
