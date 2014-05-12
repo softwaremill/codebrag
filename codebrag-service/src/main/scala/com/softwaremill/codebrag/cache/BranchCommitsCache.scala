@@ -91,14 +91,14 @@ class PersistentBackendForCache(commitInfoDao: CommitInfoDAO, branchStateDao: Br
   private def persistUniqueCommits(loadResult: MultibranchLoadCommitsResult) {
     val uniqueCommits = loadResult.uniqueCommits
     logger.debug(s"Persisting cache changes: ${uniqueCommits.size} commits")
-    uniqueCommits.foreach(c =>persistCommitSafely(c))
+    uniqueCommits.foreach(c => persistCommitSafely(c))
   }
 
   private def persistCommitSafely(c: CommitInfo): Any = {
     try {
       commitInfoDao.storeCommit(c)
     } catch {
-      case e: Exception => logger.warn(s"Could not save commit ${c.sha} in DB. Probably this one already exists - Skipping")
+      case e: Exception => logger.debug(s"Could not save commit ${c.sha} in DB. Probably this one already exists - Skipping")
     }
   }
 

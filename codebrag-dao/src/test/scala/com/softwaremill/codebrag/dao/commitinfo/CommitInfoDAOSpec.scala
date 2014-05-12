@@ -48,6 +48,20 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
     commitInfoDAO.findBySha(commit.sha) should be('defined)
   }
 
+  it should "not store commit when such sha already exists in db" taggedAs RequiresDb in {
+    // given
+    val commit = randomCommit.get
+    commitInfoDAO.storeCommit(commit)
+
+    // when
+    intercept[Exception] {
+      commitInfoDAO.storeCommit(commit)
+    }
+
+    // then
+    commitInfoDAO.findBySha(commit.sha) should be('defined)
+  }
+
   it should "return false in hasCommits when empty" taggedAs RequiresDb in {
     // given empty db
 
