@@ -1,6 +1,6 @@
 angular.module('codebrag.counters').factory('countersService', function($http, $timeout, $rootScope, Counter, branchesService, events) {
 
-    var pollingInterval = 10000,
+    var pollingInterval = 60000,
         syncTimer,
         commitsCounter = new Counter(),
         followupsCounter = new Counter();
