@@ -2,13 +2,11 @@ package com.softwaremill.codebrag.licence
 
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
-import com.softwaremill.codebrag.service.config.LicenceConfig
 import com.softwaremill.codebrag.domain.{LicenceKey, InstanceId}
 
 trait LicenceReader extends Logging {
 
   def instanceParamsDao: InstanceParamsDAO
-  def licenceConfig: LicenceConfig
   def instanceId: InstanceId
 
   protected[licence] def readCurrentLicence() = {
@@ -20,7 +18,7 @@ trait LicenceReader extends Logging {
       }
       case None => {
         logger.debug("Licence key not found. Using trial licence")
-        Licence.trialLicence(instanceId, licenceConfig.expiresInDays)
+        Licence.trialLicence(instanceId)
       }
     }
   }
@@ -32,7 +30,7 @@ trait LicenceReader extends Logging {
     } catch {
       case e: InvalidLicenceKeyException => {
         logger.debug("Could not read licence, falling back to trial licence")
-        Licence.trialLicence(instanceId, licenceConfig.expiresInDays)
+        Licence.trialLicence(instanceId)
       }
     }
   }

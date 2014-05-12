@@ -5,7 +5,6 @@ import com.softwaremill.codebrag.dao.DaoConfig
 
 trait AllConfig
   extends DaoConfig
-  with LicenceConfig
   with RepositoryConfig
   with GithubConfig
   with CodebragConfig

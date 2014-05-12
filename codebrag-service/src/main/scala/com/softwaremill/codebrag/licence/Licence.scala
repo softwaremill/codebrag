@@ -26,10 +26,11 @@ object Licence {
   def apply(jsonString: String): Licence = LicenceAsJson.fromJson(jsonString)
 
   val TrialMaxUsersCount = 999
+  val TrialExpirationDays = 30
 
-  def trialLicence(instanceId: InstanceId, days: Int) = {
+  def trialLicence(instanceId: InstanceId) = {
     val instanceCreationDate = new DateTime(instanceId.creationTime).withTimeAtStartOfDay()
-    val licenceExpiryDate = instanceCreationDate.plusDays(days - 1).withTime(23, 59, 59, 999)
+    val licenceExpiryDate = instanceCreationDate.plusDays(TrialExpirationDays - 1).withTime(23, 59, 59, 999)
     Licence(licenceExpiryDate, TrialMaxUsersCount, "-", LicenceType.Trial)
   }
 

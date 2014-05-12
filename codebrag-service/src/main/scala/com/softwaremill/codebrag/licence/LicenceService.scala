@@ -1,7 +1,6 @@
 package com.softwaremill.codebrag.licence
 
 import com.softwaremill.codebrag.common.Clock
-import com.softwaremill.codebrag.service.config.LicenceConfig
 import com.softwaremill.codebrag.domain.{LicenceKey, InstanceId}
 import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
 import java.util.concurrent.atomic.AtomicReference
@@ -9,7 +8,6 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 
 class LicenceService(
                       val instanceId: InstanceId,
-                      val licenceConfig: LicenceConfig,
                       val instanceParamsDao: InstanceParamsDAO,
                       val usersDao: UserDAO)(implicit clock: Clock) extends LicenceReader {
 

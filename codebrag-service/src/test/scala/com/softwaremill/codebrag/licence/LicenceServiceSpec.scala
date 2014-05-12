@@ -4,7 +4,6 @@ import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.domain.{LicenceKey, InstanceId}
-import com.softwaremill.codebrag.service.config.LicenceConfig
 import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.dao.instance.InstanceParamsDAO
 import org.mockito.Mockito._
@@ -14,7 +13,6 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
 
   var instanceParamsDao: InstanceParamsDAO = _
   var usersDao: UserDAO = _
-  var config: LicenceConfig = _
 
   val UsersCount = 1
 
@@ -25,7 +23,6 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
   before {
     instanceParamsDao = mock[InstanceParamsDAO]
     usersDao = mock[UserDAO]
-    config = mock[LicenceConfig]
     when(usersDao.countAll()).thenReturn(UsersCount) // one user in Codebrag
   }
 
@@ -85,7 +82,7 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
 
   private def initializeService(currentLicence: Licence) = {
     val instanceId = InstanceId("123123123")
-    new LicenceService(instanceId, config, instanceParamsDao, usersDao) {
+    new LicenceService(instanceId, instanceParamsDao, usersDao) {
       override protected[licence] def readCurrentLicence() = currentLicence
     }
   }
