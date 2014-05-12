@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.dao.finders.views.CommitState.CommitReviewState
 case class CommitListView(commits: List[CommitView], older: Int, newer: Int)
 
 case class CommitView(id: String, sha: String, message: String, authorName: String, authorEmail: String,
-                      date: Date, state: CommitReviewState = CommitState.AwaitingOthersReview, authorAvatarUrl: String = "", reviewers: Option[Set[CommitReviewerView]] = None)
+                      date: Date, state: CommitReviewState = CommitState.AwaitingOthersReview, authorAvatarUrl: String = "", reviewers: Set[CommitReviewerView] = Set.empty)
 
 object CommitState extends Enumeration {
   type CommitReviewState = Value
