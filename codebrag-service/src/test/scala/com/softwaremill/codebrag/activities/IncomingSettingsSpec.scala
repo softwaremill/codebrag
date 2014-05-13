@@ -13,26 +13,30 @@ class IncomingSettingsSpec extends FlatSpec with MockitoSugar with ShouldMatcher
     dailyUpdatesEmailEnabled = true,
     emailNotificationsEnabled = true,
     appTourDone = false,
-    toReviewStartDate = Some(DateTime.now)
+    toReviewStartDate = Some(DateTime.now),
+    selectedBranch = None
   )
 
   it should "update only incoming settings" in {
     // given
     val noNotificationsSettings = newSettingsWithNotificationsDisabled
     val tourDoneSettings = newSettingsWithAppTourDone
+    val selectedBranchSettings = newSettingsWithBranchSelected
 
     // when
     val updatedNotifications = noNotificationsSettings.applyTo(existingSettings)
     val updatedWelcomeFollowup = tourDoneSettings.applyTo(existingSettings)
+    val updatedBranchSettings = selectedBranchSettings.applyTo(existingSettings)
 
     // then
-    updatedNotifications should equal(existingSettings.copy(emailNotificationsEnabled = false).copy(dailyUpdatesEmailEnabled = false))
+    updatedNotifications should equal(existingSettings.copy(emailNotificationsEnabled = false, dailyUpdatesEmailEnabled = false))
     updatedWelcomeFollowup should equal(existingSettings.copy(appTourDone = true))
+    updatedBranchSettings should equal(existingSettings.copy(selectedBranch = Some("master")))
   }
 
   it should "update nothing when no values in incoming settings found" in {
     // given
-    val emptySettings = IncomingSettings(None, None, None)
+    val emptySettings = IncomingSettings(None, None, None, None)
 
     // when
     val updatedSettings = emptySettings.applyTo(existingSettings)
@@ -41,6 +45,21 @@ class IncomingSettingsSpec extends FlatSpec with MockitoSugar with ShouldMatcher
     updatedSettings should equal(existingSettings)
   }
 
-  val newSettingsWithNotificationsDisabled = IncomingSettings(emailNotificationsEnabled = Some(false), dailyUpdatesEmailEnabled = Some(false), appTourDone = None)
-  val newSettingsWithAppTourDone = IncomingSettings(None, None, appTourDone = Some(true))
+  val newSettingsWithNotificationsDisabled = IncomingSettings(
+    emailNotificationsEnabled = Some(false),
+    dailyUpdatesEmailEnabled = Some(false),
+    appTourDone = None,
+    selectedBranch = None)
+
+  val newSettingsWithAppTourDone = IncomingSettings(
+    emailNotificationsEnabled = None,
+    dailyUpdatesEmailEnabled = None,
+    appTourDone = Some(true),
+    selectedBranch = None)
+
+  val newSettingsWithBranchSelected = IncomingSettings(
+    emailNotificationsEnabled = None,
+    dailyUpdatesEmailEnabled = None,
+    appTourDone = Some(false),
+    selectedBranch = Some("master"))
 }

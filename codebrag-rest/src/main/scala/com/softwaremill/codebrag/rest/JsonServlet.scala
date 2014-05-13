@@ -35,7 +35,7 @@ class JsonServlet extends ScalatraServlet with JacksonJsonSupport with JValueRes
     value
   }
 
-  def extractOptBoolean(key: String): Option[Boolean] = (parsedBody \ key).extractOpt[Boolean]
+  def extractOpt[T: Manifest](key: String): Option[T] = (parsedBody \ key).extractOpt[T]
 
   def haltWithMissingKey(key: String): Nothing = {
     halt(400, s"Missing or empty element '$key' in request body")

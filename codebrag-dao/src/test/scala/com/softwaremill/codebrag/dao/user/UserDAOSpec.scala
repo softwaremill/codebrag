@@ -380,7 +380,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
   it should "update multiple settings" taggedAs RequiresDb in {
     //given
-    val newSettings = user.settings.copy(emailNotificationsEnabled = true, appTourDone = true)
+    val newSettings = user.settings.copy(emailNotificationsEnabled = true, appTourDone = true, selectedBranch = Some("master"))
     userDAO.add(user)
 
     //when
@@ -390,6 +390,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     val Some(userFound) = userDAO.findById(9)
     userFound.settings.emailNotificationsEnabled should equal(true)
     userFound.settings.appTourDone should equal(true)
+    userFound.settings.selectedBranch should equal(Some("master"))
   }
 
   it should "allow to review start date be empty" taggedAs RequiresDb in {

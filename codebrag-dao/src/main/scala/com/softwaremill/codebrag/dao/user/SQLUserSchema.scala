@@ -19,11 +19,20 @@ trait SQLUserSchema {
     auth.token, auth.salt)
 
   protected case class SQLSettings(id: ObjectId, avatarUrl: String, emailNotificationsEnabled: Boolean,
-    dailyUpdatesEmailEnabled: Boolean, appTourDone: Boolean, toReviewStartDate: Option[DateTime]) {
-    def toSettings = UserSettings(avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone, toReviewStartDate)
+    dailyUpdatesEmailEnabled: Boolean, appTourDone: Boolean, toReviewStartDate: Option[DateTime], selectedBranch: Option[String]) {
+    def toSettings = UserSettings(avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone, toReviewStartDate, selectedBranch)
   }
-  protected def toSQLSettings(id: ObjectId, settings: UserSettings) = SQLSettings(id, settings.avatarUrl,
-    settings.emailNotificationsEnabled, settings.dailyUpdatesEmailEnabled, settings.appTourDone, settings.toReviewStartDate)
+  protected def toSQLSettings(id: ObjectId, settings: UserSettings) = {
+    SQLSettings(
+      id,
+      settings.avatarUrl,
+      settings.emailNotificationsEnabled,
+      settings.dailyUpdatesEmailEnabled,
+      settings.appTourDone,
+      settings.toReviewStartDate,
+      settings.selectedBranch
+    )
+  }
 
   protected case class SQLLastNotif(id: ObjectId, commits: Option[DateTime], followups: Option[DateTime]) {
     def toLastNotif = LastUserNotificationDispatch(commits, followups)
@@ -53,8 +62,9 @@ trait SQLUserSchema {
     def dailyUpdatesEmailEnabled = column[Boolean]("email_daily_updates")
     def appTourDone = column[Boolean]("app_tour_done")
     def toReviewStartDate = column[Option[DateTime]]("to_review_start_date")
+    def selectedBranch = column[Option[String]]("selected_branch")
 
-    def * = (userId, avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone, toReviewStartDate) <> (SQLSettings.tupled, SQLSettings.unapply)
+    def * = (userId, avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone, toReviewStartDate, selectedBranch) <> (SQLSettings.tupled, SQLSettings.unapply)
   }
 
   protected val userSettings = TableQuery[Settings]

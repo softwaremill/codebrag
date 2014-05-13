@@ -17,7 +17,7 @@ class SQLInternalUserDAO(val database: SQLDatabase) extends InternalUserDAO with
 
       // we have a schema, and we have to stick to it ...
       lastNotifs += SQLLastNotif(id, None, None)
-      userSettings += SQLSettings(id, "", emailNotificationsEnabled = false, dailyUpdatesEmailEnabled = false, appTourDone = false, toReviewStartDate = None)
+      userSettings += SQLSettings(id, "", emailNotificationsEnabled = false, dailyUpdatesEmailEnabled = false, appTourDone = false, toReviewStartDate = None, selectedBranch = None)
       auths += SQLAuth(id, "", "", "", "", "")
       users += (id, internalUser.name, "", "", false)
 

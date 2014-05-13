@@ -7,7 +7,7 @@ import com.foursquare.rogue.LiftRogue._
 import org.bson.types.ObjectId
 import org.joda.time.{DateTimeZone, DateTime}
 import net.liftweb.record.field.{BooleanField, OptionalDateTimeField}
-import com.softwaremill.codebrag.dao.mongo.LongStringField
+import com.softwaremill.codebrag.dao.mongo.{OptionalLongStringField, LongStringField}
 import com.typesafe.scalalogging.slf4j.Logging
 import org.joda.time.chrono.ISOChronology
 
@@ -147,7 +147,7 @@ class MongoUserDAO extends UserDAO with Logging {
 
     implicit def fromRecord(record: UserSettingsRecord): UserSettings = {
       val startDate = record.toReviewStartDate.get.map(new DateTime(_).toDateTime(ISOChronology.getInstanceUTC))
-      UserSettings(record.avatarUrl.get, record.emailNotificationsEnabled.get, record.dailyUpdatesEmailEnabled.get, record.appTourDone.get, startDate)
+      UserSettings(record.avatarUrl.get, record.emailNotificationsEnabled.get, record.dailyUpdatesEmailEnabled.get, record.appTourDone.get, startDate, record.selectedBranch.get)
     }
 
     implicit def toRecord(settings: UserSettings): UserSettingsRecord = {
@@ -158,6 +158,10 @@ class MongoUserDAO extends UserDAO with Logging {
         .appTourDone(settings.appTourDone)
       settings.toReviewStartDate match {
         case Some(date) => record.toReviewStartDate(date.toGregorianCalendar)
+        case None => record
+      }
+      settings.selectedBranch match {
+        case Some(branch) => record.selectedBranch(settings.selectedBranch)
         case None => record
       }
     }
@@ -230,6 +234,8 @@ class UserSettingsRecord extends BsonRecord[UserSettingsRecord] {
   object appTourDone extends BooleanField(this)
 
   object toReviewStartDate extends OptionalDateTimeField(this)
+
+  object selectedBranch extends OptionalLongStringField(this)
 
 }
 
