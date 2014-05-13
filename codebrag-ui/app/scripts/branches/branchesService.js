@@ -15,7 +15,7 @@ angular.module('codebrag.branches')
                 push.apply(branchesList, response.data.branches);
                 if(angular.isUndefined(currentBranch)) {
                     var userSelectedBranch = $rootScope.loggedInUser.settings.selectedBranch;
-                    selectBranch(userSelectedBranch);
+                    selectBranch(userSelectedBranch || response.data.current);
                 }
                 dataReady.resolve();
                 return branchesList;

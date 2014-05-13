@@ -53,6 +53,19 @@ describe("Branches service", function () {
         expect(branchesService.selectedBranch()).toBe('bugfix');
     });
 
+    it('should select currently checked out branch if user has no branch in settings', function() {
+        // given
+        $rootScope.loggedInUser.settings.selectedBranch = null;
+        $httpBackend.whenGET('rest/branches').respond({branches: ['master', 'feature', 'bugfix'], current: 'feature'});
+
+        // when
+        branchesService.fetchBranches();
+        $httpBackend.flush();
+
+        // then
+        expect(branchesService.selectedBranch()).toBe('feature');
+    });
+
     it('get available branches locally if they were previously loaded', function() {
         // given
         var expectedBranchesList;
