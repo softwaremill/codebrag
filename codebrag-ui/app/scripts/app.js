@@ -152,3 +152,7 @@ angular.module('codebrag.common')
         marked.setOptions({sanitize: true, gfm: true});
     });
 
+
+angular.module('codebrag.profile').run(function(userSettingsService) {
+    userSettingsService.initialize();
+});

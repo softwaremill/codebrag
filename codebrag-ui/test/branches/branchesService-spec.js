@@ -11,6 +11,11 @@ describe("Branches service", function () {
         $rootScope = _$rootScope_;
         branchesService = _branchesService_;
         events = _events_;
+
+        // TODO: create dedicated object for logged in user in rootScope
+        $rootScope.loggedInUser = $rootScope.loggedInUser || {};
+        $rootScope.loggedInUser.settings = $rootScope.loggedInUser.settings || {};
+        $rootScope.loggedInUser.settings.selectedBranch = 'bugfix';
     }));
 
     afterEach(inject(function (_$httpBackend_) {
@@ -18,24 +23,34 @@ describe("Branches service", function () {
         _$httpBackend_.verifyNoOutstandingRequest();
     }));
 
-    it('load available branches and current branch from server', function() {
+    it('should load available branches from server', function() {
         // given
         var expectedBranchesList;
         var allBranches = ['master', 'feature', 'bugfix'];
-        var branchesResponse = {branches: allBranches, current: 'master'};
-        $httpBackend.whenGET('rest/branches').respond(branchesResponse);
+        $httpBackend.whenGET('rest/branches').respond({branches: allBranches});
 
         // when
         branchesService.fetchBranches();
         $httpBackend.flush();
 
         // then
-        expect(branchesService.selectedBranch()).toBe('master');
         branchesService.allBranches().then(function(result) {
             expectedBranchesList = result;
         });
         $rootScope.$apply();
         expect(expectedBranchesList).toEqual(allBranches);
+    });
+
+    it('should select branch from user settings', function() {
+        // given
+        $httpBackend.whenGET('rest/branches').respond({branches: ['master', 'feature', 'bugfix']});
+
+        // when
+        branchesService.fetchBranches();
+        $httpBackend.flush();
+
+        // then
+        expect(branchesService.selectedBranch()).toBe('bugfix');
     });
 
     it('get available branches locally if they were previously loaded', function() {

@@ -14,7 +14,8 @@ angular.module('codebrag.branches')
                 branchesList.length = 0;
                 push.apply(branchesList, response.data.branches);
                 if(angular.isUndefined(currentBranch)) {
-                    selectBranch(response.data.current)
+                    var userSelectedBranch = $rootScope.loggedInUser.settings.selectedBranch;
+                    selectBranch(userSelectedBranch);
                 }
                 dataReady.resolve();
                 return branchesList;
@@ -35,8 +36,10 @@ angular.module('codebrag.branches')
             });
             if(found.length > 0) {
                 currentBranch = found[0];
-                $rootScope.$broadcast(events.branches.branchChanged, currentBranch);
+            } else {
+                currentBranch = branchesList[0];
             }
+            $rootScope.$broadcast(events.branches.branchChanged, currentBranch);
         }
 
         function selectedBranch() {

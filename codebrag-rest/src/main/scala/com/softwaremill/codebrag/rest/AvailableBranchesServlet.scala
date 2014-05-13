@@ -8,7 +8,7 @@ class AvailableBranchesServlet(val authenticator: Authenticator, branchCommitsCa
 
   get("/") {
     val branches = branchCommitsCache.getShortBranchNames.toList.sorted
-    Map("branches" -> branches, "current" -> branchCommitsCache.getCheckedOutBranchShortName, "repoType" -> branchCommitsCache.repository.repoData.repoType)
+    Map("branches" -> branches, "repoType" -> branchCommitsCache.repository.repoData.repoType)
   }
 
 }
