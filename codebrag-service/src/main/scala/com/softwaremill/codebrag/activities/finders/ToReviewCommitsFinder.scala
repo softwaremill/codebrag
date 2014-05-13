@@ -21,7 +21,7 @@ class ToReviewCommitsFinder(
   val userDao: UserDAO) extends Logging with AuthorDataAppender {
 
   def find(userId: ObjectId, branchName: String, pagingCriteria: PagingCriteria[String]): CommitListView = {
-    val toReview = getSHAsOfCommitsToReview(userId, branchName)
+    val toReview = getSHAsOfCommitsToReview(userId, Option(branchName))
     val page = pagingCriteria.extractPageFrom(toReview)
     val commits = commitsInfoDao.findByShaList(page.items)
     val asToReview = markAsToReview(commits)
@@ -29,25 +29,27 @@ class ToReviewCommitsFinder(
   }
 
   def count(userId: ObjectId, branchName: String): Long = {
-    getSHAsOfCommitsToReview(userId, branchName).size
+    getSHAsOfCommitsToReview(userId, Option(branchName)).size
   }
 
-  def countForCurrentBranch(userId: ObjectId): Long = {
-    val fullBranchName = repoCache.repository.getCheckedOutBranchFullName
-    count(userId, fullBranchName)
+  def countForUserSelectedBranch(userId: ObjectId): Long = {
+    getSHAsOfCommitsToReview(userId, None).size
   }
 
   private def markAsToReview(commits: List[PartialCommitInfo]) = {
     partialCommitListToCommitViewList(commits).map(_.copy(state = CommitState.AwaitingUserReview))
   }
 
-  private def getSHAsOfCommitsToReview(userId: ObjectId, fullBranchName: String): List[String] = {
-    userDao.findById(userId).map(findShaToReview(fullBranchName, _)).getOrElse(List.empty)
+  private def getSHAsOfCommitsToReview(userId: ObjectId, branchName: Option[String]): List[String] = {
+    userDao.findById(userId).map { user =>
+      val userSelectedBranch = user.settings.selectedBranch.getOrElse(repoCache.repository.getCheckedOutBranchFullName)
+      findShaToReview(userSelectedBranch, user)
+    }.getOrElse(List.empty)
   }
 
-  private def findShaToReview(fullBranchName: String, user: User): List[String] = {
+  private def findShaToReview(branchName: String, user: User): List[String] = {
     val userBoundaryDate = reviewedCommitsCache.getUserEntry(user.id).toReviewStartDate
-    val commitsInBranch = repoCache.getBranchCommits(fullBranchName)
+    val commitsInBranch = repoCache.getBranchCommits(branchName)
     commitsInBranch
       .filterNot(userOrDoneCommits(_, user))
       .takeWhile(commitsAfterUserDate(_, userBoundaryDate))
@@ -55,17 +57,17 @@ class ToReviewCommitsFinder(
       .map(_.sha)
       .reverse
   }
-  
-  def userOrDoneCommits(commitEntry: BranchCommitCacheEntry, user: User) = {
+
+  private def userOrDoneCommits(commitEntry: BranchCommitCacheEntry, user: User) = {
     commitAuthoredByUser(commitEntry, user) || userAlreadyReviewed(user.id, commitEntry)
   }
 
 
-  def commitsAfterUserDate(commitEntry: BranchCommitCacheEntry, userBoundaryDate: DateTime): Boolean = {
+  private def commitsAfterUserDate(commitEntry: BranchCommitCacheEntry, userBoundaryDate: DateTime): Boolean = {
     commitEntry.commitDate.isAfter(userBoundaryDate) || commitEntry.commitDate.isEqual(userBoundaryDate)
   }
 
-  def notYetFullyReviewed(commitEntry: BranchCommitCacheEntry): Boolean = {
+  private def notYetFullyReviewed(commitEntry: BranchCommitCacheEntry): Boolean = {
     reviewedCommitsCache.usersWhoReviewed(commitEntry.sha).size < config.requiredReviewersCount
   }
 

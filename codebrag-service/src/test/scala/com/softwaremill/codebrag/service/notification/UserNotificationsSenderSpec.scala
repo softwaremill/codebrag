@@ -82,7 +82,7 @@ class UserNotificationsSenderSpec
     // given
     val user = UserAssembler.randomUser.get
     when(followupFinder.countFollowupsForUser(user.id)).thenReturn(NoFollowups)
-    when(toReviewCommitsFinder.countForCurrentBranch(user.id)).thenReturn(NoCommits)
+    when(toReviewCommitsFinder.countForUserSelectedBranch(user.id)).thenReturn(NoCommits)
 
     // when
     sender.sendDailyDigest(List(user))
@@ -109,7 +109,7 @@ class UserNotificationsSenderSpec
     // given
     val user = UserAssembler.randomUser.get
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(toReviewCommitsFinder.countForCurrentBranch(user.id)).thenReturn(SomeCommits)
+    when(toReviewCommitsFinder.countForUserSelectedBranch(user.id)).thenReturn(SomeCommits)
     when(followupFinder.countFollowupsForUser(user.id)).thenReturn(SomeFollowups)
 
     // when

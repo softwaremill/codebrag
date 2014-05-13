@@ -22,7 +22,7 @@ class NotificationService(
   import NotificationService.CountersToText.translate
 
   def sendWelcomeNotification(user: User) {
-    val noOfCommits = toReviewCommitsFinder.countForCurrentBranch(user.id)
+    val noOfCommits = toReviewCommitsFinder.countForUserSelectedBranch(user.id)
     val context: Map[String, Any] = prepareContextForWelcomeNotification(user, noOfCommits)
     val template = templateEngine.getEmailTemplate(WelcomeToCodebrag, context)
     emailScheduler.scheduleInstant(Email(List(user.emailLowerCase), template.subject, template.content))
@@ -43,6 +43,7 @@ class NotificationService(
   def sendDailyDigest(user: User, commitCount: Long, followupCount: Long) {
     val templateParams = Map(
       "username" -> user.name,
+      "user_branch" -> user.settings.selectedBranch,
       "commit_followup_message" -> translate(commitCount, followupCount, isTotalCount = true),
       "application_url" -> codebragConfig.applicationUrl,
       "date" -> clock.now.toString(DateTimeFormat.forPattern("yyyy-MM-dd"))

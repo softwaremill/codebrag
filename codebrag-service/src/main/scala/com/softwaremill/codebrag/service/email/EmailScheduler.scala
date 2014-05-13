@@ -13,6 +13,7 @@ class EmailScheduler(actorSystem: ActorSystem, emailSenderActor: ActorRef) exten
 
   def scheduleInstant(email: Email): Any = {
     logger.info(s"Email (subject:${email.subject}, addresses: ${email.addresses} is scheduled to send instantly")
+    logger.debug(s"Full email data to send: ${email}")
     emailSenderActor ! SendEmail(email, this)
   }
 
