@@ -17,10 +17,11 @@ import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
 import com.softwaremill.codebrag.dao.Daos
 import com.softwaremill.codebrag.repository.Repository
-import com.softwaremill.codebrag.activities.finders.{AllCommitsFinder, ToReviewCommitsFinder}
+import com.softwaremill.codebrag.activities.finders.AllCommitsFinder
 import com.softwaremill.codebrag.cache.{UserReviewedCommitsCache, PersistentBackendForCache, BranchCommitsCache}
 import com.softwaremill.codebrag.licence.LicenceService
 import com.softwaremill.codebrag.instance.InstanceParamsService
+import com.softwaremill.codebrag.activities.finders.toreview.{ToReviewCommitsViewBuilder, ToReviewBranchCommitsFilter, ToReviewCommitsFinder}
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
@@ -80,6 +81,12 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val repositoryStateCache = new BranchCommitsCache(repository, new PersistentBackendForCache(commitInfoDao, branchStateDao), config)
   lazy val reviewedCommitsCache = new UserReviewedCommitsCache(userDao, reviewedCommitsDao)
 
-  lazy val toReviewCommitsFinder = new ToReviewCommitsFinder(config, repositoryStateCache, reviewedCommitsCache, commitInfoDao, userDao)
+  lazy val toReviewCommitsFinder = new ToReviewCommitsFinder(
+    repositoryStateCache,
+    userDao,
+    new ToReviewBranchCommitsFilter(reviewedCommitsCache, config),
+    new ToReviewCommitsViewBuilder(userDao, commitInfoDao)
+  )
+
   lazy val allCommitsFinder = new AllCommitsFinder(repositoryStateCache, reviewedCommitsCache, commitInfoDao, userDao, config)
 }

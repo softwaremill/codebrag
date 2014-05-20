@@ -8,7 +8,8 @@ import com.softwaremill.codebrag.common.paging.PagingCriteria
 import PagingCriteria.Direction
 import com.softwaremill.codebrag.activities.ReviewCommitUseCase
 import com.softwaremill.codebrag.common.paging.PagingCriteria
-import com.softwaremill.codebrag.activities.finders.{AllCommitsFinder, ToReviewCommitsFinder}
+import com.softwaremill.codebrag.activities.finders.AllCommitsFinder
+import com.softwaremill.codebrag.activities.finders.toreview.ToReviewCommitsFinder
 
 trait CommitsEndpoint extends JsonServletWithAuthentication {
 

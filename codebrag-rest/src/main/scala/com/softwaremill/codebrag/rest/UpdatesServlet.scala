@@ -4,8 +4,8 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.Clock
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
-import com.softwaremill.codebrag.activities.finders.ToReviewCommitsFinder
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
+import com.softwaremill.codebrag.activities.finders.toreview.ToReviewCommitsFinder
 
 class UpdatesServlet(
   val authenticator: Authenticator,
