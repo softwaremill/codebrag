@@ -46,6 +46,11 @@ class UserAssembler(var user: User) {
     this
   }
 
+  def withSelectedBranch(branchName: String) = {
+    user = user.copy(settings = user.settings.copy(selectedBranch= Some(branchName)))
+    this
+  }
+
   def withToReviewStartDate(date: DateTime) = {
     user = user.copy(settings = user.settings.copy(toReviewStartDate = Some(date)))
     this

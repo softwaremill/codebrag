@@ -26,7 +26,7 @@ class UpdatesServlet(
     UpdateNotification(clock.nowMillis, toReviewCount, followupsCount)
   }
 
-  private def extractBranch = params.get("branch").getOrElse("master")
+  private def extractBranch = params.get("branch")
 
 }
 

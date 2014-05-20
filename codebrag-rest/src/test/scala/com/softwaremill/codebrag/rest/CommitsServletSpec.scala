@@ -77,7 +77,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val criteria = PagingCriteria.fromBeginning[String](CommitsEndpoint.DefaultPageLimit)
 
     get(s"/?${FilterParamName}=${ToReviewCommitsFilter}") {
-      verify(toReviewCommitsFinder).find(userId, EmptyBranchName, criteria)
+      verify(toReviewCommitsFinder).find(userId, None, criteria)
     }
   }
 
@@ -105,11 +105,11 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val lastKnownCommitId = "123456"
     get(s"/?${FilterParamName}=${ToReviewCommitsFilter}&${LimitParamName}=10&${MinShaParamName}=" + lastKnownCommitId.toString) {
       val criteria = PagingCriteria(lastKnownCommitId, Direction.Right, 10)
-      verify(toReviewCommitsFinder).find(userId, EmptyBranchName, criteria)
+      verify(toReviewCommitsFinder).find(userId, None, criteria)
     }
     get(s"/?${FilterParamName}=${ToReviewCommitsFilter}&${LimitParamName}=10&${MaxShaParamName}=" + lastKnownCommitId.toString) {
       val criteria = PagingCriteria(lastKnownCommitId, Direction.Left, 10)
-      verify(toReviewCommitsFinder).find(userId, EmptyBranchName, criteria)
+      verify(toReviewCommitsFinder).find(userId, None, criteria)
     }
   }
 

@@ -36,10 +36,10 @@ class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
     val expectedCommits = 1
     val expectedFollowups = 2
     given(followupFinderMock.countFollowupsForUser(user.id)).willReturn(expectedFollowups)
-    given(toReviewCommitsFinderMock.count(user.id, "master")).willReturn(expectedCommits)
+    given(toReviewCommitsFinderMock.count(user.id, Some("master"))).willReturn(expectedCommits)
 
     // when
-    get("/") {
+    get("/?branch=master") {
       //then
       status should equal(200)
       body should include( s""""lastUpdate":$fixtureTime""")

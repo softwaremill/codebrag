@@ -14,43 +14,49 @@ import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 import com.softwaremill.codebrag.dao.finders.views.{CommitState, CommitListView}
 
 class ToReviewCommitsFinder(
-  config: ReviewProcessConfig,
+  val config: ReviewProcessConfig,
   repoCache: BranchCommitsCache,
-  reviewedCommitsCache: UserReviewedCommitsCache,
-  commitsInfoDao: CommitInfoDAO,
-  val userDao: UserDAO) extends Logging with AuthorDataAppender {
+  val reviewedCommitsCache: UserReviewedCommitsCache,
+  val commitsInfoDao: CommitInfoDAO,
+  val userDao: UserDAO) extends Logging with FindToReviewCommitsInBranch with BuildToReviewCommitsView {
 
-  def find(userId: ObjectId, branchName: String, pagingCriteria: PagingCriteria[String]): CommitListView = {
-    val toReview = getSHAsOfCommitsToReview(userId, Option(branchName))
-    val page = pagingCriteria.extractPageFrom(toReview)
-    val commits = commitsInfoDao.findByShaList(page.items)
-    val asToReview = markAsToReview(commits)
-    addAuthorData(CommitListView(asToReview, page.beforeCount, page.afterCount))
+  def find(userId: ObjectId, branchName: Option[String], pagingCriteria: PagingCriteria[String]): CommitListView = {
+    val toReview = allCommitsToReviewFor(userId, branchName)
+    buildToReviewCommitsView(toReview, pagingCriteria)
   }
 
-  def count(userId: ObjectId, branchName: String): Long = {
-    getSHAsOfCommitsToReview(userId, Option(branchName)).size
+  def count(userId: ObjectId, branchName: Option[String]): Long = {
+    allCommitsToReviewFor(userId, branchName).size
   }
 
   def countForUserSelectedBranch(userId: ObjectId): Long = {
-    getSHAsOfCommitsToReview(userId, None).size
+    allCommitsToReviewFor(userId, None).size
   }
 
-  private def markAsToReview(commits: List[PartialCommitInfo]) = {
-    partialCommitListToCommitViewList(commits).map(_.copy(state = CommitState.AwaitingUserReview))
-  }
-
-  private def getSHAsOfCommitsToReview(userId: ObjectId, branchName: Option[String]): List[String] = {
+  private def allCommitsToReviewFor(userId: ObjectId, branchName: Option[String]): List[String] = {
     userDao.findById(userId).map { user =>
-      val userSelectedBranch = user.settings.selectedBranch.getOrElse(repoCache.repository.getCheckedOutBranchFullName)
-      findShaToReview(userSelectedBranch, user)
+      val ultimateBranchName = determineBranch(branchName, user.settings.selectedBranch)
+      findToReviewCommitsInBranch(getBranchCommits(ultimateBranchName), user)
     }.getOrElse(List.empty)
   }
 
-  private def findShaToReview(branchName: String, user: User): List[String] = {
+  private def determineBranch(provided: Option[String], userSelected: Option[String]) = {
+    provided.getOrElse(userSelected.getOrElse(repoCache.getCheckedOutBranchShortName))
+  }
+
+  private def getBranchCommits(branchName: String) = repoCache.getBranchCommits(branchName)
+
+
+}
+
+protected[finders] trait FindToReviewCommitsInBranch {
+
+  protected def config: ReviewProcessConfig
+  protected def reviewedCommitsCache: UserReviewedCommitsCache
+
+  protected[finders] def findToReviewCommitsInBranch(branchCommits: List[BranchCommitCacheEntry], user: User): List[String] = {
     val userBoundaryDate = reviewedCommitsCache.getUserEntry(user.id).toReviewStartDate
-    val commitsInBranch = repoCache.getBranchCommits(branchName)
-    commitsInBranch
+    branchCommits
       .filterNot(userOrDoneCommits(_, user))
       .takeWhile(commitsAfterUserDate(_, userBoundaryDate))
       .filter(notYetFullyReviewed)
@@ -74,6 +80,23 @@ class ToReviewCommitsFinder(
   private def userAlreadyReviewed(userId: ObjectId, commit: BranchCommitCacheEntry): Boolean = {
     val commitsReviewedByUser = reviewedCommitsCache.getUserEntry(userId).commits
     commitsReviewedByUser.find(_.sha == commit.sha).nonEmpty
+  }
+
+}
+
+protected[finders] trait BuildToReviewCommitsView extends AuthorDataAppender {
+
+  protected def commitsInfoDao: CommitInfoDAO
+
+  protected[finders] def buildToReviewCommitsView(allBranchCommitsToReview: List[String], paging: PagingCriteria[String]) = {
+    val pageOfCommits = paging.extractPageFrom(allBranchCommitsToReview)
+    val commits = commitsInfoDao.findByShaList(pageOfCommits.items)
+    val asToReview = markAsToReview(commits)
+    addAuthorData(CommitListView(asToReview, pageOfCommits.beforeCount, pageOfCommits.afterCount))    
+  }
+
+  private def markAsToReview(commits: List[PartialCommitInfo]) = {
+    partialCommitListToCommitViewList(commits).map(_.copy(state = CommitState.AwaitingUserReview))
   }
 
 }
