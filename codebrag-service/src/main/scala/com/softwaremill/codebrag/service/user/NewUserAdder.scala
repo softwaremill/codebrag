@@ -8,14 +8,14 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 
 class NewUserAdder(userDao: UserDAO,
   eventBus: EventBus,
-  afterRegisteredHook: AfterUserRegisteredHook,
+  afterRegistered: AfterUserRegistered,
   followupsForPriorReactionsGenerator: FollowupsGeneratorForReactionsPriorUserRegistration,
   welcomeFollowupGenerator: WelcomeFollowupsGenerator)(implicit clock: Clock) {
 
   def add(user: User):User = {
     val addedUser = userDao.add(user)
     val userRegisteredEvent = NewUserRegistered(addedUser)
-    afterRegisteredHook.run(userRegisteredEvent)
+    afterRegistered.run(userRegisteredEvent)
     followupsForPriorReactionsGenerator.recreateFollowupsForPastComments(userRegisteredEvent)
     welcomeFollowupGenerator.createWelcomeFollowupFor(userRegisteredEvent)
     eventBus.publish(userRegisteredEvent)

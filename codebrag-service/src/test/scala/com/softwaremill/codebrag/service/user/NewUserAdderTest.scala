@@ -16,7 +16,7 @@ class NewUserAdderTest
   var welcomeFollowupGenerator: WelcomeFollowupsGenerator = _
   var userDao: UserDAO = _
   var eventBus: EventBus = _
-  var afterRegisteredHook: AfterUserRegisteredHook = _
+  var afterRegisteredHook: AfterUserRegistered = _
   var followupForPreviousReactionsGenerator: FollowupsGeneratorForReactionsPriorUserRegistration = _
   
   var userAdder: NewUserAdder = _
@@ -25,7 +25,7 @@ class NewUserAdderTest
     welcomeFollowupGenerator = mock[WelcomeFollowupsGenerator]
     userDao = mock[UserDAO]
     eventBus = mock[EventBus]
-    afterRegisteredHook = mock[AfterUserRegisteredHook]
+    afterRegisteredHook = mock[AfterUserRegistered]
     followupForPreviousReactionsGenerator = mock[FollowupsGeneratorForReactionsPriorUserRegistration]
     userAdder = new NewUserAdder(userDao, eventBus, afterRegisteredHook, followupForPreviousReactionsGenerator, welcomeFollowupGenerator)
   }

@@ -8,7 +8,7 @@ import org.joda.time.DateTime
 import com.softwaremill.codebrag.cache.{UserReviewedCommitsCacheEntry, UserReviewedCommitsCache, BranchCommitsCache}
 import com.softwaremill.codebrag.service.config.ReviewProcessConfig
 
-class AfterUserRegisteredHook(
+class AfterUserRegistered(
   val repoCache: BranchCommitsCache,
   val reviewedCommitsCache: UserReviewedCommitsCache,
   val config: ReviewProcessConfig) extends SetStartingDateForUser {

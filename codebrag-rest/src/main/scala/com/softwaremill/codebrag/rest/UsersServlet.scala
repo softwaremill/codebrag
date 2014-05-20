@@ -15,7 +15,7 @@ class UsersServlet(
                     val authenticator: Authenticator,
                     registerService: RegisterService,
                     registerUserUseCase: RegisterNewUserUseCase,
-                    afterLoginHook: AfterUserLogin,
+                    afterLogin: AfterUserLogin,
                     userDao: UserDAO,
                     config: CodebragConfig,
                     val swagger: Swagger) extends JsonServletWithAuthentication with UsersServletSwaggerDefinition with CookieSupport {
@@ -23,7 +23,7 @@ class UsersServlet(
   post(operation(loginOperation)) {
     authenticate() match {
       case Some(loggedUser) => {
-        afterLoginHook.postLogin(loggedUser)
+        afterLogin.postLogin(loggedUser)
         loggedUser
       }
       case _ => halt(401, "Invalid login and/or password")
