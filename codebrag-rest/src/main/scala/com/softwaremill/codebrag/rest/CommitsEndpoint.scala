@@ -8,8 +8,8 @@ import com.softwaremill.codebrag.common.paging.PagingCriteria
 import PagingCriteria.Direction
 import com.softwaremill.codebrag.activities.ReviewCommitUseCase
 import com.softwaremill.codebrag.common.paging.PagingCriteria
-import com.softwaremill.codebrag.activities.finders.AllCommitsFinder
 import com.softwaremill.codebrag.activities.finders.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.activities.finders.all.AllCommitsFinder
 
 trait CommitsEndpoint extends JsonServletWithAuthentication {
 
@@ -41,7 +41,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   get("/", allCommits) {
     val paging = extractPagingCriteria
     logger.debug(s"Attempting to fetch all commits with possible paging: ${paging}")
-    allCommitsFinder.find(userId, extractBranch.getOrElse(EmptyBranchName), paging)
+    allCommitsFinder.find(userId, extractBranch, paging)
   }
 
   get("/", commitsToReview) {
@@ -57,7 +57,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
       case None => PagingCriteria.fromEnd[String](limit)
     }
     logger.debug(s"Attempting to fetch commits in context: ${paging}")
-    allCommitsFinder.find(userId, extractBranch.getOrElse(EmptyBranchName), paging)
+    allCommitsFinder.find(userId, extractBranch, paging)
   }
 
   private def userId = new ObjectId(user.id)
@@ -100,7 +100,5 @@ object CommitsEndpoint {
   val MinShaParamName = "min_sha"
   val MaxShaParamName = "max_sha"
   val SelectedShaParamName = "selected_sha"
-
-  val EmptyBranchName = ""
 
 }

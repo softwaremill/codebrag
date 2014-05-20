@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.service.diff
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.finders.views.CommitDetailsView
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
-import com.softwaremill.codebrag.activities.finders.AllCommitsFinder
+import com.softwaremill.codebrag.activities.finders.all.AllCommitsFinder
 
 class DiffWithCommentsService(commitsFinder: AllCommitsFinder, reactionFinder: ReactionFinder, diffService: DiffService) {
 

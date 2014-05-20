@@ -6,13 +6,13 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.cache.BranchCommitsCache
 import com.softwaremill.codebrag.dao.finders.views.CommitListView
-import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.activities.finders.UserAndBranch
 
 class ToReviewCommitsFinder(
-                             repoCache: BranchCommitsCache,
-                             userDao: UserDAO,
+                             protected val repoCache: BranchCommitsCache,
+                             protected val userDao: UserDAO,
                              toReviewCommitsFilter: ToReviewBranchCommitsFilter,
-                             toReviewCommitsViewBuilder: ToReviewCommitsViewBuilder) extends Logging {
+                             toReviewCommitsViewBuilder: ToReviewCommitsViewBuilder) extends Logging with UserAndBranch {
 
   def find(userId: ObjectId, providedBranchName: Option[String], pagingCriteria: PagingCriteria[String]): CommitListView = {
     val user = loadUser(userId)
@@ -30,11 +30,5 @@ class ToReviewCommitsFinder(
   }
 
   def countForUserSelectedBranch(userId: ObjectId): Long = count(userId, None)
-
-  private def loadUser(userId: ObjectId) = userDao.findById(userId).getOrElse(throw new IllegalArgumentException("Invalid userId provided"))    
-
-  private def determineBranch(user: User, branchName: Option[String]) = {
-    branchName.getOrElse(user.settings.selectedBranch.getOrElse(repoCache.getCheckedOutBranchShortName))
-  }
 
 }

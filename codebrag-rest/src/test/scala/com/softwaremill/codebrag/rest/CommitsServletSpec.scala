@@ -16,8 +16,8 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 import com.softwaremill.codebrag.common.paging.PagingCriteria
-import com.softwaremill.codebrag.activities.finders.AllCommitsFinder
 import com.softwaremill.codebrag.activities.finders.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.activities.finders.all.AllCommitsFinder
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
@@ -68,8 +68,8 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val userId = givenStandardAuthenticatedUser()
     val criteria = PagingCriteria.fromBeginning[String](CommitsEndpoint.DefaultPageLimit)
 
-    get(s"/?${FilterParamName}=${AllCommitsFilter}") {
-      verify(allCommitsFinder).find(userId, EmptyBranchName, criteria)
+    get(s"/?$FilterParamName=$AllCommitsFilter") {
+      verify(allCommitsFinder).find(userId, None, criteria)
     }
   }
 
@@ -77,7 +77,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val userId = givenStandardAuthenticatedUser()
     val criteria = PagingCriteria.fromBeginning[String](CommitsEndpoint.DefaultPageLimit)
 
-    get(s"/?${FilterParamName}=${ToReviewCommitsFilter}") {
+    get(s"/?$FilterParamName=$ToReviewCommitsFilter") {
       verify(toReviewCommitsFinder).find(userId, None, criteria)
     }
   }
@@ -86,29 +86,29 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val userId = givenStandardAuthenticatedUser()
     val commitId = "123456"
 
-    get(s"/?${ContextParamName}=true&${SelectedShaParamName}=" + commitId.toString) {
+    get(s"/?$ContextParamName=true&$SelectedShaParamName=" + commitId.toString) {
       val criteria = PagingCriteria(commitId, Direction.Radial, CommitsEndpoint.DefaultPageLimit)
-      verify(allCommitsFinder).find(userId, EmptyBranchName, criteria)
+      verify(allCommitsFinder).find(userId, None, criteria)
     }
   }
 
   "GET / with context=true and no id provided" should "load first commits" in {
     val userId = givenStandardAuthenticatedUser()
 
-    get(s"/?${ContextParamName}=true") {
+    get(s"/?$ContextParamName=true") {
       val criteria = PagingCriteria.fromEnd[String](CommitsEndpoint.DefaultPageLimit)
-      verify(allCommitsFinder).find(userId, EmptyBranchName, criteria)
+      verify(allCommitsFinder).find(userId, None, criteria)
     }
   }
 
   "GET / with paging criteria" should "call service with proper criteria object" in {
     val userId = givenStandardAuthenticatedUser()
     val lastKnownCommitId = "123456"
-    get(s"/?${FilterParamName}=${ToReviewCommitsFilter}&${LimitParamName}=10&${MinShaParamName}=" + lastKnownCommitId.toString) {
+    get(s"/?$FilterParamName=$ToReviewCommitsFilter&$LimitParamName=10&$MinShaParamName=" + lastKnownCommitId.toString) {
       val criteria = PagingCriteria(lastKnownCommitId, Direction.Right, 10)
       verify(toReviewCommitsFinder).find(userId, None, criteria)
     }
-    get(s"/?${FilterParamName}=${ToReviewCommitsFilter}&${LimitParamName}=10&${MaxShaParamName}=" + lastKnownCommitId.toString) {
+    get(s"/?$FilterParamName=$ToReviewCommitsFilter&$LimitParamName=10&$MaxShaParamName=" + lastKnownCommitId.toString) {
       val criteria = PagingCriteria(lastKnownCommitId, Direction.Left, 10)
       verify(toReviewCommitsFinder).find(userId, None, criteria)
     }

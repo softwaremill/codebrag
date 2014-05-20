@@ -17,11 +17,11 @@ import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
 import com.softwaremill.codebrag.dao.Daos
 import com.softwaremill.codebrag.repository.Repository
-import com.softwaremill.codebrag.activities.finders.AllCommitsFinder
 import com.softwaremill.codebrag.cache.{UserReviewedCommitsCache, PersistentBackendForCache, BranchCommitsCache}
 import com.softwaremill.codebrag.licence.LicenceService
 import com.softwaremill.codebrag.instance.InstanceParamsService
 import com.softwaremill.codebrag.activities.finders.toreview.{ToReviewCommitsViewBuilder, ToReviewBranchCommitsFilter, ToReviewCommitsFinder}
+import com.softwaremill.codebrag.activities.finders.all.{AllCommitsViewBuilder, AllCommitsFinder}
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
@@ -88,5 +88,10 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
     new ToReviewCommitsViewBuilder(userDao, commitInfoDao)
   )
 
-  lazy val allCommitsFinder = new AllCommitsFinder(repositoryStateCache, reviewedCommitsCache, commitInfoDao, userDao, config)
+  lazy val allCommitsFinder = new AllCommitsFinder(
+    repositoryStateCache,
+    commitInfoDao,
+    userDao,
+    new AllCommitsViewBuilder(commitInfoDao, config, userDao, reviewedCommitsCache)
+  )
 }
