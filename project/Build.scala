@@ -150,7 +150,8 @@ object Dependencies {
   val rogue = Seq(rogueCore, rogueField, rogueLift, rogueIndex, liftMongoRecord)
 
   val egitGithubApi = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.3"
-  val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "2.3.1.201302201838-r"
+  val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "2.3.1.201302201838-r" exclude("com.jcraft", "jsch")
+  val jsch = "com.jcraft" % "jsch" % "0.1.51"
   val dispatch = "net.databinder.dispatch" %% "dispatch-core" % "0.9.5"
 
   val slick = "com.typesafe.slick" %% "slick" % "2.0.0"
@@ -250,7 +251,7 @@ object SmlCodebragBuild extends Build {
     "codebrag-service",
     file("codebrag-service"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator,
-      javaxMail, scalate, egitGithubApi, jGit, dispatch, json4s, json4sExt, commonsLang))
+      javaxMail, scalate, egitGithubApi, jGit, jsch, dispatch, json4s, json4sExt, commonsLang))
   ) dependsOn(domain, common, dao % "test->test;compile->compile")
 
   lazy val rest: Project = Project(
