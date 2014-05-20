@@ -42,14 +42,14 @@ case class IncomingSettings(
                              emailNotificationsEnabled: Option[Boolean],
                              dailyUpdatesEmailEnabled: Option[Boolean],
                              appTourDone: Option[Boolean],
-                             selectedBranch: Option[String]) {
+                             newBranch: Option[String]) {
   def applyTo(existingSettings: UserSettings) = {
     val newSettings = existingSettings.copy(
       emailNotificationsEnabled = this.emailNotificationsEnabled.getOrElse(existingSettings.emailNotificationsEnabled),
       dailyUpdatesEmailEnabled = this.dailyUpdatesEmailEnabled.getOrElse(existingSettings.dailyUpdatesEmailEnabled),
       appTourDone = this.appTourDone.getOrElse(existingSettings.appTourDone)
     )
-    if(selectedBranch.isDefined) newSettings.copy(selectedBranch = selectedBranch) else newSettings
+    newBranch.map { branch => newSettings.copy(selectedBranch = newBranch) }.getOrElse(newSettings)
   }
 }
 

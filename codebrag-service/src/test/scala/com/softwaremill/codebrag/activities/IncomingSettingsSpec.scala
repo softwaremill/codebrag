@@ -49,17 +49,17 @@ class IncomingSettingsSpec extends FlatSpec with MockitoSugar with ShouldMatcher
     emailNotificationsEnabled = Some(false),
     dailyUpdatesEmailEnabled = Some(false),
     appTourDone = None,
-    selectedBranch = None)
+    newBranch = None)
 
   val newSettingsWithAppTourDone = IncomingSettings(
     emailNotificationsEnabled = None,
     dailyUpdatesEmailEnabled = None,
     appTourDone = Some(true),
-    selectedBranch = None)
+    newBranch = None)
 
   val newSettingsWithBranchSelected = IncomingSettings(
     emailNotificationsEnabled = None,
     dailyUpdatesEmailEnabled = None,
     appTourDone = Some(false),
-    selectedBranch = Some("master"))
+    newBranch = Some("master"))
 }
