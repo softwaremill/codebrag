@@ -12,17 +12,18 @@ class DailyStatisticsSpec extends FlatSpec with ShouldMatchers with BeforeAndAft
   val Date = new DateTime().withDayOfMonth(1).withMonthOfYear(12).withYear(2013)
   val Counters: Map[String, Int] = Map.empty
   val Version = "1.2"
+  val RepoType = "git"
 
 
   it should "serialize date to dd/mm/yyyy format" in {
     // given
-    val stats = DailyStatistics(InstanceId, Version, Date, Counters)
+    val stats = DailyStatistics(InstanceId, Version, RepoType, Date, Counters)
 
     // when
     val jsonData = stats.asJson
 
     // then
-    val expectedJsonOutput = """{"instanceId":"529d94ff300418028363ed0d","appVersion":"1.2","date":"01/12/2013","counters":{}}"""
+    val expectedJsonOutput = """{"instanceId":"529d94ff300418028363ed0d","appVersion":"1.2","repoType":"git","date":"01/12/2013","counters":{}}"""
     jsonData should be(expectedJsonOutput)
   }
 
