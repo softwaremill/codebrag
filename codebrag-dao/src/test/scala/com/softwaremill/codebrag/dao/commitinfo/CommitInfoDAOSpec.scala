@@ -249,10 +249,6 @@ trait CommitInfoDAOSpec extends FlatSpec with ShouldMatchers {
   }
 }
 
-class MongoCommitInfoDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with CommitInfoDAOSpec {
-  var commitInfoDAO = new MongoCommitInfoDAO()
-}
-
 class SQLCommitInfoDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with CommitInfoDAOSpec {
   var commitInfoDAO = new SQLCommitInfoDAO(sqlDatabase)
 }
