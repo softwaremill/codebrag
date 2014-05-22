@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao.events
 
-import com.softwaremill.codebrag.test.{FlatSpecWithSQL, ClearSQLDataAfterTest, ClearMongoDataAfterTest, FlatSpecWithMongo}
+import com.softwaremill.codebrag.test.{FlatSpecWithSQL, ClearSQLDataAfterTest}
 import org.scalatest.matchers.ShouldMatchers
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.reactions.{LikeEvent, CommentAddedEvent, CommitReviewedEvent}
@@ -90,10 +90,6 @@ trait EventDAOSpec extends FlatSpec with ShouldMatchers {
       def userId = _userId
       def toEventStream = ""
     })
-}
-
-class MongoEventDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with EventDAOSpec {
-  val eventDAO = new MongoEventDAO()
 }
 
 class SQLEventDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with EventDAOSpec {

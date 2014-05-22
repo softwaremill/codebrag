@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.repositorystatus
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.RepositoryStatus
 import org.scalatest.FlatSpec
-import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, ClearMongoDataAfterTest, FlatSpecWithMongo}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
 
 trait RepositoryStatusDAOSpec extends FlatSpec with ShouldMatchers {
   
@@ -67,9 +67,7 @@ trait RepositoryStatusDAOSpec extends FlatSpec with ShouldMatchers {
 
 }
 
-class MongoRepositoryStatusDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with RepositoryStatusDAOSpec {
-  val repositoryStatusDAO = new MongoRepositoryStatusDAO()
-}
+
 
 class SQLRepositoryStatusDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with RepositoryStatusDAOSpec {
   val repositoryStatusDAO = new SQLRepositoryStatusDAO(sqlDatabase)

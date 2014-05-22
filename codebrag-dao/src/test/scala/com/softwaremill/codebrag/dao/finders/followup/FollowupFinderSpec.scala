@@ -6,9 +6,9 @@ import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.{CommentAssembler, UserAssembler, CommitInfoAssembler}
 import com.softwaremill.codebrag.dao._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.user.{SQLUserDAO, MongoUserDAO, UserDAO}
-import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
-import com.softwaremill.codebrag.dao.commitinfo.{SQLCommitInfoDAO, MongoCommitInfoDAO, CommitInfoDAO}
+import com.softwaremill.codebrag.dao.user.{SQLUserDAO, UserDAO}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
+import com.softwaremill.codebrag.dao.commitinfo.{SQLCommitInfoDAO, CommitInfoDAO}
 import com.softwaremill.codebrag.dao.reaction._
 import com.softwaremill.codebrag.dao.followup._
 import org.scalatest.FlatSpec
@@ -205,14 +205,6 @@ trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
     reaction.message should be(created.reaction.message)
   }
 
-}
-
-class MongoFollowupFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with FollowupFinderSpec {
-  val commentDao = new MongoCommitCommentDAO()
-  val followupDao = new MongoFollowupDAO()
-  val commitInfoDao = new MongoCommitInfoDAO()
-  val userDao = new MongoUserDAO()
-  val followupFinder = new MongoFollowupFinder()
 }
 
 class SQLFollowupFinderSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with FollowupFinderSpec {

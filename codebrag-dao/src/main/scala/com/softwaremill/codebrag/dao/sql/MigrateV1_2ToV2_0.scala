@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.dao.sql
 
-import com.softwaremill.codebrag.dao.{SQLDaos, DaoConfig}
+import com.softwaremill.codebrag.dao.{Daos, DaoConfig}
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.common.{Clock, RealTimeClock}
 import org.bson.types.ObjectId
@@ -24,7 +24,7 @@ object MigrateV1_2ToV2_0 extends App with DetermineToReviewStartDates with Clean
   }
 
   val sqlDb = SQLDatabase.createEmbedded(config)
-  val sqlDaos = new SQLDaos {
+  val sqlDaos = new Daos {
     def clock = RealTimeClock
     def sqlDatabase = sqlDb
   }

@@ -9,8 +9,8 @@ import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
 import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, RequiresDb}
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
-import com.softwaremill.codebrag.test.{FlatSpecWithSQL, FlatSpecWithMongo, ClearSQLDataAfterTest, ClearMongoDataAfterTest}
-import com.softwaremill.codebrag.common.{ClockSpec, FixtureTimeClock}
+import com.softwaremill.codebrag.test.{FlatSpecWithSQL, ClearSQLDataAfterTest}
+import com.softwaremill.codebrag.common.ClockSpec
 
 trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with Logging with ClockSpec {
 
@@ -442,17 +442,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
   }
 }
 
-class MongoUserDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with UserDAOSpec {
-  var userDAO: UserDAO = _
-  var internalUserDAO: InternalUserDAO = _
 
-  override def beforeEach() {
-    userDAO = new MongoUserDAO
-    internalUserDAO = new MongoInternalUserDAO
-
-    super.beforeEach()
-  }
-}
 
 class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with UserDAOSpec {
   val userDAO = new SQLUserDAO(sqlDatabase)

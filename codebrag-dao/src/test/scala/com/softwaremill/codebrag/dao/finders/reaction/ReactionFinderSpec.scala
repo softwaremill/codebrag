@@ -6,19 +6,19 @@ import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, LikeAssembler, CommentAssembler}
-import com.softwaremill.codebrag.dao.reaction._
 import org.scalatest.BeforeAndAfterEach
-import com.softwaremill.codebrag.dao.user.MongoUserDAO
 import scala.Some
-import com.softwaremill.codebrag.test.{ClearMongoDataAfterTest, FlatSpecWithMongo}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
 import com.softwaremill.codebrag.dao.finders.views.{CommentView, ReactionsView, CommitReactionsView, ReactionView}
+import com.softwaremill.codebrag.dao.user.SQLUserDAO
+import com.softwaremill.codebrag.dao.reaction.{SQLLikeDAO, SQLCommitCommentDAO}
 
-class ReactionFinderSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with ShouldMatchers
+class ReactionFinderSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with ShouldMatchers
   with ReactionFinderVerifyHelpers with BeforeAndAfterEach {
 
-  val userDao = new MongoUserDAO()
-  val commentDao = new MongoCommitCommentDAO()
-  val likeDao = new MongoLikeDAO()
+  val userDao = new SQLUserDAO(sqlDatabase)
+  val commentDao = new SQLCommitCommentDAO(sqlDatabase)
+  val likeDao = new SQLLikeDAO(sqlDatabase)
 
   val reactionsFinder = new ReactionFinder(userDao, commentDao, likeDao)
 

@@ -4,7 +4,7 @@ import org.scalatest.matchers.ShouldMatchers
 import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.Invitation
-import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
 import com.softwaremill.codebrag.dao.RequiresDb
 import org.scalatest.FlatSpec
 import com.softwaremill.codebrag.common.RealTimeClock
@@ -57,9 +57,7 @@ trait InvitationDAOSpec extends FlatSpec with ShouldMatchers with Logging {
   }
 }
 
-class MongoInvitationDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with InvitationDAOSpec {
-  val invitationDAO = new MongoInvitationDAO()
-}
+
 
 class SQLInvitationDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with InvitationDAOSpec {
   val invitationDAO = new SQLInvitationDAO(sqlDatabase)

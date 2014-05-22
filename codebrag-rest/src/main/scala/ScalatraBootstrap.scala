@@ -1,6 +1,5 @@
 import com.softwaremill.codebrag.backup.BackupScheduler
-import com.softwaremill.codebrag.dao.mongo.MongoInit
-import com.softwaremill.codebrag.dao.{SQLDaos, MongoDaos}
+import com.softwaremill.codebrag.dao.Daos
 import com.softwaremill.codebrag.dao.sql.{SQLEmbeddedDbBackup, SQLDatabase}
 import com.softwaremill.codebrag.dao.user.InternalUserDAO
 import com.softwaremill.codebrag.domain.InternalUser
@@ -84,22 +83,14 @@ class ScalatraBootstrap extends LifeCycle with Logging {
 
 
   def initializeBeans(_config: AllConfig, _repository: Repository): Beans with EventingConfiguration = {
-    if (_config.isEmbeddedStorage) {
-      val beans = new Beans with EventingConfiguration with SQLDaos {
-        val config = _config
-        val sqlDatabase = SQLDatabase.createEmbedded(config)
-        val repository = _repository
-      }
-      beans.sqlDatabase.updateSchema()
-      BackupScheduler.initialize(beans.actorSystem, new SQLEmbeddedDbBackup(beans.sqlDatabase, beans.config, beans.clock), beans.config, beans.clock)
-      beans
-    } else {
-      MongoInit.initialize(_config)
-      new Beans with EventingConfiguration with MongoDaos {
-        val config = _config
-        val repository = _repository
-      }
+    val beans = new Beans with EventingConfiguration with Daos {
+      val config = _config
+      val sqlDatabase = SQLDatabase.createEmbedded(config)
+      val repository = _repository
     }
+    beans.sqlDatabase.updateSchema()
+    BackupScheduler.initialize(beans.actorSystem, new SQLEmbeddedDbBackup(beans.sqlDatabase, beans.config, beans.clock), beans.config, beans.clock)
+    beans
   }
 
   private def ensureInternalCodebragUserExists(internalUserDao: InternalUserDAO) {
@@ -122,11 +113,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     super.destroy(context)
 
     val beans = InstanceContext.get(context)
-
-    if (beans.config.isEmbeddedStorage) {
-      // I know, ugly, I'm ashamed
-      beans.asInstanceOf[SQLDaos].sqlDatabase.close()
-    }
+    beans.sqlDatabase.close()
 
     val actorSystem = beans.actorSystem
     actorSystem.shutdown()

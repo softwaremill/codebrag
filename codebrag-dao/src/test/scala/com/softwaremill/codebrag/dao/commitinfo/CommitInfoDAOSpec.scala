@@ -5,7 +5,7 @@ import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import CommitInfoAssembler._
 import com.softwaremill.codebrag.domain.User
-import com.softwaremill.codebrag.test.{FlatSpecWithSQL, ClearSQLDataAfterTest, FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.test.{FlatSpecWithSQL, ClearSQLDataAfterTest}
 import com.softwaremill.codebrag.dao.RequiresDb
 import org.scalatest.FlatSpec
 

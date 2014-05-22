@@ -4,7 +4,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.bson.types.ObjectId
 import org.joda.time.{DateTime, DateTimeZone}
 import com.softwaremill.codebrag.common.{FixtureTimeClock, Clock}
-import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
 import com.softwaremill.codebrag.dao.{RequiresDb, ObjectIdTestUtils}
 import org.scalatest.FlatSpec
 
@@ -84,9 +84,7 @@ trait HeartbeatDAOSpec extends FlatSpec with ShouldMatchers {
   }
 }
 
-class MongoHeartbeatDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with HeartbeatDAOSpec {
-  def heartbeatDAO(clock: Clock) = new MongoHeartbeatDAO(clock)
-}
+
 
 class SQLHeartbeatDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with HeartbeatDAOSpec {
   def heartbeatDAO(clock: Clock) = new SQLHeartbeatDAO(sqlDatabase, clock)

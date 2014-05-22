@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.CommentAssembler
 import CommentAssembler._
-import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
 import com.softwaremill.codebrag.dao.RequiresDb
 import org.scalatest.FlatSpec
 
@@ -116,9 +116,7 @@ trait CommitCommentDAOSpec extends FlatSpec with ShouldMatchers {
   }
 }
 
-class MongoCommitCommentDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with CommitCommentDAOSpec {
-  val commentDao = new MongoCommitCommentDAO()
-}
+
 
 class SQLCommitCommentDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with CommitCommentDAOSpec {
   val commentDao = new SQLCommitCommentDAO(sqlDatabase)

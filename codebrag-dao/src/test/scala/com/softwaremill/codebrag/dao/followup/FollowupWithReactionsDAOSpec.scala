@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.followup
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.ThreadDetails
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler}
-import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
 import com.softwaremill.codebrag.dao.reaction._
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils
 import com.softwaremill.codebrag.common.RealTimeClock
@@ -100,12 +100,7 @@ trait FollowupWithReactionsDAOSpec extends FlatSpec with ShouldMatchers {
 
 }
 
-class MongoFollowupWithReactionsDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with FollowupWithReactionsDAOSpec {
-  val commentDao = new MongoCommitCommentDAO()
-  val likeDao = new MongoLikeDAO()
-  val followupDao = new MongoFollowupDAO()
-  val followupWithReactionsDao = new MongoFollowupWithReactionsDAO(commentDao, likeDao)
-}
+
 
 class SQLFollowupWithReactionsDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with FollowupWithReactionsDAOSpec {
   val commentDao = new SQLCommitCommentDAO(sqlDatabase)

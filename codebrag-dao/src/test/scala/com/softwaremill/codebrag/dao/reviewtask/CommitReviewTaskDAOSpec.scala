@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.reviewtask
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.CommitReviewTask
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
 import com.softwaremill.codebrag.dao.{RequiresDb, ObjectIdTestUtils}
 import org.scalatest.FlatSpec
 import com.softwaremill.codebrag.common.RealTimeClock
@@ -79,9 +79,7 @@ trait CommitReviewTaskDAOSpec extends FlatSpec with ShouldMatchers {
   }
 }
 
-class MongoCommitReviewTaskDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with CommitReviewTaskDAOSpec {
-  val commitToReviewDao = new MongoCommitReviewTaskDAO()
-}
+
 
 class SQLCommitReviewTaskDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with CommitReviewTaskDAOSpec {
   val commitToReviewDao = new SQLCommitReviewTaskDAO(sqlDatabase, RealTimeClock)

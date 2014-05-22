@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.LikeAssembler
 import LikeAssembler._
-import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
 import com.softwaremill.codebrag.dao.RequiresDb
 import org.scalatest.FlatSpec
 
@@ -127,9 +127,7 @@ trait LikeDAOSpec extends FlatSpec with ShouldMatchers {
   }
 }
 
-class MongoLikeDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with LikeDAOSpec {
-  val likeDao = new MongoLikeDAO()
-}
+
 
 class SQLLikeDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with LikeDAOSpec {
   val likeDao = new SQLLikeDAO(sqlDatabase)

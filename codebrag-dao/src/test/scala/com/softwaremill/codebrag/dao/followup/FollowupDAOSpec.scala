@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.followup
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain.builder.{LikeAssembler, CommentAssembler, CommitInfoAssembler}
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL, FlatSpecWithMongo, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import com.softwaremill.codebrag.domain.Followup
 import com.softwaremill.codebrag.dao.RequiresDb
@@ -211,20 +211,7 @@ trait FollowupDAOSpec extends FlatSpec with ShouldMatchers {
 
 }
 
-class MongoFollowupDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with FollowupDAOSpec {
-  val followupDao = new MongoFollowupDAO()
 
-  def findAllStoredFollowups() = FollowupRecord.findAll.map { f =>
-    StoredFollowup(
-      f.id.get,
-      f.receivingUserId.get,
-      f.lastReaction.get.reactionId.get,
-      f.threadId.get.fileName.get,
-      f.threadId.get.lineNumber.get,
-      f.reactions.get
-    )
-  }
-}
 
 class SQLFollowupDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with FollowupDAOSpec {
   val followupDao = new SQLFollowupDAO(sqlDatabase)

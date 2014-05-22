@@ -4,7 +4,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
 import com.softwaremill.codebrag.domain.InternalUser
 import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.test.{FlatSpecWithSQL, FlatSpecWithMongo, ClearSQLDataAfterTest, ClearMongoDataAfterTest}
+import com.softwaremill.codebrag.test.{FlatSpecWithSQL, ClearSQLDataAfterTest}
 
 trait InternalUserDAOSpec extends FlatSpec with ShouldMatchers {
 
@@ -54,12 +54,7 @@ trait InternalUserDAOSpec extends FlatSpec with ShouldMatchers {
   }
 }
 
-class MongoInternalUserDAOSpec extends FlatSpecWithMongo with ClearMongoDataAfterTest with InternalUserDAOSpec {
-  val userDAO = new MongoUserDAO
-  val internalUserDAO = new MongoInternalUserDAO
 
-  def countInternalUsers() = InternalUserRecord.count
-}
 
 class SQLInternalUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with InternalUserDAOSpec {
   val userDAO = new SQLUserDAO(sqlDatabase)
