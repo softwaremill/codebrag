@@ -41,7 +41,7 @@ class InstanceParamsService(instanceParamsDAO: InstanceParamsDAO) extends Import
   private def migrateInstanceIdToDatabaseAndReturn(existingId: InstanceId): InstanceId = {
     logger.debug(s"Instance ID found in file, migrating to DB ${existingId.value} and returning it")
     instanceParamsDAO.save(existingId.toInstanceParam)
-    removeInstanceIdFile
+    removeInstanceIdFile()
     existingId
   }
 
@@ -68,7 +68,7 @@ trait ImportFileBasedInstanceId extends Logging {
   
   private def instanceIdFile() = new File(InstanceIdFilename)
 
-  protected def removeInstanceIdFile = {
+  protected def removeInstanceIdFile() = {
     try {
       val instanceFile = instanceIdFile()
       if(instanceFile.exists()) instanceFile.delete()
