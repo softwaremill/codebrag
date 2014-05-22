@@ -36,10 +36,6 @@ angular.module('codebrag.commits')
             return emptyList && noMoreCommitsOnServer;
         };
 
-        $scope.hasCommitsAvailable = function() {
-            return $scope.commits && $scope.commits.length > 0;
-        };
-
         $scope.pageTourForCommitsVisible = function() {
             return pageTourService.stepActive('commits') || pageTourService.stepActive('invites');
         };

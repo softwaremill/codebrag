@@ -88,16 +88,17 @@ describe('Page tour service', function() {
         expect(pageTourService.stepActive('invites')).toBeTruthy();
     });
 
-    it('should reset tour steps to initial state when user logs in', function() {
+    it('steps should be inactive when user has tour already done', function() {
         // given
-        pageTourService.ackStep('commits');
+        pageTourService.initializeTour();
 
         // when
-        var anyUser = {};
-        logUserIn(anyUser);
+        logUserIn(USER_WITH_TOUR_COMPLETED);
 
         // then
-        expect(pageTourService.stepActive('commits')).toBeTruthy();
+        ['commits', 'followups', 'invites'].forEach(function(step) {
+            expect(pageTourService.stepActive(step)).toBeFalsy();
+        });
     });
 
     function tourElementPresent() {

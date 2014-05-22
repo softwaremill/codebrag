@@ -2,29 +2,16 @@ angular.module('codebrag.tour')
 
     .factory('pageTourService', function($document, $compile, $rootScope, authService, userSettingsService, events) {
 
-        var tourSteps = (function() {
-
-            var steps = {
-                commits: { ack: false },
-                followups: { ack: false },
-                invites: {
-                    ack: false,
-                    visible: function() {
-                        return steps.commits.ack && steps.followups.ack;
-                    }
+        var tourDone, tourSteps = {
+            commits: { ack: false },
+            followups: { ack: false },
+            invites: {
+                ack: false,
+                visible: function() {
+                    return tourSteps.commits.ack && tourSteps.followups.ack;
                 }
-            };
-
-            $rootScope.$on(events.loggedIn, function() {
-                Object.getOwnPropertyNames(steps).forEach(function(step) {
-                    steps[step].ack = false;
-                });
-            });
-
-            return steps;
-
-        }());
-
+            }
+        };
 
         var tourDOMAppender = (function() {
             var tourScope, tourDOMEl;
@@ -50,6 +37,7 @@ angular.module('codebrag.tour')
         }
 
         function stepActive(stepName) {
+            if(tourDone) return false;
             if(tourSteps[stepName].visible) {
                 return !tourSteps[stepName].ack && tourSteps[stepName].visible();
             } else {
@@ -65,6 +53,7 @@ angular.module('codebrag.tour')
                     if(!user.settings.appTourDone) {
                         tourDOMAppender.append();
                     } else {
+                        tourDone = true;
                         tourDOMAppender.remove();
                     }
                 });
@@ -73,6 +62,7 @@ angular.module('codebrag.tour')
 
         function finishTour() {
             tourDOMAppender.remove();
+            tourDone = true;
             userSettingsService.save({appTourDone: true});
         }
 
