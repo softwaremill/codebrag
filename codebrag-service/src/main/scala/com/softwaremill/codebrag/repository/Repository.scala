@@ -43,7 +43,7 @@ trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDe
 
   protected def pullChangesForRepo()
 
-  implicit def gitObjectIdToString(objId: ObjectId) = ObjectId.toString(objId)
+  protected def gitBranchRefToString(objId: ObjectId) = ObjectId.toString(objId)
 }
 
 object Repository {

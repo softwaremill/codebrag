@@ -3,7 +3,6 @@ package com.softwaremill.codebrag.repository
 import com.softwaremill.codebrag.domain.{CommitsForBranch, MultibranchLoadCommitsResult}
 import org.eclipse.jgit.revwalk.{RevWalk, RevCommit}
 import org.eclipse.jgit.revwalk.filter.MaxCountRevFilter
-import org.eclipse.jgit.api.Git
 import scala.collection.JavaConversions._
 
 
@@ -16,7 +15,7 @@ trait RepositorySnapshotLoader extends RawCommitsConverter {
     val commitsForBranches = commonBranchPointers.map { case (branchName, branchKnownTop) =>
       val rawCommits = getOldBranchCommitsUntil(branchName, branchKnownTop, perBranchMaxCommitsCount)
       val commitInfos = toCommitInfos(rawCommits)
-      CommitsForBranch(branchName, commitInfos, repo.resolve(branchName))
+      CommitsForBranch(branchName, commitInfos, gitBranchRefToString(repo.resolve(branchName)))
     }.toList
     MultibranchLoadCommitsResult(repoName, commitsForBranches)
   }

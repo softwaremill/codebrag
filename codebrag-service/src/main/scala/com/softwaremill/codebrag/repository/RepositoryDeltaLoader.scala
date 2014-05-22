@@ -27,7 +27,7 @@ trait RepositoryDeltaLoader extends RawCommitsConverter {
     val commitsForBranches = remoteBranchesFullNames.map { branchName =>
         val rawCommits = getCommitsForBranch(branchName, lastKnownBranchPointers.get(branchName), maxCommitsForNewBranch)
         val commitInfos = toCommitInfos(rawCommits)
-        CommitsForBranch(branchName, commitInfos, repo.resolve(branchName))
+        CommitsForBranch(branchName, commitInfos, gitBranchRefToString(repo.resolve(branchName)))
       }
     MultibranchLoadCommitsResult(repoName, commitsForBranches.toList)
   }
