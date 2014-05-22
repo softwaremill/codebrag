@@ -25,10 +25,8 @@ object BuildSettings {
 
   import Resolvers._
 
-  val mongoDirectory = SettingKey[File]("mongo-directory", "The home directory of MongoDB datastore")
-
   val buildSettings = Defaults.defaultSettings ++ net.virtualvoid.sbt.graph.Plugin.graphSettings ++
-    Seq(mongoDirectory := file("")) ++ defaultScalariformSettings ++ Seq(
+    defaultScalariformSettings ++ Seq(
 
     organization := "pl.softwaremill",
     version := "0.0.1-SNAPSHOT",
@@ -42,20 +40,6 @@ object BuildSettings {
     libraryDependencies ++= Seq(Dependencies.guava, Dependencies.googleJsr305),
 
     concurrentRestrictions in Global += Tags.limit(Tags.Test, 1), // no parallel execution of tests, because we are starting mongo in tests
-
-    testOptions in Test <+= mongoDirectory map {
-      md: File => Tests.Setup {
-        () =>
-          val mongoFile = new File(md.getAbsolutePath + "/bin/mongod")
-          val mongoFileWin = new File(mongoFile.getAbsolutePath + ".exe")
-          if (mongoFile.exists || mongoFileWin.exists) {
-            System.setProperty("mongo.directory", md.getAbsolutePath)
-          } else {
-            throw new RuntimeException(
-              "Trying to launch with MongoDB but unable to find it in 'mongo.directory' (%s). Please check your ~/.sbt/local.sbt file.".format(mongoFile.getAbsolutePath))
-          }
-      }
-    },
 
     /*
     swagger-core has a dependency to the slf4j -> log4j bridge, while we are using the log4j -> slf4j bridge.
@@ -140,14 +124,7 @@ object Dependencies {
   // As provided implies test, so is enough here.
   val servletApiProvided = "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016" % "provided" artifacts (Artifact("javax.servlet", "jar", "jar"))
 
-  val bson = "com.mongodb" % "bson" % "2.7.1" % "provided"
-
-  val rogueField = "com.foursquare" %% "rogue-field" % rogueVersion intransitive()
-  val rogueCore = "com.foursquare" %% "rogue-core" % rogueVersion intransitive()
-  val rogueLift = "com.foursquare" %% "rogue-lift" % rogueVersion intransitive()
-  val rogueIndex = "com.foursquare" %% "rogue-index" % rogueVersion intransitive()
-  val liftMongoRecord = "net.liftweb" %% "lift-mongodb-record" % "2.5.1"
-  val rogue = Seq(rogueCore, rogueField, rogueLift, rogueIndex, liftMongoRecord)
+  val bson = "com.mongodb" % "bson" % "2.7.1"
 
   val egitGithubApi = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.3"
   val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "2.3.1.201302201838-r" exclude("com.jcraft", "jsch")
@@ -244,7 +221,7 @@ object SmlCodebragBuild extends Build {
   lazy val dao: Project = Project(
     "codebrag-dao",
     file("codebrag-dao"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= rogue ++ Seq(typesafeConfig, slick, h2, flyway, c3p0), runH2ConsoleSettings)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson, typesafeConfig, slick, h2, flyway, c3p0), runH2ConsoleSettings)
   ) dependsOn(domain % "test->test;compile->compile", common)
 
   lazy val service: Project = Project(

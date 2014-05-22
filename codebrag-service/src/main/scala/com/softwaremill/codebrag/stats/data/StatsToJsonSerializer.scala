@@ -1,16 +1,16 @@
 package com.softwaremill.codebrag.stats.data
 
-import net.liftweb.json.{CustomSerializer, DefaultFormats}
-import net.liftweb.json.ext.{DateParser, JodaTimeSerializers}
 import org.joda.time.format.{DateTimeFormatter, DateTimeFormat}
 import org.joda.time.DateTime
-import net.liftweb.json.JsonAST.{JNull, JString}
+
+import org.json4s.{CustomSerializer, DefaultFormats}
+import org.json4s.ext.{DateParser, JodaTimeSerializers}
+import org.json4s.JsonAST.{JNull, JString}
 
 trait StatsToJsonSerializer {
 
   def asJson = {
-    import net.liftweb.json.Serialization.write
-
+    import org.json4s.jackson.Serialization.write
     implicit val formats = DefaultFormats ++ JodaTimeSerializers.all + new DateOnlySerializer(DateTimeFormat.forPattern("dd/MM/yyyy"))
     write(this)
   }

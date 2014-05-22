@@ -6,12 +6,12 @@ import org.json4s.JsonAST.JValue
 import org.json4s.{DefaultJsonFormats, DefaultFormats, Formats}
 import org.scalatra.test.scalatest.ScalatraFlatSpec
 import org.scalatest.mock.MockitoSugar
+import org.json4s.jackson.Serialization
+import org.json4s.ext.JodaTimeSerializers
 
 trait CodebragServletSpec extends ScalatraFlatSpec with MockitoSugar {
 
   val defaultJsonHeaders = Map("Content-Type" -> "application/json;charset=UTF-8")
-
-  protected implicit val jsonFormats: Formats = DefaultFormats
 
   def mapToJson[T <% JValue](map: Map[String, T]): Array[Byte] = {
     compact(map2jvalue(map)).getBytes("UTF-8")
@@ -26,8 +26,8 @@ trait CodebragServletSpec extends ScalatraFlatSpec with MockitoSugar {
   }
 
   def asJson(objToJson: AnyRef) = {
-    implicit val formats = net.liftweb.json.DefaultFormats ++ net.liftweb.json.ext.JodaTimeSerializers.all
-    net.liftweb.json.Serialization.write(objToJson)
+    implicit val formats = DefaultFormats ++ JodaTimeSerializers.all
+    Serialization.write(objToJson)
   }
 
 }
