@@ -7,7 +7,7 @@ import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 
-class ToReviewBranchCommitsFilter(reviewedCommitsCache: UserReviewedCommitsCache, config: ReviewProcessConfig) extends {
+class ToReviewBranchCommitsFilter(reviewedCommitsCache: UserReviewedCommitsCache, config: ReviewProcessConfig) {
 
    def filterFor(branchCommits: List[BranchCommitCacheEntry], user: User) = {
      val userBoundaryDate = reviewedCommitsCache.getUserEntry(user.id).toReviewStartDate
