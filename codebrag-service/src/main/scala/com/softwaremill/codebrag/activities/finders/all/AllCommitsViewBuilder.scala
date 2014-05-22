@@ -13,10 +13,10 @@ import com.softwaremill.codebrag.activities.finders.CommitToViewImplicits._
 import org.bson.types.ObjectId
 
 class AllCommitsViewBuilder(
-                            val commitsInfoDao: CommitInfoDAO,
-                            val config: ReviewProcessConfig,
-                            val userDao: UserDAO,
-                            val reviewedCommitsCache: UserReviewedCommitsCache) extends Logging with AuthorDataAppender with CommitReviewStateAppender with ReviewersDataAppender {
+  val commitsInfoDao: CommitInfoDAO,
+  val config: ReviewProcessConfig,
+  val userDao: UserDAO,
+  val reviewedCommitsCache: UserReviewedCommitsCache) extends Logging with AuthorDataAppender with CommitReviewStateAppender with ReviewersDataAppender {
 
   def toView(allBranchCommits: List[String], pagingCriteria: PagingCriteria[String], user: User) = {
     val page = pagingCriteria.extractPageFrom(allBranchCommits)
