@@ -12,7 +12,7 @@ trait RepositoryDeltaLoader extends RawCommitsConverter {
 
   self: Repository =>
 
-  def getCommitsForBranch(branchName: String, lastKnownSHA: Option[String], maxCommitsForNewBranch: Int): List[RevCommit] = {
+  private def getCommitsForBranch(branchName: String, lastKnownSHA: Option[String], maxCommitsForNewBranch: Int): List[RevCommit] = {
     val branch = repo.resolve(branchName)
     val walker = new RevWalk(repo)
     setRangeStart(walker, branch)
