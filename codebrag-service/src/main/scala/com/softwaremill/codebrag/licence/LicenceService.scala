@@ -7,16 +7,16 @@ import java.util.concurrent.atomic.AtomicReference
 import com.softwaremill.codebrag.dao.user.UserDAO
 
 class LicenceService(
-                      val instanceId: InstanceId,
-                      val instanceParamsDao: InstanceParamsDAO,
-                      val usersDao: UserDAO)(implicit clock: Clock) extends LicenceReader {
+  val instanceId: InstanceId,
+  val instanceParamsDao: InstanceParamsDAO,
+  val usersDao: UserDAO)(implicit clock: Clock) extends LicenceReader {
 
   private val currentLicence = new AtomicReference[Licence](readCurrentLicence())
 
   logLicenceInfo
 
   def interruptIfLicenceExpired() {
-    if(!licenceValid) {
+    if (!licenceValid) {
       logger.debug(s"Licence expired at ${licenceExpiryDate}")
       throw new LicenceExpiredException
     }
@@ -32,10 +32,15 @@ class LicenceService(
   }
 
   def licenceValid = currentLicence.get.valid(usersDao.countAll().toInt)
+
   def licenceExpiryDate = currentLicence.get.expirationDate
+
   def daysToExpire = currentLicence.get.daysToExpire
+
   def licenceType = currentLicence.get.licenceType
+
   def companyName = currentLicence.get.companyName
+
   def maxUsers = currentLicence.get.maxUsers
 
   private def logLicenceInfo {
