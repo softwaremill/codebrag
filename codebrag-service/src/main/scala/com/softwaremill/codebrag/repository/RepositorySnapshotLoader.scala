@@ -15,7 +15,7 @@ trait RepositorySnapshotLoader extends RawCommitsConverter {
     val commitsForBranches = commonBranchPointers.map { case (branchName, branchKnownTop) =>
       val rawCommits = getOldBranchCommitsUntil(branchName, branchKnownTop, perBranchMaxCommitsCount)
       val commitInfos = toCommitInfos(rawCommits)
-      CommitsForBranch(branchName, commitInfos, gitBranchRefToString(repo.resolve(branchName)))
+      CommitsForBranch(branchName, commitInfos, branchNameToSHA(repo.resolve(branchName)))
     }.toList
     MultibranchLoadCommitsResult(repoName, commitsForBranches)
   }
