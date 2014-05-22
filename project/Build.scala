@@ -127,7 +127,7 @@ object Dependencies {
   val bson = "com.mongodb" % "bson" % "2.7.1"
 
   val egitGithubApi = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.3"
-  val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "2.3.1.201302201838-r" exclude("com.jcraft", "jsch")
+  val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "2.3.1.201302201838-r"
   val jsch = "com.jcraft" % "jsch" % "0.1.51"
   val dispatch = "net.databinder.dispatch" %% "dispatch-core" % "0.9.5"
 
