@@ -16,7 +16,8 @@ class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationSe
     logger.info(s"Trying to register $login")
     val emailLowerCase = email.toLowerCase
     if (firstRegistration) {
-      registerUser(login, emailLowerCase, password)
+      val firstUser = User(new ObjectId, Authentication.basic(login, password), login, emailLowerCase, UUID.randomUUID().toString)
+      registerUser(firstUser.makeAdmin)
     } else {
       registerUserWithInvitation(login, emailLowerCase, password, invitationCode)
     }
@@ -29,12 +30,12 @@ class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationSe
       _ <- leftIfSome(userDao.findByLowerCasedLogin(login), "User with the given login already exists").right
       _ <- leftIfSome(userDao.findByEmail(emailLowerCase), "User with the given email already exists").right
     } yield {
-      registerUser(login, emailLowerCase, password)
+      val user = User(new ObjectId, Authentication.basic(login, password), login, emailLowerCase, UUID.randomUUID().toString)
+      registerUser(user)
     }
   }
 
-  private def registerUser(login: String, emailLowerCase: String, password: String): Either[String, Unit] = {
-    val user = User(new ObjectId, Authentication.basic(login, password), login, emailLowerCase, UUID.randomUUID().toString)
+  private def registerUser(user: User): Either[String, Unit] = {
     val addedUser = newUserAdder.add(user)
     notificationService.sendWelcomeNotification(addedUser)
     Right()

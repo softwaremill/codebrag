@@ -11,7 +11,7 @@ import com.softwaremill.codebrag.service.invitations.InvitationService
 import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.dao.user.UserDAO
 
-class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers {
+class RegisterServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers {
 
   val mockUser: User = mock[User]
 
@@ -47,7 +47,7 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
     Authentication.passwordsMatch("123456", user.authentication) should be(true)
   }
 
-  it should "register first user" in {
+  it should "register first user as admin" in {
     // Given
     val userDaoMock = mock[UserDAO]
     when(userDaoMock.findByLowerCasedLogin(any())).thenReturn(None)
@@ -60,7 +60,8 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
     val notificationService = mock[NotificationService]
 
     // When
-    val result = new RegisterService(userDaoMock, newUserAdderMock, invitationService, notificationService).register("Adamw", "Adam@example.org", "123456", "")
+    val service = new RegisterService(userDaoMock, newUserAdderMock, invitationService, notificationService)
+    val result = service.register("Adamw", "Adam@example.org", "123456", "")
 
     // Then
     result should be('right)
@@ -76,6 +77,7 @@ class RegisterServiceTest extends FlatSpec with MockitoSugar with ShouldMatchers
     user.settings.avatarUrl should equal(UserSettings.defaultAvatarUrl("adam@example.org"))
     user.token.length should be > 0
     Authentication.passwordsMatch("123456", user.authentication) should be(true)
+    user.admin should be(true)
   }
 
   it should "not register a user if a user with the same login already exists" in {

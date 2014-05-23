@@ -49,7 +49,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
   it should "add user with admin flag (false by default)" taggedAs(RequiresDb) in {
     // given
     val bobUser= UserAssembler.randomUser.get
-    val johnAdmin = UserAssembler.randomUser.withAdmin.get
+    val johnAdmin = UserAssembler.randomUser.get.makeAdmin
 
     // when
     userDAO.add(bobUser)
