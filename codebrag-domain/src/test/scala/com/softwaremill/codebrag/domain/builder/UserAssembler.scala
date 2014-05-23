@@ -66,6 +66,11 @@ class UserAssembler(var user: User) {
     this
   }
 
+  def withAdmin = {
+    user = user.copy(admin = true)
+    this
+  }
+
   def get = user
 }
 

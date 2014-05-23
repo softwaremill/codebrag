@@ -40,7 +40,7 @@ trait SQLUserSchema {
   protected def toSQLLastNotif(id: ObjectId, lastNotif: LastUserNotificationDispatch) = SQLLastNotif(id,
     lastNotif.commits, lastNotif.followups)
 
-  protected type UserTuple = (ObjectId, String, String, String, Boolean)
+  protected type UserTuple = (ObjectId, String, String, String, Boolean, Boolean)
 
   protected class Auths(tag: Tag) extends Table[SQLAuth](tag, "users_authentications") {
     def userId = column[ObjectId]("user_id", O.PrimaryKey)
@@ -85,20 +85,21 @@ trait SQLUserSchema {
     def emailLowerCase    = column[String]("email_lowercase")
     def token             = column[String]("token")
     def regular           = column[Boolean]("regular")
+    def admin             = column[Boolean]("admin")
 
     def auth = foreignKey("auth_fk", id, auths)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
     def settings = foreignKey("settings_fk", id, userSettings)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
     def lastNotif = foreignKey("last_notifs_fk", id, lastNotifs)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
 
-    def * = (id, name, emailLowerCase, token, regular)
+    def * = (id, name, emailLowerCase, token, regular, admin)
   }
 
   protected val users = TableQuery[Users]
 
-  protected def tuple(user: User): UserTuple = (user.id, user.name, user.emailLowerCase, user.token, true)
+  protected def tuple(user: User): UserTuple = (user.id, user.name, user.emailLowerCase, user.token, true, user.admin)
 
   protected val untuple: ((UserTuple, SQLAuth, SQLSettings, SQLLastNotif)) => User = {
     case (tuple, sqlAuth, sqlSettings, sqlLastNotif) =>
-      User(tuple._1, sqlAuth.toAuth, tuple._2, tuple._3, tuple._4, sqlSettings.toSettings, sqlLastNotif.toLastNotif)
+      User(tuple._1, sqlAuth.toAuth, tuple._2, tuple._3, tuple._4, tuple._6, sqlSettings.toSettings, sqlLastNotif.toLastNotif)
   }
 }

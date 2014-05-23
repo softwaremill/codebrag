@@ -46,17 +46,29 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     userDAO.findById(internalUser.id) should be('empty)
   }
 
-  "other methods" should "add user with existing login" taggedAs (RequiresDb) in {
+  it should "add user with admin flag (false by default)" taggedAs(RequiresDb) in {
+    // given
+    val bobUser= UserAssembler.randomUser.get
+    val johnAdmin = UserAssembler.randomUser.withAdmin.get
+
+    // when
+    userDAO.add(bobUser)
+    userDAO.add(johnAdmin)
+
+    // then
+    val Some(bob) = userDAO.findById(bobUser.id)
+    bob.admin should be(false)
+    val Some(john) = userDAO.findById(johnAdmin.id)
+    john.admin should be(true)
+
+  }
+
+  it should "add user with existing login" taggedAs (RequiresDb) in {
     // Given
     val login = "user1"
-    val email = "anotherEmaill@sml.com"
-    val authentication = Authentication.basic(login, login)
-    val name = "User Name"
-    val token = "token"
-    val avatarUrl = "avatarUrl"
+    val user = UserAssembler.randomUser.withBasicAuth(login, "pass").withEmail("anotheremail@sml.com").get
 
     // When
-    val user = UserAssembler.randomUser.withBasicAuth("user1", "pass").withEmail("anotheremail@sml.com").get
     userDAO.add(user)
 
     // then
@@ -76,19 +88,13 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
   it should "add user with existing email" taggedAs (RequiresDb) in {
     // Given
-    val login = "anotherUser"
-    val email = "1email@sml.com"
-    val authentication = Authentication.basic(login, login)
-    val name = "User Name"
-    val token = "token"
-    val avatarUrl = "avatarUrl"
+    val user = UserAssembler.randomUser.withBasicAuth("anotherUser", "pass").withEmail("1email@sml.com").withToken("token").get
 
     // When
-    val user = UserAssembler.randomUser.withBasicAuth(login, "pass").withEmail(email).withToken(token).get
     userDAO.add(user)
 
     // then
-    assert(userDAO.findByLoginOrEmail(email).isDefined)
+    assert(userDAO.findByLoginOrEmail("1email@sml.com").isDefined)
   }
 
   it should "find by email" taggedAs (RequiresDb) in {
