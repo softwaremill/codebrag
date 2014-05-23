@@ -8,6 +8,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.auth.AuthenticationSupport
 import com.softwaremill.codebrag.service.config.{CodebragConfig, GithubConfig}
 import com.softwaremill.codebrag.dao.user.UserDAO
+import org.bson.types.ObjectId
 
 
 class GithubAuthorizationServlet(val authenticator: Authenticator,
@@ -53,7 +54,7 @@ class GithubAuthorizationServlet(val authenticator: Authenticator,
       }
       case None => {
         logger.debug("Creating new user")
-        val newUser = User(auth, user.name, user.email, UUID.randomUUID().toString, user.avatarUrl)
+        val newUser = User(new ObjectId, auth, user.name, user.email, UUID.randomUUID().toString)
         newUserAdder.add(newUser)
       }
     }

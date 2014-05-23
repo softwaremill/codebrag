@@ -7,21 +7,19 @@ import org.joda.time.DateTime
 /**
  * @param token Used by "remember me" - set in a cookie.
  */
-case class User(id: ObjectId, authentication: Authentication, name: String, 
-                emailLowerCase: String, token: String, settings: UserSettings,
-                notifications: LastUserNotificationDispatch)
+case class User(
+  id: ObjectId,
+  authentication: Authentication,
+  name: String,
+  emailLowerCase: String,
+  token: String,
+  settings: UserSettings,
+  notifications: LastUserNotificationDispatch)
 
 object User {
-  def apply(authentication: Authentication, name: String, email: String, token: String, avatarUrl: String) = {
-    new User(null, authentication, name, email, token, UserSettings(avatarUrl), LastUserNotificationDispatch(None, None))
-  }
 
-  def apply(id: ObjectId, authentication: Authentication, name: String, email: String, token: String, avatarUrl: String) = {
-    new User(id, authentication, name, email, token, UserSettings(avatarUrl), LastUserNotificationDispatch(None, None))
-  }
-
-  def apply(id: ObjectId, authentication: Authentication, name: String, email: String, token: String, settings: UserSettings) = {
-    new User(id, authentication, name, email, token, settings, LastUserNotificationDispatch(None, None))
+  def apply(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, token: String) = {
+    new User(id, authentication, name, emailLowerCase, token, UserSettings.defaults(emailLowerCase), LastUserNotificationDispatch.defaults)
   }
 
   implicit object UserLikeRegularUser extends UserLike[User] {
@@ -62,20 +60,25 @@ object Authentication extends ((String, String, String, String, String) => Authe
 
 case class LastUserNotificationDispatch(commits: Option[DateTime], followups: Option[DateTime])
 
+object LastUserNotificationDispatch {
+  def defaults = LastUserNotificationDispatch(None, None)
+}
+
 case class UserSettings(
-                         avatarUrl: String,
-                         emailNotificationsEnabled: Boolean,
-                         dailyUpdatesEmailEnabled: Boolean,
-                         appTourDone: Boolean,
-                         toReviewStartDate: Option[DateTime],
-                         selectedBranch: Option[String])
+  avatarUrl: String,
+  emailNotificationsEnabled: Boolean,
+  dailyUpdatesEmailEnabled: Boolean,
+  appTourDone: Boolean,
+  toReviewStartDate: Option[DateTime],
+  selectedBranch: Option[String])
 
 object UserSettings {
 
-  def apply(avatarUrl: String) = new UserSettings(avatarUrl, emailNotificationsEnabled = true, dailyUpdatesEmailEnabled = true, appTourDone = false, toReviewStartDate = None, selectedBranch = None)
-
-  def defaultAvatarUrl(email: String): String = {
-    s"http://www.gravatar.com/avatar/${Utils.md5(email)}.png"
+  def defaults(email: String) = {
+    new UserSettings(defaultAvatarUrl(email), emailNotificationsEnabled = true, dailyUpdatesEmailEnabled = true, appTourDone = false, toReviewStartDate = None, selectedBranch = None)
   }
+
+  def defaultAvatarUrl(email: String): String = s"http://www.gravatar.com/avatar/${Utils.md5(email)}.png"
+
 }
 

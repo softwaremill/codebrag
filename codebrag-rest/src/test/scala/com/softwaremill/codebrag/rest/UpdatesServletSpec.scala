@@ -48,7 +48,7 @@ class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
     }
   }
 
-  def currentUser(id: ObjectId) = User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde", "avatarUrl")
+  def currentUser(id: ObjectId) = User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde")
 
   class TestableUpdatesServlet(followupFinder: FollowupFinder, heartbeat: HeartbeatDAO, commitFinder: ToReviewCommitsFinder, clock: Clock) extends UpdatesServlet(fakeAuthenticator, followupFinder, heartbeat, commitFinder, clock) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry

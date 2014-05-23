@@ -19,7 +19,7 @@ class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
   val httpRequest = mock[HttpServletRequest]
   val app = mock[UsersServlet]
   val userService = mock[Authenticator]
-  val loggedUser = someUser()
+  val loggedUser = someUser
   when(userService.authenticateWithToken(loggedUser.token)) thenReturn(Option(loggedUser))
 
   val rememberMe = true

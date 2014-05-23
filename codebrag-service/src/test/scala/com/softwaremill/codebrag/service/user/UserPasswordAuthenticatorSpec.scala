@@ -20,7 +20,7 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
   val fixtureLogin = "johndoe"
   val fixturePassword = "password"
   val fixtureUserId: ObjectId = ObjectIdTestUtils.oid(123)
-  val fixtureUser = User(fixtureUserId, Authentication.basic(fixtureLogin, fixturePassword), "John Doe", "john@doe.com", "123abc", "http://gravatar.com")
+  val fixtureUser = User(fixtureUserId, Authentication.basic(fixtureLogin, fixturePassword), "John Doe", "john@doe.com", "123abc")
 
   before {
     eventBus.clear()

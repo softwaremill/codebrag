@@ -25,7 +25,7 @@ class InvitationServletSpec extends AuthenticatableServletSpec with BeforeAndAft
 
   "GET /" should "return invitation message" in {
     //given
-    userIsAuthenticatedAs(someUser())
+    userIsAuthenticatedAs(someUser)
     val invitationCode = "123abc"
     when(invitationService.generateInvitationCode(any[ObjectId])).thenReturn(invitationCode)
     //when
@@ -38,7 +38,7 @@ class InvitationServletSpec extends AuthenticatableServletSpec with BeforeAndAft
 
   "POST /" should "send invitation" in {
     //given
-    userIsAuthenticatedAs(someUser())
+    userIsAuthenticatedAs(someUser)
 
     val email = "adam@example.org"
     val invitationLink = "http://codebrag.com/#/register/123abc123"

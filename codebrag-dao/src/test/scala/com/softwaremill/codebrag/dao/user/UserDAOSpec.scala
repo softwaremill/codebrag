@@ -31,8 +31,8 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
       val password = "pass" + i
       val token = "token" + i
       val name = s"User Name $i"
-      userDAO.add(User(i, Authentication.basic(login, password), name, s"$login@sml.com", token,
-        UserSettings("avatarUrl"), LastUserNotificationDispatch(None, None)))
+      val user = UserAssembler.randomUser.withId(i).withBasicAuth(login, password).withFullName(name).withEmail(s"$login@sml.com").withToken(token).get
+      userDAO.add(user)
     }
   }
 
@@ -56,22 +56,11 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     val avatarUrl = "avatarUrl"
 
     // When
-    userDAO.add(User(authentication, name, email, token, avatarUrl))
+    val user = UserAssembler.randomUser.withBasicAuth("user1", "pass").withEmail("anotheremail@sml.com").get
+    userDAO.add(user)
 
     // then
     assert(userDAO.findByLoginOrEmail(login).isDefined)
-  }
-
-  it should "generate the id if one is not present" taggedAs (RequiresDb) in {
-    // Given
-    val user = User(Authentication.basic("x", "x"), "x", "y", "z", "")
-
-    // When
-    val addedUser = userDAO.add(user)
-
-    // then
-    user.id should be(null)
-    addedUser.id should not be (null)
   }
 
   it should "count all regular users in db" taggedAs (RequiresDb) in {
@@ -95,7 +84,8 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     val avatarUrl = "avatarUrl"
 
     // When
-    userDAO.add(User(authentication, name, email, token, avatarUrl))
+    val user = UserAssembler.randomUser.withBasicAuth(login, "pass").withEmail(email).withToken(token).get
+    userDAO.add(user)
 
     // then
     assert(userDAO.findByLoginOrEmail(email).isDefined)
@@ -305,7 +295,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
   it should "find user by its Id" taggedAs RequiresDb in {
     // given
-    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", UserSettings("avatarUrl"), LastUserNotificationDispatch(None, None))
+    val user = UserAssembler.randomUser.get
     userDAO.add(user)
 
     // when
@@ -320,7 +310,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     val commitDate = DateTime.now().minusHours(1)
     val followupDate = DateTime.now().minusMinutes(1)
     val notifications = LastUserNotificationDispatch(Some(commitDate), Some(followupDate))
-    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", UserSettings("avatarUrl"), notifications)
+    val user = UserAssembler.randomUser.withNotificationsDispatch(notifications).get
     userDAO.add(user)
 
     // when
@@ -333,7 +323,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
   "rememberNotifications" should "store dates properly" taggedAs RequiresDb in {
     // given
-    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", "avatarUrl")
+    val user = UserAssembler.randomUser.get
     userDAO.add(user)
     val followupDate = DateTime.now()
     val notifications = LastUserNotificationDispatch(None, Some(followupDate))
@@ -350,7 +340,7 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
   it should "update existing dates" taggedAs RequiresDb in {
     // given
     val notifications = LastUserNotificationDispatch(Some(DateTime.now().minusHours(5)), Some(DateTime.now().minusMinutes(5)))
-    val user = User(ObjectIdTestUtils.oid(123), Authentication.basic("user", "password"), "user", "user@email.com", "12345abcde", UserSettings("avatarUrl"), notifications)
+    val user = UserAssembler.randomUser.withNotificationsDispatch(notifications).get
     userDAO.add(user)
 
     // when

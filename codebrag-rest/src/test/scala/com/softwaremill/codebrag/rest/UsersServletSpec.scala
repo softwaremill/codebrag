@@ -49,7 +49,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
 
   "GET /" should "return user information" in {
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    val currentUser = someUser()
+    val currentUser = someUser
     userIsAuthenticatedAs(currentUser)
     get("/") {
       status should be(200)
@@ -60,7 +60,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   "GET /all" should "return empty list of registered users if in demo mode" in {
     config = configWithDemo(true)
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    userIsAuthenticatedAs(someUser())
+    userIsAuthenticatedAs(someUser)
     get("/all") {
       status should be(200)
       val expectedBody = Map("registeredUsers" -> List.empty)
@@ -72,7 +72,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     val actualUsers = List(UserAssembler.randomUser.withEmail("john@codebrag.com").get)
     when(userDao.findAll()).thenReturn(actualUsers)
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    userIsAuthenticatedAs(someUser())
+    userIsAuthenticatedAs(someUser)
     get("/all") {
       status should be(200)
       val expectedBody = Map("registeredUsers" -> actualUsers.map{user => Map("name" -> user.name, "email" -> user.emailLowerCase)})
@@ -92,7 +92,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   "GET /first-registration" should "return firstRegistration flag" in {
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
     //given
-    val currentUser = someUser()
+    val currentUser = someUser
     userIsAuthenticatedAs(currentUser)
     when(registerService.firstRegistration).thenReturn(true)
     //when

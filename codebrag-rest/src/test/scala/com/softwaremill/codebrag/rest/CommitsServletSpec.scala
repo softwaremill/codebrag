@@ -33,7 +33,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var userReactionFinder = mock[ReactionFinder]
   var userDao = mock[UserDAO]
   var reviewCommitUseCase = mock[ReviewCommitUseCase]
-  val UserJson = someUser()
+  val UserJson = someUser
   val userReactionService = mock[UserReactionService]
   val unlikeUseCaseFactory = mock[UnlikeUseCase]
   val likeUseCase = mock[LikeUseCase]

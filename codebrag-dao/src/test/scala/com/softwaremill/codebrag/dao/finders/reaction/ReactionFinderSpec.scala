@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.dao.finders.reaction
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import com.softwaremill.codebrag.dao._
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{Authentication, User}
+import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, UserSettings, Authentication, User}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, LikeAssembler, CommentAssembler}
 import org.scalatest.BeforeAndAfterEach
@@ -24,8 +24,8 @@ class ReactionFinderSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with
 
   val CommitId = oid(1)
 
-  val John = User(oid(2), Authentication.basic("john", "pass"), "John", "john@doe.com", "123abc", "http://john.doe.com/avatar")
-  val Mary = User(oid(3), Authentication.basic("mary", "pass"), "Mary", "mary@smith.com", "123abc", "http://mary.com/avatar")
+  val John = UserAssembler.randomUser.withBasicAuth("john", "pass").withFullName("John").withEmail("john@doe.com").withToken("123123").get
+  val Mary = UserAssembler.randomUser.withBasicAuth("mary", "pass").withFullName("Mary").withEmail("mary@doe.com").withToken("abcabc").get
 
   val user = UserAssembler.randomUser.withFullName("John Doe").get
   val commitId = ObjectIdTestUtils.oid(100)

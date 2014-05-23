@@ -1,11 +1,12 @@
 package com.softwaremill.codebrag.service.user
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.domain.{UserSettings, User, Authentication}
+import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, UserSettings, User, Authentication}
 import java.util.UUID
 import com.softwaremill.codebrag.service.invitations.InvitationService
 import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.dao.user.UserDAO
+import org.bson.types.ObjectId
 
 class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationService: InvitationService, notificationService: NotificationService) extends Logging {
 
@@ -33,8 +34,7 @@ class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationSe
   }
 
   private def registerUser(login: String, emailLowerCase: String, password: String): Either[String, Unit] = {
-    val user = User(Authentication.basic(login, password), login, emailLowerCase,
-      UUID.randomUUID().toString, UserSettings.defaultAvatarUrl(emailLowerCase))
+    val user = User(new ObjectId, Authentication.basic(login, password), login, emailLowerCase, UUID.randomUUID().toString)
     val addedUser = newUserAdder.add(user)
     notificationService.sendWelcomeNotification(addedUser)
     Right()

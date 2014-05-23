@@ -13,7 +13,7 @@ import com.softwaremill.codebrag.activities.FollowupDoneUseCase
 
 class FollowupsServletSpec extends AuthenticatableServletSpec {
 
-  val currentUser = someUser()
+  val currentUser = someUser
   var followupFinder = mock[FollowupFinder]
   var useCase = mock[FollowupDoneUseCase]
 

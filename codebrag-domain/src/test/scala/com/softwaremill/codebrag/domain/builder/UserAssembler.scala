@@ -16,11 +16,6 @@ class UserAssembler(var user: User) {
     this
   }
 
-  def withAvatarUrl(url: String) = {
-    user = user.copy(settings = UserSettings(url))
-    this
-  }
-
   def withEmail(email: String) = {
     user = user.copy(emailLowerCase = email)
     this
@@ -56,14 +51,25 @@ class UserAssembler(var user: User) {
     this
   }
 
+  def withNotificationsDispatch(notifs: LastUserNotificationDispatch) = {
+    user = user.copy(notifications = notifs)
+    this
+  }
+
+  def withBasicAuth(username: String, password: String) = {
+    user = user.copy(authentication = Authentication.basic(username, password))
+    this
+  }
+
+  def withToken(token: String) = {
+    user = user.copy(token = token)
+    this
+  }
+
   def get = user
 }
 
 object UserAssembler {
   def randomUser = new UserAssembler(createRandomUser())
-
-  private def createRandomUser() = {
-    User(new ObjectId, Authentication("Basic", "Sofokles", "sofokles", "token", "salt"), "Sofokles Mill", "sofo@sml.com", "token",
-      UserSettings("http://avatar.com/1.jpg"), LastUserNotificationDispatch(None, None))
-  }
+  private def createRandomUser() = User(new ObjectId, Authentication("Basic", "Sofokles", "sofokles", "token", "salt"), "Sofokles Mill", "sofo@sml.com", "token")
 }
