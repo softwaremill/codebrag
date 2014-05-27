@@ -8,9 +8,6 @@ angular.module('codebrag.tour')
 
         $scope.ackStep = function(stepName) {
             pageTourService.ackStep(stepName);
-            if(stepName === 'invites') {
-                pageTourService.finishTour();
-            }
         };
 
         $scope.inFollowups = function() {

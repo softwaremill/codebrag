@@ -10,6 +10,11 @@ describe('Page tour service', function() {
         settings: { appTourDone: true}
     };
 
+    var ADMIN_WITH_TOUR_NOT_YET_DONE = {
+        admin: true,
+        settings: { appTourDone: false}
+    };
+
     beforeEach(module('codebrag.templates'));
     beforeEach(module('codebrag.tour'));
 
@@ -58,7 +63,8 @@ describe('Page tour service', function() {
         logUserIn(USER_WITH_TOUR_NOT_YET_DONE);
 
         // when
-        pageTourService.finishTour();
+        pageTourService.ackStep('commits');
+        pageTourService.ackStep('followups');
 
         // then
         expect(tourElementPresent()).toBeFalsy();
@@ -101,12 +107,28 @@ describe('Page tour service', function() {
         });
     });
 
+
+    it('should have no invite step active for regular users', function() {
+        // given
+        pageTourService.initializeTour();
+
+        // when
+        logUserIn(ADMIN_WITH_TOUR_NOT_YET_DONE);
+
+
+        // then
+        ['commits', 'followups'].forEach(function(step) {
+            expect(pageTourService.stepActive(step)).toBeTruthy();
+        });
+        expect(pageTourService.stepActive('invites')).toBeFalsy();
+    });
+
     function tourElementPresent() {
         return $document.find('page-tour').length == 1;
     }
 
     function logUserIn(user) {
-        spyOn(authService, 'requestCurrentUser').andReturn($q.when(user));
+        authService.loggedInUser.loggedInAs(user);
         $rootScope.$broadcast(events.loggedIn);
         $rootScope.$apply();
     }

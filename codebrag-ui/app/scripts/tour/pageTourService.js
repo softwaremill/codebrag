@@ -34,10 +34,13 @@ angular.module('codebrag.tour')
 
         function ackStep(stepName) {
             tourSteps[stepName].ack = true;
+            if(shouldFinishTour()) {
+                finishTour();
+            }
         }
 
         function stepActive(stepName) {
-            if(tourDone) return false;
+            if(tourDone || angular.isUndefined(tourSteps[stepName])) return false;
             if(tourSteps[stepName].visible) {
                 return !tourSteps[stepName].ack && tourSteps[stepName].visible();
             } else {
@@ -49,15 +52,25 @@ angular.module('codebrag.tour')
             $rootScope.$on(events.loggedIn, setupUserTour);
 
             function setupUserTour() {
-                authService.requestCurrentUser().then(function(user) {
-                    if(!user.settings.appTourDone) {
-                        tourDOMAppender.append();
-                    } else {
-                        tourDone = true;
-                        tourDOMAppender.remove();
+                var user = authService.loggedInUser;
+                if(!user.settings.appTourDone) {
+                    if(!user.isAdmin()) {
+                        delete tourSteps.invites;
                     }
-                });
+                    tourDOMAppender.append();
+                } else {
+                    tourDone = true;
+                    tourDOMAppender.remove();
+                }
             }
+        }
+
+        function shouldFinishTour() {
+            return Object.getOwnPropertyNames(tourSteps).map(function(property) {
+                return tourSteps[property].ack === true;
+            }).reduce(function(res, el) {
+                return res && el;
+            }, true);
         }
 
         function finishTour() {
@@ -70,8 +83,7 @@ angular.module('codebrag.tour')
         return {
             ackStep: ackStep,
             stepActive: stepActive,
-            initializeTour: initializeTour,
-            finishTour: finishTour
+            initializeTour: initializeTour
         }
 
     });
