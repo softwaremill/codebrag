@@ -1,73 +1,65 @@
-angular.module('codebrag.auth')
+angular.module('codebrag.auth').factory('authService', function ($http, httpRequestsBuffer, $q, $rootScope, events, User) {
+    'use strict';
 
-    .factory('authService', function ($http, httpRequestsBuffer, $q, $rootScope, events) {
+    var currentUser = User.guest();
 
-        var authService = {
+    function setLoggedInUser(userData) {
+        currentUser.loggedInAs(userData);
+        updateLoggedInUserInRootScope(currentUser, $rootScope);
+        $rootScope.$broadcast(events.loggedIn);
+    }
 
-            loggedInUser: undefined,
+    function updateLoggedInUserInRootScope(loggedInUser, $rootScope) {
+        $rootScope.loggedInUser = loggedInUser;
+    }
 
-            login: function (user) {
-                var loginRequest = $http.post('rest/users', user, {bypassInterceptors: true});
-                return loginRequest.then(function (response) {
-                    authService.loggedInUser = response.data;
-                    updateLoggedInUserInRootScope(authService.loggedInUser, $rootScope);
-                    $rootScope.$broadcast(events.loggedIn);
-                    httpRequestsBuffer.retryAllRequest();
-                });
-            },
+    return {
 
-            logout: function () {
-                var logoutRequest = $http.get('rest/users/logout');
-                return logoutRequest.then(function () {
-                    authService.loggedInUser = undefined;
-                    updateLoggedInUserInRootScope(authService.loggedInUser, $rootScope);
-                    $rootScope.$broadcast(events.loginRequired);
-                });
-            },
+        login: function (user) {
+            var loginRequest = $http.post('rest/users', user, {bypassInterceptors: true});
+            return loginRequest.then(function (response) {
+                setLoggedInUser(response.data);
+                httpRequestsBuffer.retryAllRequest();
+                return currentUser;
+            });
+        },
 
-            isAuthenticated: function () {
-                return !angular.isUndefined(authService.loggedInUser);
-            },
+        logout: function () {
+            return $http.get('rest/users/logout');
+        },
 
-            isNotAuthenticated: function () {
-                return !authService.isAuthenticated();
-            },
+        isAuthenticated: function () {
+            return currentUser.isAuthenticated();
+        },
 
-            requestCurrentUser: function () {
-                if (authService.isAuthenticated()) {
-                    return $q.when(authService.loggedInUser);
-                }
-                function logInIfNotYetLoggedIn(currentUser) {
-                    if(authService.isNotAuthenticated()) {
-                        authService.loggedInUser = currentUser;
-                        updateLoggedInUserInRootScope(authService.loggedInUser, $rootScope);
-                        $rootScope.$broadcast(events.loggedIn);
-                    }
-                }
-                return $http.get('rest/users').then(function (response) {
-                    logInIfNotYetLoggedIn(response.data);
-                    return $q.when(authService.loggedInUser);
-                });
+        isNotAuthenticated: function () {
+            return currentUser.isGuest();
+        },
 
-            },
-
-            isFirstRegistration: function () {
-                if (authService.isAuthenticated()) {
-                    return $q.when(true);
-                } else {
-                    return $http.get('rest/users/first-registration').then(function (response) {
-                        var firstRegistration = response.data.firstRegistration;
-                        return $q.when(firstRegistration);
-                    });
-                }
+        requestCurrentUser: function () {
+            if (currentUser.isAuthenticated()) {
+                return $q.when(currentUser);
             }
+            return $http.get('rest/users').then(function (response) {
+                setLoggedInUser(response.data);
+                return $q.when(currentUser);
+            });
 
-        };
+        },
 
-        function updateLoggedInUserInRootScope(loggedInUser, $rootScope) {
-            $rootScope.loggedInUser = loggedInUser;
-        }
+        isFirstRegistration: function () {
+            if (currentUser.isAuthenticated()) {
+                return $q.reject();
+            } else {
+                return $http.get('rest/users/first-registration').then(function (response) {
+                    var firstRegistration = response.data.firstRegistration;
+                    return $q.when(firstRegistration);
+                });
+            }
+        },
 
-        return authService;
+        loggedInUser: currentUser
 
-    });
+    };
+
+});

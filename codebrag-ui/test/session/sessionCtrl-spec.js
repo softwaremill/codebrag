@@ -2,22 +2,22 @@
 
 describe("Session Controller", function () {
 
-    var scope, $httpBackend, ctrl, authSrv, $q, $rootScope, $window;
+    var scope, $httpBackend, ctrl, authService, $q, $rootScope, $window;
 
     beforeEach(module(function($provide) {
         $provide.value('$window', $window = angular.mock.createMockWindow());
     }));
 
-    beforeEach(module('codebrag.session'), module('codebrag.common.services'));
+    beforeEach(module('codebrag.session'));
 
-    beforeEach(inject(function (_$httpBackend_, _$rootScope_, $routeParams, configService, $controller, authService, _$q_) {
+    beforeEach(inject(function (_$httpBackend_, _$rootScope_, $routeParams, configService, $controller, _authService_, _$q_) {
         $httpBackend = _$httpBackend_;
         $httpBackend.expect("GET", "rest/config/").respond({demo: true});
 
         $rootScope = _$rootScope_;
         scope = $rootScope.$new();
-        authSrv = authService;
-        ctrl = $controller('SessionCtrl', {$scope: scope, authService: authSrv, flash: {}});
+        authService = _authService_;
+        ctrl = $controller('SessionCtrl', {$scope: scope, authService: authService, flash: {}});
         $q = _$q_;
 
         scope.loginForm = {
@@ -33,79 +33,61 @@ describe("Session Controller", function () {
 
     it('Should call login rest service when form is valid', inject(function ($state) {
         // Given
-        spyOn(authSrv, 'login').andReturn($q.when('anything'));
+        spyOn(authService, 'login').andReturn($q.when('anything'));
         spyOn($state, 'transitionTo');
 
         // When
         scope.login();
 
         // Then
-        expect(authSrv.login).toHaveBeenCalled();
+        expect(authService.login).toHaveBeenCalled();
     }));
 
     it('Should not call login rest service when form is invalid', inject(function ($state) {
         // Given
         scope.loginForm.$invalid = true;
         spyOn($state, 'transitionTo');
-        spyOn(authSrv, 'login');
+        spyOn(authService, 'login');
 
         // When
         scope.login();
 
         // Then
-        expect(authSrv.login).not.toHaveBeenCalled();
+        expect(authService.login).not.toHaveBeenCalled();
 
     }));
 
-    it('Should provide currently logged in user if authenticated', inject(function ($state, authService) {
+    it('should keep current user updated', inject(function ($state, authService) {
         // Given
         spyOn($state, 'transitionTo');
-        var expectedUser = {};
-        spyOn(authService, 'isAuthenticated').andReturn(true);
-        authService.loggedInUser = expectedUser;
+        expect(scope.loggedInUser.isGuest()).toBe(true);
+        expect(scope.loggedInUser.isAuthenticated()).toBe(false);
 
         // When
-        var loggedInUser = scope.loggedInUser();
+        authService.loggedInUser.loggedInAs({fullName: 'John Doe'});
 
         // Then
-        expect(loggedInUser).toBe(expectedUser);
+        expect(scope.loggedInUser).toBe(authService.loggedInUser);
+        expect(scope.loggedInUser.isGuest()).toBe(false);
+        expect(scope.loggedInUser.isAuthenticated()).toBe(true);
     }));
 
-    it('Should return an empty object when trying to get current user if not authenticated', inject(function ($state, authService) {
+    it('Should return guest user when trying to get current user if not authenticated', inject(function ($state, authService) {
         // Given
         spyOn($state, 'transitionTo');
-        spyOn(authService, 'isAuthenticated').andReturn(false);
 
         // When
-        var currentUser = scope.loggedInUser();
+        var currentUser = scope.loggedInUser;
 
         // Then
-        expect(currentUser).toEqual({});
-    }));
-
-    it('Should have user not logged', inject(function ($state) {
-        // Given
-        spyOn($state, 'transitionTo');
-        // no user interaction was done before
-
-        // Then
-        expect(scope.isLogged()).toBe(false);
-    }));
-
-    it('Should have user logged in', inject(function ($state) {
-        // Given
-        spyOn($state, 'transitionTo');
-        spyOn(authSrv, 'isAuthenticated').andReturn(true);
-
-        // Then
-        expect(scope.isLogged()).toBe(true);
+        expect(currentUser.isGuest()).toEqual(true);
     }));
 
     it('Should clear password after receiving error response from server', inject(function ($state) {
         // Given
         var defer = $q.defer();
         defer.reject({status: 401});
-        spyOn(authSrv, 'login').andReturn(defer.promise);
+        spyOn(authService, 'login').andReturn(defer.promise);
         spyOn($state, 'transitionTo');
 
         // When
@@ -123,7 +105,7 @@ describe("Session Controller", function () {
         // Given
         var defer = $q.defer();
         defer.resolve();
-        spyOn(authSrv, 'login').andReturn(defer.promise);
+        spyOn(authService, 'login').andReturn(defer.promise);
         spyOn($state, 'transitionTo');
 
         // When
@@ -140,14 +122,14 @@ describe("Session Controller", function () {
 
     it('Calling logout should log out and redirect to /', inject(function ($state, events, $window) {
         // Given
-        spyOn(authSrv, 'logout').andReturn($q.when());
+        spyOn(authService, 'logout').andReturn($q.when());
 
         // When
         scope.logout();
         scope.$digest();
 
         // Then
-        expect(authSrv.logout).toHaveBeenCalled();
+        expect(authService.logout).toHaveBeenCalled();
         expect($window.location).toBe('/');
     }));
 

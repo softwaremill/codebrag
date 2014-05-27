@@ -8,6 +8,8 @@ angular.module('codebrag.session')
             rememberme: false
         };
 
+        $scope.loggedInUser = authService.loggedInUser;
+
         $scope.flash = flash;
 
         $scope.login = function () {
@@ -22,21 +24,6 @@ angular.module('codebrag.session')
         $scope.githubLogin = function () {
             var githubLoginUrl = '/rest/github/authenticate';
             $window.location.href = githubLoginUrl + '?redirectTo=' + $location.url();
-        };
-
-        $scope.isLogged = function () {
-            return authService.isAuthenticated();
-        };
-
-        $scope.isNotLogged = function () {
-            return authService.isNotAuthenticated();
-        };
-
-        $scope.loggedInUser = function () {
-            if (!authService.isAuthenticated()) {
-                return {};
-            }
-            return authService.loggedInUser;
         };
 
         $scope.logout = function () {
