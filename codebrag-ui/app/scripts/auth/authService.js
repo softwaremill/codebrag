@@ -28,14 +28,6 @@ angular.module('codebrag.auth').factory('authService', function ($http, httpRequ
             return $http.get('rest/users/logout');
         },
 
-        isAuthenticated: function () {
-            return currentUser.isAuthenticated();
-        },
-
-        isNotAuthenticated: function () {
-            return currentUser.isGuest();
-        },
-
         requestCurrentUser: function () {
             if (currentUser.isAuthenticated()) {
                 return $q.when(currentUser);

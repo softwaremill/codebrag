@@ -25,7 +25,7 @@ angular.module("codebrag.auth")
                     scope.registrationSuccessMessage = flash.get();
                 });
                 function ifLoginRequired() {
-                    return authService.isNotAuthenticated();
+                    return authService.loggedInUser.isGuest();
                 }
             }
         };
