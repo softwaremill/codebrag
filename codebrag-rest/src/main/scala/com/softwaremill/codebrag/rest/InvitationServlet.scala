@@ -1,11 +1,13 @@
 package com.softwaremill.codebrag.rest
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.service.invitations.InvitationService
-import org.bson.types.ObjectId
-import com.softwaremill.codebrag.service.user.{RegisterService, Authenticator}
+import com.softwaremill.codebrag.service.user.Authenticator
+import com.softwaremill.codebrag.activities.{SendInvitationEmailUseCase, GenerateInvitationCodeUseCase}
 
-class InvitationServlet(val authenticator: Authenticator, invitationService: InvitationService) extends JsonServletWithAuthentication with Logging {
+class InvitationServlet(
+  val authenticator: Authenticator,
+  generateInvitationCodeUseCase: GenerateInvitationCodeUseCase,
+  sendInvitationEmailUseCase: SendInvitationEmailUseCase) extends JsonServletWithAuthentication with Logging {
 
   before() {
     haltIfNotAuthenticated
@@ -13,12 +15,13 @@ class InvitationServlet(val authenticator: Authenticator, invitationService: Inv
 
   post("/") {
     val emails = (parsedBody \ "emails").extract[List[String]]
-    val message = (parsedBody \ "invitationLink").extract[String]
-    invitationService.sendInvitation(emails, message, new ObjectId(user.id))
+    val invitationLink = (parsedBody \ "invitationLink").extract[String]
+    sendInvitationEmailUseCase.execute(user.idAsObjectId, emails, invitationLink)
   }
 
   get("/") {
-    Map("invitationCode" -> invitationService.generateInvitationCode(new ObjectId(user.id)))
+    val invitationCode = generateInvitationCodeUseCase.execute(user.idAsObjectId)
+    Map("invitationCode" -> invitationCode)
   }
 
 }

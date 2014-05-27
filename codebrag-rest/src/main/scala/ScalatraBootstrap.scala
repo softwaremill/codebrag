@@ -65,7 +65,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new SwaggerApiDoc(swagger), "/api-docs/*")
     context.mount(new VersionServlet(config), Prefix + "version")
     context.mount(new ConfigServlet(config, authenticator), Prefix + "config")
-    context.mount(new InvitationServlet(authenticator, invitationsService), Prefix + "invitation")
+    context.mount(new InvitationServlet(authenticator, generateInvitationCodeUseCase, sendInvitationEmailUseCase), Prefix + "invitation")
     context.mount(new RepositorySyncServlet(actorSystem, repoUpdateActor), RepositorySyncServlet.Mapping)
     context.mount(new UpdatesServlet(authenticator, followupFinder, heartbeatDao, toReviewCommitsFinder, clock), Prefix + UpdatesServlet.Mapping)
     context.mount(new RepoStatusServlet(authenticator, _repository, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
