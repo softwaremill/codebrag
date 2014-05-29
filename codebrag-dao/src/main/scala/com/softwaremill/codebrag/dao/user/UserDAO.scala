@@ -5,12 +5,7 @@ import org.bson.types.ObjectId
 import org.joda.time.DateTime
 
 trait UserDAO {
-  /**
-   * @return The saved user - in case id was not present, it will be filled after saving.
-   */
-  def add(user: User): User = addWithId(user)
-
-  def addWithId(user: User): User
+  def add(user: User): User
 
   def findAll(): List[User]
 
