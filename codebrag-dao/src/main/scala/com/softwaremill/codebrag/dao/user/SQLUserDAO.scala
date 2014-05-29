@@ -9,14 +9,13 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
   import database.driver.simple._
   import database._
 
-  def addWithId(user: User) = {
+  def add(user: User) = {
     db.withTransaction { implicit session =>
       lastNotifs += toSQLLastNotif(user.id, user.notifications)
       userSettings += toSQLSettings(user.id, user.settings)
       auths += toSQLAuth(user.id, user.authentication)
       users += tuple(user)
     }
-
     user
   }
 
