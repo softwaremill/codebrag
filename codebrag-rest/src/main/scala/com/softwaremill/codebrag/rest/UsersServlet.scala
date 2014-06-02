@@ -10,13 +10,14 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
 import org.scalatra
 import com.softwaremill.codebrag.activities.{UserToRegister, RegisterNewUserUseCase}
+import com.softwaremill.codebrag.dao.finders.user.{ManagedUsersListView, UserFinder}
 
 class UsersServlet(
                     val authenticator: Authenticator,
                     registerService: RegisterService,
                     registerUserUseCase: RegisterNewUserUseCase,
                     afterLogin: AfterUserLogin,
-                    userDao: UserDAO,
+                    userFinder: UserFinder,
                     config: CodebragConfig,
                     val swagger: Swagger) extends JsonServletWithAuthentication with UsersServletSwaggerDefinition with CookieSupport {
 
@@ -37,12 +38,11 @@ class UsersServlet(
 
   get("/all") {
     haltIfNotAuthenticated()
-    val usersView = if(!config.demo) {
-      userDao.findAll().map { user => Map("name" -> user.name, "email" -> user.emailLowerCase) }
+    if(!config.demo) {
+      userFinder.findAllAsManagedUsers()
     } else {
-      List.empty
+      ManagedUsersListView(List.empty)
     }
-    Map("registeredUsers" -> usersView)
   }
 
   get("/logout", operation(logoutOperation)) {

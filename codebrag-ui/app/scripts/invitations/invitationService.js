@@ -16,7 +16,7 @@ angular.module('codebrag.invitations')
 
         this.loadRegisteredUsers = function() {
             return $http.get('rest/users/all').then(function(response) {
-                return response.data.registeredUsers;
+                return response.data.users;
             });
         };
 

@@ -12,21 +12,20 @@ import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.typesafe.config.ConfigFactory
 import java.util.Properties
-import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.activities.{UserToRegister, RegisterNewUserUseCase}
+import com.softwaremill.codebrag.dao.finders.user.{ManagedUserView, ManagedUsersListView, UserFinder}
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
   val registerService = mock[RegisterService]
   val registerUseCase = mock[RegisterNewUserUseCase]
   val afterUserLoginHook = mock[AfterUserLogin]
-  var userDao: UserDAO = _
+  var userFinder: UserFinder = _
   var config: CodebragConfig = _
 
   override def beforeEach() {
     super.beforeEach()
-    userDao = mock[UserDAO]
+    userFinder = mock[UserFinder]
     config = configWithDemo(false)
   }
 
@@ -63,20 +62,20 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     userIsAuthenticatedAs(someUser)
     get("/all") {
       status should be(200)
-      val expectedBody = Map("registeredUsers" -> List.empty)
+      val expectedBody = ManagedUsersListView(users = List.empty)
       body should be(asJson(expectedBody))
     }
   }
 
   "GET /all" should "return actual list of registered users if not in demo mode" in {
-    val actualUsers = List(UserAssembler.randomUser.withEmail("john@codebrag.com").get)
-    when(userDao.findAll()).thenReturn(actualUsers)
+    val user = ManagedUserView("john@doe.com", "John Doe", active = true, admin = true)
+    val registeredUsers = ManagedUsersListView(List(user))
+    when(userFinder.findAllAsManagedUsers()).thenReturn(registeredUsers)
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
     userIsAuthenticatedAs(someUser)
     get("/all") {
       status should be(200)
-      val expectedBody = Map("registeredUsers" -> actualUsers.map{user => Map("name" -> user.name, "email" -> user.emailLowerCase)})
-      body should be(asJson(expectedBody))
+      body should be(asJson(registeredUsers))
     }
   }
 
@@ -128,7 +127,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends UsersServlet(fakeAuthenticator, registerService, registerUseCase, afterUserLoginHook, userDao, config, new CodebragSwagger) {
+    extends UsersServlet(fakeAuthenticator, registerService, registerUseCase, afterUserLoginHook, userFinder, config, new CodebragSwagger) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 
