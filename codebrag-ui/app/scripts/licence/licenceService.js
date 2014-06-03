@@ -10,7 +10,7 @@ angular.module('codebrag.licence')
 
         function scheduleLicenceCheck() {
             return loadLicenceData().then(scheduleNextCheck).then(fireEvents).then(function() {
-                ready.resolve();
+                ready.resolve(licenceData);
             });
             function scheduleNextCheck() {
                 checkTimer && $timeout.cancel(checkTimer);
