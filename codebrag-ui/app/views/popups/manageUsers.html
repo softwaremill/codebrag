@@ -1,0 +1,35 @@
+<div class="popup-content" ng-controller="ManageUsersPopupCtrl">
+
+    <h1 class="text-center">Manage users</h1>
+
+    <div>
+        <div class="info-line text-error" ng-repeat="f in flash.get('error')">{{ f.message }}</div>
+        <div class="info-line success" ng-repeat="f in flash.get('info')">{{ f.message }}</div>
+    </div>
+
+    <table border="1">
+        <tr>
+            <th></th>
+            <th>Active?</th>
+            <th>Admin?</th>
+            <th></th>
+        </tr>
+
+        <tr ng-repeat="user in users">
+            <td>{{ user.email}}</td>
+            <td><input type="checkbox" ng-model="user.active" ng-click="modifyUser(user)" ng-disabled="user.locked"/></td>
+            <td><input type="checkbox" ng-model="user.admin" ng-click="modifyUser(user)" ng-disabled="user.locked"/></td>
+            <td><button ng-disabled="!user.active" ng-click="askForNewPassword(user)">Set password</button></td>
+        </tr>
+    </table>
+
+    <section>
+        <div> {{ countActiveUsers() }} active users in total</div>
+        <div> Licence up to {{ licenceMaxUsers }} users</div>
+        <button ng-click="invite()">Invite team members</button>
+    </section>
+
+    <span class="close-btn" ng-click="$close()">
+        <i class="icon-remove"></i>
+    </span>
+</div>

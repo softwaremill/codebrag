@@ -39,4 +39,15 @@ angular.module('codebrag.common.services')
             return $modal.open(modalConfig(inviteModalConfig));
         };
 
+        this.openSetUserPasswordPopup = function(targetUser) {
+            var config = {
+                templateUrl: 'views/popups/setUserPassword.html',
+                controller: 'SetUserPasswordPopupCtrl',
+                resolve: {
+                    user: function() { return targetUser; }
+                }
+            };
+            return $modal.open(modalConfig(config));
+        };
+
     });

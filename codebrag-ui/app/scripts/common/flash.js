@@ -1,6 +1,7 @@
 angular.module('codebrag.common')
     .factory('flash', function ($rootScope) {
-        var queue = [], currentMessage = '';
+        var queue = [],
+            currentMessage = '';
 
         $rootScope.$on('$stateChangeSuccess', function() {
             if (queue.length > 0) {

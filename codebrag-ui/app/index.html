@@ -129,6 +129,11 @@
     <script type="text/javascript" src="scripts/licence/licenceInfoCtrl.js"></script>
     <script type="text/javascript" src="scripts/licence/licenceExpirationStatusInterceptor.js"></script>
 
+    <!--userMgmt-->
+    <script type="text/javascript" src="scripts/users/manageUsersPopupCtrl.js"></script>
+    <script type="text/javascript" src="scripts/users/flash.js"></script>
+    <script type="text/javascript" src="scripts/users/setUserPasswordPopupCtrl.js"></script>
+    <script type="text/javascript" src="scripts/users/userMgmtService.js"></script>
 
     <!--commons -->
     <script type="text/javascript" src="scripts/common/events.js"></script>
@@ -153,6 +158,8 @@
     <script type="text/javascript" src="scripts/common/directives/autofillSubmit.js"></script>
     <script type="text/javascript" src="scripts/common/directives/savingStatus.js"></script>
     <script type="text/javascript" src="scripts/common/directives/dropdown.js"></script>
+    <script type="text/javascript" src="scripts/common/directives/match.js"></script>
+    <script type="text/javascript" src="scripts/common/directives/focus.js"></script>
 
     <script type="text/javascript" src="scripts/common/services/popupsService.js"></script>
 
@@ -208,6 +215,7 @@
                 <ul class="user-info-dropdown">
                     <li class="username" ng-click="openUserProfilePopup()">{{loggedInUser.fullName}} - profile</li>
                     <li class="invite" ng-click="openInvitePopup()" ng-show="loggedInUser.isAdmin()">Invite team members</li>
+                    <li class="invite" ng-click="openUserMgmtPopup()" ng-show="loggedInUser.isAdmin()">Manage users</li>
                     <li class="invite" ng-click="openLicencePopup()">Licence info</li>
                     <li class="invite" ng-click="openAboutPopup()">About Codebrag</li>
                     <li class="logout" ng-click="logout()">Logout</li>
