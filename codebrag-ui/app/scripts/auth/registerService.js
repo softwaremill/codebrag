@@ -2,11 +2,13 @@ angular.module('codebrag.auth')
 
     .factory('registerService', function($http, $state, $stateParams) {
 
-        var registerService = {
+        var registrationApiUrl = 'rest/users/register',
+            registerService;
 
+        registerService = {
             register: function(user) {
                 user.invitationCode = $stateParams.invitationId;
-                var registerRequest = $http.post('rest/users/register', user, {unique: true, requestId: 'register'});
+                var registerRequest = $http.post(registrationApiUrl, user, {unique: true, requestId: 'register'});
                 return registerRequest.then(function() {
                     $state.transitionTo('home');
                 });

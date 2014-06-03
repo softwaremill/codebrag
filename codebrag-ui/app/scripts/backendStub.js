@@ -337,7 +337,7 @@
 
                 $httpBackend.whenGET('rest/config/').respond({demo: false, emailNotifications: true});
 
-                $httpBackend.whenGET('rest/users').respond(authUser);
+                $httpBackend.whenGET('rest/session').respond(authUser);
 
                 $httpBackend.whenGET('rest/users/first-registration').respond({firstRegistration: false});
 

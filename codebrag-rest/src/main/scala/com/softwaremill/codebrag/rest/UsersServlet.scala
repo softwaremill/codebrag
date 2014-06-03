@@ -13,30 +13,13 @@ import com.softwaremill.codebrag.activities.{UserToRegister, RegisterNewUserUseC
 import com.softwaremill.codebrag.dao.finders.user.{ManagedUsersListView, UserFinder}
 
 class UsersServlet(
-                    val authenticator: Authenticator,
-                    registerService: RegisterService,
-                    registerUserUseCase: RegisterNewUserUseCase,
-                    afterLogin: AfterUserLogin,
-                    userFinder: UserFinder,
-                    config: CodebragConfig,
-                    val swagger: Swagger) extends JsonServletWithAuthentication with UsersServletSwaggerDefinition with CookieSupport {
+  val authenticator: Authenticator,
+  registerService: RegisterService,
+  registerUserUseCase: RegisterNewUserUseCase,
+  userFinder: UserFinder,
+  config: CodebragConfig) extends JsonServletWithAuthentication {
 
-  post(operation(loginOperation)) {
-    authenticate() match {
-      case Some(loggedUser) => {
-        afterLogin.postLogin(loggedUser)
-        loggedUser
-      }
-      case _ => halt(401, "Invalid login and/or password")
-    }
-  }
-
-  get(operation(userProfileOperation)) {
-    haltIfNotAuthenticated()
-    user
-  }
-
-  get("/all") {
+  get("/") {
     haltIfNotAuthenticated()
     if(!config.demo) {
       userFinder.findAllAsManagedUsers()
@@ -45,15 +28,7 @@ class UsersServlet(
     }
   }
 
-  get("/logout", operation(logoutOperation)) {
-    if (isAuthenticated) {
-      // call logout only when logged in to avoid NPE
-      logOut()
-    }
-  }
-
-  post("/register", operation(registerOperation)) {
-    val newUser = UserToRegister(login, email, password, invitationCode)
+  post("/register") {
     registerUserUseCase.execute(newUser) match {
       case Left(error) => halt(403, error)
       case Right(_) => scalatra.Ok
@@ -64,55 +39,16 @@ class UsersServlet(
     Map("firstRegistration" -> registerService.firstRegistration)
   }
 
-  override def login: String = {
-    (parsedBody \ "login").extractOpt[String].getOrElse("")
-  }
-
-  def invitationCode: String = {
-    (parsedBody \ "invitationCode").extractOpt[String].getOrElse("")
-  }
-
-  override def password: String = {
-    (parsedBody \ "password").extractOpt[String].getOrElse("")
-  }
-
-  override def rememberMe: Boolean = {
-    (parsedBody \ "rememberme").extractOpt[Boolean].getOrElse(false)
-  }
-
-  def email: String = {
-    (parsedBody \ "email").extractOpt[String].getOrElse("")
+  private def newUser = {
+    val login = extractNotEmptyString("login")
+    val email = extractNotEmptyString("email")
+    val password = extractNotEmptyString("password")
+    val invitationCode = extractNotEmptyString("invitationCode")
+    UserToRegister(login, email, password, invitationCode)
   }
 
 }
 
 object UsersServlet {
-  val MAPPING_PATH = "users"
-}
-
-
-trait UsersServletSwaggerDefinition extends SwaggerSupport {
-
-  override protected val applicationName = Some(UsersServlet.MAPPING_PATH)
-  protected val applicationDescription: String = "User and session management endpoint"
-
-  val loginOperation = apiOperation[UserJson]("login")
-    .summary("log user in")
-    .parameter(bodyParam[String]("login").description("user login").required)
-    .parameter(bodyParam[String]("password").description("user password").required)
-    .parameter(bodyParam[Boolean]("rememberme").description("whether user session should be remembered").required)
-
-  val userProfileOperation = apiOperation[UserJson]("userProfile")
-    .summary("gets logged in user")
-    .notes("Requires user to be authenticated")
-
-  val logoutOperation = apiOperation[Unit]("logout")
-    .summary("logs user out")
-    .notes("Requires user to be authenticated")
-
-  val registerOperation = apiOperation[UserJson]("register")
-    .summary("registers a user")
-    .parameter(bodyParam[String]("login").description("user login").required)
-    .parameter(bodyParam[String]("email").description("user email").required)
-    .parameter(bodyParam[String]("password").description("user password").required)
+  val MappingPath = "users"
 }

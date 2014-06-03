@@ -41,7 +41,7 @@ describe("UserMgmtService", function () {
 
     it('should load registerd users', function () {
         // Given
-        $httpBackend.expectGET('rest/users/all').respond({users: registeredUsers});
+        $httpBackend.expectGET('rest/users').respond({users: registeredUsers});
 
         // When
         var loadedUsers = null;

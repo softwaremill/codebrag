@@ -57,7 +57,8 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     }
 
     val repoUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, _repository, commitImportService)
-    context.mount(new UsersServlet(authenticator, registerService, registerNewUserUseCase, afterUserLogin, userFinder, config, swagger), Prefix + "users")
+    context.mount(new SessionServlet(authenticator, afterUserLogin), Prefix + SessionServlet.MappingPath)
+    context.mount(new UsersServlet(authenticator, registerService, registerNewUserUseCase, userFinder, config), Prefix + UsersServlet.MappingPath)
     context.mount(new UsersSettingsServlet(authenticator, userDao, changeUserSettingsUseCase), Prefix + "users/settings")
     context.mount(new CommitsServlet(authenticator, toReviewCommitsFinder, allCommitsFinder, reactionFinder, addCommentUseCase,
       reviewCommitUseCase, userReactionService, userDao, swagger, diffWithCommentsService, unlikeUseCaseFactory, likeUseCase), Prefix + CommitsServlet.MAPPING_PATH)

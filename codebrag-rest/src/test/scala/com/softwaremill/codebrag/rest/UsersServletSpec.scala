@@ -1,14 +1,13 @@
 package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.AuthenticatableServletSpec
-import com.softwaremill.codebrag.service.user.{AfterUserLogin, RegisterService, Authenticator}
+import com.softwaremill.codebrag.service.user.{RegisterService, Authenticator}
 import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
-import org.mockito.Matchers._
 import org.json4s.JsonDSL._
-import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
+import javax.servlet.http.HttpServletRequest
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.typesafe.config.ConfigFactory
 import java.util.Properties
@@ -19,7 +18,6 @@ class UsersServletSpec extends AuthenticatableServletSpec {
 
   val registerService = mock[RegisterService]
   val registerUseCase = mock[RegisterNewUserUseCase]
-  val afterUserLoginHook = mock[AfterUserLogin]
   var userFinder: UserFinder = _
   var config: CodebragConfig = _
 
@@ -29,51 +27,24 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     config = configWithDemo(false)
   }
 
-  "GET /logout" should "call logout() when user is already authenticated" in {
-    addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    userIsAuthenticated
-    get("/logout") {
-      verify(fakeScentry).logout()(any[HttpServletRequest], any[HttpServletResponse])
-    }
-  }
-
-  "GET /logout" should "not call logout() when user is not authenticated" in {
-    addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    userIsNotAuthenticated
-    get("/logout") {
-      verify(fakeScentry, never).logout()(any[HttpServletRequest], any[HttpServletResponse])
-      verifyZeroInteractions(fakeAuthenticator)
-    }
-  }
-
-  "GET /" should "return user information" in {
-    addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    val currentUser = someUser
-    userIsAuthenticatedAs(currentUser)
-    get("/") {
-      status should be(200)
-      body should be(asJson(currentUser))
-    }
-  }
-
-  "GET /all" should "return empty list of registered users if in demo mode" in {
+  "GET /" should "return empty list of registered users if in demo mode" in {
     config = configWithDemo(true)
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
     userIsAuthenticatedAs(someUser)
-    get("/all") {
+    get("/") {
       status should be(200)
       val expectedBody = ManagedUsersListView(users = List.empty)
       body should be(asJson(expectedBody))
     }
   }
 
-  "GET /all" should "return actual list of registered users if not in demo mode" in {
+  "GET /" should "return actual list of registered users if not in demo mode" in {
     val user = ManagedUserView("john@doe.com", "John Doe", active = true, admin = true)
     val registeredUsers = ManagedUsersListView(List(user))
     when(userFinder.findAllAsManagedUsers()).thenReturn(registeredUsers)
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
     userIsAuthenticatedAs(someUser)
-    get("/all") {
+    get("/") {
       status should be(200)
       body should be(asJson(registeredUsers))
     }
@@ -127,7 +98,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends UsersServlet(fakeAuthenticator, registerService, registerUseCase, afterUserLoginHook, userFinder, config, new CodebragSwagger) {
+    extends UsersServlet(fakeAuthenticator, registerService, registerUseCase, userFinder, config) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

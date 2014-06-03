@@ -14,8 +14,10 @@ angular.module('codebrag.invitations')
 
     .service('invitationService', function($http, $q, baseAppUrl) {
 
+        var usersApiUrl = 'rest/users';
+
         this.loadRegisteredUsers = function() {
-            return $http.get('rest/users/all').then(function(response) {
+            return $http.get(usersApiUrl).then(function(response) {
                 return response.data.users;
             });
         };

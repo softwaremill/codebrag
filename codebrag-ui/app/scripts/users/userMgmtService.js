@@ -2,12 +2,14 @@ angular.module('codebrag.userMgmt')
 
     .service('userMgmtService', function($rootScope, $http, $modal, $q, $timeout) {
 
+        var usersApiUrl = 'rest/users';
+
         this.initialize = function() {
             $rootScope.$on('openUserMgmtPopup', openPopup);
         };
 
         this.loadUsers = function() {
-            return $http.get('rest/users/all').then(function(response) {
+            return $http.get(usersApiUrl).then(function(response) {
                 return response.data.users;
             });
         };
