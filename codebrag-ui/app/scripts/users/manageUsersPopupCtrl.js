@@ -25,20 +25,9 @@ angular.module('codebrag.userMgmt')
             var userData = { userId: user.userId };
             userData[flag] = user[flag];
             user.locked = true;
-            userMgmtService.modifyUser(userData).then(changed, error(flag)).then(function() {
+            userMgmtService.modifyUser(userData).then(modifySuccess, modifyFailed(flag, user)).then(function() {
                 delete user.locked;
             });
-
-            function changed() {
-                $scope.flash.add('info', 'User details changed');
-            }
-
-            function error(flag) {
-                return function() {
-                    user[flag] = !user[flag];
-                    $scope.flash.add('error', 'Could not change user details');
-                }
-            }
         };
 
         $scope.askForNewPassword = function(user) {
@@ -49,4 +38,24 @@ angular.module('codebrag.userMgmt')
             });
         };
 
+        function modifySuccess() {
+            $scope.flash.add('info', 'User details changed');
+        }
+
+        function modifyFailed(flag, user) {
+            return function(errorsMap) {
+                user[flag] = !user[flag];
+                $scope.flash.add('error', 'Could not change user details');
+                flattenErrorsMap(errorsMap).forEach(function(error) {
+                    $scope.flash.add('error', error);
+                });
+            }
+        }
+
+        function flattenErrorsMap(errorsMap) {
+            var nestedErrorsList = Object.keys(errorsMap).map(function(key) {
+                return errorsMap[key];
+            });
+            return _.flatten(nestedErrorsList)
+        }
     });

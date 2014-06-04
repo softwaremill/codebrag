@@ -128,7 +128,7 @@ describe("ManageUsersPopupCtrl", function () {
         it('should change property back when saving changes failed', function() {
             // Given
             var user = registeredUsers[0];
-            spyOn(userMgmtService, 'modifyUser').andReturn($q.reject());
+            spyOn(userMgmtService, 'modifyUser').andReturn($q.reject({}));
 
             // When
             user.active = true;
@@ -153,18 +153,20 @@ describe("ManageUsersPopupCtrl", function () {
             expect(getFlashMessage('info')).toEqual(expectedMsg);
         });
 
-        it('should display error when changes not saved', function() {
+        it('should display errors when changes not saved', function() {
             // Given
             var user = registeredUsers[0];
-            spyOn(userMgmtService, 'modifyUser').andReturn($q.reject());
+            var serverErrors = { dummy: "server error message" };
+            spyOn(userMgmtService, 'modifyUser').andReturn($q.reject(serverErrors));
 
             // When
             scope.modifyUser(user);
             scope.$digest();
 
             // Then
-            var expectedMsg = 'Could not change user details';
-            expect(getFlashMessage('error')).toEqual(expectedMsg);
+            var expectedErrors = ['Could not change user details', 'server error message'];
+            var actualErrors = scope.flash.get('error').map(function(e) { return e.message; } );
+            expect(actualErrors).toEqual(expectedErrors);
         });
 
         function getFlashMessage(type){

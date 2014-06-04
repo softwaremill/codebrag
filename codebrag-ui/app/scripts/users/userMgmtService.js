@@ -1,6 +1,6 @@
 angular.module('codebrag.userMgmt')
 
-    .service('userMgmtService', function($rootScope, $http, $modal, $q, $timeout) {
+    .service('userMgmtService', function($rootScope, $http, $modal, $q) {
 
         var usersApiUrl = 'rest/users';
 
@@ -16,8 +16,12 @@ angular.module('codebrag.userMgmt')
 
         this.modifyUser = function(userData) {
             var modifyUserUrl = [usersApiUrl, '/', userData.userId].join('');
-            return $http.put(modifyUserUrl, userData);
+            return $http.put(modifyUserUrl, userData).then(null, modifyUserFailed);
         };
+
+        function modifyUserFailed(response) {
+            return $q.reject(response.data);
+        }
 
         function openPopup() {
             var config = {
