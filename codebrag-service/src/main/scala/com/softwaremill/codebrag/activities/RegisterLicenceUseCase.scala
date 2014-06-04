@@ -17,14 +17,13 @@ class RegisterLicenceUseCase(licenceService: LicenceService, userDao: UserDAO)(i
   }
 
   def validate(providedKey: String): EnterLicenceKeyResult = {
-    decodeKey(providedKey).right.flatMap { licence =>
-      if(clock.now.isAfter(licence.expirationDate)) {
-        return Left("Licence already expired")
+    decodeKey(providedKey).right.flatMap { newLicence =>
+      val activeUsersCount = userDao.countAllActive().toInt
+      if(newLicence.valid(activeUsersCount)) {
+        Right(newLicence)
+      } else {
+        Left("Licence key already expired or too many currently active users")
       }
-      if(userDao.countAll() > licence.maxUsers) {
-        return Left("Invalid licence - too many users registered")
-      }
-      Right(licence)
     }
   }
 

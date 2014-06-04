@@ -19,7 +19,7 @@ class RegisterLicenceUseCaseSpec extends FlatSpec with BeforeAndAfter with Mocki
     userDao = mock[UserDAO]
     useCase = new RegisterLicenceUseCase(licenceService, userDao)
 
-    when(userDao.countAll()).thenReturn(1)
+    when(userDao.countAllActive()).thenReturn(1)
   }
 
   it should "update existing licence in Codebrag" in {
@@ -35,10 +35,10 @@ class RegisterLicenceUseCaseSpec extends FlatSpec with BeforeAndAfter with Mocki
     result should be(newLicence)
   }
 
-  it should "not update existing licence when current licence has fewer users allowed than current users count" in {
+  it should "not update existing licence when current licence has fewer users allowed than current active users count" in {
     // given
     val newLicence = Licence(clock.now.plusDays(30), 10, "SoftwareMill")
-    when(userDao.countAll()).thenReturn(newLicence.maxUsers + 1)
+    when(userDao.countAllActive()).thenReturn(newLicence.maxUsers + 1)
     val encodedLicence = LicenceEncryptor.encode(newLicence)
 
     // when
@@ -52,7 +52,7 @@ class RegisterLicenceUseCaseSpec extends FlatSpec with BeforeAndAfter with Mocki
   it should "not update existing licence when current licence has already expired date" in {
     // given
     val newLicence = Licence(clock.now.minusDays(1), 10, "SoftwareMill")
-    when(userDao.countAll()).thenReturn(newLicence.maxUsers)
+    when(userDao.countAllActive()).thenReturn(newLicence.maxUsers)
     val encodedLicence = LicenceEncryptor.encode(newLicence)
 
     // when
