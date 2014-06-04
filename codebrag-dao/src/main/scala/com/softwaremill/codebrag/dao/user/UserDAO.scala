@@ -38,4 +38,6 @@ trait UserDAO {
   def findPartialUserDetails(ids: Iterable[ObjectId]): Iterable[PartialUserDetails]
 
   def countAll(): Long
+
+  def countAllActive(): Long
 }
