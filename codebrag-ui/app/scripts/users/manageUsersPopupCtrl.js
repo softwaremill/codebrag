@@ -20,11 +20,12 @@ angular.module('codebrag.userMgmt')
             popupsService.openInvitePopup();
         };
 
-        $scope.modifyUser = function(user) {
+        $scope.modifyUser = function(user, flag) {
             $scope.flash.clear();
-            var userData = { userId: user.id, active: user.active, admin: user.admin };
+            var userData = { userId: user.userId };
+            userData[flag] = user[flag];
             user.locked = true;
-            userMgmtService.modifyUser(userData).then(changed, error).then(function() {
+            userMgmtService.modifyUser(userData).then(changed, error(flag)).then(function() {
                 delete user.locked;
             });
 
@@ -32,8 +33,11 @@ angular.module('codebrag.userMgmt')
                 $scope.flash.add('info', 'User details changed');
             }
 
-            function error() {
-                $scope.flash.add('error', 'Could not change user details');
+            function error(flag) {
+                return function() {
+                    user[flag] = !user[flag];
+                    $scope.flash.add('error', 'Could not change user details');
+                }
             }
         };
 

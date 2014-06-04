@@ -17,8 +17,8 @@
 
         <tr ng-repeat="user in users">
             <td>{{ user.email}}</td>
-            <td><input type="checkbox" ng-model="user.active" ng-click="modifyUser(user)" ng-disabled="user.locked"/></td>
-            <td><input type="checkbox" ng-model="user.admin" ng-click="modifyUser(user)" ng-disabled="user.locked"/></td>
+            <td><input type="checkbox" ng-model="user.active" ng-click="modifyUser(user, 'active')" ng-disabled="user.locked"/></td>
+            <td><input type="checkbox" ng-model="user.admin" ng-click="modifyUser(user, 'admin')" ng-disabled="user.locked"/></td>
             <td><button ng-disabled="!user.active" ng-click="askForNewPassword(user)">Set password</button></td>
         </tr>
     </table>

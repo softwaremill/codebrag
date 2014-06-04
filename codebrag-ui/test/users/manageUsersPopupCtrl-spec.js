@@ -10,8 +10,8 @@ describe("ManageUsersPopupCtrl", function () {
         licenceService,
         popupsService,
         registeredUsers = [
-            { id: 100, name: 'John Doe', email: 'john@doe.com', admin: true, active: true },
-            { id: 200, name: 'Mary Smith', email: 'mary@smith.com', admin: true, active: false }
+            { userId: 100, name: 'John Doe', email: 'john@doe.com', admin: true, active: true },
+            { userId: 200, name: 'Mary Smith', email: 'mary@smith.com', admin: true, active: false }
         ];
 
     beforeEach(module('codebrag.userMgmt', 'codebrag.licence', 'codebrag.common.services'));
@@ -111,6 +111,32 @@ describe("ManageUsersPopupCtrl", function () {
             // Then
             scope.$digest();
             expect(user.locked).toBeUndefined();
+        });
+
+        it('should change only property provided', function() {
+            // Given
+            var user = registeredUsers[0];
+            spyOn(userMgmtService, 'modifyUser').andReturn($q.when());
+
+            // When
+            scope.modifyUser(user, 'active');
+
+            // Then
+            expect(userMgmtService.modifyUser).toHaveBeenCalledWith({userId: user.userId, active: user.active });
+        });
+
+        it('should change property back when saving changes failed', function() {
+            // Given
+            var user = registeredUsers[0];
+            spyOn(userMgmtService, 'modifyUser').andReturn($q.reject());
+
+            // When
+            user.active = true;
+            scope.modifyUser(user, 'active');
+            scope.$digest();
+
+            // Then
+            expect(user.active).toEqual(false);
         });
 
         it('should display info when changes saved', function() {
