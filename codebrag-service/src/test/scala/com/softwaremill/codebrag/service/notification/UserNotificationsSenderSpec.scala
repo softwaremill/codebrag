@@ -41,8 +41,25 @@ class UserNotificationsSenderSpec
   it should "not send notification when user has notifications disabled" in {
     // given
     val user = UserAssembler.randomUser.withEmailNotificationsDisabled().get
-    val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
+    val userHeartbeat = clock.nowUtc.minusHours(1)
+    val heartbeats = List((user.id, userHeartbeat))
     when(userDao.findById(user.id)).thenReturn(Some(user))
+    when(followupFinder.countFollowupsForUserSince(userHeartbeat, user.id)).thenReturn(1)
+
+    // when
+    sender.sendFollowupsNotification(heartbeats)
+
+    // then
+    verifyZeroInteractions(notificationService)
+  }
+
+  it should "not send notification when user is not active " in {
+    // given
+    val user = UserAssembler.randomUser.withEmailNotificationsEnabled().withActive(set = false).get
+    val userHeartbeat = clock.nowUtc.minusHours(1)
+    val heartbeats = List((user.id, userHeartbeat))
+    when(userDao.findById(user.id)).thenReturn(Some(user))
+    when(followupFinder.countFollowupsForUserSince(userHeartbeat, user.id)).thenReturn(1)
 
     // when
     sender.sendFollowupsNotification(heartbeats)
@@ -68,6 +85,19 @@ class UserNotificationsSenderSpec
   it should "not send daily digest when user has daily digest email disabled" in {
     // given
     val user = UserAssembler.randomUser.withDailyDigestEmailDisabled().get
+    val sender = new TestUserNotificationsSender(followupFinder, toReviewCommitsFinder, userDao, notificationService, clock)
+
+    // when
+    sender.sendDailyDigest(List(user))
+
+    // then
+    verifyZeroInteractions(notificationService)
+    verifyZeroInteractions(followupFinder)
+  }
+
+  it should "not send daily digest when user is not active" in {
+    // given
+    val user = UserAssembler.randomUser.withDailyDigestEmailEnabled().withActive(set = false).get
     val sender = new TestUserNotificationsSender(followupFinder, toReviewCommitsFinder, userDao, notificationService, clock)
 
     // when

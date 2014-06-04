@@ -112,7 +112,7 @@ trait UserNotificationsSender extends Logging {
     heartbeats.foreach { case (userId, lastHeartbeat) =>
       if (userIsOffline(lastHeartbeat)) {
         userDAO.findById(userId).foreach { user =>
-          whenNotificationsEnabled(user) {
+          whenNotificationsAllowed(user) {
             val followupsCount = followupFinder.countFollowupsForUserSince(lastHeartbeat, user.id)
             if (userShouldBeNotified(lastHeartbeat, user, followupsCount)) {
               sendNotifications(user, followupsCount)
@@ -126,11 +126,11 @@ trait UserNotificationsSender extends Logging {
     logger.debug(s"Scheduled $emailsScheduled notification emails")
   }
 
-  private def whenNotificationsEnabled(user: User)(action: => Unit) = {
-    if(user.settings.emailNotificationsEnabled) {
+  private def whenNotificationsAllowed(user: User)(action: => Unit) = {
+    if(user.settings.emailNotificationsEnabled && user.active) {
       action
     } else {
-      logger.debug(s"Not sending email to ${user.emailLowerCase} - user has notifications disabled")
+      logger.debug(s"Not sending email to ${user.emailLowerCase} - user has notifications disabled or is inactive")
     }
   }
 
@@ -153,7 +153,7 @@ trait UserNotificationsSender extends Logging {
   }
 
   def sendDailyDigest(users: List[User]) {
-    users.foreach {
+    users.filter(_.active).foreach {
       user => {
         user.settings.dailyUpdatesEmailEnabled match {
           case true => {

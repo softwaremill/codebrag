@@ -36,6 +36,11 @@ class UserAssembler(var user: User) {
     this
   }
 
+  def withDailyDigestEmailEnabled() = {
+    user = user.copy(settings = user.settings.copy(dailyUpdatesEmailEnabled = true))
+    this
+  }
+
   def withWelcomeFollowupNotYetDone() = {
     user = user.copy(settings = user.settings.copy(appTourDone = false))
     this
