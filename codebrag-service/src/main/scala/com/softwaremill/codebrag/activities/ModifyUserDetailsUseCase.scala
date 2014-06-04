@@ -6,6 +6,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.activities.validation.{Validation, ValidationErrors}
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.licence.LicenceService
 
 case class ModifyUserDetailsForm(userId: ObjectId, newPassword: Option[String], admin: Option[Boolean], active: Option[Boolean]) {
 
@@ -24,7 +25,7 @@ case class ModifyUserDetailsForm(userId: ObjectId, newPassword: Option[String], 
 
 }
 
-class ModifyUserDetailsUseCase(protected val userDao: UserDAO) extends Logging {
+class ModifyUserDetailsUseCase(protected val userDao: UserDAO, protected val licenceService: LicenceService) extends Logging {
 
   import UserAssertions._
 
@@ -43,7 +44,15 @@ class ModifyUserDetailsUseCase(protected val userDao: UserDAO) extends Logging {
   private def validate(executorId: ObjectId, user: User, form: ModifyUserDetailsForm): Validation = {
     val inactiveUserCheck = (!user.active && form.newPassword.isDefined, "Cannot set password for inactive user", "active")
     val changeOwnFlagsCheck = (executorId == user.id && (form.admin.isDefined || form.active.isDefined), "Cannot modify own user", "userId")
-    Validation(inactiveUserCheck, changeOwnFlagsCheck)
+    val activeUsersLicenceLimitCheck = (activeUsersCountExceeded(user, form.active), "Licenced active users count exceeded", "active")
+    Validation(inactiveUserCheck, changeOwnFlagsCheck, activeUsersLicenceLimitCheck)
   }
 
+  private def activeUsersCountExceeded(targetUser: User, activeOpt: Option[Boolean]) = {
+    activeOpt.exists { newActiveFlag =>
+      val currentStatusInactive = targetUser.active == false
+      lazy val activeCountReached = userDao.countAllActive() == licenceService.maxUsers
+      newActiveFlag && currentStatusInactive && activeCountReached
+    }
+  }
 }
