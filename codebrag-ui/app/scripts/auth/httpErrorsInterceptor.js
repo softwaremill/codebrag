@@ -7,7 +7,7 @@ angular.module("codebrag.auth")
         }
 
         function shouldBeIntercepted(response) {
-            var codesToIgnore = [401, 402, 403];
+            var codesToIgnore = [400, 401, 402, 403];
             var bypass = codesToIgnore.filter(function(code) { return code === response.status; }).length > 0;
             return !bypass && angular.isUndefined(response.config.bypassInterceptors);
         }
