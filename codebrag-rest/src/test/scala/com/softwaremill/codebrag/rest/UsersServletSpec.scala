@@ -7,17 +7,18 @@ import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
 import org.json4s.JsonDSL._
-import javax.servlet.http.HttpServletRequest
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.typesafe.config.ConfigFactory
 import java.util.Properties
-import com.softwaremill.codebrag.activities.{UserToRegister, RegisterNewUserUseCase}
+import com.softwaremill.codebrag.activities.{ModifyUserDetailsUseCase, UserToRegister, RegisterNewUserUseCase}
 import com.softwaremill.codebrag.dao.finders.user.{ManagedUserView, ManagedUsersListView, UserFinder}
+import com.softwaremill.codebrag.dao.ObjectIdTestUtils
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
   val registerService = mock[RegisterService]
   val registerUseCase = mock[RegisterNewUserUseCase]
+  val modifyUserUseCase = mock[ModifyUserDetailsUseCase]
   var userFinder: UserFinder = _
   var config: CodebragConfig = _
 
@@ -39,7 +40,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   }
 
   "GET /" should "return actual list of registered users if not in demo mode" in {
-    val user = ManagedUserView("john@doe.com", "John Doe", active = true, admin = true)
+    val user = ManagedUserView(ObjectIdTestUtils.oid(100).toString, "john@doe.com", "John Doe", active = true, admin = true)
     val registeredUsers = ManagedUsersListView(List(user))
     when(userFinder.findAllAsManagedUsers()).thenReturn(registeredUsers)
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
@@ -98,7 +99,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends UsersServlet(fakeAuthenticator, registerService, registerUseCase, userFinder, config) {
+    extends UsersServlet(fakeAuthenticator, registerService, registerUseCase, userFinder, modifyUserUseCase, config) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

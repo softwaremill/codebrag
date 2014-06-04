@@ -1,15 +1,10 @@
 package com.softwaremill.codebrag.rest
 
-import org.scalatra._
-import com.softwaremill.codebrag.service.user.{AfterUserLogin, RegisterService, Authenticator}
-import com.softwaremill.codebrag.service.data.UserJson
-import swagger.{Swagger, SwaggerSupport}
+import com.softwaremill.codebrag.service.user.{RegisterService, Authenticator}
 import com.softwaremill.codebrag.service.config.CodebragConfig
-import com.softwaremill.codebrag.dao.user.UserDAO
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
 import org.scalatra
-import com.softwaremill.codebrag.activities.{UserToRegister, RegisterNewUserUseCase}
+import com.softwaremill.codebrag.activities.{ModifyUserDetailsUseCase, ModifyUserDetailsForm, UserToRegister, RegisterNewUserUseCase}
 import com.softwaremill.codebrag.dao.finders.user.{ManagedUsersListView, UserFinder}
 
 class UsersServlet(
@@ -17,6 +12,7 @@ class UsersServlet(
   registerService: RegisterService,
   registerUserUseCase: RegisterNewUserUseCase,
   userFinder: UserFinder,
+  modifyUserUseCase: ModifyUserDetailsUseCase,
   config: CodebragConfig) extends JsonServletWithAuthentication {
 
   get("/") {
@@ -25,6 +21,18 @@ class UsersServlet(
       userFinder.findAllAsManagedUsers()
     } else {
       ManagedUsersListView(List.empty)
+    }
+  }
+
+  put("/:userId") {
+    haltIfNotAuthenticated()
+    val targetUserId = new ObjectId(params("userId"))
+    val newPassOpt = extractOpt[String]("newPass")
+    val adminOpt = extractOpt[Boolean]("admin")
+    val activeOpt = extractOpt[Boolean]("active")
+    modifyUserUseCase.execute(user.idAsObjectId, ModifyUserDetailsForm(targetUserId, newPassOpt, adminOpt, activeOpt)) match {
+      case Left(errors) => scalatra.BadRequest(errors.fieldErrors)
+      case _ => scalatra.Ok
     }
   }
 
