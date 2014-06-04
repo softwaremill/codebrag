@@ -21,8 +21,8 @@ describe("SetUserPasswordPopupCtrl", function () {
 
     it('should change user password and close modal', function () {
         // Given
-        var targetUser = { id: 100, name: 'John Doe' };
-        var changedUserData = { userId: targetUser.id, newPass: 'secret' };
+        var targetUser = { userId: 100, name: 'John Doe' };
+        var changedUserData = { userId: targetUser.userId, newPass: 'secret' };
         spyOn(userMgmtService, 'modifyUser').andReturn($q.when());
         var modalInstance = jasmine.createSpyObj('modal', ['close']);
         $controller('SetUserPasswordPopupCtrl', {$scope: scope, $modalInstance: modalInstance, user: targetUser});
@@ -38,8 +38,8 @@ describe("SetUserPasswordPopupCtrl", function () {
 
     it('should display error and not close modal when password could not be changed', function () {
         // Given
-        var targetUser = { id: 100, name: 'John Doe' };
-        var changedUserData = { userId: targetUser.id, newPass: 'secret' };
+        var targetUser = { userId: 100, name: 'John Doe' };
+        var changedUserData = { userId: targetUser.userId, newPass: 'secret' };
         spyOn(userMgmtService, 'modifyUser').andReturn($q.reject());
         var modalInstance = jasmine.createSpyObj('modal', ['close']);
         $controller('SetUserPasswordPopupCtrl', {$scope: scope, $modalInstance: modalInstance, user: targetUser});

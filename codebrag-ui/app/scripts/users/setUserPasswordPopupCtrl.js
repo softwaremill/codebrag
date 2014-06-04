@@ -7,7 +7,7 @@ angular.module('codebrag.userMgmt')
 
         $scope.setUserPassword = function(passwordData) {
             $scope.flash.clear();
-            var userData = { userId: user.id, newPass: passwordData.newPass };
+            var userData = { userId: user.userId, newPass: passwordData.newPass };
             userMgmtService.modifyUser(userData).then(
                 function() {
                     $modalInstance.close();
