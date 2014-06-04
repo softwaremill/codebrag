@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.rest
 import org.scalatra.{NotFound, ScalatraBase}
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.licence.LicenceExpiredException
-import com.softwaremill.codebrag.activities.assertions.AdminRoleRequiredException
+import com.softwaremill.codebrag.activities.assertions.{ActiveUserStatusRequiredException, AdminRoleRequiredException}
 
 trait CodebragErrorHandler extends ScalatraBase with Logging {
 
@@ -15,6 +15,10 @@ trait CodebragErrorHandler extends ScalatraBase with Logging {
     case e: LicenceExpiredException => halt(402, Map("error" -> e.getMessage))
     case e: AdminRoleRequiredException => {
       logger.debug(s"Permission denied: ${e.getMessage}")
+      halt(403, Map("error" -> e.getMessage))
+    }
+    case e: ActiveUserStatusRequiredException => {
+      logger.debug(s"Invalid user status: ${e.getMessage}")
       halt(403, Map("error" -> e.getMessage))
     }
     case e => {

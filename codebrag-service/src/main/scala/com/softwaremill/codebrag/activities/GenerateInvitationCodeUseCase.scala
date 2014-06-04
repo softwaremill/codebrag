@@ -3,12 +3,14 @@ package com.softwaremill.codebrag.activities
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.invitations.InvitationService
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.activities.assertions.AdminRoleRequiredAssertion
+import com.softwaremill.codebrag.activities.assertions.UserAssertions
 
-class GenerateInvitationCodeUseCase(invitationService: InvitationService, protected val userDao: UserDAO) extends AdminRoleRequiredAssertion {
+class GenerateInvitationCodeUseCase(invitationService: InvitationService, implicit protected val userDao: UserDAO) {
+
+  import UserAssertions._
 
   def execute(userId: ObjectId): String = {
-    assertIsAdmin(userId)
+    assertUserWithId(userId, mustBeAdmin)
     invitationService.generateInvitationCode(userId)
   }
 
