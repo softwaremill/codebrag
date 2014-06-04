@@ -8,15 +8,15 @@ import org.joda.time.DateTime
  * @param token Used by "remember me" - set in a cookie.
  */
 case class User(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, token: String,
-  admin: Boolean, settings: UserSettings, notifications: LastUserNotificationDispatch) {
+  admin: Boolean, active: Boolean, settings: UserSettings, notifications: LastUserNotificationDispatch) {
 
   def makeAdmin = this.copy(admin = true)
 }
 
 object User {
 
-  def apply(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, token: String, admin: Boolean = false) = {
-    new User(id, authentication, name, emailLowerCase, token, admin, UserSettings.defaults(emailLowerCase), LastUserNotificationDispatch.defaults)
+  def apply(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, token: String, admin: Boolean = false, active: Boolean = true) = {
+    new User(id, authentication, name, emailLowerCase, token, admin, active, UserSettings.defaults(emailLowerCase), LastUserNotificationDispatch.defaults)
   }
 
   implicit object UserLikeRegularUser extends UserLike[User] {
