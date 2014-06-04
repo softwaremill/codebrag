@@ -14,25 +14,26 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
   var instanceParamsDao: InstanceParamsDAO = _
   var usersDao: UserDAO = _
 
-  val UsersCount = 1
+  val ActiveUsersCount = 1
 
-  val ValidDateLicence = Licence(expirationDate = clock.now.plusDays(2), maxUsers = UsersCount, companyName = "SoftwareMill")
-  val ExpiredDateLicence = ValidDateLicence.copy(expirationDate = clock.now.minusDays(2))
+  val ValidLicence = Licence(expirationDate = clock.now.plusDays(2), maxUsers = ActiveUsersCount, companyName = "SoftwareMill")
+  val ExpiredDateLicence = ValidLicence.copy(expirationDate = clock.now.minusDays(2))
+  val UsersExceededLicence = ValidLicence.copy(maxUsers = 0)
 
 
   before {
     instanceParamsDao = mock[InstanceParamsDAO]
     usersDao = mock[UserDAO]
-    when(usersDao.countAll()).thenReturn(UsersCount) // one user in Codebrag
+    when(usersDao.countAllActive()).thenReturn(ActiveUsersCount) // one user in Codebrag
   }
 
   it should "read current licence on service initialization" in {
     // when
-    val service = initializeService(ValidDateLicence)
+    val service = initializeService(ValidLicence)
 
     // then
-    service.licenceExpiryDate should be(ValidDateLicence.expirationDate)
-    service.daysToExpire should be(ValidDateLicence.daysToExpire)
+    service.licenceExpiryDate should be(ValidLicence.expirationDate)
+    service.daysToExpire should be(ValidLicence.daysToExpire)
   }
 
   it should "throw exception when licence guard called and licence is expired (due to date constraint)" in {
@@ -47,8 +48,7 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
 
   it should "throw exception when licence guard called and licence is expired (due to users constraint)" in {
     // given
-    val licenceWithFewerUsers = ExpiredDateLicence.copy(maxUsers = 0)
-    val service = initializeService(licenceWithFewerUsers)
+    val service = initializeService(UsersExceededLicence)
 
     // then
     intercept[LicenceExpiredException] {
@@ -58,7 +58,7 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
 
   it should "pass through when licence guard called and licence is valid" in {
     // given
-    val service = initializeService(ValidDateLicence)
+    val service = initializeService(ValidLicence)
 
     // then
     service.interruptIfLicenceExpired()
@@ -66,8 +66,8 @@ class LicenceServiceSpec extends FlatSpec with ShouldMatchers with BeforeAndAfte
 
   it should "update licence in DB and swap current one in running app" in {
     // given
-    val service = initializeService(ValidDateLicence)
-    val newLicence = ValidDateLicence.copy(expirationDate = ValidDateLicence.expirationDate.plusDays(30), maxUsers = 50)
+    val service = initializeService(ValidLicence)
+    val newLicence = ValidLicence.copy(expirationDate = ValidLicence.expirationDate.plusDays(30), maxUsers = 50)
     val expectedLicenceToSave = LicenceKey(LicenceEncryptor.encode(newLicence)).toInstanceParam
 
     // when
