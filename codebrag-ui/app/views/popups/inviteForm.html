@@ -22,7 +22,8 @@
                     </ul>
                 </div>
                 <input type="text" ng-model="emails" name="emails" ui-validate="{format: 'validateEmails($value)'}"
-                       placeholder="Put email addresses and hit Enter to send invitation link" required ui-keypress="{'enter': 'submitOnEnter($event)'}">
+                       placeholder="Put email addresses and hit Enter to send invitation link" required ui-keypress="{'enter': 'submitOnEnter($event)'}"
+                        set-focus>
                 <span class="text-error login-error"
                       ng-show="inviteForm.emails.$dirty && inviteForm.emails.$invalid && !inviteForm.emails.$error.required">
                       <i class="icon-remove"></i>
