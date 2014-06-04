@@ -7,15 +7,15 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
-import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, RequiresDb}
-import org.scalatest.{BeforeAndAfterEach, FlatSpec}
+import com.softwaremill.codebrag.dao.RequiresDb
+import org.scalatest.BeforeAndAfterEach
 import com.softwaremill.codebrag.test.{FlatSpecWithSQL, ClearSQLDataAfterTest}
 import com.softwaremill.codebrag.common.ClockSpec
 
-trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with Logging with ClockSpec {
+class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with BeforeAndAfterEach with ShouldMatchers with Logging with ClockSpec {
 
-  def userDAO: UserDAO
-  def internalUserDAO: InternalUserDAO
+  val userDAO = new SQLUserDAO(sqlDatabase)
+  val internalUserDAO = new SQLInternalUserDAO(sqlDatabase)
 
   val UserIdPrefix = "507f1f77bcf86cd79943901"
 
@@ -313,14 +313,14 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
 
   it should "change user details" taggedAs RequiresDb in {
     // given
-    val user = UserAssembler.randomUser.withBasicAuth("user", "pass").get
+    val user = UserAssembler.randomUser.withBasicAuth("user", "pass").withAdmin(set = false).withActive(set = false).get
     userDAO.add(user)
     val newAuth = Authentication.basic(user.authentication.username, "newpass")
 
     // when
-    val modifiedUser = user.copy(authentication = newAuth, admin = true)
+    val modifiedUser = user.copy(authentication = newAuth, admin = true, active = true)
     userDAO.modifyUser(modifiedUser)
-    val savedUser = userDAO.findById(user.id)
+    val Some(savedUser) = userDAO.findById(user.id)
 
     // then
     savedUser should be(modifiedUser)
@@ -451,11 +451,4 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     partial should have size (2)
     partial.map(_.name).toSet should be (users.map(_.name).toSet)
   }
-}
-
-
-
-class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with UserDAOSpec {
-  val userDAO = new SQLUserDAO(sqlDatabase)
-  var internalUserDAO = new SQLInternalUserDAO(sqlDatabase)
 }

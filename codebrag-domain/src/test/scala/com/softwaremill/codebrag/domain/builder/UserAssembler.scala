@@ -66,8 +66,13 @@ class UserAssembler(var user: User) {
     this
   }
 
-  def withAdmin = {
-    user = user.copy(admin = true)
+  def withAdmin(set: Boolean = true) = {
+    user = user.copy(admin = set)
+    this
+  }
+
+  def withActive(set: Boolean = true) = {
+    user = user.copy(active = set)
     this
   }
 

@@ -65,6 +65,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
 
   def modifyUser(user: User) = db.withTransaction { implicit session =>
     users.where(_.id === user.id).update(tuple(user))
+    auths.where(_.userId === user.id).update(toSQLAuth(user.id, user.authentication))
   }
 
   def changeAuthentication(id: ObjectId, auth: Authentication) = db.withTransaction { implicit session =>
