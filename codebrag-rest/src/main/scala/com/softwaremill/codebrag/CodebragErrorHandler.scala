@@ -15,7 +15,7 @@ trait CodebragErrorHandler extends ScalatraBase with Logging {
     case e: LicenceExpiredException => halt(402, Map("error" -> e.getMessage))
     case e: PermissionDeniedException => {
       logger.debug(s"Permission denied: ${e.getMessage}")
-      halt(403)
+      halt(403, Map("error" -> "You are not allowed to perform this action"))
     }
     case e => {
       logger.error("Something went wrong", e)
