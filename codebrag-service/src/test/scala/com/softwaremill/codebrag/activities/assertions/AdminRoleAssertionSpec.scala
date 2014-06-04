@@ -5,16 +5,16 @@ import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.dao.user.UserDAO
 import org.mockito.Mockito
 import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.activities.exceptions.PermissionDeniedException
+import com.softwaremill.codebrag.activities.assertions.AdminRoleRequiredException
 
 class AdminRoleAssertionSpec extends FlatSpec with MockitoSugar with BeforeAndAfter {
 
   var _userDao: UserDAO = _
-  var assertion: AdminRoleAssertion = _
+  var assertion: AdminRoleRequiredAssertion = _
 
   before {
     _userDao = mock[UserDAO]
-    assertion = new AdminRoleAssertion {
+    assertion = new AdminRoleRequiredAssertion {
       val userDao = _userDao
     }
   }
@@ -25,8 +25,8 @@ class AdminRoleAssertionSpec extends FlatSpec with MockitoSugar with BeforeAndAf
     Mockito.when(_userDao.findById(user.id)).thenReturn(Some(user))
 
     // then
-    intercept[PermissionDeniedException] {
-      assertion.assertUserIsAdmin(user.id)
+    intercept[AdminRoleRequiredException] {
+      assertion.assertIsAdmin(user.id)
     }
   }
 
@@ -37,7 +37,7 @@ class AdminRoleAssertionSpec extends FlatSpec with MockitoSugar with BeforeAndAf
 
     // then
     intercept[IllegalStateException] {
-      assertion.assertUserIsAdmin(user.id)
+      assertion.assertIsAdmin(user.id)
     }
   }
 
@@ -47,7 +47,7 @@ class AdminRoleAssertionSpec extends FlatSpec with MockitoSugar with BeforeAndAf
     Mockito.when(_userDao.findById(admin.id)).thenReturn(Some(admin))
 
     // when
-    assertion.assertUserIsAdmin(admin.id)
+    assertion.assertIsAdmin(admin.id)
 
     // then it passes through
   }

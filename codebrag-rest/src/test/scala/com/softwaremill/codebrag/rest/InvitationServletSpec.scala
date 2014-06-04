@@ -11,7 +11,7 @@ import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.ArgumentCaptor
 import com.softwaremill.codebrag.activities.{SendInvitationEmailUseCase, GenerateInvitationCodeUseCase}
 import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.activities.exceptions.PermissionDeniedException
+import com.softwaremill.codebrag.activities.assertions.AdminRoleRequiredException
 
 
 class InvitationServletSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {
@@ -42,7 +42,7 @@ class InvitationServletSpec extends AuthenticatableServletSpec with BeforeAndAft
 
   "GET /" should "return permission denied if user is not allowed to invite others" in {
     userIsAuthenticatedAs(someUser)
-    when(generateCodeUseCase.execute(someUser.idAsObjectId)).thenThrow(new PermissionDeniedException("Action not allowed"))
+    when(generateCodeUseCase.execute(someUser.idAsObjectId)).thenThrow(new AdminRoleRequiredException("Action not allowed"))
     //when
     get("/") {
       //then
@@ -76,7 +76,7 @@ class InvitationServletSpec extends AuthenticatableServletSpec with BeforeAndAft
     userIsAuthenticatedAs(someUser)
     val email = "adam@example.org"
     val invitationLink = "http://codebrag.com/#/register/123abc123"
-    when(sendInvitationUseCase.execute(someUser.idAsObjectId, List(email), invitationLink)).thenThrow(new PermissionDeniedException("Action not allowed"))
+    when(sendInvitationUseCase.execute(someUser.idAsObjectId, List(email), invitationLink)).thenThrow(new AdminRoleRequiredException("Action not allowed"))
 
     //when
     val json = s"""{"invitationLink": "${invitationLink}", "emails": ["${email}"]}"""

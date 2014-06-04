@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.activities
 
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.activities.assertions.AdminRoleAssertion
+import com.softwaremill.codebrag.activities.assertions.AdminRoleRequiredAssertion
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.activities.validation.{Validation, ValidationErrors}
 import com.softwaremill.codebrag.domain.{Authentication, User}
@@ -24,10 +24,10 @@ case class ModifyUserDetailsForm(userId: ObjectId, newPassword: Option[String], 
 
 }
 
-class ModifyUserDetailsUseCase(protected val userDao: UserDAO) extends AdminRoleAssertion with Logging {
+class ModifyUserDetailsUseCase(protected val userDao: UserDAO) extends AdminRoleRequiredAssertion with Logging {
 
   def execute(executorId: ObjectId, form: ModifyUserDetailsForm): Either[ValidationErrors, Unit] = {
-    assertUserIsAdmin(executorId)
+    assertIsAdmin(executorId)
     val targetUser = loadUser(form.userId)
     validate(executorId, targetUser, form).whenNoErrors[Unit] {
       val modifiedUser = form.applyTo(targetUser)
