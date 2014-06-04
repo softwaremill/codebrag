@@ -28,7 +28,7 @@ class InvitationServletSpec extends AuthenticatableServletSpec with BeforeAndAft
 
   "GET /" should "return invitation message if user is admin" in {
     //given
-    val adminUser = UserJson(UserAssembler.randomUser.withAdmin.get)
+    val adminUser = UserJson(UserAssembler.randomUser.withAdmin().get)
     userIsAuthenticatedAs(adminUser)
     val invitationCode = "123abc"
     when(generateCodeUseCase.execute(adminUser.idAsObjectId)).thenReturn(invitationCode)
@@ -52,7 +52,7 @@ class InvitationServletSpec extends AuthenticatableServletSpec with BeforeAndAft
 
   "POST /" should "send invitation if user is admin" in {
     //given
-    val adminUser = UserJson(UserAssembler.randomUser.withAdmin.get)
+    val adminUser = UserJson(UserAssembler.randomUser.withAdmin().get)
     userIsAuthenticatedAs(adminUser)
     val email = "adam@example.org"
     val invitationLink = "http://codebrag.com/#/register/123abc123"

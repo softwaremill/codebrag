@@ -43,7 +43,7 @@ class AdminRoleAssertionSpec extends FlatSpec with MockitoSugar with BeforeAndAf
 
   it should "pass through if user is admin" in {
     // given
-    val admin = UserAssembler.randomUser.withAdmin.get
+    val admin = UserAssembler.randomUser.withAdmin().get
     Mockito.when(_userDao.findById(admin.id)).thenReturn(Some(admin))
 
     // when
