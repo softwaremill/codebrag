@@ -54,8 +54,17 @@ describe("UserMgmtService", function () {
         expect(loadedUsers).toEqual(registeredUsers);
     });
 
-    xit('should modify user data', function () {
-        throw new Error('not yet implemented');
+    it('should modify user data', function () {
+        // given
+        var userData = { userId: 100, active: true };
+        $httpBackend.expectPUT('rest/users/100', userData).respond(200);
+
+        // when
+        userMgmtService.modifyUser(userData);
+        $httpBackend.flush();
+
+        // then
+        // http put called
     });
 
 });

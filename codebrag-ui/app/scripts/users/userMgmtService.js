@@ -15,15 +15,8 @@ angular.module('codebrag.userMgmt')
         };
 
         this.modifyUser = function(userData) {
-            var dfd = $q.defer();
-            $timeout(function() {
-                if((userData.newPass && userData.newPass === '123') || (userData.admin === true)) {
-                    dfd.reject();
-                } else {
-                    dfd.resolve();
-                }
-            }, 500);
-            return dfd.promise;
+            var modifyUserUrl = [usersApiUrl, '/', userData.userId].join('');
+            return $http.put(modifyUserUrl, userData);
         };
 
         function openPopup() {
