@@ -11,14 +11,11 @@ trait Authenticator {
   def userDAO: UserDAO
 
   def authenticateWithToken(token: String): Option[UserJson] = {
-    userDAO.findByToken(token).map(UserJson(_))
+    userDAO.findByToken(token).filter(_.active).map(UserJson.apply)
   }
 
   def findByLogin(login: String): Option[UserJson] = {
-    userDAO.findByLowerCasedLogin(login) match {
-      case Some(user) => Some(UserJson(user))
-      case _ => None
-    }
+    userDAO.findByLowerCasedLogin(login).filter(_.active).map(UserJson.apply)
   }
 
   def authenticate(login: String, nonEncryptedPassword: String): Option[UserJson]
@@ -28,8 +25,9 @@ trait Authenticator {
 class UserPasswordAuthenticator(val userDAO: UserDAO, eventBus: EventBus) extends Authenticator with Logging {
 
   def authenticate(login: String, nonEncryptedPassword: String): Option[UserJson] = {
-    val userOpt = userDAO.findByLoginOrEmail(login)
-    userOpt.filter(user => Authentication.passwordsMatch(nonEncryptedPassword, user.authentication)).map(UserJson(_))
+    userDAO.findByLoginOrEmail(login).filter { user =>
+        user.active && Authentication.passwordsMatch(nonEncryptedPassword, user.authentication)
+    }.map(UserJson.apply)
   }
 
 }
@@ -37,7 +35,7 @@ class UserPasswordAuthenticator(val userDAO: UserDAO, eventBus: EventBus) extend
 class GitHubEmptyAuthenticator(val userDAO: UserDAO) extends Authenticator with Logging {
 
   def authenticate(login: String, nonEncryptedPassword: String): Option[UserJson] = {
-    userDAO.findByLoginOrEmail(login).map(UserJson(_))
+    userDAO.findByLoginOrEmail(login).filter(_.active).map(UserJson.apply)
   }
 
 }
