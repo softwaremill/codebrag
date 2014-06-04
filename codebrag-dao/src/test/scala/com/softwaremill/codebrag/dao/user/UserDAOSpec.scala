@@ -311,6 +311,21 @@ trait UserDAOSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers w
     foundUser.get should equal(user)
   }
 
+  it should "change user details" taggedAs RequiresDb in {
+    // given
+    val user = UserAssembler.randomUser.withBasicAuth("user", "pass").get
+    userDAO.add(user)
+    val newAuth = Authentication.basic(user.authentication.username, "newpass")
+
+    // when
+    val modifiedUser = user.copy(authentication = newAuth, admin = true)
+    userDAO.modifyUser(modifiedUser)
+    val savedUser = userDAO.findById(user.id)
+
+    // then
+    savedUser should be(modifiedUser)
+  }
+
   it should "store notifications dates properly" taggedAs RequiresDb in {
     // given
     val commitDate = DateTime.now().minusHours(1)

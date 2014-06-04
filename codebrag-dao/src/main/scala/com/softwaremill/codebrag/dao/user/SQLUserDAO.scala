@@ -63,6 +63,10 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
     u.name === commit.authorName || u.emailLowerCase === commit.authorEmail.toLowerCase
   }
 
+  def modifyUser(user: User) = db.withTransaction { implicit session =>
+    users.where(_.id === user.id).update(tuple(user))
+  }
+
   def changeAuthentication(id: ObjectId, auth: Authentication) = db.withTransaction { implicit session =>
     auths.where(_.userId === id).update(toSQLAuth(id, auth))
   }

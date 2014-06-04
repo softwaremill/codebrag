@@ -21,6 +21,8 @@ trait UserDAO {
 
   def findByToken(token: String): Option[User]
 
+  def modifyUser(user: User)
+
   def changeAuthentication(id: ObjectId, authentication: Authentication)
 
   def rememberNotifications(id: ObjectId, notifications: LastUserNotificationDispatch)
