@@ -51,7 +51,7 @@ class UsersServlet(
     val login = extractNotEmptyString("login")
     val email = extractNotEmptyString("email")
     val password = extractNotEmptyString("password")
-    val invitationCode = extractNotEmptyString("invitationCode")
+    val invitationCode = extractOpt[String]("invitationCode").getOrElse("")
     UserToRegister(login, email, password, invitationCode)
   }
 

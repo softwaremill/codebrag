@@ -98,6 +98,17 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     }
   }
 
+  "POST /register" should "fallback to empty registration code when one not provided in request" in {
+    addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
+    val newUser = UserToRegister("adamw", "adam@example.org", "123456", "")
+    when(registerUseCase.execute(newUser)).thenReturn(Right())
+
+    post("/register",
+      mapToJson(Map("login" -> "adamw", "email" -> "adam@example.org", "password" -> "123456")), defaultJsonHeaders) {
+      verify(registerUseCase).execute(newUser)
+    }
+  }
+
   class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
     extends UsersServlet(fakeAuthenticator, registerService, registerUseCase, userFinder, modifyUserUseCase, config) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
