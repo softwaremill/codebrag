@@ -8,6 +8,7 @@ import org.scalatra.test.scalatest.ScalatraFlatSpec
 import org.scalatest.mock.MockitoSugar
 import org.json4s.jackson.Serialization
 import org.json4s.ext.JodaTimeSerializers
+import com.softwaremill.codebrag.rest.JsonServlet
 
 trait CodebragServletSpec extends ScalatraFlatSpec with MockitoSugar {
 
@@ -26,7 +27,7 @@ trait CodebragServletSpec extends ScalatraFlatSpec with MockitoSugar {
   }
 
   def asJson(objToJson: AnyRef) = {
-    implicit val formats = DefaultFormats ++ JodaTimeSerializers.all
+    implicit val formats = JsonServlet.jsonFormats
     Serialization.write(objToJson)
   }
 

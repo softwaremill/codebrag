@@ -1,11 +1,25 @@
 package com.softwaremill.codebrag.web
 
-import org.json4s.{ext, DefaultFormats}
+import org.json4s._
 import com.softwaremill.codebrag.dao.finders.views.CommitState
 import com.softwaremill.codebrag.licence.LicenceType
+import org.bson.types.ObjectId
+import org.json4s.JsonAST.JString
 
 object CodebragSpecificJSONFormats extends DefaultFormats {
   private val types = List(CommitState, LicenceType)
 
-  val all = types.map(new ext.EnumNameSerializer(_))
+  val all = types.map(new ext.EnumNameSerializer(_)).toList
+
+  object SimpleObjectIdSerializer extends CustomSerializer[ObjectId] (format =>
+    ( {
+        case JString(oid) => new ObjectId(oid)
+        case JNull => null
+      },
+      {
+        case oid: ObjectId => JString(oid.toString)
+      }
+    )
+  )
+
 }
