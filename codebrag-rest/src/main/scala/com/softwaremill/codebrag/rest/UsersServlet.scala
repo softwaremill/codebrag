@@ -32,14 +32,14 @@ class UsersServlet(
     val activeOpt = extractOpt[Boolean]("active")
     modifyUserUseCase.execute(user.idAsObjectId, ModifyUserDetailsForm(targetUserId, newPassOpt, adminOpt, activeOpt)) match {
       case Left(errors) => scalatra.BadRequest(errors.fieldErrors)
-      case _ => scalatra.Ok
+      case _ => scalatra.Ok()
     }
   }
 
   post("/register") {
     registerUserUseCase.execute(newUser) match {
       case Left(error) => halt(403, error)
-      case Right(_) => scalatra.Ok
+      case Right(_) => scalatra.Ok()
     }
   }
 
