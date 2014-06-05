@@ -40,7 +40,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   }
 
   "GET /" should "return actual list of registered users if not in demo mode" in {
-    val user = ManagedUserView(ObjectIdTestUtils.oid(100).toString, "john@doe.com", "John Doe", active = true, admin = true)
+    val user = ManagedUserView(ObjectIdTestUtils.oid(100), "john@doe.com", "John Doe", active = true, admin = true)
     val registeredUsers = ManagedUsersListView(List(user))
     when(userFinder.findAllAsManagedUsers()).thenReturn(registeredUsers)
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
