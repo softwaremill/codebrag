@@ -1,4 +1,4 @@
-angular.module('codebrag.userMgmt')
+angular.module('codebrag.common.services')
 
 /**
  * Allows creating local "flash messages"-like objects.
@@ -15,6 +15,12 @@ angular.module('codebrag.userMgmt')
                 var msg = { type: type, message: message };
                 this.messages.push(msg);
             },
+            // takes either map {field: ['err1', 'err2']} or array ['err1', 'err2']
+            addAll: function(type, messagesMap) {
+                var messages = (Array.isArray(messagesMap)) ? messagesMap : Flash.flattenFieldMessagesMap(messagesMap);
+                var add = _.bind(this.add, this, type); // bound to 'this' and partially applied
+                messages.forEach(add);
+            },
             clear: function() {
                 this.messages.length = 0;
             },
@@ -23,6 +29,13 @@ angular.module('codebrag.userMgmt')
                     return msg.type === type;
                 });
             }
+        };
+
+        Flash.flattenFieldMessagesMap = function(fieldMessagesMap) {
+            var nestedErrorsList = Object.keys(fieldMessagesMap).map(function(key) {
+                return fieldMessagesMap[key];
+            });
+            return _.flatten(nestedErrorsList);
         };
 
         return Flash;
