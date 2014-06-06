@@ -42,11 +42,12 @@ class RegisterLicenceUseCaseSpec extends FlatSpec with BeforeAndAfter with Mocki
     val encodedLicence = LicenceEncryptor.encode(newLicence)
 
     // when
-    val result = useCase.execute(encodedLicence)
+    val Left(result) = useCase.execute(encodedLicence)
 
     // then
     verifyZeroInteractions(licenceService)
-    result should be('left)
+    val expectedErrors = Map("general" -> List("Too many currently active users"))
+    result.fieldErrors should be(expectedErrors)
   }
 
   it should "not update existing licence when current licence has already expired date" in {
@@ -56,11 +57,12 @@ class RegisterLicenceUseCaseSpec extends FlatSpec with BeforeAndAfter with Mocki
     val encodedLicence = LicenceEncryptor.encode(newLicence)
 
     // when
-    val result = useCase.execute(encodedLicence)
+    val Left(result) = useCase.execute(encodedLicence)
 
     // then
     verifyZeroInteractions(licenceService)
-    result should be('left)
+    val expectedErrors = Map("general" -> List("Licence key already expired"))
+    result.fieldErrors should be(expectedErrors)
   }
 
   it should "not update existing licence when invalid JSON key provided" in {
@@ -68,11 +70,12 @@ class RegisterLicenceUseCaseSpec extends FlatSpec with BeforeAndAfter with Mocki
     val invalidLicenceString = "invalidLicenceString"
 
     // when
-    val result = useCase.execute(invalidLicenceString)
+    val Left(result) = useCase.execute(invalidLicenceString)
 
     // then
     verifyZeroInteractions(licenceService)
-    result should be('left)
+    val expectedErrors = Map("licenceKey" -> List("Licence key is incorrect"))
+    result.fieldErrors should be(expectedErrors)
   }
 
 }
