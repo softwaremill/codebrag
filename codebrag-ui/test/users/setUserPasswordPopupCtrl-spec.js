@@ -8,7 +8,7 @@ describe("SetUserPasswordPopupCtrl", function () {
         $controller,
         userMgmtService;
 
-    beforeEach(module('codebrag.userMgmt'));
+    beforeEach(module('codebrag.userMgmt', 'codebrag.common.services'));
 
     beforeEach(inject(function(_$rootScope_, _$q_, _$controller_, _userMgmtService_) {
         $rootScope = _$rootScope_;
