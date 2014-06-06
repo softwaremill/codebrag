@@ -9,7 +9,7 @@ angular.module('codebrag.userMgmt')
         });
 
         licenceService.ready().then(function(licenceData) {
-            $scope.licenceMaxUsers = licenceData.maxUsers;
+            $scope.licenceData = licenceData;
         });
 
         $scope.countActiveUsers = function() {

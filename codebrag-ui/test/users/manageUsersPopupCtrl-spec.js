@@ -40,7 +40,7 @@ describe("ManageUsersPopupCtrl", function () {
         expect(scope.users).toEqual(registeredUsers);
     });
 
-    it('should load max allowed users from licence data', function () {
+    it('should load licence data to scope', function () {
         // Given
         var licenceData = { maxUsers: 50 };
         spyOn(userMgmtService, 'loadUsers').andReturn($q.when([]));
@@ -51,7 +51,7 @@ describe("ManageUsersPopupCtrl", function () {
         scope.$digest();
 
         // Then
-        expect(scope.licenceMaxUsers).toEqual(licenceData.maxUsers);
+        expect(scope.licenceData).toEqual(licenceData);
     });
 
     describe('with initial data loaded', function() {

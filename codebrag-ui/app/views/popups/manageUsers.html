@@ -25,7 +25,7 @@
 
     <section>
         <div> {{ countActiveUsers() }} active users in total</div>
-        <div> Licence up to {{ licenceMaxUsers }} users</div>
+        <div ng-hide="licenceData.type === 'Trial'"> Licence up to {{ licenceData.maxUsers }} users</div>
         <button ng-click="invite()">Invite team members</button>
     </section>
 
