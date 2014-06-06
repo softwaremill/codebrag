@@ -22,7 +22,7 @@ angular.module('codebrag.licence')
 
         function loadLicenceData() {
             return $http.get('rest/licence').then(function(response) {
-                licenceData = response.data;
+                angular.copy(response.data, licenceData);
                 return licenceData;
             });
         }
