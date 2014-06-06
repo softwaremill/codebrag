@@ -1,6 +1,6 @@
 <div class="popup-content" style="text-align: left" ng-hide="enteringKey">
     <h1 class="text-center">Licence</h1>
-    <h3 class="text-center success" ng-show="registrationStatus.isOk()">Your licence has been registered!</h3>
+    <h3 class="text-center success" ng-repeat="f in flash.get('info')">{{ f.message }}</h3>
     <h2 class="text-center text-error" ng-show="!licenceData.valid">Your licence has expired.<br>Codebrag is available in read-only mode.</h2>
     <h3 class="text-center" ng-show="!licenceData.valid">Purchase your licence to continue using Codebrag.</h3>
     <ul ng-show="licenceData.type === 'Trial'">
@@ -21,7 +21,7 @@
 </div>
 <div class="popup-content" style="text-align: left" ng-show="enteringKey">
     <h1 class="text-center">Enter your licence key</h1>
-    <h3 class="text-center text-error" ng-show="registrationStatus.isFailed()">{{ registrationStatus.errMsg }}</h3>
+    <h3 class="text-center text-error" ng-repeat="f in flash.get('error')">{{ f.message }}</h3>
     <form action="" name="licenceForm">
         <textarea required cols="30" rows="5" ng-model="key">{{ key }}</textarea>
     </form>

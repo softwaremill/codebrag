@@ -13,7 +13,7 @@ angular.module('codebrag.licence')
         }
 
         function registrationFailed(response) {
-            return $q.reject(response.data.error);
+            return $q.reject(response.data);
         }
 
     });
