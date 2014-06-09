@@ -1,6 +1,8 @@
 angular.module('codebrag.session')
 
-    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, configService, $state, events, $window, $location, flash, popupsService) {
+    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, configService, $state, events, $window, $location, flash, Flash, popupsService) {
+
+        $scope.errorsFlash = new Flash();
 
         $scope.user = {
             login: '',
@@ -73,15 +75,15 @@ angular.module('codebrag.session')
         }
 
         function logInUser() {
-            delete $scope.loginFailed;
             delete $rootScope.registerSuccessful;
+            $scope.errorsFlash.clear();
             authService.login($scope.user).then(function () {
                 clearLoginField();
                 clearPasswordField();
                 goToCommitsListIfDirectLogin();
-            }, function () {
+            }, function (errors) {
+                $scope.errorsFlash.addAll('error', errors);
                 clearPasswordField();
-                $scope.loginFailed = true;
             });
         }
 

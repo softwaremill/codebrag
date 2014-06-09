@@ -24,6 +24,8 @@ angular.module('codebrag.auth').factory('authService', function ($http, httpRequ
                 setLoggedInUser(response.data);
                 httpRequestsBuffer.retryAllRequest();
                 return currentUser;
+            }, function(response) {
+                return $q.reject(response.data);
             });
         },
 
