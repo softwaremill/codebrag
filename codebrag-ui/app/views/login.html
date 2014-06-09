@@ -49,8 +49,11 @@
                     Want to sign in? Use the following usernames<br/><strong>fox, scully, skinner</strong> with password <strong>codebrag</strong>
                 </div>
             </section>
-            <section class="demo-login-info">
-                <a href="http://codebrag.com/faq.html#password" target="_blank" style="text-decoration: none">Forgot password?</a>
+            <section class="demo-login-info" ng-click="showForgotPasswordInfo = true" ng-hide="showForgotPasswordInfo">
+                <span class="link" ng-click="forgotPasswordInfo=true">Forgot password?</span>
+            </section>
+            <section class="demo-login-info" ng-show="showForgotPasswordInfo">
+                If you forgot your password, contact your administrator or use passwd.sh script (<a href="http://codebrag.com/faq.html#password" target="_blank" style="text-decoration: none">more info</a>)
             </section>
         </form>
     </div>
