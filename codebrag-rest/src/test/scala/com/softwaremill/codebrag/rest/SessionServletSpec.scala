@@ -12,12 +12,12 @@ import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.typesafe.config.ConfigFactory
 import java.util.Properties
-import com.softwaremill.codebrag.activities.{UserToRegister, RegisterNewUserUseCase}
+import com.softwaremill.codebrag.activities.{LoginUserUseCase, UserToRegister, RegisterNewUserUseCase}
 import com.softwaremill.codebrag.dao.finders.user.{ManagedUserView, ManagedUsersListView, UserFinder}
 
 class SessionServletSpec extends AuthenticatableServletSpec {
 
-  val afterUserLoginHook = mock[AfterUserLogin]
+  val loginUserUseCase = mock[LoginUserUseCase]
 
   "DELETE /" should "call logout() when user is already authenticated" in {
     addServlet(new TestableSessionServlet(fakeAuthenticator, fakeScentry), "/*")
@@ -54,7 +54,7 @@ class SessionServletSpec extends AuthenticatableServletSpec {
     }
   }
 
-  class TestableSessionServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson]) extends SessionServlet(fakeAuthenticator, afterUserLoginHook) {
+  class TestableSessionServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson]) extends SessionServlet(fakeAuthenticator, loginUserUseCase) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

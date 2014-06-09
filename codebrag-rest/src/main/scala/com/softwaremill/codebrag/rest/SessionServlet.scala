@@ -1,16 +1,21 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.service.user.{AfterUserLogin, Authenticator}
+import com.softwaremill.codebrag.service.user.Authenticator
+import org.scalatra
+import com.softwaremill.codebrag.activities.{LoginForm, LoginFailedException, LoginUserUseCase}
 
-class SessionServlet(val authenticator: Authenticator, afterLogin: AfterUserLogin) extends JsonServletWithAuthentication {
+class SessionServlet(val authenticator: Authenticator, loginUseCase: LoginUserUseCase) extends JsonServletWithAuthentication {
 
   post("/") {
-    authenticate() match {
-      case Some(loggedUser) => {
-        afterLogin.postLogin(loggedUser)
-        loggedUser
+    try {
+      loginUseCase.execute(LoginForm(login, password, rememberMe)) {
+        authenticate()
+      } match {
+        case Right(user) => scalatra.Ok(user)
+        case Left(errors) => scalatra.Unauthorized(errors.fieldErrors)
       }
-      case _ => halt(401, "Invalid login and/or password")
+    } catch {
+      case e: LoginFailedException => scalatra.Unauthorized(Map("errors" -> List(e.msg)))
     }
   }
 

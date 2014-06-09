@@ -60,6 +60,8 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
   lazy val statsAggregator = new StatsAggregator(statsFinder, InstanceId, config, repository)
 
+
+  lazy val loginUserUseCase = new LoginUserUseCase(userDao, afterUserLogin)
   lazy val addCommentUseCase = new AddCommentUseCase(userReactionService, followupService, eventBus, licenceService)
   lazy val reviewCommitUseCase = new ReviewCommitUseCase(commitInfoDao, reviewedCommitsCache, eventBus, licenceService)
   lazy val unlikeUseCaseFactory = new UnlikeUseCase(likeValidator, userReactionService, licenceService)
