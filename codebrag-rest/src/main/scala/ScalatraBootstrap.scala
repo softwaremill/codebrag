@@ -33,8 +33,8 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       def rootConfig = ConfigFactory.load()
     }
 
-    val repoData = discoverRepositoryOrExit(_config)
-    val _repository = Repository.buildUsing(repoData)
+    val repositoriesData = discoverRepositoryOrExit(_config)
+    val _repository = Repository.buildUsing(repositoriesData.head)    // temporary hack to keep single repo setup working for now
 
     val beans = initializeBeans(_config, _repository)
     import beans._
