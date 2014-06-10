@@ -1,13 +1,13 @@
 package com.softwaremill.codebrag.repository.config
 
-import com.softwaremill.codebrag.service.config.RepositoryConfig
 import java.nio.file.{Path, Paths}
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import java.io.File
+import com.softwaremill.codebrag.service.config.MultiRepoConfig
 
 object RepoDataDiscovery {
 
-  def discoverRepoDataFromConfig(repositoryConfig: RepositoryConfig) = {
+  def discoverRepoDataFromConfig(repositoryConfig: MultiRepoConfig) = {
     val rootDir = resolveRootDir(repositoryConfig)
     discoverRepoNames(rootDir).map( repoName => {
       val repoLocation = discoverRepoLocation(rootDir, repoName)
@@ -17,7 +17,7 @@ object RepoDataDiscovery {
     })
   }
 
-  private def resolveCredentials(repositoryConfig: RepositoryConfig): Option[RepoCredentials] = {
+  private def resolveCredentials(repositoryConfig: MultiRepoConfig): Option[RepoCredentials] = {
     val passphraseCredentials = repositoryConfig.passphrase.map(PassphraseCredentials(_))
     val userPassCredentials = repositoryConfig.username.map { username =>
       val password = repositoryConfig.password.getOrElse("")
@@ -26,7 +26,7 @@ object RepoDataDiscovery {
     passphraseCredentials.orElse(userPassCredentials)
   }
 
-  private def resolveRootDir(repositoryConfig: RepositoryConfig) = {
+  private def resolveRootDir(repositoryConfig: MultiRepoConfig) = {
     val rootDir = Paths.get(repositoryConfig.repositoriesRoot)
     if(!rootDir.toFile.isDirectory) {
       val path = rootDir.toFile.getCanonicalPath

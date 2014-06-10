@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.domain.{UserRepoDetails, InternalUser}
 import com.softwaremill.codebrag.repository.config.RepoDataDiscovery
 import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.rest._
-import com.softwaremill.codebrag.service.config.RepositoryConfig
+import com.softwaremill.codebrag.service.config.MultiRepoConfig
 import com.softwaremill.codebrag.service.notification.UserNotificationSenderActor
 import com.softwaremill.codebrag.service.updater.RepositoryUpdateScheduler
 import com.softwaremill.codebrag.stats.StatsSendingScheduler
@@ -110,7 +110,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     internalUserDao.createIfNotExists(InternalUser(InternalUser.WelcomeFollowupsAuthorName))
   }
 
-  private def discoverRepositoryOrExit(repoConfig: RepositoryConfig) = {
+  private def discoverRepositoryOrExit(repoConfig: MultiRepoConfig) = {
     try {
       RepoDataDiscovery.discoverRepoDataFromConfig(repoConfig)
     } catch {

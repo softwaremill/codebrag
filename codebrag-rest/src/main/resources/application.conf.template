@@ -1,11 +1,12 @@
-repository {
+repositories {
 
-### Uncomment either username/password or passphrase depending on your git/svn repository authentication method
+#    Uncomment either username/password or passphrase depending on your git/svn repository authentication method
+#    your_repo_name {
+#        username = "johndoe"
+#        password = "secret_password"
+#        passphrase = "secret_passphrase"
+#    }
 
-#   username = "johndoe"
-#   password = "secret_password"
-
-#   passphrase = "secret_passphrase"
 }
 
 codebrag {
