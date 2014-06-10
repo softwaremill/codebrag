@@ -85,7 +85,7 @@ stats.controller('StatsCtrl', function($scope, statsDataService, $location) {
           return {
             to: "/Date(" + moment.utc(entry.date).startOf('day').valueOf() + ")/",
             from: "/Date(" + moment.utc(entry.date).endOf('day').valueOf() + ")/",
-            customClass: [(entry.active === true ? 'active' : 'inactive'), (appVersion === '2.0' ? 'v20': '')].join(" ")
+            customClass: [(entry.active === true ? 'active' : 'inactive'), (/2.*/.test(appVersion) ? 'v20': '')].join(" ")
           }
         });
 

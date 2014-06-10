@@ -1,8 +1,8 @@
 ==================================
 
-Welcome to Codebrag v2.0!
+Welcome to Codebrag v2.1!
 
-* INSTALL GUIDE -> http://documentation.codebrag.com/display/CBR20/Installation
+* INSTALL GUIDE -> http://documentation.codebrag.com/display/CBR21/Installation
 
 ==================================
 
