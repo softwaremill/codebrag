@@ -33,10 +33,9 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       def rootConfig = ConfigFactory.load()
     }
 
-    val repositoriesData = discoverRepositoryOrExit(_config)
-    val _repository = Repository.buildUsing(repositoriesData.head)    // temporary hack to keep single repo setup working for now
+    val repositories = discoverRepositoryOrExit(_config).map(Repository.buildUsing)
 
-    val beans = initializeBeans(_config, _repository)
+    val beans = initializeBeans(_config, repositories.head)
     import beans._
 
     repositoryStateCache.initialize()
@@ -56,7 +55,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       logger.info("Sending anonymous statistics was disabled - not scheduling stats calculation")
     }
 
-    RepositoryUpdateScheduler.initialize(actorSystem, _repository, commitImportService)
+    RepositoryUpdateScheduler.scheduleUpdates(actorSystem, repositories, commitImportService)
     context.mount(new SessionServlet(authenticator, loginUserUseCase), Prefix + SessionServlet.MappingPath)
     context.mount(new UsersServlet(authenticator, registerService, registerNewUserUseCase, userFinder, modifyUserDetailsUseCase, config), Prefix + UsersServlet.MappingPath)
     context.mount(new UsersSettingsServlet(authenticator, userDao, changeUserSettingsUseCase), Prefix + "users/settings")
@@ -68,7 +67,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new ConfigServlet(config, authenticator), Prefix + "config")
     context.mount(new InvitationServlet(authenticator, generateInvitationCodeUseCase, sendInvitationEmailUseCase), Prefix + "invitation")
     context.mount(new UpdatesServlet(authenticator, followupFinder, heartbeatDao, toReviewCommitsFinder, clock), Prefix + UpdatesServlet.Mapping)
-    context.mount(new RepoStatusServlet(authenticator, _repository, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
+    context.mount(new RepoStatusServlet(authenticator, repositories.head, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
     context.mount(new AvailableBranchesServlet(authenticator, repositoryStateCache), Prefix + AvailableBranchesServlet.MountPath)
     context.mount(new LicenceServlet(licenceService, registerLicenceUseCase, authenticator), Prefix + LicenceServlet.MountPath)
 
