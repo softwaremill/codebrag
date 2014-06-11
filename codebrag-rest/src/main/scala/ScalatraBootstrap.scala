@@ -56,7 +56,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       logger.info("Sending anonymous statistics was disabled - not scheduling stats calculation")
     }
 
-    val repoUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, _repository, commitImportService)
+    RepositoryUpdateScheduler.initialize(actorSystem, _repository, commitImportService)
     context.mount(new SessionServlet(authenticator, loginUserUseCase), Prefix + SessionServlet.MappingPath)
     context.mount(new UsersServlet(authenticator, registerService, registerNewUserUseCase, userFinder, modifyUserDetailsUseCase, config), Prefix + UsersServlet.MappingPath)
     context.mount(new UsersSettingsServlet(authenticator, userDao, changeUserSettingsUseCase), Prefix + "users/settings")
@@ -67,7 +67,6 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new VersionServlet(config), Prefix + "version")
     context.mount(new ConfigServlet(config, authenticator), Prefix + "config")
     context.mount(new InvitationServlet(authenticator, generateInvitationCodeUseCase, sendInvitationEmailUseCase), Prefix + "invitation")
-    context.mount(new RepositorySyncServlet(actorSystem, repoUpdateActor), RepositorySyncServlet.Mapping)
     context.mount(new UpdatesServlet(authenticator, followupFinder, heartbeatDao, toReviewCommitsFinder, clock), Prefix + UpdatesServlet.Mapping)
     context.mount(new RepoStatusServlet(authenticator, _repository, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
     context.mount(new AvailableBranchesServlet(authenticator, repositoryStateCache), Prefix + AvailableBranchesServlet.MountPath)
