@@ -28,19 +28,17 @@ class BranchCommitsCache(val repository: Repository, backend: PersistentBackendF
 
   def cleanupStaleBranches() {
     val staleBranches = repository.findStaleBranchesFullNames(getFullBranchNames.toSet)
-    logger.debug(s"Purging stale branches from cache ${staleBranches}")
+    logger.debug(s"Purging stale branches from cache for ${repository.repoName}: $staleBranches")
     staleBranches.foreach(commits.remove)
-    backend.remove(staleBranches)
+    backend.remove(repository.repoName, staleBranches)
   }
 
   private def addCommitsToBranch(newCommits: List[BranchCommitCacheEntry], branchName: String) {
     Option(commits.get(branchName)) match {
-      case Some(branchCommits) => {
-        commits.put(branchName, (newCommits ::: branchCommits).take(maxCommitsPerBranchCount))
-      }
+      case Some(branchCommits) => commits.put(branchName, (newCommits ::: branchCommits).take(maxCommitsPerBranchCount))
       case None => commits.put(branchName, newCommits.take(maxCommitsPerBranchCount))
     }
-    logger.debug(s"Number of commits in ${branchName}: ${getBranchCommits(branchName).size}")
+    logger.debug(s"Number of commits in $branchName: ${getBranchCommits(branchName).size}")
   }
 
   def getFullBranchNames: Set[String] = commits.keySet.toSet
@@ -57,7 +55,7 @@ class BranchCommitsCache(val repository: Repository, backend: PersistentBackendF
 
   def initialize() {
     logger.debug(s"Initializing repo cache")
-    val savedState = backend.loadBranchesState()
+    val savedState = backend.loadBranchesState(repository.repoName)
     val loadResult = repository.loadLastKnownRepoState(savedState, maxCommitsPerBranchCount)
     loadResult.commits.foreach { branchCommits =>
       val cacheEntries = branchCommits.commits.map(partialCommitToCacheEntry)
@@ -82,9 +80,9 @@ class PersistentBackendForCache(commitInfoDao: CommitInfoDAO, branchStateDao: Br
     persistBranchesState(loadResult)
   }
 
-  def remove(branches: Set[String]) {
-    logger.debug(s"Removing branches from DB: ${branches}")
-    branchStateDao.removeBranches(branches)
+  def remove(repoName: String, branches: Set[String]) {
+    logger.debug(s"Removing branches from DB: $branches")
+    branchStateDao.removeBranches(repoName, branches)
   }
 
 
@@ -104,15 +102,15 @@ class PersistentBackendForCache(commitInfoDao: CommitInfoDAO, branchStateDao: Br
 
   private def persistBranchesState(loadResult: MultibranchLoadCommitsResult) {
     loadResult.commits.foreach { branch =>
-      val state = BranchState(branch.branchName, branch.currentBranchSHA)
+      val state = BranchState(loadResult.repoName, branch.branchName, branch.currentBranchSHA)
       branchStateDao.storeBranchState(state)
-      logger.debug(s"Persisted SHA ${branch.currentBranchSHA} for ${branch.branchName}")
+      logger.debug(s"Persisted SHA ${branch.currentBranchSHA} for ${loadResult.repoName} and ${branch.branchName}")
     }
   }
 
-  def loadBranchesState(): Map[String, String] = {
-    logger.debug("Loading repo state from persistent storage")
-    branchStateDao.loadBranchesStateAsMap
+  def loadBranchesState(repoName: String): Map[String, String] = {
+    logger.debug(s"Loading $repoName repo state from persistent storage")
+    branchStateDao.loadBranchesStateAsMap(repoName)
   }
 
 }

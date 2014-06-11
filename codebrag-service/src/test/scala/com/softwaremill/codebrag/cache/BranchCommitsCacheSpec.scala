@@ -102,7 +102,7 @@ class BranchCommitsCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAf
     // given
     val masterCommits = List(CommitsForBranch(MasterBranch, Commits, "123abc"))
     val commitsLoaded = MultibranchLoadCommitsResult("codebrag", masterCommits)
-    when(backend.loadBranchesState()).thenReturn(savedState)
+    when(backend.loadBranchesState(repository.repoName)).thenReturn(savedState)
     when(repository.loadLastKnownRepoState(savedState, cacheConfig.maxCommitsCachedPerBranch)).thenReturn(commitsLoaded)
 
     // when
