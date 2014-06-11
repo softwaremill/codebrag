@@ -10,10 +10,10 @@ import com.softwaremill.codebrag.repository.Repository
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.service.config.CommitCacheConfig
 
-class BranchCommitsCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
+class RepositoryCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
 
   var backend: PersistentBackendForCache = _
-  var repoCache: BranchCommitsCache = _
+  var repoCache: RepositoryCache = _
   var cacheConfig: CommitCacheConfig = _
   var repository: Repository = _
 
@@ -34,7 +34,7 @@ class BranchCommitsCacheSpec extends FlatSpec with MockitoSugar with BeforeAndAf
     backend = mock[PersistentBackendForCache]
     cacheConfig = mock[CommitCacheConfig]
     repository = mock[Repository]
-    repoCache = new BranchCommitsCache(repository, backend, cacheConfig)
+    repoCache = new RepositoryCache(repository, backend, cacheConfig)
 
     when(cacheConfig.maxCommitsCachedPerBranch).thenReturn(10)
     when(repository.resolveFullBranchName(MasterBranch)).thenReturn(MasterBranch)
