@@ -18,7 +18,7 @@ class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: Br
       case e: Exception => logger.error("Cannot pull changes from upstream", e)
     }
     try {
-      val loaded = repository.loadCommitsSince(branchStateDao.loadBranchesStateAsMap, config.maxCommitsCachedPerBranch)
+      val loaded = repository.loadCommitsSince(branchStateDao.loadBranchesStateAsMap(repository.repoName), config.maxCommitsCachedPerBranch)
       cache.addCommits(loaded)
       updateRepoReadyStatus(repository)
     } catch {

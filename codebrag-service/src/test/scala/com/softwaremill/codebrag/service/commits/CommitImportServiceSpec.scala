@@ -37,7 +37,7 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
 
   it should "pull changes and load commits from repo since given (saved) state" in {
     // given
-    when(branchStateDao.loadBranchesStateAsMap).thenReturn(SavedRepoState)
+    when(branchStateDao.loadBranchesStateAsMap(repository.repoName)).thenReturn(SavedRepoState)
 
     // when
     service.importRepoCommits(repository)
@@ -49,7 +49,7 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   
   it should "add loaded commits to cache" in {
     // given
-    when(branchStateDao.loadBranchesStateAsMap).thenReturn(SavedRepoState)
+    when(branchStateDao.loadBranchesStateAsMap(repository.repoName)).thenReturn(SavedRepoState)
     when(repository.loadCommitsSince(SavedRepoState, config.maxCommitsCachedPerBranch)).thenReturn(LoadedCommits)
     
     // when
