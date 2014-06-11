@@ -12,7 +12,7 @@ import scala.collection.JavaConversions._
 /**
  * Keeps commits (SHA) for all repository branches
  */
-class BranchCommitsCache(val repository: Repository, backend: PersistentBackendForCache, config: CommitCacheConfig) extends Logging {
+class RepositoryCache(val repository: Repository, backend: PersistentBackendForCache, config: CommitCacheConfig) extends Logging {
 
   private type BranchCommits = List[BranchCommitCacheEntry]
 

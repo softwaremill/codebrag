@@ -9,14 +9,14 @@ import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 import com.softwaremill.codebrag.repository.Repository
 import org.mockito.Matchers
 import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
-import com.softwaremill.codebrag.cache.BranchCommitsCache
+import com.softwaremill.codebrag.cache.RepositoryCache
 import com.softwaremill.codebrag.service.config.CommitCacheConfig
 
 class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
 
   var repoStatusDao: RepositoryStatusDAO = _
   var branchStateDao: BranchStateDAO = _
-  var repoCache: BranchCommitsCache = _
+  var repoCache: RepositoryCache = _
   var repository: Repository = _
   var service: CommitImportService = _
   var config: CommitCacheConfig = _
@@ -28,7 +28,7 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
   before {
     repoStatusDao = mock[RepositoryStatusDAO]
     branchStateDao = mock[BranchStateDAO]
-    repoCache = mock[BranchCommitsCache]
+    repoCache = mock[RepositoryCache]
     repository = mock[Repository]
     config = mock[CommitCacheConfig]
     when(config.maxCommitsCachedPerBranch).thenReturn(MaxCommitsForNewBranch)

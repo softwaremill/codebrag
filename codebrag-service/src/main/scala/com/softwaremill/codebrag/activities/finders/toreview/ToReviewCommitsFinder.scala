@@ -4,12 +4,12 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.cache.BranchCommitsCache
+import com.softwaremill.codebrag.cache.RepositoryCache
 import com.softwaremill.codebrag.dao.finders.views.CommitListView
 import com.softwaremill.codebrag.activities.finders.UserAndBranch
 
 class ToReviewCommitsFinder(
-                             protected val repoCache: BranchCommitsCache,
+                             protected val repoCache: RepositoryCache,
                              protected val userDao: UserDAO,
                              toReviewCommitsFilter: ToReviewBranchCommitsFilter,
                              toReviewCommitsViewBuilder: ToReviewCommitsViewBuilder) extends Logging with UserAndBranch {

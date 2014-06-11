@@ -4,7 +4,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.finders.views.{CommitState, CommitView}
 import com.softwaremill.codebrag.domain.{CommitAuthorClassification, ReviewedCommit}
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.cache.{BranchCommitCacheEntry, BranchCommitsCache, UserReviewedCommitsCache}
+import com.softwaremill.codebrag.cache.{BranchCommitCacheEntry, RepositoryCache, UserReviewedCommitsCache}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.service.config.ReviewProcessConfig
 

@@ -5,7 +5,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.cache.{BranchCommitCacheEntry, UserReviewedCommitsCacheEntry, BranchCommitsCache}
+import com.softwaremill.codebrag.cache.{BranchCommitCacheEntry, UserReviewedCommitsCacheEntry, RepositoryCache}
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.common.ClockSpec
@@ -14,7 +14,7 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
 
   var finder: ToReviewCommitsFinder = _
 
-  var branchCommitsCache: BranchCommitsCache = _
+  var branchCommitsCache: RepositoryCache = _
   var userDao: UserDAO = _
   var toReviewFilter: ToReviewBranchCommitsFilter = _
   var toReviewViewBuilder: ToReviewCommitsViewBuilder = _
@@ -33,7 +33,7 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
   val NoCommitsInBranch = List.empty[BranchCommitCacheEntry]
 
   before {
-    branchCommitsCache = mock[BranchCommitsCache]
+    branchCommitsCache = mock[RepositoryCache]
     userDao = mock[UserDAO]
     toReviewFilter = mock[ToReviewBranchCommitsFilter]
     toReviewViewBuilder = mock[ToReviewCommitsViewBuilder]

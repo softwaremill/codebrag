@@ -7,11 +7,11 @@ import scala.collection.JavaConversions._
 
 class RepositoriesCache(backend: PersistentBackendForCache, config: CommitCacheConfig) {
 
-  private val reposCacheMap = new ConcurrentHashMap[String, BranchCommitsCache]
+  private val reposCacheMap = new ConcurrentHashMap[String, RepositoryCache]
 
   def initialize(repos: Seq[Repository]) {
     repos.foreach { repo =>
-      val repoCache = new BranchCommitsCache(repo, backend, config)
+      val repoCache = new RepositoryCache(repo, backend, config)
       repoCache.initialize()
       reposCacheMap.put(repo.repoName, repoCache)
     }

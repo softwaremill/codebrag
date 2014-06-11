@@ -6,12 +6,12 @@ import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.finders.views.CommitListView
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.cache.BranchCommitsCache
+import com.softwaremill.codebrag.cache.RepositoryCache
 import com.softwaremill.codebrag.activities.finders.UserAndBranch
 
 
 class AllCommitsFinder(
-  protected val repoCache: BranchCommitsCache,
+  protected val repoCache: RepositoryCache,
   commitsInfoDao: CommitInfoDAO,
   protected val userDao: UserDAO,
   allCommitsViewBuilder: AllCommitsViewBuilder) extends Logging with UserAndBranch {

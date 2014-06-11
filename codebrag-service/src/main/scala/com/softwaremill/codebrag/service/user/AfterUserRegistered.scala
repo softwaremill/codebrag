@@ -5,11 +5,11 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import CommitAuthorClassification._
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.cache.{UserReviewedCommitsCacheEntry, UserReviewedCommitsCache, BranchCommitsCache}
+import com.softwaremill.codebrag.cache.{UserReviewedCommitsCacheEntry, UserReviewedCommitsCache, RepositoryCache}
 import com.softwaremill.codebrag.service.config.ReviewProcessConfig
 
 class AfterUserRegistered(
-  val repoCache: BranchCommitsCache,
+  val repoCache: RepositoryCache,
   val reviewedCommitsCache: UserReviewedCommitsCache,
   val config: ReviewProcessConfig) extends SetStartingDateForUser {
 
@@ -21,7 +21,7 @@ class AfterUserRegistered(
 
 trait SetStartingDateForUser extends Logging {
 
-  val repoCache: BranchCommitsCache
+  val repoCache: RepositoryCache
   val reviewedCommitsCache: UserReviewedCommitsCache
   val config: ReviewProcessConfig
 
