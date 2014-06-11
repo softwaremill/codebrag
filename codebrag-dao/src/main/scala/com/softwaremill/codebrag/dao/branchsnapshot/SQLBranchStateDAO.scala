@@ -10,32 +10,36 @@ class SQLBranchStateDAO(database: SQLDatabase) extends BranchStateDAO {
 
   def storeBranchState(state: BranchState) = {
     db.withTransaction { implicit session =>
-      branchStates.filter(_.branchName === state.fullBranchName).firstOption match {
+      branchStates.filter(_.repoName === state.repoName).filter(_.branchName === state.fullBranchName).firstOption match {
         case None => branchStates += state
-        case Some(existing) => branchStates
-          .filter(_.branchName === state.fullBranchName)
-          .update(state)
+        case Some(existing) => branchStates.where( row =>
+          (row.repoName === state.repoName) && (row.branchName === state.fullBranchName)
+        ).update(state)
       }
     }
   }
 
-  def loadBranchState(branchName: String): Option[BranchState] = {
+  def loadBranchState(repoName: String, branchName: String): Option[BranchState] = {
     db.withTransaction { implicit session =>
-      branchStates.filter(_.branchName === branchName).firstOption
+      branchStates.where( row =>
+        (row.repoName === repoName) && (row.branchName === branchName)
+      ).firstOption
     }
   }
 
-  def loadBranchesState: Set[BranchState] = {
+  def loadBranchesState(repoName: String): Set[BranchState] = {
     db.withTransaction { implicit session =>
-      branchStates.list().toSet
+      branchStates.where(_.repoName === repoName).list().toSet
     }
   }
 
-  def loadBranchesStateAsMap = loadBranchesState.map(b => (b.fullBranchName, b.sha)).toMap
+  def loadBranchesStateAsMap(repoName: String) = loadBranchesState(repoName).map(b => (b.fullBranchName, b.sha)).toMap
 
-  override def removeBranches(branches: Set[String]) {
+  override def removeBranches(repoName: String, branches: Set[String]) {
     db.withTransaction { implicit session =>
-      branchStates.filter(_.branchName inSet branches).delete
+      branchStates.where( row =>
+        (row.repoName === repoName) && (row.branchName inSet branches)
+      ).delete
     }
   }
 
@@ -43,8 +47,9 @@ class SQLBranchStateDAO(database: SQLDatabase) extends BranchStateDAO {
 
     def branchName = column[String]("branch_name", O.PrimaryKey)
     def sha = column[String]("sha")
+    def repoName = column[String]("repo_name")
 
-    def * = (branchName, sha) <> (BranchState.tupled, BranchState.unapply)
+    def * = (repoName, branchName, sha) <> (BranchState.tupled, BranchState.unapply)
   }
 
   private val branchStates = TableQuery[BranchStates]

@@ -6,12 +6,12 @@ trait BranchStateDAO {
 
   def storeBranchState(state: BranchState)
 
-  def loadBranchState(branchName: String): Option[BranchState]
+  def loadBranchState(repoName: String, branchName: String): Option[BranchState]
 
-  def loadBranchesState: Set[BranchState]
+  def loadBranchesState(repoName: String): Set[BranchState]
 
-  def loadBranchesStateAsMap: Map[String, String]
+  def loadBranchesStateAsMap(repoName: String): Map[String, String]
 
-  def removeBranches(branches: Set[String])
+  def removeBranches(repoName: String, branches: Set[String])
 
 }
