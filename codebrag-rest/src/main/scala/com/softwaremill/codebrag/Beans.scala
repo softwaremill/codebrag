@@ -17,7 +17,7 @@ import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
 import com.softwaremill.codebrag.dao.Daos
 import com.softwaremill.codebrag.repository.Repository
-import com.softwaremill.codebrag.cache.{UserReviewedCommitsCache, PersistentBackendForCache, BranchCommitsCache}
+import com.softwaremill.codebrag.cache.{RepositoriesCache, UserReviewedCommitsCache, PersistentBackendForCache, BranchCommitsCache}
 import com.softwaremill.codebrag.licence.LicenceService
 import com.softwaremill.codebrag.instance.InstanceParamsService
 import com.softwaremill.codebrag.activities.finders.toreview.{ToReviewCommitsViewBuilder, ToReviewBranchCommitsFilter, ToReviewCommitsFinder}
@@ -82,7 +82,9 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val statsHTTPRequestSender = new StatsHTTPRequestSender(config)
   lazy val instanceRunStatsSender = new InstanceRunStatsSender(statsHTTPRequestSender)
 
-  lazy val repositoryStateCache = new BranchCommitsCache(repository, new PersistentBackendForCache(commitInfoDao, branchStateDao), config)
+  lazy val cacheBackend = new PersistentBackendForCache(commitInfoDao, branchStateDao)
+  lazy val repositoriesCache = new RepositoriesCache(cacheBackend, config)
+  lazy val repositoryStateCache = new BranchCommitsCache(repository, cacheBackend, config)
   lazy val reviewedCommitsCache = new UserReviewedCommitsCache(userDao, reviewedCommitsDao)
 
   lazy val toReviewCommitsFinder = new ToReviewCommitsFinder(
