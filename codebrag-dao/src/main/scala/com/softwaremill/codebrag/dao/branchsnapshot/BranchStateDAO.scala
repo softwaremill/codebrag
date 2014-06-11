@@ -15,25 +15,3 @@ trait BranchStateDAO {
   def removeBranches(branches: Set[String])
 
 }
-
-class InMemoryBranchStateDAO extends BranchStateDAO {
-
-  private val storage = new scala.collection.mutable.HashSet[BranchState]
-
-  def storeBranchState(state: BranchState) {
-    storage.add(state)
-  }
-
-  def loadBranchState(branchName: String) = {
-    storage.find(_.fullBranchName == branchName)
-  }
-
-  def loadBranchesState = storage.toSet
-
-  def loadBranchesStateAsMap =  loadBranchesState.map( b => (b.fullBranchName, b.sha)).toMap
-
-  def removeBranches(branches: Set[String]) {
-    val toRemove = storage.filter(b => branches.contains(b.fullBranchName))
-    toRemove.foreach(storage.remove)
-  }
-}
