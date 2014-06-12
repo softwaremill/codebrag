@@ -29,6 +29,7 @@ trait RawCommitsConverter { self: Repository with Logging =>
 
   private def buildCommitInfo(jGitCommit: RevCommit): CommitInfo = {
     CommitInfo(
+      repoName = repoName,
       sha = jGitCommit.toObjectId.name(),
       message = jGitCommit.getFullMessage,
       authorName = jGitCommit.getAuthorIdent.getName,

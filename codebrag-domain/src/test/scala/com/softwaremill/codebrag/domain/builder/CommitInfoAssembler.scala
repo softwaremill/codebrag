@@ -7,6 +7,11 @@ import com.softwaremill.codebrag.common.{RealTimeClock, Utils}
 
 class CommitInfoAssembler(var commit: CommitInfo) {
 
+  def withRepo(newRepoName: String) = {
+    commit = commit.copy(repoName = newRepoName)
+    this
+  }
+
   def withId(newId: ObjectId) = {
     commit = commit.copy(id = newId)
     this
@@ -55,13 +60,14 @@ object CommitInfoAssembler {
 
   private def createRandomCommit = {
     val sha = Utils.randomString(10)
+    val repoName  = Utils.randomString(10)
     val message = Utils.randomString(10)
     val authorName = Utils.randomString(10)
     val authorEmail = Utils.randomString(10)
     val committerName = Utils.randomString(10)
     val committerEmail = Utils.randomString(10)
     val parent = Utils.randomString(10)
-    CommitInfo(new ObjectId, sha, message, authorName, authorEmail, committerName, committerEmail,
+    CommitInfo(new ObjectId, repoName, sha, message, authorName, authorEmail, committerName, committerEmail,
       RealTimeClock.nowUtc, RealTimeClock.nowUtc, List(parent))
   }
 

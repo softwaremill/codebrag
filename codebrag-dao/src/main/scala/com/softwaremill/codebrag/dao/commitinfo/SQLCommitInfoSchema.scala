@@ -12,11 +12,11 @@ trait SQLCommitInfoSchema {
   import database._
 
   protected case class SQLCommitInfo(
-    id: ObjectId, sha: String, message: String, authorName: String, authorEmail: String,
+    id: ObjectId, repoName: String, sha: String, message: String, authorName: String, authorEmail: String,
     committerName: String, committerEmail: String, authorDate: DateTime, commitDate: DateTime) {
 
     def toCommitInfo(sps: List[SQLCommitInfoParent]) = CommitInfo(
-      id, sha, message, authorName, authorEmail, committerName, committerEmail, authorDate, commitDate,
+      id, repoName, sha, message, authorName, authorEmail, committerName, committerEmail, authorDate, commitDate,
       sps.map(_.parent)
     )
 
@@ -27,6 +27,7 @@ trait SQLCommitInfoSchema {
 
   protected class CommitInfos(tag: Tag) extends Table[SQLCommitInfo](tag, "commit_infos") {
     def id = column[ObjectId]("id", O.PrimaryKey)
+    def repoName= column[String]("repo_name")
     def sha = column[String]("sha")
     def message = column[String]("message")
     def authorName = column[String]("author_name")
@@ -36,7 +37,7 @@ trait SQLCommitInfoSchema {
     def authorDate = column[DateTime]("author_date")
     def commitDate = column[DateTime]("commit_date")
 
-    def * = (id, sha, message, authorName, authorEmail, commiterName, commiterEmail, authorDate, commitDate) <>
+    def * = (id, repoName, sha, message, authorName, authorEmail, commiterName, commiterEmail, authorDate, commitDate) <>
       (SQLCommitInfo.tupled, SQLCommitInfo.unapply)
   }
 
