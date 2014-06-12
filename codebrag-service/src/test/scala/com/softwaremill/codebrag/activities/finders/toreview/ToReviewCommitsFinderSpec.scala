@@ -5,7 +5,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.cache.{BranchCommitCacheEntry, UserReviewedCommitsCacheEntry, RepositoryCache}
+import com.softwaremill.codebrag.cache.{RepositoriesCache, BranchCommitCacheEntry, UserReviewedCommitsCacheEntry}
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.common.ClockSpec
@@ -14,7 +14,7 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
 
   var finder: ToReviewCommitsFinder = _
 
-  var branchCommitsCache: RepositoryCache = _
+  var repositoriesCache: RepositoriesCache = _
   var userDao: UserDAO = _
   var toReviewFilter: ToReviewBranchCommitsFilter = _
   var toReviewViewBuilder: ToReviewCommitsViewBuilder = _
@@ -22,7 +22,9 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
   val MasterBranch = "master"
   val FeatureBranch = "feature"
   val BugfixBranch = "bugfix"
-  
+
+  val CodebragRepo = "codebrag"
+
   val Alice = UserAssembler.randomUser.get  // has no selected branch
   val AliceCacheEntry = UserReviewedCommitsCacheEntry(Alice.id, Set.empty, clock.now)
 
@@ -33,55 +35,71 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
   val NoCommitsInBranch = List.empty[BranchCommitCacheEntry]
 
   before {
-    branchCommitsCache = mock[RepositoryCache]
+    repositoriesCache = mock[RepositoriesCache]
     userDao = mock[UserDAO]
     toReviewFilter = mock[ToReviewBranchCommitsFilter]
     toReviewViewBuilder = mock[ToReviewCommitsViewBuilder]
 
-    finder = new ToReviewCommitsFinder(branchCommitsCache, userDao, toReviewFilter, toReviewViewBuilder)
+    finder = new ToReviewCommitsFinder(repositoriesCache, userDao, toReviewFilter, toReviewViewBuilder)
 
     when(userDao.findById(Alice.id)).thenReturn(Some(Alice))
     when(userDao.findById(Bob.id)).thenReturn(Some(Bob))
   }
 
-  it should "use provided branch to find commits in" in {
+  it should "use provided branch and repo to find commits" in {
     // given
-    when(branchCommitsCache.getBranchCommits(MasterBranch)).thenReturn(NoCommitsInBranch)
-    when(toReviewFilter.filterFor(NoCommitsInBranch, Bob)).thenReturn(List.empty)
+    when(repositoriesCache.getBranchCommits(CodebragRepo, MasterBranch)).thenReturn(NoCommitsInBranch)
+    when(toReviewFilter.filterCommitsToReview(NoCommitsInBranch, Bob)).thenReturn(List.empty)
 
     // when
-    finder.find(Bob.id, Some(MasterBranch), Page)
-    finder.count(Bob.id, Some(MasterBranch))
+    finder.find(Bob.id, Some(CodebragRepo), Some(MasterBranch), Page)
+    finder.count(Bob.id, Some(CodebragRepo), Some(MasterBranch))
 
     // then
-    verify(branchCommitsCache, times(2)).getBranchCommits(MasterBranch)
+    verify(repositoriesCache, times(2)).getBranchCommits(CodebragRepo, MasterBranch)
   }
 
   it should "use user-saved branch if no branch provided and user has branch stored" in {
     // given
-    when(branchCommitsCache.getBranchCommits(FeatureBranch)).thenReturn(NoCommitsInBranch)
-    when(toReviewFilter.filterFor(NoCommitsInBranch, Bob)).thenReturn(List.empty)
+    when(repositoriesCache.getBranchCommits(CodebragRepo, FeatureBranch)).thenReturn(NoCommitsInBranch)
+    when(toReviewFilter.filterCommitsToReview(NoCommitsInBranch, Bob)).thenReturn(List.empty)
 
     // when
-    finder.find(Bob.id, providedBranchName = None, Page)
-    finder.count(Bob.id, branchName = None)
+    finder.find(Bob.id, Some(CodebragRepo), branchNameOpt = None, Page)
+    finder.count(Bob.id, Some(CodebragRepo), branchName = None)
 
     // then
-    verify(branchCommitsCache, times(2)).getBranchCommits(FeatureBranch)
+    verify(repositoriesCache, times(2)).getBranchCommits(CodebragRepo, FeatureBranch)
   }
 
-  it should "use currently checked out branch if no branch provided and user has no branch stored" in {
+  it should "use currently checked out branch for given repo if no branch provided and user has no branch stored" in {
     // given
-    when(branchCommitsCache.getCheckedOutBranchShortName).thenReturn(BugfixBranch)
-    when(branchCommitsCache.getBranchCommits(BugfixBranch)).thenReturn(NoCommitsInBranch)
-    when(toReviewFilter.filterFor(NoCommitsInBranch, Alice)).thenReturn(List.empty)
+    when(repositoriesCache.getCheckedOutBranchShortName(CodebragRepo)).thenReturn(BugfixBranch)
+    when(repositoriesCache.getBranchCommits(CodebragRepo, BugfixBranch)).thenReturn(NoCommitsInBranch)
+    when(toReviewFilter.filterCommitsToReview(NoCommitsInBranch, Alice)).thenReturn(List.empty)
 
     // when
-    finder.find(Alice.id, providedBranchName = None, Page)
-    finder.count(Alice.id, branchName = None)
+    finder.find(Alice.id, Some(CodebragRepo), branchNameOpt = None, Page)
+    finder.count(Alice.id, Some(CodebragRepo), branchName = None)
 
     // then
-    verify(branchCommitsCache, times(2)).getBranchCommits(BugfixBranch)
+    verify(repositoriesCache, times(2)).getBranchCommits(CodebragRepo, BugfixBranch)
+  }
+
+  // TODO: change "bootzooka" to fetching from user settings
+  it should "use repo name provided or user-saved one if not provided explicitly" in {
+    // given
+    when(repositoriesCache.getBranchCommits(CodebragRepo, MasterBranch)).thenReturn(NoCommitsInBranch)
+    when(repositoriesCache.getBranchCommits("bootzooka", MasterBranch)).thenReturn(NoCommitsInBranch)
+    when(toReviewFilter.filterCommitsToReview(NoCommitsInBranch, Alice)).thenReturn(List.empty)
+
+    // when
+    finder.find(Alice.id, Some(CodebragRepo), branchNameOpt = Some(MasterBranch), Page)
+    finder.find(Alice.id, repoNameOpt = None, branchNameOpt = Some(MasterBranch), Page)
+
+    // then
+    verify(repositoriesCache).getBranchCommits(CodebragRepo, MasterBranch)
+    verify(repositoriesCache).getBranchCommits("bootzooka", MasterBranch)
   }
 
 }

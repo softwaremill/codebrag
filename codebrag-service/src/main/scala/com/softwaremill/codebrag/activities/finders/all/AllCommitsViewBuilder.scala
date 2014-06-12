@@ -18,9 +18,9 @@ class AllCommitsViewBuilder(
   val userDao: UserDAO,
   val reviewedCommitsCache: UserReviewedCommitsCache) extends Logging with AuthorDataAppender with CommitReviewStateAppender with ReviewersDataAppender {
 
-  def toView(allBranchCommits: List[String], pagingCriteria: PagingCriteria[String], user: User) = {
+  def toView(repoName: String, allBranchCommits: List[String], pagingCriteria: PagingCriteria[String], user: User) = {
     val page = pagingCriteria.extractPageFrom(allBranchCommits)
-    val commits = commitsInfoDao.findByShaList(page.items)
+    val commits = commitsInfoDao.findByShaList(repoName, page.items)
     addAuthorData(CommitListView(setCommitsReviewStates(commits, user.id), page.beforeCount, page.afterCount))
   }
 

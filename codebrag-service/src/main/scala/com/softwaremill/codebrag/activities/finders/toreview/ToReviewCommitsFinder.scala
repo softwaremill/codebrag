@@ -4,31 +4,31 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.cache.RepositoryCache
+import com.softwaremill.codebrag.cache.RepositoriesCache
 import com.softwaremill.codebrag.dao.finders.views.CommitListView
-import com.softwaremill.codebrag.activities.finders.UserAndBranch
+import com.softwaremill.codebrag.activities.finders.UserBranchAndRepoPreferences
 
 class ToReviewCommitsFinder(
-                             protected val repoCache: RepositoryCache,
+                             protected val repoCache: RepositoriesCache,
                              protected val userDao: UserDAO,
                              toReviewCommitsFilter: ToReviewBranchCommitsFilter,
-                             toReviewCommitsViewBuilder: ToReviewCommitsViewBuilder) extends Logging with UserAndBranch {
+                             toReviewCommitsViewBuilder: ToReviewCommitsViewBuilder) extends Logging with UserBranchAndRepoPreferences {
 
-  def find(userId: ObjectId, providedBranchName: Option[String], pagingCriteria: PagingCriteria[String]): CommitListView = {
+  def find(userId: ObjectId, repoNameOpt: Option[String], branchNameOpt: Option[String], pagingCriteria: PagingCriteria[String]): CommitListView = {
     val user = loadUser(userId)
-    val ultimateBranchName = determineBranch(user, providedBranchName)
-    val allBranchCommits = repoCache.getBranchCommits(ultimateBranchName) 
-    val toReviewBranchCommits = toReviewCommitsFilter.filterFor(allBranchCommits, user)
-    toReviewCommitsViewBuilder.toPageView(toReviewBranchCommits, pagingCriteria)
+    val (repoName, branchName) = findTargetRepoAndBranchNames(user, repoNameOpt, branchNameOpt)
+    val allBranchCommits = repoCache.getBranchCommits(repoName, branchName)
+    val toReviewBranchCommits = toReviewCommitsFilter.filterCommitsToReview(allBranchCommits, user)
+    toReviewCommitsViewBuilder.toPageView(repoName, toReviewBranchCommits, pagingCriteria)
   }
 
-  def count(userId: ObjectId, branchName: Option[String]): Long = {
+  def count(userId: ObjectId, repoName: Option[String], branchName: Option[String]): Long = {
     val user = loadUser(userId)
-    val ultimateBranchName = determineBranch(user, branchName)
-    val allBranchCommits = repoCache.getBranchCommits(ultimateBranchName)
-    toReviewCommitsFilter.filterFor(allBranchCommits, user).length
+    val (ultimateRepo, ultimateBranch) = findTargetRepoAndBranchNames(user, repoName, branchName)
+    val allBranchCommits = repoCache.getBranchCommits(ultimateRepo, ultimateBranch)
+    toReviewCommitsFilter.filterCommitsToReview(allBranchCommits, user).length
   }
 
-  def countForUserSelectedBranch(userId: ObjectId): Long = count(userId, None)
+  def countForUserRepoAndBranch(userId: ObjectId): Long = count(userId, None, None)
 
 }

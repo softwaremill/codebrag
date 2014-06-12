@@ -9,9 +9,9 @@ import com.softwaremill.codebrag.domain.PartialCommitInfo
 
 class ToReviewCommitsViewBuilder(val userDao: UserDAO, val commitsInfoDao: CommitInfoDAO) extends AuthorDataAppender {
 
-   def toPageView(allBranchCommitsToReview: List[String], paging: PagingCriteria[String]) = {
+   def toPageView(repoName: String, allBranchCommitsToReview: List[String], paging: PagingCriteria[String]) = {
      val pageOfCommits = paging.extractPageFrom(allBranchCommitsToReview)
-     val commits = commitsInfoDao.findByShaList(pageOfCommits.items)
+     val commits = commitsInfoDao.findByShaList(repoName, pageOfCommits.items)
      val asToReview = markAsToReview(commits)
      addAuthorData(CommitListView(asToReview, pageOfCommits.beforeCount, pageOfCommits.afterCount))
    }

@@ -17,7 +17,7 @@ import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
 import com.softwaremill.codebrag.dao.Daos
 import com.softwaremill.codebrag.repository.Repository
-import com.softwaremill.codebrag.cache.{RepositoriesCache, UserReviewedCommitsCache, PersistentBackendForCache, RepositoryCache}
+import com.softwaremill.codebrag.cache.{RepositoriesCache, UserReviewedCommitsCache, PersistentBackendForCache}
 import com.softwaremill.codebrag.licence.LicenceService
 import com.softwaremill.codebrag.instance.InstanceParamsService
 import com.softwaremill.codebrag.activities.finders.toreview.{ToReviewCommitsViewBuilder, ToReviewBranchCommitsFilter, ToReviewCommitsFinder}
@@ -51,7 +51,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
 
   lazy val newUserAdder = new NewUserAdder(userDao, eventBus, afterUserRegistered, followupGeneratorForPriorReactions, welcomeFollowupsGenerator)
-  lazy val afterUserRegistered = new AfterUserRegistered(repositoryCache, reviewedCommitsCache, config)
+  lazy val afterUserRegistered = new AfterUserRegistered(reviewedCommitsCache, config)
   lazy val afterUserLogin = new AfterUserLogin(reviewedCommitsCache)
 
   lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService, notificationService)
@@ -84,18 +84,17 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
   lazy val cacheBackend = new PersistentBackendForCache(commitInfoDao, branchStateDao)
   lazy val repositoriesCache = new RepositoriesCache(cacheBackend, config)
-  lazy val repositoryCache = new RepositoryCache(repository, cacheBackend, config)
   lazy val reviewedCommitsCache = new UserReviewedCommitsCache(userDao, reviewedCommitsDao)
 
   lazy val toReviewCommitsFinder = new ToReviewCommitsFinder(
-    repositoryCache,
+    repositoriesCache,
     userDao,
     new ToReviewBranchCommitsFilter(reviewedCommitsCache, config),
     new ToReviewCommitsViewBuilder(userDao, commitInfoDao)
   )
 
   lazy val allCommitsFinder = new AllCommitsFinder(
-    repositoryCache,
+    repositoriesCache,
     commitInfoDao,
     userDao,
     new AllCommitsViewBuilder(commitInfoDao, config, userDao, reviewedCommitsCache)
