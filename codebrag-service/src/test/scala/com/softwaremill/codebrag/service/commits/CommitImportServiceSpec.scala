@@ -9,33 +9,34 @@ import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 import com.softwaremill.codebrag.repository.Repository
 import org.mockito.Matchers
 import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
-import com.softwaremill.codebrag.cache.RepositoryCache
+import com.softwaremill.codebrag.cache.RepositoriesCache
 import com.softwaremill.codebrag.service.config.CommitCacheConfig
 
 class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with ShouldMatchers {
 
   var repoStatusDao: RepositoryStatusDAO = _
   var branchStateDao: BranchStateDAO = _
-  var repoCache: RepositoryCache = _
+  var reposCache: RepositoriesCache = _
   var repository: Repository = _
   var service: CommitImportService = _
   var config: CommitCacheConfig = _
 
   val SavedRepoState = Map.empty[String, String]
   val MaxCommitsForNewBranch = 100
-  val LoadedCommits = MultibranchLoadCommitsResult("test-repo", List.empty)
+  val RepoName = "test-repo"
+  val LoadedCommits = MultibranchLoadCommitsResult(RepoName, List.empty)
 
   before {
     repoStatusDao = mock[RepositoryStatusDAO]
     branchStateDao = mock[BranchStateDAO]
-    repoCache = mock[RepositoryCache]
+    reposCache = mock[RepositoriesCache]
     repository = mock[Repository]
     config = mock[CommitCacheConfig]
     when(config.maxCommitsCachedPerBranch).thenReturn(MaxCommitsForNewBranch)
-    service = new CommitImportService(repoStatusDao, branchStateDao, repoCache, config)
+    service = new CommitImportService(repoStatusDao, branchStateDao, reposCache, config)
   }
 
-  it should "pull changes and load commits from repo since given (saved) state" in {
+  it should "pull changes and load commits from given repo since last saved state" in {
     // given
     when(branchStateDao.loadBranchesStateAsMap(repository.repoName)).thenReturn(SavedRepoState)
 
@@ -47,16 +48,17 @@ class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndA
     verify(repository).loadCommitsSince(SavedRepoState, config.maxCommitsCachedPerBranch)
   }
   
-  it should "add loaded commits to cache" in {
+  it should "add loaded commits to cache for given repo" in {
     // given
+    when(repository.repoName).thenReturn(RepoName)
     when(branchStateDao.loadBranchesStateAsMap(repository.repoName)).thenReturn(SavedRepoState)
     when(repository.loadCommitsSince(SavedRepoState, config.maxCommitsCachedPerBranch)).thenReturn(LoadedCommits)
-    
+
     // when
     service.importRepoCommits(repository)
     
     // then
-    verify(repoCache).addCommits(LoadedCommits)
+    verify(reposCache).addCommitsToRepo(RepoName, LoadedCommits)
   }
 
   it should "update repo status to not-ready when commits import failed" in {
