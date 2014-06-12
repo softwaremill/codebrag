@@ -35,10 +35,16 @@ object MigrateV2_1ToV2_2 extends App with Logging {
   }
 
   val repositoryName = repositories.head.repoName
-  logger.debug(s"Setting repo for current branches states")
   sqlDb.db.withDynSession {
-    (Q.u + s"""ALTER TABLE "branch_states" ADD COLUMN IF NOT EXISTS "repo_name" VARCHAR DEFAULT '$repositoryName,' NOT NULL""").execute()
+
+    logger.debug(s"Setting repo to current branches states")
+    (Q.u + s"""ALTER TABLE "branch_states" ADD COLUMN IF NOT EXISTS "repo_name" VARCHAR DEFAULT '$repositoryName' NOT NULL""").execute()
     (Q.u + s"""ALTER TABLE "branch_states" ADD CONSTRAINT IF NOT EXISTS "repo_branch_state" UNIQUE("repo_name", "branch_name")""").execute()
+    logger.debug(s"Setting repo for current branches states - Done")
+
+    logger.debug(s"Adding repo name for already stored commits")
+    (Q.u + s"""ALTER TABLE "commit_infos" ADD COLUMN IF NOT EXISTS "repo_name" VARCHAR DEFAULT '$repositoryName' NOT NULL""").execute()
+    (Q.u + s"""ALTER TABLE "commit_infos" ADD CONSTRAINT IF NOT EXISTS "repo_sha" UNIQUE("repo_name", "sha")""").execute()
+    logger.debug(s"Adding repo name to already stored commits - Done")
   }
-  logger.debug(s"Setting repo for current branches states - Done")
 }
