@@ -22,4 +22,8 @@ class RepositoriesCache(backend: PersistentBackendForCache, config: CommitCacheC
 
   def addCommitsToRepo(repoName: String, commits: MultibranchLoadCommitsResult) = getRepo(repoName).addCommits(commits)
 
+  def getBranchCommits(repoName: String, branch: String) = getRepo(repoName).getBranchCommits(branch)
+
+  def getCheckedOutBranchShortName(repoName: String) = getRepo(repoName).getCheckedOutBranchShortName
+
 }
