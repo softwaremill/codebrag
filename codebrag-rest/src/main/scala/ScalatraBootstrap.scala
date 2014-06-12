@@ -39,6 +39,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     import beans._
 
     repositoryCache.initialize()
+    repositoriesCache.initialize(repositories)
     reviewedCommitsCache.initialize()
 
     setupEvents()
@@ -68,7 +69,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new InvitationServlet(authenticator, generateInvitationCodeUseCase, sendInvitationEmailUseCase), Prefix + "invitation")
     context.mount(new UpdatesServlet(authenticator, followupFinder, heartbeatDao, toReviewCommitsFinder, clock), Prefix + UpdatesServlet.Mapping)
     context.mount(new RepoStatusServlet(authenticator, repositories.head, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
-    context.mount(new AvailableBranchesServlet(authenticator, repositoryCache), Prefix + AvailableBranchesServlet.MountPath)
+    context.mount(new AvailableBranchesServlet(authenticator, repositoriesCache), Prefix + AvailableBranchesServlet.MountPath)
     context.mount(new LicenceServlet(licenceService, registerLicenceUseCase, authenticator), Prefix + LicenceServlet.MountPath)
 
     if (config.demo) {
