@@ -169,7 +169,7 @@ trait UserNotificationsSender extends Logging {
 
   private def withNonEmptyCountersFor(user: User)(actionBlock: (Long, Long) => Unit) = {
     val followupsCount = followupFinder.countFollowupsForUser(user.id)
-    val toReviewCommitsCount = toReviewCommitsFinder.countForUserSelectedBranch(user.id)
+    val toReviewCommitsCount = toReviewCommitsFinder.countForUserRepoAndBranch(user.id)
     if(followupsCount > 0 || toReviewCommitsCount > 0) {
       actionBlock(followupsCount, toReviewCommitsCount)
     } else {
