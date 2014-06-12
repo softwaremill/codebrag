@@ -30,7 +30,7 @@ class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: Br
   }
 
   def cleanupStaleBranches(repository: Repository) {
-    repositories.getRepo(repository.repoName)cleanupStaleBranches()
+    repositories.getRepo(repository.repoName).cleanupStaleBranches()
   }
 
   private def updateRepoNotReadyStatus(repository: Repository, errorMsg: String) {
