@@ -22,7 +22,7 @@ class NotificationService(
   import NotificationService.CountersToText.translate
 
   def sendWelcomeNotification(user: User) {
-    val noOfCommits = toReviewCommitsFinder.countForUserSelectedBranch(user.id)
+    val noOfCommits = toReviewCommitsFinder.countForUserRepoAndBranch(user.id)
     val context: Map[String, Any] = prepareContextForWelcomeNotification(user, noOfCommits)
     val template = templateEngine.getEmailTemplate(WelcomeToCodebrag, context)
     emailScheduler.scheduleInstant(Email(List(user.emailLowerCase), template.subject, template.content))

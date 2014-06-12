@@ -75,7 +75,7 @@ class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
       val service = new NotificationService(scheduler, engine, config, toReviewCommitsFinder, followupFinder, clock)
       val user = UserAssembler.randomUser.get
 
-      when(toReviewCommitsFinder.countForUserSelectedBranch(any[ObjectId])).thenReturn(pair._2)
+      when(toReviewCommitsFinder.countForUserRepoAndBranch(any[ObjectId])).thenReturn(pair._2)
 
       //when
       service.sendWelcomeNotification(user)
