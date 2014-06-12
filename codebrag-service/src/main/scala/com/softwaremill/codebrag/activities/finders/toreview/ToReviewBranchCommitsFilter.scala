@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 
 class ToReviewBranchCommitsFilter(reviewedCommitsCache: UserReviewedCommitsCache, config: ReviewProcessConfig) {
 
-   def filterFor(branchCommits: List[BranchCommitCacheEntry], user: User) = {
+   def filterCommitsToReview(branchCommits: List[BranchCommitCacheEntry], user: User) = {
      val userBoundaryDate = reviewedCommitsCache.getUserEntry(user.id).toReviewStartDate
      branchCommits
        .filterNot(userOrDoneCommits(_, user))
