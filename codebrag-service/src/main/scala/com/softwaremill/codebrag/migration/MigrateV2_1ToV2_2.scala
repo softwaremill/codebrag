@@ -38,11 +38,13 @@ object MigrateV2_1ToV2_2 extends App with Logging {
   sqlDb.db.withDynSession {
 
     logger.debug(s"Setting repo to current branches states")
+    (Q.u + s"""ALTER TABLE "branch_states" DROP CONSTRAINT IF EXISTS "branch_states_id"""").execute()
     (Q.u + s"""ALTER TABLE "branch_states" ADD COLUMN IF NOT EXISTS "repo_name" VARCHAR DEFAULT '$repositoryName' NOT NULL""").execute()
     (Q.u + s"""ALTER TABLE "branch_states" ADD CONSTRAINT IF NOT EXISTS "repo_branch_state" UNIQUE("repo_name", "branch_name")""").execute()
     logger.debug(s"Setting repo for current branches states - Done")
 
     logger.debug(s"Adding repo name for already stored commits")
+    (Q.u + s"""ALTER TABLE "commit_infos" DROP CONSTRAINT IF EXISTS "unique_sha"""").execute()
     (Q.u + s"""ALTER TABLE "commit_infos" ADD COLUMN IF NOT EXISTS "repo_name" VARCHAR DEFAULT '$repositoryName' NOT NULL""").execute()
     (Q.u + s"""ALTER TABLE "commit_infos" ADD CONSTRAINT IF NOT EXISTS "repo_sha" UNIQUE("repo_name", "sha")""").execute()
     logger.debug(s"Adding repo name to already stored commits - Done")
