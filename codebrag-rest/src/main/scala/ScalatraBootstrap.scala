@@ -38,7 +38,6 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     val beans = initializeBeans(_config, repositories.head)
     import beans._
 
-    repositoryCache.initialize()
     repositoriesCache.initialize(repositories)
     reviewedCommitsCache.initialize()
 
