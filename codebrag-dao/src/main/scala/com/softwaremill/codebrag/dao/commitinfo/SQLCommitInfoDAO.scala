@@ -23,10 +23,8 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQL
     sci.toCommitInfo(parents)
   }
 
-  def findBySha(sha: String) = findBySha("codebrag", sha)
   def findBySha(repoName: String, sha: String) = findOneWhere( commit => (commit.repoName === repoName) && (commit.sha === sha))
 
-  def findByShaList(shaList: List[String]) = findByShaList("codebrag", shaList)
   def findByShaList(repoName: String, shaList: List[String]) = db.withTransaction { implicit session =>
     commitInfos
       .filter( c => (c.sha inSet shaList.toSet) && (c.repoName === repoName))
@@ -37,14 +35,12 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQL
 
   def findByCommitId(commitId: ObjectId) = findOneWhere(_.id === commitId)
 
-  def findAllSha() = findAllSha("codebrag")
   def findAllSha(repoName: String) = db.withTransaction { implicit session => commitInfos.where(_.repoName === repoName).map(_.sha).list().toSet }
 
   def findAllIds() = db.withTransaction { implicit session =>
     commitInfos.map(c => (c.id, c.commitDate, c.authorDate)).sortBy(t => (t._2.asc, t._3.asc)).list().map(_._1)
   }
 
-  def findLastSha() = findLastSha("codebrag")
   def findLastSha(repoName: String) = db.withTransaction { implicit session =>
     commitInfos.where(_.repoName === repoName).map { ci => (ci.sha, ci.commitDate, ci.authorDate) }
       .sortBy(d => (d._2.desc, d._3.desc))
@@ -53,7 +49,6 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQL
       .map(_._1)
   }
 
-  def findLastCommitsNotAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]) = findLastCommitsNotAuthoredByUser("codebrag", user, count)
   def findLastCommitsNotAuthoredByUser[T](repoName: String, user: T, count: Int)(implicit userLike: UserLike[T]) =
     findMultiWhere { commitInfos
       .where(_.repoName === repoName)
@@ -62,19 +57,15 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQL
       .take(count)
     }
 
-  def findLastCommitsAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]) = findLastCommitsNotAuthoredByUser("codebrag", user, count)
-  def findLastCommitsAuthoredByUser[T](repoName: String, user: T, count: Int)(implicit userLike: UserLike[T]) =
+  def findLastCommitsAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]) =
     findMultiWhere { commitInfos
-      .where(_.repoName === repoName)
       .filter(ci => ci.authorName === userLike.userFullName(user) || ci.authorEmail === userLike.userEmail(user))
       .sortBy(orderByDatesDesc)
       .take(count)
     }
 
-  def findLastCommitsAuthoredByUserSince[T](user: T, date: DateTime)(implicit userLike: UserLike[T]) = findLastCommitsAuthoredByUserSince("codebrag", user, date)
-  def findLastCommitsAuthoredByUserSince[T](repoName: String, user: T, date: DateTime)(implicit userLike: UserLike[T]) =
+  def findLastCommitsAuthoredByUserSince[T](user: T, date: DateTime)(implicit userLike: UserLike[T]) =
     findMultiWhere { commitInfos
-      .filter(_.repoName === repoName)
       .filter { ci =>
         (ci.authorName === userLike.userFullName(user) || ci.authorEmail === userLike.userEmail(user)) &&
           ci.authorDate >= date
@@ -82,13 +73,6 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQL
       .sortBy(_.authorDate.asc)
     }
 
-  def findPartialCommitInfo(ids: List[ObjectId]) = db.withTransaction { implicit session =>
-    commitInfos
-      .filter(_.id inSet ids.toSet)
-      .sortBy(c => (c.commitDate.asc, c.authorDate.asc))
-      .list()
-      .map(_.toPartialCommitDetails)
-  }
 
   private def findOneWhere(condition: CommitInfos => Column[Boolean]): Option[CommitInfo] = db.withTransaction { implicit session =>
     val q = for {

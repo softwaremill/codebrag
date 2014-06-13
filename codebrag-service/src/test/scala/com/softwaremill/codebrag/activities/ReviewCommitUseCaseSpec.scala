@@ -23,6 +23,8 @@ class ReviewCommitUseCaseSpec
 
   var useCase: ReviewCommitUseCase = _
 
+  val RepoName = "codebrag"
+
   override def beforeEach() {
     reviewedCommitsCache = mock[UserReviewedCommitsCache]
     commitInfoDao = mock[CommitInfoDAO]
@@ -35,10 +37,10 @@ class ReviewCommitUseCaseSpec
     // given
     val userId = ObjectId.get
     val commit = CommitInfoAssembler.randomCommit.get
-    when(commitInfoDao.findBySha(commit.sha)).thenReturn(Some(commit))
+    when(commitInfoDao.findBySha(RepoName, commit.sha)).thenReturn(Some(commit))
 
     // when
-    useCase.execute(commit.sha, userId)
+    useCase.execute(RepoName, commit.sha, userId)
 
     // then
     verify(eventBus).publish(CommitReviewedEvent(commit, userId))
@@ -48,10 +50,10 @@ class ReviewCommitUseCaseSpec
     // given
     val userId = ObjectId.get
     val commit = CommitInfoAssembler.randomCommit.get
-    when(commitInfoDao.findBySha(commit.sha)).thenReturn(Some(commit))
+    when(commitInfoDao.findBySha(RepoName, commit.sha)).thenReturn(Some(commit))
 
     // when
-    useCase.execute(commit.sha, userId)
+    useCase.execute(RepoName, commit.sha, userId)
 
     // then
     val expectedCommitReviewed = ReviewedCommit(commit.sha, userId, clock.nowUtc)

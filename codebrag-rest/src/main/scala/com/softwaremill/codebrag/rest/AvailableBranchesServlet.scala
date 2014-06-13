@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.cache.{RepositoriesCache, RepositoryCache}
 class AvailableBranchesServlet(val authenticator: Authenticator, repositoriesCache: RepositoriesCache) extends JsonServletWithAuthentication with Logging {
 
   get("/") {
-    val repoName = extractReq[String]("repository")
+    val repoName = params.getOrElse("repo", throw new RuntimeException("no repo provided"))
     val repo = repositoriesCache.getRepo(repoName)
     val branches = repo.getShortBranchNames.toList.sorted
     Map("branches" -> branches, "current" -> repo.getCheckedOutBranchShortName, "repoType" -> repo.repository.repoData.repoType)

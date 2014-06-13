@@ -18,6 +18,8 @@ class RepositoriesCache(backend: PersistentBackendForCache, config: CommitCacheC
     }
   }
 
+  def repoNames = reposCacheMap.keySet().toList.sorted
+
   def getRepo(repoName: String) = reposCacheMap.getOrElse(repoName, throw new IllegalArgumentException(s"Cannot find repository $repoName"))
 
   def addCommitsToRepo(repoName: String, commits: MultibranchLoadCommitsResult) = getRepo(repoName).addCommits(commits)

@@ -24,6 +24,7 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
   val BugfixBranch = "bugfix"
 
   val CodebragRepo = "codebrag"
+  val BootzookaRepo = "bootzooka"
 
   val Alice = UserAssembler.randomUser.get  // has no selected branch
   val AliceCacheEntry = UserReviewedCommitsCacheEntry(Alice.id, Set.empty, clock.now)
@@ -86,11 +87,11 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
     verify(repositoriesCache, times(2)).getBranchCommits(CodebragRepo, BugfixBranch)
   }
 
-  // TODO: change "bootzooka" to fetching from user settings
-  it should "use repo name provided or user-saved one if not provided explicitly" in {
+  it should "use repo name provided or use first one from the list of available repos if not provided explicitly" in {
     // given
     when(repositoriesCache.getBranchCommits(CodebragRepo, MasterBranch)).thenReturn(NoCommitsInBranch)
-    when(repositoriesCache.getBranchCommits("bootzooka", MasterBranch)).thenReturn(NoCommitsInBranch)
+    when(repositoriesCache.getBranchCommits(BootzookaRepo, MasterBranch)).thenReturn(NoCommitsInBranch)
+    when(repositoriesCache.repoNames).thenReturn(List(BootzookaRepo, CodebragRepo))
     when(toReviewFilter.filterCommitsToReview(NoCommitsInBranch, Alice)).thenReturn(List.empty)
 
     // when
@@ -99,7 +100,7 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
 
     // then
     verify(repositoriesCache).getBranchCommits(CodebragRepo, MasterBranch)
-    verify(repositoriesCache).getBranchCommits("bootzooka", MasterBranch)
+    verify(repositoriesCache).getBranchCommits(BootzookaRepo, MasterBranch)
   }
 
 }

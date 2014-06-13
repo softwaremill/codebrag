@@ -24,19 +24,8 @@ trait CommitInfoDAO {
 
   def findLastCommitsNotAuthoredByUser[T](repoName: String, user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo]
 
-  def findLastCommitsAuthoredByUser[T](repoName: String, user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo]
-
-  def findLastCommitsAuthoredByUserSince[T](repoName: String, user: T, date: DateTime)(implicit userLike: UserLike[T]): List[CommitInfo]
-
-  def findPartialCommitInfo(ids: List[ObjectId]): List[PartialCommitInfo] // TODO: to remove?
-
-
-  // temporary methods to preserve old version compatibility for now
-  def findBySha(sha: String): Option[CommitInfo]
-  def findByShaList(shaList: List[String]): List[PartialCommitInfo]
-  def findAllSha(): Set[String]
-  def findLastSha(): Option[String]
-  def findLastCommitsNotAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo]
   def findLastCommitsAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]): List[CommitInfo]
+
   def findLastCommitsAuthoredByUserSince[T](user: T, date: DateTime)(implicit userLike: UserLike[T]): List[CommitInfo]
+
 }

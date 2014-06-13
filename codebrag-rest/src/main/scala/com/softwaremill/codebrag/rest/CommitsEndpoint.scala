@@ -24,33 +24,34 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     haltIfNotAuthenticated
   }
 
-  get("/:sha") {
+  get("/:repo/:sha") {
     val commitSha = params("sha")
-    diffService.diffWithCommentsFor(commitSha, userId) match {
+    val repoName = params("repo")
+    diffService.diffWithCommentsFor(repoName, commitSha, userId) match {
       case Right(commitWithComments) => commitWithComments
       case Left(error) => NotFound(error)
     }
   }
 
-  delete("/:sha") {
-    reviewCommitUseCase.execute(params("sha"), userId).left.map { err =>
+  delete("/:repo/:sha") {
+    reviewCommitUseCase.execute(params("repo"), params("sha"), userId).left.map { err =>
       BadRequest(Map("err" -> err))
     }
   }
 
-  get("/", allCommits) {
+  get("/:repo", allCommits) {
     val paging = extractPagingCriteria
     logger.debug(s"Attempting to fetch all commits with possible paging: ${paging}")
     allCommitsFinder.find(userId, extractRepoName, extractBranch, paging)
   }
 
-  get("/", commitsToReview) {
+  get("/:repo", commitsToReview) {
     val paging = extractPagingCriteria
     logger.debug(s"Attempting to fetch commits to review with possible paging: ${paging}")
     reviewableCommitsListFinder.find(userId, extractRepoName, extractBranch, paging)
   }
 
-  get("/", contextualCommits) {
+  get("/:repo", contextualCommits) {
     val limit = params.getOrElse(LimitParamName, DefaultPageLimit.toString).toInt
     val paging = params.get(SelectedShaParamName) match {
       case Some(commitSha) => PagingCriteria(commitSha, Direction.Radial, limit)

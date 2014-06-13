@@ -19,9 +19,9 @@ class ReviewCommitUseCase(
 
   type ReviewCommitResult = Either[String, Unit]
 
-  def execute(implicit sha: String, userId: ObjectId): ReviewCommitResult = {
-    ifCanExecute {
-      commitDao.findBySha(sha) match {
+  def execute(repoName: String, sha: String, userId: ObjectId): ReviewCommitResult = {
+    ifCanExecute(repoName, sha, userId) {
+      commitDao.findBySha(repoName, sha) match {
         case Some(commit) => Right(review(userId, commit))
         case None => Left("Cannot find commit to review")
       }
@@ -34,7 +34,7 @@ class ReviewCommitUseCase(
     eventBus.publish(CommitReviewedEvent(commit, userId))
   }
 
-  protected def ifCanExecute(block: => ReviewCommitResult)(implicit sha: String, userId: ObjectId): ReviewCommitResult = {
+  protected def ifCanExecute(repoName: String, sha: String, userId: ObjectId)(block: => ReviewCommitResult): ReviewCommitResult = {
     licenceService.interruptIfLicenceExpired()
     block
   }

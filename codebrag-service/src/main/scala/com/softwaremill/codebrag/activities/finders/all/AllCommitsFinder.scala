@@ -23,8 +23,8 @@ class AllCommitsFinder(
     allCommitsViewBuilder.toView(repoName, allBranchCommits, pagingCriteria, user)  // TODO: rething it, passing repo here sux!
   }
 
-  def findSingle(sha: String, userId: ObjectId) = {
-    commitsInfoDao.findBySha(sha) match {
+  def findSingle(repoName: String, sha: String, userId: ObjectId) = {
+    commitsInfoDao.findBySha(repoName, sha) match {
       case Some(commit) => Right(allCommitsViewBuilder.toViewSingle(commit, userId))
       case None => Left("Commit not found")
     }

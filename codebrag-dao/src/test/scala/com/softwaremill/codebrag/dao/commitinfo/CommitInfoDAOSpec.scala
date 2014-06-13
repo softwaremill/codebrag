@@ -176,9 +176,9 @@ class CommitInfoDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with 
     commits.foreach(commitInfoDAO.storeCommit)
 
     // when
-    val lastCommitByBob = commitInfoDAO.findLastCommitsAuthoredByUser(CodebragRepo, Bob, 1)
-    val lastCommitsByJohn = commitInfoDAO.findLastCommitsAuthoredByUser(CodebragRepo, John, 2)
-    val noCommitByAlice = commitInfoDAO.findLastCommitsAuthoredByUser(CodebragRepo, Alice, 1)
+    val lastCommitByBob = commitInfoDAO.findLastCommitsAuthoredByUser(Bob, 1)
+    val lastCommitsByJohn = commitInfoDAO.findLastCommitsAuthoredByUser(John, 2)
+    val noCommitByAlice = commitInfoDAO.findLastCommitsAuthoredByUser(Alice, 1)
 
     // then
     lastCommitByBob.map(_.sha) should be(List("4"))
@@ -201,37 +201,16 @@ class CommitInfoDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with 
     commits.foreach(commitInfoDAO.storeCommit)
 
     // when
-    val commitsByBobSince8mins = commitInfoDAO.findLastCommitsAuthoredByUserSince(CodebragRepo, Bob, hourAgo.plusMinutes(8))
-    val commitsByBobSince10mins = commitInfoDAO.findLastCommitsAuthoredByUserSince(CodebragRepo, Bob, hourAgo.plusMinutes(15))
-    val commitsByBobSince16mins = commitInfoDAO.findLastCommitsAuthoredByUserSince(CodebragRepo, Bob, hourAgo.plusMinutes(16))
-    val commitsByBobSince15minsAnd1Sec = commitInfoDAO.findLastCommitsAuthoredByUserSince(CodebragRepo, Bob, hourAgo.plusMinutes(15).plusSeconds(1))
+    val commitsByBobSince8mins = commitInfoDAO.findLastCommitsAuthoredByUserSince(Bob, hourAgo.plusMinutes(8))
+    val commitsByBobSince10mins = commitInfoDAO.findLastCommitsAuthoredByUserSince(Bob, hourAgo.plusMinutes(15))
+    val commitsByBobSince16mins = commitInfoDAO.findLastCommitsAuthoredByUserSince(Bob, hourAgo.plusMinutes(16))
+    val commitsByBobSince15minsAnd1Sec = commitInfoDAO.findLastCommitsAuthoredByUserSince(Bob, hourAgo.plusMinutes(15).plusSeconds(1))
 
     // then
     commitsByBobSince8mins.map(_.sha) should be(List("2", "4"))
     commitsByBobSince10mins.map(_.sha) should be(List("4"))
     commitsByBobSince16mins.map(_.sha) should be('empty)
     commitsByBobSince15minsAnd1Sec.map(_.sha) should be('empty)
-  }
-
-  it should "find partial commit info" taggedAs RequiresDb in {
-    // given
-    val date = new DateTime()
-
-    commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusDays(1)).withCommitDate(date.minusDays(2)).get)
-    commitInfoDAO.storeCommit(randomCommit.withAuthorDate(date.minusDays(2)).withCommitDate(date.minusDays(3)).get)
-
-    val c3 = randomCommit.withAuthorDate(date.minusDays(4)).withCommitDate(date.minusDays(4)).get
-    val c3Stored = commitInfoDAO.storeCommit(c3)
-    val c4 = randomCommit.withAuthorDate(date.minusDays(3)).withCommitDate(date.minusDays(4)).get
-    val c4Stored = commitInfoDAO.storeCommit(c4)
-    val c5 = randomCommit.withAuthorDate(date.minusDays(5)).withCommitDate(date.minusDays(5)).get
-    val c5Stored = commitInfoDAO.storeCommit(c5)
-
-    // when
-    val commits = commitInfoDAO.findPartialCommitInfo(List(c3Stored.id, c4Stored.id, c5Stored.id))
-
-    // then
-    commits.map(_.id) should be (List(c5Stored.id, c3Stored.id, c4Stored.id))
   }
 
   it should "find all commit ids in reversed order" taggedAs RequiresDb in {
