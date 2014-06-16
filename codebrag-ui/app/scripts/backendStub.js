@@ -299,8 +299,11 @@
     var authUser = {
         "id": "517a3debe4b055c40cadecea",
         "login": "john_doe",
+        "fullName":"John Codebrag",
         "email": "michal.ostruszka@softwaremill.com",
         "token": "818728e2-ced3-4d58-b676-1003d4106816",
+        "admin": true,
+        "active": true,
         "settings": {
             "appTourDone": false
         }
@@ -323,6 +326,16 @@
 
     var followup = {"followupId":"51deb248300413ead5f708c5","date":"2013-07-11T13:25:28Z","commit":{"commitId":"51cd63b33004edd49fbefb3b","authorName":"Michal Ostruszka","message":"Styling of KTHXBYE button changed according to mockup\n","date":"2013-06-26T14:25:05Z"},"reaction":{"reactionId":"51deb248300413ead5f708c3","reactionAuthor":"Happy Coder","reactionAuthorAvatarUrl":"https://softwaremill.com/wp-content/uploads/2013/04/puchta.jpg"}};
 
+    var licence = {"expiresAt":"2016-12-31T23:59:59Z","maxUsers":50,"companyName":"SoftwareMill","valid":true,"type":"Commercial","daysLeft":929};
+
+    var repoStatus = {"repoStatus":{"repositoryName":"codebrag","ready":true}};
+
+    var branches = {"branches":["alternative_licences","config","easy_install","grunt-integration","master","multibranch","multirepo","shutdown-hook","sql","svnsupport","user_mgmt","v1.0-fixes","v2.0-fixes"],"current":"master","repoType":"git"};
+
+    var managedUsers = {"users":[{"userId":"53904574e4b00a9960b690f8","email":"abcd@sml.com","name":"abcd","active":false,"admin":true},{"userId":"52fddfb6e4b0f2b59c95b2f4","email":"adam@warski.org","name":"adamw","active":true,"admin":false},{"userId":"528cdde6e4b021de8e4afbc9","email":"michal.ostruszka@gmail.com","name":"mostr","active":true,"admin":true},{"userId":"539aad14e4b0f71eba4eac00","email":"pawel+12@codebrag.com","name":"pawel12","active":true,"admin":false},{"userId":"5346538ee4b06569d00c26b7","email":"pawel+4@softwaremill.com","name":"pawel4","active":false,"admin":true},{"userId":"529f358ce4b0434b62c3e2a2","email":"pawel@codebrag.com","name":"pawel2","active":true,"admin":true},{"userId":"529f3535e4b0434b62c3e293","email":"pawel@softwaremill.com","name":"pawel","active":true,"admin":true},{"userId":"528d0d66e4b052cc0a66ba68","email":"pawel@softwaremill.pl","name":"pawel.wrzeszcz","active":true,"admin":true},{"userId":"52a03c7ce4b0434b62c3e2b6","email":"test@test.pl","name":"test","active":true,"admin":true},{"userId":"52ce88d3e4b0e6126a8d1e38","email":"test@test.tt","name":"Michal Ostruszka","active":false,"admin":true},{"userId":"53905e77e4b00a9960b69107","email":"uu@uu.pl","name":"uu","active":true,"admin":false}]};
+
+    var invitation = {"invitationCode":"94eb81294a6dbe93f7677de83c606f161cccdcc7"};
+
     function initialize() {
 
         angular.module('codebrag')
@@ -343,10 +356,10 @@
 
                 $httpBackend.whenGET('rest/notificationCounts').respond(counters);
 
-                $httpBackend.whenGET('rest/commits?context=true&limit=7').respond(allCommits);
-                $httpBackend.whenGET('rest/commits?filter=to_review&limit=7').respond(pendingCommits);
-                $httpBackend.whenGET(/rest\/commits\?filter=to_review&limit=7&min_id=[a-z0-9]{12}/).respond(additionalCommits);
-                $httpBackend.whenGET(/rest\/commits\?filter=to_review&limit=1&min_id=[a-z0-9]{12}/).respond(pendingCommits);
+                $httpBackend.whenGET('rest/commits?branch=master&context=true&limit=7').respond(allCommits);
+                $httpBackend.whenGET('rest/commits?branch=master&filter=to_review&limit=7').respond(pendingCommits);
+                $httpBackend.whenGET(/rest\/commits\?branch=master&filter=to_review&limit=7&min_sha=[a-z0-9]*$/).respond(additionalCommits);
+                $httpBackend.whenGET(/rest\/commits\?branch=master&filter=to_review&limit=1&min_sha=[a-z0-9]*$/).respond(pendingCommits);
 
                 $httpBackend.whenGET(/rest\/commits\/[a-z0-9]{12}/).respond(commitDiff);
 
@@ -354,13 +367,24 @@
 
                 $httpBackend.whenGET(/rest\/followups\/[a-z0-9]{12}/).respond(followup);
 
-                $httpBackend.whenGET('/rest/repoStatus').respond({"repoStatus":{"repositoryName":"codebrag","headId":"33ddf03d675c9c49910da4ea65e18ddc205051ba","ready":true}});
-
-                $httpBackend.whenGET('rest/updates').respond({"lastUpdate":1384251660217,"commits":0,"followups":0});
+                $httpBackend.whenGET('rest/updates?branch=master').respond({"lastUpdate":1384251660217,"commits":0,"followups":0});
 
                 $httpBackend.whenPUT('rest/users/settings').respond({userSettings: {}});
 
                 $httpBackend.whenGET('rest/users/settings').respond({userSettings: {}});
+
+                $httpBackend.whenGET('rest/licence').respond(licence);
+
+                $httpBackend.whenGET('rest/repoStatus').respond(repoStatus);
+
+                $httpBackend.whenGET('rest/branches').respond(branches);
+
+                $httpBackend.whenGET('rest/users').respond(managedUsers);
+
+                $httpBackend.whenGET('rest/invitation').respond(invitation);
+
+                $httpBackend.whenPUT(/rest\/users\/[a-z0-9]*/).respond(200);
+
             });
     }
 
