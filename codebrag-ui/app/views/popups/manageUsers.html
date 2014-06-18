@@ -1,27 +1,31 @@
 <div class="popup-content" ng-controller="ManageUsersPopupCtrl">
 
-    <h1 class="text-center">Manage users</h1>
+    <h1 class="text-center">Manage team members
 
-    <div>
-        <div class="info-line text-error" ng-repeat="f in flash.get('error')">{{ f.message }}</div>
-        <div class="info-line success" ng-repeat="f in flash.get('info')">{{ f.message }}</div>
+        <div class="info-line"> 
+            &nbsp;
+            <span class="text-error" ng-repeat="f in flash.get('error')">{{ f.message }}</span>
+            <span class="success" ng-repeat="f in flash.get('info')">{{ f.message }}</span>
+        </div>
+    </h1>
+
+    <div class="table-container">    
+        <table>
+            <thead>
+                <th>Team member email</th>
+                <th>Active?</th>
+                <th>Admin?</th>
+                <th></th>
+            </thead>
+
+            <tr ng-repeat="user in users">
+                <td>{{ user.email}}</td>
+                <td class="cell-centered"><input type="checkbox" ng-model="user.active" ng-click="modifyUser(user, 'active')" ng-disabled="user.locked"/></td>
+                <td class="cell-centered"><input type="checkbox" ng-model="user.admin" ng-click="modifyUser(user, 'admin')" ng-disabled="user.locked"/></td>
+                <td><button class="link" ng-disabled="!user.active" ng-click="askForNewPassword(user)">Set&nbsp;password</button></td>
+            </tr>
+        </table>
     </div>
-
-    <table border="1">
-        <tr>
-            <th></th>
-            <th>Active?</th>
-            <th>Admin?</th>
-            <th></th>
-        </tr>
-
-        <tr ng-repeat="user in users">
-            <td>{{ user.email}}</td>
-            <td><input type="checkbox" ng-model="user.active" ng-click="modifyUser(user, 'active')" ng-disabled="user.locked"/></td>
-            <td><input type="checkbox" ng-model="user.admin" ng-click="modifyUser(user, 'admin')" ng-disabled="user.locked"/></td>
-            <td><button ng-disabled="!user.active" ng-click="askForNewPassword(user)">Set password</button></td>
-        </tr>
-    </table>
 
     <section>
         <div> {{ countActiveUsers() }} active users in total</div>

@@ -46,43 +46,45 @@
       &.opened
         display: block;
 
-  &.user-profile
+  & .profile-info
+    margin-bottom: 3em;
+    text-align: left;
 
-    & .profile-info
-      margin-bottom: 3em;
+    & .author-box
+      & img
+        margin-right: 1.15em;
+        width: 3.85em;
+
+    & .info-box
       text-align: left;
 
-      & .author-box
-        & img
-          margin-right: 1.15em;
-          width: 3.85em;
+      & div
+        margin: 0.5em 0;
 
-      & .info-box
-        text-align: left;
-
-        & div
-          margin: 0.5em 0;
+    & h1
+      margin-bottom: 0.4em;
 
       & .info-line
         margin: 0.77em 0;
-
-    & .settings-info
-      & h1
-        margin-bottom: 0.4em;
-
-      & .info-line
         margin-top: 0.3em;
 
-      & label
-        min-width: 336px;
+  & .settings-info
+    // & h1
+    //   margin-bottom: 0.4em;
 
-      & input[type="checkbox"]
-        float: right;
-        margin-top: 0.2em;
-        vertical-align: top;
+    // & .info-line
+    //   margin-top: 0.3em;
 
-      & p:last-child
-        margin-bottom: 0;
+    & label
+      min-width: 336px;
+
+    & input[type="checkbox"]
+      float: right;
+      margin-top: 0.2em;
+      vertical-align: top;
+
+    & p:last-child
+      margin-bottom: 0;
 
 .popup-box
   background-color: $body-bg-color;
@@ -177,3 +179,32 @@
 
   & .form-group span.text-error
     bottom: -16px;
+
+  // table wrapper to make table scrollable
+  & .table-container
+    position: relative;
+    height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-bottom: 1px solid #d1cbb9;
+
+  & table 
+    text-align: left;
+    border-color: $second-body-text-color;
+
+    & tr
+      border: 1px solid #d1cbb9;
+      &:last-child
+        border-bottom: none;
+
+    & thead 
+      & tr
+        border: none;
+        border-bottom: 1px solid #d1cbb9;
+      
+    & th
+      color: $second-body-text-color;
+      font-weight: normal;
+
+    & .cell-centered
+      text-align: center;      
