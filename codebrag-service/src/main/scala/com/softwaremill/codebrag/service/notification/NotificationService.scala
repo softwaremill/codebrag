@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.softwaremill.codebrag.common.Clock
 import org.joda.time.format.DateTimeFormat
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
-import com.softwaremill.codebrag.activities.finders.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.activities.finders.commits.toreview.ToReviewCommitsFinder
 
 class NotificationService(
   emailScheduler: EmailScheduler,

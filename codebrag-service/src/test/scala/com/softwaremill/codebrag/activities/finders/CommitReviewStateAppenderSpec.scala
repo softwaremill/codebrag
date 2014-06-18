@@ -12,6 +12,7 @@ import com.softwaremill.codebrag.dao.finders.views.{CommitState, CommitView}
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.User
 import com.softwaremill.codebrag.common.ClockSpec
+import com.softwaremill.codebrag.activities.finders.commits.CommitReviewStateAppender
 
 class CommitReviewStateAppenderSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with ClockSpec {
 

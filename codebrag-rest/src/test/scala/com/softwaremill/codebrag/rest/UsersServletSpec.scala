@@ -12,7 +12,8 @@ import com.typesafe.config.ConfigFactory
 import java.util.Properties
 import com.softwaremill.codebrag.activities.{ModifyUserDetailsUseCase, UserToRegister, RegisterNewUserUseCase}
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils
-import com.softwaremill.codebrag.activities.finders.{ManagedUserView, ManagedUsersListView, UserFinder}
+import com.softwaremill.codebrag.activities.finders.ManagedUserView
+import com.softwaremill.codebrag.activities.finders.user.{ManagedUserView, ManagedUsersListView, UserFinder}
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 

@@ -13,7 +13,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
-import com.softwaremill.codebrag.activities.finders.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.activities.finders.commits.toreview.ToReviewCommitsFinder
 
 class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with ClockSpec with BeforeAndAfter {
 

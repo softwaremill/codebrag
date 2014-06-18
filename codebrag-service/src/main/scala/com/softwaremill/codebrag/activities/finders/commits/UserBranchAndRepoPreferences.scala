@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.activities.finders
+package com.softwaremill.codebrag.activities.finders.commits
 
 import com.softwaremill.codebrag.cache.RepositoriesCache
 import org.bson.types.ObjectId

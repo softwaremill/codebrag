@@ -1,11 +1,11 @@
-package com.softwaremill.codebrag.activities.finders.toreview
+package com.softwaremill.codebrag.activities.finders.commits.toreview
 
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.activities.finders.AuthorDataAppender
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.dao.finders.views.{CommitState, CommitListView}
 import com.softwaremill.codebrag.domain.PartialCommitInfo
+import com.softwaremill.codebrag.activities.finders.commits.{CommitToViewImplicits, AuthorDataAppender}
 
 class ToReviewCommitsViewBuilder(val userDao: UserDAO, val commitsInfoDao: CommitInfoDAO) extends AuthorDataAppender {
 
@@ -17,7 +17,7 @@ class ToReviewCommitsViewBuilder(val userDao: UserDAO, val commitsInfoDao: Commi
    }
 
    private def markAsToReview(commits: List[PartialCommitInfo]) = {
-     import com.softwaremill.codebrag.activities.finders.CommitToViewImplicits._
+     import CommitToViewImplicits._
      partialCommitListToCommitViewList(commits).map(_.copy(state = CommitState.AwaitingUserReview))
    }
 

@@ -12,7 +12,7 @@ import com.softwaremill.codebrag.common.scheduling.ScheduleDelaysCalculator
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
-import com.softwaremill.codebrag.activities.finders.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.activities.finders.commits.toreview.ToReviewCommitsFinder
 
 class UserNotificationSenderActor(actorSystem: ActorSystem,
                                   heartbeatStore: HeartbeatDAO,

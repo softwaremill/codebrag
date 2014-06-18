@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.rest
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra
 import com.softwaremill.codebrag.activities.{LoginForm, LoginFailedException, LoginUserUseCase}
-import com.softwaremill.codebrag.activities.finders.UserFinder
+import com.softwaremill.codebrag.activities.finders.user.UserFinder
 
 class SessionServlet(val authenticator: Authenticator, loginUseCase: LoginUserUseCase, userFinder: UserFinder) extends JsonServletWithAuthentication {
 

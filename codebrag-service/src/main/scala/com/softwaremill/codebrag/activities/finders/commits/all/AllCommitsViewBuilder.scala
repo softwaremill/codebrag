@@ -1,15 +1,15 @@
-package com.softwaremill.codebrag.activities.finders.all
+package com.softwaremill.codebrag.activities.finders.commits.all
 
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.service.config.ReviewProcessConfig
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.activities.finders.{ReviewersDataAppender, CommitReviewStateAppender, AuthorDataAppender}
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.domain.{PartialCommitInfo, CommitInfo, User}
 import com.softwaremill.codebrag.dao.finders.views.CommitListView
-import com.softwaremill.codebrag.activities.finders.CommitToViewImplicits._
+import com.softwaremill.codebrag.activities.finders.commits.{ReviewersDataAppender, CommitReviewStateAppender, AuthorDataAppender, CommitToViewImplicits}
+import CommitToViewImplicits._
 import org.bson.types.ObjectId
 
 class AllCommitsViewBuilder(
