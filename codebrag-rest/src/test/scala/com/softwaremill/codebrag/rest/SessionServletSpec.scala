@@ -1,23 +1,24 @@
 package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.AuthenticatableServletSpec
-import com.softwaremill.codebrag.service.user.{AfterUserLogin, RegisterService, Authenticator}
+import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import org.json4s.JsonDSL._
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.typesafe.config.ConfigFactory
 import java.util.Properties
-import com.softwaremill.codebrag.activities.{LoginUserUseCase, UserToRegister, RegisterNewUserUseCase}
-import com.softwaremill.codebrag.dao.finders.user.{ManagedUserView, ManagedUsersListView, UserFinder}
+import com.softwaremill.codebrag.activities.LoginUserUseCase
+import com.softwaremill.codebrag.activities.finders.{LoggedInUserView, UserFinder}
+import com.softwaremill.codebrag.domain.UserBrowsingContext
 
 class SessionServletSpec extends AuthenticatableServletSpec {
 
   val loginUserUseCase = mock[LoginUserUseCase]
+  val userFinder = mock[UserFinder]
 
   "DELETE /" should "call logout() when user is already authenticated" in {
     addServlet(new TestableSessionServlet(fakeAuthenticator, fakeScentry), "/*")
@@ -40,9 +41,11 @@ class SessionServletSpec extends AuthenticatableServletSpec {
     addServlet(new TestableSessionServlet(fakeAuthenticator, fakeScentry), "/*")
     val currentUser = someUser
     userIsAuthenticatedAs(currentUser)
+    val loggedInUserView = LoggedInUserView(currentUser, UserBrowsingContext(currentUser.idAsObjectId, "codebrag", "master"))
+    when(userFinder.findLoggedInUser(currentUser)).thenReturn(loggedInUserView)
     get("/") {
       status should be(200)
-      body should be(asJson(currentUser))
+      body should be(asJson(loggedInUserView))
     }
   }
 
@@ -54,7 +57,7 @@ class SessionServletSpec extends AuthenticatableServletSpec {
     }
   }
 
-  class TestableSessionServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson]) extends SessionServlet(fakeAuthenticator, loginUserUseCase) {
+  class TestableSessionServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson]) extends SessionServlet(fakeAuthenticator, loginUserUseCase, userFinder) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

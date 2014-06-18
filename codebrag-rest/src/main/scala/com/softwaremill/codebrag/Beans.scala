@@ -22,6 +22,7 @@ import com.softwaremill.codebrag.licence.LicenceService
 import com.softwaremill.codebrag.instance.InstanceParamsService
 import com.softwaremill.codebrag.activities.finders.toreview.{ToReviewCommitsViewBuilder, ToReviewBranchCommitsFilter, ToReviewCommitsFinder}
 import com.softwaremill.codebrag.activities.finders.all.{AllCommitsViewBuilder, AllCommitsFinder}
+import com.softwaremill.codebrag.activities.finders.UserFinder
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
@@ -61,7 +62,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val statsAggregator = new StatsAggregator(statsFinder, InstanceId, config, repository)
 
 
-  lazy val loginUserUseCase = new LoginUserUseCase(userDao, afterUserLogin)
+  lazy val loginUserUseCase = new LoginUserUseCase(userDao, afterUserLogin, userFinder)
   lazy val addCommentUseCase = new AddCommentUseCase(userReactionService, followupService, eventBus, licenceService)
   lazy val reviewCommitUseCase = new ReviewCommitUseCase(commitInfoDao, reviewedCommitsCache, eventBus, licenceService)
   lazy val unlikeUseCaseFactory = new UnlikeUseCase(likeValidator, userReactionService, licenceService)
@@ -99,4 +100,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
     userDao,
     new AllCommitsViewBuilder(commitInfoDao, config, userDao, reviewedCommitsCache)
   )
+
+  lazy val userFinder = new UserFinder(userDao, userBrowsingContextDao, repositoriesCache)
+
 }

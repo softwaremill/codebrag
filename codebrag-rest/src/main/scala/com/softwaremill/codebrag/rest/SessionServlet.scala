@@ -3,8 +3,9 @@ package com.softwaremill.codebrag.rest
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra
 import com.softwaremill.codebrag.activities.{LoginForm, LoginFailedException, LoginUserUseCase}
+import com.softwaremill.codebrag.activities.finders.UserFinder
 
-class SessionServlet(val authenticator: Authenticator, loginUseCase: LoginUserUseCase) extends JsonServletWithAuthentication {
+class SessionServlet(val authenticator: Authenticator, loginUseCase: LoginUserUseCase, userFinder: UserFinder) extends JsonServletWithAuthentication {
 
   post("/") {
     try {
@@ -21,7 +22,7 @@ class SessionServlet(val authenticator: Authenticator, loginUseCase: LoginUserUs
 
   get("/") {
     haltIfNotAuthenticated()
-    user
+    userFinder.findLoggedInUser(user)
   }
 
   delete("/") {

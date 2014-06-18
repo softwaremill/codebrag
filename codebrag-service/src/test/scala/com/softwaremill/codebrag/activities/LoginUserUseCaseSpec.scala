@@ -8,15 +8,18 @@ import com.softwaremill.codebrag.service.user.AfterUserLogin
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.service.data.UserJson
+import com.softwaremill.codebrag.domain.UserBrowsingContext
+import com.softwaremill.codebrag.activities.finders.{LoggedInUserView, UserFinder}
 
 class LoginUserUseCaseSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
 
   val userDao = mock[UserDAO]
   val afterLoginHook = mock[AfterUserLogin]
-  val loginUseCase = new LoginUserUseCase(userDao, afterLoginHook)
+  val userFinder = mock[UserFinder]
+  val loginUseCase = new LoginUserUseCase(userDao, afterLoginHook, userFinder)
 
   before {
-    reset(userDao, afterLoginHook)
+    reset(userDao, afterLoginHook, userFinder)
   }
 
   it should "not try to authenticate when user is inactive" in {
@@ -64,6 +67,23 @@ class LoginUserUseCaseSpec extends FlatSpec with ShouldMatchers with BeforeAndAf
 
     // then
     verify(afterLoginHook).postLogin(authenticatedUserJson)
+  }
+
+  it should "return logged in user view" in {
+    // given
+    val user = UserAssembler.randomUser.get
+    val authenticatedUserJson = UserJson(user)
+    val userContext = UserBrowsingContext(user.id, "codebrag", "master")
+    when(userDao.findByLoginOrEmail(user.emailLowerCase)).thenReturn(Some(user))
+    val loggedInUserView = LoggedInUserView(authenticatedUserJson, userContext)
+    when(userFinder.findLoggedInUser(authenticatedUserJson)).thenReturn(loggedInUserView)
+
+    // when
+    val loginForm = LoginForm(user.emailLowerCase, "dummy", false)
+    val Right(loggedInUser) = loginUseCase.execute(loginForm) { Some(authenticatedUserJson) }
+
+    // then
+    loggedInUser should be(loggedInUserView)
   }
 
   it should "raise exception when use cannot authenticate due to bad credentials" in {

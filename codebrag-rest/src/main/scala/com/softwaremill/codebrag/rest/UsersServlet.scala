@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.service.config.CodebragConfig
 import org.bson.types.ObjectId
 import org.scalatra
 import com.softwaremill.codebrag.activities.{ModifyUserDetailsUseCase, ModifyUserDetailsForm, UserToRegister, RegisterNewUserUseCase}
-import com.softwaremill.codebrag.dao.finders.user.{ManagedUsersListView, UserFinder}
+import com.softwaremill.codebrag.activities.finders.{ManagedUsersListView, UserFinder}
 
 class UsersServlet(
   val authenticator: Authenticator,
