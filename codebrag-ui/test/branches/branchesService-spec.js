@@ -1,21 +1,31 @@
 describe("Branches service", function () {
 
     var $httpBackend, $q, $rootScope;
-    var branchesService, events;
+    var branchesService,
+        currentRepoContext = {
+            repo: 'codebrag'
+        },
+        events;
 
-    beforeEach(module('codebrag.branches'));
+    beforeEach(module('codebrag.branches', function($provide) {
+        $provide.factory('currentRepoContext', function() {
+            return currentRepoContext;
+        });
+    }));
 
-    beforeEach(inject(function (_$httpBackend_, _$q_, _branchesService_, _$rootScope_, _events_) {
+    beforeEach(inject(function (_$httpBackend_, _$q_, _branchesService_, _currentRepoContext_, _$rootScope_, _events_) {
         $httpBackend = _$httpBackend_;
         $q = _$q_;
         $rootScope = _$rootScope_;
         branchesService = _branchesService_;
+        currentRepoContext = _currentRepoContext_;
         events = _events_;
 
-        // TODO: create dedicated object for logged in user in rootScope
-        $rootScope.loggedInUser = $rootScope.loggedInUser || {};
-        $rootScope.loggedInUser.settings = $rootScope.loggedInUser.settings || {};
-        $rootScope.loggedInUser.settings.selectedBranch = 'bugfix';
+        $rootScope.loggedInUser = {
+            settings: {
+                selectedBranch: 'bugfix'
+            }
+        };
     }));
 
     afterEach(inject(function (_$httpBackend_) {
@@ -23,84 +33,21 @@ describe("Branches service", function () {
         _$httpBackend_.verifyNoOutstandingRequest();
     }));
 
-    it('should load available branches from server', function() {
+    it('should load available branches for given repo from server', function() {
         // given
+        currentRepoContext.repo = 'codebrag';
         var expectedBranchesList;
         var allBranches = ['master', 'feature', 'bugfix'];
-        $httpBackend.whenGET('rest/branches').respond({branches: allBranches});
+        $httpBackend.whenGET('rest/branches?repo=codebrag').respond({branches: allBranches});
 
         // when
-        branchesService.fetchBranches();
-        $httpBackend.flush();
-
-        // then
-        branchesService.allBranches().then(function(result) {
-            expectedBranchesList = result;
+        branchesService.loadBranches().then(function(branches) {
+            expectedBranchesList = branches;
         });
-        $rootScope.$apply();
+        $httpBackend.flush();
+
+        // then
         expect(expectedBranchesList).toEqual(allBranches);
-    });
-
-    it('should select branch from user settings', function() {
-        // given
-        $httpBackend.whenGET('rest/branches').respond({branches: ['master', 'feature', 'bugfix']});
-
-        // when
-        branchesService.fetchBranches();
-        $httpBackend.flush();
-
-        // then
-        expect(branchesService.selectedBranch()).toBe('bugfix');
-    });
-
-    it('should select currently checked out branch if user has no branch in settings', function() {
-        // given
-        $rootScope.loggedInUser.settings.selectedBranch = null;
-        $httpBackend.whenGET('rest/branches').respond({branches: ['master', 'feature', 'bugfix'], current: 'feature'});
-
-        // when
-        branchesService.fetchBranches();
-        $httpBackend.flush();
-
-        // then
-        expect(branchesService.selectedBranch()).toBe('feature');
-    });
-
-    it('get available branches locally if they were previously loaded', function() {
-        // given
-        var expectedBranchesList;
-        var allBranches = ['master', 'feature', 'bugfix'];
-        var branchesResponse = {branches: allBranches, current: 'master'};
-        $httpBackend.expectGET('rest/branches').respond(branchesResponse);
-        branchesService.fetchBranches();
-        $httpBackend.flush();
-
-        // when
-        var allBranchesPromise = branchesService.allBranches();
-
-        // then
-        allBranchesPromise.then(function(result) {
-            expectedBranchesList = result;
-        });
-        $rootScope.$apply();
-        expect(expectedBranchesList).toEqual(allBranches);
-    });
-
-    it('should change currently selected branch', function() {
-        // given
-        spyOn($rootScope, '$broadcast').andCallThrough();
-        var allBranches = ['master', 'feature', 'bugfix'];
-        var branchesResponse = {branches: allBranches, current: 'master'};
-        $httpBackend.expectGET('rest/branches').respond(branchesResponse);
-        branchesService.fetchBranches();
-        $httpBackend.flush();
-
-        // when
-        branchesService.selectBranch("feature");
-
-        // then
-        expect(branchesService.selectedBranch()).toBe('feature');
-        expect($rootScope.$broadcast).toHaveBeenCalledWith(events.branches.branchChanged, 'feature');
     });
 
 });
