@@ -38,7 +38,7 @@ describe("Branches service", function () {
         currentRepoContext.repo = 'codebrag';
         var expectedBranchesList;
         var allBranches = ['master', 'feature', 'bugfix'];
-        $httpBackend.whenGET('rest/branches?repo=codebrag').respond({branches: allBranches});
+        $httpBackend.whenGET('rest/branches/codebrag').respond({branches: allBranches});
 
         // when
         branchesService.loadBranches().then(function(branches) {

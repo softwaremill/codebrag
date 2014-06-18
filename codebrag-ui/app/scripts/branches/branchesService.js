@@ -8,8 +8,7 @@ angular.module('codebrag.branches')
             push = Array.prototype.push;
 
         function loadBranches() {
-            var queryParams = { repo: currentRepoContext.repo };
-            return $http.get('rest/branches', {params: queryParams}).then(applyBranches);
+            return $http.get('rest/branches/' + currentRepoContext.repo).then(applyBranches);
         }
 
         function applyBranches(response) {
