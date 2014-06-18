@@ -32,11 +32,6 @@ class SessionServlet(val authenticator: Authenticator, loginUseCase: LoginUserUs
     }
   }
 
-  // update user details: password, admin, active
-  put("/:userId") {
-
-  }
-
   override def login: String = (parsedBody \ "login").extractOpt[String].getOrElse("")
   override def password: String = (parsedBody \ "password").extractOpt[String].getOrElse("")
   override def rememberMe: Boolean = (parsedBody \ "rememberme").extractOpt[Boolean].getOrElse(false)
