@@ -33,7 +33,7 @@ angular.module('codebrag.commits')
         }
 
         function commitDetails(sha) {
-            return Commits.get({sha: sha}).$then(function(response) {
+            return Commits.get({sha: sha, repo: currentRepoContext.repo}).$then(function(response) {
                 return response.data;
             });
         }
@@ -46,7 +46,7 @@ angular.module('codebrag.commits')
                 return commits.elementAtIndexOrLast(indexRemoved);
             }
 
-            var commitMarkedAsReviewed =Commits.remove({sha: sha}).$then(function() {
+            var commitMarkedAsReviewed =Commits.remove({sha: sha, repo: currentRepoContext.repo}).$then(function() {
                 return prefetchedCommitPromise;
             });
             var nextCommitToReview = commitMarkedAsReviewed.then(removeGivenAndAppendPrefetchedCommit);

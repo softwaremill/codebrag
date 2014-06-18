@@ -33,13 +33,13 @@ angular.module('codebrag.commits')
         }
 
         function commitDetails(sha) {
-            return Commits.get({sha: sha}).$then(function(response) {
+            return Commits.get({sha: sha, repo: currentRepoContext.repo}).$then(function(response) {
                 return response.data;
             });
         }
 
         function markAsReviewed(sha) {
-            Commits.remove({sha: sha});   // fire and don't wait for response
+            Commits.remove({sha: sha, repo: currentRepoContext.repo});   // fire and don't wait for response
             var indexReviewed = commits.markAsReviewedOnly(sha);
             eventsEmitter.triggerCommitReviewedEvent();
             return $q.when(commits.elementAtIndex(indexReviewed + 1));

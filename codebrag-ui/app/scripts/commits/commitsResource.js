@@ -8,7 +8,7 @@ angular.module('codebrag.commits')
         var loadAllCommits = {filter: 'all'};
         var loadAllCommitsWithSurroundings = angular.extend({}, loadAllCommits, {context: true});
 
-        return $resource('rest/commits/:sha', {}, {
+        return $resource('rest/commits/:repo/:sha', {}, {
             queryReviewable: {method: 'GET', isArray: false, requestType: commitsListLoadingRequest, params: loadCommitsToReviewParams},
             queryAllWithSurroundings: {method: 'GET', isArray: false, requestType: commitsListLoadingRequest, params: loadAllCommitsWithSurroundings},
             queryAll: {method: 'GET', isArray: false, requestType: commitsListLoadingRequest, params: loadAllCommits},
