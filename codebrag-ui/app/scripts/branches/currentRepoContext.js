@@ -37,6 +37,7 @@ angular.module('codebrag.branches')
             contextReady.resolve();
         });
 
+        $rootScope.currentRepoContext = currentContext;     //FIXME: for now, to get access to switching repo
         return currentContext;
 
     });
