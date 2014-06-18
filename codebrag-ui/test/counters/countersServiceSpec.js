@@ -2,6 +2,7 @@ describe('Counters Service', function() {
 
     var branchesService,
         countersService,
+        currentRepoContext = {},
         events,
         $rootScope,
         $injector,
@@ -11,9 +12,11 @@ describe('Counters Service', function() {
 
     var EXPECTED_INITIAL_COUNTERS = {commits: 10, followups: 20};
     var EXPECTED_WAITING_COUNTERS = {commits: 100, followups: 200};
-    var COUNTERS_URL = 'rest/updates?branch=master';
+    var COUNTERS_URL = 'rest/updates?branch=master&repo=codebrag';
 
-    beforeEach(module('codebrag.counters'));
+    beforeEach(module('codebrag.counters', function($provide){
+        $provide.value('currentRepoContext', currentRepoContext);
+    }));
 
     beforeEach(inject(function(_$q_, _$rootScope_, _$httpBackend_, _branchesService_, _$injector_, _$timeout_, _events_) {
         branchesService = _branchesService_;
@@ -30,12 +33,12 @@ describe('Counters Service', function() {
         $http.verifyNoOutstandingExpectation();
     });
 
-    describe('when branch service not ready', function() {
+    describe('when repo context not ready', function() {
 
-        it('should not initialize counters', function() {
+        it('should not initialize counters and polling', function() {
             // given
             var notYetReady = $q.defer().promise;
-            spyOn(branchesService, 'ready').andReturn(notYetReady);
+            currentRepoContext.ready = jasmine.createSpy('ready').andReturn(notYetReady);
 
             // when
             countersService = $injector.get('countersService');
@@ -43,15 +46,17 @@ describe('Counters Service', function() {
             // then
             expect(currentCommitsCount()).toBe(0);
             expect(currentFollowupsCount()).toBe(0);
+            $timeout.verifyNoPendingTasks();
         });
 
     });
 
-    describe('initialization when branch service ready', function() {
+    describe('initialization when repo context ready', function() {
 
         beforeEach(function() {
-            spyOn(branchesService, 'ready').andReturn($q.when());
-            spyOn(branchesService, 'selectedBranch').andReturn('master');
+            currentRepoContext.repo = 'codebrag';
+            currentRepoContext.branch = 'master';
+            currentRepoContext.ready = jasmine.createSpy('ready').andReturn($q.when());
         });
 
         it('should load and apply counters from server', function() {
@@ -112,16 +117,20 @@ describe('Counters Service', function() {
     describe('when initial counters are loaded', function() {
 
         beforeEach(function() {
-            spyOn(branchesService, 'ready').andReturn($q.when());
-            spyOn(branchesService, 'selectedBranch').andReturn('master');
-            $http.expectGET('rest/updates?branch=master').respond(EXPECTED_INITIAL_COUNTERS);
+            currentRepoContext.repo = 'codebrag';
+            currentRepoContext.branch = 'master';
+            currentRepoContext.ready = jasmine.createSpy('ready').andReturn($q.when());
+        });
+
+        beforeEach(function() {
+            $http.expectGET(COUNTERS_URL).respond(EXPECTED_INITIAL_COUNTERS);
             countersService = $injector.get('countersService');
             $http.flush();
         });
 
         it('should have updates available', function() {
             // when
-            $http.expectGET('rest/updates?branch=master').respond(EXPECTED_WAITING_COUNTERS);
+            $http.expectGET(COUNTERS_URL).respond(EXPECTED_WAITING_COUNTERS);
             $timeout.flush();
             $http.flush();
 
@@ -134,7 +143,7 @@ describe('Counters Service', function() {
 
         it('should have no updates when new counters not changed', function() {
             // when
-            $http.expectGET('rest/updates?branch=master').respond(EXPECTED_INITIAL_COUNTERS);
+            $http.expectGET(COUNTERS_URL).respond(EXPECTED_INITIAL_COUNTERS);
             $timeout.flush();
             $http.flush();
 
@@ -171,7 +180,7 @@ describe('Counters Service', function() {
         function testAdditionalCommitsLoaded(which) {
             it('should replace only commit counter with updated ones when ' + which + ' commits are loaded', function() {
                 // given
-                $http.expectGET('rest/updates?branch=master').respond(EXPECTED_WAITING_COUNTERS);
+                $http.expectGET(COUNTERS_URL).respond(EXPECTED_WAITING_COUNTERS);
                 $timeout.flush();
                 $http.flush();
 
@@ -190,8 +199,12 @@ describe('Counters Service', function() {
     describe('when branch changed', function() {
 
         beforeEach(function() {
-            spyOn(branchesService, 'ready').andReturn($q.when());
-            spyOn(branchesService, 'selectedBranch').andReturn('master');
+            currentRepoContext.repo = 'codebrag';
+            currentRepoContext.branch = 'master';
+            currentRepoContext.ready = jasmine.createSpy('ready').andReturn($q.when());
+        });
+
+        beforeEach(function() {
             $http.whenGET(COUNTERS_URL).respond(EXPECTED_INITIAL_COUNTERS);
             countersService = $injector.get('countersService');
             $http.flush();
@@ -199,8 +212,10 @@ describe('Counters Service', function() {
 
         it('should reinitialize only commits counter for new branch', function() {
             // when
-            $http.expectGET('rest/updates?branch=feature').respond({commits: 50, followups: 500});
-            $rootScope.$broadcast(events.branches.branchChanged, 'feature');
+            var newCountersUrl = 'rest/updates?branch=feature&repo=codebrag';
+            $http.expectGET(newCountersUrl).respond({commits: 50, followups: 500});
+            currentRepoContext.branch = 'feature';
+            $rootScope.$broadcast(events.branches.branchChanged);
             $http.flush();
 
             // then
