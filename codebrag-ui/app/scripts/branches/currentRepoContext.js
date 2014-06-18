@@ -32,8 +32,8 @@ angular.module('codebrag.branches')
         };
 
         authService.userAuthenticated.then(function(user) {
-            currentContext.branch = user.settings.selectedBranch;
-            currentContext.repo  = 'codebrag';  // TODO: fetch from authenticated user
+            currentContext.branch = user.browsingContext.branchName;
+            currentContext.repo  = user.browsingContext.repoName;
             contextReady.resolve();
         });
 
