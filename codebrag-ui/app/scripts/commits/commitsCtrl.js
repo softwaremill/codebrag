@@ -1,15 +1,14 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, $rootScope, currentCommit, commitsService, $stateParams, $state, events, pageTourService, branchesService) {
+    .controller('CommitsCtrl', function ($scope, currentCommit, commitsService, $stateParams, $state, events, pageTourService) {
 
-        branchesService.ready().then(loadCommits);
+        loadCommits();
 
-        $scope.$on(events.commitsListFilterChanged, function(event, mode) {
-            loadCommits(mode);
-        });
+        $scope.$on(events.branches.branchChanged, loadCommits);
+        $scope.$on(events.commitsListFilterChanged, loadCommits);
 
         $scope.hasNextCommits = function() {
-            return commitsService.hasNextCommits();
+            return commitsService.hasNextCommits();                                                                      9
         };
 
         $scope.hasPreviousCommits = function() {
@@ -40,20 +39,9 @@ angular.module('codebrag.commits')
             return pageTourService.stepActive('commits') || pageTourService.stepActive('invites');
         };
 
-        function loadCommits(mode) {
-            mode === 'all' ? loadAllCommits() : loadPendingCommits();
-        }
-
-        function loadAllCommits() {
-            commitsService.setAllMode();
-            commitsService.loadCommits($stateParams.sha).then(function(commits) {
-                $scope.commits = commits;
-            })
-        }
-
-        function loadPendingCommits() {
-            commitsService.setToReviewMode();
-            commitsService.loadCommits().then(function(commits) {
+        function loadCommits() {
+            var currentContextSha = $stateParams.sha;
+            commitsService.loadCommits(currentContextSha).then(function(commits) {
                 $scope.commits = commits;
             });
         }
