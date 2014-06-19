@@ -42,8 +42,9 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
 
   get("/:repo", allCommits) {
     val paging = extractPagingCriteria
+    val browsingContext = extractBrowsingContext
     logger.debug(s"Attempting to fetch all commits with possible paging: ${paging}")
-    allCommitsFinder.find(userId, extractRepoName, extractBranch, paging)
+    allCommitsFinder.find(browsingContext, paging)
   }
 
   get("/:repo", commitsToReview) {
@@ -55,12 +56,13 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
 
   get("/:repo", contextualCommits) {
     val limit = params.getOrElse(LimitParamName, DefaultPageLimit.toString).toInt
+    val browsingContext = extractBrowsingContext
     val paging = params.get(SelectedShaParamName) match {
       case Some(commitSha) => PagingCriteria(commitSha, Direction.Radial, limit)
       case None => PagingCriteria.fromEnd[String](limit)
     }
     logger.debug(s"Attempting to fetch commits in context: ${paging}")
-    allCommitsFinder.find(userId, extractRepoName, extractBranch, paging)
+    allCommitsFinder.find(browsingContext, paging)
   }
 
   private def userId = new ObjectId(user.id)
@@ -84,9 +86,6 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
       PagingCriteria.fromBeginning[String](limit)
     }
   }
-
-  private def extractBranch = params.get(BranchParamName)
-  private def extractRepoName = params.get(RepoParamName)
 
 }
 

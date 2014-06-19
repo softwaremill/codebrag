@@ -71,9 +71,9 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   "GET /:repo with filter=all" should "load all commits" in {
     val userId = givenStandardAuthenticatedUser()
     val criteria = PagingCriteria.fromBeginning[String](CommitsEndpoint.DefaultPageLimit)
-
-    get(s"/$repoName?$FilterParamName=$AllCommitsFilter") {
-      verify(allCommitsFinder).find(userId, Some(repoName), None, criteria)
+    get(s"/$repoName?$BranchParamName=$branchName&$FilterParamName=$AllCommitsFilter") {
+      val context = UserBrowsingContext(userId, repoName, branchName)
+      verify(allCommitsFinder).find(context, criteria)
     }
   }
 
@@ -90,19 +90,21 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   "GET /:reo with context=true" should "load commits with surroundings" in {
     val userId = givenStandardAuthenticatedUser()
     val commitId = "123456"
+    val context = UserBrowsingContext(userId, repoName, branchName)
 
-    get(s"/$repoName?$ContextParamName=true&$SelectedShaParamName=" + commitId.toString) {
+    get(s"/$repoName?$BranchParamName=$branchName&$ContextParamName=true&$SelectedShaParamName=" + commitId.toString) {
       val criteria = PagingCriteria(commitId, Direction.Radial, CommitsEndpoint.DefaultPageLimit)
-      verify(allCommitsFinder).find(userId, Some(repoName), None, criteria)
+      verify(allCommitsFinder).find(context, criteria)
     }
   }
 
   "GET /:repo with context=true and no id provided" should "load first commits" in {
     val userId = givenStandardAuthenticatedUser()
 
-    get(s"/$repoName?$ContextParamName=true") {
+    get(s"/$repoName?$BranchParamName=$branchName&$ContextParamName=true") {
       val criteria = PagingCriteria.fromEnd[String](CommitsEndpoint.DefaultPageLimit)
-      verify(allCommitsFinder).find(userId, Some(repoName), None, criteria)
+      val context = UserBrowsingContext(userId, repoName, branchName)
+      verify(allCommitsFinder).find(context, criteria)
     }
   }
 

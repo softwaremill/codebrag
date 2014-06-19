@@ -8,6 +8,7 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.cache.{RepositoriesCache, RepositoryCache}
 import com.softwaremill.codebrag.finders.commits.UserBranchAndRepoPreferences
+import com.softwaremill.codebrag.domain.UserBrowsingContext
 
 
 class AllCommitsFinder(
@@ -16,11 +17,10 @@ class AllCommitsFinder(
   protected val userDao: UserDAO,
   allCommitsViewBuilder: AllCommitsViewBuilder) extends Logging with UserBranchAndRepoPreferences {
 
-  def find(userId: ObjectId, repoNameOpt: Option[String], branchNameOpt: Option[String], pagingCriteria: PagingCriteria[String]): CommitListView = {
-    val user = loadUser(userId)
-    val (repoName, branchName) = findTargetRepoAndBranchNames(user, repoNameOpt, branchNameOpt)
-    val allBranchCommits = repoCache.getBranchCommits(repoName, branchName).map(_.sha).reverse
-    allCommitsViewBuilder.toView(repoName, allBranchCommits, pagingCriteria, user)  // TODO: rething it, passing repo here sux!
+  def find(browsingContext: UserBrowsingContext, pagingCriteria: PagingCriteria[String]): CommitListView = {
+    val user = loadUser(browsingContext.userId)
+    val allBranchCommits = repoCache.getBranchCommits(browsingContext.repoName, browsingContext.branchName).map(_.sha).reverse
+    allCommitsViewBuilder.toView(browsingContext.repoName, allBranchCommits, pagingCriteria, user)  // TODO: rething it, passing repo here sux!
   }
 
   def findSingle(repoName: String, sha: String, userId: ObjectId) = {
