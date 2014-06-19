@@ -23,6 +23,7 @@ import com.softwaremill.codebrag.instance.InstanceParamsService
 import com.softwaremill.codebrag.finders.commits.toreview.{ToReviewCommitsViewBuilder, ToReviewBranchCommitsFilter, ToReviewCommitsFinder}
 import com.softwaremill.codebrag.finders.commits.all.{AllCommitsViewBuilder, AllCommitsFinder}
 import com.softwaremill.codebrag.finders.user.UserFinder
+import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFinder
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
@@ -101,6 +102,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
     new AllCommitsViewBuilder(commitInfoDao, config, userDao, reviewedCommitsCache)
   )
 
-  lazy val userFinder = new UserFinder(userDao, userBrowsingContextDao, repositoriesCache)
+  lazy val userBrowsingContextFinder = new UserBrowsingContextFinder(userBrowsingContextDao, repositoriesCache)
+  lazy val userFinder = new UserFinder(userDao, userBrowsingContextFinder)
 
 }
