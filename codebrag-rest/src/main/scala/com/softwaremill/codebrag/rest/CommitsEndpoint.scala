@@ -10,6 +10,7 @@ import com.softwaremill.codebrag.usecases.ReviewCommitUseCase
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
 import com.softwaremill.codebrag.finders.commits.all.AllCommitsFinder
+import com.softwaremill.codebrag.domain.UserBrowsingContext
 
 trait CommitsEndpoint extends JsonServletWithAuthentication {
 
@@ -47,8 +48,9 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
 
   get("/:repo", commitsToReview) {
     val paging = extractPagingCriteria
-    logger.debug(s"Attempting to fetch commits to review with possible paging: ${paging}")
-    reviewableCommitsListFinder.find(userId, extractRepoName, extractBranch, paging)
+    val browsingContext = extractBrowsingContext
+    logger.debug(s"Attempting to fetch commits to review with context $browsingContext and paging: $paging")
+    reviewableCommitsListFinder.find(browsingContext, paging)
   }
 
   get("/:repo", contextualCommits) {
@@ -66,6 +68,8 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   private def contextualCommits = params.get(ContextParamName).isDefined
   private def commitsToReview = params.get(FilterParamName).isDefined && params(FilterParamName) == ToReviewCommitsFilter
   private def allCommits = params.get(FilterParamName).isDefined && params(FilterParamName) == AllCommitsFilter
+
+  private def extractBrowsingContext = UserBrowsingContext(user.idAsObjectId, extractReqUrlParam("repo"), extractReqUrlParam("branch"))
 
   private def extractPagingCriteria = {
     val minSha = params.get(MinShaParamName)
