@@ -63,6 +63,12 @@ button
       background: #e4dece;
       color: $second-body-text-color;
 
+    &[disabled="disabled"]:hover
+        background: transparent;
+        border: 1px solid transparent;
+        color: $second-body-text-color;
+
+
   &.light
     background: #ece7d9;
     border: 1px solid #dad1b9;
@@ -289,3 +295,5 @@ i
       border-bottom: 8px solid #ece7d9;
       left: 10px;
 
+input[type="checkbox"]
+  cursor: pointer;

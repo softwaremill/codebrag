@@ -8,16 +8,15 @@
             <span class="success" ng-repeat="f in flash.get('info')">{{ f.message }}</span>
         </div>
     </h1>
-
-    <div class="table-container">    
+    
+    <div class="table-container">
         <table>
             <thead>
                 <th>Team member email</th>
                 <th>Active?</th>
                 <th>Admin?</th>
-                <th></th>
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
             </thead>
-
             <tr ng-repeat="user in users">
                 <td>{{ user.email}}</td>
                 <td class="cell-centered"><input type="checkbox" ng-model="user.active" ng-click="modifyUser(user, 'active')" ng-disabled="user.locked"/></td>
@@ -28,8 +27,10 @@
     </div>
 
     <section>
-        <div> {{ countActiveUsers() }} active users in total</div>
-        <div ng-hide="licenceData.type === 'Trial'"> Licence up to {{ licenceData.maxUsers }} users</div>
+        <div class="license-info-line">
+            <strong>{{ countActiveUsers() }} active users</strong> in total.
+            <span ng-hide="licenceData.type === 'Trial'"> Licence is up to <strong>{{ licenceData.maxUsers }} users</strong>.</span>
+        </div>
         <button ng-click="invite()">Invite team members</button>
     </section>
 

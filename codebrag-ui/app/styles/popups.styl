@@ -182,29 +182,47 @@
 
   // table wrapper to make table scrollable
   & .table-container
-    position: relative;
-    height: 200px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    // height: 200px;
+    // overflow: hidden;
     border-bottom: 1px solid #d1cbb9;
 
   & table 
     text-align: left;
     border-color: $second-body-text-color;
 
-    & tr
-      border: 1px solid #d1cbb9;
-      &:last-child
-        border-bottom: none;
-
     & thead 
-      & tr
-        border: none;
-        border-bottom: 1px solid #d1cbb9;
+      border-color: transparent;
+      border-bottom: 1px solid #d1cbb9;
       
     & th
       color: $second-body-text-color;
       font-weight: normal;
 
     & .cell-centered
-      text-align: center;      
+      text-align: center;
+
+    & tbody
+      // display: block;
+      // height: 220px;
+      // overflow: auto;
+      // width: 100%;
+
+      & tr
+        border: 1px solid #d1cbb9;
+        position: relative;
+        &:first-child
+          border-top: none;
+        &:last-child
+          border-bottom: none;
+
+  & .table-container
+    margin-bottom: 1.15em;
+
+  & .license-info-line
+    color: $second-body-text-color;
+    margin-bottom: 1.15em;
+
+  & table button.link
+    color: $main-orange-color;
+    &[disabled="disabled"]
+      color: $second-body-text-color;
