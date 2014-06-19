@@ -30,7 +30,7 @@ class UserSettingsServletSpec extends AuthenticatableServletSpec with BeforeAndA
     val currentUser = someUser
     userIsAuthenticatedAs(currentUser)
     val incomingSettingsJson = """{"emailNotificationsEnabled": true, "selectedBranch": "master"}"""
-    val expectedSettings = IncomingSettings(Some(true), None, None, Some("master"))
+    val expectedSettings = IncomingSettings(Some(true), None, None)
     when(useCase.execute(currentUser.idAsObjectId, expectedSettings)).thenReturn(Right(UserSettings.defaults(currentUser.email  )))
     put("/", incomingSettingsJson, defaultJsonHeaders) {
       status should be(200)

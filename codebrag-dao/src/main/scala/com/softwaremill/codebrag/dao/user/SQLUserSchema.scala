@@ -19,8 +19,8 @@ trait SQLUserSchema {
     auth.token, auth.salt)
 
   protected case class SQLSettings(id: ObjectId, avatarUrl: String, emailNotificationsEnabled: Boolean,
-    dailyUpdatesEmailEnabled: Boolean, appTourDone: Boolean, toReviewStartDate: Option[DateTime], selectedBranch: Option[String]) {
-    def toSettings = UserSettings(avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone, toReviewStartDate, selectedBranch)
+    dailyUpdatesEmailEnabled: Boolean, appTourDone: Boolean, toReviewStartDate: Option[DateTime]) {
+    def toSettings = UserSettings(avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone, toReviewStartDate)
   }
   protected def toSQLSettings(id: ObjectId, settings: UserSettings) = {
     SQLSettings(
@@ -29,8 +29,7 @@ trait SQLUserSchema {
       settings.emailNotificationsEnabled,
       settings.dailyUpdatesEmailEnabled,
       settings.appTourDone,
-      settings.toReviewStartDate,
-      settings.selectedBranch
+      settings.toReviewStartDate
     )
   }
 
@@ -62,9 +61,8 @@ trait SQLUserSchema {
     def dailyUpdatesEmailEnabled = column[Boolean]("email_daily_updates")
     def appTourDone = column[Boolean]("app_tour_done")
     def toReviewStartDate = column[Option[DateTime]]("to_review_start_date")
-    def selectedBranch = column[Option[String]]("selected_branch")
 
-    def * = (userId, avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone, toReviewStartDate, selectedBranch) <> (SQLSettings.tupled, SQLSettings.unapply)
+    def * = (userId, avatarUrl, emailNotificationsEnabled, dailyUpdatesEmailEnabled, appTourDone, toReviewStartDate) <> (SQLSettings.tupled, SQLSettings.unapply)
   }
 
   protected val userSettings = TableQuery[Settings]

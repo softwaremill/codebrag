@@ -43,7 +43,6 @@ class NotificationService(
   def sendDailyDigest(user: User, commitCount: Long, followupCount: Long) {
     val templateParams = Map(
       "username" -> user.name,
-      "user_branch" -> user.settings.selectedBranch,
       "commit_followup_message" -> translate(commitCount, followupCount, isTotalCount = true),
       "application_url" -> codebragConfig.applicationUrl,
       "date" -> clock.now.toString(DateTimeFormat.forPattern("yyyy-MM-dd"))

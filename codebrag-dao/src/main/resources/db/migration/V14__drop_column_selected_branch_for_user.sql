@@ -1,0 +1,1 @@
+ALTER TABLE "users_settings" DROP COLUMN IF EXISTS "selected_branch";

@@ -18,7 +18,7 @@ class UsersSettingsServlet(val authenticator: Authenticator, userDao: UserDAO, c
   }
 
   put("/") {
-    val newSettings = IncomingSettings(extractOpt[Boolean]("emailNotificationsEnabled"), extractOpt[Boolean]("dailyUpdatesEmailEnabled"), extractOpt[Boolean]("appTourDone"), extractOpt[String]("selectedBranch"))
+    val newSettings = IncomingSettings(extractOpt[Boolean]("emailNotificationsEnabled"), extractOpt[Boolean]("dailyUpdatesEmailEnabled"), extractOpt[Boolean]("appTourDone"))
     changeUserSettings.execute(user.idAsObjectId, newSettings) match {
       case Right(settings) => Ok(settingsResponse(settings))
       case Left(err) => halt(400, Map("error" -> err))

@@ -38,18 +38,15 @@ class ChangeUserSettingsUseCase(userDao: UserDAO, licenceService: LicenceService
 
 }
 
-case class IncomingSettings(
-                             emailNotificationsEnabled: Option[Boolean],
-                             dailyUpdatesEmailEnabled: Option[Boolean],
-                             appTourDone: Option[Boolean],
-                             newBranch: Option[String]) {
+case class IncomingSettings(emailNotificationsEnabled: Option[Boolean], dailyUpdatesEmailEnabled: Option[Boolean], appTourDone: Option[Boolean]) {
+
   def applyTo(existingSettings: UserSettings) = {
-    val newSettings = existingSettings.copy(
+    existingSettings.copy(
       emailNotificationsEnabled = this.emailNotificationsEnabled.getOrElse(existingSettings.emailNotificationsEnabled),
       dailyUpdatesEmailEnabled = this.dailyUpdatesEmailEnabled.getOrElse(existingSettings.dailyUpdatesEmailEnabled),
       appTourDone = this.appTourDone.getOrElse(existingSettings.appTourDone)
     )
-    newBranch.map { branch => newSettings.copy(selectedBranch = newBranch) }.getOrElse(newSettings)
   }
+
 }
 

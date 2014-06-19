@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.dao.finders.views.CommitListView
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.cache.{RepositoriesCache, RepositoryCache}
-import com.softwaremill.codebrag.finders.commits.UserBranchAndRepoPreferences
+import com.softwaremill.codebrag.finders.commits.UserLoader
 import com.softwaremill.codebrag.domain.UserBrowsingContext
 
 
@@ -15,7 +15,7 @@ class AllCommitsFinder(
   protected val repoCache: RepositoriesCache,
   commitsInfoDao: CommitInfoDAO,
   protected val userDao: UserDAO,
-  allCommitsViewBuilder: AllCommitsViewBuilder) extends Logging with UserBranchAndRepoPreferences {
+  allCommitsViewBuilder: AllCommitsViewBuilder) extends Logging with UserLoader {
 
   def find(browsingContext: UserBrowsingContext, pagingCriteria: PagingCriteria[String]): CommitListView = {
     val user = loadUser(browsingContext.userId)
