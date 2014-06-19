@@ -10,6 +10,7 @@ import com.softwaremill.codebrag.common.paging.PagingCriteria
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.domain.UserBrowsingContext
+import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFinder
 
 class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with ClockSpec {
 
@@ -17,6 +18,7 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
 
   var repositoriesCache: RepositoriesCache = _
   var userDao: UserDAO = _
+  var browsingContextFinder: UserBrowsingContextFinder = _
   var toReviewFilter: ToReviewBranchCommitsFilter = _
   var toReviewViewBuilder: ToReviewCommitsViewBuilder = _
 
@@ -32,10 +34,11 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
   before {
     repositoriesCache = mock[RepositoriesCache]
     userDao = mock[UserDAO]
+    browsingContextFinder = mock[UserBrowsingContextFinder]
     toReviewFilter = mock[ToReviewBranchCommitsFilter]
     toReviewViewBuilder = mock[ToReviewCommitsViewBuilder]
 
-    finder = new ToReviewCommitsFinder(repositoriesCache, userDao, toReviewFilter, toReviewViewBuilder)
+    finder = new ToReviewCommitsFinder(repositoriesCache, userDao, browsingContextFinder, toReviewFilter, toReviewViewBuilder)
 
     when(userDao.findById(Bob.id)).thenReturn(Some(Bob))
   }
@@ -48,10 +51,24 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
     // when
     val context = UserBrowsingContext(Bob.id, CodebragRepo, MasterBranch)
     finder.find(context, Page)
-    finder.count(Bob.id, Some(CodebragRepo), Some(MasterBranch))
+    finder.count(context)
 
     // then
     verify(repositoriesCache, times(2)).getBranchCommits(CodebragRepo, MasterBranch)
+  }
+
+  it should "count commits to review for user default browsing context" in {
+    // given
+    val defaultContext = UserBrowsingContext(Bob.id, CodebragRepo, MasterBranch)
+    when(browsingContextFinder.findUserDefaultContext(Bob.id)).thenReturn(defaultContext)
+    when(repositoriesCache.getBranchCommits(CodebragRepo, MasterBranch)).thenReturn(NoCommitsInBranch)
+    when(toReviewFilter.filterCommitsToReview(NoCommitsInBranch, Bob)).thenReturn(List.empty)
+
+    // when
+    finder.countForUserRepoAndBranch(Bob.id)
+
+    // then
+    verify(repositoriesCache).getBranchCommits(CodebragRepo, MasterBranch)
   }
 
 }

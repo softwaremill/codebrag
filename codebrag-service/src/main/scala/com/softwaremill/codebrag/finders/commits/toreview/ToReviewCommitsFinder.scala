@@ -13,6 +13,7 @@ import com.softwaremill.codebrag.domain.UserBrowsingContext
 class ToReviewCommitsFinder(
   protected val repoCache: RepositoriesCache,
   protected val userDao: UserDAO,
+  userBrowsingContextFinder: UserBrowsingContextFinder,
   toReviewCommitsFilter: ToReviewBranchCommitsFilter,
   toReviewCommitsViewBuilder: ToReviewCommitsViewBuilder) extends Logging with UserBranchAndRepoPreferences {
 
@@ -23,13 +24,15 @@ class ToReviewCommitsFinder(
     toReviewCommitsViewBuilder.toPageView(browsingContext.repoName, toReviewBranchCommits, pagingCriteria)
   }
 
-  def count(userId: ObjectId, repoName: Option[String], branchName: Option[String]): Long = {
-    val user = loadUser(userId)
-    val (ultimateRepo, ultimateBranch) = findTargetRepoAndBranchNames(user, repoName, branchName)
-    val allBranchCommits = repoCache.getBranchCommits(ultimateRepo, ultimateBranch)
+  def count(browsingContext: UserBrowsingContext): Long = {
+    val user = loadUser(browsingContext.userId)
+    val allBranchCommits = repoCache.getBranchCommits(browsingContext.repoName, browsingContext.branchName)
     toReviewCommitsFilter.filterCommitsToReview(allBranchCommits, user).length
   }
 
-  def countForUserRepoAndBranch(userId: ObjectId): Long = count(userId, None, None)
+  def countForUserRepoAndBranch(userId: ObjectId): Long = {
+    val userDefaultContext = userBrowsingContextFinder.findUserDefaultContext(userId)
+    count(userDefaultContext)
+  }
 
 }

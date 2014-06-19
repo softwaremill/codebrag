@@ -6,6 +6,7 @@ import com.softwaremill.codebrag.common.Clock
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.domain.UserBrowsingContext
 
 class UpdatesServlet(
   val authenticator: Authenticator,
@@ -20,14 +21,12 @@ class UpdatesServlet(
 
   get("/") {
     val userId = new ObjectId(user.id)
+    val browsingContext = UserBrowsingContext(userId, extractReqUrlParam("repo"), extractReqUrlParam("branch"))
     heartbeat.update(userId)
     val followupsCount = followupFinder.countFollowupsForUser(userId)
-    val toReviewCount = toReviewCommitsFinder.count(userId, extractRepo, extractBranch)
+    val toReviewCount = toReviewCommitsFinder.count(browsingContext)
     UpdateNotification(clock.nowMillis, toReviewCount, followupsCount)
   }
-
-  private def extractBranch = params.get("branch")
-  private def extractRepo = params.get("repo")
 
 }
 

@@ -4,7 +4,7 @@ import com.softwaremill.codebrag.AuthenticatableServletSpec
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.BDDMockito._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.{Authentication, User}
+import com.softwaremill.codebrag.domain.{UserBrowsingContext, Authentication, User}
 import com.softwaremill.codebrag.common.{ClockSpec, Clock}
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
@@ -33,10 +33,11 @@ class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
   "GET /" should "call finder to fetch counters for authorized user for prepo and branch" in {
     // given
     userIsAuthenticatedAs(UserJson(user))
+    val context = UserBrowsingContext(user.id, "codebrag", "master")
     val expectedCommits = 1
     val expectedFollowups = 2
     given(followupFinderMock.countFollowupsForUser(user.id)).willReturn(expectedFollowups)
-    given(toReviewCommitsFinderMock.count(user.id, Some("codebrag"), Some("master"))).willReturn(expectedCommits)
+    given(toReviewCommitsFinderMock.count(context)).willReturn(expectedCommits)
 
     // when
     get("/?branch=master&repo=codebrag") {
