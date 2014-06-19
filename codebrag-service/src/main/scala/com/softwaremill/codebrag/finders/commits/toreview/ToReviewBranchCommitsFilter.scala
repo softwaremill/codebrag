@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.activities.finders.commits.toreview
+package com.softwaremill.codebrag.finders.commits.toreview
 
 import com.softwaremill.codebrag.cache.{BranchCommitCacheEntry, UserReviewedCommitsCache}
 import com.softwaremill.codebrag.service.config.ReviewProcessConfig

@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.activities.finders
+package com.softwaremill.codebrag.finders
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
@@ -12,7 +12,7 @@ import com.softwaremill.codebrag.dao.finders.views.{CommitState, CommitView}
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.User
 import com.softwaremill.codebrag.common.ClockSpec
-import com.softwaremill.codebrag.activities.finders.commits.CommitReviewStateAppender
+import com.softwaremill.codebrag.finders.commits.CommitReviewStateAppender
 
 class CommitReviewStateAppenderSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with ClockSpec {
 

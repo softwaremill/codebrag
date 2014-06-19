@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.activities.finders.user
+package com.softwaremill.codebrag.finders.user
 
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain.{UserBrowsingContext, UserSettings, User}

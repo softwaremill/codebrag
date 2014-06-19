@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.activities.finders.commits.toreview
+package com.softwaremill.codebrag.finders.commits.toreview
 
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.paging.PagingCriteria
@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.cache.RepositoriesCache
 import com.softwaremill.codebrag.dao.finders.views.CommitListView
-import com.softwaremill.codebrag.activities.finders.commits.UserBranchAndRepoPreferences
+import com.softwaremill.codebrag.finders.commits.UserBranchAndRepoPreferences
 
 class ToReviewCommitsFinder(
                              protected val repoCache: RepositoriesCache,

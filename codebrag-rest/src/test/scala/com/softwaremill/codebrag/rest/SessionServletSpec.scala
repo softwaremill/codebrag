@@ -12,9 +12,8 @@ import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.typesafe.config.ConfigFactory
 import java.util.Properties
 import com.softwaremill.codebrag.activities.LoginUserUseCase
-import com.softwaremill.codebrag.activities.finders.LoggedInUserView
 import com.softwaremill.codebrag.domain.UserBrowsingContext
-import com.softwaremill.codebrag.activities.finders.user.{LoggedInUserView, UserFinder}
+import com.softwaremill.codebrag.finders.user.{LoggedInUserView, UserFinder}
 
 class SessionServletSpec extends AuthenticatableServletSpec {
 

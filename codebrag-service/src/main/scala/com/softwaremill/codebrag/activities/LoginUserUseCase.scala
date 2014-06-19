@@ -1,11 +1,10 @@
 package com.softwaremill.codebrag.activities
 
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.activities.validation.{ValidateableForm, ValidationErrors, Validation}
+import com.softwaremill.codebrag.activities.validation.{ValidationErrors, Validation}
 import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.service.user.AfterUserLogin
-import com.softwaremill.codebrag.activities.finders.LoggedInUserView
-import com.softwaremill.codebrag.activities.finders.user.{LoggedInUserView, UserFinder}
+import com.softwaremill.codebrag.finders.user.{LoggedInUserView, UserFinder}
 
 case class LoginFailedException(msg: String) extends RuntimeException(msg)
 

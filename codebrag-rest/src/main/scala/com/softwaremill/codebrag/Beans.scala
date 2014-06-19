@@ -20,9 +20,9 @@ import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.cache.{RepositoriesCache, UserReviewedCommitsCache, PersistentBackendForCache}
 import com.softwaremill.codebrag.licence.LicenceService
 import com.softwaremill.codebrag.instance.InstanceParamsService
-import com.softwaremill.codebrag.activities.finders.commits.toreview.{ToReviewCommitsViewBuilder, ToReviewBranchCommitsFilter, ToReviewCommitsFinder}
-import com.softwaremill.codebrag.activities.finders.commits.all.{AllCommitsViewBuilder, AllCommitsFinder}
-import com.softwaremill.codebrag.activities.finders.user.UserFinder
+import com.softwaremill.codebrag.finders.commits.toreview.{ToReviewCommitsViewBuilder, ToReviewBranchCommitsFilter, ToReviewCommitsFinder}
+import com.softwaremill.codebrag.finders.commits.all.{AllCommitsViewBuilder, AllCommitsFinder}
+import com.softwaremill.codebrag.finders.user.UserFinder
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 

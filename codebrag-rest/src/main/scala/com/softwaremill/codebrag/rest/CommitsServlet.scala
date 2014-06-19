@@ -10,8 +10,8 @@ import com.softwaremill.codebrag.activities.{LikeUseCase, UnlikeUseCase, ReviewC
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
-import com.softwaremill.codebrag.activities.finders.commits.toreview.ToReviewCommitsFinder
-import com.softwaremill.codebrag.activities.finders.commits.all.AllCommitsFinder
+import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.finders.commits.all.AllCommitsFinder
 
 class CommitsServlet(val authenticator: Authenticator,
                      val reviewableCommitsListFinder: ToReviewCommitsFinder,

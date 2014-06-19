@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.activities.finders.commits
+package com.softwaremill.codebrag.finders.commits
 
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 import com.softwaremill.codebrag.dao.user.{UserDAO, PartialUserDetails}

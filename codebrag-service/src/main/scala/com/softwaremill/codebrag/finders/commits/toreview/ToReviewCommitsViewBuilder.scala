@@ -1,11 +1,11 @@
-package com.softwaremill.codebrag.activities.finders.commits.toreview
+package com.softwaremill.codebrag.finders.commits.toreview
 
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.dao.finders.views.{CommitState, CommitListView}
 import com.softwaremill.codebrag.domain.PartialCommitInfo
-import com.softwaremill.codebrag.activities.finders.commits.{CommitToViewImplicits, AuthorDataAppender}
+import com.softwaremill.codebrag.finders.commits.{CommitToViewImplicits, AuthorDataAppender}
 
 class ToReviewCommitsViewBuilder(val userDao: UserDAO, val commitsInfoDao: CommitInfoDAO) extends AuthorDataAppender {
 

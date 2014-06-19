@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.activities.finders.commits.toreview
+package com.softwaremill.codebrag.finders.commits.toreview
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers

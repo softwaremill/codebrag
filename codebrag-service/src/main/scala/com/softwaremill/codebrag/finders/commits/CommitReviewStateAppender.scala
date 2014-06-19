@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.activities.finders.commits
+package com.softwaremill.codebrag.finders.commits
 
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.finders.views.{CommitState, CommitView}
