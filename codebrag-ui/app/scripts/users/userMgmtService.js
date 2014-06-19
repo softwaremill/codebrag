@@ -28,7 +28,8 @@ angular.module('codebrag.userMgmt')
                 backdrop: false,
                 keyboard: true,
                 controller: 'ManageUsersPopupCtrl',
-                templateUrl: 'views/popups/manageUsers.html'
+                templateUrl: 'views/popups/manageUsers.html',
+                windowClass: 'manage-users'
             };
             $modal.open(config)
         }
