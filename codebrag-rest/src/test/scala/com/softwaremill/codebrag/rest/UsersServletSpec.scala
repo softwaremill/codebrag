@@ -10,7 +10,7 @@ import org.json4s.JsonDSL._
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.typesafe.config.ConfigFactory
 import java.util.Properties
-import com.softwaremill.codebrag.activities.{ModifyUserDetailsUseCase, UserToRegister, RegisterNewUserUseCase}
+import com.softwaremill.codebrag.usecases.{ModifyUserDetailsUseCase, UserToRegister, RegisterNewUserUseCase}
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils
 import com.softwaremill.codebrag.finders.user.{ManagedUserView, ManagedUsersListView, UserFinder}
 

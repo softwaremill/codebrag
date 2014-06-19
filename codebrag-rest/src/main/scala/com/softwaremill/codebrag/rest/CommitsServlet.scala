@@ -6,7 +6,7 @@ import json.JacksonJsonSupport
 import swagger.{Swagger, SwaggerSupport}
 
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
-import com.softwaremill.codebrag.activities.{LikeUseCase, UnlikeUseCase, ReviewCommitUseCase, AddCommentUseCase}
+import com.softwaremill.codebrag.usecases.{LikeUseCase, UnlikeUseCase, ReviewCommitUseCase, AddCommentUseCase}
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder

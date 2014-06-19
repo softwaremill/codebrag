@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.activities
+package com.softwaremill.codebrag.usecases
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
@@ -8,7 +8,7 @@ import org.mockito.Matchers._
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.{Authentication, User}
-import com.softwaremill.codebrag.activities.assertions.{ActiveUserStatusRequiredException, AdminRoleRequiredException}
+import com.softwaremill.codebrag.usecases.assertions.{ActiveUserStatusRequiredException, AdminRoleRequiredException}
 import com.softwaremill.codebrag.licence.LicenceService
 
 class ModifyUserDetailsUseCaseSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {

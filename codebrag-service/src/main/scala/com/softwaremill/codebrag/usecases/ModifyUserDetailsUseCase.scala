@@ -1,9 +1,9 @@
-package com.softwaremill.codebrag.activities
+package com.softwaremill.codebrag.usecases
 
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.activities.assertions.UserAssertions
+import com.softwaremill.codebrag.usecases.assertions.UserAssertions
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.activities.validation.{Validation, ValidationErrors}
+import com.softwaremill.codebrag.usecases.validation.{Validation, ValidationErrors}
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.licence.LicenceService

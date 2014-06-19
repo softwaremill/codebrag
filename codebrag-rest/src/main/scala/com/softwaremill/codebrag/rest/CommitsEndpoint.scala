@@ -6,7 +6,7 @@ import org.bson.types.ObjectId
 import CommitsEndpoint._
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import PagingCriteria.Direction
-import com.softwaremill.codebrag.activities.ReviewCommitUseCase
+import com.softwaremill.codebrag.usecases.ReviewCommitUseCase
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
 import com.softwaremill.codebrag.finders.commits.all.AllCommitsFinder

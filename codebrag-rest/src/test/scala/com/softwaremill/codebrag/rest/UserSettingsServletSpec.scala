@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
-import com.softwaremill.codebrag.activities.{IncomingSettings, ChangeUserSettingsUseCase}
+import com.softwaremill.codebrag.usecases.{IncomingSettings, ChangeUserSettingsUseCase}
 import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.UserSettings

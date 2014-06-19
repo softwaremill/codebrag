@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag
 
-import com.softwaremill.codebrag.activities._
+import com.softwaremill.codebrag.usecases._
 import com.softwaremill.codebrag.common.{RealTimeClock, ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.rest.CodebragSwagger
 import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}

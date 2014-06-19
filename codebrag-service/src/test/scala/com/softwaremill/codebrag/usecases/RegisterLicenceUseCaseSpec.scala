@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.activities
+package com.softwaremill.codebrag.usecases
 
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import com.softwaremill.codebrag.licence.{LicenceEncryptor, Licence, LicenceService}

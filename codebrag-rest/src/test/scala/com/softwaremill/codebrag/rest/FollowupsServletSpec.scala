@@ -9,7 +9,7 @@ import org.mockito.Mockito._
 import com.softwaremill.codebrag.service.followups.FollowupService
 import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
-import com.softwaremill.codebrag.activities.FollowupDoneUseCase
+import com.softwaremill.codebrag.usecases.FollowupDoneUseCase
 
 class FollowupsServletSpec extends AuthenticatableServletSpec {
 

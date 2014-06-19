@@ -1,10 +1,10 @@
-package com.softwaremill.codebrag.activities
+package com.softwaremill.codebrag.usecases
 
 import com.softwaremill.codebrag.licence._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.common.Clock
-import com.softwaremill.codebrag.activities.validation.{Validation, ValidationErrors}
+import com.softwaremill.codebrag.usecases.validation.{Validation, ValidationErrors}
 
 
 class RegisterLicenceUseCase(licenceService: LicenceService, userDao: UserDAO)(implicit clock: Clock) extends Logging {

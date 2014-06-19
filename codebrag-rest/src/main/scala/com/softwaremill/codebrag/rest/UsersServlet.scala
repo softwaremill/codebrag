@@ -4,7 +4,7 @@ import com.softwaremill.codebrag.service.user.{RegisterService, Authenticator}
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import org.bson.types.ObjectId
 import org.scalatra
-import com.softwaremill.codebrag.activities.{ModifyUserDetailsUseCase, ModifyUserDetailsForm, UserToRegister, RegisterNewUserUseCase}
+import com.softwaremill.codebrag.usecases.{ModifyUserDetailsUseCase, ModifyUserDetailsForm, UserToRegister, RegisterNewUserUseCase}
 import com.softwaremill.codebrag.finders.user.{ManagedUsersListView, UserFinder}
 
 class UsersServlet(

@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.activities
+package com.softwaremill.codebrag.usecases
 
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.service.comments.command.IncomingLike

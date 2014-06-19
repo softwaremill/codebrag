@@ -1,6 +1,6 @@
-package com.softwaremill.codebrag.activities.validation
+package com.softwaremill.codebrag.usecases.validation
 
-import com.softwaremill.codebrag.activities.validation.Validation.ValidationRule
+import com.softwaremill.codebrag.usecases.validation.Validation.ValidationRule
 
 
 trait ValidateableForm {

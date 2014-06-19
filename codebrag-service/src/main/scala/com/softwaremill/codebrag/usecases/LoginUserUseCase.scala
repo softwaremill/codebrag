@@ -1,7 +1,7 @@
-package com.softwaremill.codebrag.activities
+package com.softwaremill.codebrag.usecases
 
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.activities.validation.{ValidationErrors, Validation}
+import com.softwaremill.codebrag.usecases.validation.{ValidationErrors, Validation}
 import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.service.user.AfterUserLogin
 import com.softwaremill.codebrag.finders.user.{LoggedInUserView, UserFinder}

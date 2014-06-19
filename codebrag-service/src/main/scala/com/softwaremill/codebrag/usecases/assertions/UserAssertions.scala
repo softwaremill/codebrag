@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.activities.assertions
+package com.softwaremill.codebrag.usecases.assertions
 
 import com.softwaremill.codebrag.domain.User
 import org.bson.types.ObjectId
