@@ -68,13 +68,6 @@
         margin: 0.77em 0;
         margin-top: 0.3em;
 
-  & .settings-info
-    // & h1
-    //   margin-bottom: 0.4em;
-
-    // & .info-line
-    //   margin-top: 0.3em;
-
     & label
       min-width: 336px;
 
@@ -85,6 +78,10 @@
 
     & p:last-child
       margin-bottom: 0;
+
+  &.manage-users .popup-box
+    width: auto;
+    max-width: none;
 
 .popup-box
   background-color: $body-bg-color;
@@ -180,19 +177,36 @@
   & .form-group span.text-error
     bottom: -16px;
 
-  // table wrapper to make table scrollable
+  // for scrollability start
+  & .fake-thead-container
+    padding-top: 20px;
+    position: relative;
+
   & .table-container
-    // height: 200px;
-    // overflow: hidden;
     border-bottom: 1px solid #d1cbb9;
+    border-top: 1px solid #d1cbb9;
+    max-height: 16em;
+    margin-bottom: 1.15em;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-left: 1px;
+    padding-right: 1px;
+
+  & .thead
+    position: absolute;
+    top: 0;
+
+  & table th
+    padding-top: 0;
+    padding-bottom: 0;
+  // for scrollability end
 
   & table 
-    text-align: left;
     border-color: $second-body-text-color;
+    text-align: left;
 
     & thead 
       border-color: transparent;
-      border-bottom: 1px solid #d1cbb9;
       
     & th
       color: $second-body-text-color;
@@ -200,23 +214,15 @@
 
     & .cell-centered
       text-align: center;
+      min-width: 4.15em;
 
     & tbody
-      // display: block;
-      // height: 220px;
-      // overflow: auto;
-      // width: 100%;
-
       & tr
         border: 1px solid #d1cbb9;
-        position: relative;
         &:first-child
           border-top: none;
         &:last-child
           border-bottom: none;
-
-  & .table-container
-    margin-bottom: 1.15em;
 
   & .license-info-line
     color: $second-body-text-color;
@@ -226,3 +232,6 @@
     color: $main-orange-color;
     &[disabled="disabled"]
       color: $second-body-text-color;
+
+  & tbody tr td.user-email
+    min-width: 11em;
