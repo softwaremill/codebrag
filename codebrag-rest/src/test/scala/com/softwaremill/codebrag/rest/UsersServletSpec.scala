@@ -10,15 +10,19 @@ import org.json4s.JsonDSL._
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import com.typesafe.config.ConfigFactory
 import java.util.Properties
-import com.softwaremill.codebrag.usecases.{ModifyUserDetailsUseCase, UserToRegister, RegisterNewUserUseCase}
+import com.softwaremill.codebrag.usecases._
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils
 import com.softwaremill.codebrag.finders.user.{ManagedUserView, ManagedUsersListView, UserFinder}
+import com.softwaremill.codebrag.finders.user.ManagedUserView
+import com.softwaremill.codebrag.finders.user.ManagedUsersListView
+import com.softwaremill.codebrag.usecases.UserToRegister
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
   val registerService = mock[RegisterService]
   val registerUseCase = mock[RegisterNewUserUseCase]
   val modifyUserUseCase = mock[ModifyUserDetailsUseCase]
+  val updateBrowsingContextUseCase = mock[UpdateUserBrowsingContextUseCase]
   var userFinder: UserFinder = _
   var config: CodebragConfig = _
 
@@ -109,8 +113,21 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     }
   }
 
+  "PUT /browsing-context" should "save browsing context for user" in {
+    addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
+    val user = someUser
+    userIsAuthenticatedAs(someUser)
+
+    put("/browsing-context",
+      mapToJson(Map("repo" -> "codebrag", "branch" -> "bugfix")), defaultJsonHeaders) {
+      val form = UpdateUserBrowsingContextForm(user.idAsObjectId, "codebrag", "bugfix")
+      verify(updateBrowsingContextUseCase).execute(form)
+    }
+  }
+
+
   class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends UsersServlet(fakeAuthenticator, registerService, registerUseCase, userFinder, modifyUserUseCase, config) {
+    extends UsersServlet(fakeAuthenticator, registerService, registerUseCase, userFinder, modifyUserUseCase, updateBrowsingContextUseCase, config) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 
