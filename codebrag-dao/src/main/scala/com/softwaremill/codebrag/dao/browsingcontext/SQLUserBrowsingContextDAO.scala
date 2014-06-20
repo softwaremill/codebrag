@@ -22,7 +22,7 @@ class SQLUserBrowsingContextDAO(database: SQLDatabase) extends UserBrowsingConte
 
   def findDefault(userId: ObjectId): Option[UserBrowsingContext] = {
     db.withTransaction {implicit session =>
-      userBrowsingContexts.filter(c => c.userId === userId).firstOption
+      userBrowsingContexts.filter(c => c.userId === userId && c.default === true).firstOption
     }
   }
 

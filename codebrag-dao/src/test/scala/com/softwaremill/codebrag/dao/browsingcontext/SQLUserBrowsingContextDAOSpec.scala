@@ -46,6 +46,8 @@ class SQLUserBrowsingContextDAOSpec extends FlatSpecWithSQL with ShouldMatchers 
 
   it should "find default context for user" in {
     // given
+    val nonDefaultContext = UserBrowsingContext(Bob.id, "codebrag", "bugfix")
+    contextDao.save(nonDefaultContext)
     val defaultContext = UserBrowsingContext(Bob.id, "bootzooka", "feature", default = true)
     contextDao.save(defaultContext)
 
@@ -58,8 +60,8 @@ class SQLUserBrowsingContextDAOSpec extends FlatSpecWithSQL with ShouldMatchers 
 
   it should "save separate contexts for different user" in {
     // given
-    val bobContext = UserBrowsingContext(Bob.id, "bootzooka", "feature")
-    val aliceContext = UserBrowsingContext(Alice.id, "bootzooka", "master")
+    val bobContext = UserBrowsingContext(Bob.id, "bootzooka", "feature", default = true)
+    val aliceContext = UserBrowsingContext(Alice.id, "bootzooka", "master", default = true)
     contextDao.save(bobContext)
     contextDao.save(aliceContext)
 
