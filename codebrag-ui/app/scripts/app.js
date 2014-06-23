@@ -155,10 +155,6 @@ angular.module('codebrag.common')
     });
 
 
-angular.module('codebrag.profile').run(function(userSettingsService) {
-    userSettingsService.initialize();
-});
-
 angular.module('codebrag.userMgmt').run(function(userMgmtService) {
     userMgmtService.initialize();
 });
