@@ -1,6 +1,6 @@
 angular.module('codebrag.branches')
 
-    .factory('currentRepoContext', function(authService, $rootScope, $q, events) {
+    .factory('currentRepoContext', function(authService, $rootScope, $q, events, UserBrowsingContext) {
 
         var currentContext,
             contextReady = $q.defer(),
@@ -23,6 +23,15 @@ angular.module('codebrag.branches')
             switchBranch: function (newBranch) {
                 this.branch = newBranch;
                 $rootScope.$broadcast(events.branches.branchChanged, newBranch);
+                saveUserContext(this);
+            },
+
+            switchRepo: function (newRepo) {
+                var self = this;
+                UserBrowsingContext.get({repo: newRepo}).$then(function(response) {
+                    self.repo = response.data.repoName;
+                    self.branch = response.data.branchName;
+                });
             },
 
             switchCommitsFilter: function (newFilter) {
@@ -31,6 +40,11 @@ angular.module('codebrag.branches')
             }
         };
 
+        function saveUserContext(params) {
+            var context = new UserBrowsingContext(params);
+            context.$save();
+        }
+
         authService.userAuthenticated.then(function(user) {
             currentContext.branch = user.browsingContext.branchName;
             currentContext.repo  = user.browsingContext.repoName;
@@ -38,6 +52,7 @@ angular.module('codebrag.branches')
         });
 
         $rootScope.currentRepoContext = currentContext;     //FIXME: for now, to get access to switching repo
+
         return currentContext;
 
     });

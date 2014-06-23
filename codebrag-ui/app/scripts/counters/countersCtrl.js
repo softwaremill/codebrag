@@ -2,6 +2,12 @@ angular.module('codebrag.counters')
 
     .controller('CountersCtrl', function ($scope, $state, $rootScope, events, currentCommit, countersService) {
 
+        $scope.repo = $rootScope.currentRepoContext.repo;
+
+        $scope.switchRepo = function(newRepo) {
+            $rootScope.currentRepoContext.switchRepo(newRepo);
+        };
+
         $scope.counters = {
             commits: function() {
                 return countersService.commitsCounter.currentCount();
