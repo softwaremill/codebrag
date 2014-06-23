@@ -16,13 +16,13 @@ import com.softwaremill.codebrag.finders.user.{ManagedUserView, ManagedUsersList
 import com.softwaremill.codebrag.finders.user.ManagedUserView
 import com.softwaremill.codebrag.finders.user.ManagedUsersListView
 import com.softwaremill.codebrag.usecases.UserToRegister
+import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFinder
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
   val registerService = mock[RegisterService]
   val registerUseCase = mock[RegisterNewUserUseCase]
   val modifyUserUseCase = mock[ModifyUserDetailsUseCase]
-  val updateBrowsingContextUseCase = mock[UpdateUserBrowsingContextUseCase]
   var userFinder: UserFinder = _
   var config: CodebragConfig = _
 
@@ -113,21 +113,8 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     }
   }
 
-  "PUT /browsing-context" should "save browsing context for user" in {
-    addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    val user = someUser
-    userIsAuthenticatedAs(someUser)
-
-    put("/browsing-context",
-      mapToJson(Map("repo" -> "codebrag", "branch" -> "bugfix")), defaultJsonHeaders) {
-      val form = UpdateUserBrowsingContextForm(user.idAsObjectId, "codebrag", "bugfix")
-      verify(updateBrowsingContextUseCase).execute(form)
-    }
-  }
-
-
   class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
-    extends UsersServlet(fakeAuthenticator, registerService, registerUseCase, userFinder, modifyUserUseCase, updateBrowsingContextUseCase, config) {
+    extends UsersServlet(fakeAuthenticator, registerService, registerUseCase, userFinder, modifyUserUseCase, config) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

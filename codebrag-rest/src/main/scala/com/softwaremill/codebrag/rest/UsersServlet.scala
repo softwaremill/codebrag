@@ -16,7 +16,6 @@ class UsersServlet(
   registerUserUseCase: RegisterNewUserUseCase,
   userFinder: UserFinder,
   modifyUserUseCase: ModifyUserDetailsUseCase,
-  updateUserBrowsingContextUseCase: UpdateUserBrowsingContextUseCase,
   config: CodebragConfig) extends JsonServletWithAuthentication {
 
   get("/") {
@@ -38,12 +37,6 @@ class UsersServlet(
       case Left(errors) => scalatra.BadRequest(errors.fieldErrors)
       case _ => scalatra.Ok()
     }
-  }
-
-  put("/browsing-context") {
-    haltIfNotAuthenticated()
-    val form = UpdateUserBrowsingContextForm(user.idAsObjectId, extractReq[String]("repo"), extractReq[String]("branch"))
-    updateUserBrowsingContextUseCase.execute(form)
   }
 
   post("/register") {
