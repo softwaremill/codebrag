@@ -6,7 +6,7 @@ import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.finders.views.CommitListView
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.cache.{RepositoriesCache, RepositoryCache}
+import com.softwaremill.codebrag.cache.RepositoriesCache
 import com.softwaremill.codebrag.finders.commits.UserLoader
 import com.softwaremill.codebrag.domain.UserBrowsingContext
 
