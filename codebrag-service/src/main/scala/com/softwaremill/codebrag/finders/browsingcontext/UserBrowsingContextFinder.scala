@@ -8,6 +8,13 @@ import com.typesafe.scalalogging.slf4j.Logging
 
 class UserBrowsingContextFinder(val userBrowsingContextDao: UserBrowsingContextDAO, val repositoriesCache: RepositoriesCache) extends Logging {
 
+  def find(userId: ObjectId, repoName: String): Option[UserBrowsingContext] = {
+    userBrowsingContextDao.find(userId, repoName) match {
+      case Some(context) => Some(context)
+      case None => Some(UserBrowsingContext(userId, repoName, repositoriesCache.getCheckedOutBranchShortName(repoName)))
+    }
+  }
+
   def findUserDefaultContext(userId: ObjectId) = {
     logger.debug(s"Searching for default browsing context for user $userId")
     val context = userBrowsingContextDao.findDefault(userId)
