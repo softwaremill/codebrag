@@ -17,7 +17,7 @@ import com.softwaremill.codebrag.dao.repositorystatus.SQLRepositoryStatusDAO
 import com.softwaremill.codebrag.dao.heartbeat.SQLHeartbeatDAO
 import com.softwaremill.codebrag.dao.branchsnapshot.SQLBranchStateDAO
 import com.softwaremill.codebrag.dao.reviewedcommits.SQLReviewedCommitsDAO
-import com.softwaremill.codebrag.dao.browsingcontext.SQLUserBrowsingContextDAO
+import com.softwaremill.codebrag.dao.repo.SQLUserRepoDetailsDAO
 
 trait Daos {
   lazy val userDao = new SQLUserDAO(sqlDatabase)
@@ -35,7 +35,7 @@ trait Daos {
   lazy val reviewedCommitsDao = new SQLReviewedCommitsDAO(sqlDatabase)
   lazy val heartbeatDao = new SQLHeartbeatDAO(sqlDatabase, clock)
   lazy val instanceParamsDao = new InstanceParamsDAO(sqlDatabase)
-  lazy val userBrowsingContextDao = new SQLUserBrowsingContextDAO(sqlDatabase)
+  lazy val userRepoDetailsDao = new SQLUserRepoDetailsDAO(sqlDatabase)
 
   lazy val followupFinder = new SQLFollowupFinder(sqlDatabase, userDao)
   lazy val reactionFinder = new ReactionFinder(userDao, commentDao, likeDao)

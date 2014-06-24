@@ -1,21 +1,22 @@
-package com.softwaremill.codebrag.dao.browsingcontext
+package com.softwaremill.codebrag.dao.repo
 
 import com.softwaremill.codebrag.test.FlatSpecWithSQL
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.UserBrowsingContext
+import com.softwaremill.codebrag.domain.UserRepoDetails
 import com.softwaremill.codebrag.domain.builder.UserAssembler
+import com.softwaremill.codebrag.common.ClockSpec
 
-class SQLUserBrowsingContextDAOSpec extends FlatSpecWithSQL with ShouldMatchers {
+class SQLUserRepoDetailsDAOSpec extends FlatSpecWithSQL with ShouldMatchers with ClockSpec {
 
-  val contextDao = new SQLUserBrowsingContextDAO(sqlDatabase)
+  val contextDao = new SQLUserRepoDetailsDAO(sqlDatabase)
 
   val Bob = UserAssembler.randomUser.get
   val Alice = UserAssembler.randomUser.get
 
   it should "save context when one doesn't exist for user and repo" in {
     // given
-    val codebragContext = UserBrowsingContext(Bob.id, "codebrag", "master")
-    val bootzookaDefaultContext = UserBrowsingContext(Bob.id, "bootzooka", "feature", default = true)
+    val codebragContext = UserRepoDetails(Bob.id, "codebrag", "master", clock.nowUtc)
+    val bootzookaDefaultContext = UserRepoDetails(Bob.id, "bootzooka", "feature", clock.nowUtc, default = true)
 
     // when
     contextDao.save(codebragContext)
@@ -30,11 +31,11 @@ class SQLUserBrowsingContextDAOSpec extends FlatSpecWithSQL with ShouldMatchers 
 
   it should "make new context default when saved with default = true" in {
     // given
-    val defaultContext = UserBrowsingContext(Bob.id, "bootzooka", "feature", default = true)
+    val defaultContext = UserRepoDetails(Bob.id, "bootzooka", "feature", clock.nowUtc, default = true)
     contextDao.save(defaultContext)
 
     // when
-    val newDefaultContext = UserBrowsingContext(Bob.id, "codebrag", "master", default = true)
+    val newDefaultContext = UserRepoDetails(Bob.id, "codebrag", "master", clock.nowUtc, default = true)
     contextDao.save(newDefaultContext)
 
     // then
@@ -46,9 +47,9 @@ class SQLUserBrowsingContextDAOSpec extends FlatSpecWithSQL with ShouldMatchers 
 
   it should "find default context for user" in {
     // given
-    val nonDefaultContext = UserBrowsingContext(Bob.id, "codebrag", "bugfix")
+    val nonDefaultContext = UserRepoDetails(Bob.id, "codebrag", "bugfix", clock.nowUtc)
     contextDao.save(nonDefaultContext)
-    val defaultContext = UserBrowsingContext(Bob.id, "bootzooka", "feature", default = true)
+    val defaultContext = UserRepoDetails(Bob.id, "bootzooka", "feature", clock.nowUtc, default = true)
     contextDao.save(defaultContext)
 
     // when
@@ -60,8 +61,8 @@ class SQLUserBrowsingContextDAOSpec extends FlatSpecWithSQL with ShouldMatchers 
 
   it should "save separate contexts for different user" in {
     // given
-    val bobContext = UserBrowsingContext(Bob.id, "bootzooka", "feature", default = true)
-    val aliceContext = UserBrowsingContext(Alice.id, "bootzooka", "master", default = true)
+    val bobContext = UserRepoDetails(Bob.id, "bootzooka", "feature", clock.nowUtc, default = true)
+    val aliceContext = UserRepoDetails(Alice.id, "bootzooka", "master", clock.nowUtc, default = true)
     contextDao.save(bobContext)
     contextDao.save(aliceContext)
 
@@ -76,7 +77,7 @@ class SQLUserBrowsingContextDAOSpec extends FlatSpecWithSQL with ShouldMatchers 
 
   it should "update context for user when context exists" in {
     // given
-    val context = UserBrowsingContext(Bob.id, "bootzooka", "feature", default = true)
+    val context = UserRepoDetails(Bob.id, "bootzooka", "feature", clock.nowUtc, default = true)
     contextDao.save(context)
 
     // when
