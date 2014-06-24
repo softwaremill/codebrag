@@ -2,19 +2,20 @@ package com.softwaremill.codebrag.usecases
 
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.dao.browsingcontext.UserBrowsingContextDAO
-import com.softwaremill.codebrag.domain.UserBrowsingContext
+import com.softwaremill.codebrag.dao.repo.UserRepoDetailsDAO
+import com.softwaremill.codebrag.domain.UserRepoDetails
+import com.softwaremill.codebrag.common.Clock
 
-case class UpdateUserBrowsingContextForm(userId: ObjectId, repoName: String, branchName: String) {
-  def toUserBrowsingContext = UserBrowsingContext(userId, repoName, branchName, default = true)
-}
+case class UpdateUserBrowsingContextForm(userId: ObjectId, repoName: String, branchName: String)
 
-class UpdateUserBrowsingContextUseCase(userBrowsingContextDao: UserBrowsingContextDAO) extends Logging {
+class UpdateUserBrowsingContextUseCase(userRepoDetailsDao: UserRepoDetailsDAO)(implicit clock: Clock) extends Logging {
 
   def execute(form: UpdateUserBrowsingContextForm) = {
-    val context = form.toUserBrowsingContext
-    logger.debug(s"Update user browsing context: $context")
-    userBrowsingContextDao.save(context)
+    val details = userRepoDetailsDao.find(form.userId, form.repoName) match {
+      case Some(repoDetails) => repoDetails.copy(branchName = form.branchName, default = true)
+      case None => UserRepoDetails(form.userId, form.repoName, form.branchName, clock.nowUtc, default = true)
+    }
+    userRepoDetailsDao.save(details)
   }
 
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "user_browsing_contexts" ADD COLUMN IF NOT EXISTS "to_review_since" TIMESTAMP NOT NULL;

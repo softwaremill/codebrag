@@ -4,11 +4,12 @@ import com.softwaremill.codebrag.AuthenticatableServletSpec
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.BDDMockito._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.{UserBrowsingContext, Authentication, User}
+import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.common.{ClockSpec, Clock}
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 
 class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
 

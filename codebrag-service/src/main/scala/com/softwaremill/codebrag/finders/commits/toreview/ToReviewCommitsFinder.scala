@@ -7,8 +7,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.cache.RepositoriesCache
 import com.softwaremill.codebrag.dao.finders.views.CommitListView
 import com.softwaremill.codebrag.finders.commits.UserLoader
-import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFinder
-import com.softwaremill.codebrag.domain.UserBrowsingContext
+import com.softwaremill.codebrag.finders.browsingcontext.{UserBrowsingContext, UserBrowsingContextFinder}
 
 class ToReviewCommitsFinder(
   protected val repoCache: RepositoriesCache,

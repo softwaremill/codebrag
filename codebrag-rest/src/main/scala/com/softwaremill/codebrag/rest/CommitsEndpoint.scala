@@ -10,7 +10,7 @@ import com.softwaremill.codebrag.usecases.ReviewCommitUseCase
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
 import com.softwaremill.codebrag.finders.commits.all.AllCommitsFinder
-import com.softwaremill.codebrag.domain.UserBrowsingContext
+import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 
 trait CommitsEndpoint extends JsonServletWithAuthentication {
 
@@ -42,27 +42,27 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
 
   get("/:repo", allCommits) {
     val paging = extractPagingCriteria
-    val browsingContext = extractBrowsingContext
+    val context = extractBrowsingContext
     logger.debug(s"Attempting to fetch all commits with possible paging: ${paging}")
-    allCommitsFinder.find(browsingContext, paging)
+    allCommitsFinder.find(context, paging)
   }
 
   get("/:repo", commitsToReview) {
     val paging = extractPagingCriteria
-    val browsingContext = extractBrowsingContext
-    logger.debug(s"Attempting to fetch commits to review with context $browsingContext and paging: $paging")
-    reviewableCommitsListFinder.find(browsingContext, paging)
+    val context = extractBrowsingContext
+    logger.debug(s"Attempting to fetch commits to review with context $context and paging: $paging")
+    reviewableCommitsListFinder.find(context, paging)
   }
 
   get("/:repo", contextualCommits) {
     val limit = params.getOrElse(LimitParamName, DefaultPageLimit.toString).toInt
-    val browsingContext = extractBrowsingContext
+    val context = extractBrowsingContext
     val paging = params.get(SelectedShaParamName) match {
       case Some(commitSha) => PagingCriteria(commitSha, Direction.Radial, limit)
       case None => PagingCriteria.fromEnd[String](limit)
     }
     logger.debug(s"Attempting to fetch commits in context: ${paging}")
-    allCommitsFinder.find(browsingContext, paging)
+    allCommitsFinder.find(context, paging)
   }
 
   private def userId = new ObjectId(user.id)

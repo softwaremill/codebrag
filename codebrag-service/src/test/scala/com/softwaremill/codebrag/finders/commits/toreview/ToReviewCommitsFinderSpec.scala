@@ -9,8 +9,7 @@ import com.softwaremill.codebrag.cache.{RepositoriesCache, BranchCommitCacheEntr
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.common.ClockSpec
-import com.softwaremill.codebrag.domain.UserBrowsingContext
-import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFinder
+import com.softwaremill.codebrag.finders.browsingcontext.{UserBrowsingContext, UserBrowsingContextFinder}
 
 class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with ClockSpec {
 

@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.cache.RepositoriesCache
 import com.softwaremill.codebrag.finders.commits.UserLoader
-import com.softwaremill.codebrag.domain.UserBrowsingContext
+import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 
 
 class AllCommitsFinder(

@@ -1,8 +1,7 @@
 package com.softwaremill.codebrag.finders.user
 
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.domain.{UserBrowsingContext, UserSettings, User}
-import org.bson.types.ObjectId
+import com.softwaremill.codebrag.domain.User
 import com.softwaremill.codebrag.service.data.UserJson
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFinder

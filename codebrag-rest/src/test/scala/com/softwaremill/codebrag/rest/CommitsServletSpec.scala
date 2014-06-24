@@ -18,7 +18,7 @@ import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
 import com.softwaremill.codebrag.finders.commits.all.AllCommitsFinder
-import com.softwaremill.codebrag.domain.UserBrowsingContext
+import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 

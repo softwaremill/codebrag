@@ -1,8 +1,9 @@
 package com.softwaremill.codebrag.finders.user
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.{UserBrowsingContext, UserSettings}
+import com.softwaremill.codebrag.domain.UserSettings
 import com.softwaremill.codebrag.service.data.UserJson
+import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 
 case class LoggedInUserView(
   id: ObjectId,

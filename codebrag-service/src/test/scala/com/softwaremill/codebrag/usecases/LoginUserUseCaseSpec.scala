@@ -8,8 +8,8 @@ import com.softwaremill.codebrag.service.user.AfterUserLogin
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.service.data.UserJson
-import com.softwaremill.codebrag.domain.UserBrowsingContext
 import com.softwaremill.codebrag.finders.user.{LoggedInUserView, UserFinder}
+import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 
 class LoginUserUseCaseSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
 
