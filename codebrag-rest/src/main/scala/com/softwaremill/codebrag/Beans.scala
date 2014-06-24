@@ -53,7 +53,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
 
   lazy val newUserAdder = new NewUserAdder(userDao, eventBus, afterUserRegistered, followupGeneratorForPriorReactions, welcomeFollowupsGenerator)
-  lazy val afterUserRegistered = new AfterUserRegistered(reviewedCommitsCache, config)
+  lazy val afterUserRegistered = new AfterUserRegistered(repositoriesCache, userRepoDetailsDao, config)
   lazy val afterUserLogin = new AfterUserLogin(reviewedCommitsCache)
 
   lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService, notificationService)
@@ -75,7 +75,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val generateInvitationCodeUseCase = new GenerateInvitationCodeUseCase(invitationsService, userDao)
   lazy val sendInvitationEmailUseCase = new SendInvitationEmailUseCase(invitationsService, userDao)
   lazy val modifyUserDetailsUseCase = new ModifyUserDetailsUseCase(userDao, licenceService)
-  lazy val updateUserBrowsingContextUseCase = new UpdateUserBrowsingContextUseCase(userBrowsingContextDao)
+  lazy val updateUserBrowsingContextUseCase = new UpdateUserBrowsingContextUseCase(userRepoDetailsDao)
 
   lazy val licenceService = new LicenceService(InstanceId, instanceParamsDao, userDao)(clock)
 
@@ -104,7 +104,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
     new AllCommitsViewBuilder(commitInfoDao, config, userDao, reviewedCommitsCache)
   )
 
-  lazy val userBrowsingContextFinder = new UserBrowsingContextFinder(userBrowsingContextDao, repositoriesCache)
+  lazy val userBrowsingContextFinder = new UserBrowsingContextFinder(userRepoDetailsDao, repositoriesCache)
   lazy val userFinder = new UserFinder(userDao, userBrowsingContextFinder)
 
 }
