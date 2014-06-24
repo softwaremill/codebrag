@@ -5,24 +5,29 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import CommitAuthorClassification._
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.cache.{RepositoriesCache, RepositoryCache}
+import com.softwaremill.codebrag.cache.{UserReviewedCommitsCache, UserReviewedCommitsCacheEntry, RepositoriesCache, RepositoryCache}
 import com.softwaremill.codebrag.service.config.ReviewProcessConfig
 import com.softwaremill.codebrag.dao.repo.UserRepoDetailsDAO
 
 class AfterUserRegistered(
   repoCache: RepositoriesCache,
+  reviewedCommitsCache: UserReviewedCommitsCache,
   userRepoDetails: UserRepoDetailsDAO,
   config: ReviewProcessConfig) {
 
   def run(user: NewUserRegistered) {
     import ToReviewStartDateCalculator.calcStartingDate
-    val contexts = repoCache.repoNames.map { repoName =>
+    val repoDetails = repoCache.repoNames.map { repoName =>
       val startingDate = calcStartingDate(user, repoCache.getRepo(repoName), config)
       val defaultBranch = repoCache.getCheckedOutBranchShortName(repoName)
       UserRepoDetails(user.id, repoName, defaultBranch, startingDate)
     }
-    contexts.foreach(userRepoDetails.save)
+    repoDetails.foreach { rd =>
+      userRepoDetails.save(rd)
+      reviewedCommitsCache.initializeEmptyCacheFor(rd)
+    }
   }
+
 
 }
 
