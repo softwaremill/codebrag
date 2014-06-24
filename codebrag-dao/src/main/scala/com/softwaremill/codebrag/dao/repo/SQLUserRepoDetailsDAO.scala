@@ -35,7 +35,7 @@ class SQLUserRepoDetailsDAO(database: SQLDatabase) extends UserRepoDetailsDAO {
 
   private def resetUserDefault(userId: ObjectId)(implicit session: Session) = userRepoDetails.filter(_.userId === userId).map(_.default).update(false)
 
-  private class UserRepoDetailsTable(tag: Tag) extends Table[UserRepoDetails](tag, "user_browsing_contexts") {
+  private class UserRepoDetailsTable(tag: Tag) extends Table[UserRepoDetails](tag, "user_repo_details") {
 
     def userId = column[ObjectId]("user_id")
     def repoName = column[String]("repo_name")
