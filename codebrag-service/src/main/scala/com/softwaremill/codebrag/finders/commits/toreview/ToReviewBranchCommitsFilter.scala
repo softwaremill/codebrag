@@ -9,18 +9,18 @@ import com.softwaremill.codebrag.domain.CommitAuthorClassification._
 
 class ToReviewBranchCommitsFilter(reviewedCommitsCache: UserReviewedCommitsCache, config: ReviewProcessConfig) {
 
-   def filterCommitsToReview(branchCommits: List[BranchCommitCacheEntry], user: User) = {
-     val userBoundaryDate = reviewedCommitsCache.getUserEntry(user.id).toReviewStartDate
+   def filterCommitsToReview(branchCommits: List[BranchCommitCacheEntry], user: User, repoName: String) = {
+     val userBoundaryDate = reviewedCommitsCache.getEntry(user.id, repoName).toReviewStartDate
      branchCommits
-       .filterNot(userOrDoneCommits(_, user))
+       .filterNot(userOrDoneCommits(repoName, _, user))
        .takeWhile(commitsAfterUserDate(_, userBoundaryDate))
-       .filter(notYetFullyReviewed)
+       .filter(notYetFullyReviewed(repoName, _))
        .map(_.sha)
        .reverse
    }
 
-   private def userOrDoneCommits(commitEntry: BranchCommitCacheEntry, user: User) = {
-     commitAuthoredByUser(commitEntry, user) || userAlreadyReviewed(user.id, commitEntry)
+   private def userOrDoneCommits(repoName: String, commitEntry: BranchCommitCacheEntry, user: User) = {
+     commitAuthoredByUser(commitEntry, user) || userAlreadyReviewed(user.id, repoName, commitEntry)
    }
 
 
@@ -28,12 +28,12 @@ class ToReviewBranchCommitsFilter(reviewedCommitsCache: UserReviewedCommitsCache
      commitEntry.commitDate.isAfter(userBoundaryDate) || commitEntry.commitDate.isEqual(userBoundaryDate)
    }
 
-   private def notYetFullyReviewed(commitEntry: BranchCommitCacheEntry): Boolean = {
-     reviewedCommitsCache.usersWhoReviewed(commitEntry.sha).size < config.requiredReviewersCount
+   private def notYetFullyReviewed(repoName: String, commitEntry: BranchCommitCacheEntry): Boolean = {
+     reviewedCommitsCache.usersWhoReviewed(repoName, commitEntry.sha).size < config.requiredReviewersCount
    }
 
-   private def userAlreadyReviewed(userId: ObjectId, commit: BranchCommitCacheEntry): Boolean = {
-     val commitsReviewedByUser = reviewedCommitsCache.getUserEntry(userId).commits
+   private def userAlreadyReviewed(userId: ObjectId, repoName: String, commit: BranchCommitCacheEntry): Boolean = {
+     val commitsReviewedByUser = reviewedCommitsCache.getEntry(userId, repoName).commits
      commitsReviewedByUser.find(_.sha == commit.sha).nonEmpty
    }
 

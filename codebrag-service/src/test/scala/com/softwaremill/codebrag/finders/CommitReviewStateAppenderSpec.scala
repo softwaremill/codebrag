@@ -24,18 +24,20 @@ class CommitReviewStateAppenderSpec extends FlatSpec with ShouldMatchers with Mo
   val Bob = UserAssembler.randomUser.withFullName("Bob").withEmail("bob@email.com").get
   val John = UserAssembler.randomUser.withFullName("John").withEmail("john@email.com").get
 
+  val CodebragRepo = "codebrag"
+
   val BobCommit = buildCommitView("123", clock.now.minusDays(1), Bob)
-  val BobCacheEntry = UserReviewedCommitsCacheEntry(Bob.id, Set.empty, clock.now.minusDays(2))
-  val AliceCacheEntry = UserReviewedCommitsCacheEntry(Alice.id, Set.empty, clock.now.minusDays(2))
-  val JohnCacheEntry = UserReviewedCommitsCacheEntry(John.id, Set.empty, clock.now)
+  val BobCacheEntry = UserReviewedCommitsCacheEntry(Bob.id, CodebragRepo, Set.empty, clock.now.minusDays(2))
+  val AliceCacheEntry = UserReviewedCommitsCacheEntry(Alice.id, CodebragRepo, Set.empty, clock.now.minusDays(2))
+  val JohnCacheEntry = UserReviewedCommitsCacheEntry(John.id, CodebragRepo, Set.empty, clock.now)
 
   before {
     reviewedCommitsCache = mock[UserReviewedCommitsCache]
     userDao = mock[UserDAO]
 
-    when(reviewedCommitsCache.getUserEntry(Bob.id)).thenReturn(BobCacheEntry)
-    when(reviewedCommitsCache.getUserEntry(Alice.id)).thenReturn(AliceCacheEntry)
-    when(reviewedCommitsCache.getUserEntry(John.id)).thenReturn(JohnCacheEntry)
+    when(reviewedCommitsCache.getEntry(Bob.id, CodebragRepo)).thenReturn(BobCacheEntry)
+    when(reviewedCommitsCache.getEntry(Alice.id, CodebragRepo)).thenReturn(AliceCacheEntry)
+    when(reviewedCommitsCache.getEntry(John.id, CodebragRepo)).thenReturn(JohnCacheEntry)
 
     when(userDao.findById(Bob.id)).thenReturn(Some(Bob))
     when(userDao.findById(Alice.id)).thenReturn(Some(Alice))
@@ -127,14 +129,14 @@ class CommitReviewStateAppenderSpec extends FlatSpec with ShouldMatchers with Mo
 
   private def markUsersReviewedCommit(commit: CommitView, users: User*) {
     users.foreach { user =>
-      when(reviewedCommitsCache.reviewedByUser(commit.sha, user.id)).thenReturn(true)
+      when(reviewedCommitsCache.reviewedByUser(commit.sha, commit.repoName, user.id)).thenReturn(true)
     }
-    when(reviewedCommitsCache.usersWhoReviewed(commit.sha)).thenReturn(users.map(_.id).toSet)
+    when(reviewedCommitsCache.usersWhoReviewed(CodebragRepo, commit.sha)).thenReturn(users.map(_.id).toSet)
   }
 
   private def buildCommitView(sha: String, date: DateTime, author: User) = {
     val NA = ""
-    CommitView(NA, sha, NA, author.name, author.emailLowerCase, date.toDate)
+    CommitView(NA, CodebragRepo, sha, NA, author.name, author.emailLowerCase, date.toDate)
   }
   
   private def appenderWith(reviewersCount: Int) = {

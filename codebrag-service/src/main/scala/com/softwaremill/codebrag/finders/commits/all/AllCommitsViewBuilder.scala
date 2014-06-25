@@ -7,9 +7,8 @@ import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.domain.{PartialCommitInfo, CommitInfo, User}
-import com.softwaremill.codebrag.dao.finders.views.CommitListView
-import com.softwaremill.codebrag.finders.commits.{ReviewersDataAppender, CommitReviewStateAppender, AuthorDataAppender, CommitToViewImplicits}
-import CommitToViewImplicits._
+import com.softwaremill.codebrag.dao.finders.views.{CommitView, CommitListView}
+import com.softwaremill.codebrag.finders.commits.{ReviewersDataAppender, CommitReviewStateAppender, AuthorDataAppender}
 import org.bson.types.ObjectId
 
 class AllCommitsViewBuilder(
@@ -21,15 +20,26 @@ class AllCommitsViewBuilder(
   def toView(repoName: String, allBranchCommits: List[String], pagingCriteria: PagingCriteria[String], user: User) = {
     val page = pagingCriteria.extractPageFrom(allBranchCommits)
     val commits = commitsInfoDao.findByShaList(repoName, page.items)
-    addAuthorData(CommitListView(setCommitsReviewStates(commits, user.id), page.beforeCount, page.afterCount))
+    addAuthorData(CommitListView(setCommitsReviewStates(toCommitsListView(repoName, commits), user.id), page.beforeCount, page.afterCount))
   }
 
   def toViewSingle(commit: CommitInfo, userId: ObjectId) = {
-    Option(PartialCommitInfo(commit))
-      .map(addAutorData(_))
-      .map(addReviewersData(_, commit.sha))
+    Option(commit)
+      .map(toCommitView)
+      .map(addAutorData)
+      .map(addReviewersData)
       .map(setCommitReviewState(_, userId))
       .get
+  }
+
+  private def toCommitsListView(repoName:String, commits: List[PartialCommitInfo]) = {
+    commits.map { commit =>
+        CommitView(commit.id.toString, repoName, commit.sha, commit.message, commit.authorName, commit.authorEmail, commit.date.toDate)
+    }
+  }
+  
+  private def toCommitView(commit: CommitInfo) = {
+    CommitView(commit.id.toString, commit.repoName, commit.sha, commit.message, commit.authorName, commit.authorEmail, commit.commitDate.toDate)
   }
 
 }

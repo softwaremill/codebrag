@@ -40,11 +40,11 @@ trait CommitReviewStateAppender {
   }
 
   def reviewedByUser(commitView: CommitView, userId: ObjectId): Boolean = {
-    reviewedCommitsCache.reviewedByUser(commitView.sha, userId)
+    reviewedCommitsCache.reviewedByUser(commitView.sha, commitView.repoName, userId)
   }
 
   def fullyReviewed(commit: CommitView): Boolean = {
-    reviewedCommitsCache.usersWhoReviewed(commit.sha).size >= config.requiredReviewersCount
+    reviewedCommitsCache.usersWhoReviewed(commit.repoName, commit.sha).size >= config.requiredReviewersCount
   }
 
   private def isUserAnAuthor(commit: CommitView, userId: ObjectId) = {
@@ -55,7 +55,7 @@ trait CommitReviewStateAppender {
   }
 
   private def commitTooOldForUser(commit: CommitView, userId: ObjectId) = {
-    val userDate = reviewedCommitsCache.getUserEntry(userId).toReviewStartDate
+    val userDate = reviewedCommitsCache.getEntry(userId, commit.repoName).toReviewStartDate
     val commitDate = new DateTime(commit.date)
     commitDate.isBefore(userDate)
   }

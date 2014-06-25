@@ -19,14 +19,14 @@ class ToReviewCommitsFinder(
   def find(browsingContext: UserBrowsingContext, pagingCriteria: PagingCriteria[String]): CommitListView = {
     val user = loadUser(browsingContext.userId)
     val allBranchCommits = repoCache.getBranchCommits(browsingContext.repoName, browsingContext.branchName)
-    val toReviewBranchCommits = toReviewCommitsFilter.filterCommitsToReview(allBranchCommits, user)
+    val toReviewBranchCommits = toReviewCommitsFilter.filterCommitsToReview(allBranchCommits, user, browsingContext.repoName)
     toReviewCommitsViewBuilder.toPageView(browsingContext.repoName, toReviewBranchCommits, pagingCriteria)
   }
 
   def count(browsingContext: UserBrowsingContext): Long = {
     val user = loadUser(browsingContext.userId)
     val allBranchCommits = repoCache.getBranchCommits(browsingContext.repoName, browsingContext.branchName)
-    toReviewCommitsFilter.filterCommitsToReview(allBranchCommits, user).length
+    toReviewCommitsFilter.filterCommitsToReview(allBranchCommits, user, browsingContext.repoName).length
   }
 
   def countForUserRepoAndBranch(userId: ObjectId): Long = {
