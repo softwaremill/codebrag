@@ -4,7 +4,6 @@ import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.service.user.AfterUserLogin
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.service.data.UserJson
@@ -14,12 +13,11 @@ import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 class LoginUserUseCaseSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
 
   val userDao = mock[UserDAO]
-  val afterLoginHook = mock[AfterUserLogin]
   val userFinder = mock[UserFinder]
-  val loginUseCase = new LoginUserUseCase(userDao, afterLoginHook, userFinder)
+  val loginUseCase = new LoginUserUseCase(userDao, userFinder)
 
   before {
-    reset(userDao, afterLoginHook, userFinder)
+    reset(userDao, userFinder)
   }
 
   it should "not try to authenticate when user is inactive" in {
@@ -53,20 +51,6 @@ class LoginUserUseCaseSpec extends FlatSpec with ShouldMatchers with BeforeAndAf
 
     // then
     exceptionCaught.msg should be("Invalid login credentials")
-  }
-
-  it should "invoke post login hook when user authenticates successfuly" in {
-    // given
-    val user = UserAssembler.randomUser.get
-    val authenticatedUserJson = UserJson(user)
-    when(userDao.findByLoginOrEmail(user.emailLowerCase)).thenReturn(Some(user))
-
-    // when
-    val loginForm = LoginForm(user.emailLowerCase, "dummy", false)
-    loginUseCase.execute(loginForm) { Some(authenticatedUserJson) }
-
-    // then
-    verify(afterLoginHook).postLogin(authenticatedUserJson)
   }
 
   it should "return logged in user view" in {

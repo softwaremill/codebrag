@@ -53,8 +53,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
 
   lazy val newUserAdder = new NewUserAdder(userDao, eventBus, afterUserRegistered, followupGeneratorForPriorReactions, welcomeFollowupsGenerator)
-  lazy val afterUserRegistered = new AfterUserRegistered(repositoriesCache, userRepoDetailsDao, config)
-  lazy val afterUserLogin = new AfterUserLogin(reviewedCommitsCache)
+  lazy val afterUserRegistered = new AfterUserRegistered(repositoriesCache, reviewedCommitsCache,userRepoDetailsDao, config)
 
   lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService, notificationService)
 
@@ -63,7 +62,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val statsAggregator = new StatsAggregator(statsFinder, InstanceId, config, repository)
 
 
-  lazy val loginUserUseCase = new LoginUserUseCase(userDao, afterUserLogin, userFinder)
+  lazy val loginUserUseCase = new LoginUserUseCase(userDao, userFinder)
   lazy val addCommentUseCase = new AddCommentUseCase(userReactionService, followupService, eventBus, licenceService)
   lazy val reviewCommitUseCase = new ReviewCommitUseCase(commitInfoDao, reviewedCommitsCache, eventBus, licenceService)
   lazy val unlikeUseCaseFactory = new UnlikeUseCase(likeValidator, userReactionService, licenceService)
@@ -87,7 +86,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
   lazy val cacheBackend = new PersistentBackendForCache(commitInfoDao, branchStateDao)
   lazy val repositoriesCache = new RepositoriesCache(cacheBackend, config)
-  lazy val reviewedCommitsCache = new UserReviewedCommitsCache(userDao, reviewedCommitsDao, reviewedCommitsCache)
+  lazy val reviewedCommitsCache = new UserReviewedCommitsCache(userDao, reviewedCommitsDao, userRepoDetailsDao)
 
   lazy val toReviewCommitsFinder = new ToReviewCommitsFinder(
     repositoriesCache,
