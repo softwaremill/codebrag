@@ -32,8 +32,8 @@ angular.module('codebrag.commits')
             });
         }
 
-        function commitDetails(sha) {
-            return Commits.get({sha: sha, repo: currentRepoContext.repo}).$then(function(response) {
+        function commitDetails(sha, repo) {
+            return Commits.get({sha: sha, repo: repo || currentRepoContext.repo}).$then(function(response) {
                 return response.data;
             });
         }

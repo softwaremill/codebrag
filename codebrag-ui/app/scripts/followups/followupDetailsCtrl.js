@@ -8,7 +8,7 @@ angular.module('codebrag.followups')
 
         followupsService.loadFollowupDetails(followupId).then(function(followup) {
             $scope.currentFollowup = followup;
-            commitsService.commitDetails(followup.commit.sha).then(function(commit) {
+            commitsService.commitDetails(followup.commit.sha, followup.commit.repoName).then(function(commit) {
                 $scope.currentCommit = new codebrag.CurrentCommit(commit);
 
             });
