@@ -7,6 +7,7 @@ trait UserRepoDetailsDAO {
 
   def save(context: UserRepoDetails)
   def find(userId: ObjectId, repoName: String): Option[UserRepoDetails]
+  def findAll(userId: ObjectId): Set[UserRepoDetails]
   def findDefault(userId: ObjectId): Option[UserRepoDetails]
 
 }
