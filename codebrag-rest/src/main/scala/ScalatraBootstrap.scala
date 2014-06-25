@@ -2,7 +2,7 @@ import com.softwaremill.codebrag.backup.BackupScheduler
 import com.softwaremill.codebrag.dao.Daos
 import com.softwaremill.codebrag.dao.sql.{SQLEmbeddedDbBackup, SQLDatabase}
 import com.softwaremill.codebrag.dao.user.InternalUserDAO
-import com.softwaremill.codebrag.domain.InternalUser
+import com.softwaremill.codebrag.domain.{UserRepoDetails, InternalUser}
 import com.softwaremill.codebrag.repository.config.RepoDataDiscovery
 import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.rest._
@@ -40,6 +40,18 @@ class ScalatraBootstrap extends LifeCycle with Logging {
 
     repositoriesCache.initialize(repositories)
     reviewedCommitsCache.initialize()
+
+    val repoNames = repositoriesCache.repoNames
+    userDao.findAll().foreach { user =>
+      logger.debug(s"Synchronizing repositories for ${user.name}")
+      val userRepoDetails = userRepoDetailsDao.findAll(user.id)
+      val newReposForUser = repoNames.filterNot(rn => userRepoDetails.exists(_.repoName == rn))
+      logger.debug(s"Found new repositories for user ${user.name}: $newReposForUser")
+      newReposForUser.map({newRepoName =>
+        UserRepoDetails(user.id, newRepoName, repositoriesCache.getCheckedOutBranchShortName(newRepoName), clock.nowUtc)
+      }).foreach(userRepoDetailsDao.save)
+    }
+
 
     setupEvents()
     ensureInternalCodebragUserExists(beans.internalUserDao)
