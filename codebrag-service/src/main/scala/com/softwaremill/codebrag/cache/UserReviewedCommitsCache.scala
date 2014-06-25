@@ -3,84 +3,84 @@ package com.softwaremill.codebrag.cache
 import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.domain.ReviewedCommit
+import com.softwaremill.codebrag.domain.{UserRepoDetails, ReviewedCommit}
 import com.softwaremill.codebrag.dao.reviewedcommits.ReviewedCommitsDAO
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConversions._
+import com.softwaremill.codebrag.dao.repo.UserRepoDetailsDAO
 
-class UserReviewedCommitsCache(userDao: UserDAO, reviewedCommitsDao: ReviewedCommitsDAO) extends Logging {
+class UserReviewedCommitsCache(userDao: UserDAO, reviewedCommitsDao: ReviewedCommitsDAO, userRepoDetailsDao: UserRepoDetailsDAO) extends Logging {
 
-  private val userEntries = new ConcurrentHashMap[ObjectId, UserReviewedCommitsCacheEntry]
+  private val userEntries = new ConcurrentHashMap[UserReviewedRepoCommitsCacheKey, UserReviewedCommitsCacheEntry]
 
-  def addNewUserEntry(newUserEntry: UserReviewedCommitsCacheEntry) {
-    userDao.setToReviewStartDate(newUserEntry.userId, newUserEntry.toReviewStartDate)
-    userEntries.put(newUserEntry.userId, newUserEntry)
+  def initializeEmptyCacheFor(userRepo: UserRepoDetails) {
+    val key = UserReviewedRepoCommitsCacheKey(userRepo.userId, userRepo.repoName)
+    val value = UserReviewedCommitsCacheEntry(userRepo.userId, userRepo.repoName, Set.empty, userRepo.toReviewSince)
+    userEntries.put(key, value)
   }
 
-  def getUserEntry(userId: ObjectId): UserReviewedCommitsCacheEntry = {
-    Option(userEntries.get(userId)) match {
+  def getEntry(userId: ObjectId, repoName: String): UserReviewedCommitsCacheEntry = {
+    val key = UserReviewedRepoCommitsCacheKey(userId, repoName)
+    Option(userEntries.get(key)) match {
       case Some(entry) => entry
       case None => {
-        lazyInitCacheForUser(userId)
-        Option(userEntries.get(userId)).getOrElse(throw new IllegalStateException(s"Cannot find reviewed commits data for user ${userId}"))
+        loadCacheEntryForKey(key)
+        userEntries.get(key)
       }
     }
   }
 
   def markCommitAsReviewed(reviewedCommit: ReviewedCommit) {
-    storeReviewedCommit(reviewedCommit)
+    reviewedCommitsDao.storeReviewedCommit(reviewedCommit)
     addToCache(reviewedCommit)
   }
 
-  def loadUserDataToCache(userId: ObjectId) {
-    getUserEntry(userId)
+  def initializeUserDefaultCache(userId: ObjectId, repoName: String) {
+    getEntry(userId, repoName)
   }
 
-  def usersWhoReviewed(sha: String) = {
-    userEntries.flatMap { entry =>
+  def usersWhoReviewed(repoName: String, sha: String) = {
+    userEntries.filter(_._1.repoName == repoName).flatMap { entry =>
       entry._2.commits.find(_.sha == sha) match {
         case Some(found) => Some(entry._1)
         case None => None
       }
-    }.toSet
+    }.map(_.userId).toSet
   }
 
-  def reviewedByUser(sha: String, userId: ObjectId) = {
-    getUserEntry(userId).commits.map(_.sha).contains(sha)
+  def reviewedByUser(sha: String, repoName: String, userId: ObjectId) = {
+    getEntry(userId, repoName).commits.map(_.sha).contains(sha)
   }
 
   def initialize() {
-    logger.debug("Initializing cache of reviewed commits for registered users")
-    userDao.findAll().foreach(user => lazyInitCacheForUser(user.id))
+    logger.debug("TODO: Initializing cache of reviewed commits for registered users") // TODO: add real initialization
   }
 
-  private def lazyInitCacheForUser(userId: ObjectId) {
-    logger.debug(s"Not found cache entry for user ${userId}, trying to load reviewed commits from DB and put in cache")
-    userDao.findById(userId).foreach { user =>
-      user.settings.toReviewStartDate match {
-        case Some(date) => {
-          val commits = reviewedCommitsDao.allReviewedByUser(userId)
-          val entry = UserReviewedCommitsCacheEntry(userId, commits, date)
-          userEntries.put(userId, entry)
-          logger.debug(s"User ${userId}, has ${commits.size} commits reviewed and start date set to ${date}")
-        }
-        case None => throw new IllegalStateException(s"User ${userId} doesn't have toReviewStartDate set in DB")
-      }
+  private def loadCacheEntryForKey(key: UserReviewedRepoCommitsCacheKey) {
+    logger.debug(s"Not found cache entry for $key, trying to load reviewed commits from DB and put in cache")
+    userRepoDetailsDao.find(key.userId, key.repoName) match {
+      case Some(details) => loadCacheEntryForUserRepo(details)
+      case None => throw new IllegalStateException(s"No repository details found: $key")
     }
   }
 
-  private def storeReviewedCommit(reviewedCommit: ReviewedCommit) {
-    reviewedCommitsDao.storeReviewedCommit(reviewedCommit)
+  private def loadCacheEntryForUserRepo(userRepoDetails: UserRepoDetails) {
+    val commits = reviewedCommitsDao.allReviewedByUser(userRepoDetails.userId, userRepoDetails.repoName)
+    val key = UserReviewedRepoCommitsCacheKey(userRepoDetails.userId, userRepoDetails.repoName)
+    val entry = UserReviewedCommitsCacheEntry(userRepoDetails.userId, userRepoDetails.repoName, commits, userRepoDetails.toReviewSince)
+    userEntries.put(key, entry)
+    logger.debug(s"User ${key.userId}, has ${commits.size} commits reviewed in repo ${key.repoName} and start date set to ${entry.toReviewStartDate}")
   }
 
   private def addToCache(reviewedCommit: ReviewedCommit) {
-    Option(userEntries.get(reviewedCommit.userId)) match {
+    val key = UserReviewedRepoCommitsCacheKey(reviewedCommit.userId, reviewedCommit.repoName)
+    Option(userEntries.get(key)) match {
       case Some(userEntry) => {
         val updatedEntry = userEntry.copy(commits = userEntry.commits + reviewedCommit)
-        userEntries.put(reviewedCommit.userId, updatedEntry)
-        logger.debug(s"Reviewed commits count for user ${reviewedCommit.userId}: ${updatedEntry.commits.size}")
+        userEntries.put(key, updatedEntry)
+        logger.debug(s"Reviewed commits count for $key: ${updatedEntry.commits.size}")
       }
-      case None => logger.error(s"Could not find user ${reviewedCommit.userId} entry in cache")
+      case None => logger.error(s"Could not find $key entry in cache")
     }
   }
 
