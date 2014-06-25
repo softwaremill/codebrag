@@ -9,8 +9,8 @@ trait ReviewersDataAppender {
   def reviewedCommitsCache: UserReviewedCommitsCache
   def userDao: UserDAO
 
-  def addReviewersData(view: CommitView, sha: String) = {
-    val reviewers = reviewedCommitsCache.usersWhoReviewed(sha).flatMap(userDao.findById).map(CommitReviewerView.apply)
+  def addReviewersData(view: CommitView) = {
+    val reviewers = reviewedCommitsCache.usersWhoReviewed(view.repoName, view.sha).flatMap(userDao.findById).map(CommitReviewerView.apply)
     view.copy(reviewers = reviewers)
   }
 
