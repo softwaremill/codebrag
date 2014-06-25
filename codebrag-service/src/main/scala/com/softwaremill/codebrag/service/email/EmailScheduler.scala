@@ -23,6 +23,7 @@ class EmailScheduler(actorSystem: ActorSystem, emailSenderActor: ActorRef) exten
 
   def schedule(email: Email, delay: FiniteDuration): Any = {
     logger.info(s"Email (subject:${email.subject}, addresses: ${email.addresses}) is scheduled to send in $delay")
+    logger.debug(s"Full email data to send: ${email}")
     scheduleForSender(SendEmail(email, this), actorSystem, delay)
   }
 
