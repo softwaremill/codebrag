@@ -61,5 +61,12 @@ object MigrateV2_1ToV2_2 extends App with Logging {
       UserRepoDetails(user.id, repositoryName, "master", user.settings.toReviewStartDate.getOrElse(RealTimeClock.nowUtc), true)
     } foreach userRepoDetailsDao.save
     logger.debug(s"Moving user/repo data - Done")
+
+
+    logger.debug(s"Assigning already reviewed commits to current repo")
+    (Q.u + s"""ALTER TABLE "reviewed_commits" DROP CONSTRAINT IF EXISTS "reviewed_commits_id"""").execute()
+    (Q.u + s"""ALTER TABLE "reviewed_commits" ADD COLUMN IF NOT EXISTS "repo_name" VARCHAR NOT NULL DEFAULT '$repositoryName'""").execute()
+    (Q.u + s"""ALTER TABLE "reviewed_commits" ADD CONSTRAINT IF NOT EXISTS "reviewed_commits_id" PRIMARY KEY ("user_id", "sha", "repo_name")""").execute()
+    logger.debug(s"Assigning already reviewed commits to current repo - Done")
   }
 }

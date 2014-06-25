@@ -29,7 +29,7 @@ class ReviewCommitUseCase(
   }
 
   private def review(userId: ObjectId, commit: CommitInfo) = {
-    val reviewedCommit = ReviewedCommit(commit.sha, userId, clock.nowUtc)
+    val reviewedCommit = ReviewedCommit(commit.sha, userId, commit.repoName, clock.nowUtc)
     reviewedCommitsCache.markCommitAsReviewed(reviewedCommit)
     eventBus.publish(CommitReviewedEvent(commit, userId))
   }

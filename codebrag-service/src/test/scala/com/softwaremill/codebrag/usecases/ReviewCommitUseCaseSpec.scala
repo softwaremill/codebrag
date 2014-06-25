@@ -49,14 +49,14 @@ class ReviewCommitUseCaseSpec
   it should "mark commit as reviewed if commit found" in {
     // given
     val userId = ObjectId.get
-    val commit = CommitInfoAssembler.randomCommit.get
+    val commit = CommitInfoAssembler.randomCommit.withRepo(RepoName).get
     when(commitInfoDao.findBySha(RepoName, commit.sha)).thenReturn(Some(commit))
 
     // when
     useCase.execute(RepoName, commit.sha, userId)
 
     // then
-    val expectedCommitReviewed = ReviewedCommit(commit.sha, userId, clock.nowUtc)
+    val expectedCommitReviewed = ReviewedCommit(commit.sha, userId, RepoName, clock.nowUtc)
     verify(reviewedCommitsCache).markCommitAsReviewed(expectedCommitReviewed)
   }
 

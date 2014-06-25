@@ -4,10 +4,10 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.ReviewedCommit
 import org.joda.time.DateTime
 
-case class UserReviewedCommitsCacheEntry(userId: ObjectId, commits: Set[ReviewedCommit], toReviewStartDate: DateTime)
+case class UserReviewedRepoCommitsCacheKey(userId: ObjectId, repoName: String)
 
-object UserReviewedCommitsCacheEntry {
-  def forNewlyRegisteredUser(userId: ObjectId, toReviewStartDate: DateTime) = {
-    new UserReviewedCommitsCacheEntry(userId, Set.empty, toReviewStartDate)
-  }
+case class UserReviewedCommitsCacheEntry(userId: ObjectId, repoName: String, commits: Set[ReviewedCommit], toReviewStartDate: DateTime) {
+
+  def toCacheKey = UserReviewedRepoCommitsCacheKey(userId, repoName)
+
 }
