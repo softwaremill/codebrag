@@ -97,6 +97,7 @@ trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
     forFirstCommit.commit.authorName should be(commit.authorName)
     forFirstCommit.commit.date should be(commit.authorDate.toDate)
     forFirstCommit.commit.message should be(commit.message)
+    forFirstCommit.commit.repoName should be(commit.repoName)
   }
 
   it should "have correct reactions data for followup" in {

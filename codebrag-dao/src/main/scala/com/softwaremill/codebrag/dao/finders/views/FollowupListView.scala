@@ -4,7 +4,7 @@ import java.util.Date
 
 case class SingleFollowupView(followupId: String, date: Date, commit: FollowupCommitView, reaction: FollowupLastReactionView)
 
-case class FollowupCommitView(commitId: String, sha: String, authorName: String, message: String, date: Date)
+case class FollowupCommitView(commitId: String, sha: String, repoName: String, authorName: String, message: String, date: Date)
 
 case class FollowupsByCommitListView(followupsByCommit: List[FollowupsByCommitView])
 
