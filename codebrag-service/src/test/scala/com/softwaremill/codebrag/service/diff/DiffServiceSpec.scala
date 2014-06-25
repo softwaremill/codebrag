@@ -8,6 +8,7 @@ import com.softwaremill.codebrag.domain.CommitFileInfo
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import com.softwaremill.codebrag.service.commits.DiffLoader
 import com.softwaremill.codebrag.repository.Repository
+import com.softwaremill.codebrag.cache.RepositoriesCache
 
 class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers with MockitoSugar {
 
@@ -50,14 +51,18 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
 
   var service: DiffService = _
 
+  var repoCache: RepositoriesCache = _
   var repository: Repository = _
 
   var diffLoader: DiffLoader = _
 
   before {
     diffLoader = mock[DiffLoader]
+    repoCache = mock[RepositoriesCache]
     repository = mock[Repository]
-    service = new DiffService(diffLoader, repository)
+    service = new DiffService(diffLoader, repoCache)
+
+    given(repoCache.getUnderlyingRepo(repository.repoName)).willReturn(repository)
   }
 
   it should "produce data for each line in diff" in {
@@ -122,7 +127,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(Nil))
 
     //when
-    val filesEither = service.getFilesWithDiffs(commit.sha)
+    val filesEither = service.getFilesWithDiffs(repository.repoName, commit.sha)
 
     //then
     filesEither should be('right)
@@ -151,7 +156,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(List(file1, file2)))
 
     //when
-    val Right(files) = service.getFilesWithDiffs(commit.sha)
+    val Right(files) = service.getFilesWithDiffs(repository.repoName, commit.sha)
 
     //then
     files should have size 2
@@ -172,7 +177,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(List(file)))
 
     //when
-    val Right(files) = service.getFilesWithDiffs(commit.sha)
+    val Right(files) = service.getFilesWithDiffs(repository.repoName, commit.sha)
 
     //then
     files(0).diffStats.added should equal(3)
@@ -185,7 +190,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(List(FileWithPatchHeaders)))
 
     // when
-    val Right(files) = service.getFilesWithDiffs(commit.sha)
+    val Right(files) = service.getFilesWithDiffs(repository.repoName, commit.sha)
 
     // then
     files(0).lines.length should equal(6)
@@ -197,13 +202,13 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     files(0).lines(5).line should equal("yet another content")
   }
 
-  it should "return information when commit is missing" in {
+  it should "return information when commit is missing in given repo" in {
     //given
     val nonExistingSHA = "123123123"
     given(diffLoader.loadDiff(nonExistingSHA, repository)).willReturn(None)
 
     //when
-    val files = service.getFilesWithDiffs(nonExistingSHA)
+    val files = service.getFilesWithDiffs(repository.repoName, nonExistingSHA)
 
     //then
     files should be('left)
@@ -216,7 +221,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(List(file)))
 
     //when
-    val Right(files) = service.getFilesWithDiffs(commit.sha)
+    val Right(files) = service.getFilesWithDiffs(repository.repoName, commit.sha)
 
     //then
     files(0).lines should be ('empty)
@@ -229,7 +234,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(List(file)))
 
     //when
-    val Right(files) = service.getFilesWithDiffs(commit.sha)
+    val Right(files) = service.getFilesWithDiffs(repository.repoName, commit.sha)
 
     //then
     files(0).lines should be ('empty)
@@ -242,7 +247,7 @@ class DiffServiceSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers w
     given(diffLoader.loadDiff(commit.sha, repository)).willReturn(Some(List(file)))
 
     //when
-    val Right(files) = service.getFilesWithDiffs(commit.sha)
+    val Right(files) = service.getFilesWithDiffs(repository.repoName, commit.sha)
 
     //then
     files(0).status should be (StatusAdded)

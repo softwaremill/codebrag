@@ -57,7 +57,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
   lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService, notificationService)
 
-  lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder, new DiffService(diffLoader, repository))
+  lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder, new DiffService(diffLoader, repositoriesCache))
 
   lazy val statsAggregator = new StatsAggregator(statsFinder, InstanceId, config, repository)
 

@@ -4,8 +4,9 @@ import annotation.tailrec
 import com.softwaremill.codebrag.domain.{FileDiffStats, DiffLine, CommitFileDiff}
 import com.softwaremill.codebrag.service.commits.DiffLoader
 import com.softwaremill.codebrag.repository.Repository
+import com.softwaremill.codebrag.cache.RepositoriesCache
 
-class DiffService(diffLoader: DiffLoader, repository: Repository) {
+class DiffService(diffLoader: DiffLoader, repoCache: RepositoriesCache) {
 
   val IrrelevantLineIndicator = -1
   val LineTypeHeader = "header"
@@ -15,7 +16,7 @@ class DiffService(diffLoader: DiffLoader, repository: Repository) {
   val Info = """@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)""".r
   val PatchPattern =  """(?s)([^@]*)(@@ .*)""".r
 
-  def parseDiff(diff: String): List[DiffLine] = {
+  def  parseDiff(diff: String): List[DiffLine] = {
     @tailrec
     def convertToDiffLines(lines: List[String], lineNumberOriginal: Int, lineNumberChanged: Int, accu: List[DiffLine]): List[DiffLine] = {
       if (lines.isEmpty) {
@@ -52,9 +53,9 @@ class DiffService(diffLoader: DiffLoader, repository: Repository) {
     }
   }
 
-  def getFilesWithDiffs(sha: String): Either[String, List[CommitFileDiff]] = {
+  def getFilesWithDiffs(repoName: String, sha: String): Either[String, List[CommitFileDiff]] = {
     val result = for {
-      diff <- diffLoader.loadDiff(sha, repository)
+      diff <- diffLoader.loadDiff(sha, repoCache.getUnderlyingRepo(repoName))
     } yield Right(diff.map(file => {
         val patch = cutGitHeaders(file.patch)
         val diffLines = parseDiff(patch)
