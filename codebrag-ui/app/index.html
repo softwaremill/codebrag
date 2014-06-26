@@ -96,6 +96,7 @@
     <script type="text/javascript" src="scripts/commits/displayReviewersFilter.js"></script>
 
     <!-- branches -->
+    <script type="text/javascript" src="scripts/branches/reposCtrl.js"></script>
     <script type="text/javascript" src="scripts/branches/branchesCtrl.js"></script>
     <script type="text/javascript" src="scripts/branches/branchesService.js"></script>
     <script type="text/javascript" src="scripts/branches/currentRepoContext.js"></script>
@@ -206,10 +207,6 @@
                             <span class="ghost-notification" ng-show="updates.followups()"></span>
                         </span>
                     </a>
-                </li>
-                <li>
-                    <input type="text" ng-model="repo"/>
-                    <input type="button" ng-click="switchRepo(repo)" value="Switch repo">
                 </li>
             </ul>
         </nav>

@@ -2,6 +2,15 @@
     <div class="small-12 large-12 columns">
         <div class="commits-tab-header row">
             <div class="small-3 large-3 columns">
+                <div class="branch-selector row" style="z-index:4" ng-controller="ReposCtrl">
+                    <div class="columns">
+                        <dropdown selected="currentRepoContext.repo">
+                            <ul class="branches-list">
+                                <li ng-repeat="(repo, branch) in currentRepoContext.all" ng-click="selectRepo(repo)" ng-class="{'selected': isSelected(repo)}">{{repo}}</li>
+                            </ul>
+                        </dropdown>
+                    </div>
+                </div>
                 <div class="branch-selector row" ng-controller="BranchesCtrl">
                     <div class="small-6 large-6 columns" ng-show="showBranchesSelector">
                         <dropdown selected="currentRepoContext.branch" icon="assets/images/branch.png">
