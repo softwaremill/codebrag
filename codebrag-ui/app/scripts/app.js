@@ -120,7 +120,6 @@ angular.module('codebrag.commits')
                 templateUrl: 'views/secured/commits/commits.html',
                 resolve: authenticatedUser,
                 onEnter: function($stateParams, currentRepoContext) {
-                    console.log('enter');
                     currentRepoContext.ready().then(function() {
                         currentRepoContext.switchRepo($stateParams.repo);
                     })
