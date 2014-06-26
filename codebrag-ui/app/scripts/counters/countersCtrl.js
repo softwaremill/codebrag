@@ -1,6 +1,6 @@
 angular.module('codebrag.counters')
 
-    .controller('CountersCtrl', function ($scope, $state, $rootScope, events, currentCommit, countersService) {
+    .controller('CountersCtrl', function ($scope, $state, $rootScope, events, currentCommit, countersService, currentRepoContext) {
 
         $scope.repo = $rootScope.currentRepoContext.repo;
 
@@ -36,6 +36,6 @@ angular.module('codebrag.counters')
             countersService.reloadCounters({commits: true});
             currentCommit.empty();
             $rootScope.$broadcast(events.commitsTabOpened);
-            $state.transitionTo('commits.list');
+            $state.transitionTo('commits.list', {repo: currentRepoContext.repo});
         };
     });

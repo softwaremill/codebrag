@@ -115,10 +115,16 @@ angular.module('codebrag.commits')
     .config(function ($stateProvider, authenticatedUser) {
         $stateProvider
             .state('commits', {
-                url: '/commits',
+                url: '/{repo}/commits',
                 abstract: true,
                 templateUrl: 'views/secured/commits/commits.html',
-                resolve: authenticatedUser
+                resolve: authenticatedUser,
+                onEnter: function($stateParams, currentRepoContext) {
+                    console.log('enter');
+                    currentRepoContext.ready().then(function() {
+                        currentRepoContext.switchRepo($stateParams.repo);
+                    })
+                }
             })
             .state('commits.list', {
                 url: '',

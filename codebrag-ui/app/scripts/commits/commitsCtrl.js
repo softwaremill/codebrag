@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .controller('CommitsCtrl', function ($scope, currentCommit, commitsService, $stateParams, $state, events, pageTourService) {
+    .controller('CommitsCtrl', function ($scope, currentCommit, commitsService, $stateParams, $state, events, pageTourService, currentRepoContext) {
 
         loadCommits();
 
@@ -26,7 +26,7 @@ angular.module('codebrag.commits')
         $scope.openCommitDetails = function(sha) {
             if(currentCommit.hasSha(sha)) return;
             currentCommit.empty();
-            $state.transitionTo('commits.details', {sha: sha});
+            $state.transitionTo('commits.details', {sha: sha, repo: currentRepoContext.repo});
         };
 
         $scope.allCommitsReviewed = function() {

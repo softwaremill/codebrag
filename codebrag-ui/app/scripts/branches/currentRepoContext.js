@@ -1,6 +1,6 @@
 angular.module('codebrag.branches')
 
-    .factory('currentRepoContext', function(authService, $rootScope, $q, events, UserBrowsingContext) {
+    .factory('currentRepoContext', function($state, $stateParams, authService, $rootScope, $q, events, UserBrowsingContext) {
 
         var currentContext,
             contextReady = $q.defer(),
@@ -28,9 +28,12 @@ angular.module('codebrag.branches')
 
             switchRepo: function (newRepo) {
                 var self = this;
+                if(this.repo === newRepo) return;
                 UserBrowsingContext.get({repo: newRepo}).$then(function(response) {
                     self.repo = response.data.repoName;
                     self.branch = response.data.branchName;
+                }).then(function() {
+                    saveUserContext(self);
                 });
             },
 
