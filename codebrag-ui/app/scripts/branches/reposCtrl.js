@@ -2,7 +2,9 @@ angular.module('codebrag.branches')
 
     .controller('ReposCtrl', function ($scope, $state, events, currentRepoContext) {
 
-        $scope.currentRepoContext = currentRepoContext;
+        $scope.repos = function() {
+            return Object.getOwnPropertyNames(currentRepoContext.all);
+        };
 
         $scope.selectRepo = function(selected) {
             currentRepoContext.switchRepo(selected);

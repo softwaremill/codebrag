@@ -6,7 +6,7 @@
                     <div class="columns">
                         <dropdown selected="currentRepoContext.repo">
                             <ul class="branches-list">
-                                <li ng-repeat="(repo, branch) in currentRepoContext.all" ng-click="selectRepo(repo)" ng-class="{'selected': isSelected(repo)}">{{repo}}</li>
+                                <li ng-repeat="repo in repos()" ng-click="selectRepo(repo)" ng-class="{'selected': isSelected(repo)}">{{repo}}</li>
                             </ul>
                         </dropdown>
                     </div>
