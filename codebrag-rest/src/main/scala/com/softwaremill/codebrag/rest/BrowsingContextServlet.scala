@@ -7,6 +7,11 @@ import com.softwaremill.codebrag.service.user.Authenticator
 
 class BrowsingContextServlet(val authenticator: Authenticator, contextFinder: UserBrowsingContextFinder, updateContext: UpdateUserBrowsingContextUseCase) extends JsonServletWithAuthentication {
 
+  get("/") {
+    haltIfNotAuthenticated()
+    contextFinder.findAll(user.idAsObjectId)
+  }
+
   get("/:repo") {
     haltIfNotAuthenticated()
     val repo = params("repo")
