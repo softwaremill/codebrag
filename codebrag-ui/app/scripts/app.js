@@ -92,7 +92,7 @@ angular.module('codebrag.session')
         $stateProvider
             .state('home', {
                 url: '/',
-                templateUrl: 'views/main.html'
+                controller: 'HomeCtrl'
             })
             .state('register', {
                 url: '/register/{invitationId}',

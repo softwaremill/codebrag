@@ -80,17 +80,10 @@ angular.module('codebrag.session')
             authService.login($scope.user).then(function () {
                 clearLoginField();
                 clearPasswordField();
-                goToCommitsListIfDirectLogin();
             }, function (errors) {
                 $scope.errorsFlash.addAll('error', errors);
                 clearPasswordField();
             });
-        }
-
-        function goToCommitsListIfDirectLogin() {
-            if ($state.current.name === 'home') {
-                $state.transitionTo('commits.list');
-            }
         }
 
     });
