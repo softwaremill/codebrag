@@ -6,7 +6,6 @@ angular.module('codebrag.counters').factory('countersService', function($http, $
         followupsCounter = new Counter();
 
     currentRepoContext.ready().then(function() {
-        console.log('initializing counters service');
         initPolling({ commits: true, followups: true });
         bindEventListeners();
     });
