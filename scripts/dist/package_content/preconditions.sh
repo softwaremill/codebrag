@@ -37,26 +37,30 @@ function check_repo_available {
     exit 1    
   fi
 
-  local POTENTIAL_REPO_DIR=$(find $REPOS_DIR -maxdepth 1 -mindepth 1 -type d -print)
+  local POTENTIAL_REPO_DIRS=$(find $REPOS_DIR -maxdepth 1 -mindepth 1 -type d -print)
 
-  # check if repo dir is readable by current user
-  if [ ! -r "$POTENTIAL_REPO_DIR" ]; then
-    echo "ERROR: Looks like $POTENTIAL_REPO_DIR is not readable"
-    exit 1    
-  fi
+  for dir in "${POTENTIAL_REPO_DIRS[@]}"
+  do
+      # check if repo dir is readable by current user
+      if [ ! -r "$dir" ]; then
+        echo "ERROR: Looks like $dir is not readable"
+        exit 1
+      fi
 
-  # check if dir is git repo (contains .git dir)
-  local GIT_DIR=$POTENTIAL_REPO_DIR/.git
-  if [ ! -d "$GIT_DIR" ]; then
-    echo "ERROR: Looks like $POTENTIAL_REPO_DIR is not a git repository"
-    exit 1    
-  fi
+      # check if dir is git repo (contains .git dir)
+      local GIT_DIR=$dir/.git
+      if [ ! -d "$GIT_DIR" ]; then
+        echo "ERROR: Looks like $dir is not a git repository"
+        exit 1
+      fi
 
-  # check if repo dir is writable by current user
-  if [ ! -w "$POTENTIAL_REPO_DIR" ]; then
-    echo "ERROR: Looks like $POTENTIAL_REPO_DIR is not writable"
-    exit 1    
-  fi
+      # check if repo dir is writable by current user
+      if [ ! -w "$dir" ]; then
+        echo "ERROR: Looks like $dir is not writable"
+        exit 1
+      fi
+  done
+
 }
 
 
