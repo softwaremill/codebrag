@@ -12,7 +12,7 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
 import com.softwaremill.codebrag.common.config.ConfigWithDefault
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
-import com.softwaremill.codebrag.activities.finders.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
 
 class UserNotificationsSenderSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
@@ -112,7 +112,7 @@ class UserNotificationsSenderSpec
     // given
     val user = UserAssembler.randomUser.get
     when(followupFinder.countFollowupsForUser(user.id)).thenReturn(NoFollowups)
-    when(toReviewCommitsFinder.countForUserSelectedBranch(user.id)).thenReturn(NoCommits)
+    when(toReviewCommitsFinder.countForUserRepoAndBranch(user.id)).thenReturn(NoCommits)
 
     // when
     sender.sendDailyDigest(List(user))
@@ -139,7 +139,7 @@ class UserNotificationsSenderSpec
     // given
     val user = UserAssembler.randomUser.get
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(toReviewCommitsFinder.countForUserSelectedBranch(user.id)).thenReturn(SomeCommits)
+    when(toReviewCommitsFinder.countForUserRepoAndBranch(user.id)).thenReturn(SomeCommits)
     when(followupFinder.countFollowupsForUser(user.id)).thenReturn(SomeFollowups)
 
     // when

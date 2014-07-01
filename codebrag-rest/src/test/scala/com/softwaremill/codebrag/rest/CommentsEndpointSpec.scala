@@ -6,7 +6,7 @@ import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import com.softwaremill.codebrag.activities.AddCommentUseCase
+import com.softwaremill.codebrag.usecases.AddCommentUseCase
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain._
 import org.scalatra.swagger.SwaggerEngine

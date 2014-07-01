@@ -36,6 +36,8 @@ class JsonServlet extends ScalatraServlet with JacksonJsonSupport with JValueRes
     value
   }
 
+  def extractReqUrlParam(key: String): String = params.getOrElse(key, haltWithMissingKey(key))
+
   def extractReq[T: Manifest](key: String): T = (parsedBody \ key).extractOrElse[T](haltWithMissingKey(key))
 
   def extractOpt[T: Manifest](key: String): Option[T] = (parsedBody \ key).extractOpt[T]

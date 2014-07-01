@@ -13,10 +13,9 @@ function java_not_installed {
 
 # 0. check if REPOS_DIR defined in config and set it accordingly 
 # 1. check if root dir with repos exists
-# 2. check if it contains exactly 1 repo dir
-# 3. check if repo dir is readable by current user
-# 4. check if it is Git repo (check for .git dir)
-# 5. check if repo dir is writable by current user
+# 2. check if repo dir is readable by current user
+# 3. check if it is Git repo (check for .git dir)
+# 4. check if repo dir is writable by current user
 function check_repo_available {
   local CWD=$(pwd)
 
@@ -38,33 +37,30 @@ function check_repo_available {
     exit 1    
   fi
 
-  # check if exactly 1 repository directory is present
-  if [ $SUBDIRS_COUNT -ne 1 ]; then
-    echo "ERROR: $REPOS_DIR directory should contain exactly one directory with your repository ($SUBDIRS_COUNT directories found).
- At the moment Codebrag supports single repository configuration only."
-    exit 1
-  fi
+  local POTENTIAL_REPO_DIRS=($(find $REPOS_DIR -maxdepth 1 -mindepth 1 -type d -print))
 
-  local POTENTIAL_REPO_DIR=$(find $REPOS_DIR -maxdepth 1 -mindepth 1 -type d -print)
+  for dir in "${POTENTIAL_REPO_DIRS[@]}"
+  do
+      # check if repo dir is readable by current user
+      if [ ! -r "$dir" ]; then
+        echo "ERROR: Looks like $dir is not readable"
+        exit 1
+      fi
 
-  # check if repo dir is readable by current user
-  if [ ! -r "$POTENTIAL_REPO_DIR" ]; then
-    echo "ERROR: Looks like $POTENTIAL_REPO_DIR is not readable"
-    exit 1    
-  fi
+      # check if dir is git repo (contains .git dir)
+      local GIT_DIR=$dir/.git
+      if [ ! -d "$GIT_DIR" ]; then
+        echo "ERROR: Looks like $dir is not a git repository"
+        exit 1
+      fi
 
-  # check if dir is git repo (contains .git dir)
-  local GIT_DIR=$POTENTIAL_REPO_DIR/.git
-  if [ ! -d "$GIT_DIR" ]; then
-    echo "ERROR: Looks like $POTENTIAL_REPO_DIR is not a git repository"
-    exit 1    
-  fi
+      # check if repo dir is writable by current user
+      if [ ! -w "$dir" ]; then
+        echo "ERROR: Looks like $dir is not writable"
+        exit 1
+      fi
+  done
 
-  # check if repo dir is writable by current user
-  if [ ! -w "$POTENTIAL_REPO_DIR" ]; then
-    echo "ERROR: Looks like $POTENTIAL_REPO_DIR is not writable"
-    exit 1    
-  fi
 }
 
 

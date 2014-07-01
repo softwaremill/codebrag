@@ -9,16 +9,6 @@ trait ReviewedCommitsDAO {
 
   def storeReviewedCommit(commit: ReviewedCommit)
 
-  def allReviewedByUser(userId: ObjectId): Set[ReviewedCommit]
-
-}
-
-class InMemoryReviewedCommitsDAO extends ReviewedCommitsDAO {
-
-  private val storage = new scala.collection.mutable.HashSet[ReviewedCommit]
-
-  override def allReviewedByUser(userId: ObjectId) = storage.filter(_.userId == userId).toSet
-
-  override def storeReviewedCommit(commit: ReviewedCommit) = storage.add(commit)
+  def allReviewedByUser(userId: ObjectId, repoName: String): Set[ReviewedCommit]
 
 }

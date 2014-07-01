@@ -2,13 +2,14 @@ package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.service.user.Authenticator
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.cache.BranchCommitsCache
+import com.softwaremill.codebrag.cache.{RepositoriesCache, RepositoryCache}
 
-class AvailableBranchesServlet(val authenticator: Authenticator, branchCommitsCache: BranchCommitsCache) extends JsonServletWithAuthentication with Logging {
+class AvailableBranchesServlet(val authenticator: Authenticator, repositoriesCache: RepositoriesCache) extends JsonServletWithAuthentication with Logging {
 
-  get("/") {
-    val branches = branchCommitsCache.getShortBranchNames.toList.sorted
-    Map("branches" -> branches, "current" -> branchCommitsCache.getCheckedOutBranchShortName, "repoType" -> branchCommitsCache.repository.repoData.repoType)
+  get("/:repo") {
+    val repo = repositoriesCache.getRepo(params("repo"))
+    val branches = repo.getShortBranchNames.toList.sorted
+    Map("branches" -> branches, "current" -> repo.getCheckedOutBranchShortName, "repoType" -> repo.repository.repoData.repoType)
   }
 
 }

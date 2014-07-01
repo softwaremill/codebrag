@@ -4,8 +4,11 @@ import com.softwaremill.codebrag.service.user.{RegisterService, Authenticator}
 import com.softwaremill.codebrag.service.config.CodebragConfig
 import org.bson.types.ObjectId
 import org.scalatra
-import com.softwaremill.codebrag.activities.{ModifyUserDetailsUseCase, ModifyUserDetailsForm, UserToRegister, RegisterNewUserUseCase}
-import com.softwaremill.codebrag.dao.finders.user.{ManagedUsersListView, UserFinder}
+import com.softwaremill.codebrag.usecases._
+import com.softwaremill.codebrag.finders.user.UserFinder
+import com.softwaremill.codebrag.finders.user.ManagedUsersListView
+import com.softwaremill.codebrag.usecases.ModifyUserDetailsForm
+import com.softwaremill.codebrag.usecases.UserToRegister
 
 class UsersServlet(
   val authenticator: Authenticator,

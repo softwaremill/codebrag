@@ -47,7 +47,7 @@ class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends Fol
           .map(f => followupToReactionsView(f, followupReactions.getOrElse(f.id, Nil), lastReactions, reactionAuthors))
           .sortWith(sortFollowupsForCommitByDate)
         val commit = commits(commitId)
-        val commitView = FollowupCommitView(commit.id.toString, commit.sha, commit.authorName, commit.message, commit.authorDate.toDate)
+        val commitView = FollowupCommitView(commit.id.toString, commit.sha, commit.repoName, commit.authorName, commit.message, commit.authorDate.toDate)
         FollowupsByCommitView(commitView, followupsForCommitViews)
     }
     FollowupsByCommitListView(sortFollowupGroupsByNewest(followupsForCommits))
@@ -101,7 +101,7 @@ class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends Fol
   }
 
   private def recordsToFollowupView(commit: SQLCommitInfo, reaction: UserReaction, author: PartialUserDetails, followup: SQLFollowup): SingleFollowupView = {
-    val commitView = FollowupCommitView(commit.id.toString, commit.sha, commit.authorName, commit.message, commit.authorDate.toDate)
+    val commitView = FollowupCommitView(commit.id.toString, commit.sha, commit.repoName, commit.authorName, commit.message, commit.authorDate.toDate)
     val lastReactionView = buildLastReactionView(reaction, author)
     val followupView = SingleFollowupView(followup.id.toString, reaction.postingTime.toDate, commitView, lastReactionView)
     followupView

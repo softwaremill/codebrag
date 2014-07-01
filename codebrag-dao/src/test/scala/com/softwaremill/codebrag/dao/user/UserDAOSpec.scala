@@ -391,7 +391,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
 
   it should "update multiple settings" taggedAs RequiresDb in {
     //given
-    val newSettings = user.settings.copy(emailNotificationsEnabled = true, appTourDone = true, selectedBranch = Some("master"))
+    val newSettings = user.settings.copy(emailNotificationsEnabled = true, appTourDone = true)
     userDAO.add(user)
 
     //when
@@ -401,7 +401,6 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     val Some(userFound) = userDAO.findById(9)
     userFound.settings.emailNotificationsEnabled should equal(true)
     userFound.settings.appTourDone should equal(true)
-    userFound.settings.selectedBranch should equal(Some("master"))
   }
 
   it should "allow to review start date be empty" taggedAs RequiresDb in {

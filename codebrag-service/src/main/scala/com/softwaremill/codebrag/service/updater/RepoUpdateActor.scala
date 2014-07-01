@@ -9,14 +9,14 @@ import com.softwaremill.codebrag.repository.Repository
 class RepoUpdateActor(importService: CommitImportService, repository: Repository) extends Actor with Logging {
 
   def receive = {
-    case Update(scheduleNext) => {
+    case Update(scheduleNext) => {    // TODO: get rid of this scheduleNext
       try {
         importService.importRepoCommits(repository)
-        importService.cleanupStaleBranches()
+        importService.cleanupStaleBranches(repository)
       } finally {
         if (scheduleNext) {
           import context.dispatcher
-          logger.debug("Scheduling next update delay to " + NextUpdatesInterval.toString)
+          logger.debug(s"Scheduling next update of ${repository.repoName} in ${NextUpdatesInterval.toString}")
           context.system.scheduler.scheduleOnce(NextUpdatesInterval, self, Update(scheduleNext = true))
         }
       }

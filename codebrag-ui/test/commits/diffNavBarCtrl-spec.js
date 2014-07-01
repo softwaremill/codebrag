@@ -5,10 +5,15 @@ describe("DiffNavbarController", function () {
     var noopPromise = {then: function(){}};
     var $scope, $q, commitsService;
 
-    var commit = {info: {sha: '123', state: 'AwaitingUserReview'}};
-    var nextCommit = {sha: '345'};
+    var commit = {info: {sha: '123', repoName: 'codebrag', state: 'AwaitingUserReview'}};
+    var nextCommit = {sha: '345', repoName: 'codebrag'};
+    var currentRepoContext = {
+        repo: 'codebrag'
+    };
 
-    beforeEach(module('codebrag.commits'));
+    beforeEach(module('codebrag.commits', function($provide) {
+        $provide.value('currentRepoContext', currentRepoContext);
+    }));
 
     beforeEach(inject(function($rootScope, _$q_, _commitsService_) {
         $scope = $rootScope.$new();
@@ -32,9 +37,7 @@ describe("DiffNavbarController", function () {
 
     it('should go to next commit when making current commit reviewed', inject(function($controller, $state, currentCommit) {
         // Given
-        var nextCommitDeferred = $q.defer();
-        nextCommitDeferred.resolve(nextCommit);
-        spyOn(commitsService, 'markAsReviewed').andReturn(nextCommitDeferred.promise);
+        spyOn(commitsService, 'markAsReviewed').andReturn($q.when(nextCommit));
         spyOn($state, 'transitionTo');
         currentCommit.set(commit);
         $controller('DiffNavbarCtrl', {$scope: $scope});
@@ -45,7 +48,7 @@ describe("DiffNavbarController", function () {
         $scope.$apply();
 
         // Then
-        expect($state.transitionTo).toHaveBeenCalledWith('commits.details', nextCommit);
+        expect($state.transitionTo).toHaveBeenCalledWith('commits.details', {sha: nextCommit.sha, repo: nextCommit.repoName } );
     }));
 
     it('should go to commits list when no next commit available', inject(function($controller, $state, currentCommit) {
@@ -63,7 +66,7 @@ describe("DiffNavbarController", function () {
         $scope.$apply();
 
         // Then
-        expect($state.transitionTo).toHaveBeenCalledWith('commits.list');
+        expect($state.transitionTo).toHaveBeenCalledWith('commits.list', {repo: currentRepoContext.repo });
         expect(currentCommit.get()).toBeNull();
     }));
 

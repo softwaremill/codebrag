@@ -1,6 +1,6 @@
 angular.module('codebrag.profile')
 
-    .service('userSettingsService', function($rootScope, $timeout, $q, $http, authService, events) {
+    .service('userSettingsService', function($rootScope, $timeout, $q, $http, authService) {
 
         this.load = function() {
             return $http.get('rest/users/settings').then(function(response) {
@@ -12,13 +12,6 @@ angular.module('codebrag.profile')
             return $http.put('rest/users/settings', settings).then(function(response) {
                 angular.extend(authService.loggedInUser.settings, response.data.userSettings);
                 return response.data.userSettings;
-            });
-        };
-
-        this.initialize = function() {
-            var self = this;
-            $rootScope.$on(events.branches.branchChanged, function(e, branchName) {
-                self.save({selectedBranch: branchName});
             });
         };
 

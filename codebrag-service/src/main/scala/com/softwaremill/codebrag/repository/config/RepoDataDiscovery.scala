@@ -9,11 +9,12 @@ object RepoDataDiscovery {
 
   def discoverRepoDataFromConfig(repositoryConfig: RepositoryConfig) = {
     val rootDir = resolveRootDir(repositoryConfig)
-    val repoName = discoverRepoName(rootDir)
-    val repoLocation = discoverRepoLocation(rootDir, repoName)
-    val repoType = discoverRepoType(repoLocation)
-    val credentials = resolveCredentials(repositoryConfig)
-    RepoData(repoLocation, repoName, repoType, credentials)
+    discoverRepoNames(rootDir).map( repoName => {
+      val repoLocation = discoverRepoLocation(rootDir, repoName)
+      val repoType = discoverRepoType(repoLocation)
+      val credentials = resolveCredentials(repositoryConfig)
+      RepoData(repoLocation, repoName, repoType, credentials)
+    })
   }
 
   private def resolveCredentials(repositoryConfig: RepositoryConfig): Option[RepoCredentials] = {
@@ -34,14 +35,11 @@ object RepoDataDiscovery {
     rootDir
   }
 
-  private def discoverRepoName(rootDir: Path) = {
-    val potentialRepoDirs = rootDir.toFile.listFiles.filter(_.isDirectory).map(_.getName).toList
+  private def discoverRepoNames(rootDir: Path) = {
+    val reposDirs = rootDir.toFile.listFiles.filter(_.isDirectory).map(_.getName).toList
     val reposRootDir = rootDir.toFile.getCanonicalPath
-    potentialRepoDirs match {
-      case Nil => throw new RuntimeException(s"Repository directory not found in ${reposRootDir}. Please clone your repository as a directory inside ${reposRootDir}")
-      case dir :: Nil => dir
-      case _ => throw new RuntimeException(s"More than one directory found in ${reposRootDir}. Only one repository directory can exist there")
-    }
+    if(reposDirs.isEmpty) throw new RuntimeException(s"Repositories not found in ${reposRootDir}. Please clone your repositories as a directory inside ${reposRootDir}")
+    reposDirs
   }
 
   private def discoverRepoLocation(rootDir: Path, repoName: String) = {

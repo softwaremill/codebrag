@@ -1,6 +1,6 @@
 angular.module('codebrag.common.directives')
 
-    .directive('autoFitHeight', function($window) {
+    .directive('autoFitHeight', function($window, $timeout) {
 
         function HeightsResizer() {
 
@@ -46,17 +46,19 @@ angular.module('codebrag.common.directives')
         return {
             restrict: 'A',
             link: function(scope, el) {
-                var resizer = new HeightsResizer();
-                var listArea = el.find(listAreaSelector);
-                var diffArea = el.find(diffAreaSelector);
-                resizer.resize(listArea, diffArea);
-                $($window).on('resize', resizeWithDelay());
+                $timeout(function() {
+                    var resizer = new HeightsResizer();
+                    var listArea = el.find(listAreaSelector);
+                    var diffArea = el.find(diffAreaSelector);
+                    resizer.resize(listArea, diffArea);
+                    $($window).on('resize', resizeWithDelay());
 
-                function resizeWithDelay() {
-                    return _.debounce(function() {
-                        resizer.resize(listArea, diffArea);
-                    }, 50);
-                }
+                    function resizeWithDelay() {
+                        return _.debounce(function() {
+                            resizer.resize(listArea, diffArea);
+                        }, 50);
+                    }
+                }, 0);
             }
         };
 

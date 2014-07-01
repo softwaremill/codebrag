@@ -2,9 +2,10 @@ package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra
-import com.softwaremill.codebrag.activities.{LoginForm, LoginFailedException, LoginUserUseCase}
+import com.softwaremill.codebrag.usecases.{LoginForm, LoginFailedException, LoginUserUseCase}
+import com.softwaremill.codebrag.finders.user.UserFinder
 
-class SessionServlet(val authenticator: Authenticator, loginUseCase: LoginUserUseCase) extends JsonServletWithAuthentication {
+class SessionServlet(val authenticator: Authenticator, loginUseCase: LoginUserUseCase, userFinder: UserFinder) extends JsonServletWithAuthentication {
 
   post("/") {
     try {
@@ -21,7 +22,7 @@ class SessionServlet(val authenticator: Authenticator, loginUseCase: LoginUserUs
 
   get("/") {
     haltIfNotAuthenticated()
-    user
+    userFinder.findLoggedInUser(user)
   }
 
   delete("/") {
@@ -29,11 +30,6 @@ class SessionServlet(val authenticator: Authenticator, loginUseCase: LoginUserUs
       // call logout only when logged in to avoid NPE
       logOut()
     }
-  }
-
-  // update user details: password, admin, active
-  put("/:userId") {
-
   }
 
   override def login: String = (parsedBody \ "login").extractOpt[String].getOrElse("")

@@ -2,16 +2,25 @@
     <div class="small-12 large-12 columns">
         <div class="commits-tab-header row">
             <div class="small-3 large-3 columns">
+                <div class="branch-selector row" style="z-index:4" ng-controller="ReposCtrl">
+                    <div class="columns">
+                        <dropdown selected="currentRepoContext.repo">
+                            <ul class="branches-list">
+                                <li ng-repeat="repo in repos()" ng-click="selectRepo(repo)" ng-class="{'selected': isSelected(repo)}">{{repo}}</li>
+                            </ul>
+                        </dropdown>
+                    </div>
+                </div>
                 <div class="branch-selector row" ng-controller="BranchesCtrl">
                     <div class="small-6 large-6 columns" ng-show="showBranchesSelector">
-                        <dropdown selected="selectedBranch()" icon="assets/images/branch.png">
+                        <dropdown selected="currentRepoContext.branch" icon="assets/images/branch.png">
                             <ul class="branches-list">
-                                <li ng-repeat="branch in branches" ng-click="selectBranch(branch)" ng-class="{'selected': branch === selectedBranch()}">{{branch}}</li>
+                                <li ng-repeat="branch in branches" ng-click="selectBranch(branch)" ng-class="{'selected': isSelected(branch)}">{{branch}}</li>
                             </ul>
                         </dropdown>
                     </div>
                     <div class="columns" ng-class="{'small-6 large-6': showBranchesSelector}">
-                        <dropdown selected="displaySelectedMode(counters.commitsCount)">
+                        <dropdown selected="displaySelectedMode()">
                             <ul>
                                 <li ng-click="switchListView('pending')">
                                     <i class="icon-info-sign help-bubble"><div class="help-info">"To Review" list shows your colleagues' recent commits awaiting your review</div></i>

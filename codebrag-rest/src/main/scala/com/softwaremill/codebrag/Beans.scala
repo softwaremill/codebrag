@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag
 
-import com.softwaremill.codebrag.activities._
+import com.softwaremill.codebrag.usecases._
 import com.softwaremill.codebrag.common.{RealTimeClock, ObjectIdGenerator, IdGenerator}
 import com.softwaremill.codebrag.rest.CodebragSwagger
 import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
@@ -17,11 +17,13 @@ import com.softwaremill.codebrag.service.templates.TemplateEngine
 import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
 import com.softwaremill.codebrag.dao.Daos
 import com.softwaremill.codebrag.repository.Repository
-import com.softwaremill.codebrag.cache.{UserReviewedCommitsCache, PersistentBackendForCache, BranchCommitsCache}
+import com.softwaremill.codebrag.cache.{RepositoriesCache, UserReviewedCommitsCache, PersistentBackendForCache}
 import com.softwaremill.codebrag.licence.LicenceService
 import com.softwaremill.codebrag.instance.InstanceParamsService
-import com.softwaremill.codebrag.activities.finders.toreview.{ToReviewCommitsViewBuilder, ToReviewBranchCommitsFilter, ToReviewCommitsFinder}
-import com.softwaremill.codebrag.activities.finders.all.{AllCommitsViewBuilder, AllCommitsFinder}
+import com.softwaremill.codebrag.finders.commits.toreview.{ToReviewCommitsViewBuilder, ToReviewBranchCommitsFilter, ToReviewCommitsFinder}
+import com.softwaremill.codebrag.finders.commits.all.{AllCommitsViewBuilder, AllCommitsFinder}
+import com.softwaremill.codebrag.finders.user.UserFinder
+import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFinder
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
@@ -51,17 +53,16 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
 
   lazy val newUserAdder = new NewUserAdder(userDao, eventBus, afterUserRegistered, followupGeneratorForPriorReactions, welcomeFollowupsGenerator)
-  lazy val afterUserRegistered = new AfterUserRegistered(repositoryStateCache, reviewedCommitsCache, config)
-  lazy val afterUserLogin = new AfterUserLogin(reviewedCommitsCache)
+  lazy val afterUserRegistered = new AfterUserRegistered(repositoriesCache, reviewedCommitsCache,userRepoDetailsDao, config)
 
   lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService, notificationService)
 
-  lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder, new DiffService(diffLoader, repository))
+  lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder, new DiffService(diffLoader, repositoriesCache))
 
   lazy val statsAggregator = new StatsAggregator(statsFinder, InstanceId, config, repository)
 
 
-  lazy val loginUserUseCase = new LoginUserUseCase(userDao, afterUserLogin)
+  lazy val loginUserUseCase = new LoginUserUseCase(userDao, userFinder)
   lazy val addCommentUseCase = new AddCommentUseCase(userReactionService, followupService, eventBus, licenceService)
   lazy val reviewCommitUseCase = new ReviewCommitUseCase(commitInfoDao, reviewedCommitsCache, eventBus, licenceService)
   lazy val unlikeUseCaseFactory = new UnlikeUseCase(likeValidator, userReactionService, licenceService)
@@ -73,6 +74,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val generateInvitationCodeUseCase = new GenerateInvitationCodeUseCase(invitationsService, userDao)
   lazy val sendInvitationEmailUseCase = new SendInvitationEmailUseCase(invitationsService, userDao)
   lazy val modifyUserDetailsUseCase = new ModifyUserDetailsUseCase(userDao, licenceService)
+  lazy val updateUserBrowsingContextUseCase = new UpdateUserBrowsingContextUseCase(userRepoDetailsDao)
 
   lazy val licenceService = new LicenceService(InstanceId, instanceParamsDao, userDao)(clock)
 
@@ -82,20 +84,26 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val statsHTTPRequestSender = new StatsHTTPRequestSender(config)
   lazy val instanceRunStatsSender = new InstanceRunStatsSender(statsHTTPRequestSender)
 
-  lazy val repositoryStateCache = new BranchCommitsCache(repository, new PersistentBackendForCache(commitInfoDao, branchStateDao), config)
-  lazy val reviewedCommitsCache = new UserReviewedCommitsCache(userDao, reviewedCommitsDao)
+  lazy val cacheBackend = new PersistentBackendForCache(commitInfoDao, branchStateDao)
+  lazy val repositoriesCache = new RepositoriesCache(cacheBackend, config)
+  lazy val reviewedCommitsCache = new UserReviewedCommitsCache(userDao, reviewedCommitsDao, userRepoDetailsDao)
 
   lazy val toReviewCommitsFinder = new ToReviewCommitsFinder(
-    repositoryStateCache,
+    repositoriesCache,
     userDao,
+    userBrowsingContextFinder,
     new ToReviewBranchCommitsFilter(reviewedCommitsCache, config),
     new ToReviewCommitsViewBuilder(userDao, commitInfoDao)
   )
 
   lazy val allCommitsFinder = new AllCommitsFinder(
-    repositoryStateCache,
+    repositoriesCache,
     commitInfoDao,
     userDao,
     new AllCommitsViewBuilder(commitInfoDao, config, userDao, reviewedCommitsCache)
   )
+
+  lazy val userBrowsingContextFinder = new UserBrowsingContextFinder(userRepoDetailsDao, repositoriesCache)
+  lazy val userFinder = new UserFinder(userDao, userBrowsingContextFinder)
+
 }

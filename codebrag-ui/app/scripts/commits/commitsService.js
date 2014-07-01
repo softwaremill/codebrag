@@ -6,7 +6,7 @@ angular.module('codebrag.commits')
      *
      * Most of the code here is to create delegates
      */
-    .factory('commitsService', function(allCommitsListService, pendingCommitsListService) {
+    .factory('commitsService', function(allCommitsListService, pendingCommitsListService, currentRepoContext) {
 
         var toReviewService = true;
 
@@ -44,7 +44,7 @@ angular.module('codebrag.commits')
         }
 
         function getCurrentImpl() {
-            return toReviewService ? pendingCommitsListService : allCommitsListService
+            return currentRepoContext.isToReviewFilterSet() ? pendingCommitsListService : allCommitsListService;
         }
 
         return proxyService;

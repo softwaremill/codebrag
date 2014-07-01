@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
-import com.softwaremill.codebrag.activities.{IncomingSettings, ChangeUserSettingsUseCase}
+import com.softwaremill.codebrag.usecases.{IncomingSettings, ChangeUserSettingsUseCase}
 import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.UserSettings
@@ -30,7 +30,7 @@ class UserSettingsServletSpec extends AuthenticatableServletSpec with BeforeAndA
     val currentUser = someUser
     userIsAuthenticatedAs(currentUser)
     val incomingSettingsJson = """{"emailNotificationsEnabled": true, "selectedBranch": "master"}"""
-    val expectedSettings = IncomingSettings(Some(true), None, None, Some("master"))
+    val expectedSettings = IncomingSettings(Some(true), None, None)
     when(useCase.execute(currentUser.idAsObjectId, expectedSettings)).thenReturn(Right(UserSettings.defaults(currentUser.email  )))
     put("/", incomingSettingsJson, defaultJsonHeaders) {
       status should be(200)

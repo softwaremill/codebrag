@@ -60,12 +60,11 @@ angular.module('codebrag')
             return codebrag.uniqueRequestsAwareHttpService($delegate, $q);
         });
     })
-    .run(function($rootScope, repositoryStatusService, pageTourService, authService, $state, licenceService, branchesService) {
+    .run(function($rootScope, repositoryStatusService, pageTourService, authService, $state, licenceService) {
         repositoryStatusService.checkRepoReady();
         authService.isFirstRegistration().then(openFirstRegistrationIfNeeded);
         pageTourService.initializeTour();
         licenceService.initialize();
-        branchesService.initialize();
 
         function openFirstRegistrationIfNeeded(firstRegistration) {
             if (firstRegistration) {
@@ -93,7 +92,7 @@ angular.module('codebrag.session')
         $stateProvider
             .state('home', {
                 url: '/',
-                templateUrl: 'views/main.html'
+                controller: 'HomeCtrl'
             })
             .state('register', {
                 url: '/register/{invitationId}',
@@ -116,10 +115,15 @@ angular.module('codebrag.commits')
     .config(function ($stateProvider, authenticatedUser) {
         $stateProvider
             .state('commits', {
-                url: '/commits',
+                url: '/{repo}/commits',
                 abstract: true,
                 templateUrl: 'views/secured/commits/commits.html',
-                resolve: authenticatedUser
+                resolve: authenticatedUser,
+                onEnter: function($stateParams, currentRepoContext) {
+                    currentRepoContext.ready().then(function() {
+                        currentRepoContext.switchRepo($stateParams.repo);
+                    })
+                }
             })
             .state('commits.list', {
                 url: '',
@@ -155,10 +159,6 @@ angular.module('codebrag.common')
         marked.setOptions({sanitize: true, gfm: true});
     });
 
-
-angular.module('codebrag.profile').run(function(userSettingsService) {
-    userSettingsService.initialize();
-});
 
 angular.module('codebrag.userMgmt').run(function(userMgmtService) {
     userMgmtService.initialize();

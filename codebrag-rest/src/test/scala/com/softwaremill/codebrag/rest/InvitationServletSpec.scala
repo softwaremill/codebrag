@@ -9,9 +9,9 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra.auth.Scentry
 import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.ArgumentCaptor
-import com.softwaremill.codebrag.activities.{SendInvitationEmailUseCase, GenerateInvitationCodeUseCase}
+import com.softwaremill.codebrag.usecases.{SendInvitationEmailUseCase, GenerateInvitationCodeUseCase}
 import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.activities.assertions.AdminRoleRequiredException
+import com.softwaremill.codebrag.usecases.assertions.AdminRoleRequiredException
 
 
 class InvitationServletSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {

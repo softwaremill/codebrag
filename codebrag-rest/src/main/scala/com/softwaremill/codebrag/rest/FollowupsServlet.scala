@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.service.followups.FollowupService
 import org.scalatra.NotFound
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 import com.softwaremill.codebrag.dao.finders.views.SingleFollowupView
-import com.softwaremill.codebrag.activities.FollowupDoneUseCase
+import com.softwaremill.codebrag.usecases.FollowupDoneUseCase
 
 class FollowupsServlet(val authenticator: Authenticator,
                        val swagger: Swagger,

@@ -2,7 +2,7 @@ import com.softwaremill.codebrag.backup.BackupScheduler
 import com.softwaremill.codebrag.dao.Daos
 import com.softwaremill.codebrag.dao.sql.{SQLEmbeddedDbBackup, SQLDatabase}
 import com.softwaremill.codebrag.dao.user.InternalUserDAO
-import com.softwaremill.codebrag.domain.InternalUser
+import com.softwaremill.codebrag.domain.{UserRepoDetails, InternalUser}
 import com.softwaremill.codebrag.repository.config.RepoDataDiscovery
 import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.rest._
@@ -33,14 +33,25 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       def rootConfig = ConfigFactory.load()
     }
 
-    val repoData = discoverRepositoryOrExit(_config)
-    val _repository = Repository.buildUsing(repoData)
+    val repositories = discoverRepositoryOrExit(_config).map(Repository.buildUsing)
 
-    val beans = initializeBeans(_config, _repository)
+    val beans = initializeBeans(_config, repositories.head)
     import beans._
 
-    repositoryStateCache.initialize()
+    repositoriesCache.initialize(repositories)
     reviewedCommitsCache.initialize()
+
+    val repoNames = repositoriesCache.repoNames
+    userDao.findAll().foreach { user =>
+      logger.debug(s"Synchronizing repositories for ${user.name}")
+      val userRepoDetails = userRepoDetailsDao.findAll(user.id)
+      val newReposForUser = repoNames.filterNot(rn => userRepoDetails.exists(_.repoName == rn))
+      logger.debug(s"Found new repositories for user ${user.name}: $newReposForUser")
+      newReposForUser.map({newRepoName =>
+        UserRepoDetails(user.id, newRepoName, repositoriesCache.getCheckedOutBranchShortName(newRepoName), clock.nowUtc)
+      }).foreach(userRepoDetailsDao.save)
+    }
+
 
     setupEvents()
     ensureInternalCodebragUserExists(beans.internalUserDao)
@@ -56,8 +67,8 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       logger.info("Sending anonymous statistics was disabled - not scheduling stats calculation")
     }
 
-    val repoUpdateActor = RepositoryUpdateScheduler.initialize(actorSystem, _repository, commitImportService)
-    context.mount(new SessionServlet(authenticator, loginUserUseCase), Prefix + SessionServlet.MappingPath)
+    RepositoryUpdateScheduler.scheduleUpdates(actorSystem, repositories, commitImportService)
+    context.mount(new SessionServlet(authenticator, loginUserUseCase, userFinder), Prefix + SessionServlet.MappingPath)
     context.mount(new UsersServlet(authenticator, registerService, registerNewUserUseCase, userFinder, modifyUserDetailsUseCase, config), Prefix + UsersServlet.MappingPath)
     context.mount(new UsersSettingsServlet(authenticator, userDao, changeUserSettingsUseCase), Prefix + "users/settings")
     context.mount(new CommitsServlet(authenticator, toReviewCommitsFinder, allCommitsFinder, reactionFinder, addCommentUseCase,
@@ -67,11 +78,12 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new VersionServlet(config), Prefix + "version")
     context.mount(new ConfigServlet(config, authenticator), Prefix + "config")
     context.mount(new InvitationServlet(authenticator, generateInvitationCodeUseCase, sendInvitationEmailUseCase), Prefix + "invitation")
-    context.mount(new RepositorySyncServlet(actorSystem, repoUpdateActor), RepositorySyncServlet.Mapping)
     context.mount(new UpdatesServlet(authenticator, followupFinder, heartbeatDao, toReviewCommitsFinder, clock), Prefix + UpdatesServlet.Mapping)
-    context.mount(new RepoStatusServlet(authenticator, _repository, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
-    context.mount(new AvailableBranchesServlet(authenticator, repositoryStateCache), Prefix + AvailableBranchesServlet.MountPath)
+    context.mount(new RepoStatusServlet(authenticator, repositories.head, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
+    context.mount(new AvailableBranchesServlet(authenticator, repositoriesCache), Prefix + AvailableBranchesServlet.MountPath)
     context.mount(new LicenceServlet(licenceService, registerLicenceUseCase, authenticator), Prefix + LicenceServlet.MountPath)
+    context.mount(new BrowsingContextServlet(authenticator, userBrowsingContextFinder, updateUserBrowsingContextUseCase), Prefix + BrowsingContextServlet.MappingPath)
+
 
     if (config.demo) {
       context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")

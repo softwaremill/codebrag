@@ -14,20 +14,20 @@ trait ReviewedCommitsDAOSpec extends FlatSpec with ShouldMatchers with ClockSpec
   it should "save reviewed commit for user together with review date" in {
     // given
     val userId = ObjectIdTestUtils.oid(999)
-    val reviewedCommit = ReviewedCommit("123", userId, clock.nowUtc)
+    val reviewedCommit = ReviewedCommit("123", userId, "codebrag", clock.nowUtc)
 
     // when
     reviewedCommitsDao.storeReviewedCommit(reviewedCommit)
 
     // then
-    val reviewedByUser = reviewedCommitsDao.allReviewedByUser(userId)
+    val reviewedByUser = reviewedCommitsDao.allReviewedByUser(userId, "codebrag")
     reviewedByUser should be(Set(reviewedCommit))
   }
 
-  it should "not store the same commit for user twice" in {
+  it should "not store the same commit for user and repo twice" in {
     // given
     val userId = ObjectIdTestUtils.oid(999)
-    val reviewedCommit = ReviewedCommit("123", userId, clock.nowUtc)
+    val reviewedCommit = ReviewedCommit("123", userId, "codebrag", clock.nowUtc)
     reviewedCommitsDao.storeReviewedCommit(reviewedCommit)
 
     // when
@@ -36,20 +36,20 @@ trait ReviewedCommitsDAOSpec extends FlatSpec with ShouldMatchers with ClockSpec
     }
 
     // then
-    val reviewedByUser = reviewedCommitsDao.allReviewedByUser(userId)
+    val reviewedByUser = reviewedCommitsDao.allReviewedByUser(userId, "codebrag")
     reviewedByUser should be(Set(reviewedCommit))
   }
 
   it should "fetch all commits reviewed by user" in {
     // given
     val userId = ObjectIdTestUtils.oid(999)
-    val firstCommit = ReviewedCommit("123", userId, clock.nowUtc)
+    val firstCommit = ReviewedCommit("123", userId, "codebrag", clock.nowUtc)
     reviewedCommitsDao.storeReviewedCommit(firstCommit)
-    val secondCommit = ReviewedCommit("456", userId, clock.nowUtc)
+    val secondCommit = ReviewedCommit("456", userId, "codebrag", clock.nowUtc)
     reviewedCommitsDao.storeReviewedCommit(secondCommit)
 
     // when
-    val allReviewedByUser = reviewedCommitsDao.allReviewedByUser(userId)
+    val allReviewedByUser = reviewedCommitsDao.allReviewedByUser(userId, "codebrag")
 
     // then
     allReviewedByUser should be(Set(firstCommit, secondCommit))

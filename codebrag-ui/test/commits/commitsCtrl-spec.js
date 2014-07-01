@@ -8,19 +8,17 @@ describe("Commits Controller", function () {
         $rootScope,
         $q,
         commitsService,
-        branchesService,
         $stateParams,
         events,
         currentCommit;
 
     beforeEach(module('codebrag.commits', 'codebrag.notifications'));
 
-    beforeEach(inject(function(_$rootScope_, _$q_, $controller, _commitsService_, _$stateParams_, _events_, _branchesService_, _currentCommit_) {
+    beforeEach(inject(function(_$rootScope_, _$q_, $controller, _commitsService_, _$stateParams_, _events_, _currentCommit_) {
         $scope = _$rootScope_.$new();
         $rootScope = _$rootScope_;
         $q = _$q_;
         commitsService = _commitsService_;
-        branchesService = _branchesService_;
         $stateParams = _$stateParams_;
         events = _events_;
         currentCommit = _currentCommit_;
@@ -28,30 +26,12 @@ describe("Commits Controller", function () {
 
     beforeEach(inject(function($controller) {
         spyOn(commitsService, 'loadCommits').andReturn($q.defer().promise);
-        $controller('CommitsCtrl', {$scope: $scope, commitsListService: commitsService, $stateParams: $stateParams, branchesService: branchesService});
+        $controller('CommitsCtrl', {$scope: $scope, commitsListService: commitsService, $stateParams: $stateParams});
     }));
 
-    it('should not load commits before branches service is ready', inject(function($controller) {
-        // given
-        var branchServiceReady = $q.defer();
-        spyOn(branchesService, 'ready').andReturn(branchServiceReady.promise);
-
+    it('should load pending commits when controller starts', inject(function($controller) {
         // when
-        $controller('CommitsCtrl', {$scope: $scope});
-
-        // then
-        expect(commitsService.loadCommits).not.toHaveBeenCalled();
-    }));
-
-    it('should load pending commits when branches service is ready', inject(function($controller) {
-        // given
-        var branchServiceReady = $q.defer();
-        spyOn(branchesService, 'ready').andReturn(branchServiceReady.promise);
-
-        // when
-        $controller('CommitsCtrl', {$scope: $scope});
-        branchServiceReady.resolve();
-        $rootScope.$digest();
+        $controller('CommitsCtrl', {$scope: $scope, commitsListService: commitsService});
 
         // then
         expect(commitsService.loadCommits).toHaveBeenCalled();

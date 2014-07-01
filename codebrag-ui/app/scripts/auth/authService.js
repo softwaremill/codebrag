@@ -1,15 +1,16 @@
 angular.module('codebrag.auth').factory('authService', function ($http, httpRequestsBuffer, $q, $rootScope, events, User) {
     'use strict';
 
-    var sessionApiUrl = 'rest/session';
-    var registrationApiUrl = 'rest/users/first-registration';
-
-    var currentUser = User.guest();
+    var sessionApiUrl = 'rest/session',
+        registrationApiUrl = 'rest/users/first-registration',
+        currentUser = User.guest(),
+        authenticatedDeferred = $q.defer();
 
     function setLoggedInUser(userData) {
         currentUser.loggedInAs(userData);
         updateLoggedInUserInRootScope(currentUser, $rootScope);
         $rootScope.$broadcast(events.loggedIn);
+        authenticatedDeferred.resolve(currentUser);
     }
 
     function updateLoggedInUserInRootScope(loggedInUser, $rootScope) {
@@ -55,7 +56,9 @@ angular.module('codebrag.auth').factory('authService', function ($http, httpRequ
             }
         },
 
-        loggedInUser: currentUser
+        loggedInUser: currentUser,
+
+        userAuthenticated: authenticatedDeferred.promise
 
     };
 

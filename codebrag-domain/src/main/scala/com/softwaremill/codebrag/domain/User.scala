@@ -66,13 +66,13 @@ case class UserSettings(
   emailNotificationsEnabled: Boolean,
   dailyUpdatesEmailEnabled: Boolean,
   appTourDone: Boolean,
-  toReviewStartDate: Option[DateTime],
-  selectedBranch: Option[String])
+  toReviewStartDate: Option[DateTime]
+)
 
 object UserSettings {
 
   def defaults(email: String) = {
-    new UserSettings(defaultAvatarUrl(email), emailNotificationsEnabled = true, dailyUpdatesEmailEnabled = true, appTourDone = false, toReviewStartDate = None, selectedBranch = None)
+    new UserSettings(defaultAvatarUrl(email), emailNotificationsEnabled = true, dailyUpdatesEmailEnabled = true, appTourDone = false, toReviewStartDate = None)
   }
 
   def defaultAvatarUrl(email: String): String = s"http://www.gravatar.com/avatar/${Utils.md5(email)}.png"

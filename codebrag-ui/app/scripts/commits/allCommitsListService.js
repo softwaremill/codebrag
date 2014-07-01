@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .factory('allCommitsListService', function(Commits, $rootScope, events, $q, branchesService) {
+    .factory('allCommitsListService', function(Commits, $rootScope, events, $q, currentRepoContext) {
 
         var self = this;
 
@@ -21,7 +21,8 @@ angular.module('codebrag.commits')
             var options = {};
             options[self.urlParams.limit] = pageLimit;
             options[self.urlParams.selected] = sha;
-            options[self.urlParams.branch] = branchesService.selectedBranch();
+            options[self.urlParams.branch] = currentRepoContext.branch;
+            options[self.urlParams.repo] = currentRepoContext.repo;
             return Commits.queryAllWithSurroundings(options).$then(function(response) {
                 var list = _mixInreviewStateMethods(response.data.commits);
                 commits.replaceWith(list);
@@ -31,14 +32,14 @@ angular.module('codebrag.commits')
             });
         }
 
-        function commitDetails(sha) {
-            return Commits.get({sha: sha}).$then(function(response) {
+        function commitDetails(sha, repo) {
+            return Commits.get({sha: sha, repo: repo || currentRepoContext.repo}).$then(function(response) {
                 return response.data;
             });
         }
 
         function markAsReviewed(sha) {
-            Commits.remove({sha: sha});   // fire and don't wait for response
+            Commits.remove({sha: sha, repo: currentRepoContext.repo});   // fire and don't wait for response
             var indexReviewed = commits.markAsReviewedOnly(sha);
             eventsEmitter.triggerCommitReviewedEvent();
             return $q.when(commits.elementAtIndex(indexReviewed + 1));
@@ -49,7 +50,8 @@ angular.module('codebrag.commits')
             var options = {};
             options[self.urlParams.min] = commits.last().sha;
             options[self.urlParams.limit] = pageLimit;
-            options[self.urlParams.branch] = branchesService.selectedBranch();
+            options[self.urlParams.branch] = currentRepoContext.branch;
+            options[self.urlParams.repo] = currentRepoContext.repo;
             return Commits.queryAll(options).$then(function(response) {
                 var list = _mixInreviewStateMethods(response.data.commits);
                 commits.appendAll(list);
@@ -64,7 +66,8 @@ angular.module('codebrag.commits')
             var options = {};
             options[self.urlParams.max] = commits.first().sha;
             options[self.urlParams.limit] = pageLimit;
-            options[self.urlParams.branch] = branchesService.selectedBranch();
+            options[self.urlParams.branch] = currentRepoContext.branch;
+            options[self.urlParams.repo] = currentRepoContext.repo;
             return Commits.queryAll(options).$then(function(response) {
                 var list = _mixInreviewStateMethods(response.data.commits);
                 commits.prependAll(list);

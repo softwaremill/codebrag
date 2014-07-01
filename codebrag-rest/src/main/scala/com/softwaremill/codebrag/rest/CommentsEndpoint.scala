@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.rest
 
 import org.bson.types.ObjectId
 import org.scalatra.swagger.SwaggerSupport
-import com.softwaremill.codebrag.activities.AddCommentUseCase
+import com.softwaremill.codebrag.usecases.AddCommentUseCase
 import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import scala.Some
 import com.softwaremill.codebrag.dao.user.UserDAO

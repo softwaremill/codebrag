@@ -41,6 +41,9 @@
     <!-- main module -->
     <script type="text/javascript" src="scripts/app.js"></script>
 
+    <!-- home ctrl -->
+    <script type="text/javascript" src="scripts/home/homeCtrl.js"></script>
+
     <!-- templates module -->
     <script type="text/javascript" src="scripts/templates.js"></script>
 
@@ -96,8 +99,11 @@
     <script type="text/javascript" src="scripts/commits/displayReviewersFilter.js"></script>
 
     <!-- branches -->
+    <script type="text/javascript" src="scripts/branches/reposCtrl.js"></script>
     <script type="text/javascript" src="scripts/branches/branchesCtrl.js"></script>
     <script type="text/javascript" src="scripts/branches/branchesService.js"></script>
+    <script type="text/javascript" src="scripts/branches/currentRepoContext.js"></script>
+    <script type="text/javascript" src="scripts/branches/userBrowsingContextResource.js"></script>
 
 
     <!-- follow-ups -->
@@ -180,7 +186,7 @@
     <div class="loading-bar" http-request-tracker active-class="loading"></div>
     <contact-form-popup></contact-form-popup>
     <popup template-url="views/popups/userProfile.html" open-on="openUserProfilePopup"></popup>
-    <header class="main-header" ng-controller="SessionCtrl">
+    <header class="main-header" ng-controller="SessionCtrl" ng-if="loggedInUser.isAuthenticated()">
         <div class="demo-nav" show-on-demo>
             <a href="http://codebrag.com/">back to codebrag.com</a>
         </div>
@@ -188,7 +194,7 @@
             <img alt="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAA0CAYAAABCZTCoAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHh5AAB/gQAA+lMAAIDxAAB4LgAA/hgAAEcGAAAQ3E+OhDkAAANsSURBVHja7JzLaxRBEIe/cdfFR4xEQy568YGIj1y8SG560Yge9OBNBFFUVELEoxCC4EHwEbwIivgniI+I6EEwIIqCxmg8BIUgIiwaNUpAkqyH1MLQtLO9yczu9E79oOnpmdrqnurqrsc0GxQnW4kJJQeaAEWqZJmPc9QjQ0sin6/dNK5TmzJZzlNRZxuqAKoAClUAhSqAQhVAoQqgyBoCx0SQJnnSh1jmxDkRpEme9CGOOVETkHHk69x/EqalNEd+pSr7i5tfTc1pvRUgEdMSxdOFX6UxJcmv1uZUTYCGgQr1Aepn8wOH7a5UwT5Wy7MSP3M7DuY4vmr5NbYTGLaHrrau0m+q5TmbMdSSX60VwMkT1zg/dZjN7mnfATTJ07ioNLf5BtF0n5CqtHpe10i6VqTmARSaB1A0cBgYR+7AZ4FnPg+QtThbTYAi9SYgloQCeiIoleFkpbl1PhLmkCwKknqJmHkG1byrw+KIm5/rO8cyJ3oeoMbj0zyAQp1AhYaBzk5KHXjGPaZUf8vQHUBNgEIVQJFZBD78R1BL94SXwh27vDB1skzUCdSTRf7J0jcTMCSrw1aGgc4Q7b0I2s/AYYP3aaBoof0OnDVWXCfw0UL7B7gGFNQHSAYbI56tB24DW6S9OYJ2BXAd2C3tg8BFwGYPW4BzQJe010g/qyy0i4CjwAVVgOTwHlhmlDaZ0AJwxKBvN2iXA73y7LjUB6Q+Y+G9E5gGDgnNHumnTxQmTNsBTAH7fRGmj2cCp4Axy/0nMvkrjfs/LfSPgR6gWdptUj+30D4ExoGl0l4g9Qvgm0H7DLgryqAKkFHs1TxAHcJZ2X4BvjrQb5X6d9a11ccdYIN45mHMB5rEPNwyng2KDS8jF9r6bxq0/cCkpc9mMSVRuAHsk+vXwPasKUA9P3qUEyd/pbjQTgNxZpgmQsqyzRdZ5ltzRQ+8viYzCmi3kF0CuoFj4qCFo4BRg7YLuAKclHxBGbuAAQvvHw7DPCVlsByC+iDbRvoW8NLw6KPwSurFWfcB9GOQOoHeIcdMdi6MArBDrkcT7r9s6zuAR4bTuA5YbXFSVQESjgLCk3M14f7vAOeBE1Js6FMTkAzeRHj2b5lJwgzLvafi0H2x0I9I6Zf2ffn9u//wHwAeyPUn2W0+WOh+iXPZ64tA/w0AtnQCYn2mVh4AAAAASUVORK5CYII=" />
         </a>
         <nav class="main-nav">
-            <ul class="button-group" ng-controller="CountersCtrl" ng-show="loggedInUser.isAuthenticated()">
+            <ul class="button-group" ng-controller="CountersCtrl">
                 <li>
                     <a id="commits-btn" ng-click="openCommits()" class="button" active-for-states="commits,commits.list,commits.details">
                         <span class="number">

@@ -5,7 +5,7 @@
             <div class="followups-container" ng-repeat="commit in followupCommits">
                 <div class="info-box">
                     <div class="commit-name" ng-bind-html-unsafe="commit.commit.message"></div>
-                    <div class="info-line"><span class="username">{{commit.commit.authorName}}</span><span class="time">{{commit.commit.date | relativeDate}}</span></div>
+                    <div class="info-line"><span class="username">{{commit.commit.authorName}}</span><span class="time">{{commit.commit.date | relativeDate}} in {{ commit.commit.repoName }}</span></div>
                 </div>
                 <div class="followup-container" ng-repeat="followup in commit.followups" ng-controller="FollowupListItemCtrl" ng-click="openFollowupDetails(followup)"
                      mark-current="followup.followupId" state-param-name="followupId">

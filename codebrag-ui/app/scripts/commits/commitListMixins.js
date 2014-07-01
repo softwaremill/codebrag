@@ -101,6 +101,7 @@ codebrag.commitsList.mixin.urlParams = function(target) {
         selected: 'selected_sha',
         limit: 'limit',
         filter: 'filter',
-        branch: 'branch'
+        branch: 'branch',
+        repo: 'repo'
     }
 };

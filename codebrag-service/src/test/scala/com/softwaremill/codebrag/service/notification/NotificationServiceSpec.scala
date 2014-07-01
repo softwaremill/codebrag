@@ -13,7 +13,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
-import com.softwaremill.codebrag.activities.finders.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
 
 class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with ClockSpec with BeforeAndAfter {
 
@@ -75,7 +75,7 @@ class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
       val service = new NotificationService(scheduler, engine, config, toReviewCommitsFinder, followupFinder, clock)
       val user = UserAssembler.randomUser.get
 
-      when(toReviewCommitsFinder.countForUserSelectedBranch(any[ObjectId])).thenReturn(pair._2)
+      when(toReviewCommitsFinder.countForUserRepoAndBranch(any[ObjectId])).thenReturn(pair._2)
 
       //when
       service.sendWelcomeNotification(user)

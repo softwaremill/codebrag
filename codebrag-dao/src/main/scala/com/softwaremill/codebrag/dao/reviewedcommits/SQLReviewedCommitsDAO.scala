@@ -11,9 +11,9 @@ class SQLReviewedCommitsDAO(database: SQLDatabase) extends ReviewedCommitsDAO wi
   import database.driver.simple._
   import database._
 
-  override def allReviewedByUser(userId: ObjectId): Set[ReviewedCommit] = {
+  override def allReviewedByUser(userId: ObjectId, repoName: String): Set[ReviewedCommit] = {
     db.withTransaction { implicit session =>
-      reviewedCommits.filter(_.userId === userId).list().toSet
+      reviewedCommits.filter( rc => rc.userId === userId && rc.repoName === repoName).list().toSet
     }
   }
 
@@ -28,11 +28,12 @@ class SQLReviewedCommitsDAO(database: SQLDatabase) extends ReviewedCommitsDAO wi
 
     def userId = column[ObjectId]("user_id")
     def sha = column[String]("sha")
+    def repoName = column[String]("repo_name")
     def reviewDate = column[DateTime]("review_date")
 
-    def pk = primaryKey("reviewed_commits_id", (userId, sha))
+    def pk = primaryKey("reviewed_commits_id", (userId, sha, repoName))
 
-    def * = (sha, userId, reviewDate) <> (ReviewedCommit.tupled, ReviewedCommit.unapply)
+    def * = (sha, userId, repoName, reviewDate) <> (ReviewedCommit.tupled, ReviewedCommit.unapply)
   }
 
   private val reviewedCommits = TableQuery[ReviewedCommits]

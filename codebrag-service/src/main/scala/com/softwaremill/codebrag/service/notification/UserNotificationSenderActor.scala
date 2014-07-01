@@ -12,7 +12,7 @@ import com.softwaremill.codebrag.common.scheduling.ScheduleDelaysCalculator
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
-import com.softwaremill.codebrag.activities.finders.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
 
 class UserNotificationSenderActor(actorSystem: ActorSystem,
                                   heartbeatStore: HeartbeatDAO,
@@ -169,7 +169,7 @@ trait UserNotificationsSender extends Logging {
 
   private def withNonEmptyCountersFor(user: User)(actionBlock: (Long, Long) => Unit) = {
     val followupsCount = followupFinder.countFollowupsForUser(user.id)
-    val toReviewCommitsCount = toReviewCommitsFinder.countForUserSelectedBranch(user.id)
+    val toReviewCommitsCount = toReviewCommitsFinder.countForUserRepoAndBranch(user.id)
     if(followupsCount > 0 || toReviewCommitsCount > 0) {
       actionBlock(followupsCount, toReviewCommitsCount)
     } else {

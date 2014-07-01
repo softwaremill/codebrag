@@ -8,7 +8,8 @@ import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.common.{ClockSpec, Clock}
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
-import com.softwaremill.codebrag.activities.finders.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 
 class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
 
@@ -30,16 +31,17 @@ class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
     }
   }
 
-  "GET /" should "call finder to fetch counters for authorized user" in {
+  "GET /" should "call finder to fetch counters for authorized user for prepo and branch" in {
     // given
     userIsAuthenticatedAs(UserJson(user))
+    val context = UserBrowsingContext(user.id, "codebrag", "master")
     val expectedCommits = 1
     val expectedFollowups = 2
     given(followupFinderMock.countFollowupsForUser(user.id)).willReturn(expectedFollowups)
-    given(toReviewCommitsFinderMock.count(user.id, Some("master"))).willReturn(expectedCommits)
+    given(toReviewCommitsFinderMock.count(context)).willReturn(expectedCommits)
 
     // when
-    get("/?branch=master") {
+    get("/?branch=master&repo=codebrag") {
       //then
       status should equal(200)
       body should include( s""""lastUpdate":$fixtureTime""")

@@ -5,48 +5,47 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import CommitAuthorClassification._
 import org.joda.time.DateTime
-import com.softwaremill.codebrag.cache.{UserReviewedCommitsCacheEntry, UserReviewedCommitsCache, BranchCommitsCache}
+import com.softwaremill.codebrag.cache.{UserReviewedCommitsCache, UserReviewedCommitsCacheEntry, RepositoriesCache, RepositoryCache}
 import com.softwaremill.codebrag.service.config.ReviewProcessConfig
+import com.softwaremill.codebrag.dao.repo.UserRepoDetailsDAO
 
 class AfterUserRegistered(
-  val repoCache: BranchCommitsCache,
-  val reviewedCommitsCache: UserReviewedCommitsCache,
-  val config: ReviewProcessConfig) extends SetStartingDateForUser {
+  repoCache: RepositoriesCache,
+  reviewedCommitsCache: UserReviewedCommitsCache,
+  userRepoDetails: UserRepoDetailsDAO,
+  config: ReviewProcessConfig) {
 
   def run(user: NewUserRegistered) {
-    setStartingDate(user)
+    import ToReviewStartDateCalculator.calcStartingDate
+    val repoDetails = repoCache.repoNames.map { repoName =>
+      val startingDate = calcStartingDate(user, repoCache.getRepo(repoName), config)
+      val defaultBranch = repoCache.getCheckedOutBranchShortName(repoName)
+      UserRepoDetails(user.id, repoName, defaultBranch, startingDate)
+    }
+    repoDetails.foreach { rd =>
+      userRepoDetails.save(rd)
+      reviewedCommitsCache.initializeEmptyCacheFor(rd)
+    }
   }
+
 
 }
 
-trait SetStartingDateForUser extends Logging {
+object ToReviewStartDateCalculator extends Logging {
 
-  val repoCache: BranchCommitsCache
-  val reviewedCommitsCache: UserReviewedCommitsCache
-  val config: ReviewProcessConfig
-
-  protected def setStartingDate(user: NewUserRegistered) {
-    val defaultToReviewStartDate = user.timestamp.minusDays(config.initialToReviewDays)
-    val allBranchCommits = repoCache.getBranchCommits(currentBranch)
-    val newestForUserToReview = allBranchCommits.filterNot(commitAuthoredByUser(_, user)).take(config.initialCommitsToReviewCount)
-    val dateBoundary = newestForUserToReview.lastOption match {
+  def calcStartingDate(registeredUser: NewUserRegistered, repoCache: RepositoryCache, config: ReviewProcessConfig) = {
+    val defaultToReviewStartDate = registeredUser.timestamp.minusDays(config.initialToReviewDays)
+    val repoDefaultBranch = repoCache.repository.getCheckedOutBranchFullName
+    val allBranchCommits = repoCache.getBranchCommits(repoDefaultBranch)
+    val newestForUserToReview = allBranchCommits.filterNot(commitAuthoredByUser(_, registeredUser)).take(config.initialCommitsToReviewCount)
+    newestForUserToReview.lastOption match {
       case Some(last) => getLatestFromBothDates(last.commitDate, defaultToReviewStartDate)
       case None => defaultToReviewStartDate
-    }
-    val newUserCacheEntry = UserReviewedCommitsCacheEntry.forNewlyRegisteredUser(user.id, dateBoundary)
-    reviewedCommitsCache.addNewUserEntry(newUserCacheEntry)
-    logger.debug(s"New user ${user.login} registered. To review boundary date set to ${dateBoundary}")
+    }    
   }
 
-
-  def getLatestFromBothDates(lastCommitDate: DateTime, weekBeforeRegistration: DateTime): DateTime = {
-    if (lastCommitDate.isBefore(weekBeforeRegistration)) {
-      weekBeforeRegistration
-    } else {
-      lastCommitDate
-    }
+  private def getLatestFromBothDates(lastCommitDate: DateTime, dateRangeBeforeRegistration: DateTime): DateTime = {
+    if (lastCommitDate.isBefore(dateRangeBeforeRegistration)) dateRangeBeforeRegistration else lastCommitDate
   }
-
-  private def currentBranch = repoCache.repository.getCheckedOutBranchFullName
 
 }

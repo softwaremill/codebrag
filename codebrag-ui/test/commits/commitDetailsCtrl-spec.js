@@ -14,16 +14,18 @@ describe("CommitDetailsController", function () {
         commitsService = _commitsService_;
     }));
 
-    it('should use commit sha provided in $stateParams to load commit data', inject(function($stateParams, $controller) {
+    it('should use repo and commit sha provided in $stateParams to load commit data', inject(function($stateParams, $controller) {
         // Given
         $stateParams.sha = selectedCommitSha;
+        $stateParams.repo = "codebrag"
+
         spyOn(commitsService, 'commitDetails').andReturn(noopPromise);
 
         // when
         $controller('CommitDetailsCtrl', {$scope: $scope, commitsListService: commitsService});
 
         // Then
-        expect(commitsService.commitDetails).toHaveBeenCalledWith(selectedCommitSha);
+        expect(commitsService.commitDetails).toHaveBeenCalledWith(selectedCommitSha, "codebrag");
     }));
 
     it('should expose loaded commit in scope', inject(function($controller, $stateParams) {

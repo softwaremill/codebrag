@@ -1,6 +1,6 @@
 angular.module('codebrag.commits')
 
-    .factory('pendingCommitsListService', function(Commits, $rootScope, events, branchesService) {
+    .factory('pendingCommitsListService', function(Commits, $rootScope, events, currentRepoContext) {
 
         var self = this;
 
@@ -21,7 +21,8 @@ angular.module('codebrag.commits')
         function loadCommits() {
             var options = {};
             options[self.urlParams.limit] = pageLimit;
-            options[self.urlParams.branch] = branchesService.selectedBranch();
+            options[self.urlParams.branch] = currentRepoContext.branch;
+            options[self.urlParams.repo] = currentRepoContext.repo;
             return Commits.queryReviewable(options).$then(function(response) {
                 var list = _mixInreviewStateMethods(response.data.commits);
                 commits.replaceWith(list);
@@ -31,8 +32,8 @@ angular.module('codebrag.commits')
             });
         }
 
-        function commitDetails(sha) {
-            return Commits.get({sha: sha}).$then(function(response) {
+        function commitDetails(sha, repo) {
+            return Commits.get({sha: sha, repo: repo || currentRepoContext.repo}).$then(function(response) {
                 return response.data;
             });
         }
@@ -45,10 +46,10 @@ angular.module('codebrag.commits')
                 return commits.elementAtIndexOrLast(indexRemoved);
             }
 
-            var commitMarkedAsReviewed =Commits.remove({sha: sha}).$then(function() {
+            var commitMarkedAsReviewed =Commits.remove({sha: sha, repo: currentRepoContext.repo}).$then(function() {
                 return prefetchedCommitPromise;
             });
-            var nextCommitToReview = commitMarkedAsReviewed.then(removeGivenAndAppendPrefetchedCommit)
+            var nextCommitToReview = commitMarkedAsReviewed.then(removeGivenAndAppendPrefetchedCommit);
             nextCommitToReview.then(_prefetchOneMoreCommit);
             return nextCommitToReview;
         }
@@ -58,7 +59,8 @@ angular.module('codebrag.commits')
             var options = {};
             options[self.urlParams.min] = commits.last().sha;
             options[self.urlParams.limit] = pageLimit;
-            options[self.urlParams.branch] = branchesService.selectedBranch();
+            options[self.urlParams.branch] = currentRepoContext.branch;
+            options[self.urlParams.repo] = currentRepoContext.repo;
             Commits.queryReviewable(options).$then(function(response) {
                 var list = _mixInreviewStateMethods(response.data.commits);
                 commits.appendAll(list);
@@ -82,7 +84,8 @@ angular.module('codebrag.commits')
             options[self.urlParams.min] = commits.last().sha;
             options[self.urlParams.limit] = 1;
             options[self.urlParams.filter] = 'to_review';
-            options[self.urlParams.branch] = branchesService.selectedBranch();
+            options[self.urlParams.branch] = currentRepoContext.branch;
+            options[self.urlParams.repo] = currentRepoContext.repo;
             prefetchedCommitPromise = Commits.querySilent(options).$then(function(response) {
                 if(!response.data.commits.length) nextCommits = 0;
                 return response.data.commits.shift();

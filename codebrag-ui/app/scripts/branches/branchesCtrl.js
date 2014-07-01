@@ -1,26 +1,24 @@
 angular.module('codebrag.branches')
 
-    .controller('BranchesCtrl', function ($rootScope, $scope, branchesService, events, countersService) {
+    .controller('BranchesCtrl', function ($scope, branchesService, events, countersService, currentRepoContext) {
 
-        var listFilter = 'pending';
-        $scope.branches = [];
         $scope.showBranchesSelector = false;
+        $scope.currentRepoContext = currentRepoContext;
 
         $scope.selectBranch = function(selected) {
-            branchesService.selectBranch(selected);
-            $rootScope.$broadcast(events.commitsListFilterChanged, listFilter);
+            currentRepoContext.switchBranch(selected);
         };
 
         $scope.isSelected = function(branch) {
-            return branchesService.selectedBranch() === branch;
+            return currentRepoContext.branch === branch;
         };
 
         $scope.selectedBranch = function() {
-            return branchesService.selectedBranch();
+            return currentRepoContext.branch;
         };
 
         $scope.displaySelectedMode = function() {
-            return listFilter === 'all' ? 'all' : $scope.toReviewLabel();
+            return currentRepoContext.isToReviewFilterSet() ? $scope.toReviewLabel() : 'all'
         };
 
         $scope.toReviewLabel = function() {
@@ -28,20 +26,13 @@ angular.module('codebrag.branches')
         };
 
         $scope.switchListView = function(mode) {
-            listFilter = mode;
-            $rootScope.$broadcast(events.commitsListFilterChanged, listFilter);
+            currentRepoContext.switchCommitsFilter(mode);
         };
 
-        function init() {
-            $scope.$on(events.commitsTabOpened, init);
-            branchesService.fetchBranches().then(function(list) {
-                $rootScope.$broadcast(events.commitsListFilterChanged, listFilter);
-                $scope.showBranchesSelector = branchesService.repoType() === 'git' ? true : false;
-                $scope.branches = list;
-            });
-        }
-
-        init();
+        branchesService.loadBranches().then(function(branchesList) {
+            $scope.showBranchesSelector = (branchesService.repoType() === 'git');
+            $scope.branches = branchesList;
+        });
 
     });
 

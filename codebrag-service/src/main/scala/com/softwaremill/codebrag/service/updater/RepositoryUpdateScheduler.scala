@@ -1,28 +1,22 @@
 package com.softwaremill.codebrag.service.updater
 
-import akka.actor.{ActorRef, Props, ActorSystem}
+import akka.actor.{Props, ActorSystem}
 import com.softwaremill.codebrag.service.commits.CommitImportService
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.repository.config.RepoData
 import com.softwaremill.codebrag.repository.Repository
 
 object RepositoryUpdateScheduler extends Logging {
 
-  private var actor: ActorRef = _
-
-  def initialize(
-    actorSystem: ActorSystem,
-    repository: Repository,
-    commitImportService: CommitImportService): ActorRef = {
-
-    actor = actorSystem.actorOf(Props(new RepoUpdateActor(commitImportService, repository)),
-      repository.repoName + "-repo-update-actor")
-    scheduleRepositorySynchronization(actorSystem)
-    actor
+  def scheduleUpdates(actorSystem: ActorSystem, repositories: Seq[Repository], commitImportService: CommitImportService) {
+    repositories.foreach(scheduleSingleRepoUpdate(actorSystem, _, commitImportService))
   }
 
-  def scheduleRepositorySynchronization(actorSystem: ActorSystem) {
+  private def scheduleSingleRepoUpdate(actorSystem: ActorSystem, repository: Repository, commitImportService: CommitImportService) {
+    val props = Props(new RepoUpdateActor(commitImportService, repository))
+    val actorName = s"${repository.repoName}-repo-update-actor"
+    val actor = actorSystem.actorOf(props, actorName)
     import actorSystem.dispatcher
     actorSystem.scheduler.scheduleOnce(RepoUpdateActor.InitialDelay, actor, RepoUpdateActor.Update(scheduleNext = true))
   }
+
 }
