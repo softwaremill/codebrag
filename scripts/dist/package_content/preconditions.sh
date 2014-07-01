@@ -37,7 +37,7 @@ function check_repo_available {
     exit 1    
   fi
 
-  local POTENTIAL_REPO_DIRS=$(find $REPOS_DIR -maxdepth 1 -mindepth 1 -type d -print)
+  local POTENTIAL_REPO_DIRS=($(find $REPOS_DIR -maxdepth 1 -mindepth 1 -type d -print))
 
   for dir in "${POTENTIAL_REPO_DIRS[@]}"
   do
