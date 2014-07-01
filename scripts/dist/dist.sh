@@ -10,7 +10,7 @@ if [ $# -eq 1 ] && [ $1 = "--help" ]; then
 fi
 
 CODEBRAG_ROOT=../..
-DIST_DIR=codebrag-2.1
+DIST_DIR=codebrag-2.2
 DIST_ARCHIVE=codebrag.zip
 DIST_ARCHIVE_PREVIEW=codebrag-preview.zip
 WAR_FILE=$CODEBRAG_ROOT/codebrag-dist/target/scala-2.10/codebrag-dist-assembly*.jar
