@@ -55,7 +55,7 @@ object MigrateV2_1ToV2_2 extends App with Logging {
     logger.debug(s"Adding repo name to already stored commits - Done")
 
     logger.debug(s"Moving user/repo data")
-    (Q.u + s"""CREATE TABLE "user_repo_details"("user_id" VARCHAR NOT NULL, "repo_name" VARCHAR NOT NULL, "branch_name" VARCHAR NOT NULL, "to_review_since" TIMESTAMP NOT NULL, "default" BOOLEAN NOT NULL DEFAULT FALSE)""").execute()
+    (Q.u + s"""CREATE TABLE IF NOT EXISTS "user_repo_details"("user_id" VARCHAR NOT NULL, "repo_name" VARCHAR NOT NULL, "branch_name" VARCHAR NOT NULL, "to_review_since" TIMESTAMP NOT NULL, "default" BOOLEAN NOT NULL DEFAULT FALSE)""").execute()
     (Q.u + s"""ALTER TABLE "user_repo_details" ADD CONSTRAINT IF NOT EXISTS "user_repo_branch_pk" PRIMARY KEY("user_id", "repo_name", "branch_name")""").execute()
     userDao.findAll().map { user =>
       UserRepoDetails(user.id, repositoryName, "master", user.settings.toReviewStartDate.getOrElse(RealTimeClock.nowUtc), true)
