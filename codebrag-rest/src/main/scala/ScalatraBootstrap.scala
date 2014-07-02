@@ -39,7 +39,6 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     import beans._
 
     repositoriesCache.initialize(repositories)
-    reviewedCommitsCache.initialize()
 
     val repoNames = repositoriesCache.repoNames
     userDao.findAll().foreach { user =>

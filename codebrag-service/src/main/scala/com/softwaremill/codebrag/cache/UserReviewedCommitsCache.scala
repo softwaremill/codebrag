@@ -52,10 +52,6 @@ class UserReviewedCommitsCache(userDao: UserDAO, reviewedCommitsDao: ReviewedCom
     getEntry(userId, repoName).commits.map(_.sha).contains(sha)
   }
 
-  def initialize() {
-    logger.debug("TODO: Initializing cache of reviewed commits for registered users") // TODO: add real initialization
-  }
-
   private def loadCacheEntryForKey(key: UserReviewedRepoCommitsCacheKey) {
     logger.debug(s"Not found cache entry for $key, trying to load reviewed commits from DB and put in cache")
     userRepoDetailsDao.find(key.userId, key.repoName) match {
