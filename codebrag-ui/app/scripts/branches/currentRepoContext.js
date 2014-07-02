@@ -29,7 +29,7 @@ angular.module('codebrag.branches')
             },
 
             switchRepo: function (newRepo) {
-                if(this.repo === newRepo) return;
+                if(this.repo === newRepo || angular.isUndefined(this.all[newRepo])) return;
                 this.repo = newRepo;
                 this.switchBranch(this.all[newRepo]);
             },

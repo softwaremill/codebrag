@@ -15,14 +15,18 @@ object UserBrowsingContext {
 class UserBrowsingContextFinder(val userRepoDetailsDao: UserRepoDetailsDAO, val repositoriesCache: RepositoriesCache) extends Logging {
 
   def find(userId: ObjectId, repoName: String): Option[UserBrowsingContext] = {
-    val found = userRepoDetailsDao.find(userId, repoName) match {
-      case Some(context) => UserBrowsingContext(context)
-      case None => UserBrowsingContext(userId, repoName, repositoriesCache.getCheckedOutBranchShortName(repoName))
+    if(repositoriesCache.hasRepo(repoName)) {
+      val found = userRepoDetailsDao.find(userId, repoName) match {
+        case Some(context) => UserBrowsingContext(context)
+        case None => UserBrowsingContext(userId, repoName, repositoriesCache.getCheckedOutBranchShortName(repoName))
+      }
+      Option(found)
+    } else {
+      None
     }
-    Option(found)
   }
 
-  def findAll(userId: ObjectId) = userRepoDetailsDao.findAll(userId).map(UserBrowsingContext.apply)
+  def findAll(userId: ObjectId) = userRepoDetailsDao.findAll(userId).filter(rd => repositoriesCache.hasRepo(rd.repoName))map(UserBrowsingContext.apply)
 
   def findUserDefaultContext(userId: ObjectId) = {
     logger.debug(s"Searching for default browsing context for user $userId")
