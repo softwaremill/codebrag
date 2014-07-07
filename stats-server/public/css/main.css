@@ -111,6 +111,22 @@ nav li {
     background: #f90 !important
 }
 
+.gantt-chart .inactive.v21 {
+    background: #ad0 !important
+}
+
+.gantt-chart .active.v21 {
+    background: #0f0 !important;
+}
+
+.gantt-chart .inactive.v22 {
+    background: #FA9770 !important
+}
+
+.gantt-chart .active.v22 {
+    background: #D2413A !important;
+}
+
 .legend {
     padding: 0.3em;
 }
