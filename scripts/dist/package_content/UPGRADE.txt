@@ -2,7 +2,7 @@
 
 Hey, great to see you again!
 
-* UPGRADE INSTRUCTIONS -> http://documentation.codebrag.com/display/CBR21/Upgrade+from+2.0+to+2.1
+* UPGRADE INSTRUCTIONS -> http://documentation.codebrag.com/display/CBR22/Upgrade+from+2.1+to+2.2
 
 Ping us at ask@codebrag.com if you need any help with the upgrade process.
 
