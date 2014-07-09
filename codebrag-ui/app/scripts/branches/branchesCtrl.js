@@ -2,7 +2,7 @@ angular.module('codebrag.branches')
 
     .controller('BranchesCtrl', function ($scope, branchesService, events, countersService, currentRepoContext) {
 
-        $scope.showBranchesSelector = false;
+        $scope.showBranchesSelector = true;
         $scope.currentRepoContext = currentRepoContext;
 
         $scope.selectBranch = function(selected) {
