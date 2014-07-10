@@ -52,14 +52,14 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQL
   def findLastCommitsNotAuthoredByUser[T](repoName: String, user: T, count: Int)(implicit userLike: UserLike[T]) =
     findMultiWhere { commitInfos
       .where(_.repoName === repoName)
-      .filter(ci => ci.authorName =!= userLike.userFullName(user) && ci.authorEmail =!= userLike.userEmail(user))
+      .filter(ci => ci.authorName =!= userLike.userFullName(user) && !(ci.authorEmail inSet userLike.userEmails(user)))
       .sortBy(orderByDatesDesc)
       .take(count)
     }
 
   def findLastCommitsAuthoredByUser[T](user: T, count: Int)(implicit userLike: UserLike[T]) =
     findMultiWhere { commitInfos
-      .filter(ci => ci.authorName === userLike.userFullName(user) || ci.authorEmail === userLike.userEmail(user))
+      .filter(ci => ci.authorName === userLike.userFullName(user) || (ci.authorEmail inSet userLike.userEmails(user)))
       .sortBy(orderByDatesDesc)
       .take(count)
     }
@@ -67,7 +67,7 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQL
   def findLastCommitsAuthoredByUserSince[T](user: T, date: DateTime)(implicit userLike: UserLike[T]) =
     findMultiWhere { commitInfos
       .filter { ci =>
-        (ci.authorName === userLike.userFullName(user) || ci.authorEmail === userLike.userEmail(user)) &&
+        (ci.authorName === userLike.userFullName(user) || (ci.authorEmail inSet userLike.userEmails(user))) &&
           ci.authorDate >= date
       }
       .sortBy(_.authorDate.asc)

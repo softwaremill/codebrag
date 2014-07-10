@@ -22,7 +22,7 @@ object User {
   implicit object UserLikeRegularUser extends UserLike[User] {
     def userFullName(userLike: User) = userLike.name
 
-    def userEmail(userLike: User) = userLike.emailLowerCase
+    def userEmails(userLike: User) = Set(userLike.emailLowerCase)
   }
 
 }
@@ -30,7 +30,7 @@ object User {
 trait UserLike[T] {
   def userFullName(userLike: T): String
 
-  def userEmail(userLike: T): String
+  def userEmails(userLike: T): Set[String]
 }
 
 case class Authentication(provider: String, username: String, usernameLowerCase: String, token: String, salt: String)

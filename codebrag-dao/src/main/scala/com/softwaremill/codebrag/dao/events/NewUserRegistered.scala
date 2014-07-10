@@ -29,7 +29,7 @@ object NewUserRegistered {
 
     def userFullName(userLike: NewUserRegistered) = userLike.fullName
 
-    def userEmail(userLike: NewUserRegistered) = userLike.email
+    def userEmails(userLike: NewUserRegistered) = Set(userLike.email)
 
   }
 
