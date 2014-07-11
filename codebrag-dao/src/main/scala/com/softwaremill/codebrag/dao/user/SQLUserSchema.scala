@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag.dao.user
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.{User, LastUserNotificationDispatch, UserSettings, Authentication}
+import com.softwaremill.codebrag.domain._
 import org.joda.time.DateTime
 import scala.slick.model.ForeignKeyAction
 import com.softwaremill.codebrag.dao.sql.SQLDatabase
@@ -99,6 +99,6 @@ trait SQLUserSchema {
 
   protected val untuple: ((UserTuple, SQLAuth, SQLSettings, SQLLastNotif)) => User = {
     case (tuple, sqlAuth, sqlSettings, sqlLastNotif) =>
-      User(tuple._1, sqlAuth.toAuth, tuple._2, tuple._3, tuple._4, tuple._6, tuple._7, sqlSettings.toSettings, sqlLastNotif.toLastNotif)
+      User(tuple._1, sqlAuth.toAuth, tuple._2, tuple._3, tuple._4, tuple._6, tuple._7, sqlSettings.toSettings, sqlLastNotif.toLastNotif, UserAliases.defaults)
   }
 }

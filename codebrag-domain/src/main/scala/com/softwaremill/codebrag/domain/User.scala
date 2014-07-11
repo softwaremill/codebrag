@@ -8,7 +8,7 @@ import org.joda.time.DateTime
  * @param token Used by "remember me" - set in a cookie.
  */
 case class User(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, token: String,
-  admin: Boolean, active: Boolean, settings: UserSettings, notifications: LastUserNotificationDispatch) {
+  admin: Boolean, active: Boolean, settings: UserSettings, notifications: LastUserNotificationDispatch, aliases: UserAliases) {
 
   def makeAdmin = this.copy(admin = true)
 }
@@ -16,7 +16,7 @@ case class User(id: ObjectId, authentication: Authentication, name: String, emai
 object User {
 
   def apply(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, token: String, admin: Boolean = false, active: Boolean = true) = {
-    new User(id, authentication, name, emailLowerCase, token, admin, active, UserSettings.defaults(emailLowerCase), LastUserNotificationDispatch.defaults)
+    new User(id, authentication, name, emailLowerCase, token, admin, active, UserSettings.defaults(emailLowerCase), LastUserNotificationDispatch.defaults, UserAliases.defaults)
   }
 
   implicit object UserLikeRegularUser extends UserLike[User] {
@@ -77,5 +77,11 @@ object UserSettings {
 
   def defaultAvatarUrl(email: String): String = s"http://www.gravatar.com/avatar/${Utils.md5(email)}.png"
 
+}
+
+case class UserAliases(emailAliases: Set[String])
+
+object UserAliases {
+  def defaults = UserAliases(Set.empty[String])
 }
 
