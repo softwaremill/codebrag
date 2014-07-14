@@ -22,7 +22,7 @@ object User {
   implicit object UserLikeRegularUser extends UserLike[User] {
     def userFullName(userLike: User) = userLike.name
 
-    def userEmails(userLike: User) = Set(userLike.emailLowerCase)
+    def userEmails(userLike: User) = Set(userLike.emailLowerCase) ++ userLike.aliases.emailAliases.map(_.alias)
   }
 
 }
@@ -86,7 +86,7 @@ object UserAlias {
   def apply(userId: ObjectId, alias: String) = new UserAlias(new ObjectId, userId, alias)
 }
 
-case class UserAliases(emailAliases: Set[UserAlias])
+case class UserAliases(emailAliases: Iterable[UserAlias])
 
 object UserAliases {
   def defaults = UserAliases(Set.empty)

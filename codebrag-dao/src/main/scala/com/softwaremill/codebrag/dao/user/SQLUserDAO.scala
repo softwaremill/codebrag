@@ -111,7 +111,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
       s <- u.settings
     } yield (u.id, u.name, u.emailLowerCase, s.avatarUrl)
 
-    q.list().map(PartialUserDetails.tupled)
+    q.list().map(queryPartialUserAliases).map(PartialUserDetails.tupled)
   }
 
   private def findOneWhere(condition: Users => Column[Boolean]): Option[User] = db.withTransaction { implicit session =>
@@ -128,5 +128,10 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
     val userId = tuple._1._1
     val aliases = userAliases.where(_.userId === userId).list()
     (tuple._1, tuple._2, tuple._3, tuple._4, aliases)
+  }
+
+  private def queryPartialUserAliases(tuple: (ObjectId, String, String, String))(implicit session: Session) = {
+    val aliases = userAliases.where(_.userId === tuple._1).list()
+    (tuple._1, tuple._2, tuple._3, tuple._4, UserAliases(aliases.map(_.toUserAlias)))
   }
 }

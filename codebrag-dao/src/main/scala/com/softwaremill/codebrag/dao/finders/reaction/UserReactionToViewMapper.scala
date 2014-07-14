@@ -45,9 +45,6 @@ trait UserReactionToViewMapper {
   }
 
   private def findUserDetails(commenters: Iterable[PartialUserDetails], commenterId: ObjectId) = {
-    commenters.find(_.id == commenterId) match {
-      case Some(author) => author
-      case None => PartialUserDetails(new ObjectId(), "Unknown author", "", "")
-    }
+    commenters.find(_.id == commenterId).getOrElse(throw new IllegalStateException(s"Could not find user $commenterId"))
   }
 }

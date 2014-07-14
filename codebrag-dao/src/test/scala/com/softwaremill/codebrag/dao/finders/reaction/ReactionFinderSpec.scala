@@ -145,20 +145,6 @@ class ReactionFinderSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with
     comment.authorAvatarUrl should equal(John.settings.avatarUrl)
   }
 
-  it should "return empty string as author avatar if author not registered in codebrag" taggedAs RequiresDb in {
-    // given
-    val dummyCommitId = ObjectIdTestUtils.oid(123123)
-    val commentFromNonexistingUser = CommentAssembler.commentFor(dummyCommitId).withAuthorId(ObjectIdTestUtils.oid(1111111)).get
-    commentDao.save(commentFromNonexistingUser)
-
-    // when
-    val commentsView = reactionsFinder.findReactionsForCommit(dummyCommitId)
-
-    // then
-    val Some(comments) = commentsView.entireCommitReactions.comments
-    comments(0).asInstanceOf[CommentView].authorAvatarUrl should equal("")
-  }
-
   it should "find like by id" taggedAs RequiresDb in {
     // given
     val like = LikeAssembler.likeFor(commitId).withAuthorId(user.id).get
