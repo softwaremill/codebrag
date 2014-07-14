@@ -14,6 +14,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
       lastNotifs += toSQLLastNotif(user.id, user.notifications)
       userSettings += toSQLSettings(user.id, user.settings)
       auths += toSQLAuth(user.id, user.authentication)
+      userAliases ++= user.aliases.emailAliases.map(toSQLUserAlias)
       users += tuple(user)
     }
     user
@@ -27,7 +28,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
       l <- u.lastNotif
     } yield (u, a, s, l)
 
-    q.list().map(untuple)
+    q.list().map(queryUserAliases).map(untuple)
   }
 
   def findById(userId: ObjectId) = findOneWhere(_.id === userId)
@@ -42,7 +43,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
       l <- u.lastNotif
     } yield (u, a, s, l)
 
-    q.firstOption.map(untuple)
+    q.firstOption.map(queryUserAliases).map(untuple)
   }
 
   def findByLoginOrEmail(login: String, email: String) = db.withTransaction { implicit session =>
@@ -54,7 +55,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
       l <- u.lastNotif
     } yield (u, a, s, l)
 
-    q.firstOption.map(untuple)
+    q.firstOption.map(queryUserAliases).map(untuple)
   }
 
   def findByToken(token: String) = findOneWhere(_.token === token)
@@ -114,13 +115,18 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
   }
 
   private def findOneWhere(condition: Users => Column[Boolean]): Option[User] = db.withTransaction { implicit session =>
-    val q = for {
+    val userQuery = for {
       u <- users if condition(u) && u.regular
       a <- u.auth
       s <- u.settings
       l <- u.lastNotif
     } yield (u, a, s, l)
+    userQuery.firstOption.map(queryUserAliases).map(untuple)
+  }
 
-    q.firstOption.map(untuple)
+  private def queryUserAliases(tuple: (UserTuple, SQLAuth, SQLSettings, SQLLastNotif))(implicit session: Session) = {
+    val userId = tuple._1._1
+    val aliases = userAliases.where(_.userId === userId).list()
+    (tuple._1, tuple._2, tuple._3, tuple._4, aliases)
   }
 }

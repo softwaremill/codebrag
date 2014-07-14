@@ -89,16 +89,33 @@ trait SQLUserSchema {
     def auth = foreignKey("auth_fk", id, auths)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
     def settings = foreignKey("settings_fk", id, userSettings)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
     def lastNotif = foreignKey("last_notifs_fk", id, lastNotifs)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
+    def aliases = foreignKey("aliases_fk", id, userAliases)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
 
     def * = (id, name, emailLowerCase, token, regular, admin, active)
   }
 
   protected val users = TableQuery[Users]
 
+  protected case class SQLUserAlias(id: ObjectId, userId: ObjectId, emailAlias: String) {
+    def toUserAlias = UserAlias(id, userId, emailAlias)
+  }
+
+  protected def toSQLUserAlias(userAlias: UserAlias) = SQLUserAlias(userAlias.id, userAlias.userId, userAlias.alias)
+
+  protected class UserAliases(tag: Tag) extends Table[SQLUserAlias](tag, "user_aliases") {
+    def id = column[ObjectId]("id", O.PrimaryKey)
+    def userId = column[ObjectId]("user_id")
+    def alias = column[String]("alias")
+
+    def * = (id, userId, alias) <> (SQLUserAlias.tupled, SQLUserAlias.unapply)
+  }
+
+  protected val userAliases = TableQuery[UserAliases]
+
   protected def tuple(user: User): UserTuple = (user.id, user.name, user.emailLowerCase, user.token, true, user.admin, user.active)
 
-  protected val untuple: ((UserTuple, SQLAuth, SQLSettings, SQLLastNotif)) => User = {
-    case (tuple, sqlAuth, sqlSettings, sqlLastNotif) =>
-      User(tuple._1, sqlAuth.toAuth, tuple._2, tuple._3, tuple._4, tuple._6, tuple._7, sqlSettings.toSettings, sqlLastNotif.toLastNotif, UserAliases.defaults)
+  protected val untuple: ((UserTuple, SQLAuth, SQLSettings, SQLLastNotif, List[SQLUserAlias])) => User = {
+    case (tuple, sqlAuth, sqlSettings, sqlLastNotif, sqlAliases) =>
+      User(tuple._1, sqlAuth.toAuth, tuple._2, tuple._3, tuple._4, tuple._6, tuple._7, sqlSettings.toSettings, sqlLastNotif.toLastNotif, UserAliases(sqlAliases.map(_.toUserAlias).toSet))
   }
 }

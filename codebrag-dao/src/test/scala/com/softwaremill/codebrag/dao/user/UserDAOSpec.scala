@@ -7,7 +7,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
 import org.joda.time.DateTime
 import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
-import com.softwaremill.codebrag.dao.RequiresDb
+import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, RequiresDb}
 import org.scalatest.BeforeAndAfterEach
 import com.softwaremill.codebrag.test.{FlatSpecWithSQL, ClearSQLDataAfterTest}
 import com.softwaremill.codebrag.common.ClockSpec
@@ -73,6 +73,20 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
 
     // then
     assert(userDAO.findByLoginOrEmail(login).isDefined)
+  }
+
+  it should "add user with email aliases" taggedAs (RequiresDb) in {
+    // given
+    val userId = new ObjectId
+    val userAliases = UserAliases(Set(UserAlias(userId, "one@codebrag.com"), UserAlias(userId, "two@codebrag.com")))
+    val user = UserAssembler.randomUser.withId(userId).get.copy(aliases = userAliases)
+
+    // when
+    userDAO.add(user)
+
+    // then
+    val result = userDAO.findById(userId)
+    result.get.aliases should be(userAliases)
   }
 
   it should "count all regular users in db" taggedAs (RequiresDb) in {

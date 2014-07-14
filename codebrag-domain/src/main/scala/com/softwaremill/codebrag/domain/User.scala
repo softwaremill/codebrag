@@ -79,9 +79,16 @@ object UserSettings {
 
 }
 
-case class UserAliases(emailAliases: Set[String])
+
+case class UserAlias(id: ObjectId, userId: ObjectId, alias: String)
+
+object UserAlias {
+  def apply(userId: ObjectId, alias: String) = new UserAlias(new ObjectId, userId, alias)
+}
+
+case class UserAliases(emailAliases: Set[UserAlias])
 
 object UserAliases {
-  def defaults = UserAliases(Set.empty[String])
+  def defaults = UserAliases(Set.empty)
 }
 
