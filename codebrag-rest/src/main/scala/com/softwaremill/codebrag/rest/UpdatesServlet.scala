@@ -20,10 +20,9 @@ class UpdatesServlet(
   }
 
   get("/") {
-    val userId = new ObjectId(user.id)
-    val context = UserBrowsingContext(userId, extractReqUrlParam("repo"), extractReqUrlParam("branch"))
-    heartbeat.update(userId)
-    val followupsCount = followupFinder.countFollowupsForUser(userId)
+    val context = UserBrowsingContext(user.id, extractReqUrlParam("repo"), extractReqUrlParam("branch"))
+    heartbeat.update(user.id)
+    val followupsCount = followupFinder.countFollowupsForUser(user.id)
     val toReviewCount = toReviewCommitsFinder.count(context)
     UpdateNotification(clock.nowMillis, toReviewCount, followupsCount)
   }

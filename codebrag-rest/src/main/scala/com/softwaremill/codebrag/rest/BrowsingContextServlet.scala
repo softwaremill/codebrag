@@ -9,13 +9,13 @@ class BrowsingContextServlet(val authenticator: Authenticator, contextFinder: Us
 
   get("/") {
     haltIfNotAuthenticated()
-    contextFinder.findAll(user.idAsObjectId)
+    contextFinder.findAll(user.id)
   }
 
   get("/:repo") {
     haltIfNotAuthenticated()
     val repo = params("repo")
-    contextFinder.find(user.idAsObjectId, repo) match {
+    contextFinder.find(user.id, repo) match {
       case Some(context) => scalatra.Ok(context)
       case None => scalatra.NotFound(Map("error" -> s"Repository $repo found"))
     }
@@ -23,7 +23,7 @@ class BrowsingContextServlet(val authenticator: Authenticator, contextFinder: Us
 
   put("/:repo") {
     haltIfNotAuthenticated()
-    val form = UpdateUserBrowsingContextForm(user.idAsObjectId, params("repo"), extractReq[String]("branch"))
+    val form = UpdateUserBrowsingContextForm(user.id, params("repo"), extractReq[String]("branch"))
     updateContext.execute(form)
   }
 

@@ -3,17 +3,16 @@ package com.softwaremill.codebrag.rest
 import com.softwaremill.codebrag.AuthenticatableServletSpec
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra.auth.Scentry
-import com.softwaremill.codebrag.service.data.UserJson
 import org.bson.types.ObjectId
 import org.mockito.Mockito._
-import com.softwaremill.codebrag.service.followups.FollowupService
-import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 import com.softwaremill.codebrag.usecases.FollowupDoneUseCase
+import com.softwaremill.codebrag.domain.builder.UserAssembler
+import com.softwaremill.codebrag.domain.User
 
 class FollowupsServletSpec extends AuthenticatableServletSpec {
 
-  val currentUser = someUser
+  val currentUser = UserAssembler.randomUser.get
   var followupFinder = mock[FollowupFinder]
   var useCase = mock[FollowupDoneUseCase]
 
@@ -26,13 +25,13 @@ class FollowupsServletSpec extends AuthenticatableServletSpec {
     userIsAuthenticatedAs(currentUser)
     get("/") {
       status should be (200)
-      verify(followupFinder).findAllFollowupsByCommitForUser(new ObjectId(currentUser.id))
+      verify(followupFinder).findAllFollowupsByCommitForUser(currentUser.id)
     }
   }
 
 }
 
-class TestableFollowupsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson], followupFinder: FollowupFinder, useCase: FollowupDoneUseCase)
+class TestableFollowupsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[User], followupFinder: FollowupFinder, useCase: FollowupDoneUseCase)
   extends FollowupsServlet(fakeAuthenticator, new CodebragSwagger, followupFinder, useCase) {
   override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
 }

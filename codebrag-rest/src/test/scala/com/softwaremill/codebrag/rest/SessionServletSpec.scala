@@ -2,9 +2,7 @@ package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.AuthenticatableServletSpec
 import com.softwaremill.codebrag.service.user.Authenticator
-import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import org.scalatra.auth.Scentry
-import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
@@ -14,6 +12,8 @@ import java.util.Properties
 import com.softwaremill.codebrag.usecases.LoginUserUseCase
 import com.softwaremill.codebrag.finders.user.{LoggedInUserView, UserFinder}
 import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
+import com.softwaremill.codebrag.domain.builder.UserAssembler
+import com.softwaremill.codebrag.domain.User
 
 class SessionServletSpec extends AuthenticatableServletSpec {
 
@@ -39,9 +39,9 @@ class SessionServletSpec extends AuthenticatableServletSpec {
 
   "GET /" should "return user information" in {
     addServlet(new TestableSessionServlet(fakeAuthenticator, fakeScentry), "/*")
-    val currentUser = someUser
+    val currentUser = UserAssembler.randomUser.get
     userIsAuthenticatedAs(currentUser)
-    val loggedInUserView = LoggedInUserView(currentUser, UserBrowsingContext(currentUser.idAsObjectId, "codebrag", "master"))
+    val loggedInUserView = LoggedInUserView(currentUser, UserBrowsingContext(currentUser.id, "codebrag", "master"))
     when(userFinder.findLoggedInUser(currentUser)).thenReturn(loggedInUserView)
     get("/") {
       status should be(200)
@@ -57,7 +57,7 @@ class SessionServletSpec extends AuthenticatableServletSpec {
     }
   }
 
-  class TestableSessionServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson]) extends SessionServlet(fakeAuthenticator, loginUserUseCase, userFinder) {
+  class TestableSessionServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[User]) extends SessionServlet(fakeAuthenticator, loginUserUseCase, userFinder) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

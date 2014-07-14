@@ -16,11 +16,11 @@ class InvitationServlet(
   post("/") {
     val emails = (parsedBody \ "emails").extract[List[String]]
     val invitationLink = (parsedBody \ "invitationLink").extract[String]
-    sendInvitationEmailUseCase.execute(user.idAsObjectId, emails, invitationLink)
+    sendInvitationEmailUseCase.execute(user.id, emails, invitationLink)
   }
 
   get("/") {
-    val invitationCode = generateInvitationCodeUseCase.execute(user.idAsObjectId)
+    val invitationCode = generateInvitationCodeUseCase.execute(user.id)
     Map("invitationCode" -> invitationCode)
   }
 

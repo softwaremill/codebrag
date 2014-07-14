@@ -6,8 +6,6 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.BDDMockito._
-import com.softwaremill.codebrag.domain.{Authentication, User}
-import com.softwaremill.codebrag.service.data.UserJson
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.dao.user.UserDAO
@@ -54,7 +52,7 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
     val Some(result) = authenticator.authenticate(fixtureLogin, fixturePassword)
 
     // then
-    result should equal(UserJson(ActiveUser))
+    result should equal(ActiveUser)
   }
 
   it should "return None when user not found" in {
@@ -75,8 +73,7 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
     // when
     val Some(user) = authenticator.authenticate(fixtureLogin, fixturePassword)
 
-    user.fullName should be(ActiveUser.name)
-    user.email should be(ActiveUser.emailLowerCase)
+    user should be(ActiveUser)
   }
 
   it should "return None if user credentials don't match" in {

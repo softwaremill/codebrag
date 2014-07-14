@@ -4,14 +4,14 @@ import org.scalatra.{ CookieOptions, Cookie, ScalatraBase }
 import org.scalatra.auth.ScentryStrategy
 import com.softwaremill.codebrag.common.Utils
 import com.softwaremill.codebrag.service.user.Authenticator
-import com.softwaremill.codebrag.service.data.UserJson
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
+import com.softwaremill.codebrag.domain.User
 
-class RememberMeStrategy(protected val app: ScalatraBase, rememberMe: Boolean, val authenticator: Authenticator) extends ScentryStrategy[UserJson] {
+class RememberMeStrategy(protected val app: ScalatraBase, rememberMe: Boolean, val authenticator: Authenticator) extends ScentryStrategy[User] {
 
   override def name: String = RememberMe.name
 
-  override def afterAuthenticate(winningStrategy: String, user: UserJson)(implicit request: HttpServletRequest, response: HttpServletResponse) {
+  override def afterAuthenticate(winningStrategy: String, user: User)(implicit request: HttpServletRequest, response: HttpServletResponse) {
     if (winningStrategy == name || (winningStrategy == UserPassword.name && rememberMe)) {
       val token = user.token
       app.response.addHeader("Set-Cookie",
@@ -27,7 +27,7 @@ class RememberMeStrategy(protected val app: ScalatraBase, rememberMe: Boolean, v
     app.cookies.get(cookieKey).flatMap(authenticator.authenticateWithToken)
   }
 
-  override def beforeLogout(user: UserJson)(implicit request: HttpServletRequest, response: HttpServletResponse) {
+  override def beforeLogout(user: User)(implicit request: HttpServletRequest, response: HttpServletResponse) {
     app.response.addHeader("Set-Cookie",
       Cookie(cookieKey, "")(CookieOptions(path = "/", secure = false, maxAge = 0, httpOnly = true)).toCookieString)
   }

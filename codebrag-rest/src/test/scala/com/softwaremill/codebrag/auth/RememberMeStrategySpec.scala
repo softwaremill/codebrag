@@ -4,13 +4,13 @@ import org.scalatra.SweetCookies
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import com.softwaremill.codebrag.rest.UsersServlet
 import com.softwaremill.codebrag.service.user.Authenticator
-import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 
-import com.softwaremill.codebrag.service.data.UserJson
 import org.scalatra.test.scalatest.ScalatraFlatSpec
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.BDDMockito._
+import com.softwaremill.codebrag.domain.builder.UserAssembler
+import com.softwaremill.codebrag.domain.User
 
 class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
   behavior of "RememberMe"
@@ -19,7 +19,7 @@ class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
   val httpRequest = mock[HttpServletRequest]
   val app = mock[UsersServlet]
   val userService = mock[Authenticator]
-  val loggedUser = someUser
+  val loggedUser = UserAssembler.randomUser.get
   when(userService.authenticateWithToken(loggedUser.token)) thenReturn(Option(loggedUser))
 
   val rememberMe = true
@@ -36,7 +36,7 @@ class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
 
     // Then
     user must not be (None)
-    user.get.login must be ("user")
+    user.get.authentication.username must be (loggedUser.authentication.username)
   }
 
   it should "not authenticate user with invalid cookie" in {
@@ -44,7 +44,7 @@ class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
     given(app.cookies) willReturn new SweetCookies(Map(("rememberMe", loggedUser.token + "X")), httpResponse)
 
     // When
-    val user: Option[UserJson] = strategy.authenticate()(httpRequest, httpResponse)
+    val user: Option[User] = strategy.authenticate()(httpRequest, httpResponse)
 
     // Then
     user must be (null)

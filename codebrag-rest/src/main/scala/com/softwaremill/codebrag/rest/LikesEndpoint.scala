@@ -41,7 +41,7 @@ trait LikesEndpoint extends JsonServletWithAuthentication with UserReactionParam
 
   private def incomingLike = {
     val params = readReactionParamsFromRequest
-    IncomingLike(new ObjectId(params.commitId), new ObjectId(user.id), params.fileName, params.lineNumber)
+    IncomingLike(new ObjectId(params.commitId), user.id, params.fileName, params.lineNumber)
   }
 
 }

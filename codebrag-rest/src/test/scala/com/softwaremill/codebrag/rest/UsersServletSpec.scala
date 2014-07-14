@@ -2,9 +2,7 @@ package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.AuthenticatableServletSpec
 import com.softwaremill.codebrag.service.user.{RegisterService, Authenticator}
-import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import org.scalatra.auth.Scentry
-import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
 import org.json4s.JsonDSL._
 import com.softwaremill.codebrag.service.config.CodebragConfig
@@ -12,11 +10,12 @@ import com.typesafe.config.ConfigFactory
 import java.util.Properties
 import com.softwaremill.codebrag.usecases._
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils
-import com.softwaremill.codebrag.finders.user.{ManagedUserView, ManagedUsersListView, UserFinder}
+import com.softwaremill.codebrag.finders.user.UserFinder
 import com.softwaremill.codebrag.finders.user.ManagedUserView
 import com.softwaremill.codebrag.finders.user.ManagedUsersListView
 import com.softwaremill.codebrag.usecases.UserToRegister
-import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFinder
+import com.softwaremill.codebrag.domain.builder.UserAssembler
+import com.softwaremill.codebrag.domain.User
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
@@ -35,7 +34,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   "GET /" should "return empty list of registered users if in demo mode" in {
     config = configWithDemo(true)
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    userIsAuthenticatedAs(someUser)
+    userIsAuthenticatedAs(UserAssembler.randomUser.get)
     get("/") {
       status should be(200)
       val expectedBody = ManagedUsersListView(users = List.empty)
@@ -48,7 +47,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     val registeredUsers = ManagedUsersListView(List(user))
     when(userFinder.findAllAsManagedUsers()).thenReturn(registeredUsers)
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    userIsAuthenticatedAs(someUser)
+    userIsAuthenticatedAs(UserAssembler.randomUser.get)
     get("/") {
       status should be(200)
       body should be(asJson(registeredUsers))
@@ -67,7 +66,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   "GET /first-registration" should "return firstRegistration flag" in {
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
     //given
-    val currentUser = someUser
+    val currentUser = UserAssembler.randomUser.get
     userIsAuthenticatedAs(currentUser)
     when(registerService.firstRegistration).thenReturn(true)
     //when
@@ -113,7 +112,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     }
   }
 
-  class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
+  class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[User])
     extends UsersServlet(fakeAuthenticator, registerService, registerUseCase, userFinder, modifyUserUseCase, config) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }

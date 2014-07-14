@@ -6,8 +6,8 @@ import org.scalatra.auth.{ ScentryConfig, ScentrySupport }
 import scala.Some
 import com.softwaremill.codebrag.common.{ Utils, JsonWrapper }
 import com.softwaremill.codebrag.service.user.Authenticator
-import com.softwaremill.codebrag.service.data.UserJson
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
+import com.softwaremill.codebrag.domain.User
 
 /**
  * It should be used with each servlet to support RememberMe functionality for whole application
@@ -24,7 +24,7 @@ trait RememberMeSupport extends AuthenticationSupport {
 
 }
 
-trait AuthenticationSupport extends ScentrySupport[UserJson] {
+trait AuthenticationSupport extends ScentrySupport[User] {
 
   self: ScalatraBase =>
 
@@ -37,7 +37,7 @@ trait AuthenticationSupport extends ScentrySupport[UserJson] {
 
   protected def fromSession = {
     case id: String => {
-      val userOpt: Option[UserJson] = authenticator.findByLogin(id)
+      val userOpt: Option[User] = authenticator.findByLogin(id)
       userOpt match {
         case Some(u) => u
         case _ => null
@@ -46,7 +46,7 @@ trait AuthenticationSupport extends ScentrySupport[UserJson] {
   }
 
   protected def toSession = {
-    case usr: UserJson => usr.login
+    case usr: User => usr.authentication.usernameLowerCase
   }
 
   override protected def configureScentry {

@@ -7,8 +7,8 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfterEach
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra.auth.Scentry
-import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.domain.User
 
 
 class ConfigServletSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {
@@ -32,7 +32,7 @@ class ConfigServletSpec extends AuthenticatableServletSpec with BeforeAndAfterEa
     }
   }
 
-  class TestableConfigServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
+  class TestableConfigServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[User])
     extends ConfigServlet(config, fakeAuthenticator) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }

@@ -28,14 +28,14 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   get("/:repo/:sha") {
     val commitSha = params("sha")
     val repoName = params("repo")
-    diffService.diffWithCommentsFor(repoName, commitSha, userId) match {
+    diffService.diffWithCommentsFor(repoName, commitSha, user.id) match {
       case Right(commitWithComments) => commitWithComments
       case Left(error) => NotFound(error)
     }
   }
 
   delete("/:repo/:sha") {
-    reviewCommitUseCase.execute(params("repo"), params("sha"), userId).left.map { err =>
+    reviewCommitUseCase.execute(params("repo"), params("sha"), user.id).left.map { err =>
       BadRequest(Map("err" -> err))
     }
   }
@@ -65,13 +65,11 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
     allCommitsFinder.find(context, paging)
   }
 
-  private def userId = new ObjectId(user.id)
-
   private def contextualCommits = params.get(ContextParamName).isDefined
   private def commitsToReview = params.get(FilterParamName).isDefined && params(FilterParamName) == ToReviewCommitsFilter
   private def allCommits = params.get(FilterParamName).isDefined && params(FilterParamName) == AllCommitsFilter
 
-  private def extractBrowsingContext = UserBrowsingContext(user.idAsObjectId, extractReqUrlParam("repo"), extractReqUrlParam("branch"))
+  private def extractBrowsingContext = UserBrowsingContext(user.id, extractReqUrlParam("repo"), extractReqUrlParam("branch"))
 
   private def extractPagingCriteria = {
     val minSha = params.get(MinShaParamName)

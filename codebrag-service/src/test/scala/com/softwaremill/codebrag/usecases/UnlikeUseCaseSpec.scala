@@ -5,7 +5,6 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.service.comments.{UserReactionService, LikeValidator}
-import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils
 import org.bson.types.ObjectId
@@ -27,9 +26,9 @@ class UnlikeUseCaseSpec extends FlatSpec with MockitoSugar with ShouldMatchers w
 
   it should "tell when unlike cannot be done due to validation rules" in {
     // given
-    val user = UserJson(UserAssembler.randomUser.get)
+    val user = UserAssembler.randomUser.get
     val likeIdToRemove = ObjectIdTestUtils.oid(100)
-    when(likeValidator.canUserDoUnlike(new ObjectId(user.id), likeIdToRemove)).thenReturn(Left("err"))
+    when(likeValidator.canUserDoUnlike(user.id, likeIdToRemove)).thenReturn(Left("err"))
 
     // when
     val result = unlikeUseCase.execute(user, likeIdToRemove)
@@ -40,9 +39,9 @@ class UnlikeUseCaseSpec extends FlatSpec with MockitoSugar with ShouldMatchers w
 
   it should "tell when unlike can be done" in {
     // given
-    val user = UserJson(UserAssembler.randomUser.get)
+    val user = UserAssembler.randomUser.get
     val likeIdToRemove = ObjectIdTestUtils.oid(100)
-    when(likeValidator.canUserDoUnlike(new ObjectId(user.id), likeIdToRemove)).thenReturn(Right())
+    when(likeValidator.canUserDoUnlike(user.id, likeIdToRemove)).thenReturn(Right())
 
     // when
     val result = unlikeUseCase.execute(user, likeIdToRemove)
@@ -53,9 +52,9 @@ class UnlikeUseCaseSpec extends FlatSpec with MockitoSugar with ShouldMatchers w
 
   it should "initiate like removal when like can be removed" in {
     // given
-    val user = UserJson(UserAssembler.randomUser.get)
+    val user = UserAssembler.randomUser.get
     val likeIdToRemove = ObjectIdTestUtils.oid(100)
-    when(likeValidator.canUserDoUnlike(new ObjectId(user.id), likeIdToRemove)).thenReturn(Right())
+    when(likeValidator.canUserDoUnlike(user.id, likeIdToRemove)).thenReturn(Right())
 
     // when
     unlikeUseCase.execute(user, likeIdToRemove)
@@ -66,9 +65,9 @@ class UnlikeUseCaseSpec extends FlatSpec with MockitoSugar with ShouldMatchers w
 
   it should "not remove like and return err when validation rules are not met" in {
     // given
-    val user = UserJson(UserAssembler.randomUser.get)
+    val user = UserAssembler.randomUser.get
     val likeIdToRemove = ObjectIdTestUtils.oid(100)
-    when(likeValidator.canUserDoUnlike(new ObjectId(user.id), likeIdToRemove)).thenReturn(Left("err"))
+    when(likeValidator.canUserDoUnlike(user.id, likeIdToRemove)).thenReturn(Left("err"))
 
     // when
     val result = unlikeUseCase.execute(user, likeIdToRemove)

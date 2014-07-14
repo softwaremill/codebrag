@@ -6,7 +6,6 @@ import org.scalatest.mock.MockitoSugar
 import com.softwaremill.codebrag.dao.user.UserDAO
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.finders.user.{LoggedInUserView, UserFinder}
 import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 
@@ -56,15 +55,14 @@ class LoginUserUseCaseSpec extends FlatSpec with ShouldMatchers with BeforeAndAf
   it should "return logged in user view" in {
     // given
     val user = UserAssembler.randomUser.get
-    val authenticatedUserJson = UserJson(user)
     val userContext = UserBrowsingContext(user.id, "codebrag", "master")
     when(userDao.findByLoginOrEmail(user.emailLowerCase)).thenReturn(Some(user))
-    val loggedInUserView = LoggedInUserView(authenticatedUserJson, userContext)
-    when(userFinder.findLoggedInUser(authenticatedUserJson)).thenReturn(loggedInUserView)
+    val loggedInUserView = LoggedInUserView(user, userContext)
+    when(userFinder.findLoggedInUser(user)).thenReturn(loggedInUserView)
 
     // when
     val loginForm = LoginForm(user.emailLowerCase, "dummy", false)
-    val Right(loggedInUser) = loginUseCase.execute(loginForm) { Some(authenticatedUserJson) }
+    val Right(loggedInUser) = loginUseCase.execute(loginForm) { Some(user) }
 
     // then
     loggedInUser should be(loggedInUserView)

@@ -4,8 +4,6 @@ import org.bson.types.ObjectId
 import org.scalatra.swagger.SwaggerSupport
 import com.softwaremill.codebrag.usecases.AddCommentUseCase
 import com.softwaremill.codebrag.service.comments.command.IncomingComment
-import scala.Some
-import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.finders.views.CommentView
 import com.softwaremill.codebrag.domain.Comment
 
@@ -23,14 +21,14 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with UserReactionPa
   }
   
   private def commentToView(comment: Comment) = {
-    AddCommentResponse(CommentView(comment.id.toString, user.fullName, user.id.toString, comment.message, comment.postingTime.toDate, user.settings.avatarUrl))
+    AddCommentResponse(CommentView(comment.id.toString, user.name, user.id.toString, comment.message, comment.postingTime.toDate, user.settings.avatarUrl))
   }
 
   private def incomingComment = {
     val params = readReactionParamsFromRequest
     val commentBody = extractNotEmptyString("body")
 
-    IncomingComment(new ObjectId(params.commitId), new ObjectId(user.id), commentBody, params.fileName, params.lineNumber)
+    IncomingComment(new ObjectId(params.commitId), user.id, commentBody, params.fileName, params.lineNumber)
   }
 }
 

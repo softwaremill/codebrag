@@ -1,7 +1,6 @@
 package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.AuthenticatableServletSpec
-import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.BDDMockito._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.{Authentication, User}
@@ -33,7 +32,7 @@ class UpdatesServletSpec extends AuthenticatableServletSpec with ClockSpec {
 
   "GET /" should "call finder to fetch counters for authorized user for prepo and branch" in {
     // given
-    userIsAuthenticatedAs(UserJson(user))
+    userIsAuthenticatedAs(user)
     val context = UserBrowsingContext(user.id, "codebrag", "master")
     val expectedCommits = 1
     val expectedFollowups = 2

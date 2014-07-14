@@ -3,7 +3,6 @@ package com.softwaremill.codebrag.rest
 import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.AuthenticatableServletSpec
 import org.scalatra.auth.Scentry
-import com.softwaremill.codebrag.service.data.UserJson
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import com.softwaremill.codebrag.usecases.AddCommentUseCase
@@ -15,7 +14,6 @@ import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterEach
 import scala.Some
 import com.softwaremill.codebrag.service.comments.command.IncomingComment
-import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.finders.views.CommentView
 
 
@@ -43,7 +41,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     // given
     val body = "{\"body\": \"This is comment body\"}"
     val dummyComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
-    userIsAuthenticatedAs(UserJson(user))
+    userIsAuthenticatedAs(user)
     when(addCommentUseCase.execute(any[IncomingComment])).thenReturn(Right(dummyComment))
 
     // when
@@ -62,7 +60,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     // given
     val body = "{\"body\": \"This is comment body\", \"fileName\": \"test_file.txt\", \"lineNumber\": 20}"
     val dummyComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body", Some("test_file.txt"), Some(20))
-    userIsAuthenticatedAs(UserJson(user))
+    userIsAuthenticatedAs(user)
     when(addCommentUseCase.execute(any[IncomingComment])).thenReturn(Right(dummyComment))
 
     // when
@@ -83,7 +81,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     // given
     val body = "{\"body\": \"This is comment body\"}"
     val createdComment = Comment(new ObjectId, commitId, user.id, DateTime.now, "This is comment body")
-    userIsAuthenticatedAs(UserJson(user))
+    userIsAuthenticatedAs(user)
     when(addCommentUseCase.execute(any[IncomingComment])).thenReturn(Right(createdComment))
 
     // when
@@ -96,7 +94,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
 
   def currentUser(id: ObjectId) = User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde")
 
- class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[UserJson], val addCommentUseCase: AddCommentUseCase) extends CommentsEndpoint {
+ class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[User], val addCommentUseCase: AddCommentUseCase) extends CommentsEndpoint {
 
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
 

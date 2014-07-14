@@ -6,11 +6,10 @@ import org.scalatest.BeforeAndAfterEach
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra.auth.Scentry
-import com.softwaremill.codebrag.service.data.UserJson
 import com.softwaremill.codebrag.usecases.{IncomingSettings, ChangeUserSettingsUseCase}
-import com.softwaremill.codebrag.service.user.UserJsonBuilder._
 import org.mockito.Mockito._
-import com.softwaremill.codebrag.domain.UserSettings
+import com.softwaremill.codebrag.domain.{User, UserSettings}
+import com.softwaremill.codebrag.domain.builder.UserAssembler
 
 
 class UserSettingsServletSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {
@@ -27,17 +26,17 @@ class UserSettingsServletSpec extends AuthenticatableServletSpec with BeforeAndA
   }
 
   "PUT /" should "update user settings" in {
-    val currentUser = someUser
+    val currentUser = UserAssembler.randomUser.get
     userIsAuthenticatedAs(currentUser)
     val incomingSettingsJson = """{"emailNotificationsEnabled": true, "selectedBranch": "master"}"""
     val expectedSettings = IncomingSettings(Some(true), None, None)
-    when(useCase.execute(currentUser.idAsObjectId, expectedSettings)).thenReturn(Right(UserSettings.defaults(currentUser.email  )))
+    when(useCase.execute(currentUser.id, expectedSettings)).thenReturn(Right(UserSettings.defaults(currentUser.emailLowerCase)))
     put("/", incomingSettingsJson, defaultJsonHeaders) {
       status should be(200)
     }
   }
 
-  class TestableUserSettingsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[UserJson])
+  class TestableUserSettingsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[User])
     extends UsersSettingsServlet(fakeAuthenticator, userDao, useCase) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
