@@ -1,8 +1,8 @@
 package com.softwaremill.codebrag.dao.finders.reaction
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.{Like, Comment, UserReaction}
-import com.softwaremill.codebrag.dao.user.{UserDAO, PartialUserDetails}
+import com.softwaremill.codebrag.domain.{PartialUserDetails, Like, Comment, UserReaction}
+import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.reaction.{LikeDAO, CommitCommentDAO}
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.finders.views.{CommentView, LikeView, CommitReactionsView}

@@ -1,8 +1,9 @@
 package com.softwaremill.codebrag.finders.commits
 
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
-import com.softwaremill.codebrag.dao.user.{UserDAO, PartialUserDetails}
+import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.finders.views.{CommitView, CommitListView}
+import com.softwaremill.codebrag.domain.PartialUserDetails
 
 trait AuthorDataAppender {
 

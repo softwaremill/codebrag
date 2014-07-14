@@ -1,6 +1,5 @@
-package com.softwaremill.codebrag.dao.user
+package com.softwaremill.codebrag.domain
 
-import com.softwaremill.codebrag.domain.UserLike
 import org.bson.types.ObjectId
 
 case class PartialUserDetails(id: ObjectId, name: String, email: String, avatarUrl: String)

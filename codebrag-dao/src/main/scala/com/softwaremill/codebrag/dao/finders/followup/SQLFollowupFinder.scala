@@ -3,15 +3,13 @@ package com.softwaremill.codebrag.dao.finders.followup
 import com.softwaremill.codebrag.dao.followup.SQLFollowupSchema
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reaction.SQLReactionSchema
-import com.softwaremill.codebrag.domain.UserReaction
-import com.softwaremill.codebrag.dao.user.{UserDAO, PartialUserDetails}
+import com.softwaremill.codebrag.domain.{PartialUserDetails, UserReaction, Like, Comment}
+import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.SQLCommitInfoSchema
 import com.softwaremill.codebrag.dao.finders.views._
 import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.dao.finders.views.FollowupsByCommitListView
 import com.softwaremill.codebrag.dao.finders.views.FollowupReactionsView
-import com.softwaremill.codebrag.domain.Like
-import com.softwaremill.codebrag.domain.Comment
 import com.softwaremill.codebrag.dao.finders.views.FollowupsByCommitView
 import com.softwaremill.codebrag.dao.finders.views.FollowupCommitView
 import org.joda.time.DateTime

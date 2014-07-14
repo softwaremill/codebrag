@@ -1,8 +1,8 @@
 package com.softwaremill.codebrag.dao.finders.reaction
 
-import com.softwaremill.codebrag.domain.UserReaction
+import com.softwaremill.codebrag.domain.{PartialUserDetails, UserReaction}
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.user.{PartialUserDetails, UserDAO}
+import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.finders.views.{ReactionsView, ReactionView}
 
 trait UserReactionToViewMapper {
