@@ -48,10 +48,10 @@ trait UserIsCommitAuthorCheck extends Logging {
 
   def userIsCommitAuthor(like: Like) = {
     val Some(commit) = commitDao.findByCommitId(like.commitId)
-    isUserNameSameAsAuthor(commit, like)
+    isUserSameAsAuthor(commit, like)
   }
 
-  private def isUserNameSameAsAuthor(commit: CommitInfo, like: Like): Boolean = {
+  private def isUserSameAsAuthor(commit: CommitInfo, like: Like): Boolean = {
     val userOpt = userDao.findCommitAuthor(commit)
     userOpt.getOrElse(logger.debug(s"Cannot find user: ${commit.authorName}/${commit.authorEmail}"))
     userOpt.exists(_.id == like.authorId)
