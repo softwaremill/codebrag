@@ -61,13 +61,9 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
   def findByToken(token: String) = findOneWhere(_.token === token)
 
   def findCommitAuthor(commit: CommitInfo) = db.withSession { implicit session =>
-    val q = for {
-      u <- users if u.regular && (u.name === commit.authorName || u.emailLowerCase === commit.authorEmail.toLowerCase)
-      a <- u.auth
-      s <- u.settings
-      l <- u.lastNotif
-    } yield (u, a, s, l)
-    q.firstOption.map(queryUserAliases).map(untuple)
+    findAll().find { u =>
+      u.name == commit.authorName || u.emailLowerCase == commit.authorEmail.toLowerCase || u.aliases.emailAliases.map(_.alias).toSet.contains(commit.authorEmail.toLowerCase)
+    }
   }
 
   def modifyUser(user: User) = db.withTransaction { implicit session =>

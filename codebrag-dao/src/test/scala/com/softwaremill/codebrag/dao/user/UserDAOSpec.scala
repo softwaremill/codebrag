@@ -259,6 +259,21 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     }
   }
 
+  it should "find commit author by aliased email" taggedAs (RequiresDb) in {
+    // Given
+    val userId = new ObjectId
+    val userAliases = UserAliases(Set(UserAlias(userId, "aliased_email@codebrag.com")))
+    val userWithAlias = UserAssembler.randomUser.withId(userId).get.copy(aliases = userAliases)
+    userDAO.add(userWithAlias)
+    val commit = CommitInfoAssembler.randomCommit.withAuthorEmail("aliased_email@codebrag.com").get
+
+    // When
+    val Some(found) = userDAO.findCommitAuthor(commit)
+
+    // Then
+    found should be(userWithAlias)
+  }
+
   it should "find commit author by name" taggedAs (RequiresDb) in {
     // Given
     val commit = CommitInfoAssembler.randomCommit.withAuthorName("User Name 1").get
