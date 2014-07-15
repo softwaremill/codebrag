@@ -20,7 +20,7 @@ class UserBrowsingContextFinder(val userRepoDetailsDao: UserRepoDetailsDAO, val 
         case Some(context) => UserBrowsingContext(context)
         case None => UserBrowsingContext(userId, repoName, repositoriesCache.getCheckedOutBranchShortName(repoName))
       }
-      Option(found)
+      Some(found)
     } else {
       None
     }
