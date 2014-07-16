@@ -1,14 +1,15 @@
 package com.softwaremill.codebrag.rest
 
-import org.scalatra.{NotFound, ScalatraBase}
+import org.scalatra.ScalatraBase
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.licence.LicenceExpiredException
 import com.softwaremill.codebrag.usecases.assertions.{ActiveUserStatusRequiredException, AdminRoleRequiredException}
+import org.scalatra
 
 trait CodebragErrorHandler extends ScalatraBase with Logging {
 
   notFound {
-    NotFound()
+    scalatra.NotFound(Map("error" -> "Resource not found"))
   }
 
   error {
