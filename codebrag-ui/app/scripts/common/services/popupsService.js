@@ -50,4 +50,12 @@ angular.module('codebrag.common.services')
             return $modal.open(modalConfig(config));
         };
 
+        this.openAddAliasPopup = function() {
+            var config = {
+                templateUrl: 'views/popups/addAlias.html',
+                controller: 'AddAliasPopupCtrl'
+            };
+            return $modal.open(modalConfig(config));
+        };
+
     });

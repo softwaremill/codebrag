@@ -1,7 +1,7 @@
-<div class="user-profile popup-page opened" id="user-profile-popup" ng-controller="UserProfileCtrl">
+<div class="user-profile popup-page opened" id="user-profile-popup">
     <div class="popup-box">
         <div class="popup-content">
-            <section class="profile-info">
+            <section class="profile-info" ng-controller="UserProfileCtrl">
                 <h1>Your profile</h1>
                 <div class="authored-box">
                     <div class="author-box">
@@ -14,24 +14,40 @@
                 </div>
                 <aside class="info-line">Codebrag uses <a href="http://gravatar.com" target="_blank">Gravatar</a> for your profile picture.</aside>
             </section>
+            <section class="aliases-info" ng-controller="EmailAliasesCtrl">
+                <h1>Your email aliases
+                    <div class="info-line">&nbsp;
+                        <span class="text-error" ng-repeat="f in flash.get('error')">{{ f.message }}</span>
+                        <span class="success" ng-repeat="f in flash.get('info')">{{ f.message }}</span>
+                    </div>
+                </h1>
+                <ul>
+                    <li ng-hide="aliases && aliases.length">You have no email aliases defined</li>
+                    <li ng-repeat="a in aliases">{{ a.alias }} <span><a href="" ng-click="deleteAlias(a)">(delete)</a></span></li>
+                </ul>
+                <a href="" ng-click="openAddAliasPopup()">Define alias</a>
+            </section>
 
-            <section class="settings-info" ng-show="userSettings">
+            <section class="settings-info" ng-show="userSettings" ng-controller="UserSettingsCtrl">
                 <h1>Your settings
                     <div class="info-line">&nbsp;
-                        <span  saving-status="savingStatus"></span>
+                        <div class="info-line">&nbsp;
+                            <span class="text-error" ng-repeat="f in flash.get('error')">{{ f.message }}</span>
+                            <span class="success" ng-repeat="f in flash.get('info')">{{ f.message }}</span>
+                        </div>
                     </div>
                 </h1>
                 <form class="param clearfix">
                     <p class="clearfix">
                         <label >
                             Smart email notifications <a href="http://codebrag.com/faq.html#smart" target="_blank">(learn more)</a>
-                            <input ng-disabled="isSavePending()" type="checkbox" ng-model="userSettings.emailNotificationsEnabled" ng-change="notificationsChanged()"/>
+                            <input ng-disabled="actionPending" type="checkbox" ng-model="userSettings.emailNotificationsEnabled" ng-change="notificationsChanged()"/>
                         </label>
                     </p>
                     <p class="clearfix">
                         <label >
                             Daily update emails
-                            <input ng-disabled="isSavePending()" type="checkbox" ng-model="userSettings.dailyUpdatesEmailEnabled" ng-change="notificationsChanged()"/>
+                            <input ng-disabled="actionPending" type="checkbox" ng-model="userSettings.dailyUpdatesEmailEnabled" ng-change="notificationsChanged()"/>
                         </label>
                     </p>
                 </form>

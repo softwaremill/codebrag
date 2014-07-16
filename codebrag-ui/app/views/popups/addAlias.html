@@ -1,0 +1,22 @@
+<div class="popup-content">
+
+    <section class="form-group">
+        <form name="addAliasForm" novalidate class="form-group" ng-submit="addAlias(alias)">
+
+            <h1 class="text-center">Add email alias</h1>
+            <div class="text-error" ng-repeat="error in flash.get('error')">{{ error.message }}</div>
+            <ul>
+                <li>
+                    <label>Email address:</label><input type="email" ng-model="alias" required set-focus>
+                </li>
+
+            </ul>
+            <button type="submit" ng-disabled="addAliasForm.$invalid">Add alias</button>
+            <button class="secondary" ng-click="$dismiss()">Cancel</button>
+        </form>
+    </section>
+
+    <span class="close-btn" ng-click="$dismiss()">
+        <i class="icon-remove"></i>
+    </span>
+</div>
