@@ -4,4 +4,4 @@ CREATE TABLE IF NOT EXISTS "user_aliases"(
     "alias" VARCHAR NOT NULL
 );
 ALTER TABLE "user_aliases" ADD CONSTRAINT IF NOT EXISTS "user_alias_pk" PRIMARY KEY("id");
-ALTER TABLE "user_aliases" ADD CONSTRAINT IF NOT EXISTS "user_alias_pk" UNIQUE("user_id", "alias");
+ALTER TABLE "user_aliases" ADD CONSTRAINT IF NOT EXISTS "unique_alias" UNIQUE("alias");
