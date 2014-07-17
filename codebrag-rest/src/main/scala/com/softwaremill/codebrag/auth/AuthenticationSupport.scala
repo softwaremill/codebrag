@@ -88,13 +88,13 @@ trait AuthenticationSupport extends ScentrySupport[User] {
   protected def rememberMe: Boolean = false
 
   def haltIfNotAuthenticated() {
-    if (isAuthenticated == false) {
-      halt(401, "User not logged in")
+    if(!isAuthenticated) {
+      halt(401, Map("error" -> "User not logged in"))
     }
   }
 
   def haltWithForbiddenIf(f: Boolean) {
-    if (f) halt(403, "Action forbidden")
+    if (f) halt(403, Map("error" -> "Action forbidden"))
   }
 
 }
