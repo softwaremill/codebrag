@@ -36,6 +36,7 @@ trait Daos {
   lazy val heartbeatDao = new SQLHeartbeatDAO(sqlDatabase, clock)
   lazy val instanceParamsDao = new InstanceParamsDAO(sqlDatabase)
   lazy val userRepoDetailsDao = new SQLUserRepoDetailsDAO(sqlDatabase)
+  lazy val userAliasDao = new SQLUserAliasDAO(sqlDatabase)
 
   lazy val followupFinder = new SQLFollowupFinder(sqlDatabase, userDao)
   lazy val reactionFinder = new ReactionFinder(userDao, commentDao, likeDao)
