@@ -12,5 +12,7 @@ trait UserAliasDAO {
 
   def findAllForUser(userId: ObjectId): Iterable[UserAlias]
 
+  def findByAlias(alias: String): Option[UserAlias]
+
 }
 

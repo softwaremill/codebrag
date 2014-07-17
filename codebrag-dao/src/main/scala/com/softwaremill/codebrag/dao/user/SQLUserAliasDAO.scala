@@ -20,4 +20,9 @@ class SQLUserAliasDAO(val database: SQLDatabase) extends UserAliasDAO with SQLUs
   override def findAllForUser(userId: ObjectId) = db.withSession { implicit session =>
     userAliases.where(_.userId === userId).list().map(_.toUserAlias)
   }
+
+  override def findByAlias(alias: String) = db.withSession { implicit session =>
+    userAliases.where(_.alias === alias).firstOption.map(_.toUserAlias)
+
+  }
 }

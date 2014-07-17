@@ -29,13 +29,26 @@ class SQLUserAliasDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest wit
   it should "delete existing alias" in {
     // given
     val alias = UserAlias(new ObjectId, BobId, "email@codebrag.com")
+    aliasDao.save(alias)
 
     // when
     aliasDao.remove(alias.id)
 
     // then
-    val found = aliasDao.findAllForUser(BobId)
+    val found = aliasDao.findByAlias(alias.alias)
     found should be('empty)
+  }
+
+  it should "find existing alias" in {
+    // given
+    val alias = UserAlias(new ObjectId, BobId, "email@codebrag.com")
+    aliasDao.save(alias)
+
+    // when
+    val Some(result) = aliasDao.findByAlias(alias.alias)
+
+    // then
+    result should be(alias)
   }
 
   it should "not save new alias if one exists for any user" in {
