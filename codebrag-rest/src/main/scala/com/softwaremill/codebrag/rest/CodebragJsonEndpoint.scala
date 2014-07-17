@@ -4,16 +4,29 @@ import org.scalatra._
 import org.scalatra.json.{JValueResult, JacksonJsonSupport}
 import org.json4s._
 import org.json4s.{DefaultFormats, Formats}
-import javax.servlet.http.HttpServletResponse
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import java.util.Date
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.web.CodebragSpecificJSONFormats
 import com.softwaremill.codebrag.web.CodebragSpecificJSONFormats.SimpleObjectIdSerializer
+import com.softwaremill.codebrag.auth.RememberMeSupport
 
+trait JsonServlet extends ScalatraServlet with CodebragJsonEndpoint with CustomErrorsHandler with CustomNotFoundErrorsHandler
 
-class JsonServlet extends ScalatraServlet with JacksonJsonSupport with JValueResult with Logging with CodebragErrorHandler {
+trait JsonServletWithAuthentication extends JsonServlet with RememberMeSupport
 
-  protected implicit val jsonFormats = JsonServlet.jsonFormats
+trait CodebragJsonFilter extends ScalatraFilter with CodebragJsonEndpoint with CustomErrorsHandler {
+  // make resolving request path identical as in ScalatraServlet
+  // so that both servlet and filter can be mounted to the same url space
+  // see https://groups.google.com/forum/#!topic/scalatra-user/QuQaFcUBpgc
+  override def requestPath(implicit request: HttpServletRequest) = ScalatraServlet.requestPath(request)
+}
+
+trait JsonFilterWithAuthentication extends CodebragJsonFilter with RememberMeSupport
+
+trait CodebragJsonEndpoint extends JacksonJsonSupport with JValueResult with Logging {
+
+  protected implicit val jsonFormats = CodebragJsonEndpoint.jsonFormats
 
   val Expire = new Date().toString
 
@@ -43,7 +56,7 @@ class JsonServlet extends ScalatraServlet with JacksonJsonSupport with JValueRes
   def extractOpt[T: Manifest](key: String): Option[T] = (parsedBody \ key).extractOpt[T]
 
   def haltWithMissingKey(key: String): Nothing = {
-    halt(400, s"Missing or empty element '$key' in request body")
+    halt(400, Map("error" -> s"Missing or empty element '$key' in request body"))
   }
 
   def applyNoCache(response: HttpServletResponse) {
@@ -55,7 +68,7 @@ class JsonServlet extends ScalatraServlet with JacksonJsonSupport with JValueRes
 
 }
 
-object JsonServlet {
+object CodebragJsonEndpoint {
 
   implicit val jsonFormats: Formats = DefaultFormats ++ org.json4s.ext.JodaTimeSerializers.all ++ CodebragSpecificJSONFormats.all + SimpleObjectIdSerializer
 
