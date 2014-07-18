@@ -1,6 +1,6 @@
 angular.module('codebrag.profile')
 
-    .service('emailAliasesService', function($http, $q) {
+    .service('emailAliasesService', function($http, $q, authService) {
 
         var aliases = [];
         aliases.pushAll = function(items) {
@@ -8,52 +8,37 @@ angular.module('codebrag.profile')
         };
 
         function loadAliases() {
-            return _load().then(function(response) {
+            var currentUserId = authService.loggedInUser.id;
+            return $http.get('rest/users/' + currentUserId + '/aliases').then(function(response) {
                 aliases.length = 0;
                 aliases.pushAll(response.data)
             });
         }
 
-        function createAlias(alias) {
-            return _create(alias).then(
+        function createAlias(email) {
+            var currentUserId = authService.loggedInUser.id;
+            var alias = {userId: currentUserId, email: email};
+            return $http.post('rest/users/' + currentUserId + '/aliases', alias).then(
                 function(response) {
                     aliases.push(response.data);
                 },
                 function(response) {
-                    return $q.reject(response.data.errors || []);
+                    return $q.reject(response.data || []);
                 }
             );
         }
 
         function deleteAlias(alias) {
-            return _remove(alias).then(function() {
-                var index = aliases.indexOf(alias);
-                aliases.splice(index, 1);
-            });
-        }
-
-        function _load() {
-            var aliases = [
-                { id: 1, alias: 'mail@codebrag.com'},
-                { id: 2, alias: 'michal.ostruszka@codebrag.com'}
-            ];
-            return $q.when({data: aliases});
-        }
-
-        function _create(email) {
-            console.log('creating alias', email);
-            if(email.indexOf('fail') != -1) {
-                var errors = {
-                    general: ['This email is already defined', 'Woohoo bad email']
-                };
-                return $q.reject({data: { errors: errors }});
-            }
-            return $q.when({data: {id: 999, alias: email, userId: 123}});
-        }
-
-        function _remove(alias) {
-            console.log('removing alias', alias);
-            return $q.when();
+            var currentUserId = authService.loggedInUser.id;
+            return $http.delete('rest/users/' + currentUserId + '/aliases/' + alias.id).then(
+                function() {
+                    var index = aliases.indexOf(alias);
+                    aliases.splice(index, 1);
+                },
+                function(response) {
+                    return $q.reject(response.data || []);
+                }
+            );
         }
 
         return {
