@@ -75,6 +75,8 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val sendInvitationEmailUseCase = new SendInvitationEmailUseCase(invitationsService, userDao)
   lazy val modifyUserDetailsUseCase = new ModifyUserDetailsUseCase(userDao, licenceService)
   lazy val updateUserBrowsingContextUseCase = new UpdateUserBrowsingContextUseCase(userRepoDetailsDao)
+  lazy val addUserAliasUseCase = new AddUserAliasUseCase(userAliasDao, userDao)
+  lazy val deleteUserAliasUseCase = new DeleteUserAliasUseCase(userAliasDao)
 
   lazy val licenceService = new LicenceService(InstanceId, instanceParamsDao, userDao)(clock)
 
