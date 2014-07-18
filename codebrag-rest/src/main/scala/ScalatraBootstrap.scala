@@ -69,6 +69,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     RepositoryUpdateScheduler.scheduleUpdates(actorSystem, repositories, commitImportService)
     context.mount(new SessionServlet(authenticator, loginUserUseCase, userFinder), Prefix + SessionServlet.MappingPath)
     context.mount(new UsersServlet(authenticator, registerService, registerNewUserUseCase, userFinder, modifyUserDetailsUseCase, config), Prefix + UsersServlet.MappingPath)
+    context.mount(new UserAliasesEndpoint(authenticator, addUserAliasUseCase, deleteUserAliasUseCase), Prefix + UserAliasesEndpoint.MappingPath)
     context.mount(new UsersSettingsServlet(authenticator, userDao, changeUserSettingsUseCase), Prefix + "users/settings")
     context.mount(new CommitsServlet(authenticator, toReviewCommitsFinder, allCommitsFinder, reactionFinder, addCommentUseCase,
       reviewCommitUseCase, userReactionService, userDao, swagger, diffWithCommentsService, unlikeUseCaseFactory, likeUseCase), Prefix + CommitsServlet.MAPPING_PATH)
