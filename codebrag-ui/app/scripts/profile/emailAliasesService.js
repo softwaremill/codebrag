@@ -1,6 +1,6 @@
 angular.module('codebrag.profile')
 
-    .service('emailAliasesService', function($http, $q, authService) {
+    .service('emailAliasesService', function($rootScope, $http, $q, authService, events) {
 
         var aliases = [];
         aliases.pushAll = function(items) {
@@ -21,6 +21,7 @@ angular.module('codebrag.profile')
             return $http.post('rest/users/' + currentUserId + '/aliases', alias).then(
                 function(response) {
                     aliases.push(response.data);
+                    $rootScope.$broadcast(events.profile.emailAliasesChanged)
                 },
                 function(response) {
                     return $q.reject(response.data || []);
@@ -34,6 +35,7 @@ angular.module('codebrag.profile')
                 function() {
                     var index = aliases.indexOf(alias);
                     aliases.splice(index, 1);
+                    $rootScope.$broadcast(events.profile.emailAliasesChanged)
                 },
                 function(response) {
                     return $q.reject(response.data || []);

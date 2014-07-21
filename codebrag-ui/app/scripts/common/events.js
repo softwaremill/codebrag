@@ -31,5 +31,9 @@ angular.module('codebrag.events', []).constant('events', {
         licenceAboutToExpire: 'codebrag:licenceAboutToExpire',
         licenceExpired: 'codebrag:licenceExpied',
         licenceKeyRegistered: 'codebrag:licenceKeyRegistered'
+    },
+
+    profile: {
+        emailAliasesChanged: 'codebrag:emailAliasesModified'
     }
 });
