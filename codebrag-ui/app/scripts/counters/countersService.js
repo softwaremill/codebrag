@@ -59,6 +59,9 @@ angular.module('codebrag.counters').factory('countersService', function($http, $
         $rootScope.$on(events.commitsListFilterChanged, function() {
             initPolling({commits: true});
         });
+        $rootScope.$on(events.profile.emailAliasesChanged, function() {
+            initPolling({commits: true});
+        });
         $rootScope.$on(events.commitReviewed, function() {
             commitsCounter.decrease();
         });
