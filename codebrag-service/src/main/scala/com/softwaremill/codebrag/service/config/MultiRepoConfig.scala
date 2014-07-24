@@ -13,16 +13,20 @@ trait MultiRepoConfig extends ConfigWithDefault {
   val repositoriesRoot = getString("codebrag.repos-root", "./repos")
 
   lazy val repositoriesConfig = {
-    import scala.collection.JavaConversions._
-    rootConfig.getObject(rootRepoPath)
-      .filter({ case(repoName, config) => config.valueType() == ConfigValueType.OBJECT })
-      .map({ case(repoName, config) =>
+    if(rootConfig.hasPath(rootRepoPath)) {
+      import scala.collection.JavaConversions._
+      rootConfig.getObject(rootRepoPath)
+        .filter({ case(repoName, config) => config.valueType() == ConfigValueType.OBJECT })
+        .map({ case(repoName, config) =>
         config.valueType()
         println(repoName)
         println(config)
         val opt = getOptional(s"$rootRepoPath.$repoName")_
         (repoName, PossibleRepoCredentials(repoName, opt("username"), opt("password"), opt("passphrase")))
       })
+    } else {
+      Map.empty[String, PossibleRepoCredentials]
+    }
   }
 
   lazy val globalConfig = {

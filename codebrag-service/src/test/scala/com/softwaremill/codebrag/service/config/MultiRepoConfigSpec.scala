@@ -57,4 +57,20 @@ class MultiRepoConfigSpec extends FlatSpec with ShouldMatchers {
     globalConfig should be(PossibleRepoCredentials("*", Some("globaluser"), Some("globalpassword"), None))
   }
 
+  it should "have empty repositories configs when not repositories section is not present" in {
+    // given
+    val emptyConfigContent =
+      """
+      """.stripMargin
+    val config = new MultiRepoConfig {
+      override def rootConfig = ConfigFactory.parseString(emptyConfigContent)
+    }
+
+    // when
+    val configs = config.repositoriesConfig
+
+    // then
+    configs should be('empty)
+  }
+
 }
