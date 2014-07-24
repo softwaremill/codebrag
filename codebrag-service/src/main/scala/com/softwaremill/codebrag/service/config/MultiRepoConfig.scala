@@ -1,9 +1,9 @@
 package com.softwaremill.codebrag.service.config
 
-import com.typesafe.config.Config
+import com.typesafe.config.{ConfigValueType, Config}
 import com.softwaremill.codebrag.common.config.ConfigWithDefault
 
-case class RepoCredentials(repoName: String, userName: Option[String], password: Option[String], passphrase: Option[String])
+case class PossibleRepoCredentials(repoName: String, userName: Option[String], password: Option[String], passphrase: Option[String])
 
 trait MultiRepoConfig extends ConfigWithDefault {
 
@@ -14,23 +14,26 @@ trait MultiRepoConfig extends ConfigWithDefault {
 
   lazy val repositoriesConfig = {
     import scala.collection.JavaConversions._
-    rootConfig.getObject("repositories").map({ case(repoName, config) =>
-      val opt = getOptional(repoName)_
-      (repoName, RepoCredentials(repoName, opt("username"), opt("password"), opt("passphrase")))
-    })
+    rootConfig.getObject(rootRepoPath)
+      .filter({ case(repoName, config) => config.valueType() == ConfigValueType.OBJECT })
+      .map({ case(repoName, config) =>
+        config.valueType()
+        println(repoName)
+        println(config)
+        val opt = getOptional(s"$rootRepoPath.$repoName")_
+        (repoName, PossibleRepoCredentials(repoName, opt("username"), opt("password"), opt("passphrase")))
+      })
   }
 
-
-  // brigde section to seamlessly use new config
-  lazy val username = singleRepoConfig.userName
-  lazy val password = singleRepoConfig.password
-  lazy val passphrase = singleRepoConfig.passphrase
-
-  private lazy val singleRepoConfig = {
-    if(repositoriesConfig.size > 1) throw new IllegalStateException("More than one repo configured. Hold your horses, sir!")
-    repositoriesConfig.headOption.map(_._2).getOrElse(RepoCredentials("temp", None, None, None))
+  lazy val globalConfig = {
+    val opt = getOptional(rootRepoPath)_
+    PossibleRepoCredentials("*", opt("username"), opt("password"), opt("repositories.passphrase"))
   }
 
-  private def getOptional(repoName: String)(field: String) = getOptionalString(s"repos.$repoName.$field")
+  private def getOptional(prefix: String)(field: String) = {
+    getOptionalString(s"$prefix.$field")
+  }
+
+  private lazy val rootRepoPath = if(rootConfig.hasPath("repositories")) "repositories" else "repository"
 
 }

@@ -8,16 +8,20 @@ class MultiRepoConfigSpec extends FlatSpec with ShouldMatchers {
 
   val ConfigContent =
     """
-      |repos {
+      |repositories {
+      |
+      |   username = "globaluser"
+      |   password = "globalpassword"
+      |
       |   firstRepo: {
-      |     username: "john"
-      |     password: "secret"
+      |     username = "john"
+      |     password = "secret"
       |   }
       |   
-      |   secondRepo: {}
+      |   secondRepo {}
       |   
-      |   thirdRepo: {
-      |     passphrase: "123abc"
+      |   thirdRepo {
+      |     passphrase = "123abc"
       |   }
       |
       |}
@@ -40,9 +44,17 @@ class MultiRepoConfigSpec extends FlatSpec with ShouldMatchers {
     val repoConfigs = config.repositoriesConfig
 
     // then
-    repoConfigs("firstRepo") should be(RepoCredentials("firstRepo", Some("john"), Some("secret"), None))
-    repoConfigs("secondRepo") should be(RepoCredentials("secondRepo", None, None, None))
-    repoConfigs("thirdRepo") should be(RepoCredentials("thirdRepo", None, None, Some("123abc")))
+    repoConfigs("firstRepo") should be(PossibleRepoCredentials("firstRepo", Some("john"), Some("secret"), None))
+    repoConfigs("secondRepo") should be(PossibleRepoCredentials("secondRepo", None, None, None))
+    repoConfigs("thirdRepo") should be(PossibleRepoCredentials("thirdRepo", None, None, Some("123abc")))
+  }
+
+  it should "have global configuration (for other repos that don't override it)" in {
+    // when
+    val globalConfig = config.globalConfig
+
+    // then
+    globalConfig should be(PossibleRepoCredentials("*", Some("globaluser"), Some("globalpassword"), None))
   }
 
 }

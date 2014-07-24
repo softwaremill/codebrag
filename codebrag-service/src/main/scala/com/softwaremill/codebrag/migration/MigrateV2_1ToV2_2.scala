@@ -3,10 +3,8 @@ package com.softwaremill.codebrag.migration
 import com.softwaremill.codebrag.dao.{Daos, DaoConfig}
 import com.typesafe.config.ConfigFactory
 import com.softwaremill.codebrag.common.RealTimeClock
-import com.softwaremill.codebrag.dao.branchsnapshot.SQLBranchStateDAO
 import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.repository.config.RepoDataDiscovery
-import com.softwaremill.codebrag.service.config.RepositoryConfig
 import scala.slick.jdbc.{StaticQuery => Q}
 import scala.slick.driver.JdbcDriver.backend.Database
 import Database.dynamicSession
@@ -14,6 +12,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.SQLUserDAO
 import com.softwaremill.codebrag.domain.UserRepoDetails
 import com.softwaremill.codebrag.dao.repo.SQLUserRepoDetailsDAO
+import com.softwaremill.codebrag.service.config.MultiRepoConfig
 
 object MigrateV2_1ToV2_2 extends App with Logging {
 
@@ -31,7 +30,7 @@ object MigrateV2_1ToV2_2 extends App with Logging {
   val userDao = new SQLUserDAO(sqlDb)
   val userRepoDetailsDao = new SQLUserRepoDetailsDAO(sqlDb)
 
-  val repositories = RepoDataDiscovery.discoverRepoDataFromConfig(new RepositoryConfig {
+  val repositories = RepoDataDiscovery.discoverRepoDataFromConfig(new MultiRepoConfig {
     override def rootConfig = baseConfig
   })
 

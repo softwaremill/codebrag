@@ -1,7 +1,14 @@
 repositories {
 
-#    Uncomment either username/password or passphrase depending on your git/svn repository authentication method
-#    your_repo_name {
+#    These are global settings, applied to all repositories if not overriden (see below)
+#    Uncomment either username/password or passphrase depending on your git/svn repositories authentication method
+#    username = "johndoe"
+#    password = "secret_password"
+#    passphrase = "secret_passphrase"
+
+
+#    Repository-specific settings, applied to repository with given name
+#    repo_name {
 #        username = "johndoe"
 #        password = "secret_password"
 #        passphrase = "secret_passphrase"

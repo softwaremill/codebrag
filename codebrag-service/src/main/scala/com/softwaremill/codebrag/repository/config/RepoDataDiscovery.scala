@@ -12,15 +12,16 @@ object RepoDataDiscovery {
     discoverRepoNames(rootDir).map( repoName => {
       val repoLocation = discoverRepoLocation(rootDir, repoName)
       val repoType = discoverRepoType(repoLocation)
-      val credentials = resolveCredentials(repositoryConfig)
+      val credentials = resolveCredentials(repoName, repositoryConfig)
       RepoData(repoLocation, repoName, repoType, credentials)
     })
   }
 
-  private def resolveCredentials(repositoryConfig: MultiRepoConfig): Option[RepoCredentials] = {
-    val passphraseCredentials = repositoryConfig.passphrase.map(PassphraseCredentials(_))
-    val userPassCredentials = repositoryConfig.username.map { username =>
-      val password = repositoryConfig.password.getOrElse("")
+  private def resolveCredentials(repoName: String, repositoryConfig: MultiRepoConfig): Option[RepoCredentials] = {
+    val repoSpecificCredentials = repositoryConfig.repositoriesConfig.get(repoName).getOrElse(repositoryConfig.globalConfig)
+    val passphraseCredentials = repoSpecificCredentials.passphrase.map(PassphraseCredentials)
+    val userPassCredentials = repoSpecificCredentials.userName.map { username =>
+      val password = repoSpecificCredentials.password.getOrElse("")
       UserPassCredentials(username, password)
     }
     passphraseCredentials.orElse(userPassCredentials)
