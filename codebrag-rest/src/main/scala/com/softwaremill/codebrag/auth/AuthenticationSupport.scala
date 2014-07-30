@@ -8,6 +8,7 @@ import com.softwaremill.codebrag.common.{ Utils, JsonWrapper }
 import com.softwaremill.codebrag.service.user.Authenticator
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import com.softwaremill.codebrag.domain.User
+import org.bson.types.ObjectId
 
 /**
  * It should be used with each servlet to support RememberMe functionality for whole application
@@ -96,5 +97,11 @@ trait AuthenticationSupport extends ScentrySupport[User] {
   def haltWithForbiddenIf(f: Boolean) {
     if (f) halt(403, Map("error" -> "Action forbidden"))
   }
+
+  def haltIfNotCurrentUser(userId: ObjectId) = {
+    haltIfNotAuthenticated()
+    haltWithForbiddenIf(userId != user.id)
+  }
+
 
 }
