@@ -1,25 +1,24 @@
 package com.softwaremill.codebrag.usecases
 
-import com.softwaremill.codebrag.dao.user.{UserDAO, UserAliasDAO}
+import com.softwaremill.codebrag.dao.user.UserAliasDAO
 import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.UserAlias
-import com.softwaremill.codebrag.usecases.validation.{Validation, ValidationErrors}
+import com.softwaremill.scalaval.Validation._
 
 class DeleteUserAliasUseCase(val userAliasDao: UserAliasDAO) extends Logging {
 
-  def execute(executorId: ObjectId, aliasId: ObjectId): Either[ValidationErrors, Unit]  = {
-    validate(executorId, aliasId).whenNoErrors {
+  def execute(executorId: ObjectId, aliasId: ObjectId): Either[Errors, Unit]  = {
+    validateAlias(executorId, aliasId).whenOk {
       userAliasDao.remove(aliasId)
     }
   }
 
-  private def validate(executorId: ObjectId, aliasId: ObjectId): Validation = {
-    val check = userAliasDao.findById(aliasId).map { a =>
-      (a.userId != executorId, "This is not your alias", "alias")
-    } getOrElse {
-      (true, "Alias not found", "alias")
+  private def validateAlias(executorId: ObjectId, aliasId: ObjectId) = {
+    val exists = rule("alias", haltOnFail = true) {
+      val userRuleExists = userAliasDao.findById(aliasId).exists(_.userId == executorId)
+      (userRuleExists, "You don't have such alias defined")
+
     }
-    Validation(check)
+    validate(exists)
   }
 }

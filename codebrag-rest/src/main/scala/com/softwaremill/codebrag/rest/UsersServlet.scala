@@ -34,7 +34,7 @@ class UsersServlet(
     val adminOpt = extractOpt[Boolean]("admin")
     val activeOpt = extractOpt[Boolean]("active")
     modifyUserUseCase.execute(user.id, ModifyUserDetailsForm(targetUserId, newPassOpt, adminOpt, activeOpt)) match {
-      case Left(errors) => scalatra.BadRequest(errors.fieldErrors)
+      case Left(errors) => scalatra.BadRequest(errors)
       case _ => scalatra.Ok()
     }
   }

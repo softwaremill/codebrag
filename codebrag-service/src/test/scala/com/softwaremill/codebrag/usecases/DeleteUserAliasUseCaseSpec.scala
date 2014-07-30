@@ -33,10 +33,10 @@ class DeleteUserAliasUseCaseSpec extends FlatSpec with MockitoSugar with ShouldM
     val Left(result) = useCase.execute(Bob.id, OtherUserAlias.id)
 
     // then
-    result.fieldErrors.flatMap(_._2) should be(List("This is not your alias"))
+    result.flatMap(_._2) should be(List("You don't have such alias defined"))
   }
 
-  it should "return alias not found when, well... not found :)" in {
+  it should "not remove alias when alias not found :)" in {
     // given
     when(userAliasDao.findById(OtherUserAlias.id)).thenReturn(None)
 
@@ -44,7 +44,7 @@ class DeleteUserAliasUseCaseSpec extends FlatSpec with MockitoSugar with ShouldM
     val Left(result) = useCase.execute(Bob.id, OtherUserAlias.id)
 
     // then
-    result.fieldErrors.flatMap(_._2) should be(List("Alias not found"))
+    result.flatMap(_._2) should be(List("You don't have such alias defined"))
   }
 
   it should "remove alias if it belongs to current user" in {

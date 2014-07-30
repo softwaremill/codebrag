@@ -13,7 +13,7 @@ class SessionServlet(val authenticator: Authenticator, loginUseCase: LoginUserUs
         authenticate()
       } match {
         case Right(user) => scalatra.Ok(user)
-        case Left(errors) => scalatra.Unauthorized(errors.fieldErrors)
+        case Left(errors) => scalatra.Unauthorized(errors)
       }
     } catch {
       case e: LoginFailedException => scalatra.Unauthorized(Map("errors" -> List(e.msg)))

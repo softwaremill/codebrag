@@ -34,7 +34,7 @@ class AddUserAliasUseCaseSpec extends FlatSpec with MockitoSugar with ShouldMatc
     val Left(result) = useCase.execute(Bob.id, invalidEmail)
 
     // then
-    result.fieldErrors.flatMap(_._2) should be(List("Invalid email provided"))
+    result.flatMap(_._2) should be(List("Invalid email provided"))
   }
 
   it should "reject when given email exists as primary for any user" in {
@@ -46,7 +46,7 @@ class AddUserAliasUseCaseSpec extends FlatSpec with MockitoSugar with ShouldMatc
     val Left(result) = useCase.execute(Bob.id, email)
 
     // then
-    result.fieldErrors.flatMap(_._2) should be(List("This email is already defined as primary"))
+    result.flatMap(_._2) should be(List("This email is already defined as primary"))
   }
 
   it should "reject when given email exists as alias for this user" in {
@@ -58,7 +58,7 @@ class AddUserAliasUseCaseSpec extends FlatSpec with MockitoSugar with ShouldMatc
     val Left(result) = useCase.execute(Bob.id, email)
 
     // then
-    result.fieldErrors.flatMap(_._2) should be(List("You have such alias already defined"))
+    result.flatMap(_._2) should be(List("You have such alias already defined"))
   }
 
   it should "reject when given email exists as alias for other user" in {
@@ -70,7 +70,7 @@ class AddUserAliasUseCaseSpec extends FlatSpec with MockitoSugar with ShouldMatc
     val Left(result) = useCase.execute(Bob.id, email)
 
     // then
-    result.fieldErrors.flatMap(_._2) should be(List("Such alias is already defined for other user"))
+    result.flatMap(_._2) should be(List("Such alias is already defined for other user"))
   }
 
   it should "create user alias when all is ok" in {

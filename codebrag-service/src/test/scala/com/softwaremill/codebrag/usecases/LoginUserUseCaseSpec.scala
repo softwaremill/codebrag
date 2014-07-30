@@ -32,7 +32,7 @@ class LoginUserUseCaseSpec extends FlatSpec with ShouldMatchers with BeforeAndAf
 
     // then
     val expectedErrors = Map("general" -> List("User account inactive"))
-    result.fieldErrors should be(expectedErrors)
+    result should be(expectedErrors)
   }
 
   it should "not try to authenticate when user not found by login/email" in {

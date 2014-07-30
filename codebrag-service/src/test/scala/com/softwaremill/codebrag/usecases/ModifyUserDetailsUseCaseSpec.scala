@@ -54,7 +54,7 @@ class ModifyUserDetailsUseCaseSpec extends FlatSpec with ShouldMatchers with Bef
     val Left(result) = useCase.execute(ValidExecutor.id, ownChangeForm)
 
     // then
-    result.fieldErrors should be(Map("userId" -> List("Cannot modify own user")))
+    result should be(Map("userId" -> List("Cannot modify own user")))
     verify(userDao, never()).modifyUser(any[User])
   }
 
@@ -67,7 +67,7 @@ class ModifyUserDetailsUseCaseSpec extends FlatSpec with ShouldMatchers with Bef
     val Left(result) = useCase.execute(ValidExecutor.id, form)
 
     // then
-    result.fieldErrors should be(Map("active" -> List("Cannot set password for inactive user")))
+    result should be(Map("active" -> List("Cannot set password for inactive user")))
     verify(userDao, never()).modifyUser(any[User])
   }
 
@@ -82,7 +82,7 @@ class ModifyUserDetailsUseCaseSpec extends FlatSpec with ShouldMatchers with Bef
     val Left(result) = useCase.execute(ValidExecutor.id, formWithActiveFlag)
 
     // then
-    result.fieldErrors should be(Map("active" -> List("Licenced active users count exceeded")))
+    result should be(Map("active" -> List("Licenced active users count exceeded")))
     verify(userDao, never()).modifyUser(any[User])
   }
 

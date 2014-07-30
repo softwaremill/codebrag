@@ -19,7 +19,7 @@ class LicenceServlet(licenceService: LicenceService, registerUseCase: RegisterLi
     logger.debug(s"Trying to register licence key ${licenceKey}")
     registerUseCase.execute(licenceKey) match {
       case Right(licence) => scalatra.Ok(licenceDetailsView)
-      case Left(errors) => scalatra.BadRequest(errors.fieldErrors)
+      case Left(errors) => scalatra.BadRequest(errors)
     }
   }
 

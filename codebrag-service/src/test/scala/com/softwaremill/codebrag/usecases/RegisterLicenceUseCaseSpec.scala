@@ -47,7 +47,7 @@ class RegisterLicenceUseCaseSpec extends FlatSpec with BeforeAndAfter with Mocki
     // then
     verifyZeroInteractions(licenceService)
     val expectedErrors = Map("general" -> List("Too many currently active users"))
-    result.fieldErrors should be(expectedErrors)
+    result should be(expectedErrors)
   }
 
   it should "not update existing licence when current licence has already expired date" in {
@@ -62,7 +62,7 @@ class RegisterLicenceUseCaseSpec extends FlatSpec with BeforeAndAfter with Mocki
     // then
     verifyZeroInteractions(licenceService)
     val expectedErrors = Map("general" -> List("Licence key already expired"))
-    result.fieldErrors should be(expectedErrors)
+    result should be(expectedErrors)
   }
 
   it should "not update existing licence when invalid JSON key provided" in {
@@ -75,7 +75,7 @@ class RegisterLicenceUseCaseSpec extends FlatSpec with BeforeAndAfter with Mocki
     // then
     verifyZeroInteractions(licenceService)
     val expectedErrors = Map("licenceKey" -> List("Licence key is incorrect"))
-    result.fieldErrors should be(expectedErrors)
+    result should be(expectedErrors)
   }
 
 }

@@ -4,28 +4,28 @@ import com.softwaremill.codebrag.licence._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.common.Clock
-import com.softwaremill.codebrag.usecases.validation.{Validation, ValidationErrors}
+import com.softwaremill.scalaval.Validation._
 
 
 class RegisterLicenceUseCase(licenceService: LicenceService, userDao: UserDAO)(implicit clock: Clock) extends Logging {
 
-  def execute(providedKey: String): Either[ValidationErrors, Licence] = {
+  def execute(providedKey: String): Either[Errors, Licence] = {
     decodeKey(providedKey).map { newLicence =>
-      validate(newLicence).whenNoErrors[Licence] {
+      validateLicence(newLicence).whenOk[Licence] {
         licenceService.updateLicence(newLicence)
         newLicence
       }
     } getOrElse {
       val incorrectKeyValidation = Map("licenceKey" -> List("Licence key is incorrect"))
-      Left(ValidationErrors(incorrectKeyValidation))
+      Left(incorrectKeyValidation)
     }
   }
 
-  private def validate(newLicence: Licence): Validation = {
+  private def validateLicence(newLicence: Licence) = {
     val activeUsersCount = userDao.countAllActive().toInt
-    val usersCountExceeded = (!newLicence.isValidForUsersCount(activeUsersCount), "Too many currently active users", "general")
-    val keyAlreayExpired = (!newLicence.isValidForCurrentDate, "Licence key already expired", "general")
-    Validation(usersCountExceeded, keyAlreayExpired)
+    val usersCountExceeded = rule("general")(newLicence.isValidForUsersCount(activeUsersCount), "Too many currently active users")
+    val keyAlreayExpired = rule("general")(newLicence.isValidForCurrentDate, "Licence key already expired")
+    validate(usersCountExceeded, keyAlreayExpired)
   }
 
   private def decodeKey(providedKey: String): Option[Licence] = {

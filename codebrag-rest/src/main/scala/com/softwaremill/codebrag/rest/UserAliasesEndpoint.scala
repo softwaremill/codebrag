@@ -22,7 +22,7 @@ class UserAliasesEndpoint(
     haltIfNotCurrentUser()
     val emailAlias = extractReq[String]("email")
     addUserAliasUseCase.execute(user.id, emailAlias) match {
-      case Left(errors) => scalatra.BadRequest(errors.fieldErrors)
+      case Left(errors) => scalatra.BadRequest(errors)
       case Right(aliasCreated) => scalatra.Ok(aliasCreated)
     }
   }
@@ -31,7 +31,7 @@ class UserAliasesEndpoint(
     haltIfNotCurrentUser()
     val aliasIdToRemove = new ObjectId(params("aliasId"))
     deleteUserAliasUseCase.execute(user.id, aliasIdToRemove) match {
-      case Left(errors) => scalatra.BadRequest(errors.fieldErrors)
+      case Left(errors) => scalatra.BadRequest(errors)
       case _ => scalatra.Ok()
     }
   }

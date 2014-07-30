@@ -3,10 +3,10 @@ package com.softwaremill.codebrag.usecases
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.usecases.assertions.UserAssertions
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.usecases.validation.{Validation, ValidationErrors}
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.licence.LicenceService
+import com.softwaremill.scalaval.Validation._
 
 case class ModifyUserDetailsForm(userId: ObjectId, newPassword: Option[String], admin: Option[Boolean], active: Option[Boolean]) {
 
@@ -29,10 +29,10 @@ class ModifyUserDetailsUseCase(protected val userDao: UserDAO, protected val lic
 
   import UserAssertions._
 
-  def execute(executorId: ObjectId, form: ModifyUserDetailsForm): Either[ValidationErrors, Unit] = {
+  def execute(executorId: ObjectId, form: ModifyUserDetailsForm): Either[Errors, Unit] = {
     assertUserWithId(executorId, mustBeActive, mustBeAdmin)(userDao)
     val targetUser = loadUser(form.userId)
-    validate(executorId, targetUser, form).whenNoErrors[Unit] {
+    validateUserDetails(executorId, targetUser, form).whenOk[Unit] {
       val modifiedUser = form.applyTo(targetUser)
       logger.debug(s"Validation passed, attempting to modify user $modifiedUser")
       userDao.modifyUser(modifiedUser)
@@ -41,11 +41,16 @@ class ModifyUserDetailsUseCase(protected val userDao: UserDAO, protected val lic
 
   private def loadUser(userId: ObjectId) = userDao.findById(userId).getOrElse(throw new IllegalStateException(s"User $userId not found"))
 
-  private def validate(executorId: ObjectId, user: User, form: ModifyUserDetailsForm): Validation = {
-    val inactiveUserCheck = (!user.active && form.newPassword.isDefined, "Cannot set password for inactive user", "active")
-    val changeOwnFlagsCheck = (executorId == user.id && (form.admin.isDefined || form.active.isDefined), "Cannot modify own user", "userId")
-    val activeUsersLicenceLimitCheck = (activeUsersCountExceeded(user, form.active), "Licenced active users count exceeded", "active")
-    Validation(inactiveUserCheck, changeOwnFlagsCheck, activeUsersLicenceLimitCheck)
+  private def validateUserDetails(executorId: ObjectId, user: User, form: ModifyUserDetailsForm) = {
+    val checkUserActive = rule("active") {
+      (!form.newPassword.isDefined || (form.newPassword.isDefined && user.active), "Cannot set password for inactive user")
+    }
+    val changeOwnFlagsCheck = rule("userId") {
+      val isModifyingFlags = form.admin.isDefined || form.active.isDefined
+      (!isModifyingFlags || (isModifyingFlags && executorId != user.id), "Cannot modify own user")
+    }
+    val activeUsersLicenceLimitCheck = rule("active")(!activeUsersCountExceeded(user, form.active), "Licenced active users count exceeded")
+    validate(checkUserActive, changeOwnFlagsCheck, activeUsersLicenceLimitCheck)
   }
 
   private def activeUsersCountExceeded(targetUser: User, activeOpt: Option[Boolean]) = {
