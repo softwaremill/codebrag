@@ -135,6 +135,8 @@ object Dependencies {
   val h2 = "com.h2database" % "h2" % "1.3.175"
   val flyway = "com.googlecode.flyway" % "flyway-core" % "2.3"
   val c3p0 = "com.mchange" % "c3p0" % "0.9.5-pre6"
+
+  val scalaval = "com.softwaremill.scalaval" %% "scalaval" % "0.1"
 }
 
 object SmlCodebragBuild extends Build {
@@ -228,7 +230,7 @@ object SmlCodebragBuild extends Build {
     "codebrag-service",
     file("codebrag-service"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator,
-      javaxMail, scalate, egitGithubApi, jGit, jsch, dispatch, json4s, json4sExt, commonsLang))
+      javaxMail, scalate, egitGithubApi, jGit, jsch, dispatch, json4s, json4sExt, commonsLang, scalaval))
   ) dependsOn(domain, common, dao % "test->test;compile->compile")
 
   lazy val rest: Project = Project(
