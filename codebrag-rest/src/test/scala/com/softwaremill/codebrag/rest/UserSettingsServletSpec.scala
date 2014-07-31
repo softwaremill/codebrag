@@ -6,10 +6,10 @@ import org.scalatest.BeforeAndAfterEach
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra.auth.Scentry
-import com.softwaremill.codebrag.usecases.{IncomingSettings, ChangeUserSettingsUseCase}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.{User, UserSettings}
 import com.softwaremill.codebrag.domain.builder.UserAssembler
+import com.softwaremill.codebrag.usecases.user.{IncomingSettings, ChangeUserSettingsUseCase}
 
 
 class UserSettingsServletSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {

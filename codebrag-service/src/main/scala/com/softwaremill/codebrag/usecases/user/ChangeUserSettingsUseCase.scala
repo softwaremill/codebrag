@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.usecases
+package com.softwaremill.codebrag.usecases.user
 
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.UserSettings

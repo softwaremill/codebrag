@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.usecases
+package com.softwaremill.codebrag.usecases.user
 
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.usecases.assertions.UserAssertions

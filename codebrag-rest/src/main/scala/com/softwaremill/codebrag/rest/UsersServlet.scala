@@ -7,8 +7,8 @@ import org.scalatra
 import com.softwaremill.codebrag.usecases._
 import com.softwaremill.codebrag.finders.user.UserFinder
 import com.softwaremill.codebrag.finders.user.ManagedUsersListView
-import com.softwaremill.codebrag.usecases.ModifyUserDetailsForm
 import com.softwaremill.codebrag.usecases.UserToRegister
+import com.softwaremill.codebrag.usecases.user.{ModifyUserDetailsUseCase, ModifyUserDetailsForm}
 
 class UsersServlet(
   val authenticator: Authenticator,

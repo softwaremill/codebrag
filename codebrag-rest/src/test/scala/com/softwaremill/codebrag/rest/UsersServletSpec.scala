@@ -16,6 +16,7 @@ import com.softwaremill.codebrag.finders.user.ManagedUsersListView
 import com.softwaremill.codebrag.usecases.UserToRegister
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.usecases.user.ModifyUserDetailsUseCase
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
