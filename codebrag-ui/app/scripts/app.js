@@ -11,11 +11,13 @@ angular.module('codebrag.session', ['ui.compat', 'codebrag.auth', 'codebrag.even
 angular.module('codebrag.notifications', ['codebrag.events', 'codebrag.common', 'codebrag.templates']);
 angular.module('codebrag.favicon', ['codebrag.events', 'codebrag.counters']);
 
+angular.module('codebrag.commits.observedbranches', []);
 angular.module('codebrag.commits.comments', ['ui.compat', 'codebrag.events']);
 angular.module('codebrag.commits', [
     'ngResource',
     'codebrag.auth',
     'codebrag.commits.comments',
+    'codebrag.commits.observedbranches',
     'codebrag.events',
     'codebrag.tour',
     'codebrag.branches',
