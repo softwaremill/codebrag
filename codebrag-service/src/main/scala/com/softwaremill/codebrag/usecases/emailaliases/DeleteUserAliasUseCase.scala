@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.usecases
+package com.softwaremill.codebrag.usecases.emailaliases
 
 import com.softwaremill.codebrag.dao.user.UserAliasDAO
 import com.typesafe.scalalogging.slf4j.Logging

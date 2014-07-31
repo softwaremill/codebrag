@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.usecases
+package com.softwaremill.codebrag.usecases.emailaliases
 
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar

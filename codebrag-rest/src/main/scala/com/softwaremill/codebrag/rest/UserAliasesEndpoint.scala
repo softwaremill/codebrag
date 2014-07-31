@@ -3,10 +3,7 @@ package com.softwaremill.codebrag.rest
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra
 import org.bson.types.ObjectId
-import org.scalatra.{ScalatraServlet, ScalatraFilter}
-import javax.servlet.http.HttpServletRequest
-import com.softwaremill.codebrag.domain.UserAlias
-import com.softwaremill.codebrag.usecases.{DeleteUserAliasUseCase, AddUserAliasUseCase}
+import com.softwaremill.codebrag.usecases.emailaliases.{DeleteUserAliasUseCase, AddUserAliasUseCase}
 
 class UserAliasesEndpoint(
   val authenticator: Authenticator,
