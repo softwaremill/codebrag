@@ -27,7 +27,7 @@ import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFind
 import com.softwaremill.codebrag.usecases.observedbranches.{FindUserObservedBranches, RemoveBranchFromObserved, AddBranchToObserved}
 import com.softwaremill.codebrag.usecases.reactions._
 import com.softwaremill.codebrag.usecases.emailaliases.{DeleteUserAliasUseCase, AddUserAliasUseCase}
-import com.softwaremill.codebrag.usecases.user.{LoginUserUseCase, ModifyUserDetailsUseCase, ChangeUserSettingsUseCase}
+import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, LoginUserUseCase, ModifyUserDetailsUseCase, ChangeUserSettingsUseCase}
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 

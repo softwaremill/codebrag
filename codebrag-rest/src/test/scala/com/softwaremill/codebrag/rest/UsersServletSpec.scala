@@ -13,10 +13,9 @@ import com.softwaremill.codebrag.dao.ObjectIdTestUtils
 import com.softwaremill.codebrag.finders.user.UserFinder
 import com.softwaremill.codebrag.finders.user.ManagedUserView
 import com.softwaremill.codebrag.finders.user.ManagedUsersListView
-import com.softwaremill.codebrag.usecases.UserToRegister
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.User
-import com.softwaremill.codebrag.usecases.user.ModifyUserDetailsUseCase
+import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, UserToRegister, ModifyUserDetailsUseCase}
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 

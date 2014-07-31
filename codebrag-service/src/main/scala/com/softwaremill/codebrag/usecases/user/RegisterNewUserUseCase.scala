@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.usecases
+package com.softwaremill.codebrag.usecases.user
 
 import com.softwaremill.codebrag.licence._
 import com.typesafe.scalalogging.slf4j.Logging
