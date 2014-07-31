@@ -6,9 +6,9 @@ import org.scalatra.auth.Scentry
 import org.bson.types.ObjectId
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
-import com.softwaremill.codebrag.usecases.FollowupDoneUseCase
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.usecases.reactions.FollowupDoneUseCase
 
 class FollowupsServletSpec extends AuthenticatableServletSpec {
 

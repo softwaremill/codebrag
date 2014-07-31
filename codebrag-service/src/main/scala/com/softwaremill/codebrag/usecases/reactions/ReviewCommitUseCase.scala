@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.usecases
+package com.softwaremill.codebrag.usecases.reactions
 
 import com.softwaremill.codebrag.domain.{CommitInfo, ReviewedCommit}
 import com.softwaremill.codebrag.common.{EventBus, Clock}

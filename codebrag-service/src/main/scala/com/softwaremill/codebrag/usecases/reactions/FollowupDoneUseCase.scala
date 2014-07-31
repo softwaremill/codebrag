@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.usecases
+package com.softwaremill.codebrag.usecases.reactions
 
 import com.softwaremill.codebrag.service.followups.FollowupService
 import org.bson.types.ObjectId

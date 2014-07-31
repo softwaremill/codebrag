@@ -6,13 +6,12 @@ import json.JacksonJsonSupport
 import swagger.{Swagger, SwaggerSupport}
 
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
-import com.softwaremill.codebrag.usecases.ReviewCommitUseCase
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
 import com.softwaremill.codebrag.finders.commits.all.AllCommitsFinder
-import com.softwaremill.codebrag.usecases.reactions.{UnlikeUseCase, LikeUseCase, AddCommentUseCase}
+import com.softwaremill.codebrag.usecases.reactions.{ReviewCommitUseCase, UnlikeUseCase, LikeUseCase, AddCommentUseCase}
 
 class CommitsServlet(val authenticator: Authenticator,
                      val reviewableCommitsListFinder: ToReviewCommitsFinder,

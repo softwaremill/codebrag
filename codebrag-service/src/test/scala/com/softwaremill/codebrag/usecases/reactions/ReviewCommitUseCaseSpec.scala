@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.usecases
+package com.softwaremill.codebrag.usecases.reactions
 
 import org.scalatest.{FlatSpec, BeforeAndAfterEach}
 import org.scalatest.matchers.ShouldMatchers
