@@ -2,10 +2,10 @@ package com.softwaremill.codebrag.rest
 
 import org.bson.types.ObjectId
 import org.scalatra.swagger.SwaggerSupport
-import com.softwaremill.codebrag.usecases.AddCommentUseCase
 import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import com.softwaremill.codebrag.dao.finders.views.CommentView
 import com.softwaremill.codebrag.domain.Comment
+import com.softwaremill.codebrag.usecases.reactions.AddCommentUseCase
 
 
 trait CommentsEndpoint extends JsonServletWithAuthentication with UserReactionParametersReader with CommentsEndpointSwaggerDefinition {

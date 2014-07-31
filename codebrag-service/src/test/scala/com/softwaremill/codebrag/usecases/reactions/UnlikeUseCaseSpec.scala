@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.usecases
+package com.softwaremill.codebrag.usecases.reactions
 
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
@@ -7,7 +7,6 @@ import org.mockito.Mockito._
 import com.softwaremill.codebrag.service.comments.{UserReactionService, LikeValidator}
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils
-import org.bson.types.ObjectId
 import com.softwaremill.codebrag.licence.LicenceService
 
 class UnlikeUseCaseSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {

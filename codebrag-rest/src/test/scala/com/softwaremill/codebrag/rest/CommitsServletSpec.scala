@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.AuthenticatableServletSpec
 import org.scalatra.auth.Scentry
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
-import com.softwaremill.codebrag.usecases.{LikeUseCase, UnlikeUseCase, ReviewCommitUseCase, AddCommentUseCase}
+import com.softwaremill.codebrag.usecases.ReviewCommitUseCase
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.common.paging.PagingCriteria
@@ -19,6 +19,7 @@ import com.softwaremill.codebrag.finders.commits.all.AllCommitsFinder
 import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.usecases.reactions.{UnlikeUseCase, LikeUseCase, AddCommentUseCase}
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
