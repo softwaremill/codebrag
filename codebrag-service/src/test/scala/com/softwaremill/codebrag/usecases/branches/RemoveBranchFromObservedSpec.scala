@@ -4,18 +4,18 @@ import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.common.ClockSpec
-import com.softwaremill.codebrag.dao.observedbranch.UserObservedBranchDAO
+import com.softwaremill.codebrag.dao.branch.WatchedBranchesDao
 import com.softwaremill.codebrag.licence.{LicenceExpiredException, LicenceService}
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import org.mockito.Mockito
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.UserObservedBranch
+import com.softwaremill.codebrag.domain.UserWatchedBranch
 
 class RemoveBranchFromObservedSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
 
-  val dao = mock[UserObservedBranchDAO]
+  val dao = mock[WatchedBranchesDao]
   val licenceService = mock[LicenceService]
-  val useCase = new RemoveBranchFromObserved(dao, licenceService)
+  val useCase = new StopWatchingBranch(dao, licenceService)
 
   val Bob = UserAssembler.randomUser.get
 
@@ -25,25 +25,25 @@ class RemoveBranchFromObservedSpec extends FlatSpec with MockitoSugar with Shoul
 
   it should "throw excepion if licence is expired" in {
     // given
+    val form = WatchedBranchForm("codebrag", "master")
     Mockito.when(licenceService.interruptIfLicenceExpired()).thenThrow(new LicenceExpiredException())
-    val toRemove = new ObjectId
 
     // when
     intercept[Exception] {
-      useCase.execute(Bob.id, toRemove)
+      useCase.execute(Bob.id, form)
     }
 
     // then exception should be thrown
-    Mockito.verifyZeroInteractions(dao)
+    Mockito.verifyNoMoreInteractions(dao)
   }
 
   it should "not attempt to remove branch from observed if user is not observing this branch" in {
     // given
-    Mockito.when(dao.findAll(Bob.id)).thenReturn(Set.empty[UserObservedBranch])
+    val form = WatchedBranchForm("codebrag", "master")
+    Mockito.when(dao.findAll(Bob.id)).thenReturn(Set.empty[UserWatchedBranch])
 
     // when
-    val toRemove = new ObjectId
-    val Left(result) = useCase.execute(Bob.id, toRemove)
+    val Left(result) = useCase.execute(Bob.id, form)
 
     // then
     result.flatMap(_._2) should be(Seq("You're not watching this branch"))
@@ -51,11 +51,12 @@ class RemoveBranchFromObservedSpec extends FlatSpec with MockitoSugar with Shoul
 
   it should "remove branch from observed for user" in {
     // given
-    val observed = UserObservedBranch(new ObjectId, Bob.id, "codebrag", "master")
+    val observed = UserWatchedBranch(new ObjectId, Bob.id, "codebrag", "master")
+    val form = WatchedBranchForm("codebrag", "master")
     Mockito.when(dao.findAll(Bob.id)).thenReturn(Set(observed))
 
     // when
-    val result = useCase.execute(Bob.id, observed.id)
+    val result = useCase.execute(Bob.id, form)
 
     // then
     result should be('right)

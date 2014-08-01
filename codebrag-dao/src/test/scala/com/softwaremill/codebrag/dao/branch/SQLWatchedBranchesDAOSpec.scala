@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.dao.observedbranch
+package com.softwaremill.codebrag.dao.branch
 
 import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
 import org.scalatest.BeforeAndAfterEach
@@ -6,19 +6,19 @@ import org.scalatest.matchers.ShouldMatchers
 import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.builder.UserAssembler
-import com.softwaremill.codebrag.domain.UserObservedBranch
+import com.softwaremill.codebrag.domain.UserWatchedBranch
 
 
-class SQLUserObservedBranchDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with BeforeAndAfterEach with ShouldMatchers with Logging {
+class SQLWatchedBranchesDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with BeforeAndAfterEach with ShouldMatchers with Logging {
 
-  val dao = new SQLUserObservedBranchDAO(sqlDatabase)
+  val dao = new SQLWatchedBranchesDao(sqlDatabase)
 
   val Bob = UserAssembler.randomUser.get
   val Alice = UserAssembler.randomUser.get
 
   it should "create record for observed repo/branch for user" in {
     // given
-    val observed = UserObservedBranch(new ObjectId, Bob.id, "codebrag", "master")
+    val observed = UserWatchedBranch(new ObjectId, Bob.id, "codebrag", "master")
 
     // when
     dao.save(observed)
@@ -29,8 +29,8 @@ class SQLUserObservedBranchDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfte
 
   it should "not create duplicated record for user/repo/branch" in {
     // given
-    val first = UserObservedBranch(new ObjectId, Bob.id, "codebrag", "master")
-    val second = UserObservedBranch(new ObjectId, Bob.id, "codebrag", "master")
+    val first = UserWatchedBranch(new ObjectId, Bob.id, "codebrag", "master")
+    val second = UserWatchedBranch(new ObjectId, Bob.id, "codebrag", "master")
     dao.save(first)
 
     // when
@@ -42,10 +42,10 @@ class SQLUserObservedBranchDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfte
   it should "create record for same user but different repo/branch" in {
     // given
     val toSave = Seq(
-      UserObservedBranch(new ObjectId, Bob.id, "codebrag", "master"),
-      UserObservedBranch(new ObjectId, Bob.id, "codebrag", "bugfix"),
-      UserObservedBranch(new ObjectId, Bob.id, "bootzooka", "master"),
-      UserObservedBranch(new ObjectId, Bob.id, "bootzooka", "bugfix")
+      UserWatchedBranch(new ObjectId, Bob.id, "codebrag", "master"),
+      UserWatchedBranch(new ObjectId, Bob.id, "codebrag", "bugfix"),
+      UserWatchedBranch(new ObjectId, Bob.id, "bootzooka", "master"),
+      UserWatchedBranch(new ObjectId, Bob.id, "bootzooka", "bugfix")
     )
 
     // when
@@ -57,8 +57,8 @@ class SQLUserObservedBranchDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfte
 
   it should "remove observed branch by id" in {
     // given
-    val first = UserObservedBranch(new ObjectId, Bob.id, "codebrag", "master")
-    val second = UserObservedBranch(new ObjectId, Bob.id, "bootzooka", "bugfix")
+    val first = UserWatchedBranch(new ObjectId, Bob.id, "codebrag", "master")
+    val second = UserWatchedBranch(new ObjectId, Bob.id, "bootzooka", "bugfix")
     Seq(first, second).foreach(dao.save)
 
     // when
@@ -70,8 +70,8 @@ class SQLUserObservedBranchDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfte
 
   it should "find observed branches for given user" in {
     // given
-    val aliceBranch = UserObservedBranch(new ObjectId, Alice.id, "codebrag", "master")
-    val bobBranch = UserObservedBranch(new ObjectId, Bob.id, "bootzooka", "bugfix")
+    val aliceBranch = UserWatchedBranch(new ObjectId, Alice.id, "codebrag", "master")
+    val bobBranch = UserWatchedBranch(new ObjectId, Bob.id, "bootzooka", "bugfix")
     Seq(aliceBranch, bobBranch).foreach(dao.save)
 
     // when

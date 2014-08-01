@@ -70,7 +70,6 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new SessionServlet(authenticator, loginUserUseCase, userFinder), Prefix + SessionServlet.MappingPath)
     context.mount(new UsersServlet(authenticator, registerService, registerNewUserUseCase, userFinder, modifyUserDetailsUseCase, config), Prefix + UsersServlet.MappingPath)
     context.mount(new UserAliasesEndpoint(authenticator, addUserAliasUseCase, deleteUserAliasUseCase), Prefix + UserAliasesEndpoint.MappingPath)
-    context.mount(new UserObservedBranchesEndpoint(authenticator, addBranchToObserved, removeBranchFromObserved), Prefix + UserObservedBranchesEndpoint.MappingPath)
     context.mount(new UsersSettingsServlet(authenticator, userDao, changeUserSettingsUseCase), Prefix + "users/settings")
     context.mount(new CommitsServlet(authenticator, toReviewCommitsFinder, allCommitsFinder, reactionFinder, addCommentUseCase,
       reviewCommitUseCase, userReactionService, userDao, swagger, diffWithCommentsService, unlikeUseCaseFactory, likeUseCase), Prefix + CommitsServlet.MAPPING_PATH)
@@ -81,7 +80,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new InvitationServlet(authenticator, generateInvitationCodeUseCase, sendInvitationEmailUseCase), Prefix + "invitation")
     context.mount(new UpdatesServlet(authenticator, followupFinder, heartbeatDao, toReviewCommitsFinder, clock), Prefix + UpdatesServlet.Mapping)
     context.mount(new RepoStatusServlet(authenticator, repositories.head, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
-    context.mount(new RepositoryBranchesServlet(authenticator, listRepoBranches), Prefix + RepositoryBranchesServlet.MountPath)
+    context.mount(new RepositoryBranchesServlet(authenticator, listRepoBranches, addBranchToObserved, removeBranchFromObserved), Prefix + RepositoryBranchesServlet.MountPath)
     context.mount(new LicenceServlet(licenceService, registerLicenceUseCase, authenticator), Prefix + LicenceServlet.MountPath)
     context.mount(new BrowsingContextServlet(authenticator, userBrowsingContextFinder, updateUserBrowsingContextUseCase), Prefix + BrowsingContextServlet.MappingPath)
 

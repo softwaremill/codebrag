@@ -24,7 +24,7 @@ import com.softwaremill.codebrag.finders.commits.toreview.{ToReviewCommitsViewBu
 import com.softwaremill.codebrag.finders.commits.all.{AllCommitsViewBuilder, AllCommitsFinder}
 import com.softwaremill.codebrag.finders.user.UserFinder
 import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFinder
-import com.softwaremill.codebrag.usecases.branches.{RemoveBranchFromObserved, AddBranchToObserved, ListRepositoryBranches}
+import com.softwaremill.codebrag.usecases.branches.{StopWatchingBranch, StartWatchingBranch, ListRepositoryBranches}
 import com.softwaremill.codebrag.usecases.reactions._
 import com.softwaremill.codebrag.usecases.emailaliases.{DeleteUserAliasUseCase, AddUserAliasUseCase}
 import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, LoginUserUseCase, ModifyUserDetailsUseCase, ChangeUserSettingsUseCase}
@@ -81,8 +81,8 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val updateUserBrowsingContextUseCase = new UpdateUserBrowsingContextUseCase(userRepoDetailsDao)
   lazy val addUserAliasUseCase = new AddUserAliasUseCase(userAliasDao, userDao)
   lazy val deleteUserAliasUseCase = new DeleteUserAliasUseCase(userAliasDao)
-  lazy val addBranchToObserved = new AddBranchToObserved(userObservedBranchesDao, licenceService)
-  lazy val removeBranchFromObserved = new RemoveBranchFromObserved(userObservedBranchesDao, licenceService)
+  lazy val addBranchToObserved = new StartWatchingBranch(userObservedBranchesDao, licenceService)
+  lazy val removeBranchFromObserved = new StopWatchingBranch(userObservedBranchesDao, licenceService)
   lazy val listRepoBranches = new ListRepositoryBranches(repositoriesCache, userObservedBranchesDao)
 
   lazy val licenceService = new LicenceService(InstanceId, instanceParamsDao, userDao)(clock)
