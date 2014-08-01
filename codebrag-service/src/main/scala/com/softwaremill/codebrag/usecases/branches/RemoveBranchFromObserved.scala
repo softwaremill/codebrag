@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.usecases.observedbranches
+package com.softwaremill.codebrag.usecases.branches
 
 import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId

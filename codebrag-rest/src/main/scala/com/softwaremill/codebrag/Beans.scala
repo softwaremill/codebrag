@@ -24,11 +24,10 @@ import com.softwaremill.codebrag.finders.commits.toreview.{ToReviewCommitsViewBu
 import com.softwaremill.codebrag.finders.commits.all.{AllCommitsViewBuilder, AllCommitsFinder}
 import com.softwaremill.codebrag.finders.user.UserFinder
 import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFinder
-import com.softwaremill.codebrag.usecases.branches.ListRepositoryBranches
+import com.softwaremill.codebrag.usecases.branches.{RemoveBranchFromObserved, AddBranchToObserved, ListRepositoryBranches}
 import com.softwaremill.codebrag.usecases.reactions._
 import com.softwaremill.codebrag.usecases.emailaliases.{DeleteUserAliasUseCase, AddUserAliasUseCase}
 import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, LoginUserUseCase, ModifyUserDetailsUseCase, ChangeUserSettingsUseCase}
-import com.softwaremill.codebrag.usecases.observedbranches.{RemoveBranchFromObserved, AddBranchToObserved}
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 

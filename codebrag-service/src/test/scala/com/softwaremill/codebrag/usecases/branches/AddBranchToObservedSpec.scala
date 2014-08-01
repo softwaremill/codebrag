@@ -1,4 +1,4 @@
-package com.softwaremill.codebrag.usecases.observedbranches
+package com.softwaremill.codebrag.usecases.branches
 
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.mock.MockitoSugar

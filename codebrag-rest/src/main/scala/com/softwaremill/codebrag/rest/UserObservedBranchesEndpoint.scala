@@ -1,9 +1,9 @@
 package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.service.user.Authenticator
-import com.softwaremill.codebrag.usecases.observedbranches.{NewObservedBranch, RemoveBranchFromObserved, AddBranchToObserved}
 import org.bson.types.ObjectId
 import org.scalatra
+import com.softwaremill.codebrag.usecases.branches.{RemoveBranchFromObserved, NewObservedBranch, AddBranchToObserved}
 
 class UserObservedBranchesEndpoint(
   val authenticator: Authenticator, 
