@@ -2,6 +2,7 @@ describe("Branches service", function () {
 
     var $httpBackend, $q, $rootScope;
     var branchesService,
+        RepoBranch,
         currentRepoContext = {
             repo: 'codebrag'
         },
@@ -13,11 +14,12 @@ describe("Branches service", function () {
         });
     }));
 
-    beforeEach(inject(function (_$httpBackend_, _$q_, _branchesService_, _currentRepoContext_, _$rootScope_, _events_) {
+    beforeEach(inject(function (_$httpBackend_, _$q_, _branchesService_, _RepoBranch_, _currentRepoContext_, _$rootScope_, _events_) {
         $httpBackend = _$httpBackend_;
         $q = _$q_;
         $rootScope = _$rootScope_;
         branchesService = _branchesService_;
+        RepoBranch = _RepoBranch_;
         currentRepoContext = _currentRepoContext_;
         events = _events_;
 
@@ -37,8 +39,8 @@ describe("Branches service", function () {
         // given
         currentRepoContext.repo = 'codebrag';
         var expectedBranchesList;
-        var allBranches = ['master', 'feature', 'bugfix'];
-        $httpBackend.whenGET('rest/branches/codebrag').respond({branches: allBranches});
+        var allBranches = [{branchName: 'master', watching: false}, {branchName: 'feature', watching: true}];
+        $httpBackend.whenGET('rest/repos/codebrag/branches').respond({branches: allBranches});
 
         // when
         branchesService.loadBranches().then(function(branches) {
@@ -47,7 +49,10 @@ describe("Branches service", function () {
         $httpBackend.flush();
 
         // then
-        expect(expectedBranchesList).toEqual(allBranches);
+        var branches = allBranches.map(function(b) {
+            return new RepoBranch(b);
+        });
+        expect(expectedBranchesList).toEqual(branches);
     });
 
 });

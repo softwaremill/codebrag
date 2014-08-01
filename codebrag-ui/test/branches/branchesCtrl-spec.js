@@ -1,7 +1,7 @@
 describe("Branches Controller", function () {
 
     var $q, $scope, $controller,
-        branchesService, events,
+        branchesService, events, RepoBranch,
         allBranches = ['master', 'feature', 'bugfix'];
 
     beforeEach(module('codebrag.branches', 'codebrag.counters'));
@@ -10,6 +10,7 @@ describe("Branches Controller", function () {
         $q = $injector.get('$q');
         $scope = $injector.get('$rootScope').$new();
         $controller = $injector.get('$controller');
+        RepoBranch = $injector.get('RepoBranch');
         events = $injector.get('events');
     }));
 
@@ -41,11 +42,12 @@ describe("Branches Controller", function () {
         createController($scope, branchesService, countersService, currentRepoContext);
 
         // when
-        $scope.selectBranch("feature");
+        var selected = new RepoBranch({branchName: "feature"});
+        $scope.selectBranch(selected);
         $scope.switchListView("all");
 
         // then
-        expect(currentRepoContext.switchBranch).toHaveBeenCalledWith("feature");
+        expect(currentRepoContext.switchBranch).toHaveBeenCalledWith(selected.name);
         expect(currentRepoContext.switchCommitsFilter).toHaveBeenCalledWith("all");
     });
 

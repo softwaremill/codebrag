@@ -1,6 +1,6 @@
 angular.module('codebrag.branches')
 
-    .factory('branchesService', function($http, $q, $rootScope, events, currentRepoContext) {
+    .factory('branchesService', function($http, $q, $rootScope, currentRepoContext, RepoBranch) {
 
         var branchesList = [],
             repositoryType,
@@ -8,15 +8,21 @@ angular.module('codebrag.branches')
             push = Array.prototype.push;
 
         function loadBranches() {
-            return $http.get('rest/branches/' + currentRepoContext.repo).then(applyBranches);
+            return $http.get('rest/repos/' + currentRepoContext.repo + '/branches').then(applyBranches);
         }
 
         function applyBranches(response) {
             repositoryType = response.data.repoType;
             branchesList.length = 0;
-            push.apply(branchesList, response.data.branches);
+            push.apply(branchesList, toBranches(response.data.branches));
             dataReady.resolve();
             return branchesList;
+        }
+
+        function toBranches(arr) {
+            return arr.map(function(branchData) {
+                return new RepoBranch(branchData);
+            });
         }
 
         function repoType() {

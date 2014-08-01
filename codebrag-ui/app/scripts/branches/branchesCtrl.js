@@ -6,11 +6,11 @@ angular.module('codebrag.branches')
         $scope.currentRepoContext = currentRepoContext;
 
         $scope.selectBranch = function(selected) {
-            currentRepoContext.switchBranch(selected);
+            currentRepoContext.switchBranch(selected.name);
         };
 
         $scope.isSelected = function(branch) {
-            return currentRepoContext.branch === branch;
+            return currentRepoContext.branch === branch.name;
         };
 
         $scope.selectedBranch = function() {
@@ -27,6 +27,11 @@ angular.module('codebrag.branches')
 
         $scope.switchListView = function(mode) {
             currentRepoContext.switchCommitsFilter(mode);
+        };
+
+        $scope.toggleWatching = function(branch) {
+            console.log('will toggle', branch.name, currentRepoContext.repo);
+            branch.watching = !branch.watching;
         };
 
         branchesService.loadBranches().then(function(branchesList) {
