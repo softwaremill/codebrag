@@ -1,7 +1,6 @@
 describe('Counters Service', function() {
 
-    var branchesService,
-        countersService,
+    var countersService,
         currentRepoContext = {},
         events,
         $rootScope,
@@ -18,8 +17,7 @@ describe('Counters Service', function() {
         $provide.value('currentRepoContext', currentRepoContext);
     }));
 
-    beforeEach(inject(function(_$q_, _$rootScope_, _$httpBackend_, _branchesService_, _$injector_, _$timeout_, _events_) {
-        branchesService = _branchesService_;
+    beforeEach(inject(function(_$q_, _$rootScope_, _$httpBackend_, _$injector_, _$timeout_, _events_) {
         events = _events_;
         $injector = _$injector_;
         $rootScope = _$rootScope_;
