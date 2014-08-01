@@ -306,6 +306,10 @@
         "active": true,
         "settings": {
             "appTourDone": false
+        },
+        "browsingContext": {
+            "branchName": "master",
+            "repoName": "codebrag"
         }
     };
 
@@ -330,7 +334,7 @@
 
     var repoStatus = {"repoStatus":{"repositoryName":"codebrag","ready":true}};
 
-    var branches = {"branches":["alternative_licences","config","easy_install","grunt-integration","master","multibranch","multirepo","shutdown-hook","sql","svnsupport","user_mgmt","v1.0-fixes","v2.0-fixes"],"current":"master","repoType":"git"};
+    var branches = {"branches":[{branchName: "config", watching: false}, {branchName: "easy_install", watching: true},{ branchName: "master", watching: true}], "repoType":"git"};
 
     var managedUsers = {"users":[{"userId":"53904574e4b00a9960b690f8","email":"abcd@sml.com","name":"abcd","active":false,"admin":true},{"userId":"52fddfb6e4b0f2b59c95b2f4","email":"adam@warski.org","name":"adamw","active":true,"admin":false},{"userId":"528cdde6e4b021de8e4afbc9","email":"michal.ostruszka@gmail.com","name":"mostr","active":true,"admin":true},{"userId":"539aad14e4b0f71eba4eac00","email":"pawel+12@codebrag.com","name":"pawel12","active":true,"admin":false},{"userId":"5346538ee4b06569d00c26b7","email":"pawel+4@softwaremill.com","name":"pawel4","active":false,"admin":true},{"userId":"529f358ce4b0434b62c3e2a2","email":"pawel@codebrag.com","name":"pawel2","active":true,"admin":true},{"userId":"529f3535e4b0434b62c3e293","email":"pawel@softwaremill.com","name":"pawel","active":true,"admin":true},{"userId":"528d0d66e4b052cc0a66ba68","email":"pawel@softwaremill.pl","name":"pawel.wrzeszcz","active":true,"admin":true},{"userId":"52a03c7ce4b0434b62c3e2b6","email":"test@test.pl","name":"test","active":true,"admin":true},{"userId":"52ce88d3e4b0e6126a8d1e38","email":"test@test.tt","name":"Michal Ostruszka","active":false,"admin":true},{"userId":"53905e77e4b00a9960b69107","email":"uu@uu.pl","name":"uu","active":true,"admin":false}]};
 
@@ -356,10 +360,10 @@
 
                 $httpBackend.whenGET('rest/notificationCounts').respond(counters);
 
-                $httpBackend.whenGET('rest/commits?branch=master&context=true&limit=7').respond(allCommits);
-                $httpBackend.whenGET('rest/commits?branch=master&filter=to_review&limit=7').respond(pendingCommits);
-                $httpBackend.whenGET(/rest\/commits\?branch=master&filter=to_review&limit=7&min_sha=[a-z0-9]*$/).respond(additionalCommits);
-                $httpBackend.whenGET(/rest\/commits\?branch=master&filter=to_review&limit=1&min_sha=[a-z0-9]*$/).respond(pendingCommits);
+                $httpBackend.whenGET('rest/commits/codebrag?branch=master&context=true&limit=7').respond(allCommits);
+                $httpBackend.whenGET('rest/commits/codebrag?branch=master&filter=to_review&limit=7').respond(pendingCommits);
+                $httpBackend.whenGET(/rest\/commits\/codebrag\?branch=master&filter=to_review&limit=7&min_sha=[a-z0-9]*$/).respond(additionalCommits);
+                $httpBackend.whenGET(/rest\/commits\/codebrag\?branch=master&filter=to_review&limit=1&min_sha=[a-z0-9]*$/).respond(pendingCommits);
 
                 $httpBackend.whenGET(/rest\/commits\/[a-z0-9]{12}/).respond(commitDiff);
 
@@ -367,7 +371,7 @@
 
                 $httpBackend.whenGET(/rest\/followups\/[a-z0-9]{12}/).respond(followup);
 
-                $httpBackend.whenGET('rest/updates?branch=master').respond({"lastUpdate":1384251660217,"commits":0,"followups":0});
+                $httpBackend.whenGET('rest/updates?branch=master&repo=codebrag').respond({"lastUpdate":1384251660217,"commits":0,"followups":0});
 
                 $httpBackend.whenPUT('rest/users/settings').respond({userSettings: {}});
 
@@ -377,11 +381,18 @@
 
                 $httpBackend.whenGET('rest/repoStatus').respond(repoStatus);
 
-                $httpBackend.whenGET('rest/branches').respond(branches);
+                $httpBackend.whenGET('rest/repos/codebrag/branches').respond(branches);
 
                 $httpBackend.whenGET('rest/users').respond(managedUsers);
 
                 $httpBackend.whenGET('rest/invitation').respond(invitation);
+
+                var browsingContexts = [
+                    {"userId":"516cfedfe4b0ad2b39ba1b36","repoName":"bootzooka","branchName":"master"},
+                    {"userId":"516cfedfe4b0ad2b39ba1b36","repoName":"codebrag-website","branchName":"master"},
+                    {"userId":"516cfedfe4b0ad2b39ba1b36","repoName":"codebrag","branchName":"master"}
+                ];
+                $httpBackend.whenGET('rest/browsing-context').respond(browsingContexts);
 
                 $httpBackend.whenPUT(/rest\/users\/[a-z0-9]*/).respond(200);
 
