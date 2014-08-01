@@ -4,9 +4,8 @@ import com.softwaremill.codebrag.service.user.Authenticator
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.usecases.branches.{WatchedBranchForm, StopWatchingBranch, StartWatchingBranch, ListRepositoryBranches}
 import org.scalatra
-import org.bson.types.ObjectId
 
-class RepositoryBranchesServlet(val authenticator: Authenticator, 
+class RepositoryBranchesServlet(val authenticator: Authenticator,
   listRepositoryBranches: ListRepositoryBranches,
   watchBranch: StartWatchingBranch,
   unwatchBranch: StopWatchingBranch) extends JsonServletWithAuthentication with Logging {
@@ -17,15 +16,15 @@ class RepositoryBranchesServlet(val authenticator: Authenticator,
   }
 
   post("/:repo/branches/:branch/watch") {
-    val form = WatchedBranchForm(extractReq[String]("repo"), extractReq[String]("branch"))
+    val form = WatchedBranchForm(extractReqUrlParam("repo"), extractReqUrlParam("branch"))
     watchBranch.execute(user.id, form) match {
       case Left(errors) => scalatra.BadRequest(Map("errors" -> errors))
       case Right(observedBranch) => observedBranch
     }
   }
 
-  delete("/:repo/branches/:branch") {
-    val form = WatchedBranchForm(extractReq[String]("repo"), extractReq[String]("branch"))
+  delete("/:repo/branches/:branch/watch") {
+    val form = WatchedBranchForm(extractReqUrlParam("repo"), extractReqUrlParam("branch"))
     unwatchBranch.execute(user.id, form) match {
       case Left(errors) => scalatra.BadRequest(Map("errors" -> errors))
       case Right(_) => scalatra.Ok()
