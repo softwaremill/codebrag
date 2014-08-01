@@ -5,10 +5,7 @@ angular.module('codebrag.branches')
         return {
             restrict: 'E',
             replace: true,
-            template: '<span style="display: inline-block; position: relative; left: -30px" ng-click="toggleWatching(watching)" isolate-click>' +
-                '<i class="icon-bell" ng-show="!branch.watching"></i>' +
-                '<i class="icon-bell-alt" ng-show="branch.watching"></i>' +
-                '</span>',
+            templateUrl: "views/branches/watchedBranchIndicator.html",
             scope: {
                 branch: '=',
                 toggleWatching: '&'
