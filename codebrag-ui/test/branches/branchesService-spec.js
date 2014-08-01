@@ -38,21 +38,54 @@ describe("Branches service", function () {
     it('should load available branches for given repo from server', function() {
         // given
         currentRepoContext.repo = 'codebrag';
-        var expectedBranchesList;
         var allBranches = [{branchName: 'master', watching: false}, {branchName: 'feature', watching: true}];
         $httpBackend.whenGET('rest/repos/codebrag/branches').respond({branches: allBranches});
 
         // when
-        branchesService.loadBranches().then(function(branches) {
-            expectedBranchesList = branches;
-        });
+        branchesService.loadBranches();
         $httpBackend.flush();
 
         // then
         var branches = allBranches.map(function(b) {
             return new RepoBranch(b);
         });
-        expect(expectedBranchesList).toEqual(branches);
+        expect(branchesService.branches).toEqual(branches);
+    });
+
+    it('should toggle watching for branch', function() {
+        // given
+        currentRepoContext.repo = 'codebrag';
+        branchesService.branches = [
+            new RepoBranch({branchName: 'master', watching: false}),
+            new RepoBranch({branchName: 'feature', watching: true})
+        ];
+        $httpBackend.expectPOST('rest/repos/codebrag/branches/master/watch').respond(200);
+
+        // when
+        var target = branchesService.branches[0];
+        branchesService.toggleWatching(target);
+        $httpBackend.flush();
+
+        // then
+        expect(target.watching).toBeTruthy();
+    });
+
+    it('should revert back watch for branch when error happened', function() {
+        // given
+        currentRepoContext.repo = 'codebrag';
+        branchesService.branches = [
+            new RepoBranch({branchName: 'master', watching: false}),
+            new RepoBranch({branchName: 'feature', watching: true})
+        ];
+        $httpBackend.expectPOST('rest/repos/codebrag/branches/master/watch').respond(400);
+
+        // when
+        var target = branchesService.branches[0];
+        branchesService.toggleWatching(target);
+        $httpBackend.flush();
+
+        // then
+        expect(target.watching).toBeFalsy();
     });
 
 });

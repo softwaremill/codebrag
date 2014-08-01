@@ -2,8 +2,14 @@ angular.module('codebrag.branches')
 
     .controller('BranchesCtrl', function ($scope, branchesService, events, countersService, currentRepoContext) {
 
+        $scope.branches = branchesService.branches;
         $scope.showBranchesSelector = true;
         $scope.currentRepoContext = currentRepoContext;
+
+        branchesService.loadBranches();
+        branchesService.ready().then(function() {
+            $scope.showBranchesSelector = (branchesService.repoType() === 'git');
+        });
 
         $scope.selectBranch = function(selected) {
             currentRepoContext.switchBranch(selected.name);
@@ -30,14 +36,8 @@ angular.module('codebrag.branches')
         };
 
         $scope.toggleWatching = function(branch) {
-            console.log('will toggle', branch.name, currentRepoContext.repo);
-            branch.watching = !branch.watching;
+            branchesService.toggleWatching(branch);
         };
-
-        branchesService.loadBranches().then(function(branchesList) {
-            $scope.showBranchesSelector = (branchesService.repoType() === 'git');
-            $scope.branches = branchesList;
-        });
 
     });
 

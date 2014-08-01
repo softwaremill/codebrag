@@ -16,7 +16,9 @@ describe("Branches Controller", function () {
 
     beforeEach(function() {
         branchesService = {
-            loadBranches: function() { return $q.when(allBranches) },
+            branches: [],
+            loadBranches: function() { return $q.when() },
+            ready: function() { return $q.when() },
             repoType: function() { return 'git' }
         };
     });
@@ -31,7 +33,7 @@ describe("Branches Controller", function () {
         $scope.$digest();
 
         // then
-        expect($scope.branches).toBe(allBranches);
+        expect($scope.branches).toEqual(branchesService.branches);
     });
 
     it('should change current branch and commits list filter', function() {

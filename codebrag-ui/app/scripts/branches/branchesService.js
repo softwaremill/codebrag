@@ -2,21 +2,35 @@ angular.module('codebrag.branches')
 
     .factory('branchesService', function($http, $q, $rootScope, currentRepoContext, RepoBranch) {
 
-        var branchesList = [],
+        var branches = [],
             repositoryType,
             dataReady = $q.defer(),
             push = Array.prototype.push;
 
+        function baseUrl() {
+            return 'rest/repos/' + currentRepoContext.repo + '/branches'
+        }
+
+        function toggleWatching(branch) {
+            var original = angular.copy(branch),
+                url = baseUrl() + '/' + branch.name + '/watch',
+                httpCall = (branch.watching ? $http.delete(url) : $http.post(url));
+            branch.watching = !branch.watching;
+            return httpCall.then(null, function() {
+                // revert back to original state when error
+                branch.watching = original.watching;
+            });
+        }
+
         function loadBranches() {
-            return $http.get('rest/repos/' + currentRepoContext.repo + '/branches').then(applyBranches);
+            return $http.get(baseUrl()).then(applyBranches);
         }
 
         function applyBranches(response) {
             repositoryType = response.data.repoType;
-            branchesList.length = 0;
-            push.apply(branchesList, toBranches(response.data.branches));
+            branches.length = 0;
+            push.apply(branches, toBranches(response.data.branches));
             dataReady.resolve();
-            return branchesList;
         }
 
         function toBranches(arr) {
@@ -34,8 +48,10 @@ angular.module('codebrag.branches')
         }
 
         return {
+            branches: branches,
             ready: ready,
             loadBranches: loadBranches,
+            toggleWatching: toggleWatching,
             repoType: repoType
         }
 
