@@ -1,6 +1,10 @@
 angular.module('codebrag.counters')
 
-    .controller('CountersCtrl', function ($scope, $state, $rootScope, events, currentCommit, countersService, currentRepoContext) {
+    .controller('CountersCtrl', function (notificationPoller, notificationsRegistry, $scope, $state, $rootScope, events, currentCommit, countersService, currentRepoContext) {
+
+        $scope.notifications = notificationsRegistry.notifications;
+
+        notificationPoller.start();
 
         $scope.counters = {
             commits: function() {
