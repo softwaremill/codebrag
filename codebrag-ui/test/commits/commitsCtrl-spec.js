@@ -12,7 +12,7 @@ describe("Commits Controller", function () {
         events,
         currentCommit;
 
-    beforeEach(module('codebrag.commits', 'codebrag.notifications'));
+    beforeEach(module('codebrag.commits', 'codebrag.repostatus'));
 
     beforeEach(inject(function(_$rootScope_, _$q_, $controller, _commitsService_, _$stateParams_, _events_, _currentCommit_) {
         $scope = _$rootScope_.$new();

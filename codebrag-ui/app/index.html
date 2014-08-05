@@ -66,13 +66,15 @@
     <script type="text/javascript" src="scripts/session/profileCtrl.js"></script>
 
     <!-- notifications -->
-    <script type="text/javascript" src="scripts/notifications/repositoryStatusService.js"></script>
-    <script type="text/javascript" src="scripts/notifications/repositoryStatusCtrl.js"></script>
+    <script type="text/javascript" src="scripts/repostatus/repositoryStatusService.js"></script>
+    <script type="text/javascript" src="scripts/repostatus/repositoryStatusCtrl.js"></script>
 
     <!-- counters -->
-    <script type="text/javascript" src="scripts/counters/counter.js"></script>
-    <script type="text/javascript" src="scripts/counters/countersService.js"></script>
-    <script type="text/javascript" src="scripts/counters/countersCtrl.js"></script>
+    <script type="text/javascript" src="scripts/notifications/branchNotification.js"></script>
+    <script type="text/javascript" src="scripts/notifications/branchNotificationsPopup.js"></script>
+    <script type="text/javascript" src="scripts/notifications/notificationPoller.js"></script>
+    <script type="text/javascript" src="scripts/notifications/notificationRegistry.js"></script>
+    <script type="text/javascript" src="scripts/notifications/notificationsCtrl.js"></script>
 
     <!--favicon-->
     <script type="text/javascript" src="scripts/favicon/faviconChangeService.js"></script>
@@ -107,6 +109,8 @@
     <script type="text/javascript" src="scripts/branches/userBrowsingContextResource.js"></script>
     <script type="text/javascript" src="scripts/branches/watchedBranchIndicator.js"></script>
     <script type="text/javascript" src="scripts/branches/repoBranch.js"></script>
+    <script type="text/javascript" src="scripts/branches/currentBranchCommitsCounter.js"></script>
+
 
 
 
@@ -202,14 +206,15 @@
             <img alt="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAA0CAYAAABCZTCoAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHh5AAB/gQAA+lMAAIDxAAB4LgAA/hgAAEcGAAAQ3E+OhDkAAANsSURBVHja7JzLaxRBEIe/cdfFR4xEQy568YGIj1y8SG560Yge9OBNBFFUVELEoxCC4EHwEbwIivgniI+I6EEwIIqCxmg8BIUgIiwaNUpAkqyH1MLQtLO9yczu9E79oOnpmdrqnurqrsc0GxQnW4kJJQeaAEWqZJmPc9QjQ0sin6/dNK5TmzJZzlNRZxuqAKoAClUAhSqAQhVAoQqgyBoCx0SQJnnSh1jmxDkRpEme9CGOOVETkHHk69x/EqalNEd+pSr7i5tfTc1pvRUgEdMSxdOFX6UxJcmv1uZUTYCGgQr1Aepn8wOH7a5UwT5Wy7MSP3M7DuY4vmr5NbYTGLaHrrau0m+q5TmbMdSSX60VwMkT1zg/dZjN7mnfATTJ07ioNLf5BtF0n5CqtHpe10i6VqTmARSaB1A0cBgYR+7AZ4FnPg+QtThbTYAi9SYgloQCeiIoleFkpbl1PhLmkCwKknqJmHkG1byrw+KIm5/rO8cyJ3oeoMbj0zyAQp1AhYaBzk5KHXjGPaZUf8vQHUBNgEIVQJFZBD78R1BL94SXwh27vDB1skzUCdSTRf7J0jcTMCSrw1aGgc4Q7b0I2s/AYYP3aaBoof0OnDVWXCfw0UL7B7gGFNQHSAYbI56tB24DW6S9OYJ2BXAd2C3tg8BFwGYPW4BzQJe010g/qyy0i4CjwAVVgOTwHlhmlDaZ0AJwxKBvN2iXA73y7LjUB6Q+Y+G9E5gGDgnNHumnTxQmTNsBTAH7fRGmj2cCp4Axy/0nMvkrjfs/LfSPgR6gWdptUj+30D4ExoGl0l4g9Qvgm0H7DLgryqAKkFHs1TxAHcJZ2X4BvjrQb5X6d9a11ccdYIN45mHMB5rEPNwyng2KDS8jF9r6bxq0/cCkpc9mMSVRuAHsk+vXwPasKUA9P3qUEyd/pbjQTgNxZpgmQsqyzRdZ5ltzRQ+8viYzCmi3kF0CuoFj4qCFo4BRg7YLuAKclHxBGbuAAQvvHw7DPCVlsByC+iDbRvoW8NLw6KPwSurFWfcB9GOQOoHeIcdMdi6MArBDrkcT7r9s6zuAR4bTuA5YbXFSVQESjgLCk3M14f7vAOeBE1Js6FMTkAzeRHj2b5lJwgzLvafi0H2x0I9I6Zf2ffn9u//wHwAeyPUn2W0+WOh+iXPZ64tA/w0AtnQCYn2mVh4AAAAASUVORK5CYII=" />
         </a>
         <nav class="main-nav">
-            <ul class="button-group" ng-controller="CountersCtrl">
-                <li>
-                    <a id="commits-btn" ng-click="openCommits()" class="button" active-for-states="commits,commits.list,commits.details">
+            <ul class="button-group" ng-controller="NotificationsCtrl">
+                <li style="position: relative">
+                    <a id="commits-btn" ng-click="openNotificationsPopup()" class="button" active-for-states="commits,commits.list,commits.details">
                         <span class="number">
                             commits
-                            <span class="ghost-notification" ng-show="updates.commits()"></span>
+                            <span class="ghost-notification" ng-show="notificationsAvailaible()"></span>
                         </span>
                     </a>
+                    <branch-notifications-popup src="notifications" on-click="goToDestRepo(notif)"></branch-notifications-popup>
                 </li>
                 <li>
                     <a id="followups-btn" ng-click="openFollowups()" class="button" active-for-states="followups,followups.list,followups.details">

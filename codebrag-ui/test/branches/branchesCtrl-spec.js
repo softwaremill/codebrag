@@ -4,7 +4,7 @@ describe("Branches Controller", function () {
         branchesService, events, RepoBranch,
         allBranches = ['master', 'feature', 'bugfix'];
 
-    beforeEach(module('codebrag.branches', 'codebrag.counters'));
+    beforeEach(module('codebrag.branches', 'codebrag.notifications'));
 
     beforeEach(inject(function($injector) {
         $q = $injector.get('$q');

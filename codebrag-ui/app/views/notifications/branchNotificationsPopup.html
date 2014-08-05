@@ -1,0 +1,7 @@
+<div tabindex="-1" style="position: absolute; top: 4.4em; left: 0; z-index:100; background: #fff; overflow: visible; display: none; outline: 0">
+    <ul>
+        <li ng-repeat="n in notifications" style="white-space: nowrap" ng-click="hideAndProceed(n)">
+            {{ n.repo }}/{{ n.branch }} ({{ n.commitsCount }})
+        </li>
+    </ul>
+</div>
