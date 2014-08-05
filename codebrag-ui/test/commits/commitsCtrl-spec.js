@@ -31,7 +31,13 @@ describe("Commits Controller", function () {
 
     it('should load pending commits when controller starts', inject(function($controller) {
         // when
-        $controller('CommitsCtrl', {$scope: $scope, commitsListService: commitsService});
+        var currentRepoContext = {
+                ready: function() {
+                    return $q.when();
+                }
+            };
+        $controller('CommitsCtrl', {$scope: $scope, commitsListService: commitsService, currentRepoContext: currentRepoContext});
+        $scope.$digest();
 
         // then
         expect(commitsService.loadCommits).toHaveBeenCalled();
