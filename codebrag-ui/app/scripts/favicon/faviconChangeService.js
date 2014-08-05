@@ -1,6 +1,6 @@
 angular.module('codebrag.favicon')
 
-    .directive('tabNotifier', function($window, countersService) {
+    .directive('tabNotifier', function($window, notificationsRegistry) {
 
         var REGULAR_FAVICON = 'assets/images/favicon.ico';
         var NOTIFY_FAVICON = 'assets/images/notification-favicon/favicon.ico';
@@ -16,7 +16,7 @@ angular.module('codebrag.favicon')
                 });
 
                 function updates() {
-                    return countersService.commitsCounter.updateAvailable() || countersService.followupsCounter.updateAvailable();
+                    return notificationsRegistry.notificationsAvailable();
                 }
 
                 function setFavicon(iconUrl, tabTitle) {
