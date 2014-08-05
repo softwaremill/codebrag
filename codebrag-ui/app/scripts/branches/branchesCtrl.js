@@ -1,12 +1,15 @@
 angular.module('codebrag.branches')
 
-    .controller('BranchesCtrl', function ($scope, branchesService, events, countersService, currentRepoContext) {
+    .controller('BranchesCtrl', function ($scope, branchesService, currentRepoContext, currentBranchCommitsCounter) {
 
         $scope.branches = branchesService.branches;
         $scope.showBranchesSelector = true;
         $scope.currentRepoContext = currentRepoContext;
 
-        branchesService.loadBranches();
+        currentRepoContext.ready().then(function() {
+            branchesService.loadBranches();
+        });
+
         branchesService.ready().then(function() {
             $scope.showBranchesSelector = (branchesService.repoType() === 'git');
         });
@@ -28,7 +31,7 @@ angular.module('codebrag.branches')
         };
 
         $scope.toReviewLabel = function() {
-            return 'to review (' + countersService.commitsCounter.currentCount() + ')';
+            return 'to review (' + currentBranchCommitsCounter.toReviewCount + ')';
         };
 
         $scope.switchListView = function(mode) {
