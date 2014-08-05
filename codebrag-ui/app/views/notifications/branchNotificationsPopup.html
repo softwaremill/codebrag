@@ -1,4 +1,4 @@
-<div tabindex="-1" style="position: absolute; top: 4.4em; left: 0; z-index:100; background: #fff; overflow: visible; display: none; outline: 0">
+<div class="notification-popup" tabindex="-1">
     <ul>
         <li ng-repeat="n in notifications | filter: displayActiveOnly | orderBy:'read'" style="white-space: nowrap" ng-click="hideAndProceed(n)">
             <span ng-show="n.read">{{ n.repo }}/{{ n.branch }} ({{ n.commitsCount }})</span>

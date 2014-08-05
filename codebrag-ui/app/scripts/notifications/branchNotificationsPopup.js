@@ -20,10 +20,12 @@ Displayed on event and hidden when clicked outside.
             },
             link: function(scope, el) {
                 el.on('blur', function() {
+                    console.log('xx');
                     el.hide();
                 });
 
                 scope.$on(OPEN_POPUP_EVENT, function() {
+                    console.log('got');
                     el.show();
                     el.focus();
                 });
