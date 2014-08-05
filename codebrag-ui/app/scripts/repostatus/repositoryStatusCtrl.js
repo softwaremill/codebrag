@@ -1,4 +1,4 @@
-angular.module('codebrag.notifications')
+angular.module('codebrag.repostatus')
 
     .controller('RepositoryStatusCtrl', function ($scope, $modalInstance, repoStatus) {
         $scope.repoStatus = repoStatus;
