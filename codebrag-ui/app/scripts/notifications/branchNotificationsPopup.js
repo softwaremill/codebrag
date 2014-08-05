@@ -6,7 +6,7 @@ Takes collection of "BranchNotification" objects and action to call when given r
 Displayed on event and hidden when clicked outside.
 */
 
-    .directive('branchNotificationsPopup', function() {
+    .directive('branchNotificationsPopup', function($rootScope) {
 
         var OPEN_POPUP_EVENT = 'openNotificationsPopup';
 
@@ -31,6 +31,18 @@ Displayed on event and hidden when clicked outside.
                 scope.hideAndProceed = function(notif) {
                     scope.onClick({notif: notif});
                     el.hide();
+                }
+            },
+            controller: function($scope) {
+                $scope.displayActiveOnly = function(notif) {
+                    return notif.active();
+                };
+
+                $scope.notificationsAvailable = function() {
+                    var active = $scope.notifications.filter(function(n) {
+                        return n.active();
+                    });
+                    return active.length > 0;
                 }
             }
         }

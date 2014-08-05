@@ -5,13 +5,14 @@ angular.module('codebrag.notifications')
         $scope.notifications = notificationsRegistry.notifications;
 
         currentRepoContext.ready().then(function() {
-            notificationPoller.start();
+            notificationPoller.start({ markAllAsRead: true });
         });
 
         $scope.goToDestRepo = function(notif) {
             currentCommit.empty();
             currentRepoContext.switchRepo(notif.repo);
             currentRepoContext.switchBranch(notif.branch);
+            notificationsRegistry.markAsRead(notif);
             $rootScope.$broadcast(events.commitsTabOpened);
             $state.transitionTo('commits.list', {repo: notif.repo});
         };
@@ -24,11 +25,14 @@ angular.module('codebrag.notifications')
 
         $scope.openNotificationsPopup = function() {
             $rootScope.$broadcast('openNotificationsPopup');
-            notificationsRegistry.markAsRead();
         };
 
-        $scope.notificationsAvailable = function() {
-            return notificationsRegistry.notificationsAvailable();
-        }
+        $rootScope.$on('newNotificationsAvailable', function() {
+            $scope.notificationsAvailable = true;
+        });
+
+        $rootScope.$on('allNotificationsRead', function() {
+            $scope.notificationsAvailable = false;
+        });
 
     });

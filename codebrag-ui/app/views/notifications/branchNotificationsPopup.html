@@ -1,7 +1,9 @@
 <div tabindex="-1" style="position: absolute; top: 4.4em; left: 0; z-index:100; background: #fff; overflow: visible; display: none; outline: 0">
     <ul>
-        <li ng-repeat="n in notifications" style="white-space: nowrap" ng-click="hideAndProceed(n)">
-            {{ n.repo }}/{{ n.branch }} ({{ n.commitsCount }})
+        <li ng-repeat="n in notifications | filter: displayActiveOnly | orderBy:'read'" style="white-space: nowrap" ng-click="hideAndProceed(n)">
+            <span ng-show="n.read">{{ n.repo }}/{{ n.branch }} ({{ n.commitsCount }})</span>
+            <span ng-show="!n.read"><strong>{{ n.repo }}/{{ n.branch }} ({{ n.commitsCount }})</strong></span>
         </li>
+        <li style="white-space: nowrap" ng-show="!notificationsAvailable()">You have 0 notifications</li>
     </ul>
 </div>

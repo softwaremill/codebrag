@@ -12,7 +12,7 @@ Single element of popup with notifications list (repo, branch, count).
             this.repo = repo;
             this.branch = branch;
             this.commitsCount = commitsCount || 0;
-            this.read = read || false;
+            this.read = read || true;
         };
 
         BranchNotification.prototype = {

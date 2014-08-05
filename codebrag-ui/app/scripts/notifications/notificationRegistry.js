@@ -1,6 +1,6 @@
 angular.module('codebrag.notifications')
 
-    .service('notificationsRegistry', function() {
+    .service('notificationsRegistry', function($rootScope) {
 
         var notifications = [];
 
@@ -9,6 +9,9 @@ angular.module('codebrag.notifications')
         this.mergeAll = function(notifs) {
             var merge = this.merge.bind(this);
             notifs.forEach(merge);
+            if(this.notificationsAvailable()) {
+                $rootScope.$emit('newNotificationsAvailable');
+            }
         };
 
         this.merge = function(notif) {
@@ -24,15 +27,24 @@ angular.module('codebrag.notifications')
             return _.find(notifications, identity(repo, branch));
         };
 
-        this.markAsRead = function() {
-            notifications.forEach(function(bn) {
-                bn.read = true;
-            });
+        this.markAsRead = function(notif) {
+            var found = this.find(notif.repo, notif.branch);
+            if(found) {
+                found.read = true;
+            }
+            if(!this.notificationsAvailable()) {
+                $rootScope.$emit('allNotificationsRead');
+            }
+        };
+
+        this.markAllAsRead = function() {
+            var markAsRead = this.markAsRead.bind(this);
+            this.notifications.forEach(markAsRead);
         };
 
         this.notificationsAvailable = function() {
             var unread = notifications.filter(function(n) {
-                return !n.read
+                return n.active() && !n.read;
             });
             return unread.length > 0;
         };
