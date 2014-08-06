@@ -3,7 +3,29 @@
         <div class="commits-tab-header row">
             <div class="small-3 large-3 columns">
                 <div class="branch-selector row" ng-controller="BranchesCtrl">
-                    <div class="columns small-1 large-1" ng-controller="ReposCtrl">
+                    <div class="small-7 large-7 columns">
+                        <div class="repo-btn" ng-controller="ReposCtrl">
+                            <div class="dropdown-btn btn-small">
+                                <div class="selected text-center">
+                                    <span class="octicon octicon-repo"></span>
+                                </div>
+                                <ul class="branches-list">
+                                    <li style="white-space: nowrap" ng-repeat="repo in repos()" ng-click="selectRepo(repo)" ng-class="{'selected': isSelected(repo)}">{{repo}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="branch-btn" ng-show="showBranchesSelector">
+                            <dropdown selected="currentRepoContext.branch" icon="assets/images/branch.png">
+                                <ul class="branches-list">
+                                    <li ng-repeat="branch in branches" ng-class="{'selected': isSelected(branch)}" ng-click="selectBranch(branch)">
+                                        <watched-branch-indicator toggle-watching="toggleWatching(branch)" branch="branch"></watched-branch-indicator>
+                                        {{branch.name}}
+                                    </li>
+                                </ul>
+                            </dropdown>
+                        </div>
+                    </div>
+                    <!-- <div class="columns small-1 large-1" ng-controller="ReposCtrl">
                         <div class="dropdown-btn btn-small">
                             <div class="selected text-center">
                                 <span class="octicon octicon-repo"></span>
@@ -12,8 +34,8 @@
                                 <li style="white-space: nowrap" ng-repeat="repo in repos()" ng-click="selectRepo(repo)" ng-class="{'selected': isSelected(repo)}">{{repo}}</li>
                             </ul>
                         </div>
-                    </div>
-                    <div class="small-6 large-6 columns" ng-show="showBranchesSelector">
+                    </div> -->
+                    <!-- <div class="small-6 large-6 columns" ng-show="showBranchesSelector">
                         <dropdown selected="currentRepoContext.branch" icon="assets/images/branch.png">
                             <ul class="branches-list">
                                 <li ng-repeat="branch in branches" ng-class="{'selected': isSelected(branch)}" ng-click="selectBranch(branch)">
@@ -22,7 +44,7 @@
                                 </li>
                             </ul>
                         </dropdown>
-                    </div>
+                    </div> -->
                     <div class="columns" ng-class="{'small-5 large-5': showBranchesSelector, 'small-11 large-11': !showBranchesSelector}">
                         <dropdown selected="displaySelectedMode()">
                             <ul>
