@@ -371,7 +371,7 @@
 
                 $httpBackend.whenGET(/rest\/followups\/[a-z0-9]{12}/).respond(followup);
 
-                $httpBackend.whenGET('rest/updates?branch=master&repo=codebrag').respond({"lastUpdate":1384251660217,"commits":0,"followups":0});
+                $httpBackend.whenGET('rest/notifications').respond({"followups":0, repos: [ { repoName: "codebrag", branchName: "master", commits: 10 }]});
 
                 $httpBackend.whenPUT('rest/users/settings').respond({userSettings: {}});
 
@@ -395,6 +395,10 @@
                 $httpBackend.whenGET('rest/browsing-context').respond(browsingContexts);
 
                 $httpBackend.whenPUT(/rest\/users\/[a-z0-9]*/).respond(200);
+
+                $httpBackend.whenPUT(/rest\/browsing-context\/[a-z0-9]*/).respond(200);
+
+                $httpBackend.whenGET('rest/repos/codebrag/branches/master/count').respond({toReviewCount: 10});
 
             });
     }
