@@ -211,6 +211,7 @@
                     <a class="button" ng-click="openNotificationsPopup()">
                         <span class="number">
                             <span class="octicon octicon-mail"></span>
+                            <span class="ghost-notification" ng-show="notificationsAvailable"></span>
                         </span>
                     </a>
                     <branch-notifications-popup src="notifications" on-commits-click="goToDestRepo(notif)" on-followups-click="openFollowups()"></branch-notifications-popup>
@@ -219,7 +220,6 @@
                     <a id="commits-btn" ng-click="openCommits()" class="button" active-for-states="commits,commits.list,commits.details">
                         <span class="number">
                             commits
-                            <span class="ghost-notification" ng-show="notificationsAvailable"></span>
                         </span>
                     </a>
                 </li>

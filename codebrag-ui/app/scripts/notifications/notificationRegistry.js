@@ -28,7 +28,7 @@ angular.module('codebrag.notifications')
         };
 
         this.markAsRead = function(notif) {
-            var found = this.find(notif.repo, notif.branch);
+            var found = this.find(notif.displayName());
             if(found) {
                 found.read = true;
             }
