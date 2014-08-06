@@ -1,4 +1,4 @@
-angular.module('codebrag.notifications')
+angular.module('codebrag.repostatus')
 
     .factory('repositoryStatusService', function ($http, $q, popupsService) {
 

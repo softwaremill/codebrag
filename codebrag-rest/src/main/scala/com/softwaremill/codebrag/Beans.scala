@@ -28,6 +28,7 @@ import com.softwaremill.codebrag.usecases.branches.{StopWatchingBranch, StartWat
 import com.softwaremill.codebrag.usecases.reactions._
 import com.softwaremill.codebrag.usecases.emailaliases.{DeleteUserAliasUseCase, AddUserAliasUseCase}
 import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, LoginUserUseCase, ModifyUserDetailsUseCase, ChangeUserSettingsUseCase}
+import com.softwaremill.codebrag.usecases.notifications.FindUserNotifications
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
@@ -84,6 +85,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val addBranchToObserved = new StartWatchingBranch(userObservedBranchesDao, licenceService)
   lazy val removeBranchFromObserved = new StopWatchingBranch(userObservedBranchesDao, licenceService)
   lazy val listRepoBranches = new ListRepositoryBranches(repositoriesCache, userObservedBranchesDao)
+  lazy val findUserNotifications = new FindUserNotifications(followupFinder, heartbeatDao, toReviewCommitsFinder, userObservedBranchesDao)
 
   lazy val licenceService = new LicenceService(InstanceId, instanceParamsDao, userDao)(clock)
 

@@ -24,7 +24,10 @@ class BrowsingContextServlet(val authenticator: Authenticator, contextFinder: Us
   put("/:repo") {
     haltIfNotAuthenticated()
     val form = UpdateUserBrowsingContextForm(user.id, params("repo"), extractReq[String]("branch"))
-    updateContext.execute(form)
+    updateContext.execute(form) match {
+      case Left(errors) => scalatra.BadRequest(Map("errors" -> errors))
+      case Right(_) => scalatra.Ok()
+    }
   }
 
 }

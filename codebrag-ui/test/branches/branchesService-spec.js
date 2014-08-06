@@ -4,7 +4,8 @@ describe("Branches service", function () {
     var branchesService,
         RepoBranch,
         currentRepoContext = {
-            repo: 'codebrag'
+            repo: 'codebrag',
+            branch: 'master'
         },
         events;
 
@@ -87,5 +88,21 @@ describe("Branches service", function () {
         // then
         expect(target.watching).toBeFalsy();
     });
+
+    it('should load to review commits count for current repo/branch', function() {
+        // given
+        var response = { toReviewCount: 10 };
+        $httpBackend.expectGET('rest/repos/codebrag/branches/master/count').respond(response);
+
+        // when
+        var expectedCount;
+        branchesService.loadCurrentBranchCommitsCount().then(function(count) {
+            expectedCount = count;
+        });
+        $httpBackend.flush();
+
+        // then
+        expect(expectedCount).toBe(response.toReviewCount);
+    })
 
 });

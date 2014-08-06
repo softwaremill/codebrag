@@ -12,7 +12,7 @@ describe("Commits Controller", function () {
         events,
         currentCommit;
 
-    beforeEach(module('codebrag.commits', 'codebrag.notifications'));
+    beforeEach(module('codebrag.commits', 'codebrag.repostatus'));
 
     beforeEach(inject(function(_$rootScope_, _$q_, $controller, _commitsService_, _$stateParams_, _events_, _currentCommit_) {
         $scope = _$rootScope_.$new();
@@ -31,7 +31,13 @@ describe("Commits Controller", function () {
 
     it('should load pending commits when controller starts', inject(function($controller) {
         // when
-        $controller('CommitsCtrl', {$scope: $scope, commitsListService: commitsService});
+        var currentRepoContext = {
+                ready: function() {
+                    return $q.when();
+                }
+            };
+        $controller('CommitsCtrl', {$scope: $scope, commitsListService: commitsService, currentRepoContext: currentRepoContext});
+        $scope.$digest();
 
         // then
         expect(commitsService.loadCommits).toHaveBeenCalled();

@@ -4,7 +4,7 @@ describe("Branches Controller", function () {
         branchesService, events, RepoBranch,
         allBranches = ['master', 'feature', 'bugfix'];
 
-    beforeEach(module('codebrag.branches', 'codebrag.counters'));
+    beforeEach(module('codebrag.branches', 'codebrag.notifications'));
 
     beforeEach(inject(function($injector) {
         $q = $injector.get('$q');
@@ -25,11 +25,15 @@ describe("Branches Controller", function () {
 
     it('should load all branches on start', function() {
         // given
-        var countersService = {},
-            currentRepoContext = {};
+        var currentBranchCommitsCounter = {},
+            currentRepoContext = {
+                ready: function() {
+                    return $q.when();
+                }
+            };
 
         // when
-        createController($scope, branchesService, countersService, currentRepoContext);
+        createController($scope, branchesService, currentBranchCommitsCounter, currentRepoContext);
         $scope.$digest();
 
         // then
@@ -38,10 +42,17 @@ describe("Branches Controller", function () {
 
     it('should change current branch and commits list filter', function() {
         // given
-        var countersService = {},
-            currentRepoContext = jasmine.createSpyObj('currentRepo', ['switchBranch', 'switchCommitsFilter']);
+        var currentBranchCommitsCounter = {},
+            currentRepoContext = {
+                switchBranch: jasmine.createSpy('switchBranch'),
+                switchCommitsFilter: jasmine.createSpy('switchCommitFilter'),
+                ready: function() {
+                    return $q.when();
+                }
+            };
 
-        createController($scope, branchesService, countersService, currentRepoContext);
+
+        createController($scope, branchesService, currentBranchCommitsCounter, currentRepoContext);
 
         // when
         var selected = new RepoBranch({branchName: "feature"});
@@ -53,34 +64,37 @@ describe("Branches Controller", function () {
         expect(currentRepoContext.switchCommitsFilter).toHaveBeenCalledWith("all");
     });
 
-    it('should return correct label (with counter) for branch and commits to review', inject(function(Counter) {
+    it('should return correct label (with counter) for branch and commits to review', function() {
         // given
-        var currentRepoContext, countersService;
+        var currentRepoContext, currentBranchCommitsCounter;
 
         currentRepoContext = {
             commitsFilter: 'pending',
             isToReviewFilterSet: function() {
                 return true
+            },
+            ready: function() {
+                return $q.when();
             }
         };
-        countersService = {
-            commitsCounter: new Counter(10)
+        currentBranchCommitsCounter = {
+            toReviewCount: 10
         };
 
-        createController($scope, branchesService, countersService, currentRepoContext);
+        createController($scope, branchesService, currentBranchCommitsCounter, currentRepoContext);
 
         // when
         var toReviewLabel = $scope.displaySelectedMode();
 
         // then
         expect(toReviewLabel).toBe('to review (10)');
-    }));
+    });
 
-    function createController(scope, branchesService, countersService, currentRepoContext) {
+    function createController(scope, branchesService, currentBranchCommitsCounter, currentRepoContext) {
         $controller('BranchesCtrl', {
             $scope: scope,
             branchesService: branchesService,
-            countersService: countersService,
+            currentBranchCommitsCounter: currentBranchCommitsCounter,
             currentRepoContext: currentRepoContext
         });
     }

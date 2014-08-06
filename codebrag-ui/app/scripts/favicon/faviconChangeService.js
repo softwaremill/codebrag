@@ -1,6 +1,6 @@
 angular.module('codebrag.favicon')
 
-    .directive('tabNotifier', function($window, countersService) {
+    .directive('tabNotifier', function($window, $rootScope) {
 
         var REGULAR_FAVICON = 'assets/images/favicon.ico';
         var NOTIFY_FAVICON = 'assets/images/notification-favicon/favicon.ico';
@@ -10,14 +10,17 @@ angular.module('codebrag.favicon')
 
         return {
             restrict: 'A',
-            link: function(scope) {
-                scope.$watch(updates, function(value) {
-                    value === true ? setFavicon(NOTIFY_FAVICON, NOTIFY_TITLE) : setFavicon(REGULAR_FAVICON, REGULAR_TITLE);
+            controller: function() {
+
+                setFavicon(REGULAR_FAVICON, REGULAR_TITLE);
+
+                $rootScope.$on('newNotificationsAvailable', function() {
+                    setFavicon(NOTIFY_FAVICON, NOTIFY_TITLE);
                 });
 
-                function updates() {
-                    return countersService.commitsCounter.updateAvailable() || countersService.followupsCounter.updateAvailable();
-                }
+                $rootScope.$on('allNotificationsRead', function() {
+                    setFavicon(REGULAR_FAVICON, REGULAR_TITLE);
+                });
 
                 function setFavicon(iconUrl, tabTitle) {
                     $window.favicon && $window.favicon.change(iconUrl, tabTitle);

@@ -8,8 +8,8 @@ angular.module('codebrag.common', ['codebrag.common.services', 'codebrag.common.
 angular.module('codebrag.auth', ['codebrag.events']);
 
 angular.module('codebrag.session', ['ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.common']);
-angular.module('codebrag.notifications', ['codebrag.events', 'codebrag.common', 'codebrag.templates']);
-angular.module('codebrag.favicon', ['codebrag.events', 'codebrag.counters']);
+angular.module('codebrag.repostatus', ['codebrag.events', 'codebrag.common', 'codebrag.templates']);
+angular.module('codebrag.favicon', ['codebrag.events', 'codebrag.notifications']);
 
 angular.module('codebrag.commits.comments', ['ui.compat', 'codebrag.events']);
 angular.module('codebrag.commits', [
@@ -19,7 +19,7 @@ angular.module('codebrag.commits', [
     'codebrag.events',
     'codebrag.tour',
     'codebrag.branches',
-    'codebrag.counters']);
+    'codebrag.notifications']);
 
 angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.tour']);
 
@@ -29,16 +29,16 @@ angular.module('codebrag.profile', ['codebrag.session']);
 
 angular.module('codebrag.tour', ['codebrag.templates', 'codebrag.auth', 'codebrag.profile', 'codebrag.common']);
 
-angular.module('codebrag.branches', ['codebrag.counters', 'codebrag.events']);
+angular.module('codebrag.branches', ['codebrag.notifications', 'codebrag.events']);
 
-angular.module('codebrag.counters', ['codebrag.branches', 'codebrag.events']);
+angular.module('codebrag.notifications', ['codebrag.branches', 'codebrag.events']);
 
 angular.module('codebrag.licence', ['codebrag.events', 'ui.bootstrap.modal']);
 
 angular.module('codebrag.userMgmt', ['ui.bootstrap.modal']);
 
 angular.module('codebrag', [
-    'codebrag.counters',
+    'codebrag.notifications',
     'codebrag.templates',
     'codebrag.auth',
     'codebrag.common',
@@ -46,7 +46,7 @@ angular.module('codebrag', [
     'codebrag.commits',
     'codebrag.branches',
     'codebrag.followups',
-    'codebrag.notifications',
+    'codebrag.repostatus',
     'codebrag.favicon',
     'codebrag.tour',
     'codebrag.profile',

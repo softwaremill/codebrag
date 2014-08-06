@@ -1,0 +1,53 @@
+.notification-popup
+  position: absolute;
+  top: 4.4em;
+  left: 0;
+  z-index: 100;
+  background: #fff;
+  overflow: visible;
+  display: none;
+  outline: 0;
+
+  ul
+    background-color: white;
+    border: 1px solid #e4d9b8;
+    box-shadow: 0 0 7px 0 rgba(211,196,160,0.7);
+    margin: 0.66em 0 0;
+    padding: 0.66em 0;
+    list-style: none;
+    left: 0;
+    min-width: 100%;
+
+    &:before
+      content: "";
+      position: absolute;
+      top: -7px;
+      color: green;
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 8px solid white;
+      left: 10px;
+
+    & li
+      padding: 0.66em 1.5em;
+      text-transform: none;
+      transition: background-color 300ms;
+      vertical-align: medium;
+      cursor: pointer;
+
+      &:hover, &.selected
+        color: white;
+        background-color: $main-orange-color;
+
+      & span
+        white-space: nowrap;
+        vertical-align: baseline;
+        & img
+          vertical-align: top;
+
+      & i
+        vertical-align: baseline;
+        float: right;
+        margin-left: 20px;

@@ -1,0 +1,9 @@
+<div class="notification-popup" tabindex="-1">
+    <ul>
+        <li ng-repeat="n in notifications | filter: displayActiveOnly | orderBy:'read'" style="white-space: nowrap" ng-click="hideAndProceed(n)">
+            <span ng-show="n.read">{{ n.repo }}/{{ n.branch }} ({{ n.commitsCount }})</span>
+            <span ng-show="!n.read"><strong>{{ n.repo }}/{{ n.branch }} ({{ n.commitsCount }})</strong></span>
+        </li>
+        <li style="white-space: nowrap" ng-show="!notificationsAvailable()">You have 0 notifications</li>
+    </ul>
+</div>

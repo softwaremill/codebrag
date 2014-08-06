@@ -39,6 +39,12 @@ angular.module('codebrag.branches')
             });
         }
 
+        function loadCurrentBranchCommitsCount() {
+            return $http.get(baseUrl() + '/' + currentRepoContext.branch + '/count').then(function(resp) {
+                return resp.data.toReviewCount;
+            });
+        }
+
         function repoType() {
             return repositoryType;
         }
@@ -52,6 +58,7 @@ angular.module('codebrag.branches')
             ready: ready,
             loadBranches: loadBranches,
             toggleWatching: toggleWatching,
+            loadCurrentBranchCommitsCount: loadCurrentBranchCommitsCount,
             repoType: repoType
         }
 

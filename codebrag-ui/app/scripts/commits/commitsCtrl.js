@@ -2,7 +2,7 @@ angular.module('codebrag.commits')
 
     .controller('CommitsCtrl', function ($scope, currentCommit, commitsService, $stateParams, $state, events, pageTourService, currentRepoContext) {
 
-        loadCommits();
+        currentRepoContext.ready().then(loadCommits);
 
         $scope.$on(events.branches.branchChanged, loadCommits);
         $scope.$on(events.commitsListFilterChanged, loadCommits);
