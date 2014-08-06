@@ -1,6 +1,6 @@
 angular.module('codebrag.notifications')
 
-    .factory('notificationPoller', function($http, $timeout, $rootScope, BranchNotification, notificationsRegistry, events) {
+    .factory('notificationPoller', function($http, $timeout, $rootScope, BranchNotification, FollowupsNotification, notificationsRegistry, events) {
 
         var timer,
             delay = 30000;
@@ -39,13 +39,16 @@ angular.module('codebrag.notifications')
         }
 
         function toNotifications(resp) {
-            return resp.data.repos.map(function(c) {
+            var notifs =  resp.data.repos.map(function(c) {
                 return new BranchNotification(c.repoName, c.branchName, c.commits);
             });
+            notifs.push(new FollowupsNotification(resp.data.followups));
+            return notifs;
         }
 
         function bindEventListeners() {
             $rootScope.$on(events.commitReviewed, restart);
+            $rootScope.$on(events.followupDone, restart);
         }
 
         return {

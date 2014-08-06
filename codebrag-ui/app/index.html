@@ -208,19 +208,25 @@
         <nav class="main-nav">
             <ul class="button-group" ng-controller="NotificationsCtrl">
                 <li style="position: relative">
-                    <a id="commits-btn" ng-click="openNotificationsPopup()" class="button" active-for-states="commits,commits.list,commits.details">
+                    <a class="button" ng-click="openNotificationsPopup()">
+                        <span class="number">
+                            <span class="octicon octicon-mail"></span>
+                        </span>
+                    </a>
+                    <branch-notifications-popup src="notifications" on-commits-click="goToDestRepo(notif)" on-followups-click="openFollowups()"></branch-notifications-popup>
+                </li>
+                <li>
+                    <a id="commits-btn" ng-click="openCommits()" class="button" active-for-states="commits,commits.list,commits.details">
                         <span class="number">
                             commits
                             <span class="ghost-notification" ng-show="notificationsAvailable"></span>
                         </span>
                     </a>
-                    <branch-notifications-popup src="notifications" on-click="goToDestRepo(notif)"></branch-notifications-popup>
                 </li>
                 <li>
                     <a id="followups-btn" ng-click="openFollowups()" class="button" active-for-states="followups,followups.list,followups.details">
                         <span class="number">
-                            followups ({{counters.followups()}})
-                            <span class="ghost-notification" ng-show="updates.followups()"></span>
+                            followups
                         </span>
                     </a>
                 </li>
