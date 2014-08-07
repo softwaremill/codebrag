@@ -1,6 +1,6 @@
 angular.module('codebrag.notifications')
 
-    .factory('notificationPoller', function($http, $timeout, $rootScope, BranchNotification, FollowupsNotification, notificationsRegistry, events) {
+    .factory('notificationPoller', function($http, $timeout, $rootScope, CommitsNotification, FollowupsNotification, commitsNotificationsService, followupsNotificationService, events) {
 
         var timer,
             delay = 30000;
@@ -9,7 +9,8 @@ angular.module('codebrag.notifications')
 
         function call() {
             fetchNotifications().then(function(notifs) {
-                notificationsRegistry.mergeAll(notifs);
+                commitsNotificationsService.mergeAll(notifs.commits);
+                followupsNotificationService.merge(notifs.followups);
                 timer = $timeout(call, delay);
             });
         }
@@ -39,11 +40,12 @@ angular.module('codebrag.notifications')
         }
 
         function toNotifications(resp) {
-            var notifs =  resp.data.repos.map(function(c) {
-                return new BranchNotification(c.repoName, c.branchName, c.commits);
-            });
-            notifs.push(new FollowupsNotification(resp.data.followups));
-            return notifs;
+            return {
+                commits: resp.data.repos.map(function(c) {
+                    return new CommitsNotification(c.repoName, c.branchName, c.commits);
+                }),
+                followups: new FollowupsNotification(resp.data.followups)
+            };
         }
 
         function bindEventListeners() {

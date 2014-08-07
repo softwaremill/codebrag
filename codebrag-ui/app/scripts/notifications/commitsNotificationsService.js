@@ -1,6 +1,6 @@
 angular.module('codebrag.notifications')
 
-    .service('notificationsRegistry', function($rootScope) {
+    .service('commitsNotificationsService', function($rootScope) {
 
         var notifications = [];
 
@@ -10,12 +10,12 @@ angular.module('codebrag.notifications')
             var merge = this.merge.bind(this);
             notifs.forEach(merge);
             if(this.notificationsAvailable()) {
-                $rootScope.$emit('newNotificationsAvailable');
+                $rootScope.$emit('commitsNotificationsAvailable');
             }
         };
 
         this.merge = function(notif) {
-            var found = this.find(notif.displayName());
+            var found = this.find(notif);
             if(found) {
                 found.updateCount(notif);
             } else {
@@ -23,17 +23,17 @@ angular.module('codebrag.notifications')
             }
         };
 
-        this.find = function(displayName) {
-            return _.find(notifications, identity2(displayName));
+        this.find = function(notif) {
+            return _.find(notifications, identity(notif));
         };
 
         this.markAsRead = function(notif) {
-            var found = this.find(notif.displayName());
+            var found = this.find(notif);
             if(found) {
                 found.read = true;
             }
             if(!this.notificationsAvailable()) {
-                $rootScope.$emit('allNotificationsRead');
+                $rootScope.$emit('allCommitsNotificationsRead');
             }
         };
 
@@ -49,9 +49,9 @@ angular.module('codebrag.notifications')
             return unread.length > 0;
         };
 
-        function identity2(displayName) {
+        function identity(notif) {
             return function(e) {
-                return e.displayName() === displayName;
+                return e.branch === notif.branch && e.repo === notif.repo;
             }
         }
     });

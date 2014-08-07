@@ -6,7 +6,7 @@ Takes collection of "BranchNotification" objects and action to call when given r
 Displayed on event and hidden when clicked outside.
 */
 
-    .directive('branchNotificationsPopup', function(BranchNotification, FollowupsNotification) {
+    .directive('commitsNotificationsPopup', function() {
 
         function show(el) {
             return function() {
@@ -23,7 +23,7 @@ Displayed on event and hidden when clicked outside.
         return {
             restrict: 'E',
             replace: true,
-            templateUrl: 'views/notifications/branchNotificationsPopup.html',
+            templateUrl: 'views/notifications/commitsNotificationsPopup.html',
             scope: {
                 notifications: '=src',
                 onClick: '&'
@@ -39,14 +39,6 @@ Displayed on event and hidden when clicked outside.
 
             },
             controller: function($scope) {
-
-                $scope.displayFollowupsNotifs = function(notif) {
-                    return notif instanceof FollowupsNotification;
-                };
-
-                $scope.displayBranchNotifs = function(notif) {
-                    return !(notif instanceof FollowupsNotification);
-                };
 
                 $scope.displayActiveOnly = function(notif) {
                     return notif.active();

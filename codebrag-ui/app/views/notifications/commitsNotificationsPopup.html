@@ -1,6 +1,6 @@
 <div class="notification-popup" tabindex="-1">
     <ul>
-        <li ng-repeat="n in notifications | filter: displayBranchNotifs | filter: displayActiveOnly | orderBy:'read'" style="white-space: nowrap" ng-click="hideAndProceed(n)">
+        <li ng-repeat="n in notifications | filter: displayActiveOnly | orderBy:'read'" style="white-space: nowrap" ng-click="hideAndProceed(n)">
             <span ng-show="n.read">{{ n.displayName()}} ({{ n.count }})</span>
             <span ng-show="!n.read"><strong>{{ n.displayName()}} ({{ n.count }})</strong></span>
         </li>

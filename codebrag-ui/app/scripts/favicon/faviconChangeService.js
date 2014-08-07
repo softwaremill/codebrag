@@ -14,11 +14,19 @@ angular.module('codebrag.favicon')
 
                 setFavicon(REGULAR_FAVICON, REGULAR_TITLE);
 
-                $rootScope.$on('newNotificationsAvailable', function() {
+                $rootScope.$on('newCommitsNotificationsAvailable', function() {
                     setFavicon(NOTIFY_FAVICON, NOTIFY_TITLE);
                 });
 
-                $rootScope.$on('allNotificationsRead', function() {
+                $rootScope.$on('allCommitsNotificationsRead', function() {
+                    setFavicon(REGULAR_FAVICON, REGULAR_TITLE);
+                });
+
+                $rootScope.$on('followupsNotificationAvailable', function() {
+                    setFavicon(NOTIFY_FAVICON, NOTIFY_TITLE);
+                });
+
+                $rootScope.$on('followupsNotificationRead', function() {
                     setFavicon(REGULAR_FAVICON, REGULAR_TITLE);
                 });
 

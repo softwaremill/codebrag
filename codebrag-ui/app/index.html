@@ -65,15 +65,17 @@
     <script type="text/javascript" src="scripts/session/registerCtrl.js"></script>
     <script type="text/javascript" src="scripts/session/profileCtrl.js"></script>
 
-    <!-- notifications -->
+    <!-- repostatus -->
     <script type="text/javascript" src="scripts/repostatus/repositoryStatusService.js"></script>
     <script type="text/javascript" src="scripts/repostatus/repositoryStatusCtrl.js"></script>
 
-    <!-- counters -->
-    <script type="text/javascript" src="scripts/notifications/branchNotification.js"></script>
-    <script type="text/javascript" src="scripts/notifications/branchNotificationsPopup.js"></script>
+    <!-- notifications -->
+    <script type="text/javascript" src="scripts/notifications/commitsNotification.js"></script>
+    <script type="text/javascript" src="scripts/notifications/followupsNotification.js"></script>
+    <script type="text/javascript" src="scripts/notifications/commitsNotificationsPopup.js"></script>
     <script type="text/javascript" src="scripts/notifications/notificationPoller.js"></script>
-    <script type="text/javascript" src="scripts/notifications/notificationRegistry.js"></script>
+    <script type="text/javascript" src="scripts/notifications/commitsNotificationsService.js"></script>
+    <script type="text/javascript" src="scripts/notifications/followupsNotificationService.js"></script>
     <script type="text/javascript" src="scripts/notifications/notificationsCtrl.js"></script>
 
     <!--favicon-->
@@ -211,15 +213,16 @@
                     <a id="commits-btn" ng-click="openCommits()" class="button" active-for-states="commits,commits.list,commits.details">
                         <span class="number">
                             commits
-                            <span class="ghost-notification" ng-show="notificationsAvailable"></span>
+                            <span class="ghost-notification" ng-show="commitsNotificationsAvailable"></span>
                         </span>
                     </a>
-                    <branch-notifications-popup src="notifications" on-click="goToDestRepo(notif)"></branch-notifications-popup>
+                    <commits-notifications-popup src="commitsNotifications" on-click="goToDestRepo(notif)"></commits-notifications-popup>
                 </li>
                 <li>
                     <a id="followups-btn" ng-click="openFollowups()" class="button" active-for-states="followups,followups.list,followups.details">
                         <span class="number">
-                            followups
+                            followups ({{ followupsNotification.count }})
+                            <span class="ghost-notification" ng-show="followupsNotificationAvailable"></span>
                         </span>
                     </a>
                 </li>
