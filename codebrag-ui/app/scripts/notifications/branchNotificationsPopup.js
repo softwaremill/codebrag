@@ -8,7 +8,17 @@ Displayed on event and hidden when clicked outside.
 
     .directive('branchNotificationsPopup', function(BranchNotification, FollowupsNotification) {
 
-        var OPEN_POPUP_EVENT = 'openNotificationsPopup';
+        function show(el) {
+            return function() {
+                return el.show();
+            }
+        }
+
+        function hide(el) {
+            return function() {
+                return el.hide();
+            }
+        }
 
         return {
             restrict: 'E',
@@ -16,28 +26,17 @@ Displayed on event and hidden when clicked outside.
             templateUrl: 'views/notifications/branchNotificationsPopup.html',
             scope: {
                 notifications: '=src',
-                onCommitsClick: '&',
-                onFollowupsClick: '&'
+                onClick: '&'
             },
             link: function(scope, el) {
-                el.on('blur', function() {
-                    el.hide();
-                });
+                el.parent('li').hover(show(el), hide(el));
+                el.parent('li').click(hide(el));
 
-                scope.$on(OPEN_POPUP_EVENT, function() {
-                    el.show();
-                    el.focus();
-                });
-
-                scope.hideAndProceedToRepo = function(notif) {
-                    scope.onCommitsClick({notif: notif});
-                    el.hide();
+                scope.hideAndProceed = function(notif) {
+                    scope.onClick({notif: notif});
+                    hide(el)();
                 };
 
-                scope.hideAndProceedToFollowups = function() {
-                    scope.onFollowupsClick();
-                    el.hide();
-                }
             },
             controller: function($scope) {
 

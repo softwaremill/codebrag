@@ -26,10 +26,6 @@ angular.module('codebrag.notifications')
             $state.transitionTo('commits.list', {repo: repo || currentRepoContext.repo});
         };
 
-        $scope.openNotificationsPopup = function() {
-            $rootScope.$broadcast('openNotificationsPopup');
-        };
-
         $rootScope.$on('newNotificationsAvailable', function() {
             $scope.notificationsAvailable = true;
         });

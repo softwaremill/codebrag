@@ -1,13 +1,9 @@
 <div class="notification-popup" tabindex="-1">
     <ul>
-        <li ng-repeat="n in notifications | filter: displayFollowupsNotifs" style="white-space: nowrap; border-bottom: 1px solid #a27d69" ng-click="hideAndProceedToFollowups(n)">
+        <li ng-repeat="n in notifications | filter: displayBranchNotifs | filter: displayActiveOnly | orderBy:'read'" style="white-space: nowrap" ng-click="hideAndProceed(n)">
             <span ng-show="n.read">{{ n.displayName()}} ({{ n.count }})</span>
             <span ng-show="!n.read"><strong>{{ n.displayName()}} ({{ n.count }})</strong></span>
         </li>
-        <li ng-repeat="n in notifications | filter: displayBranchNotifs | filter: displayActiveOnly | orderBy:'read'" style="white-space: nowrap" ng-click="hideAndProceedToRepo(n)">
-            <span ng-show="n.read">{{ n.displayName()}} ({{ n.count }})</span>
-            <span ng-show="!n.read"><strong>{{ n.displayName()}} ({{ n.count }})</strong></span>
-        </li>
-        <li style="white-space: nowrap" ng-show="!notificationsAvailable()">You have 0 notifications</li>
     </ul>
+    <p style="white-space: nowrap" ng-show="!notificationsAvailable()">Yay! You have nothing to review</p>
 </div>
