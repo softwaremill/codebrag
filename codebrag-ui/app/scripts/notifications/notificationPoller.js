@@ -51,6 +51,7 @@ angular.module('codebrag.notifications')
         function bindEventListeners() {
             $rootScope.$on(events.commitReviewed, restart);
             $rootScope.$on(events.followupDone, restart);
+            $rootScope.$on(events.branches.branchWatchToggle, restart);
         }
 
         return {

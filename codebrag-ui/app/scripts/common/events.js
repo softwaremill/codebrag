@@ -23,7 +23,8 @@ angular.module('codebrag.events', []).constant('events', {
     diffDOMHeightChanged: 'codebrag:diffDOMHeightChanged',
 
     branches: {
-        branchChanged: 'codebrag:branchChanged'
+        branchChanged: 'codebrag:branchChanged',
+        branchWatchToggle: 'codebrag:branchWatchToggle'
     },
 
     licence: {

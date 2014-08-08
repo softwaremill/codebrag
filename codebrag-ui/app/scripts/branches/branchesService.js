@@ -1,6 +1,6 @@
 angular.module('codebrag.branches')
 
-    .factory('branchesService', function($http, $q, $rootScope, currentRepoContext, RepoBranch) {
+    .factory('branchesService', function($http, $q, $rootScope, currentRepoContext, RepoBranch, events) {
 
         var branches = [],
             repositoryType,
@@ -19,6 +19,9 @@ angular.module('codebrag.branches')
             return httpCall.then(null, function() {
                 // revert back to original state when error
                 branch.watching = original.watching;
+                return $q.reject();
+            }).then(function() {
+                $rootScope.$broadcast(events.branches.branchWatchToggle);
             });
         }
 

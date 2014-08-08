@@ -8,6 +8,7 @@ angular.module('codebrag.notifications')
 
         this.mergeAll = function(notifs) {
             var merge = this.merge.bind(this);
+            cleanupStale(notifs);
             notifs.forEach(merge);
             if(this.notificationsAvailable()) {
                 $rootScope.$emit('commitsNotificationsAvailable');
@@ -48,6 +49,14 @@ angular.module('codebrag.notifications')
             });
             return unread.length > 0;
         };
+
+        function cleanupStale(incoming) {
+            var stale = _.difference(notifications, incoming);
+            stale.forEach(function(toRemove) {
+                var index = notifications.indexOf(toRemove);
+                notifications.splice(index, 1);
+            });
+        }
 
         function identity(notif) {
             return function(e) {
