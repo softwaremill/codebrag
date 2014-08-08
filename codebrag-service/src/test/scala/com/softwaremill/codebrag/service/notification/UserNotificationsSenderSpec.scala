@@ -13,6 +13,7 @@ import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
 import com.softwaremill.codebrag.common.config.ConfigWithDefault
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.usecases.notifications.{RepoBranchNotificationView, UserNotificationsView, FindUserNotifications}
 
 class UserNotificationsSenderSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
@@ -21,6 +22,7 @@ class UserNotificationsSenderSpec
   var userDao: UserDAO = _
   var followupFinder: FollowupFinder = _
   var toReviewCommitsFinder: ToReviewCommitsFinder = _
+  var findUserNotifications: FindUserNotifications = _
 
   var sender: UserNotificationsSender = _
 
@@ -34,8 +36,9 @@ class UserNotificationsSenderSpec
     toReviewCommitsFinder = mock[ToReviewCommitsFinder]
     userDao = mock[UserDAO]
     notificationService = mock[NotificationService]
+    findUserNotifications = mock[FindUserNotifications]
     
-    sender = new TestUserNotificationsSender(followupFinder, toReviewCommitsFinder, userDao, notificationService, clock)
+    sender = new TestUserNotificationsSender(findUserNotifications, followupFinder, toReviewCommitsFinder, userDao, notificationService, clock)
   }
 
   it should "not send notification when user has notifications disabled" in {
@@ -85,20 +88,19 @@ class UserNotificationsSenderSpec
   it should "not send daily digest when user has daily digest email disabled" in {
     // given
     val user = UserAssembler.randomUser.withDailyDigestEmailDisabled().get
-    val sender = new TestUserNotificationsSender(followupFinder, toReviewCommitsFinder, userDao, notificationService, clock)
+    val sender = new TestUserNotificationsSender(findUserNotifications, followupFinder, toReviewCommitsFinder, userDao, notificationService, clock)
 
     // when
     sender.sendDailyDigest(List(user))
 
     // then
     verifyZeroInteractions(notificationService)
-    verifyZeroInteractions(followupFinder)
   }
 
   it should "not send daily digest when user is not active" in {
     // given
     val user = UserAssembler.randomUser.withDailyDigestEmailEnabled().withActive(set = false).get
-    val sender = new TestUserNotificationsSender(followupFinder, toReviewCommitsFinder, userDao, notificationService, clock)
+    val sender = new TestUserNotificationsSender(findUserNotifications, followupFinder, toReviewCommitsFinder, userDao, notificationService, clock)
 
     // when
     sender.sendDailyDigest(List(user))
@@ -111,8 +113,7 @@ class UserNotificationsSenderSpec
   it should "not send daily digest when user has no commits or followups waiting" in {
     // given
     val user = UserAssembler.randomUser.get
-    when(followupFinder.countFollowupsForUser(user.id)).thenReturn(NoFollowups)
-    when(toReviewCommitsFinder.countForUserRepoAndBranch(user.id)).thenReturn(NoCommits)
+    when(findUserNotifications.execute(user.id)).thenReturn(UserNotificationsView(followups = 0, repos = Set.empty))
 
     // when
     sender.sendDailyDigest(List(user))
@@ -138,7 +139,9 @@ class UserNotificationsSenderSpec
   it should "send daily digest when user has commits or followups" in {
     // given
     val user = UserAssembler.randomUser.get
+    val userNotifications = UserNotificationsView(10, Set(RepoBranchNotificationView("codebrag", "master", 20)))
     when(userDao.findById(user.id)).thenReturn(Some(user))
+    when(findUserNotifications.execute(user.id)).thenReturn(userNotifications)
     when(toReviewCommitsFinder.countForUserRepoAndBranch(user.id)).thenReturn(SomeCommits)
     when(followupFinder.countFollowupsForUser(user.id)).thenReturn(SomeFollowups)
 
@@ -146,10 +149,11 @@ class UserNotificationsSenderSpec
     sender.sendDailyDigest(List(user))
 
     // then
-    verify(notificationService).sendDailyDigest(user, SomeCommits, SomeFollowups)
+    verify(notificationService).sendDailySummary(user, userNotifications)
   }
 
   class TestUserNotificationsSender(
+    val findUserNotifications: FindUserNotifications,
     val followupFinder: FollowupFinder,
     val toReviewCommitsFinder: ToReviewCommitsFinder,
     val userDAO: UserDAO,

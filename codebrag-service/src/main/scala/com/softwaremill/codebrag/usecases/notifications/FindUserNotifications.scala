@@ -8,8 +8,10 @@ import com.softwaremill.codebrag.dao.branch.WatchedBranchesDao
 import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 import com.softwaremill.codebrag.domain.UserWatchedBranch
 
-case class RepoBranchNotificationView(repoName: String, branchName: String, commits: Long)
-case class UserNotificationsView(followups: Long, repos: Set[RepoBranchNotificationView])
+case class RepoBranchNotificationView(repoName: String, branchName: String, commits: Int)
+case class UserNotificationsView(followups: Int, repos: Set[RepoBranchNotificationView]) {
+  def nonEmpty = followups > 0 || repos.nonEmpty
+}
 
 class FindUserNotifications(
   followupFinder: FollowupFinder,
@@ -25,11 +27,11 @@ class FindUserNotifications(
   private def findNotifications(userId: ObjectId): UserNotificationsView = {
     val followupsCount = followupFinder.countFollowupsForUser(userId)
     val branchCommitsCount = watchedBranchesDao.findAll(userId).map(findBranchCommitsToReview)
-    UserNotificationsView(followupsCount, branchCommitsCount)
+    UserNotificationsView(followupsCount.toInt, branchCommitsCount)
   }
 
   private def findBranchCommitsToReview(wb: UserWatchedBranch) = {
     val bc = UserBrowsingContext(wb.userId, wb.repoName, wb.branchName)
-    RepoBranchNotificationView(bc.repoName, bc.branchName, toReviewCommitsFinder.count(bc))
+    RepoBranchNotificationView(bc.repoName, bc.branchName, toReviewCommitsFinder.count(bc).toInt)
   }
 }

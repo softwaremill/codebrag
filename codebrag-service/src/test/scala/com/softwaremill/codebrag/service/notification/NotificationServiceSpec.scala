@@ -20,8 +20,8 @@ class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
   var scheduler: EmailScheduler = _
   var engine: TemplateEngine = _
   var config: CodebragConfig = _
-  var followupFinder: FollowupFinder = _
   var toReviewCommitsFinder: ToReviewCommitsFinder = _
+
 
   var service: NotificationService = _
 
@@ -31,9 +31,8 @@ class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
     scheduler = mock[EmailScheduler]
     engine = mock[TemplateEngine]
     config = mock[CodebragConfig]
-    followupFinder = mock[FollowupFinder]
     toReviewCommitsFinder = mock[ToReviewCommitsFinder]
-    service = new NotificationService(scheduler, engine, config, toReviewCommitsFinder, followupFinder, clock)
+    service = new NotificationService(scheduler, engine, config, toReviewCommitsFinder, clock)
   }
 
   it should "send welcome notification" in {
@@ -70,9 +69,8 @@ class NotificationServiceSpec extends FlatSpec with MockitoSugar with ShouldMatc
       val engine = new TemplateEngine
       val config = mock[CodebragConfig]
       when(config.applicationUrl).thenReturn("http://test:8080")
-      val followupFinder = mock[FollowupFinder]
       val toReviewCommitsFinder = mock[ToReviewCommitsFinder]
-      val service = new NotificationService(scheduler, engine, config, toReviewCommitsFinder, followupFinder, clock)
+      val service = new NotificationService(scheduler, engine, config, toReviewCommitsFinder, clock)
       val user = UserAssembler.randomUser.get
 
       when(toReviewCommitsFinder.countForUserRepoAndBranch(any[ObjectId])).thenReturn(pair._2)

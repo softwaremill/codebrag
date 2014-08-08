@@ -13,16 +13,19 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.heartbeat.HeartbeatDAO
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.usecases.notifications.{FindUserNotifications, UserNotificationsView}
 
-class UserNotificationSenderActor(actorSystem: ActorSystem,
-                                  heartbeatStore: HeartbeatDAO,
-                                  val followupFinder: FollowupFinder,
-                                  val toReviewCommitsFinder: ToReviewCommitsFinder,
-                                  val userDAO: UserDAO,
-                                  val clock: Clock,
-                                  val notificationService: NotificationService,
-                                  val config: CodebragConfig)
-  extends Actor with Logging with UserNotificationsSender {
+class UserNotificationSenderActor(
+  actorSystem: ActorSystem,
+  heartbeatStore: HeartbeatDAO,
+  val findUserNotifications: FindUserNotifications,
+  val followupFinder: FollowupFinder,
+  val toReviewCommitsFinder: ToReviewCommitsFinder,
+  val userDAO: UserDAO,
+  val clock: Clock,
+  val notificationService: NotificationService,
+  val config: CodebragConfig)
+extends Actor with Logging with UserNotificationsSender {
 
   import UserNotificationSenderActor._
 
@@ -46,6 +49,7 @@ object UserNotificationSenderActor extends Logging {
 
   def initialize(actorSystem: ActorSystem,
                  heartbeatStore: HeartbeatDAO,
+                 findUserNotifications: FindUserNotifications,
                  toReviewCommitsFinder: ToReviewCommitsFinder,
                  followupFinder: FollowupFinder,
                  userDAO: UserDAO,
@@ -54,7 +58,7 @@ object UserNotificationSenderActor extends Logging {
                  config: CodebragConfig) = {
     logger.debug("Initializing user notification system")
     val actor = actorSystem.actorOf(
-      Props(new UserNotificationSenderActor(actorSystem, heartbeatStore, followupFinder, toReviewCommitsFinder, userDAO, clock, notificationsService, config)),
+      Props(new UserNotificationSenderActor(actorSystem, heartbeatStore, findUserNotifications, followupFinder, toReviewCommitsFinder, userDAO, clock, notificationsService, config)),
       "notification-scheduler")
 
     scheduleNextNotificationsSendOut(actorSystem, actor, config.notificationsCheckInterval)
@@ -96,6 +100,7 @@ case object SendDailyDigest
 
 trait UserNotificationsSender extends Logging {
 
+  def findUserNotifications: FindUserNotifications
   def followupFinder: FollowupFinder
   def toReviewCommitsFinder: ToReviewCommitsFinder
   def userDAO: UserDAO
@@ -157,9 +162,7 @@ trait UserNotificationsSender extends Logging {
       user => {
         user.settings.dailyUpdatesEmailEnabled match {
           case true => {
-            withNonEmptyCountersFor(user) { (followupsCount, commitsCount) =>
-              notificationService.sendDailyDigest(user, commitsCount, followupsCount)
-            }
+            withNonEmptyUserNotifications(user)( n => notificationService.sendDailySummary(user, n))
           }
           case false => logger.debug(s"Not sending email to ${user.emailLowerCase} - user has daily digest emails disabled")
         }
@@ -167,11 +170,10 @@ trait UserNotificationsSender extends Logging {
     }
   }
 
-  private def withNonEmptyCountersFor(user: User)(actionBlock: (Long, Long) => Unit) = {
-    val followupsCount = followupFinder.countFollowupsForUser(user.id)
-    val toReviewCommitsCount = toReviewCommitsFinder.countForUserRepoAndBranch(user.id)
-    if(followupsCount > 0 || toReviewCommitsCount > 0) {
-      actionBlock(followupsCount, toReviewCommitsCount)
+  private def withNonEmptyUserNotifications(user: User)(actionBlock: UserNotificationsView => Unit) = {
+    val notifications = findUserNotifications.execute(user.id)
+    if(notifications.nonEmpty) {
+      actionBlock(notifications)
     } else {
       logger.debug(s"Not sending email to ${user.emailLowerCase} - no commits and followups waiting for this user")
     }

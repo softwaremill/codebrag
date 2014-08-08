@@ -10,13 +10,13 @@ import com.softwaremill.codebrag.common.Clock
 import org.joda.time.format.DateTimeFormat
 import com.softwaremill.codebrag.dao.finders.followup.FollowupFinder
 import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.usecases.notifications.UserNotificationsView
 
 class NotificationService(
   emailScheduler: EmailScheduler,
   templateEngine: TemplateEngine,
   codebragConfig: CodebragConfig,
   toReviewCommitsFinder: ToReviewCommitsFinder,
-  followupFinder: FollowupFinder,
   clock: Clock) extends Logging {
 
   import NotificationService.CountersToText.translate
@@ -40,11 +40,12 @@ class NotificationService(
     emailScheduler.scheduleInstant(email)
   }
 
-  def sendDailyDigest(user: User, commitCount: Long, followupCount: Long) {
+  def sendDailySummary(user: User, toReviewSummary: UserNotificationsView) {
     val templateParams = Map(
       "username" -> user.name,
-      "commit_followup_message" -> translate(commitCount, followupCount, isTotalCount = true),
-      "application_url" -> codebragConfig.applicationUrl,
+      "summaryMessage" -> translate(toReviewSummary.repos.foldLeft(0)(_ + _.commits), toReviewSummary.followups, isTotalCount = true),
+      "commitsNotifications" -> toReviewSummary.repos,
+      "applicationUrl" -> codebragConfig.applicationUrl,
       "date" -> clock.now.toString(DateTimeFormat.forPattern("yyyy-MM-dd"))
     )
     val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.DailyDigest, templateParams)

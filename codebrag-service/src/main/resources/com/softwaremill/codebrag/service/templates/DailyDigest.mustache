@@ -1,8 +1,13 @@
-[Codebrag] Daily update ({{date}}): {{commit_followup_message}}
+[Codebrag] Daily update ({{date}}): {{summaryMessage}}
 Dear {{username}},
 
-Things awaiting your attention in Codebrag today: {{commit_followup_message}}.
+Things awaiting your attention in Codebrag today: {{summaryMessage}}
+<ul>
+  {{#commitsNotifications}}
+  <li>{{repoName}}/{{branchName}} ({{commits}})</li>
+  {{/commitsNotifications}}
+</ul>
 
-Please visit {{application_url}} to check them out.
+Please visit {{applicationUrl}} to check them out.
 
 Codebrag Team
