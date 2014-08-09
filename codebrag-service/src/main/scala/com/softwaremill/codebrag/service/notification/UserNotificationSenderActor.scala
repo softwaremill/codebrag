@@ -172,8 +172,9 @@ trait UserNotificationsSender extends Logging {
 
   private def withNonEmptyUserNotifications(user: User)(actionBlock: UserNotificationsView => Unit) = {
     val notifications = findUserNotifications.execute(user.id)
-    if(notifications.nonEmpty) {
-      actionBlock(notifications)
+    val allWithNonEmptyNotifs = notifications.copy(repos = notifications.repos.filter(_.commits > 0))
+    if(allWithNonEmptyNotifs.nonEmpty) {
+      actionBlock(allWithNonEmptyNotifs)
     } else {
       logger.debug(s"Not sending email to ${user.emailLowerCase} - no commits and followups waiting for this user")
     }

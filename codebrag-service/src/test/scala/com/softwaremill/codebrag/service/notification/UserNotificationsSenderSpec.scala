@@ -151,6 +151,27 @@ class UserNotificationsSenderSpec
     // then
     verify(notificationService).sendDailySummary(user, userNotifications)
   }
+  
+  it should "include only watched branches containing non-zero commits to review" in {
+    // given
+    val user = UserAssembler.randomUser.get
+    val watchedBranches = Set(
+      RepoBranchNotificationView("codebrag", "master", 20),
+      RepoBranchNotificationView("codebrag", "bugfix", 0)
+    ) 
+    val userNotifications = UserNotificationsView(10, watchedBranches)
+    when(userDao.findById(user.id)).thenReturn(Some(user))
+    when(findUserNotifications.execute(user.id)).thenReturn(userNotifications)
+    when(toReviewCommitsFinder.countForUserRepoAndBranch(user.id)).thenReturn(SomeCommits)
+    when(followupFinder.countFollowupsForUser(user.id)).thenReturn(SomeFollowups)
+
+    // when
+    sender.sendDailyDigest(List(user))
+
+    // then
+    val nonZeroNotifications = userNotifications.copy(repos = userNotifications.repos.filter(_.commits > 0))
+    verify(notificationService).sendDailySummary(user, nonZeroNotifications)    
+  }
 
   class TestUserNotificationsSender(
     val findUserNotifications: FindUserNotifications,
