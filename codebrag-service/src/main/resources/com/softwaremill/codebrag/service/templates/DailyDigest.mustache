@@ -2,11 +2,9 @@
 Dear {{username}},
 
 Things awaiting your attention in Codebrag today: {{summaryMessage}}
-<ul>
-  {{#commitsNotifications}}
-  <li>{{repoName}}/{{branchName}} ({{commits}})</li>
-  {{/commitsNotifications}}
-</ul>
+{{#commitsNotifications}}
+- {{repoName}}/{{branchName}} ({{commits}})
+{{/commitsNotifications}}
 
 Please visit {{applicationUrl}} to check them out.
 
