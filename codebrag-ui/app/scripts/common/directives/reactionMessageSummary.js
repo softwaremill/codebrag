@@ -7,7 +7,7 @@ angular.module('codebrag.common.directives')
 
         return {
             restrict: 'E',
-            template: '<span ng-bind-html-unsafe="reactionMessage"></span>',
+            template: '<span>{{ reactionMessage }}</span>',
             replace: true,
             scope: {
                 reaction: '='
