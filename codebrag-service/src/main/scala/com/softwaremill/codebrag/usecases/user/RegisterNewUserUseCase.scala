@@ -4,25 +4,21 @@ import com.softwaremill.codebrag.licence._
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.service.user.RegisterService
+import com.softwaremill.scalaval.Validation
 
 class RegisterNewUserUseCase(licenceService: LicenceService, registerService: RegisterService, userDao: UserDAO) extends Logging {
 
-  type UserRegistrationResult = Either[String, Unit]
-  
-  def execute(user: UserToRegister): UserRegistrationResult = {
+  def execute(user: UserToRegister): Either[Validation.Errors, Unit] = {
     logger.debug(s"Attempting to register new user ${user.login}")
-    validate.right.flatMap { _ =>
+    validateRegistration().whenOk {
       registerService.register(user.login, user.email, user.password, user.invitationCode)
     }
   }
 
-  def validate: UserRegistrationResult = {
-    if(licenceService.maxUsers > userDao.countAll()) {
-      Right()
-    } else {
-      logger.debug(s"Cannot register user - max users licenced reached")
-      Left(RegisterNewUserUseCase.MaxUsersExceededMessage)
-    }
+  def validateRegistration() = {
+    import com.softwaremill.scalaval.Validation._
+    val licence = rule("licence")(licenceService.maxUsers > userDao.countAllActive(), RegisterNewUserUseCase.MaxUsersExceededMessage)
+    validate(licence)
   }
 
 }

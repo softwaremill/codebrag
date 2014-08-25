@@ -16,6 +16,7 @@ import com.softwaremill.codebrag.finders.user.ManagedUsersListView
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.User
 import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, UserToRegister, ModifyUserDetailsUseCase}
+import com.softwaremill.scalaval.Validation
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
@@ -92,7 +93,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   "POST /register" should "call the register service and return 403 if registration is unsuccessful" in {
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
     val newUser = UserToRegister("adamw", "adam@example.org", "123456", "code")
-    when(registerUseCase.execute(newUser)).thenReturn(Left("error"))
+    when(registerUseCase.execute(newUser)).thenReturn(Left(Map.empty[String, Seq[String]]))
 
     post("/register",
       mapToJson(Map("login" -> "adamw", "email" -> "adam@example.org", "password" -> "123456", "invitationCode" -> "code")),

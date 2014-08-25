@@ -1,5 +1,7 @@
 angular.module('codebrag.session')
-    .controller('RegisterCtrl', function RegisterCtrl($scope, $rootScope, registerService, flash) {
+    .controller('RegisterCtrl', function RegisterCtrl($scope, $rootScope, registerService, flash, Flash) { // TODO: refactor and cleanup "flashes"
+
+        $scope.flash = new Flash();
 
         $scope.user = {
             login: '',
@@ -37,14 +39,13 @@ angular.module('codebrag.session')
         }
 
         function registerUser() {
-            delete $scope.registerFailed;
+            $scope.flash.clear();
             registerService.register($scope.user).then(function() {
                 clearForm();
                 flash.set("Registration was successful! You can now log in.");
             }, function (errorResponse) {
                 if(errorResponse.status !== 499) {
-                    $scope.registerFailed = true;
-                    $scope.registerFailedMessage = errorResponse.data;
+                    $scope.flash.addAll('error', errorResponse.data);
                 }
             });
         }

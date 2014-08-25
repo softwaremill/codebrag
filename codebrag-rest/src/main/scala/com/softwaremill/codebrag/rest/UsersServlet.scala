@@ -40,7 +40,7 @@ class UsersServlet(
 
   post("/register") {
     registerUserUseCase.execute(newUser) match {
-      case Left(error) => halt(403, error)
+      case Left(errors) => scalatra.Forbidden(errors)
       case Right(_) => scalatra.Ok()
     }
   }
