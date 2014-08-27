@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
 import com.softwaremill.codebrag.cache.RepositoriesCache
 import com.softwaremill.codebrag.service.config.CommitCacheConfig
 
-class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: BranchStateDAO, repositories: RepositoriesCache, config: CommitCacheConfig) extends Logging {
+class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: BranchStateDAO, repositoriesCache: RepositoriesCache, config: CommitCacheConfig) extends Logging {
 
   def importRepoCommits(repository: Repository) {
     try {
@@ -19,7 +19,7 @@ class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: Br
     }
     try {
       val loaded = repository.loadCommitsSince(branchStateDao.loadBranchesStateAsMap(repository.repoName), config.maxCommitsCachedPerBranch)
-      repositories.addCommitsToRepo(repository.repoName, loaded)
+      repositoriesCache.addCommitsToRepo(repository.repoName, loaded)
       updateRepoReadyStatus(repository)
     } catch {
       case e: Exception => {
@@ -30,7 +30,7 @@ class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: Br
   }
 
   def cleanupStaleBranches(repository: Repository) {
-    repositories.getRepo(repository.repoName).cleanupStaleBranches()
+    repositoriesCache.getRepo(repository.repoName).cleanupStaleBranches()
   }
 
   private def updateRepoNotReadyStatus(repository: Repository, errorMsg: String) {
