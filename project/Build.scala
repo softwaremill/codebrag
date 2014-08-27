@@ -288,7 +288,7 @@ object SmlCodebragBuild extends Build {
     "codebrag-licence-gen",
     file("codebrag-licence-gen"),
     settings = buildSettings ++ assemblySettings ++ Seq(
-      mainClass in assembly := Some("com.softwaremill.codebrag.licence.LicenceGenerator")
+      mainClass in assembly := Some("com.softwaremill.codebrag.licence.LicenceGeneratorApp")
     )
   ) dependsOn (service)
 
