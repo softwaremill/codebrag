@@ -15,7 +15,7 @@ import com.softwaremill.codebrag.finders.user.ManagedUserView
 import com.softwaremill.codebrag.finders.user.ManagedUsersListView
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.User
-import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, UserToRegister, ModifyUserDetailsUseCase}
+import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, RegistrationForm, ModifyUserDetailsUseCase}
 import com.softwaremill.scalaval.Validation
 
 class UsersServletSpec extends AuthenticatableServletSpec {
@@ -69,7 +69,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     //given
     val currentUser = UserAssembler.randomUser.get
     userIsAuthenticatedAs(currentUser)
-    when(registerService.firstRegistration).thenReturn(true)
+    when(registerService.isFirstRegistration).thenReturn(true)
     //when
     get("/first-registration") {
       //then
@@ -80,7 +80,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
 
   "POST /register" should "call the register service and return 200 if registration is successful" in {
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    val newUser = UserToRegister("adamw", "adam@example.org", "123456", "code")
+    val newUser = RegistrationForm("adamw", "adam@example.org", "123456", "code")
     when(registerUseCase.execute(newUser)).thenReturn(Right())
 
     post("/register",
@@ -92,7 +92,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
 
   "POST /register" should "call the register service and return 403 if registration is unsuccessful" in {
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    val newUser = UserToRegister("adamw", "adam@example.org", "123456", "code")
+    val newUser = RegistrationForm("adamw", "adam@example.org", "123456", "code")
     when(registerUseCase.execute(newUser)).thenReturn(Left(Map.empty[String, Seq[String]]))
 
     post("/register",
@@ -104,7 +104,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
 
   "POST /register" should "fallback to empty registration code when one not provided in request" in {
     addServlet(new TestableUsersServlet(fakeAuthenticator, fakeScentry), "/*")
-    val newUser = UserToRegister("adamw", "adam@example.org", "123456", "")
+    val newUser = RegistrationForm("adamw", "adam@example.org", "123456", "")
     when(registerUseCase.execute(newUser)).thenReturn(Right())
 
     post("/register",

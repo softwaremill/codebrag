@@ -7,7 +7,7 @@ import org.scalatra
 import com.softwaremill.codebrag.usecases._
 import com.softwaremill.codebrag.finders.user.UserFinder
 import com.softwaremill.codebrag.finders.user.ManagedUsersListView
-import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, UserToRegister, ModifyUserDetailsUseCase, ModifyUserDetailsForm}
+import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, RegistrationForm, ModifyUserDetailsUseCase, ModifyUserDetailsForm}
 
 class UsersServlet(
   val authenticator: Authenticator,
@@ -46,7 +46,7 @@ class UsersServlet(
   }
 
   get("/first-registration") {
-    Map("firstRegistration" -> registerService.firstRegistration)
+    Map("firstRegistration" -> registerService.isFirstRegistration)
   }
 
   private def newUser = {
@@ -54,7 +54,7 @@ class UsersServlet(
     val email = extractNotEmptyString("email")
     val password = extractNotEmptyString("password")
     val invitationCode = extractOpt[String]("invitationCode").getOrElse("")
-    UserToRegister(login, email, password, invitationCode)
+    RegistrationForm(login, email, password, invitationCode)
   }
 
 }

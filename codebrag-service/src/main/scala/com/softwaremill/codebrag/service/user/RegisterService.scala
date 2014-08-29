@@ -7,47 +7,32 @@ import com.softwaremill.codebrag.service.invitations.InvitationService
 import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.dao.user.UserDAO
 import org.bson.types.ObjectId
+import com.softwaremill.codebrag.dao.events.NewUserRegistered
+import com.softwaremill.codebrag.common.{Clock, EventBus}
+import com.softwaremill.codebrag.service.followups.{WelcomeFollowupsGenerator, FollowupsGeneratorForReactionsPriorUserRegistration}
 
-class RegisterService(userDao: UserDAO, newUserAdder: NewUserAdder, invitationService: InvitationService, notificationService: NotificationService) extends Logging {
+class RegisterService(
+  userDao: UserDAO,
+  eventBus: EventBus,
+  afterRegistered: AfterUserRegistered,
+  notificationService: NotificationService,
+  followupsForPriorReactionsGenerator: FollowupsGeneratorForReactionsPriorUserRegistration,
+  welcomeFollowupGenerator: WelcomeFollowupsGenerator)(implicit clock: Clock) extends Logging {
 
-  def firstRegistration: Boolean = userDao.findAll().isEmpty
-
-  def register(login: String, email: String, password: String, invitationCode: String): Either[String, Unit] = {
-    logger.info(s"Trying to register $login")
-    val newUser = User(new ObjectId, Authentication.basic(login, password), login, email.toLowerCase, UUID.randomUUID().toString)
-    if (firstRegistration) {
-      registerUser(newUser.makeAdmin)
-    } else {
-      registerUserWithInvitation(newUser, invitationCode)
-    }
-  }
-
-  private def registerUserWithInvitation(newUser: User, invitationCode: String): Either[String, Unit] = {
-    for {
-      _ <- leftIfTrue(invitationCode.isEmpty, "To register in Codebrag you need a registration link. Ask another Codebrag user to send you one.").right
-      _ <- leftIfTrue(!invitationService.verify(invitationCode), "The registration link is not valid or was already used. Ask your friend for another one.").right
-      _ <- leftIfSome(userDao.findByLowerCasedLogin(newUser.name), "User with the given login already exists").right
-      _ <- leftIfSome(userDao.findByEmail(newUser.emailLowerCase), "User with the given email already exists").right
-    } yield registerUser(newUser)
-  }
-
-  private def registerUser(user: User): Either[String, Unit] = {
-    val addedUser = newUserAdder.add(user)
+  def registerUser(user: User) = {
+    logger.info(s"Trying to register user: $user.name")
+    val addedUser = userDao.add(user) // TODO: fix, no need to return, user is ready
+    doPostRegister(addedUser)
     notificationService.sendWelcomeNotification(addedUser)
-    Right()
   }
 
-  private def leftIfTrue(cond: Boolean, message: String) = {
-    if (cond) {
-      Left(message)
-    } else {
-      Right()
-    }
-  }
+  def isFirstRegistration = userDao.countAll() == 0
 
-  private def leftIfSome[A](userOpt: Option[A], msg: String) = {
-    userOpt.map({
-      user => Left(msg)
-    }).getOrElse(Right())
+  private def doPostRegister(addedUser: User) {
+    val userRegisteredEvent = NewUserRegistered(addedUser)
+    afterRegistered.run(userRegisteredEvent)
+    followupsForPriorReactionsGenerator.recreateFollowupsForPastComments(userRegisteredEvent)
+    welcomeFollowupGenerator.createWelcomeFollowupFor(userRegisteredEvent)
+    eventBus.publish(userRegisteredEvent)
   }
 }

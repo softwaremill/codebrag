@@ -84,11 +84,6 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new LicenceServlet(licenceService, registerLicenceUseCase, authenticator), Prefix + LicenceServlet.MountPath)
     context.mount(new BrowsingContextServlet(authenticator, userBrowsingContextFinder, updateUserBrowsingContextUseCase), Prefix + BrowsingContextServlet.MappingPath)
 
-
-    if (config.demo) {
-      context.mount(new GithubAuthorizationServlet(emptyGithubAuthenticator, ghService, userDao, newUserAdder, config), Prefix + "github")
-    }
-
     context.mount(new TimingFilter, "/*")
 
     InstanceContext.put(context, beans)

@@ -7,48 +7,60 @@ import com.softwaremill.codebrag.service.user.RegisterService
 import com.softwaremill.codebrag.licence.LicenceService
 import com.softwaremill.codebrag.dao.user.UserDAO
 import org.mockito.Mockito._
+import com.softwaremill.codebrag.service.invitations.InvitationService
+import com.softwaremill.scalaval.Validation
 
 class RegisterNewUserUseCaseSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter {
 
-  var useCase: RegisterNewUserUseCase = _
-  var registerService: RegisterService = _
-  var licenceService: LicenceService = _
-  var userDao: UserDAO = _
+  val validator = mock[UserRegistrationValidator]
+  val registerService = mock[RegisterService]
+  val useCase: RegisterNewUserUseCase = new RegisterNewUserUseCase(registerService, validator)
+  
+  val noValidationErrors = Validation.Result(errors = Map.empty)
 
   before {
-    registerService = mock[RegisterService]
-    licenceService = mock[LicenceService]
-    userDao = mock[UserDAO]
-
-    useCase = new RegisterNewUserUseCase(licenceService, registerService, userDao)
+    reset(registerService, validator)
   }
 
-  it should "allow new user to be registered when it doesn't exceed max users licenced" in {
+  it should "allow first user to be registered" in {
     // given
-    when(licenceService.maxUsers).thenReturn(10)
-    when(userDao.countAllActive()).thenReturn(5)
+    val form = RegistrationForm("john", "john@codebrag.com", "secret", "123456")
+    when(registerService.isFirstRegistration).thenReturn(true)
+    when(validator.validateRegistration(form, firstRegistration = true)).thenReturn(noValidationErrors)
 
     // when
-    val user = UserToRegister("john", "john@codebrag.com", "secret", "123456")
-    useCase.execute(user)
+    useCase.execute(form)
 
     // then
-    verify(registerService).register(user.login, user.email, user.password, user.invitationCode)
+    verify(registerService).registerUser(form.toUser.makeAdmin)
   }
 
-  it should "not allow new user to be registered when it exceeds max users licenced" in {
+  it should "allow new user to be registered when validation passes" in {
     // given
-    when(licenceService.maxUsers).thenReturn(10)
-    when(userDao.countAllActive()).thenReturn(10)
+    val form = RegistrationForm("john", "john@codebrag.com", "secret", "123456")
+    when(registerService.isFirstRegistration).thenReturn(false)
+    when(validator.validateRegistration(form, firstRegistration = false)).thenReturn(noValidationErrors)
 
     // when
-    val user = UserToRegister("john", "john@codebrag.com", "secret", "123456")
-    val Left(result) = useCase.execute(user)
+    useCase.execute(form)
 
     // then
-    verifyZeroInteractions(registerService)
+    verify(registerService).registerUser(form.toUser)
+  }
 
-    result.flatMap(_._2) should be(List(RegisterNewUserUseCase.MaxUsersExceededMessage))
+  it should "not allow new user to be registered when validation fails" in {
+    // given
+    val form = RegistrationForm("john", "john@codebrag.com", "secret", "123456")
+    when(registerService.isFirstRegistration).thenReturn(false)
+    val errors = Map("userName" -> Seq("User already exists"))
+    when(validator.validateRegistration(form, firstRegistration = false)).thenReturn(Validation.Result(errors))
+
+    // when
+    val Left(result) = useCase.execute(form)
+
+    // then
+    verify(registerService, times(0)).registerUser(form.toUser)
+    result should be(errors)
   }
 
 }

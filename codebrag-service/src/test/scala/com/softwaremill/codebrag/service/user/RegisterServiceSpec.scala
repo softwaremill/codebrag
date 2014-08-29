@@ -1,161 +1,55 @@
 package com.softwaremill.codebrag.service.user
 
-import org.scalatest.FlatSpec
+import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import org.mockito.Mockito._
-import org.mockito.Matchers._
-import com.softwaremill.codebrag.domain.{UserSettings, Authentication, User}
-import org.mockito.ArgumentCaptor
-import com.softwaremill.codebrag.service.invitations.InvitationService
 import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.domain.builder.UserAssembler
+import com.softwaremill.codebrag.common.{ClockSpec, EventBus}
+import com.softwaremill.codebrag.service.followups.{WelcomeFollowupsGenerator, FollowupsGeneratorForReactionsPriorUserRegistration}
+import com.softwaremill.codebrag.dao.events.NewUserRegistered
 
-class RegisterServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers {
+class RegisterServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfter with ClockSpec {
 
-  val mockUser: User = mock[User]
+  val userDao = mock[UserDAO]
+  val eventBus = mock[EventBus]
+  val afterRegistered = mock[AfterUserRegistered]
+  val notificationService = mock[NotificationService]
+  val previousFollowupsGen = mock[FollowupsGeneratorForReactionsPriorUserRegistration]
+  val welcomeFollowupsGen = mock[WelcomeFollowupsGenerator]
 
-  it should "register a user" in {
-    // Given
-    val userDaoMock = mock[UserDAO]
-    when(userDaoMock.findByLowerCasedLogin(any())).thenReturn(None)
-    when(userDaoMock.findByEmail(any())).thenReturn(None)
-    when(userDaoMock.findAll()).thenReturn(List(mockUser))
+  val registerService = new RegisterService(userDao, eventBus, afterRegistered, notificationService, previousFollowupsGen, welcomeFollowupsGen)
 
-    val invitationService = mock[InvitationService]
-    when(invitationService.verify(any())).thenReturn(true)
-
-    val newUserAdderMock = mock[NewUserAdder]
-    val notificationService = mock[NotificationService]
-
-    // When
-    val result = new RegisterService(userDaoMock, newUserAdderMock, invitationService, notificationService).register("Adamw", "Adam@example.org", "123456", "code")
-
-    // Then
-    result should be('right)
-
-    val userCaptor = ArgumentCaptor.forClass(classOf[User])
-    verify(newUserAdderMock).add(userCaptor.capture())
-    val user = userCaptor.getValue
-    verify(notificationService).sendWelcomeNotification(any[User])
-
-    user.authentication.username should be("Adamw")
-    user.authentication.usernameLowerCase should be("adamw")
-    user.emailLowerCase should be("adam@example.org")
-    user.settings.avatarUrl should equal(UserSettings.defaultAvatarUrl("adam@example.org"))
-    user.token.length should be > (0)
-    Authentication.passwordsMatch("123456", user.authentication) should be(true)
+  before {
+    reset(userDao, eventBus, afterRegistered, notificationService, previousFollowupsGen, welcomeFollowupsGen)
   }
 
-  it should "register first user as admin" in {
-    // Given
-    val userDaoMock = mock[UserDAO]
-    when(userDaoMock.findByLowerCasedLogin(any())).thenReturn(None)
-    when(userDaoMock.findByEmail(any())).thenReturn(None)
-    when(userDaoMock.findAll()).thenReturn(Nil)
+  it should "do post register actions after user registered" in {
+    // given
+    val user = UserAssembler.randomUser.get
+    when(userDao.add(user)).thenReturn(user)
 
-    val invitationService = mock[InvitationService]
+    // when
+    registerService.registerUser(user)
 
-    val newUserAdderMock = mock[NewUserAdder]
-    val notificationService = mock[NotificationService]
-
-    // When
-    val service = new RegisterService(userDaoMock, newUserAdderMock, invitationService, notificationService)
-    val result = service.register("Adamw", "Adam@example.org", "123456", "")
-
-    // Then
-    result should be('right)
-
-    val userCaptor = ArgumentCaptor.forClass(classOf[User])
-    verify(newUserAdderMock).add(userCaptor.capture())
-    val user = userCaptor.getValue
-    verify(notificationService).sendWelcomeNotification(any[User])
-
-    user.authentication.username should be("Adamw")
-    user.authentication.usernameLowerCase should be("adamw")
-    user.emailLowerCase should be("adam@example.org")
-    user.settings.avatarUrl should equal(UserSettings.defaultAvatarUrl("adam@example.org"))
-    user.token.length should be > 0
-    Authentication.passwordsMatch("123456", user.authentication) should be(true)
-    user.admin should be(true)
+    // then
+    val userRegiserteredEvent = NewUserRegistered(user)
+    verify(afterRegistered).run(userRegiserteredEvent)
+    verify(previousFollowupsGen).recreateFollowupsForPastComments(userRegiserteredEvent)
+    verify(welcomeFollowupsGen).createWelcomeFollowupFor(userRegiserteredEvent)
   }
 
-  it should "not register a user if a user with the same login already exists" in {
-    // Given
-    val userDaoMock = mock[UserDAO]
+  it should "send welcome notification afer user registerd" in {
+    // given
+    val user = UserAssembler.randomUser.get
+    when(userDao.add(user)).thenReturn(user)
 
+    // when
+    registerService.registerUser(user)
 
-    when(userDaoMock.findByLowerCasedLogin(any())).thenReturn(Some(mockUser))
-    when(userDaoMock.findByEmail(any())).thenReturn(None)
-    when(userDaoMock.findAll()).thenReturn(List(mockUser))
-
-    val invitationService = mock[InvitationService]
-    when(invitationService.verify(any())).thenReturn(true)
-
-    val notificationService = mock[NotificationService]
-
-    // When
-    val result = new RegisterService(userDaoMock, null, invitationService, notificationService).register("adamw", "adam@example.org", "123456", "code")
-
-    // Then
-    result should be('left)
-  }
-
-  it should "not register a user if a user with the same email already exists" in {
-    // Given
-    val userDaoMock = mock[UserDAO]
-
-    when(userDaoMock.findByLowerCasedLogin(any())).thenReturn(None)
-    when(userDaoMock.findByEmail(any())).thenReturn(Some(mockUser))
-    when(userDaoMock.findAll()).thenReturn(List(mockUser))
-
-    val invitationService = mock[InvitationService]
-    when(invitationService.verify(any())).thenReturn(true)
-
-    val notificationService = mock[NotificationService]
-
-    // When
-    val result = new RegisterService(userDaoMock, null, invitationService, notificationService).register("adamw", "adam@example.org", "123456", "code")
-
-    // Then
-    result should be('left)
-  }
-
-  it should "not register a user with blank code" in {
-    // Given
-    val userDaoMock = mock[UserDAO]
-
-    when(userDaoMock.findByLowerCasedLogin(any())).thenReturn(None)
-    when(userDaoMock.findByEmail(any())).thenReturn(Some(mockUser))
-    when(userDaoMock.findAll()).thenReturn(List(mockUser))
-
-    val invitationService = mock[InvitationService]
-    val notificationService = mock[NotificationService]
-
-    // When
-    val result = new RegisterService(userDaoMock, null, invitationService, notificationService).register("adamw", "adam@example.org", "123456", "")
-
-    // Then
-    result should be('left)
-  }
-
-  it should "not register a user with unverifiable code" in {
-    // Given
-    val userDaoMock = mock[UserDAO]
-
-    when(userDaoMock.findByLowerCasedLogin(any())).thenReturn(None)
-    when(userDaoMock.findByEmail(any())).thenReturn(Some(mockUser))
-    when(userDaoMock.findAll()).thenReturn(List(mockUser))
-
-    val invitationService = mock[InvitationService]
-    when(invitationService.verify("badCode")).thenReturn(false)
-
-    val notificationService = mock[NotificationService]
-
-    // When
-    val result = new RegisterService(userDaoMock, null, invitationService, notificationService).register("adamw", "adam@example.org", "123456", "badCode")
-
-    // Then
-    result should be('left)
+    // then
+    verify(notificationService).sendWelcomeNotification(user)
   }
 }

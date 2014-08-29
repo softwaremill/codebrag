@@ -27,7 +27,7 @@ import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFind
 import com.softwaremill.codebrag.usecases.branches.{StopWatchingBranch, StartWatchingBranch, ListRepositoryBranches}
 import com.softwaremill.codebrag.usecases.reactions._
 import com.softwaremill.codebrag.usecases.emailaliases.{DeleteUserAliasUseCase, AddUserAliasUseCase}
-import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, LoginUserUseCase, ModifyUserDetailsUseCase, ChangeUserSettingsUseCase}
+import com.softwaremill.codebrag.usecases.user._
 import com.softwaremill.codebrag.usecases.notifications.FindUserNotifications
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
@@ -40,7 +40,6 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val self = this
   lazy val eventBus = new AkkaEventBus(actorSystem)
   lazy val swagger = new CodebragSwagger
-  lazy val ghService = new GitHubAuthService(config)
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
   lazy val likeValidator = new LikeValidator(commitInfoDao, likeDao, userDao)
   lazy val userReactionService = new UserReactionService(commentDao, likeDao, likeValidator, eventBus)
@@ -55,12 +54,10 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val followupGeneratorForPriorReactions = new FollowupsGeneratorForReactionsPriorUserRegistration(commentDao, likeDao, followupDao, commitInfoDao, config)
 
   lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus)
-  lazy val emptyGithubAuthenticator = new GitHubEmptyAuthenticator(userDao)
 
-  lazy val newUserAdder = new NewUserAdder(userDao, eventBus, afterUserRegistered, followupGeneratorForPriorReactions, welcomeFollowupsGenerator)
   lazy val afterUserRegistered = new AfterUserRegistered(repositoriesCache, reviewedCommitsCache,userRepoDetailsDao, config)
 
-  lazy val registerService = new RegisterService(userDao, newUserAdder, invitationsService, notificationService)
+  lazy val registerService = new RegisterService(userDao, eventBus, afterUserRegistered, notificationService, followupGeneratorForPriorReactions, welcomeFollowupsGenerator)
 
   lazy val diffWithCommentsService = new DiffWithCommentsService(allCommitsFinder, reactionFinder, new DiffService(diffLoader, repositoriesCache))
 
@@ -75,7 +72,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val changeUserSettingsUseCase = new ChangeUserSettingsUseCase(userDao, licenceService)
   lazy val followupDoneUseCase = new FollowupDoneUseCase(followupService, licenceService)
   lazy val registerLicenceUseCase = new RegisterLicenceUseCase(licenceService, userDao)
-  lazy val registerNewUserUseCase = new RegisterNewUserUseCase(licenceService, registerService, userDao)
+  lazy val registerNewUserUseCase = new RegisterNewUserUseCase(registerService, new UserRegistrationValidator(licenceService, invitationsService, userDao))
   lazy val generateInvitationCodeUseCase = new GenerateInvitationCodeUseCase(invitationsService, userDao)
   lazy val sendInvitationEmailUseCase = new SendInvitationEmailUseCase(invitationsService, userDao)
   lazy val modifyUserDetailsUseCase = new ModifyUserDetailsUseCase(userDao, licenceService)
