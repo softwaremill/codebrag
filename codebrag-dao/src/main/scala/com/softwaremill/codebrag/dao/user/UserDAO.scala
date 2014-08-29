@@ -5,7 +5,7 @@ import org.bson.types.ObjectId
 import org.joda.time.DateTime
 
 trait UserDAO {
-  def add(user: User): User
+  def add(user: User)
 
   def findAll(): List[User]
 

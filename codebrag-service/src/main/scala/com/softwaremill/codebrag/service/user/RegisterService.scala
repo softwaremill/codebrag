@@ -1,12 +1,9 @@
 package com.softwaremill.codebrag.service.user
 
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, UserSettings, User, Authentication}
-import java.util.UUID
-import com.softwaremill.codebrag.service.invitations.InvitationService
+import com.softwaremill.codebrag.domain.User
 import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.dao.user.UserDAO
-import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.service.followups.{WelcomeFollowupsGenerator, FollowupsGeneratorForReactionsPriorUserRegistration}
@@ -21,9 +18,9 @@ class RegisterService(
 
   def registerUser(user: User) = {
     logger.info(s"Trying to register user: $user.name")
-    val addedUser = userDao.add(user) // TODO: fix, no need to return, user is ready
-    doPostRegister(addedUser)
-    notificationService.sendWelcomeNotification(addedUser)
+    userDao.add(user)
+    doPostRegister(user)
+    notificationService.sendWelcomeNotification(user)
   }
 
   def isFirstRegistration = userDao.countAll() == 0

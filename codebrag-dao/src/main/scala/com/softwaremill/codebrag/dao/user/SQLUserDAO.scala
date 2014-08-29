@@ -9,7 +9,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
   import database.driver.simple._
   import database._
 
-  def add(user: User) = {
+  def add(user: User) {
     db.withTransaction { implicit session =>
       lastNotifs += toSQLLastNotif(user.id, user.notifications)
       userSettings += toSQLSettings(user.id, user.settings)
@@ -17,7 +17,6 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
       userAliases ++= user.aliases.emailAliases.map(toSQLUserAlias)
       users += tuple(user)
     }
-    user
   }
 
   def findAll() = db.withTransaction { implicit session =>

@@ -29,7 +29,6 @@ class RegisterServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   it should "do post register actions after user registered" in {
     // given
     val user = UserAssembler.randomUser.get
-    when(userDao.add(user)).thenReturn(user)
 
     // when
     registerService.registerUser(user)
@@ -44,7 +43,6 @@ class RegisterServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers
   it should "send welcome notification afer user registerd" in {
     // given
     val user = UserAssembler.randomUser.get
-    when(userDao.add(user)).thenReturn(user)
 
     // when
     registerService.registerUser(user)
