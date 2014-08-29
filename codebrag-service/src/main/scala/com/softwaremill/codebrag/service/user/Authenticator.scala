@@ -30,11 +30,3 @@ class UserPasswordAuthenticator(val userDAO: UserDAO, eventBus: EventBus) extend
   }
 
 }
-
-class GitHubEmptyAuthenticator(val userDAO: UserDAO) extends Authenticator with Logging {
-
-  def authenticate(login: String, nonEncryptedPassword: String): Option[User] = {
-    userDAO.findByLoginOrEmail(login).filter(_.active)
-  }
-
-}
