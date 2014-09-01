@@ -22,7 +22,7 @@ function initializeRoutes(app, db) {
 }
 
 function startServer(app) {
-  var port = 8080;
+  var port = 7777;
   var httpServer = http.createServer(app);
   httpServer.listen(port);
   console.log("Codebrag reporting server started on port", port);
