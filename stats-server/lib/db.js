@@ -3,7 +3,7 @@ var MongoClient = require('mongodb');
 
 function initialize(callback) {
   var connect = Q.denodeify(MongoClient.connect);
-  var dbInitialized = connect("mongodb://localhost:27017/codebrag");
+  var dbInitialized = connect("mongodb://localhost:27017/codebrag_stats");
   dbInitialized.then(ensureIndex);
   return dbInitialized.nodeify(callback);   // return promise, but allow for callback style too
 }
