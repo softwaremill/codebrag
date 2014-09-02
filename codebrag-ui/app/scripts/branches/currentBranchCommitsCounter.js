@@ -9,7 +9,10 @@ Updates dynamically when commits are loaded, branch changed, commit is reviewed 
 
         var counter = { toReviewCount: 0 };
 
-        branchesService.ready().then(bindEventListeners);
+        branchesService.ready().then(function() {
+            bindEventListeners();
+            reloadCounter();
+        });
 
         function bindEventListeners() {
             $rootScope.$on(events.branches.branchChanged, reloadCounter);
