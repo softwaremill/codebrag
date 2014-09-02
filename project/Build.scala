@@ -3,7 +3,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import sbt._
 import Keys._
-import com.gu.SbtJasminePlugin._
+//import com.gu.SbtJasminePlugin._
 import net.virtualvoid.sbt.graph.Plugin._
 import com.typesafe.sbt.SbtScalariform._
 import sbtjslint.Plugin._
@@ -206,18 +206,25 @@ object SmlCodebragBuild extends Build {
     "codebrag-root",
     file("."),
     settings = buildSettings
-  ) aggregate(common, domain, dao, service, rest, ui, dist)
+  ) aggregate(common, domain, dao, service, rest,
+    //    ui,
+    dist)
 
   lazy val common: Project = Project(
     "codebrag-common",
     file("codebrag-common"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies ++ Seq(akka) ++ Seq(akkaSlf4j) ++ Seq(commonsCodec))
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies ++ Seq(commonsCodec, typesafeConfig))
   )
 
   lazy val domain: Project = Project(
     "codebrag-domain",
     file("codebrag-domain"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson))
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson, json4s, json4sExt, commonsLang) ++ jodaDependencies) ++ assemblySettings ++ Seq(
+      assemblyOption in assembly ~= { _.copy(includeScala = false) },
+      excludedJars in assembly <<= (fullClasspath in assembly) map { cp =>
+        cp filter {_.data.getName == "config-1.0.1.jar"}
+      }
+    )
   ) dependsOn (common)
 
   lazy val dao: Project = Project(
@@ -230,7 +237,7 @@ object SmlCodebragBuild extends Build {
     "codebrag-service",
     file("codebrag-service"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator,
-      javaxMail, scalate, egitGithubApi, jGit, jsch, dispatch, json4s, json4sExt, commonsLang, scalaval))
+      javaxMail, scalate, egitGithubApi, jGit, jsch, dispatch, json4s, json4sExt, commonsLang, scalaval, akka, akkaSlf4j))
   ) dependsOn(domain, common, dao % "test->test;compile->compile")
 
   lazy val rest: Project = Project(
@@ -261,28 +268,32 @@ object SmlCodebragBuild extends Build {
       } },
       // We need to include the whole webapp, hence replacing the resource directory
       unmanagedResourceDirectories in Compile <<= baseDirectory { bd => {
-        List(bd.getParentFile() / rest.base.getName / "src" / "main", bd.getParentFile() / ui.base.getName / "dist")
-        }
+        List(bd.getParentFile() / rest.base.getName / "src" / "main"
+          //          , bd.getParentFile() / ui.base.getName / "dist"
+        )
+      }
       }
     )
-  ) dependsOn (ui, rest)
+  ) dependsOn (
+    //    ui,
+    rest)
 
-  lazy val ui = Project(
-    "codebrag-ui",
-    file("codebrag-ui"),
-    settings = buildSettings ++ webClientBuildSettings ++ Seq(
-      (compile in Compile) <<= (compile in Compile) dependsOn (buildWebClient)
-    )
-  )
-
-  lazy val uiTests = Project(
-    "codebrag-ui-tests",
-    file("codebrag-ui-tests"),
-    settings = buildSettings ++ Seq(
-      libraryDependencies ++= selenium ++ Seq(awaitility)
-    )
-
-  ) dependsOn (dist)
+  //  lazy val ui = Project(
+  //    "codebrag-ui",
+  //    file("codebrag-ui"),
+  //    settings = buildSettings ++ webClientBuildSettings ++ Seq(
+  //      (compile in Compile) <<= (compile in Compile) dependsOn (buildWebClient)
+  //    )
+  //  )
+  //
+  //  lazy val uiTests = Project(
+  //    "codebrag-ui-tests",
+  //    file("codebrag-ui-tests"),
+  //    settings = buildSettings ++ Seq(
+  //      libraryDependencies ++= selenium ++ Seq(awaitility)
+  //    )
+  //
+  //  ) dependsOn (dist)
 
   lazy val licenceGen: Project = Project(
     "codebrag-licence-gen",

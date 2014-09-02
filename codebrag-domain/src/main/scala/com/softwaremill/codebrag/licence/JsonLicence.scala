@@ -1,10 +1,10 @@
 package com.softwaremill.codebrag.licence
 
-import org.joda.time.format.DateTimeFormat
-import org.json4s.ext.EnumNameSerializer
-import org.json4s.CustomSerializer
 import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.json4s.CustomSerializer
 import org.json4s.JsonAST.{JNull, JString}
+import org.json4s.ext.EnumNameSerializer
 
 object LicenceAsJson {
 

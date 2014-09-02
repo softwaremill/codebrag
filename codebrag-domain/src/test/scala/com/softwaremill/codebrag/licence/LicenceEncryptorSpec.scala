@@ -1,12 +1,12 @@
 package com.softwaremill.codebrag.licence
 
+import com.softwaremill.codebrag.common.ClockSpec
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.common.ClockSpec
 
 class LicenceEncryptorSpec extends FlatSpec with ShouldMatchers with ClockSpec {
 
-  import LicenceEncryptor._
+  import com.softwaremill.codebrag.licence.LicenceEncryptor._
 
   it should "encrypt and decrypt back licence info" in {
     // given

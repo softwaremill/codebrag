@@ -1,11 +1,11 @@
 package com.softwaremill.codebrag.licence
 
-import org.scalatest.FlatSpec
-import org.joda.time.DateTime
-import org.scalatest.matchers.ShouldMatchers
+import com.softwaremill.codebrag.common.{ClockSpec, FixtureTimeClock}
 import com.softwaremill.codebrag.domain.InstanceId
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.common.{FixtureTimeClock, ClockSpec}
+import org.joda.time.DateTime
+import org.scalatest.FlatSpec
+import org.scalatest.matchers.ShouldMatchers
 
 class LicenceSpec extends FlatSpec with ShouldMatchers with ClockSpec {
 

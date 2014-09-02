@@ -1,10 +1,10 @@
 package com.softwaremill.codebrag.licence
 
-import org.joda.time.{Days, DateTime}
-import com.softwaremill.codebrag.domain.InstanceId
 import com.softwaremill.codebrag.common.Clock
-import com.typesafe.scalalogging.slf4j.Logging
+import com.softwaremill.codebrag.domain.InstanceId
 import com.softwaremill.codebrag.licence.LicenceType.LicenceType
+import com.typesafe.scalalogging.slf4j.Logging
+import org.joda.time.{DateTime, Days}
 
 case class Licence(expirationDate: DateTime, maxUsers: Int, companyName: String, licenceType: LicenceType = LicenceType.Commercial) extends Logging {
 
