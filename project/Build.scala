@@ -90,7 +90,6 @@ object Dependencies {
   val commonsCodec = "commons-codec" % "commons-codec" % "1.8"
 
   val jetty = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion
-  val jettyContainer = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container"
 
   val mockito = "org.mockito" % "mockito-all" % "1.9.5" % "test"
   val scalatest = "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
@@ -237,7 +236,7 @@ object SmlCodebragBuild extends Build {
   lazy val rest: Project = Project(
     "codebrag-rest",
     file("codebrag-rest"),
-    settings = buildSettings ++ graphSettings ++ versionGenSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig, jettyContainer)) ++ Seq(
+    settings = buildSettings ++ graphSettings ++ versionGenSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig)) ++ Seq(
       artifactName := { (config: ScalaVersion, module: ModuleID, artifact: Artifact) =>
         "codebrag." + artifact.extension // produces nice war name -> http://stackoverflow.com/questions/8288859/how-do-you-remove-the-scala-version-postfix-from-artifacts-builtpublished-wi
       },
