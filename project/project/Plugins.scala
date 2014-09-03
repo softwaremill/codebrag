@@ -13,13 +13,7 @@ object Plugins extends Build {
       addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.9.0")))
       .dependsOn(
     // TeamCity reporting, see: https://github.com/guardian/sbt-teamcity-test-reporting-plugin
-    uri("git://github.com/guardian/sbt-teamcity-test-reporting-plugin.git#1.2"),
-
-    // Shell access from sbt console, see https://github.com/steppenwells/sbt-sh
-    uri("git://github.com/steppenwells/sbt-sh.git"),
-
-    // execute jasmin tests during sbt test phase
-    uri("git://github.com/softwaremill/sbt-jasmine-plugin.git#0.8.1")
+    uri("git://github.com/guardian/sbt-teamcity-test-reporting-plugin.git#1.2")
   )
 
 }
