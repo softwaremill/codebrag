@@ -37,12 +37,15 @@ angular.module('codebrag.licence', ['codebrag.events', 'ui.bootstrap.modal']);
 
 angular.module('codebrag.userMgmt', ['ui.bootstrap.modal']);
 
+angular.module('codebrag.registration', ['codebrag.branches']);
+
 angular.module('codebrag', [
     'codebrag.notifications',
     'codebrag.templates',
     'codebrag.auth',
     'codebrag.common',
     'codebrag.session',
+    'codebrag.registration',
     'codebrag.commits',
     'codebrag.branches',
     'codebrag.followups',
@@ -96,7 +99,13 @@ angular.module('codebrag.session')
             })
             .state('register', {
                 url: '/register/{invitationId}',
-                templateUrl: 'views/register.html',
+                templateUrl: 'views/register/register.html',
+                controller: 'RegistrationWizardCtrl',
+                resolve: {
+                    invitationId: function($stateParams) {
+                        return $stateParams.invitationId;
+                    }
+                },
                 noLogin: true
             })
             .state('profile', {
