@@ -206,9 +206,7 @@ object SmlCodebragBuild extends Build {
     "codebrag-root",
     file("."),
     settings = buildSettings
-  ) aggregate(common, domain, dao, service, rest,
-    //    ui,
-    dist)
+  ) aggregate(common, domain, dao, service, rest, ui, dist)
 
   lazy val common: Project = Project(
     "codebrag-common",
@@ -268,32 +266,31 @@ object SmlCodebragBuild extends Build {
       } },
       // We need to include the whole webapp, hence replacing the resource directory
       unmanagedResourceDirectories in Compile <<= baseDirectory { bd => {
-        List(bd.getParentFile() / rest.base.getName / "src" / "main"
-          //          , bd.getParentFile() / ui.base.getName / "dist"
+        List(bd.getParentFile() / rest.base.getName / "src" / "main", bd.getParentFile() / ui.base.getName / "dist"
         )
       }
       }
     )
   ) dependsOn (
-    //    ui,
+        ui,
     rest)
 
-  //  lazy val ui = Project(
-  //    "codebrag-ui",
-  //    file("codebrag-ui"),
-  //    settings = buildSettings ++ webClientBuildSettings ++ Seq(
-  //      (compile in Compile) <<= (compile in Compile) dependsOn (buildWebClient)
-  //    )
-  //  )
-  //
-  //  lazy val uiTests = Project(
-  //    "codebrag-ui-tests",
-  //    file("codebrag-ui-tests"),
-  //    settings = buildSettings ++ Seq(
-  //      libraryDependencies ++= selenium ++ Seq(awaitility)
-  //    )
-  //
-  //  ) dependsOn (dist)
+    lazy val ui = Project(
+      "codebrag-ui",
+      file("codebrag-ui"),
+      settings = buildSettings ++ webClientBuildSettings ++ Seq(
+        (compile in Compile) <<= (compile in Compile) dependsOn (buildWebClient)
+      )
+    )
+
+    lazy val uiTests = Project(
+      "codebrag-ui-tests",
+      file("codebrag-ui-tests"),
+      settings = buildSettings ++ Seq(
+        libraryDependencies ++= selenium ++ Seq(awaitility)
+      )
+
+    ) dependsOn (dist)
 
   lazy val licenceGen: Project = Project(
     "codebrag-licence-gen",
