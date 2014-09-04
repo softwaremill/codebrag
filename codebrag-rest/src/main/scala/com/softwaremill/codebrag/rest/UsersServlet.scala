@@ -41,7 +41,7 @@ class UsersServlet(
   post("/register") {
     registerUserUseCase.execute(newUser) match {
       case Left(errors) => scalatra.Forbidden(errors)
-      case Right(_) => scalatra.Ok()
+      case Right(registeredUser) => registeredUser
     }
   }
 
