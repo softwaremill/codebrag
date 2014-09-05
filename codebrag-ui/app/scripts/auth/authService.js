@@ -2,7 +2,7 @@ angular.module('codebrag.auth').factory('authService', function ($http, httpRequ
     'use strict';
 
     var sessionApiUrl = 'rest/session',
-        registrationApiUrl = 'rest/users/first-registration',
+        registrationApiUrl = 'rest/register/first-registration',
         currentUser = User.guest(),
         authenticatedDeferred = $q.defer();
 
