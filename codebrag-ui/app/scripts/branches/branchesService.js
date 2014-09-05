@@ -1,19 +1,27 @@
 angular.module('codebrag.branches')
 
-    .factory('branchesService', function($http, $q, $rootScope, currentRepoContext, RepoBranch, events) {
+    .factory('branchesService', function($http, $q, $rootScope, RepoBranch, events) {
 
         var branches = [],
             repositoryType,
             dataReady = $q.defer(),
             push = Array.prototype.push;
 
-        function baseUrl() {
-            return 'rest/repos/' + currentRepoContext.repo + '/branches'
-        }
+        var urls = {
+            getRepoBranches: function(repoName) {
+                return 'rest/repos/' + repoName + '/branches'
+            },
+            toggleWatchBranch: function(repoName, branchName) {
+                return this.getRepoBranches(repoName) + '/' + branchName + '/watch'
+            },
+            currentBranchCommitsCount: function(repoName, branchName) {
+                return this.getRepoBranches(repoName) + '/' + branchName + '/count'
+            }
+        };
 
-        function toggleWatching(branch) {
+        function toggleWatching(repoName, branch) {
             var original = angular.copy(branch),
-                url = baseUrl() + '/' + branch.name + '/watch',
+                url = urls.toggleWatchBranch(repoName, branch.name);
                 httpCall = (branch.watching ? $http.delete(url) : $http.post(url));
             branch.watching = !branch.watching;
             return httpCall.then(null, function() {
@@ -25,8 +33,9 @@ angular.module('codebrag.branches')
             });
         }
 
-        function loadBranches() {
-            return $http.get(baseUrl()).then(applyBranches);
+        function loadBranches(repoName) {
+            var url = urls.getRepoBranches(repoName);
+            return $http.get(url).then(applyBranches);
         }
 
         function applyBranches(response) {
@@ -42,8 +51,9 @@ angular.module('codebrag.branches')
             });
         }
 
-        function loadCurrentBranchCommitsCount() {
-            return $http.get(baseUrl() + '/' + currentRepoContext.branch + '/count').then(function(resp) {
+        function loadBranchCommitsToReviewCount(repoName, branchName) {
+            var url = urls.currentBranchCommitsCount(repoName, branchName);
+            return $http.get(url).then(function(resp) {
                 return resp.data.toReviewCount;
             });
         }
@@ -61,7 +71,7 @@ angular.module('codebrag.branches')
             ready: ready,
             loadBranches: loadBranches,
             toggleWatching: toggleWatching,
-            loadCurrentBranchCommitsCount: loadCurrentBranchCommitsCount,
+            loadBranchCommitsToReviewCount: loadBranchCommitsToReviewCount,
             repoType: repoType
         }
 

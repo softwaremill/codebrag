@@ -7,7 +7,7 @@ angular.module('codebrag.branches')
         $scope.currentRepoContext = currentRepoContext;
 
         currentRepoContext.ready().then(function() {
-            branchesService.loadBranches();
+            branchesService.loadBranches(currentRepoContext.repo);
         });
 
         branchesService.ready().then(function() {
@@ -39,7 +39,7 @@ angular.module('codebrag.branches')
         };
 
         $scope.toggleWatching = function(branch) {
-            branchesService.toggleWatching(branch);
+            branchesService.toggleWatching(currentRepoContext.repo, branch);
         };
 
     });
