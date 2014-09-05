@@ -2,7 +2,7 @@ angular.module('codebrag.registration')
 
     .factory('registerService', function($http, $q) {
 
-        var registrationApiUrl = 'rest/users/register',
+        var registrationApiUrl = 'rest/register/signup',
             registerService;
 
         function success(response) {
