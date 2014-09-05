@@ -5,7 +5,7 @@ Keeps to review commits count for current repo/branch.
 Updates dynamically when commits are loaded, branch changed, commit is reviewed etc.
 */
 
-    .factory('currentBranchCommitsCounter', function($rootScope, branchesService, events) {
+    .factory('currentBranchCommitsCounter', function($rootScope, branchesService, currentRepoContext, events) {
 
         var counter = { toReviewCount: 0 };
 
@@ -24,7 +24,8 @@ Updates dynamically when commits are loaded, branch changed, commit is reviewed 
         }
 
         function reloadCounter() {
-            branchesService.loadCurrentBranchCommitsCount().then(function(count) {
+            var current = currentRepoContext;
+            branchesService.loadBranchCommitsToReviewCount(current.repo, current.branch).then(function(count) {
                 counter.toReviewCount = count;
             });
         }
