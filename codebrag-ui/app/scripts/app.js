@@ -90,7 +90,7 @@ angular.module('codebrag.licence')
     });
 
 angular.module('codebrag.session')
-    .config(function ($stateProvider, $urlRouterProvider, authenticatedUser) {
+    .config(function ($stateProvider, $urlRouterProvider) {
         $urlRouterProvider.when('', '/');
         $stateProvider
             .state('home', {
@@ -108,16 +108,6 @@ angular.module('codebrag.session')
                 },
                 noLogin: true
             })
-            .state('profile', {
-                url: '/profile',
-                templateUrl: 'views/secured/profile.html',
-                resolve: authenticatedUser
-            })
-            .state('error', {
-                url: '/error',
-                templateUrl: 'views/errorpages/error500.html',
-                noLogin: true
-            });
     });
 
 angular.module('codebrag.commits')
