@@ -30,7 +30,7 @@ angular.module('codebrag.registration')
         };
 
         $scope.finish = function() {
-            $window.location = '/';
+            $window.location = '/?registered';
         };
 
     });
