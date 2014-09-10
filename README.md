@@ -8,8 +8,8 @@ Prerequisites:
 1. MongoDB (2.4.6 or newer) - installed from package. Not from Brew, there are problems with tests.
 2. Setup `mongo-directory` property. In file `~/.sbt/local.sbt` insert (change path to your local path) `SettingKey[File]("mongo-directory") := file("/path/to/mongo")`
 3. OS X 10.8 (mongodb tests are hanging on version 10.7)
-4. Sbt version 12.3
-5. Add sbt-idea plugin. In file `~/.sbt/plugins/build.sbt` insert line `addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.5.1")`
+4. sbt version 0.13.5
+5. Add sbt-idea plugin. In file `~/.sbt/0.13/local.sbt` insert line `addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6")`
 6. Install nodejs (0.10.13 or newer) and make sure `node` and `npm` are available on `PATH`
 
 Quick Start
