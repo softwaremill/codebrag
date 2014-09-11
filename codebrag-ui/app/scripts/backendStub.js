@@ -356,7 +356,7 @@
 
                 $httpBackend.whenGET('rest/session').respond(authUser);
 
-                $httpBackend.whenGET('rest/users/first-registration').respond({firstRegistration: false});
+                $httpBackend.whenGET('rest/register/first-registration').respond({firstRegistration: false});
 
                 $httpBackend.whenGET('rest/notificationCounts').respond(counters);
 
@@ -400,6 +400,10 @@
 
                 $httpBackend.whenGET('rest/repos/codebrag/branches/master/count').respond({toReviewCount: 10});
 
+                $httpBackend.whenGET(/rest\/register\/repos\?invitationCode=[a-z]*/).respond(['codebrag', 'bootzooka', 'codebrag-website']);
+
+                var initialBranches = { branches: [ {branchName: 'master', watching: false}, {branchName: 'bugfix', watching: true}, {branchName: 'feature', watching: false}] };
+                $httpBackend.whenGET(/rest\/register\/repos\/[a-z\-]*\/branches.*/).respond(initialBranches);
             });
     }
 

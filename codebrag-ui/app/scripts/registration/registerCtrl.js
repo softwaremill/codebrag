@@ -17,6 +17,10 @@ angular.module('codebrag.registration')
             }
         };
 
+        $scope.fakeRegister = function() {
+            registrationWizardData.registeredUser = { id: '123123', login: 'john_doe', email: 'john@codebrag.com'};
+        };
+
         function registerFormValid() {
             // set dirty to show error messages on empty fields when submit is clicked
             $scope.registerForm.login.$dirty = true;
