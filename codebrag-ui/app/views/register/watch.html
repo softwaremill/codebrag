@@ -8,33 +8,32 @@
         </section>
         <section>
             <div class="demo-login-info top">
-                Select branches you want to watch.<br>
+                Select branches you want to watch, so we will notify you about changes in these branches<br>
                 You can change it later on.<br>
-                (we'll notify you about changes in these branches)
             </div>
         </section>
-        <section>
-            <h3>Select repository</h3>
-            <dropdown selected="currentRepo">
-                <ul class="branches-list">
-                    <li ng-repeat="repo in repos" ng-class="{'selected': isSelected(repo)}" ng-click="selectRepo(repo)">
-                        {{repo}}
-                    </li>
-                </ul>
-            </dropdown>
-        </section>
-        <section>
-            <h3>Select branches to watch (click bell icon)</h3>
-            <dropdown selected="'-- select branch --'">
-                <ul class="branches-list">
-                    <li ng-repeat="branch in branches" ng-click="selectBranch(branch)">
-                        <watched-branch-indicator toggle-watching="toggleWatching(branch)" branch="branch"></watched-branch-indicator>
-                        {{branch.name}}
-                    </li>
-                </ul>
-            </dropdown>
-        </section>
         <fieldset>
+            <section class="form-group">
+                <h3>Select repository</h3>
+                <dropdown selected="currentRepo">
+                    <ul class="branches-list">
+                        <li ng-repeat="repo in repos" ng-class="{'selected': isSelected(repo)}" ng-click="selectRepo(repo)">
+                            {{repo}}
+                        </li>
+                    </ul>
+                </dropdown>
+            </section>
+            <section class="form-group">
+                <h3>Select branches to watch (click bell icon)</h3>
+                <dropdown selected="'-- select branch --'">
+                    <ul class="branches-list">
+                        <li ng-repeat="branch in branches" ng-click="selectBranch(branch)">
+                            <watched-branch-indicator toggle-watching="toggleWatching(branch)" branch="branch"></watched-branch-indicator>
+                            {{branch.name}}
+                        </li>
+                    </ul>
+                </dropdown>
+            </section>
             <div class="btn-centered-wrapper">
                 <button id="reg-btn" ng-click="finish()">
                     <i class="icon-chevron-right"></i>
