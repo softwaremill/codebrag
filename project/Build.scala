@@ -149,9 +149,9 @@ object SmlCodebragBuild extends Build {
 
   lazy val VersionFile = {
     (scalaVersion, baseDirectory, projectID) map { (sv, bd, pid) =>
-      val targetProperties: File = bd / "target" / "scala-2.10" / "classes" / "version.id"
+      val targetProperties: File = bd / "target" / "scala-2.10" / "classes"
       val versionIdentifier = List(buildDateString, currentGitCommitSHA).mkString("-")
-      replaceFileContent(targetProperties, versionIdentifier)
+      replaceFileContent(targetProperties, "version.id", versionIdentifier)
       println("Generated version file in: " + targetProperties.getPath)
     }
   }
@@ -159,9 +159,11 @@ object SmlCodebragBuild extends Build {
   def currentGitCommitSHA = Process("git rev-parse HEAD")!!
   def buildDateString = new SimpleDateFormat("yyyyMMddHHmm").format(new Date())
 
-
-  def replaceFileContent(file: File, content: String) {
-    println("Writing version to " + file)
+  def replaceFileContent(filePath: File, fileName: String, content: String): Unit = {
+    val file: File = {
+      if (!filePath.exists()) filePath.mkdirs()
+      filePath / fileName
+    }
     if(file.exists) file.delete()
     file.createNewFile()
     val writer = new PrintWriter(file)
