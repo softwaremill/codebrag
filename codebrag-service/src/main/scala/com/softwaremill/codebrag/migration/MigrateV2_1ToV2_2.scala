@@ -42,6 +42,12 @@ object MigrateV2_1ToV2_2 extends App with Logging {
   val repositoryName = repositories.head.repoName
   sqlDb.db.withDynSession {
 
+    logger.debug(s"Creating user_aliases table")
+    (Q.u + s"""CREATE TABLE IF NOT EXISTS "user_aliases"("id" VARCHAR NOT NULL, "user_id" VARCHAR NOT NULL, "alias" VARCHAR NOT NULL);""").execute()
+    (Q.u + s"""ALTER TABLE "user_aliases" ADD CONSTRAINT IF NOT EXISTS "user_alias_pk" PRIMARY KEY("id");""").execute()
+    (Q.u + s"""ALTER TABLE "user_aliases" ADD CONSTRAINT IF NOT EXISTS "unique_alias" UNIQUE("alias");""").execute()
+    logger.debug(s"Creating user_aliases table - Done")
+
     logger.debug(s"Setting repo to current branches states")
     (Q.u + s"""ALTER TABLE "branch_states" DROP CONSTRAINT IF EXISTS "branch_states_id"""").execute()
     (Q.u + s"""ALTER TABLE "branch_states" ADD COLUMN IF NOT EXISTS "repo_name" VARCHAR DEFAULT '$repositoryName' NOT NULL""").execute()
