@@ -27,7 +27,7 @@
                 <h3>Select branches to watch (click bell icon)</h3>
                 <dropdown selected="'-- select branch --'">
                     <ul class="branches-list">
-                        <li ng-repeat="branch in branches" ng-click="selectBranch(branch)">
+                        <li ng-repeat="branch in branches" ng-click="toggleWatching(branch)" isolate-click>
                             <watched-branch-indicator toggle-watching="toggleWatching(branch)" branch="branch"></watched-branch-indicator>
                             {{branch.name}}
                         </li>
