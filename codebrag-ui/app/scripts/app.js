@@ -97,6 +97,12 @@ angular.module('codebrag.session')
                 url: '/',
                 controller: 'HomeCtrl'
             })
+            .state('firstReegistration', {
+                url: '/register',
+                controller: function($state) {
+                    $state.transitionTo('register', {});
+                }
+            })
             .state('register', {
                 url: '/register/{invitationId}',
                 templateUrl: 'views/register/register.html',

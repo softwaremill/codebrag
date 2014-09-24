@@ -12,7 +12,7 @@ angular.module('codebrag.registration')
             invitationCode: null,
             registeredUser: null,
             signupVisible: function() {
-                return Boolean(this.invitationCode && !this.registeredUser)
+                return Boolean(!this.registeredUser)
             },
             watchVisible: function() {
                 return Boolean(this.invitationCode && this.registeredUser);
