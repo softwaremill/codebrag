@@ -60,6 +60,17 @@ class InvitationServiceSpec
     verify should be(true)
   }
 
+  it should "positively verify any code if there is only one user saved" in {
+    // given
+    when(userDAO.countAll()).thenReturn(1)
+
+    // when
+    val code = null
+
+    // then
+    invitationService.verify(code) should be(true)
+  }
+
   it should "negatively verify invitation when invitation expired" in {
     //given
     val expirationTimeInThePast = clock.nowUtc.minusHours(1)
