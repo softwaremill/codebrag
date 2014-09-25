@@ -81,8 +81,10 @@ angular.module('codebrag.session')
         }
 
         function showRegisteredSuccessMessage(flash) {
-            if($location.search().registered) {
-                flash.add("info", "Registration was successful! You can now log in.")
+            // a bit hacky, can't think of good way to pass "registered" flag to not mess up with further urls
+            if(/.*\?registered$/.test($location.absUrl())) {
+                flash.add("info", "Registration was successful! You can now log in.");
+                $location.url($location.path());
             }
         }
 

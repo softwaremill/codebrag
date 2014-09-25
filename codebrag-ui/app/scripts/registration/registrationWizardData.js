@@ -15,7 +15,7 @@ angular.module('codebrag.registration')
                 return Boolean(!this.registeredUser)
             },
             watchVisible: function() {
-                return Boolean(this.invitationCode && this.registeredUser);
+                return !this.signupVisible();
             }
         };
 
