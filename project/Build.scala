@@ -252,6 +252,10 @@ object SmlCodebragBuild extends Build {
     settings = buildSettings ++ assemblySettings ++ Seq(
       libraryDependencies ++= Seq(jetty),
       mainClass in assembly := Some("com.softwaremill.codebrag.Codebrag"),
+      // We need to include the whole webapp, hence replacing the resource directory
+      unmanagedResourceDirectories in Compile <<= baseDirectory { bd =>
+        List(bd.getParentFile() / rest.base.getName / "src" / "main", bd.getParentFile() / ui.base.getName / "dist")
+      },
       mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) => {
         // There are two of such files in jgit and javax.servlet - but we don't really care about them (I guess ... ;) )
         // Probably some OSGi stuff.
@@ -260,13 +264,7 @@ object SmlCodebragBuild extends Build {
         // Here we don't care for sure.
         case "about.html" => MergeStrategy.discard
         case x => old(x)
-      } },
-      // We need to include the whole webapp, hence replacing the resource directory
-      unmanagedResourceDirectories in Compile <<= baseDirectory { bd => {
-        List(bd.getParentFile() / rest.base.getName / "src" / "main", bd.getParentFile() / ui.base.getName / "dist"
-        )
-      }
-      }
+      } }
     )
   ) dependsOn (
         ui,
