@@ -29,6 +29,7 @@ import com.softwaremill.codebrag.usecases.reactions._
 import com.softwaremill.codebrag.usecases.emailaliases.{DeleteUserAliasUseCase, AddUserAliasUseCase}
 import com.softwaremill.codebrag.usecases.user._
 import com.softwaremill.codebrag.usecases.notifications.FindUserNotifications
+import com.softwaremill.codebrag.usecases.registration.{UnwatchBranchAfterRegistration, WatchBranchAfterRegistration, ListRepoBranchesAfterRegistration, ListRepositoriesAfterRegistration}
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
@@ -73,6 +74,12 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val followupDoneUseCase = new FollowupDoneUseCase(followupService, licenceService)
   lazy val registerLicenceUseCase = new RegisterLicenceUseCase(licenceService, userDao)
   lazy val registerNewUserUseCase = new RegisterNewUserUseCase(registerService, new UserRegistrationValidator(licenceService, invitationsService, userDao))
+
+  lazy val listReposAfterRegistration = new ListRepositoriesAfterRegistration(repositoriesCache, invitationsService)
+  lazy val listRepoBranchesAfterRegistration = new ListRepoBranchesAfterRegistration(listRepoBranches, invitationsService)
+  lazy val watchBranchAfterRegistration = new WatchBranchAfterRegistration(addBranchToObserved, invitationsService)
+  lazy val unwatchBranchAfterRegistration = new UnwatchBranchAfterRegistration(removeBranchFromObserved, invitationsService)
+
   lazy val generateInvitationCodeUseCase = new GenerateInvitationCodeUseCase(invitationsService, userDao)
   lazy val sendInvitationEmailUseCase = new SendInvitationEmailUseCase(invitationsService, userDao)
   lazy val modifyUserDetailsUseCase = new ModifyUserDetailsUseCase(userDao, licenceService)

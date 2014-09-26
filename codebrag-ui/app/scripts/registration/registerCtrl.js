@@ -1,5 +1,6 @@
-angular.module('codebrag.session')
-    .controller('RegisterCtrl', function RegisterCtrl($scope, $rootScope, registerService, flash, Flash) { // TODO: refactor and cleanup "flashes"
+angular.module('codebrag.registration')
+
+    .controller('RegisterCtrl', function RegisterCtrl($scope, registerService, Flash, registrationWizardData) {
 
         $scope.flash = new Flash();
 
@@ -40,13 +41,16 @@ angular.module('codebrag.session')
 
         function registerUser() {
             $scope.flash.clear();
-            registerService.register($scope.user).then(function() {
-                clearForm();
-                flash.set("Registration was successful! You can now log in.");
-            }, function (errorResponse) {
-                if(errorResponse.status !== 499) {
-                    $scope.flash.addAll('error', errorResponse.data);
-                }
-            });
+            registerService.register($scope.user, registrationWizardData.invitationCode).then(signupSuccess, signupError)
         }
+
+        function signupSuccess(data) {
+            clearForm();
+            registrationWizardData.registeredUser = data;
+        }
+
+        function signupError(errors) {
+            $scope.flash.addAll('error', errors);
+        }
+
     });

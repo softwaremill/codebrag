@@ -1,8 +1,10 @@
 angular.module('codebrag.session')
 
-    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, configService, $state, events, $window, $location, flash, Flash, popupsService) {
+    .controller('SessionCtrl', function SessionCtrl($scope, $rootScope, authService, configService, $state, events, $window, $location, Flash, popupsService, $stateParams) {
 
-        $scope.errorsFlash = new Flash();
+        $scope.flash = new Flash();
+
+        showRegisteredSuccessMessage($scope.flash);
 
         $scope.user = {
             login: '',
@@ -12,8 +14,6 @@ angular.module('codebrag.session')
 
         $scope.loggedInUser = authService.loggedInUser;
 
-        $scope.flash = flash;
-
         $scope.login = function () {
             if ($scope.registrationSuccess) {
                 $scope.registrationSuccess = false;
@@ -21,11 +21,6 @@ angular.module('codebrag.session')
             if (loginFormValid()) {
                 logInUser();
             }
-        };
-
-        $scope.githubLogin = function () {
-            var githubLoginUrl = '/rest/github/authenticate';
-            $window.location.href = githubLoginUrl + '?redirectTo=' + $location.url();
         };
 
         $scope.logout = function () {
@@ -75,15 +70,22 @@ angular.module('codebrag.session')
         }
 
         function logInUser() {
-            delete $rootScope.registerSuccessful;
-            $scope.errorsFlash.clear();
+            $scope.flash.clear();
             authService.login($scope.user).then(function () {
                 clearLoginField();
                 clearPasswordField();
             }, function (errors) {
-                $scope.errorsFlash.addAll('error', errors);
+                $scope.flash.addAll('error', errors);
                 clearPasswordField();
             });
+        }
+
+        function showRegisteredSuccessMessage(flash) {
+            // a bit hacky, can't think of good way to pass "registered" flag to not mess up with further urls
+            if(/.*\?registered$/.test($location.absUrl())) {
+                flash.add("info", "Registration was successful! You can now log in.");
+                $location.url($location.path());
+            }
         }
 
     });

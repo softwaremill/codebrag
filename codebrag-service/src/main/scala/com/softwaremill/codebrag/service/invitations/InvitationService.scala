@@ -49,6 +49,7 @@ class InvitationService(
   }
 
   def verify(code: String): Boolean = {
+    if(userDAO.countAll() == 1) return true // when there is only one (first) user saved in DB
     invitationDAO.findByCode(code) match {
       case Some(inv) => inv.isValid(clock.nowUtc)
       case None => false

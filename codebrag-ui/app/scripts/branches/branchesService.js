@@ -1,33 +1,11 @@
 angular.module('codebrag.branches')
 
-    .factory('branchesService', function($http, $q, $rootScope, currentRepoContext, RepoBranch, events) {
+    .factory('branchesService', function($http, $q, $rootScope, RepoBranch, events) {
 
         var branches = [],
             repositoryType,
             dataReady = $q.defer(),
             push = Array.prototype.push;
-
-        function baseUrl() {
-            return 'rest/repos/' + currentRepoContext.repo + '/branches'
-        }
-
-        function toggleWatching(branch) {
-            var original = angular.copy(branch),
-                url = baseUrl() + '/' + branch.name + '/watch',
-                httpCall = (branch.watching ? $http.delete(url) : $http.post(url));
-            branch.watching = !branch.watching;
-            return httpCall.then(null, function() {
-                // revert back to original state when error
-                branch.watching = original.watching;
-                return $q.reject();
-            }).then(function() {
-                $rootScope.$broadcast(events.branches.branchWatchToggle);
-            });
-        }
-
-        function loadBranches() {
-            return $http.get(baseUrl()).then(applyBranches);
-        }
 
         function applyBranches(response) {
             repositoryType = response.data.repoType;
@@ -42,28 +20,56 @@ angular.module('codebrag.branches')
             });
         }
 
-        function loadCurrentBranchCommitsCount() {
-            return $http.get(baseUrl() + '/' + currentRepoContext.branch + '/count').then(function(resp) {
-                return resp.data.toReviewCount;
-            });
-        }
-
-        function repoType() {
-            return repositoryType;
-        }
-
-        function ready() {
-            return dataReady.promise;
-        }
-
         return {
-            branches: branches,
-            ready: ready,
-            loadBranches: loadBranches,
-            toggleWatching: toggleWatching,
-            loadCurrentBranchCommitsCount: loadCurrentBranchCommitsCount,
-            repoType: repoType
-        }
 
+            branches: branches,
+
+            urls: {
+                getRepoBranches: function (repoName) {
+                    return 'rest/repos/' + repoName + '/branches'
+                },
+                toggleWatchBranch: function (repoName, branchName) {
+                    return this.getRepoBranches(repoName) + '/' + branchName + '/watch'
+                },
+                currentBranchCommitsCount: function (repoName, branchName) {
+                    return this.getRepoBranches(repoName) + '/' + branchName + '/count'
+                }
+            },
+
+            toggleWatching: function (repoName, branch) {
+                var original = angular.copy(branch),
+                    url = this.urls.toggleWatchBranch(repoName, branch.name);
+                httpCall = (branch.watching ? $http.delete(url) : $http.post(url));
+                branch.watching = !branch.watching;
+                return httpCall.then(null, function () {
+                    // revert back to original state when error
+                    branch.watching = original.watching;
+                    return $q.reject();
+                }).then(function () {
+                    $rootScope.$broadcast(events.branches.branchWatchToggle);
+                });
+            },
+
+            loadBranches: function (repoName) {
+                var url = this.urls.getRepoBranches(repoName);
+                return $http.get(url).then(applyBranches);
+            },
+
+            loadBranchCommitsToReviewCount: function (repoName, branchName) {
+                var url = this.urls.currentBranchCommitsCount(repoName, branchName);
+                return $http.get(url).then(function (resp) {
+                    return resp.data.toReviewCount;
+                });
+            },
+
+            repoType: function () {
+                return repositoryType;
+            },
+
+            ready: function ready() {
+                return dataReady.promise;
+            }
+
+        }
     });
 

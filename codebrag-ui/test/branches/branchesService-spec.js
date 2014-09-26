@@ -1,27 +1,16 @@
 describe("Branches service", function () {
 
     var $httpBackend, $q, $rootScope;
-    var branchesService,
-        RepoBranch,
-        currentRepoContext = {
-            repo: 'codebrag',
-            branch: 'master'
-        },
-        events;
+    var branchesService, RepoBranch, events;
 
-    beforeEach(module('codebrag.branches', function($provide) {
-        $provide.factory('currentRepoContext', function() {
-            return currentRepoContext;
-        });
-    }));
+    beforeEach(module('codebrag.branches'));
 
-    beforeEach(inject(function (_$httpBackend_, _$q_, _branchesService_, _RepoBranch_, _currentRepoContext_, _$rootScope_, _events_) {
+    beforeEach(inject(function (_$httpBackend_, _$q_, _branchesService_, _RepoBranch_, _$rootScope_, _events_) {
         $httpBackend = _$httpBackend_;
         $q = _$q_;
         $rootScope = _$rootScope_;
         branchesService = _branchesService_;
         RepoBranch = _RepoBranch_;
-        currentRepoContext = _currentRepoContext_;
         events = _events_;
 
         $rootScope.loggedInUser = {
@@ -38,12 +27,11 @@ describe("Branches service", function () {
 
     it('should load available branches for given repo from server', function() {
         // given
-        currentRepoContext.repo = 'codebrag';
         var allBranches = [{branchName: 'master', watching: false}, {branchName: 'feature', watching: true}];
         $httpBackend.whenGET('rest/repos/codebrag/branches').respond({branches: allBranches});
 
         // when
-        branchesService.loadBranches();
+        branchesService.loadBranches('codebrag');
         $httpBackend.flush();
 
         // then
@@ -55,7 +43,6 @@ describe("Branches service", function () {
 
     it('should toggle watching for branch', function() {
         // given
-        currentRepoContext.repo = 'codebrag';
         branchesService.branches = [
             new RepoBranch({branchName: 'master', watching: false}),
             new RepoBranch({branchName: 'feature', watching: true})
@@ -64,7 +51,7 @@ describe("Branches service", function () {
 
         // when
         var target = branchesService.branches[0];
-        branchesService.toggleWatching(target);
+        branchesService.toggleWatching('codebrag', target);
         $httpBackend.flush();
 
         // then
@@ -73,7 +60,6 @@ describe("Branches service", function () {
 
     it('should revert back watch for branch when error happened', function() {
         // given
-        currentRepoContext.repo = 'codebrag';
         branchesService.branches = [
             new RepoBranch({branchName: 'master', watching: false}),
             new RepoBranch({branchName: 'feature', watching: true})
@@ -82,7 +68,7 @@ describe("Branches service", function () {
 
         // when
         var target = branchesService.branches[0];
-        branchesService.toggleWatching(target);
+        branchesService.toggleWatching('codebrag', target);
         $httpBackend.flush();
 
         // then
@@ -96,7 +82,7 @@ describe("Branches service", function () {
 
         // when
         var expectedCount;
-        branchesService.loadCurrentBranchCommitsCount().then(function(count) {
+        branchesService.loadBranchCommitsToReviewCount('codebrag', 'master').then(function(count) {
             expectedCount = count;
         });
         $httpBackend.flush();
