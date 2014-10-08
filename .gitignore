@@ -12,8 +12,8 @@ scripts/dist/codebrag.zip
 # local files for dev env
 local.conf*
 .instanceId
-./repos/
-./data/
+repos/
+data/
 
 
 # for codebrag-ui
