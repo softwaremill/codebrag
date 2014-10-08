@@ -177,7 +177,7 @@
         min-height: 14px;
 
     & i
-      opacity: 0;
+      visibility: hidden;
       position: absolute;
       left: 50%;
       margin-left: -0.5em;
@@ -228,10 +228,10 @@
 
     & .icon-heart
       color: rgb(255, 255, 255);
-      opacity: 1;
+      visibility: visible;
 
     & .diff-line-num-content
-      opacity: 0;
+      visibility: hidden;
 
 
 .diff-file-container tr.liked-by-user
@@ -239,9 +239,9 @@
     background: #f3720b;
     & .icon-heart
       color: rgb(185, 80, 21);
-      opacity: 1;
+      visibility: visible;
     & .diff-line-num-content
-      opacity: 0;
+      visibility: hidden;
 
 
 tbody tr.comments-container:last-child
@@ -257,9 +257,9 @@ tr:hover .diff-line-num .button
     &:hover
       background: $green-button-bg-hover;
   & .diff-line-num-content
-    opacity: 0;
+    visibility: hidden
   & i
-    opacity: 1;
+    visibility: visible;
 
 
 .diff-not-displayed
