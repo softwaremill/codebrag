@@ -11,18 +11,21 @@ class ToReviewBranchCommitsFilter(reviewedCommitsCache: UserReviewedCommitsCache
 
    def filterCommitsToReview(branchCommits: List[BranchCommitCacheEntry], user: User, repoName: String) = {
      val userBoundaryDate = reviewedCommitsCache.getEntry(user.id, repoName).toReviewStartDate
+     filterCommitsToReviewSince(userBoundaryDate, branchCommits, user, repoName)
+   }
+
+   def filterCommitsToReviewSince(date: DateTime, branchCommits: List[BranchCommitCacheEntry], user: User, repoName: String) = {
      branchCommits
        .filterNot(userOrDoneCommits(repoName, _, user))
-       .takeWhile(commitsAfterUserDate(_, userBoundaryDate))
+       .takeWhile(commitsAfterUserDate(_, date))
        .filter(notYetFullyReviewed(repoName, _))
        .map(_.sha)
        .reverse
    }
 
-   private def userOrDoneCommits(repoName: String, commitEntry: BranchCommitCacheEntry, user: User) = {
+   private def userOrDoneCommits(repoName: String, commitEntry: BranchCommitCacheEntry, user: User): Boolean = {
      commitAuthoredByUser(commitEntry, user) || userAlreadyReviewed(user.id, repoName, commitEntry)
    }
-
 
    private def commitsAfterUserDate(commitEntry: BranchCommitCacheEntry, userBoundaryDate: DateTime): Boolean = {
      commitEntry.commitDate.isAfter(userBoundaryDate) || commitEntry.commitDate.isEqual(userBoundaryDate)
@@ -36,5 +39,4 @@ class ToReviewBranchCommitsFilter(reviewedCommitsCache: UserReviewedCommitsCache
      val commitsReviewedByUser = reviewedCommitsCache.getEntry(userId, repoName).commits
      commitsReviewedByUser.find(_.sha == commit.sha).nonEmpty
    }
-
- }
+}

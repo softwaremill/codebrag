@@ -28,14 +28,25 @@ class NotificationService(
     emailScheduler.scheduleInstant(Email(List(user.emailLowerCase), template.subject, template.content))
   }
 
-
   def sendFollowupNotification(user: User, followupCount: Long) {
     val templateParams = Map(
       "username" -> user.name,
-      "commit_followup_message" -> translate(0, followupCount, isTotalCount = false),
-      "application_url" -> codebragConfig.applicationUrl
+      "commitFollowupMessage" -> translate(0, followupCount, isTotalCount = false),
+      "applicationUrl" -> codebragConfig.applicationUrl
     )
-    val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.UserNotifications, templateParams)
+    val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.FollowupNotifications, templateParams)
+    val email = Email(List(user.emailLowerCase), resolvedTemplate.subject, resolvedTemplate.content)
+    emailScheduler.scheduleInstant(email)
+  }
+
+  def sendFollowupAndCommitsNotification(user: User, notifications: UserNotificationsView) {
+    val templateParams = Map(
+      "username" -> user.name,
+      "summaryMessage" -> translate(notifications.commits, notifications.followups, isTotalCount = false),
+      "commitsNotifications" -> notifications.repos,
+      "applicationUrl" -> codebragConfig.applicationUrl
+    )
+    val resolvedTemplate = templateEngine.getEmailTemplate(EmailTemplates.FollowupAndCommitNotifications, templateParams)
     val email = Email(List(user.emailLowerCase), resolvedTemplate.subject, resolvedTemplate.content)
     emailScheduler.scheduleInstant(email)
   }
@@ -43,7 +54,7 @@ class NotificationService(
   def sendDailySummary(user: User, toReviewSummary: UserNotificationsView) {
     val templateParams = Map(
       "username" -> user.name,
-      "summaryMessage" -> translate(toReviewSummary.repos.foldLeft(0)(_ + _.commits), toReviewSummary.followups, isTotalCount = true),
+      "summaryMessage" -> translate(toReviewSummary.commits, toReviewSummary.followups, isTotalCount = true),
       "commitsNotifications" -> toReviewSummary.repos,
       "applicationUrl" -> codebragConfig.applicationUrl,
       "date" -> clock.now.toString(DateTimeFormat.forPattern("yyyy-MM-dd"))

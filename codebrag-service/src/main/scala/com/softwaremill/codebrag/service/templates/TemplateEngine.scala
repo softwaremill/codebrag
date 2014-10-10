@@ -31,7 +31,7 @@ class TemplateEngine {
 
 object EmailTemplates extends Enumeration {
   type EmailTemplates = Value
-  val WelcomeToCodebrag, Invitation, UserNotifications, DailyDigest = Value
+  val WelcomeToCodebrag, Invitation, FollowupNotifications, FollowupAndCommitNotifications, DailyDigest = Value
 }
 
 object PlainTextTemplates extends Enumeration {

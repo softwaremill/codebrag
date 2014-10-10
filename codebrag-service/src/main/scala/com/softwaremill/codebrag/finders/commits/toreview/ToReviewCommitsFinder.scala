@@ -8,6 +8,7 @@ import com.softwaremill.codebrag.cache.RepositoriesCache
 import com.softwaremill.codebrag.dao.finders.views.CommitListView
 import com.softwaremill.codebrag.finders.commits.UserLoader
 import com.softwaremill.codebrag.finders.browsingcontext.{UserBrowsingContext, UserBrowsingContextFinder}
+import org.joda.time.DateTime
 
 class ToReviewCommitsFinder(
   protected val repoCache: RepositoriesCache,
@@ -27,6 +28,14 @@ class ToReviewCommitsFinder(
     val user = loadUser(browsingContext.userId)
     val allBranchCommits = repoCache.getBranchCommits(browsingContext.repoName, browsingContext.branchName)
     toReviewCommitsFilter.filterCommitsToReview(allBranchCommits, user, browsingContext.repoName).length
+  }
+
+  def countSince(date: DateTime, browsingContext: UserBrowsingContext): Long = {
+    val user = loadUser(browsingContext.userId)
+    val branchCommits = repoCache
+      .getBranchCommits(browsingContext.repoName, browsingContext.branchName)
+      .filter(bc => bc.commitDate.isAfter(date) || bc.commitDate.isEqual(date))
+    toReviewCommitsFilter.filterCommitsToReview(branchCommits, user, browsingContext.repoName).length
   }
 
   def countForUserRepoAndBranch(userId: ObjectId): Long = {

@@ -32,7 +32,7 @@ extends Actor with Logging with UserNotificationsSender {
   def receive = {
     case SendFollowupsNotification => {
       logger.debug("Preparing notifications to send out")
-      sendFollowupsNotification(heartbeatStore.loadAll())
+      sendInstantNotification(heartbeatStore.loadAll())
       scheduleNextNotificationsSendOut(actorSystem, self, config.notificationsCheckInterval)
     }
 
@@ -108,7 +108,7 @@ trait UserNotificationsSender extends Logging {
   def notificationService: NotificationService
   def config: CodebragConfig
 
-  def sendFollowupsNotification(heartbeats: List[(ObjectId, DateTime)]) {
+  def sendInstantNotification(heartbeats: List[(ObjectId, DateTime)]) {
 
     def userIsOffline(heartbeat: DateTime) = heartbeat.isBefore(clock.nowUtc.minus(config.userOfflinePeriod))
 
@@ -118,10 +118,11 @@ trait UserNotificationsSender extends Logging {
       if (userIsOffline(lastHeartbeat)) {
         userDAO.findById(userId).foreach { user =>
           whenNotificationsAllowed(user) {
-            val followupsCount = followupFinder.countFollowupsForUserSince(lastHeartbeat, user.id)
-            if (userShouldBeNotified(lastHeartbeat, user, followupsCount)) {
-              sendNotifications(user, followupsCount)
-              updateLastNotificationsDispatch(user, followupsCount)
+            val notifications = findUserNotifications.executeSince(lastHeartbeat, user.id)
+
+            if (notifications.nonEmpty && userShouldBeNotified(lastHeartbeat, user)) {
+              notificationService.sendFollowupAndCommitsNotification(user, notifications)
+              updateLastNotificationsDispatch(user)
               emailsScheduled += 1
             }
           }
@@ -139,22 +140,16 @@ trait UserNotificationsSender extends Logging {
     }
   }
 
-  private def userShouldBeNotified(heartbeat: DateTime, user: User, followupsCount: Long) = {
-    followupsCount > 0 && (user.notifications match {
+  private def userShouldBeNotified(heartbeat: DateTime, user: User) = {
+    user.notifications match {
       case LastUserNotificationDispatch(_, None) => true
       case LastUserNotificationDispatch(_, Some(date)) => date.isBefore(heartbeat)
-    })
-  }
-
-  private def sendNotifications(user: User, followupsCount: Long) = {
-    notificationService.sendFollowupNotification(user, followupsCount)
-  }
-
-  private def updateLastNotificationsDispatch(user: User, followupsCount: Long) {
-    val followupDate = if (followupsCount > 0) Some(clock.nowUtc) else None
-    followupDate.foreach { date =>
-      userDAO.rememberNotifications(user.id, LastUserNotificationDispatch(followupDate, followupDate))
     }
+  }
+
+  private def updateLastNotificationsDispatch(user: User) {
+    val notificationDate = Some(clock.nowUtc)
+    userDAO.rememberNotifications(user.id, LastUserNotificationDispatch(notificationDate, notificationDate))
   }
 
   def sendDailyDigest(users: List[User]) {
@@ -172,9 +167,9 @@ trait UserNotificationsSender extends Logging {
 
   private def withNonEmptyUserNotifications(user: User)(actionBlock: UserNotificationsView => Unit) = {
     val notifications = findUserNotifications.execute(user.id)
-    val allWithNonEmptyNotifs = notifications.copy(repos = notifications.repos.filter(_.commits > 0))
-    if(allWithNonEmptyNotifs.nonEmpty) {
-      actionBlock(allWithNonEmptyNotifs)
+    val notificationsWithCommits = notifications.copy(repos = notifications.repos.filter(_.commits > 0))
+    if(notificationsWithCommits.nonEmpty) {
+      actionBlock(notificationsWithCommits)
     } else {
       logger.debug(s"Not sending email to ${user.emailLowerCase} - no commits and followups waiting for this user")
     }

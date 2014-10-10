@@ -50,7 +50,7 @@ class UserNotificationsSenderSpec
     when(followupFinder.countFollowupsForUserSince(userHeartbeat, user.id)).thenReturn(1)
 
     // when
-    sender.sendFollowupsNotification(heartbeats)
+    sender.sendInstantNotification(heartbeats)
 
     // then
     verifyZeroInteractions(notificationService)
@@ -65,21 +65,22 @@ class UserNotificationsSenderSpec
     when(followupFinder.countFollowupsForUserSince(userHeartbeat, user.id)).thenReturn(1)
 
     // when
-    sender.sendFollowupsNotification(heartbeats)
+    sender.sendInstantNotification(heartbeats)
 
     // then
     verifyZeroInteractions(notificationService)
   }
 
-  it should "not send notification when user has no followups waiting" in {
+  it should "not send notification when user has no followups or commits waiting" in {
     // given
     val user = UserAssembler.randomUser.get.copy(notifications = LastUserNotificationDispatch(None, None))
-    val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
+    val lastHeartbeat = clock.nowUtc.minusHours(1)
+    val heartbeats = List((user.id, lastHeartbeat))
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(followupFinder.countFollowupsForUserSince(heartbeats.head._2, user.id)).thenReturn(NoFollowups)
+    when(findUserNotifications.executeSince(lastHeartbeat, user.id)).thenReturn(UserNotificationsView(followups = 0, repos = Set.empty))
 
     // when
-    sender.sendFollowupsNotification(heartbeats)
+    sender.sendInstantNotification(heartbeats)
 
     // then
     verifyZeroInteractions(notificationService)
@@ -125,15 +126,33 @@ class UserNotificationsSenderSpec
   it should "send notification when user has new followups" in {
     // given
     val user = UserAssembler.randomUser.get
-    val heartbeats = List((user.id, clock.nowUtc.minusHours(1)))
+    val lastHeartbeat = clock.nowUtc.minusHours(1)
+    val heartbeats = List((user.id, lastHeartbeat))
+    val notifications = UserNotificationsView(followups = 1, repos = Set.empty)
     when(userDao.findById(user.id)).thenReturn(Some(user))
-    when(followupFinder.countFollowupsForUserSince(heartbeats.head._2, user.id)).thenReturn(SomeFollowups)
+    when(findUserNotifications.executeSince(lastHeartbeat, user.id)).thenReturn(notifications)
 
     // when
-    sender.sendFollowupsNotification(heartbeats)
+    sender.sendInstantNotification(heartbeats)
 
     // then
-    verify(notificationService).sendFollowupNotification(user, SomeFollowups)
+    verify(notificationService).sendFollowupAndCommitsNotification(user, notifications)
+  }
+
+  it should "send notification when user has new commits" in {
+    // given
+    val user = UserAssembler.randomUser.get
+    val lastHeartbeat = clock.nowUtc.minusHours(1)
+    val heartbeats = List((user.id, lastHeartbeat))
+    val notifications = UserNotificationsView(followups = 0, repos = Set(RepoBranchNotificationView("testRepo", "testBranch", 1)))
+    when(userDao.findById(user.id)).thenReturn(Some(user))
+    when(findUserNotifications.executeSince(lastHeartbeat, user.id)).thenReturn(notifications)
+
+    // when
+    sender.sendInstantNotification(heartbeats)
+
+    // then
+    verify(notificationService).sendFollowupAndCommitsNotification(user, notifications)
   }
 
   it should "send daily digest when user has commits or followups" in {
