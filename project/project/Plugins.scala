@@ -5,6 +5,7 @@ object Plugins extends Build {
     "plugins",
     file("."),
     settings = Defaults.coreDefaultSettings ++ Seq(
+      addSbtPlugin("com.earldouglas" %% "xsbt-web-plugin" % "1.0.0-M7"),
       addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4"),
       addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.1.0"),
       addSbtPlugin("com.gu" % "sbt-teamcity-test-reporting-plugin" % "1.5"),
