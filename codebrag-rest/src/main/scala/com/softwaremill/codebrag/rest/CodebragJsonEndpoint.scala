@@ -1,5 +1,6 @@
 package com.softwaremill.codebrag.rest
 
+import com.softwaremill.scalaval.Validation
 import org.scalatra._
 import org.scalatra.json.{JValueResult, JacksonJsonSupport}
 import org.json4s._
@@ -64,6 +65,24 @@ trait CodebragJsonEndpoint extends JacksonJsonSupport with JValueResult with Log
     response.addHeader("Last-Modified", Expire)
     response.addHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
     response.addHeader("Pragma", "no-cache")
+  }
+
+  /**
+   * Codebrag-specific render pipeline.
+   * Converts Either and Option instances xto valid scalatra responses
+   * @return
+   */
+  protected override def renderPipeline = renderUseCaseResult orElse renderOptionResult orElse super.renderPipeline
+
+  private def renderUseCaseResult: PartialFunction[Any, Any] = {
+    case Right(success: Any) => super.renderPipeline(Ok(success))
+    case Left(error: String) => super.renderPipeline(BadRequest(Map("error" -> error)))
+    case Left(errors: Validation.Errors) => super.renderPipeline(BadRequest(Map("errors" -> errors)))
+  }
+
+  private def renderOptionResult: PartialFunction[Any, Any] = {
+    case Some(value: Any) => super.renderPipeline(Ok(value))
+    case None => super.renderPipeline(NotFound())
   }
 
 }
