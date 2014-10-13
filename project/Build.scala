@@ -36,18 +36,7 @@ object BuildSettings {
     libraryDependencies ++= Dependencies.logging,
     libraryDependencies ++= Seq(Dependencies.guava, Dependencies.googleJsr305),
 
-    concurrentRestrictions in Global += Tags.limit(Tags.Test, 1), // no parallel execution of tests, because we are starting mongo in tests
-
-    /*
-    swagger-core has a dependency to the slf4j -> log4j bridge, while we are using the log4j -> slf4j bridge.
-    We cannot exclude the dependency in the dependency declaration, as swagger-core is a transitive dep of
-    scalatra-swagger, hence the global exclude.
-     */
-    ivyXML :=
-      <dependencies>
-        <exclude org="org.slf4j" artifact="slf4j-log4j12" />
-        <exclude org="log4j" artifact="log4j" />
-      </dependencies>
+    concurrentRestrictions in Global += Tags.limit(Tags.Test, 1) // no parallel execution of tests, because we are starting mongo in tests
   )
 
 }
@@ -79,9 +68,6 @@ object Dependencies {
   val json4sExt = "org.json4s" %% "json4s-ext" % "3.2.4"
   val scalatraAuth = "org.scalatra" %% "scalatra-auth" % scalatraVersion  exclude("commons-logging", "commons-logging")
 
-  val swaggerCore = "com.wordnik"  % "swagger-project_2.10.0"  % "1.2.5"
-  val scalatraSwagger = "org.scalatra" %% "scalatra-swagger"  % scalatraVersion
-
   val jodaTime = "joda-time" % "joda-time" % "2.0"
   val jodaConvert = "org.joda" % "joda-convert" % "1.2"
 
@@ -95,7 +81,7 @@ object Dependencies {
   val scalatest = "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
 
   val jodaDependencies = Seq(jodaTime, jodaConvert)
-  val scalatraStack = Seq(scalatra, scalatraScalatest, scalatraJson, json4s, scalatraAuth, commonsLang, swaggerCore, scalatraSwagger)
+  val scalatraStack = Seq(scalatra, scalatraScalatest, scalatraJson, json4s, scalatraAuth, commonsLang)
 
   val akka = "com.typesafe.akka" %% "akka-actor" % akkaVersion
   val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % akkaVersion

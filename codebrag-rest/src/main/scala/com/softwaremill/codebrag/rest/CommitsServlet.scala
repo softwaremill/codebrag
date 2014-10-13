@@ -3,7 +3,6 @@ package com.softwaremill.codebrag.rest
 import org.scalatra._
 import com.softwaremill.codebrag.service.user.Authenticator
 import json.JacksonJsonSupport
-import swagger.{Swagger, SwaggerSupport}
 
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import com.softwaremill.codebrag.service.comments.UserReactionService
@@ -20,15 +19,11 @@ class CommitsServlet(val authenticator: Authenticator,
                      val addCommentUseCase: AddCommentUseCase,
                      val reviewCommitUseCase: ReviewCommitUseCase,
                      val userReactionService: UserReactionService,
-                     val userDao: UserDAO, val swagger: Swagger,
+                     val userDao: UserDAO,
                      val diffService: DiffWithCommentsService,
                      val unlikeUseCase: UnlikeUseCase,
                      val likeUseCase: LikeUseCase)
-  extends JsonServletWithAuthentication with JacksonJsonSupport with SwaggerSupport with CommitsEndpoint with CommentsEndpoint with LikesEndpoint {
-
-  override protected val applicationName = Some(CommitsServlet.MAPPING_PATH)
-  override protected val applicationDescription = "Commits information endpoint"
-
+  extends JsonServletWithAuthentication with JacksonJsonSupport with CommitsEndpoint with CommentsEndpoint with LikesEndpoint {
 }
 
 object CommitsServlet {

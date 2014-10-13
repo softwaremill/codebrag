@@ -130,7 +130,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[User])
     extends CommitsServlet(fakeAuthenticator, toReviewCommitsFinder, allCommitsFinder, userReactionFinder, commentActivity,
-      reviewCommitUseCase, userReactionService, userDao, new CodebragSwagger, diffService, unlikeUseCaseFactory, likeUseCase) {
+      reviewCommitUseCase, userReactionService, userDao, diffService, unlikeUseCaseFactory, likeUseCase) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

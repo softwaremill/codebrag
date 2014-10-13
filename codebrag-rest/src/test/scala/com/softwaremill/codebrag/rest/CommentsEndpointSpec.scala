@@ -7,7 +7,6 @@ import org.mockito.Mockito._
 import org.mockito.Matchers._
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain._
-import org.scalatra.swagger.SwaggerEngine
 import org.mockito.ArgumentCaptor
 import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterEach
@@ -94,13 +93,8 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
 
   def currentUser(id: ObjectId) = User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde")
 
- class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[User], val addCommentUseCase: AddCommentUseCase) extends CommentsEndpoint {
-
+  class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[User], val addCommentUseCase: AddCommentUseCase) extends CommentsEndpoint {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
-
-    protected implicit def swagger: SwaggerEngine[_] = new CodebragSwagger
-    protected def applicationDescription: String = ""
-
   }
 
 }

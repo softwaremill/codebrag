@@ -32,7 +32,7 @@ class FollowupsServletSpec extends AuthenticatableServletSpec {
 }
 
 class TestableFollowupsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[User], followupFinder: FollowupFinder, useCase: FollowupDoneUseCase)
-  extends FollowupsServlet(fakeAuthenticator, new CodebragSwagger, followupFinder, useCase) {
+  extends FollowupsServlet(fakeAuthenticator, followupFinder, useCase) {
   override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
 }
 

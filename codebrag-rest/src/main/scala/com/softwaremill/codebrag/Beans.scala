@@ -2,7 +2,6 @@ package com.softwaremill.codebrag
 
 import com.softwaremill.codebrag.usecases._
 import com.softwaremill.codebrag.common.{RealTimeClock, ObjectIdGenerator, IdGenerator}
-import com.softwaremill.codebrag.rest.CodebragSwagger
 import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
 import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
 import com.softwaremill.codebrag.service.followups.{FollowupsGeneratorForReactionsPriorUserRegistration, WelcomeFollowupsGenerator, FollowupService}
@@ -40,7 +39,6 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   implicit lazy val idGenerator: IdGenerator = new ObjectIdGenerator
   lazy val self = this
   lazy val eventBus = new AkkaEventBus(actorSystem)
-  lazy val swagger = new CodebragSwagger
   lazy val followupService = new FollowupService(followupDao, commitInfoDao, commentDao, userDao)
   lazy val likeValidator = new LikeValidator(commitInfoDao, likeDao, userDao)
   lazy val userReactionService = new UserReactionService(commentDao, likeDao, likeValidator, eventBus)
