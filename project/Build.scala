@@ -27,7 +27,7 @@ object BuildSettings {
 
     organization := "pl.softwaremill",
     version := "0.0.1-SNAPSHOT",
-    scalaVersion := "2.10.4",
+    scalaVersion := "2.10.2",
 
     resolvers := codebragResolvers,
     scalacOptions += "-unchecked",
@@ -55,10 +55,10 @@ object BuildSettings {
 object Dependencies {
 
   val slf4jVersion = "1.7.2"
-  val logBackVersion = "1.1.2"
-  val scalatraVersion = "2.2.2"
+  val logBackVersion = "1.0.9"
+  val scalatraVersion = "2.2.1"
   val rogueVersion = "2.1.0"
-  val scalaLoggingVersion = "1.1.0"
+  val scalaLoggingVersion = "1.0.1"
   val akkaVersion = "2.1.4"
   val jettyVersion = "8.1.7.v20120910"
 
@@ -75,8 +75,8 @@ object Dependencies {
   val scalatra = "org.scalatra" %% "scalatra" % scalatraVersion
   val scalatraScalatest = "org.scalatra" %% "scalatra-scalatest" % scalatraVersion % "test"
   val scalatraJson = "org.scalatra" %% "scalatra-json" % scalatraVersion
-  val json4s = "org.json4s" %% "json4s-jackson" % "3.2.10"
-  val json4sExt = "org.json4s" %% "json4s-ext" % "3.2.10"
+  val json4s = "org.json4s" %% "json4s-jackson" % "3.2.4"
+  val json4sExt = "org.json4s" %% "json4s-ext" % "3.2.4"
   val scalatraAuth = "org.scalatra" %% "scalatra-auth" % scalatraVersion  exclude("commons-logging", "commons-logging")
 
   val swaggerCore = "com.wordnik"  % "swagger-project_2.10.0"  % "1.2.5"
@@ -106,7 +106,7 @@ object Dependencies {
 
   val javaxMail = "javax.mail" % "mail" % "1.4.5"
 
-  val scalate = "org.fusesource.scalate" %% "scalate-core" % "1.6.1"
+  val scalate = "org.fusesource.scalate" %% "scalate-core" % "1.6.0"
 
   val seleniumVer = "2.33.0"
   val seleniumJava = "org.seleniumhq.selenium" % "selenium-java" % seleniumVer % "test"
@@ -127,7 +127,7 @@ object Dependencies {
   val jsch = "com.jcraft" % "jsch" % "0.1.51"
   val dispatch = "net.databinder.dispatch" %% "dispatch-core" % "0.9.5"
 
-  val slick = "com.typesafe.slick" %% "slick" % "2.0.3"
+  val slick = "com.typesafe.slick" %% "slick" % "2.0.0"
   val h2 = "com.h2database" % "h2" % "1.3.175"
   val flyway = "com.googlecode.flyway" % "flyway-core" % "2.3"
   val c3p0 = "com.mchange" % "c3p0" % "0.9.5-pre6"
@@ -139,7 +139,6 @@ object SmlCodebragBuild extends Build {
 
   import Dependencies._
   import BuildSettings._
-  import com.earldouglas.xwp._
 
   val genVersionFile = TaskKey[Unit](
     "gen-version-file",
@@ -239,7 +238,7 @@ object SmlCodebragBuild extends Build {
   lazy val rest: Project = Project(
     "codebrag-rest",
     file("codebrag-rest"),
-    settings = buildSettings ++ graphSettings ++ XwpPlugin.jetty() ++ versionGenSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig)) ++ Seq(
+    settings = buildSettings ++ graphSettings ++ versionGenSettings ++ Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig)) ++ Seq(
       artifactName := { (config: ScalaVersion, module: ModuleID, artifact: Artifact) =>
         "codebrag." + artifact.extension // produces nice war name -> http://stackoverflow.com/questions/8288859/how-do-you-remove-the-scala-version-postfix-from-artifacts-builtpublished-wi
       },
