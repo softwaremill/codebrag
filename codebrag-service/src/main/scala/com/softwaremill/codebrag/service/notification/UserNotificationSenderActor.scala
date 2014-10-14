@@ -30,9 +30,9 @@ extends Actor with Logging with UserNotificationsSender {
   import UserNotificationSenderActor._
 
   def receive = {
-    case SendFollowupsNotification => {
+    case SendHeartbeatNotification => {
       logger.debug("Preparing notifications to send out")
-      sendInstantNotification(heartbeatStore.loadAll())
+      sendHeartbeatNotification(heartbeatStore.loadAll())
       scheduleNextNotificationsSendOut(actorSystem, self, config.notificationsCheckInterval)
     }
 
@@ -42,7 +42,6 @@ extends Actor with Logging with UserNotificationsSender {
       sendDailyDigest(userDAO.findAll())
     }
   }
-
 }
 
 object UserNotificationSenderActor extends Logging {
@@ -88,14 +87,11 @@ object UserNotificationSenderActor extends Logging {
   private def scheduleNextNotificationsSendOut(actorSystem: ActorSystem, receiver: ActorRef, interval: FiniteDuration) {
     import actorSystem.dispatcher
     logger.debug(s"Scheduling next preparation in $interval")
-    actorSystem.scheduler.scheduleOnce(interval, receiver, SendFollowupsNotification)
+    actorSystem.scheduler.scheduleOnce(interval, receiver, SendHeartbeatNotification)
   }
-
-
 }
 
-case object SendFollowupsNotification
-
+case object SendHeartbeatNotification
 case object SendDailyDigest
 
 trait UserNotificationsSender extends Logging {
@@ -108,7 +104,7 @@ trait UserNotificationsSender extends Logging {
   def notificationService: NotificationService
   def config: CodebragConfig
 
-  def sendInstantNotification(heartbeats: List[(ObjectId, DateTime)]) {
+  def sendHeartbeatNotification(heartbeats: List[(ObjectId, DateTime)]) {
 
     def userIsOffline(heartbeat: DateTime) = heartbeat.isBefore(clock.nowUtc.minus(config.userOfflinePeriod))
 
@@ -174,5 +170,4 @@ trait UserNotificationsSender extends Logging {
       logger.debug(s"Not sending email to ${user.emailLowerCase} - no commits and followups waiting for this user")
     }
   }
-
 }

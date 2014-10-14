@@ -50,7 +50,7 @@ class UserNotificationsSenderSpec
     when(followupFinder.countFollowupsForUserSince(userHeartbeat, user.id)).thenReturn(1)
 
     // when
-    sender.sendInstantNotification(heartbeats)
+    sender.sendHeartbeatNotification(heartbeats)
 
     // then
     verifyZeroInteractions(notificationService)
@@ -65,7 +65,7 @@ class UserNotificationsSenderSpec
     when(followupFinder.countFollowupsForUserSince(userHeartbeat, user.id)).thenReturn(1)
 
     // when
-    sender.sendInstantNotification(heartbeats)
+    sender.sendHeartbeatNotification(heartbeats)
 
     // then
     verifyZeroInteractions(notificationService)
@@ -80,7 +80,7 @@ class UserNotificationsSenderSpec
     when(findUserNotifications.executeSince(lastHeartbeat, user.id)).thenReturn(UserNotificationsView(followups = 0, repos = Set.empty))
 
     // when
-    sender.sendInstantNotification(heartbeats)
+    sender.sendHeartbeatNotification(heartbeats)
 
     // then
     verifyZeroInteractions(notificationService)
@@ -133,7 +133,7 @@ class UserNotificationsSenderSpec
     when(findUserNotifications.executeSince(lastHeartbeat, user.id)).thenReturn(notifications)
 
     // when
-    sender.sendInstantNotification(heartbeats)
+    sender.sendHeartbeatNotification(heartbeats)
 
     // then
     verify(notificationService).sendFollowupAndCommitsNotification(user, notifications)
@@ -149,7 +149,7 @@ class UserNotificationsSenderSpec
     when(findUserNotifications.executeSince(lastHeartbeat, user.id)).thenReturn(notifications)
 
     // when
-    sender.sendInstantNotification(heartbeats)
+    sender.sendHeartbeatNotification(heartbeats)
 
     // then
     verify(notificationService).sendFollowupAndCommitsNotification(user, notifications)
