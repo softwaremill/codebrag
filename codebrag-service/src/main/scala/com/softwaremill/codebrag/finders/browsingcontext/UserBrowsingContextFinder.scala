@@ -26,7 +26,7 @@ class UserBrowsingContextFinder(val userRepoDetailsDao: UserRepoDetailsDAO, val 
     }
   }
 
-  def findAll(userId: ObjectId) = userRepoDetailsDao.findAll(userId).filter(rd => repositoriesCache.hasRepo(rd.repoName))map(UserBrowsingContext.apply)
+  def findAll(userId: ObjectId) = userRepoDetailsDao.findAll(userId).filter(rd => repositoriesCache.hasRepo(rd.repoName)).map(UserBrowsingContext.apply)
 
   def findUserDefaultContext(userId: ObjectId) = {
     logger.debug(s"Searching for default browsing context for user $userId")
