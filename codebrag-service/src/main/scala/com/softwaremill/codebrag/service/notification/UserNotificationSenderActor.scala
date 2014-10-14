@@ -30,9 +30,9 @@ extends Actor with Logging with UserNotificationsSender {
   import UserNotificationSenderActor._
 
   def receive = {
-    case SendHeartbeatNotification => {
+    case SendInstantNotification => {
       logger.debug("Preparing notifications to send out")
-      sendHeartbeatNotification(heartbeatStore.loadAll())
+      sendInstantNotification(heartbeatStore.loadAll())
       scheduleNextNotificationsSendOut(actorSystem, self, config.notificationsCheckInterval)
     }
 
@@ -87,11 +87,11 @@ object UserNotificationSenderActor extends Logging {
   private def scheduleNextNotificationsSendOut(actorSystem: ActorSystem, receiver: ActorRef, interval: FiniteDuration) {
     import actorSystem.dispatcher
     logger.debug(s"Scheduling next preparation in $interval")
-    actorSystem.scheduler.scheduleOnce(interval, receiver, SendHeartbeatNotification)
+    actorSystem.scheduler.scheduleOnce(interval, receiver, SendInstantNotification)
   }
 }
 
-case object SendHeartbeatNotification
+case object SendInstantNotification
 case object SendDailyDigest
 
 trait UserNotificationsSender extends Logging {
@@ -104,7 +104,7 @@ trait UserNotificationsSender extends Logging {
   def notificationService: NotificationService
   def config: CodebragConfig
 
-  def sendHeartbeatNotification(heartbeats: List[(ObjectId, DateTime)]) {
+  def sendInstantNotification(heartbeats: List[(ObjectId, DateTime)]) {
 
     def userIsOffline(heartbeat: DateTime) = heartbeat.isBefore(clock.nowUtc.minus(config.userOfflinePeriod))
 
