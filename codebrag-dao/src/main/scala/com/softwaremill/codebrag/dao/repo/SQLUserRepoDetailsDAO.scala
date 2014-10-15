@@ -32,6 +32,12 @@ class SQLUserRepoDetailsDAO(database: SQLDatabase) extends UserRepoDetailsDAO {
       userRepoDetails.filter(_.userId === userId).list().toSet
     }
   }
+  
+  def findAll(): Set[UserRepoDetails] = {
+    db.withTransaction { implicit session =>
+      userRepoDetails.list().toSet
+    }
+  }
 
   def find(userId: ObjectId, repoName: String): Option[UserRepoDetails] = {
     db.withTransaction {implicit session =>
