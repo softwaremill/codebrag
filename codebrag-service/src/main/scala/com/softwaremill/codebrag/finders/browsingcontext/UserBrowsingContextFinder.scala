@@ -30,10 +30,28 @@ class UserBrowsingContextFinder(val userRepoDetailsDao: UserRepoDetailsDAO, val 
 
   def findUserDefaultContext(userId: ObjectId) = {
     logger.debug(s"Searching for default browsing context for user $userId")
+    
+    val masterBranch = "master"
+    val developBranch = "develop"
+    
     val context = userRepoDetailsDao.findDefault(userId)
-      .filter(context => repositoriesCache.hasRepo(context.repoName))
-      .map(UserBrowsingContext.apply)
+      .filter(ctx => repositoriesCache.hasRepo(ctx.repoName))
+      .map(ctx => {
+        val repo = repositoriesCache.getRepo(ctx.repoName)
+        val branches = repo.getShortBranchNames
+        val branchName = if (branches.contains(ctx.branchName)) ctx.branchName 
+          else if (branches.contains(masterBranch)) masterBranch
+          else if (branches.contains(developBranch)) developBranch
+          else branches.head
+                
+        UserBrowsingContext(
+            userId,
+            ctx.repoName,
+            branchName
+        )
+      })
       .getOrElse(findSystemDefaultContext(userId))
+    
     logger.debug(s"User context is $context")
     context
   }

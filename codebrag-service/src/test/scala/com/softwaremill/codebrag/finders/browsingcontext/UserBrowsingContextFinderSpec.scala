@@ -27,7 +27,10 @@ class UserBrowsingContextFinderSpec extends FlatSpec with MockitoSugar with Shou
     val repoDetails = UserRepoDetails(Bob.id, "codebrag", "bugfix", clock.nowUtc)
     when(userRepoDetailsDao.findDefault(Bob.id)).thenReturn(Some(repoDetails))
     when(repoCache.hasRepo("codebrag")).thenReturn(true)
-
+    val codebragRepoCache = mock[RepositoryCache]
+    when(repoCache.getRepo("codebrag")).thenReturn(codebragRepoCache)
+    when(codebragRepoCache.getShortBranchNames).thenReturn(Set("bugfix"))
+    
     // when
     val result = finder.findUserDefaultContext(Bob.id)
 
