@@ -17,7 +17,7 @@ class ToReviewBranchCommitsFilter(reviewedCommitsCache: UserReviewedCommitsCache
    def filterCommitsToReviewSince(date: DateTime, branchCommits: List[BranchCommitCacheEntry], user: User, repoName: String) = {
      branchCommits
        .filterNot(userOrDoneCommits(repoName, _, user))
-       .takeWhile(commitsAfterUserDate(_, date))
+       .filterNot(commitTooOld(_, date))
        .filter(notYetFullyReviewed(repoName, _))
        .map(_.sha)
        .reverse
@@ -27,8 +27,8 @@ class ToReviewBranchCommitsFilter(reviewedCommitsCache: UserReviewedCommitsCache
      commitAuthoredByUser(commitEntry, user) || userAlreadyReviewed(user.id, repoName, commitEntry)
    }
 
-   private def commitsAfterUserDate(commitEntry: BranchCommitCacheEntry, userBoundaryDate: DateTime): Boolean = {
-     commitEntry.commitDate.isAfter(userBoundaryDate) || commitEntry.commitDate.isEqual(userBoundaryDate)
+   private def commitTooOld(commitEntry: BranchCommitCacheEntry, userBoundaryDate: DateTime): Boolean = {
+     commitEntry.commitDate.isBefore(userBoundaryDate)
    }
 
    private def notYetFullyReviewed(repoName: String, commitEntry: BranchCommitCacheEntry): Boolean = {
