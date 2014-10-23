@@ -29,6 +29,8 @@ object MigrateV2_2ToV2_3 extends App with Logging {
   var watchedBranchesDao = new SQLWatchedBranchesDao(sqlDb)
 
   sqlDb.db.withDynSession {
+    logger.debug("Updating database schema")
+    sqlDb.updateSchema()
     logger.debug(s"Updating watched branches")
     userRepoDetailsDao.findAll().map { userRepo =>
       val branchName = if (userRepo.branchName.isEmpty) "master" else userRepo.branchName
