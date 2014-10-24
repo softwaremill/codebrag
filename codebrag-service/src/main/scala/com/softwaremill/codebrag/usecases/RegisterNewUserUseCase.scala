@@ -17,7 +17,7 @@ class RegisterNewUserUseCase(licenceService: LicenceService, registerService: Re
   }
 
   def validate: UserRegistrationResult = {
-    if(licenceService.maxUsers > userDao.countAll()) {
+    if (licenceService.maxUsers > userDao.countAllActive()) {
       Right()
     } else {
       logger.debug(s"Cannot register user - max users licenced reached")

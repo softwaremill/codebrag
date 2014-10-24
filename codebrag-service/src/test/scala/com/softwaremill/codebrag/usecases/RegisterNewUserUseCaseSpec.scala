@@ -26,7 +26,7 @@ class RegisterNewUserUseCaseSpec extends FlatSpec with ShouldMatchers with Mocki
   it should "allow new user to be registered when it doesn't exceed max users licenced" in {
     // given
     when(licenceService.maxUsers).thenReturn(10)
-    when(userDao.countAll()).thenReturn(5)
+    when(userDao.countAllActive()).thenReturn(5)
 
     // when
     val user = UserToRegister("john", "john@codebrag.com", "secret", "123456")
@@ -36,10 +36,10 @@ class RegisterNewUserUseCaseSpec extends FlatSpec with ShouldMatchers with Mocki
     verify(registerService).register(user.login, user.email, user.password, user.invitationCode)
   }
 
-  it should "allow new user to be registered when it exceeds max users licenced" in {
+  it should "not allow new user to be registered when it exceeds max users licenced" in {
     // given
     when(licenceService.maxUsers).thenReturn(10)
-    when(userDao.countAll()).thenReturn(10)
+    when(userDao.countAllActive()).thenReturn(10)
 
     // when
     val user = UserToRegister("john", "john@codebrag.com", "secret", "123456")
