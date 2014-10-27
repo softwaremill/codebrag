@@ -402,8 +402,18 @@
 
                 $httpBackend.whenGET(/rest\/register\/repos\?invitationCode=[a-z]*/).respond(['codebrag', 'bootzooka', 'codebrag-website']);
 
-                var initialBranches = { branches: [ {branchName: 'master', watching: false}, {branchName: 'bugfix', watching: true}, {branchName: 'feature', watching: false}] };
+                var initialBranches = {
+                    branches: [
+                        {branchName: 'master', watching: false},
+                        {branchName: 'bugfix', watching: true},
+                        {branchName: 'feature', watching: false},
+                        {branchName: "a_branch_with_some_very_very_long_name", watched: true}
+                    ]
+                };
                 $httpBackend.whenGET(/rest\/register\/repos\/[a-z\-]*\/branches.*/).respond(initialBranches);
+
+                var registeredUser = { id: 'foo', login: 'bar', email: 'test@test.org'};
+                $httpBackend.whenPOST('rest/register/signup').respond(registeredUser);
             });
     }
 
