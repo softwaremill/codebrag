@@ -34,12 +34,12 @@ class AllCommitsViewBuilder(
 
   private def toCommitsListView(repoName:String, commits: List[PartialCommitInfo]) = {
     commits.map { commit =>
-        CommitView(commit.id.toString, repoName, commit.sha, commit.message, commit.authorName, commit.authorEmail, commit.date.toDate)
+        CommitView(commit.id.toString, repoName, commit.sha, commit.message, commit.authorName, commit.authorEmail, commit.date)
     }
   }
   
   private def toCommitView(commit: CommitInfo) = {
-    CommitView(commit.id.toString, commit.repoName, commit.sha, commit.message, commit.authorName, commit.authorEmail, commit.commitDate.toDate)
+    CommitView(commit.id.toString, commit.repoName, commit.sha, commit.message, commit.authorName, commit.authorEmail, commit.commitDate)
   }
 
 }

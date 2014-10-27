@@ -1,5 +1,6 @@
 package com.softwaremill.codebrag.dao.finders.followup
 
+import com.softwaremill.codebrag.common.Joda
 import com.softwaremill.codebrag.dao.followup.SQLFollowupSchema
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.reaction.SQLReactionSchema
@@ -19,7 +20,8 @@ class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends Fol
                                             
   import database.driver.simple._
   import database._
-
+  import Joda._
+  
   def countFollowupsForUser(userId: ObjectId) = db.withTransaction { implicit session =>
     Query(followups.where(_.receivingUserId === userId).length).first()
   }
@@ -37,7 +39,7 @@ class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends Fol
 
     val followupsGroupedByCommit = followups.groupBy(_.threadCommitId)
 
-    val sortFollowupsForCommitByDate = (f1: FollowupReactionsView, f2: FollowupReactionsView) => f1.lastReaction.date.after(f2.lastReaction.date)
+    val sortFollowupsForCommitByDate = (f1: FollowupReactionsView, f2: FollowupReactionsView) => f1.lastReaction.date.isAfter(f2.lastReaction.date)
 
     val followupsForCommits = followupsGroupedByCommit.map {
       case (commitId, commitFollowups) =>
@@ -45,7 +47,7 @@ class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends Fol
           .map(f => followupToReactionsView(f, followupReactions.getOrElse(f.id, Nil), lastReactions, reactionAuthors))
           .sortWith(sortFollowupsForCommitByDate)
         val commit = commits(commitId)
-        val commitView = FollowupCommitView(commit.id.toString, commit.sha, commit.repoName, commit.authorName, commit.message, commit.authorDate.toDate)
+        val commitView = FollowupCommitView(commit.id.toString, commit.sha, commit.repoName, commit.authorName, commit.message, commit.authorDate)
         FollowupsByCommitView(commitView, followupsForCommitViews)
     }
     FollowupsByCommitListView(sortFollowupGroupsByNewest(followupsForCommits))
@@ -85,7 +87,7 @@ class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends Fol
     val followupsGroupsSorted = followupsForCommits.toList.sortWith((f1, f2) => {
       val firstMaxDate = f1.followups.maxBy(_.lastReaction.date).lastReaction.date
       val secondMaxDate = f2.followups.maxBy(_.lastReaction.date).lastReaction.date
-      firstMaxDate.after(secondMaxDate)
+      firstMaxDate.isAfter(secondMaxDate)
     })
     followupsGroupsSorted
   }
@@ -99,9 +101,9 @@ class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends Fol
   }
 
   private def recordsToFollowupView(commit: SQLCommitInfo, reaction: UserReaction, author: PartialUserDetails, followup: SQLFollowup): SingleFollowupView = {
-    val commitView = FollowupCommitView(commit.id.toString, commit.sha, commit.repoName, commit.authorName, commit.message, commit.authorDate.toDate)
+    val commitView = FollowupCommitView(commit.id.toString, commit.sha, commit.repoName, commit.authorName, commit.message, commit.authorDate)
     val lastReactionView = buildLastReactionView(reaction, author)
-    val followupView = SingleFollowupView(followup.id.toString, reaction.postingTime.toDate, commitView, lastReactionView)
+    val followupView = SingleFollowupView(followup.id.toString, reaction.postingTime, commitView, lastReactionView)
     followupView
   }
 
@@ -123,8 +125,8 @@ class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends Fol
 
   private def buildLastReactionView(reaction: UserReaction, author: PartialUserDetails): FollowupLastReactionView = {
     reaction match {
-      case comment: Comment => FollowupLastCommentView(comment.id.toString, author.name, comment.postingTime.toDate, author.avatarUrl, comment.message)
-      case like: Like => FollowupLastLikeView(like.id.toString, author.name, like.postingTime.toDate, author.avatarUrl)
+      case comment: Comment => FollowupLastCommentView(comment.id.toString, author.name, comment.postingTime, author.avatarUrl, comment.message)
+      case like: Like => FollowupLastLikeView(like.id.toString, author.name, like.postingTime, author.avatarUrl)
     }
   }
 }

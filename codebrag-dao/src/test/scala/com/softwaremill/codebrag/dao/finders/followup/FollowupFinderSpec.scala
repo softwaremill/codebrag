@@ -1,8 +1,9 @@
 package com.softwaremill.codebrag.dao.finders.followup
 
+import com.softwaremill.codebrag.common.Joda
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.domain._
-import org.joda.time.DateTime
+import org.joda.time.{DateTimeZone, DateTime}
 import com.softwaremill.codebrag.domain.builder.{CommentAssembler, UserAssembler, CommitInfoAssembler}
 import com.softwaremill.codebrag.dao._
 import org.bson.types.ObjectId
@@ -15,6 +16,7 @@ import org.scalatest.FlatSpec
 import com.softwaremill.codebrag.domain.Followup
 import com.softwaremill.codebrag.domain.Comment
 import com.softwaremill.codebrag.dao.finders.views.FollowupLastCommentView
+import Joda._
 
 trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
   def followupDao: FollowupDAO
@@ -89,20 +91,20 @@ trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
     val forAnotherCommit = result.followupsByCommit(0)
     forAnotherCommit.commit.commitId should be(anotherCommit.id.toString)
     forAnotherCommit.commit.authorName should be(anotherCommit.authorName)
-    forAnotherCommit.commit.date should be(anotherCommit.authorDate.toDate)
+    forAnotherCommit.commit.date should be(anotherCommit.authorDate)
     forAnotherCommit.commit.message should be(anotherCommit.message)
 
     val forFirstCommit = result.followupsByCommit(1)
     forFirstCommit.commit.commitId should be(commit.id.toString)
     forFirstCommit.commit.authorName should be(commit.authorName)
-    forFirstCommit.commit.date should be(commit.authorDate.toDate)
+    forFirstCommit.commit.date should be(commit.authorDate)
     forFirstCommit.commit.message should be(commit.message)
     forFirstCommit.commit.repoName should be(commit.repoName)
   }
 
   it should "have correct reactions data for followup" in {
     // given
-    val now = DateTime.now
+    val now = DateTime.now(DateTimeZone.UTC)
     val commit = commitInfoDao.storeCommit(CommitInfoAssembler.randomCommit.get)
     val firstInlineFollowup = createFollowupWithDependenciesFor(commit, JohnId, now.plusHours(1), ThreadDetails(commit.id, Some(20), Some("file.txt")))
     val secondInlineFollowup = createFollowupWithDependenciesFor(commit, JohnId, now.plusHours(2), ThreadDetails(commit.id, Some(20), Some("file.txt")))
@@ -116,7 +118,7 @@ trait FollowupFinderSpec extends FlatSpec with ShouldMatchers {
     inlineFollowup.allReactions should be(List(firstInlineFollowup.reaction.id.toString, secondInlineFollowup.reaction.id.toString))
     inlineFollowup.followupId should be(secondInlineFollowup.id.toString)
 
-    inlineFollowup.lastReaction.date should be(secondInlineFollowup.reaction.postingTime.toDate)
+    inlineFollowup.lastReaction.date should be(secondInlineFollowup.reaction.postingTime)
     inlineFollowup.lastReaction.reactionAuthor should be(secondInlineFollowup.reactionAuthor.name)
     inlineFollowup.lastReaction.reactionAuthorAvatarUrl should equal(secondInlineFollowup.reactionAuthor.settings.avatarUrl)
     inlineFollowup.lastReaction.reactionId should be(secondInlineFollowup.reaction.id.toString)

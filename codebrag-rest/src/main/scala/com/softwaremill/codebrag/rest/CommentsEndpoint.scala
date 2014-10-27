@@ -20,7 +20,7 @@ trait CommentsEndpoint extends JsonServletWithAuthentication with UserReactionPa
   }
   
   private def commentToView(comment: Comment) = {
-    AddCommentResponse(CommentView(comment.id.toString, user.name, user.id.toString, comment.message, comment.postingTime.toDate, user.settings.avatarUrl))
+    AddCommentResponse(CommentView(comment.id.toString, user.name, user.id.toString, comment.message, comment.postingTime, user.settings.avatarUrl))
   }
 
   private def incomingComment = {

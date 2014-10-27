@@ -87,7 +87,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     post(s"/$commitId/comments", body, Map("Content-Type" -> "application/json")) {
       // then
       status should be(200)
-      asJson(AddCommentResponse(CommentView(createdComment.id.toString, user.name, user.id.toString, createdComment.message, createdComment.postingTime.toDate, user.settings.avatarUrl)))
+      asJson(AddCommentResponse(CommentView(createdComment.id.toString, user.name, user.id.toString, createdComment.message, createdComment.postingTime, user.settings.avatarUrl)))
     }
   }
 

@@ -1,10 +1,10 @@
 package com.softwaremill.codebrag.dao.finders.views
 
-import java.util.Date
+import org.joda.time.DateTime
 
-case class SingleFollowupView(followupId: String, date: Date, commit: FollowupCommitView, reaction: FollowupLastReactionView)
+case class SingleFollowupView(followupId: String, date: DateTime, commit: FollowupCommitView, reaction: FollowupLastReactionView)
 
-case class FollowupCommitView(commitId: String, sha: String, repoName: String, authorName: String, message: String, date: Date)
+case class FollowupCommitView(commitId: String, sha: String, repoName: String, authorName: String, message: String, date: DateTime)
 
 case class FollowupsByCommitListView(followupsByCommit: List[FollowupsByCommitView])
 
@@ -17,12 +17,12 @@ trait FollowupLastReactionView {
 
   def reactionId: String
   def reactionAuthor: String
-  def date: Date
+  def date: DateTime
   def reactionAuthorAvatarUrl: String
 
 }
 
-case class FollowupLastCommentView(reactionId: String, reactionAuthor: String, date: Date, reactionAuthorAvatarUrl: String, message: String) extends FollowupLastReactionView
+case class FollowupLastCommentView(reactionId: String, reactionAuthor: String, date: DateTime, reactionAuthorAvatarUrl: String, message: String) extends FollowupLastReactionView
 
-case class FollowupLastLikeView(reactionId: String, reactionAuthor: String, date: Date, reactionAuthorAvatarUrl: String) extends FollowupLastReactionView
+case class FollowupLastLikeView(reactionId: String, reactionAuthor: String, date: DateTime, reactionAuthorAvatarUrl: String) extends FollowupLastReactionView
 

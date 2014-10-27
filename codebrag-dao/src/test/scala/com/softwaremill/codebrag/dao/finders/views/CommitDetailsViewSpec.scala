@@ -10,7 +10,7 @@ import com.softwaremill.codebrag.domain.FileDiffStats
 
 class CommitDetailsViewSpec extends FlatSpec with BeforeAndAfterEach with ShouldMatchers with ReactionFinderVerifyHelpers {
 
-  val Commit = CommitView("123", "codebrag", "123abc", "This is commit message", "John Doe", "john@example.org", DateTime.now.toDate)
+  val Commit = CommitView("123", "codebrag", "123abc", "This is commit message", "John Doe", "john@example.org", DateTime.now)
   val Lines = List(DiffLine("line one", 1, 2, "added"), DiffLine("line two", 2, 2, "added"))
   val Diffs = List(CommitFileDiff("test.txt", "added", Lines, FileDiffStats(2, 0)))
   val EmptyReactions = CommitReactionsView(ReactionsView(None, None), Map())
@@ -29,7 +29,7 @@ class CommitDetailsViewSpec extends FlatSpec with BeforeAndAfterEach with Should
 
   it should "have comments when commit has some general comments" in {
     // given
-    val generalComments = List(CommentView("123", "Mary Smith", "1", "Comment for commit", DateTime.now.toDate, ""))
+    val generalComments = List(CommentView("123", "Mary Smith", "1", "Comment for commit", DateTime.now, ""))
     val reactions = CommitReactionsView(ReactionsView(Some(generalComments), None), Map())
 
     // when
@@ -42,8 +42,8 @@ class CommitDetailsViewSpec extends FlatSpec with BeforeAndAfterEach with Should
 
   it should "have inline comments when commit has some lines commented" in {
     // given
-    val lineCommentOne = CommentView("123", "John Doe", "1", "Line comment one", DateTime.now.toDate, "")
-    val lineCommentTwo = CommentView("456", "Mary Smith", "2", "Line comment two", DateTime.now.toDate, "")
+    val lineCommentOne = CommentView("123", "John Doe", "1", "Line comment one", DateTime.now, "")
+    val lineCommentTwo = CommentView("456", "Mary Smith", "2", "Line comment two", DateTime.now, "")
     val reactionsForLineZero = ReactionsView(Some(List(lineCommentOne)), None)
     val reactionsForLineOne = ReactionsView(Some(List(lineCommentTwo)), None)
     val fileComments = Map("test.txt" -> Map(0.toString -> reactionsForLineZero, 1.toString -> reactionsForLineOne))

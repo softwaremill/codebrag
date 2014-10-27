@@ -22,7 +22,7 @@ class ToReviewCommitsViewBuilder(val userDao: UserDAO, val commitsInfoDao: Commi
 
   private def toCommitsListView(repoName:String, commits: List[PartialCommitInfo]) = {
     commits.map { commit =>
-      CommitView(commit.id.toString, repoName, commit.sha, commit.message, commit.authorName, commit.authorEmail, commit.date.toDate)
+      CommitView(commit.id.toString, repoName, commit.sha, commit.message, commit.authorName, commit.authorEmail, commit.date)
     }
   }
 

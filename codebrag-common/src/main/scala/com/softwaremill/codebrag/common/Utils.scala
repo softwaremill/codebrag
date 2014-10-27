@@ -58,3 +58,7 @@ object Utils {
     Runtime.getRuntime.exec(Array[String]("rm", "-rf", file.getAbsolutePath)).waitFor == 0
   }
 }
+
+object Joda {
+    implicit def dateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
+}

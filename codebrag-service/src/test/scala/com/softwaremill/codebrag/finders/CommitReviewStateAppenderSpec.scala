@@ -136,7 +136,7 @@ class CommitReviewStateAppenderSpec extends FlatSpec with ShouldMatchers with Mo
 
   private def buildCommitView(sha: String, date: DateTime, author: User) = {
     val NA = ""
-    CommitView(NA, CodebragRepo, sha, NA, author.name, author.emailLowerCase, date.toDate)
+    CommitView(NA, CodebragRepo, sha, NA, author.name, author.emailLowerCase, date)
   }
   
   private def appenderWith(reviewersCount: Int) = {

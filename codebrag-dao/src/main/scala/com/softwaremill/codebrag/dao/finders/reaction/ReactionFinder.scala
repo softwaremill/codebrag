@@ -14,11 +14,11 @@ class ReactionFinder(val userDAO: UserDAO, commitCommentDAO: CommitCommentDAO, l
     likeDAO.findById(likeId).map { like =>
       userDAO.findById(like.authorId) match {
         case Some(author) => {
-          LikeView(like.id.toString, author.name, like.authorId.toString, like.postingTime.toDate, like.fileName, like.lineNumber)
+          LikeView(like.id.toString, author.name, like.authorId.toString, like.postingTime, like.fileName, like.lineNumber)
         }
         case None => {
           logger.warn(s"Cannot find author with Id ${like.authorId} for like $likeId")
-          LikeView(like.id.toString, "", like.authorId.toString, like.postingTime.toDate, like.fileName, like.lineNumber)
+          LikeView(like.id.toString, "", like.authorId.toString, like.postingTime, like.fileName, like.lineNumber)
         }
       }
     }
@@ -27,8 +27,8 @@ class ReactionFinder(val userDAO: UserDAO, commitCommentDAO: CommitCommentDAO, l
   def findReactionsForCommit(commitId: ObjectId) = {
     def reactionToView(reaction: UserReaction, author: PartialUserDetails) = {
       reaction match {
-        case comment: Comment => CommentView(comment.id.toString, author.name, author.id.toString, comment.message, comment.postingTime.toDate, author.avatarUrl)
-        case like: Like => LikeView(reaction.id.toString, author.name, author.id.toString, reaction.postingTime.toDate)
+        case comment: Comment => CommentView(comment.id.toString, author.name, author.id.toString, comment.message, comment.postingTime, author.avatarUrl)
+        case like: Like => LikeView(reaction.id.toString, author.name, author.id.toString, reaction.postingTime)
       }
     }
 
