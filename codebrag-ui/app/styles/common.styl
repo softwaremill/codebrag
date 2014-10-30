@@ -110,6 +110,7 @@ button
     min-width: 100%;
     max-height: 23.3em;
     overflow-y: auto;
+    max-width: 200px;
 
     & li
       padding: 0.66em 1.5em;
@@ -117,6 +118,9 @@ button
       transition: background-color 300ms;
       vertical-align: medium;
       cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
       &:hover, &.selected
         color: white;
@@ -125,7 +129,6 @@ button
   &:hover
     & ul
       display: block;
-
 
 
 
@@ -306,35 +309,48 @@ i
 
 // bubble displayed on mouse-over.
 // Add this class to element you want to have bubble and as a child create '.help-info'
-.help-bubble
-  .help-info
-    height: 0;
-    opacity: 0;
-    padding: 0;
-    width: 0;
+// .help-bubble
+//   .help-info
+//     height: 0;
+//     opacity: 0;
+//     padding: 0;
+//     width: 0;
 
-  &:hover .help-info
-    font-family: 'PT Sans', Tahoma, sans-serif;
-    position: absolute;
-    color: $second-body-text-color;
-    background-color: #ece7d9;
-    height: auto;
-    opacity: 1;
-    padding: 0.66em 1.5em;
-    border: 1px solid #dad1b9;
-    margin: 8px 0 0 -11px;
-    width: 200px;
-    &:before
-      content: "";
-      position: absolute;
-      top: -7px;
-      color: green;
-      width: 0;
-      height: 0;
-      border-left: 6px solid transparent;
-      border-right: 6px solid transparent;
-      border-bottom: 8px solid #ece7d9;
-      left: 10px;
+//   &:hover .help-info
+//     font-family: 'PT Sans', Tahoma, sans-serif;
+//     position: absolute;
+//     color: $second-body-text-color;
+//     background-color: #ece7d9;
+//     height: auto;
+//     opacity: 1;
+//     padding: 0.66em 1.5em;
+//     border: 1px solid #dad1b9;
+//     margin: 8px 0 0 -11px;
+//     width: 200px;
+//     &:before
+//       content: "";
+//       position: absolute;
+//       top: -7px;
+//       color: green;
+//       width: 0;
+//       height: 0;
+//       border-left: 6px solid transparent;
+//       border-right: 6px solid transparent;
+//       border-bottom: 8px solid #ece7d9;
+//       left: 10px;
+// .help-bubble:after
+//   content: "'To Review' list shows your colleagues' recent commits awaiting your review";
+//   display: block;
+//   position: relative;
+//   overflow-x: visible;
+//   white-space: normal;
+//   color: brown;
+//   height: 0;
+//   opacity: 0;
+  
+
+  
+  
 
 input[type="checkbox"]
   cursor: pointer;

@@ -28,8 +28,9 @@
                     <div class="columns" ng-class="{'small-5 large-5': showBranchesSelector, 'small-11 large-11': !showBranchesSelector}">
                         <dropdown selected="displaySelectedMode()">
                             <ul>
-                                <li ng-click="switchListView('pending')">
-                                    <i class="icon-info-sign help-bubble"><div class="help-info">"To Review" list shows your colleagues' recent commits awaiting your review</div></i>
+                                <li class="to-review-help" ng-click="switchListView('pending')">
+                                    <i class="icon-info-sign help-bubble">
+                                    </i>
                                     <span>{{ toReviewLabel() }}</span>
                                 </li>
                                 <li ng-click="switchListView('all')">all</li>
