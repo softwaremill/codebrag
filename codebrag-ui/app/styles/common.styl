@@ -307,49 +307,24 @@ i
   height: 0;
   width: 0;
 
-// bubble displayed on mouse-over.
-// Add this class to element you want to have bubble and as a child create '.help-info'
-// .help-bubble
-//   .help-info
-//     height: 0;
-//     opacity: 0;
-//     padding: 0;
-//     width: 0;
+.help-bubble {
+  margin-left: 4.5rem;
+}
 
-//   &:hover .help-info
-//     font-family: 'PT Sans', Tahoma, sans-serif;
-//     position: absolute;
-//     color: $second-body-text-color;
-//     background-color: #ece7d9;
-//     height: auto;
-//     opacity: 1;
-//     padding: 0.66em 1.5em;
-//     border: 1px solid #dad1b9;
-//     margin: 8px 0 0 -11px;
-//     width: 200px;
-//     &:before
-//       content: "";
-//       position: absolute;
-//       top: -7px;
-//       color: green;
-//       width: 0;
-//       height: 0;
-//       border-left: 6px solid transparent;
-//       border-right: 6px solid transparent;
-//       border-bottom: 8px solid #ece7d9;
-//       left: 10px;
-// .help-bubble:after
-//   content: "'To Review' list shows your colleagues' recent commits awaiting your review";
-//   display: block;
-//   position: relative;
-//   overflow-x: visible;
-//   white-space: normal;
-//   color: brown;
-//   height: 0;
-//   opacity: 0;
-  
+.to-review-help {
+  height: 0;
+  display: none;
+  white-space: normal;
+  overflow: hidden;
+  transition: height 250ms, margin-top 250ms;
+}
 
-  
+.dropdown-btn ul .help-bubble:hover .to-review-help{
+  height: auto;
+  display: block;
+  font-style: italic;
+  margin-top: 1rem;
+}
   
 
 input[type="checkbox"]
