@@ -73,6 +73,11 @@ class SQLCommitInfoDAO(val database: SQLDatabase) extends CommitInfoDAO with SQL
       .sortBy(_.authorDate.asc)
     }
 
+  def updateCommitAndAuthorDates(commitInfo: CommitInfo) = db.withTransaction { implicit session =>
+    commitInfos.where(_.id === commitInfo.id)
+      .map(ci => (ci.commitDate, ci.authorDate))
+      .update((commitInfo.commitDate, commitInfo.authorDate))
+  }
 
   private def findOneWhere(condition: CommitInfos => Column[Boolean]): Option[CommitInfo] = db.withTransaction { implicit session =>
     val q = for {
