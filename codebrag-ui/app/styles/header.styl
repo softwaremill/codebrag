@@ -9,7 +9,8 @@
     margin: 0.34em 5em;
     width: 128px;
   & .pull-right-wrapper
-    padding: 0.98em 0;
+    padding: 0.7em 0 0.33rem;
+    vertical-align: top;
 
 .main-nav
   display: inline-block;
@@ -73,6 +74,7 @@
   border-color: #788600;
   vertical-align: top;
   margin-right: 4em;
+  margin-top: 0.3rem;
   &:hover
     background: #99ab01;
   &:active
@@ -82,6 +84,7 @@
   cursor: pointer;
   display: inline-block;
   margin-right: 2em;
+  margin-top: 0.3rem;
   overflow: visible;
   position: relative;
   & img
@@ -129,12 +132,18 @@
       &:hover
         color: $header-text-color;
 
-// @keyframes ghost {
-//   0% {
-//     top: 0;
-//   }
-//   100% {
-//     top: -3px;
-//     right: -20px;
-//   }
-// }
+.sml-info
+  display: inline-block;
+  text-align: center;
+  font-size: 12px;
+  margin-right: 1rem;
+  position: relative;
+  top: -0.33rem;
+  color: #aa6e34;
+  opacity: 0.8;
+  transition: opacity 300ms;
+  & a
+    display: block;
+    margin-top: 0.33rem;
+  &:hover
+    opacity: 1;
