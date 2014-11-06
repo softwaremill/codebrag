@@ -8,20 +8,17 @@ import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.UserSettings
 import org.mockito.Matchers
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.licence.{LicenceExpiredException, LicenceService}
 
 class ChangeUserSettingsUseCaseSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach {
 
   var userDao: UserDAO = _
-  var licenceService: LicenceService = _
   var changeUserSettings: ChangeUserSettingsUseCase = _
 
   val dummySettings = IncomingSettings(None, None, None)
 
   override def beforeEach() {
     userDao = mock[UserDAO]
-    licenceService = mock[LicenceService]
-    changeUserSettings = new ChangeUserSettingsUseCase(userDao, licenceService)
+    changeUserSettings = new ChangeUserSettingsUseCase(userDao)
   }
 
   it should "update user settings when user found" in {
@@ -46,21 +43,6 @@ class ChangeUserSettingsUseCaseSpec extends FlatSpec with MockitoSugar with Shou
 
     // then
     result.isLeft should be(true)
-  }
-
-  it should "prevent from calling action when licence expired" in {
-    // given
-    val user = UserAssembler.randomUser.get
-    when(licenceService.interruptIfLicenceExpired()).thenThrow(new LicenceExpiredException)
-    when(userDao.findById(user.id)).thenReturn(Some(user))
-
-    // when
-    intercept[LicenceExpiredException] {
-      changeUserSettings.execute(user.id, dummySettings)
-    }
-
-    // then
-    verifyNoMoreInteractions(userDao)
   }
 
 }

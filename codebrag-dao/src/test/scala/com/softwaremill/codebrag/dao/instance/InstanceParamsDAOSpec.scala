@@ -1,37 +1,37 @@
 package com.softwaremill.codebrag.dao.instance
 
 import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
-import com.softwaremill.codebrag.domain.LicenceKey
+import com.softwaremill.codebrag.domain.InstanceId
 import org.scalatest.matchers.ShouldMatchers
 
 class InstanceParamsDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with ShouldMatchers {
 
   val dao = new InstanceParamsDAO(sqlDatabase)
 
-  it should "save and read instance param (e.g. licence key) if not exists" in {
+  it should "save and read instance param (e.g. instance id) if not exists" in {
     // given
-    val licenceKeyParam = LicenceKey("abcd1234").toInstanceParam
+    val instanceIdParam = InstanceId("abcd1234").toInstanceParam
 
     // when
-    dao.save(licenceKeyParam)
-    val Some(fetched) = dao.findByKey(LicenceKey.Key)
+    dao.save(instanceIdParam)
+    val Some(fetched) = dao.findByKey(InstanceId.Key)
 
     // then
-    fetched should be(licenceKeyParam)
+    fetched should be(instanceIdParam)
   }
 
-  it should "update and read instance param (e.g. licence key) if one exists" in {
+  it should "update and read instance param (e.g. instance id) if one exists" in {
     // given
-    val licenceKeyParam = LicenceKey("abcd1234").toInstanceParam
-    dao.save(licenceKeyParam)
-    val newLicenceKeyParam = LicenceKey("xyz123").toInstanceParam
+    val instanceIdParam = InstanceId("abcd1234").toInstanceParam
+    dao.save(instanceIdParam)
+    val newInstanceIdParam = InstanceId("xyz123").toInstanceParam
 
     // when
-    dao.save(newLicenceKeyParam)
-    val Some(fetched) = dao.findByKey(LicenceKey.Key)
+    dao.save(newInstanceIdParam)
+    val Some(fetched) = dao.findByKey(InstanceId.Key)
 
     // then
-    fetched should be(newLicenceKeyParam)
+    fetched should be(newInstanceIdParam)
   }
 
 }

@@ -5,7 +5,6 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
 import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.dao.branch.WatchedBranchesDao
-import com.softwaremill.codebrag.licence.{LicenceExpiredException, LicenceService}
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import org.mockito.Mockito
 import org.bson.types.ObjectId
@@ -14,27 +13,12 @@ import com.softwaremill.codebrag.domain.UserWatchedBranch
 class RemoveBranchFromObservedSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
 
   val dao = mock[WatchedBranchesDao]
-  val licenceService = mock[LicenceService]
-  val useCase = new StopWatchingBranch(dao, licenceService)
+  val useCase = new StopWatchingBranch(dao)
 
   val Bob = UserAssembler.randomUser.get
 
   override def beforeEach() {
-    Mockito.reset(dao, licenceService)
-  }
-
-  it should "throw excepion if licence is expired" in {
-    // given
-    val form = WatchedBranchForm("codebrag", "master")
-    Mockito.when(licenceService.interruptIfLicenceExpired()).thenThrow(new LicenceExpiredException())
-
-    // when
-    intercept[Exception] {
-      useCase.execute(Bob.id, form)
-    }
-
-    // then exception should be thrown
-    Mockito.verifyNoMoreInteractions(dao)
+    Mockito.reset(dao)
   }
 
   it should "not attempt to remove branch from observed if user is not observing this branch" in {

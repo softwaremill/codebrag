@@ -7,21 +7,19 @@ describe("ManageUsersPopupCtrl", function () {
         $q,
         $controller,
         userMgmtService,
-        licenceService,
         popupsService,
         registeredUsers = [
             { userId: 100, name: 'John Doe', email: 'john@doe.com', admin: true, active: true },
             { userId: 200, name: 'Mary Smith', email: 'mary@smith.com', admin: true, active: false }
         ];
 
-    beforeEach(module('codebrag.userMgmt', 'codebrag.licence', 'codebrag.common.services'));
+    beforeEach(module('codebrag.userMgmt', 'codebrag.common.services'));
 
-    beforeEach(inject(function(_$rootScope_, _$q_, _$controller_, _userMgmtService_, _licenceService_, _popupsService_) {
+    beforeEach(inject(function(_$rootScope_, _$q_, _$controller_, _userMgmtService_, _popupsService_) {
         $rootScope = _$rootScope_;
         $q = _$q_;
         $controller = _$controller_;
         userMgmtService = _userMgmtService_;
-        licenceService = _licenceService_;
         popupsService = _popupsService_;
 
         scope = $rootScope.$new();
@@ -40,25 +38,10 @@ describe("ManageUsersPopupCtrl", function () {
         expect(scope.users).toEqual(registeredUsers);
     });
 
-    it('should load licence data to scope', function () {
-        // Given
-        var licenceData = { maxUsers: 50 };
-        spyOn(userMgmtService, 'loadUsers').andReturn($q.when([]));
-        spyOn(licenceService, 'ready').andReturn($q.when(licenceData));
-
-        // When
-        $controller('ManageUsersPopupCtrl', {$scope: scope});
-        scope.$digest();
-
-        // Then
-        expect(scope.licenceData).toEqual(licenceData);
-    });
-
     describe('with initial data loaded', function() {
 
         beforeEach(function() {
             spyOn(userMgmtService, 'loadUsers').andReturn($q.when(registeredUsers));
-            spyOn(licenceService, 'ready').andReturn($q.when({}));
             $controller('ManageUsersPopupCtrl', {$scope: scope});
             scope.$digest();
         });

@@ -11,7 +11,6 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.Comment
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.reactions.CommentAddedEvent
-import com.softwaremill.codebrag.licence.LicenceService
 
 class AddCommentUseCaseSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
@@ -19,7 +18,6 @@ class AddCommentUseCaseSpec
   var userReactionService: UserReactionService = _
   var followupService: FollowupService = _
   var eventBus: EventBus = _
-  var licenceService: LicenceService = _
 
   var activity: AddCommentUseCase = _
 
@@ -27,9 +25,8 @@ class AddCommentUseCaseSpec
     userReactionService = mock[UserReactionService]
     followupService = mock[FollowupService]
     eventBus = mock[EventBus]
-    licenceService = mock[LicenceService]
 
-    activity = new AddCommentUseCase(userReactionService, followupService, eventBus, licenceService)
+    activity = new AddCommentUseCase(userReactionService, followupService, eventBus)
   }
 
   it should "generate commit added event" in {

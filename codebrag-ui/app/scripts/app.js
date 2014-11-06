@@ -33,8 +33,6 @@ angular.module('codebrag.branches', ['codebrag.notifications', 'codebrag.events'
 
 angular.module('codebrag.notifications', ['codebrag.branches', 'codebrag.events']);
 
-angular.module('codebrag.licence', ['codebrag.events', 'ui.bootstrap.modal']);
-
 angular.module('codebrag.userMgmt', ['ui.bootstrap.modal']);
 
 angular.module('codebrag.registration', ['codebrag.branches']);
@@ -54,7 +52,6 @@ angular.module('codebrag', [
     'codebrag.tour',
     'codebrag.profile',
     'codebrag.invitations',
-    'codebrag.licence',
     'codebrag.userMgmt']);
 
 angular.module('codebrag')
@@ -63,11 +60,10 @@ angular.module('codebrag')
             return codebrag.uniqueRequestsAwareHttpService($delegate, $q);
         });
     })
-    .run(function($rootScope, repositoryStatusService, pageTourService, authService, $state, licenceService) {
+    .run(function($rootScope, repositoryStatusService, pageTourService, authService, $state) {
         repositoryStatusService.checkRepoReady();
         authService.isFirstRegistration().then(openFirstRegistrationIfNeeded);
         pageTourService.initializeTour();
-        licenceService.initialize();
 
         function openFirstRegistrationIfNeeded(firstRegistration) {
             if (firstRegistration) {
@@ -82,11 +78,6 @@ angular.module('codebrag.auth')
     .config(function ($httpProvider) {
         $httpProvider.responseInterceptors.push('httpAuthInterceptor');
         $httpProvider.responseInterceptors.push('httpErrorsInterceptor');
-    });
-
-angular.module('codebrag.licence')
-    .config(function ($httpProvider) {
-        $httpProvider.responseInterceptors.push('httpLicenceExpirationStatusInterceptor');
     });
 
 angular.module('codebrag.session')

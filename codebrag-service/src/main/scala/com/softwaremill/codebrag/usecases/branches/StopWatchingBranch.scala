@@ -3,16 +3,14 @@ package com.softwaremill.codebrag.usecases.branches
 import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.dao.branch.WatchedBranchesDao
-import com.softwaremill.codebrag.licence.LicenceService
 import com.softwaremill.codebrag.common.Clock
 import com.softwaremill.scalaval.Validation
 import com.softwaremill.codebrag.domain.UserWatchedBranch
 
 
-class StopWatchingBranch(val watchedBranchesDao: WatchedBranchesDao, licenceService: LicenceService) (implicit clock: Clock) extends Logging {
+class StopWatchingBranch(val watchedBranchesDao: WatchedBranchesDao) (implicit clock: Clock) extends Logging {
 
   def execute(userId: ObjectId, form: WatchedBranchForm): Either[Validation.Errors, Unit]  = {
-    licenceService.interruptIfLicenceExpired()
     val watchedBranchOpt = findUserWatchedBranch(userId, form)
     validateBranchRemoval(userId, watchedBranchOpt).whenOk {
       watchedBranchOpt.foreach(b => watchedBranchesDao.delete(b.id))

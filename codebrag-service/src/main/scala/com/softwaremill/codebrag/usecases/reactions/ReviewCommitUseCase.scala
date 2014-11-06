@@ -7,7 +7,6 @@ import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.domain.reactions.CommitReviewedEvent
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
-import com.softwaremill.codebrag.licence.LicenceService
 
 /**
  * Handles user activity when user wants to mark given commit as reviewed
@@ -15,16 +14,14 @@ import com.softwaremill.codebrag.licence.LicenceService
 class ReviewCommitUseCase(
   commitDao: CommitInfoDAO,
   reviewedCommitsCache: UserReviewedCommitsCache,
-  eventBus: EventBus, licenceService: LicenceService) (implicit clock: Clock) extends Logging {
+  eventBus: EventBus) (implicit clock: Clock) extends Logging {
 
   type ReviewCommitResult = Either[String, Unit]
 
   def execute(repoName: String, sha: String, userId: ObjectId): ReviewCommitResult = {
-    ifCanExecute(repoName, sha, userId) {
-      commitDao.findBySha(repoName, sha) match {
-        case Some(commit) => Right(review(userId, commit))
-        case None => Left("Cannot find commit to review")
-      }
+    commitDao.findBySha(repoName, sha) match {
+      case Some(commit) => Right(review(userId, commit))
+      case None => Left("Cannot find commit to review")
     }
   }
 
@@ -32,11 +29,6 @@ class ReviewCommitUseCase(
     val reviewedCommit = ReviewedCommit(commit.sha, userId, commit.repoName, clock.nowUtc)
     reviewedCommitsCache.markCommitAsReviewed(reviewedCommit)
     eventBus.publish(CommitReviewedEvent(commit, userId))
-  }
-
-  protected def ifCanExecute(repoName: String, sha: String, userId: ObjectId)(block: => ReviewCommitResult): ReviewCommitResult = {
-    licenceService.interruptIfLicenceExpired()
-    block
   }
 
 }

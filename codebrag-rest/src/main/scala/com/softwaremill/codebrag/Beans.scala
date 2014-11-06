@@ -17,7 +17,6 @@ import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequest
 import com.softwaremill.codebrag.dao.Daos
 import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.cache.{RepositoriesCache, UserReviewedCommitsCache, PersistentBackendForCache}
-import com.softwaremill.codebrag.licence.LicenceService
 import com.softwaremill.codebrag.instance.InstanceParamsService
 import com.softwaremill.codebrag.finders.commits.toreview.{ToReviewCommitsViewBuilder, ToReviewBranchCommitsFilter, ToReviewCommitsFinder}
 import com.softwaremill.codebrag.finders.commits.all.{AllCommitsViewBuilder, AllCommitsFinder}
@@ -64,14 +63,13 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
 
   lazy val loginUserUseCase = new LoginUserUseCase(userDao, userFinder)
-  lazy val addCommentUseCase = new AddCommentUseCase(userReactionService, followupService, eventBus, licenceService)
-  lazy val reviewCommitUseCase = new ReviewCommitUseCase(commitInfoDao, reviewedCommitsCache, eventBus, licenceService)
-  lazy val unlikeUseCaseFactory = new UnlikeUseCase(likeValidator, userReactionService, licenceService)
-  lazy val likeUseCase = new LikeUseCase(userReactionService, licenceService)
-  lazy val changeUserSettingsUseCase = new ChangeUserSettingsUseCase(userDao, licenceService)
-  lazy val followupDoneUseCase = new FollowupDoneUseCase(followupService, licenceService)
-  lazy val registerLicenceUseCase = new RegisterLicenceUseCase(licenceService, userDao)
-  lazy val registerNewUserUseCase = new RegisterNewUserUseCase(registerService, new UserRegistrationValidator(licenceService, invitationsService, userDao))
+  lazy val addCommentUseCase = new AddCommentUseCase(userReactionService, followupService, eventBus)
+  lazy val reviewCommitUseCase = new ReviewCommitUseCase(commitInfoDao, reviewedCommitsCache, eventBus)
+  lazy val unlikeUseCaseFactory = new UnlikeUseCase(likeValidator, userReactionService)
+  lazy val likeUseCase = new LikeUseCase(userReactionService)
+  lazy val changeUserSettingsUseCase = new ChangeUserSettingsUseCase(userDao)
+  lazy val followupDoneUseCase = new FollowupDoneUseCase(followupService)
+  lazy val registerNewUserUseCase = new RegisterNewUserUseCase(registerService, new UserRegistrationValidator(invitationsService, userDao))
 
   lazy val listReposAfterRegistration = new ListRepositoriesAfterRegistration(repositoriesCache, invitationsService)
   lazy val listRepoBranchesAfterRegistration = new ListRepoBranchesAfterRegistration(listRepoBranches, invitationsService)
@@ -80,16 +78,14 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
   lazy val generateInvitationCodeUseCase = new GenerateInvitationCodeUseCase(invitationsService, userDao)
   lazy val sendInvitationEmailUseCase = new SendInvitationEmailUseCase(invitationsService, userDao)
-  lazy val modifyUserDetailsUseCase = new ModifyUserDetailsUseCase(userDao, licenceService)
+  lazy val modifyUserDetailsUseCase = new ModifyUserDetailsUseCase(userDao)
   lazy val updateUserBrowsingContextUseCase = new UpdateUserBrowsingContextUseCase(userRepoDetailsDao)
   lazy val addUserAliasUseCase = new AddUserAliasUseCase(userAliasDao, userDao)
   lazy val deleteUserAliasUseCase = new DeleteUserAliasUseCase(userAliasDao)
-  lazy val addBranchToObserved = new StartWatchingBranch(userObservedBranchesDao, licenceService)
-  lazy val removeBranchFromObserved = new StopWatchingBranch(userObservedBranchesDao, licenceService)
+  lazy val addBranchToObserved = new StartWatchingBranch(userObservedBranchesDao)
+  lazy val removeBranchFromObserved = new StopWatchingBranch(userObservedBranchesDao)
   lazy val listRepoBranches = new ListRepositoryBranches(repositoriesCache, userObservedBranchesDao)
   lazy val findUserNotifications = new FindUserNotifications(followupFinder, heartbeatDao, toReviewCommitsFinder, userObservedBranchesDao)
-
-  lazy val licenceService = new LicenceService(InstanceId, instanceParamsDao, userDao)(clock)
 
   lazy val instanceParamsService = new InstanceParamsService(instanceParamsDao)
   lazy val InstanceId = instanceParamsService.readOrCreateInstanceId

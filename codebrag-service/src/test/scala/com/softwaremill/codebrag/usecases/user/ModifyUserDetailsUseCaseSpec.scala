@@ -9,13 +9,11 @@ import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.usecases.assertions.{ActiveUserStatusRequiredException, AdminRoleRequiredException}
-import com.softwaremill.codebrag.licence.LicenceService
 
 class ModifyUserDetailsUseCaseSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with MockitoSugar {
 
   val userDao = mock[UserDAO]
-  val licenceService = mock[LicenceService]
-  val useCase = new ModifyUserDetailsUseCase(userDao, licenceService)
+  val useCase = new ModifyUserDetailsUseCase(userDao)
   
   val InactiveUser = UserAssembler.randomUser.withActive(set = false).get
   val ActiveUser = UserAssembler.randomUser.withActive().get
@@ -25,7 +23,7 @@ class ModifyUserDetailsUseCaseSpec extends FlatSpec with ShouldMatchers with Bef
   val InactiveExecutor = UserAssembler.randomUser.withActive(set = false).withAdmin().get
 
   after {
-    reset(userDao, licenceService)
+    reset(userDao)
   }
   
   it should "not modify user when executing user is neither admin nor active" in {
@@ -71,24 +69,8 @@ class ModifyUserDetailsUseCaseSpec extends FlatSpec with ShouldMatchers with Bef
     verify(userDao, never()).modifyUser(any[User])
   }
 
-  it should "not allow making user active if it would exceed licenced active users count" in {
-    // given
-    stubLicenceMaxUsersTo(1)
-    stubCurrentlyActiveUsersCountTo(1)
-    setupReturningUserFromDB(ValidExecutor, InactiveUser)
-
-    // when
-    val formWithActiveFlag = ModifyUserDetailsForm(InactiveUser.id, newPassword = None, admin = None, active = Some(true))
-    val Left(result) = useCase.execute(ValidExecutor.id, formWithActiveFlag)
-
-    // then
-    result should be(Map("active" -> List("Licenced active users count exceeded")))
-    verify(userDao, never()).modifyUser(any[User])
-  }
-
   it should "change details when validation passes" in {
     // given
-    stubLicenceMaxUsersTo(1)
     stubCurrentlyActiveUsersCountTo(0)
     setupReturningUserFromDB(ValidExecutor, ActiveUser)
 
@@ -103,10 +85,6 @@ class ModifyUserDetailsUseCaseSpec extends FlatSpec with ShouldMatchers with Bef
     result should be('right)
     val expectedUser = form.applyTo(ActiveUser)
     verify(userDao).modifyUser(expectedUser)
-  }
-
-  private def stubLicenceMaxUsersTo(maxUsers: Int) {
-    when(licenceService.maxUsers).thenReturn(maxUsers)
   }
 
   private def stubCurrentlyActiveUsersCountTo(activeUsersCount: Int) {

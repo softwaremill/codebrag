@@ -277,14 +277,6 @@ object SmlCodebragBuild extends Build {
 
   ) dependsOn (dist)
 
-  lazy val licenceGen: Project = Project(
-    "codebrag-licence-gen",
-    file("codebrag-licence-gen"),
-    settings = buildSettings ++ assemblySettings ++ Seq(
-      mainClass in assembly := Some("com.softwaremill.codebrag.licence.LicenceGeneratorApp")
-    )
-  ) dependsOn (service)
-
   // To run the embedded container, we need to provide the path to the configuration. To make things easier, we assume
   // that the local conf is in the current dir in the local.conf file.
   System.setProperty("config.file", "local.conf")

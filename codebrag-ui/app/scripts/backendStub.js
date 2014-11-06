@@ -330,8 +330,6 @@
 
     var followup = {"followupId":"51deb248300413ead5f708c5","date":"2013-07-11T13:25:28Z","commit":{"commitId":"51cd63b33004edd49fbefb3b","authorName":"Michal Ostruszka","message":"Styling of KTHXBYE button changed according to mockup\n","date":"2013-06-26T14:25:05Z"},"reaction":{"reactionId":"51deb248300413ead5f708c3","reactionAuthor":"Happy Coder","reactionAuthorAvatarUrl":"https://softwaremill.com/wp-content/uploads/2013/04/puchta.jpg"}};
 
-    var licence = {"expiresAt":"2016-12-31T23:59:59Z","maxUsers":50,"companyName":"SoftwareMill","valid":true,"type":"Commercial","daysLeft":929};
-
     var repoStatus = {"repoStatus":{"repositoryName":"codebrag","ready":true}};
 
     var branches = {"branches":[{branchName: "config", watching: false}, {branchName: "easy_install", watching: true},{ branchName: "master", watching: true}], "repoType":"git"};
@@ -376,8 +374,6 @@
                 $httpBackend.whenPUT('rest/users/settings').respond({userSettings: {}});
 
                 $httpBackend.whenGET('rest/users/settings').respond({userSettings: {}});
-
-                $httpBackend.whenGET('rest/licence').respond(licence);
 
                 $httpBackend.whenGET('rest/repoStatus').respond(repoStatus);
 

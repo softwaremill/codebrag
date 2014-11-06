@@ -27,13 +27,6 @@ angular.module('codebrag.events', []).constant('events', {
         branchWatchToggle: 'codebrag:branchWatchToggle'
     },
 
-    licence: {
-        openPopup: 'codebrag:openLicencePopup',
-        licenceAboutToExpire: 'codebrag:licenceAboutToExpire',
-        licenceExpired: 'codebrag:licenceExpied',
-        licenceKeyRegistered: 'codebrag:licenceKeyRegistered'
-    },
-
     profile: {
         emailAliasesChanged: 'codebrag:emailAliasesModified'
     }

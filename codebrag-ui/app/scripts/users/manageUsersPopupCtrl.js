@@ -1,15 +1,11 @@
 angular.module('codebrag.userMgmt')
 
-    .controller('ManageUsersPopupCtrl', function($scope, userMgmtService, licenceService, popupsService, Flash) {
+    .controller('ManageUsersPopupCtrl', function($scope, userMgmtService, popupsService, Flash) {
 
         $scope.flash = new Flash();
 
         userMgmtService.loadUsers().then(function(users) {
             $scope.users = users;
-        });
-
-        licenceService.ready().then(function(licenceData) {
-            $scope.licenceData = licenceData;
         });
 
         $scope.countActiveUsers = function() {

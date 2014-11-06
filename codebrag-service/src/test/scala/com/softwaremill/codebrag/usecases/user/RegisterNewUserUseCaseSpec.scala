@@ -4,7 +4,6 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import com.softwaremill.codebrag.service.user.RegisterService
-import com.softwaremill.codebrag.licence.LicenceService
 import com.softwaremill.codebrag.dao.user.UserDAO
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.service.invitations.InvitationService

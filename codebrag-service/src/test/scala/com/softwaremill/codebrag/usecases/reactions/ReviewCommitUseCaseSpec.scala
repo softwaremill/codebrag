@@ -11,14 +11,12 @@ import com.softwaremill.codebrag.domain.reactions.CommitReviewedEvent
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import com.softwaremill.codebrag.cache.UserReviewedCommitsCache
-import com.softwaremill.codebrag.licence.LicenceService
 
 class ReviewCommitUseCaseSpec
   extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with ClockSpec {
 
   var reviewedCommitsCache: UserReviewedCommitsCache = _
   var commitInfoDao: CommitInfoDAO = _
-  var licenceService: LicenceService = _
   var eventBus: EventBus = _
 
   var useCase: ReviewCommitUseCase = _
@@ -29,8 +27,7 @@ class ReviewCommitUseCaseSpec
     reviewedCommitsCache = mock[UserReviewedCommitsCache]
     commitInfoDao = mock[CommitInfoDAO]
     eventBus = mock[EventBus]
-    licenceService = mock[LicenceService]
-    useCase = new ReviewCommitUseCase(commitInfoDao, reviewedCommitsCache, eventBus, licenceService)
+    useCase = new ReviewCommitUseCase(commitInfoDao, reviewedCommitsCache, eventBus)
   }
 
   it should "generate commit reviewed event" in {

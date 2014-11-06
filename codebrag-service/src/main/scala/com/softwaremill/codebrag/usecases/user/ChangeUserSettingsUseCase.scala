@@ -4,16 +4,13 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.UserSettings
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.licence.LicenceService
 
-class ChangeUserSettingsUseCase(userDao: UserDAO, licenceService: LicenceService) extends Logging {
+class ChangeUserSettingsUseCase(userDao: UserDAO) extends Logging {
 
   type ChangeUserSettingsResult = Either[String, UserSettings]
 
   def execute(implicit userId: ObjectId, newSettings: IncomingSettings): ChangeUserSettingsResult = {
-    ifCanExecute {
-      changeSettings(userId, newSettings)
-    }
+    changeSettings(userId, newSettings)
   }
 
   private def changeSettings(userId: ObjectId, settings: IncomingSettings): ChangeUserSettingsResult = {
@@ -30,12 +27,6 @@ class ChangeUserSettingsUseCase(userDao: UserDAO, licenceService: LicenceService
       }
     }
   }
-
-  protected def ifCanExecute(block: => ChangeUserSettingsResult)(implicit userId: ObjectId, settings: IncomingSettings): ChangeUserSettingsResult = {
-    licenceService.interruptIfLicenceExpired()
-    block
-  }
-
 }
 
 case class IncomingSettings(emailNotificationsEnabled: Option[Boolean], dailyUpdatesEmailEnabled: Option[Boolean], appTourDone: Option[Boolean]) {

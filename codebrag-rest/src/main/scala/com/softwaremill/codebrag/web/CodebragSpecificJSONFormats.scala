@@ -2,12 +2,11 @@ package com.softwaremill.codebrag.web
 
 import org.json4s._
 import com.softwaremill.codebrag.dao.finders.views.CommitState
-import com.softwaremill.codebrag.licence.LicenceType
 import org.bson.types.ObjectId
 import org.json4s.JsonAST.JString
 
 object CodebragSpecificJSONFormats extends DefaultFormats {
-  private val types = List(CommitState, LicenceType)
+  private val types = List(CommitState)
 
   val all = types.map(new ext.EnumNameSerializer(_)).toList
 
