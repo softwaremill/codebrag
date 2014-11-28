@@ -16,9 +16,10 @@ Quick Start
 ---
 
 1. Configure `local.conf` in the `codebrag` home directory basing on `codebrag-rest/src/main/resources/application.conf.template`
-2. Navigate to the `codebrag` home directory
-3. Execute `./run.sh` script
-4. Default browser should open at `localhost:9090`
+2. Checkout a SVN/Git repository to chosen `repos-root` folder - Codebrag won't do that for you!
+3. Navigate to the `codebrag` home directory
+4. Execute `./run.sh` script
+5. Default browser should open at `localhost:9090`
 
 Working with the application:
 ---
