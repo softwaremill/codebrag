@@ -35,3 +35,9 @@ trait StatsConfig extends ConfigWithDefault {
   lazy val dailyStatsServerUrl = getString("codebrag.daily-stats-server-url", "https://stats.codebrag.com:6666")
   lazy val instanceRunStatsServerUrl = getString("codebrag.instance-run-stats-server-url", "https://stats.codebrag.com:6666/instanceRun")
 }
+
+trait HooksConfig extends ConfigWithDefault {
+
+  lazy val likeEventHooks = getStringList("hooks.like-event-urls")
+
+}
