@@ -11,3 +11,4 @@ trait AllConfig
   with StatsConfig
   with CommitCacheConfig
   with ReviewProcessConfig
+  with HooksConfig
