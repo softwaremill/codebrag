@@ -1,6 +1,7 @@
 package com.softwaremill.codebrag.common.config
 
 import com.typesafe.config.Config
+import scala.collection.JavaConversions._
 
 trait ConfigWithDefault {
 
@@ -12,6 +13,7 @@ trait ConfigWithDefault {
   def getConfig(path: String, default:Config) =  ifHasPath(path,default) { _.getConfig(path) }
   def getMilliseconds(path:String, default:Long) = ifHasPath(path, default) { _.getMilliseconds(path) }
   def getOptionalString(path: String, default: Option[String] = None) = getOptional(path) { _.getString(path) }
+  def getStringList(path: String, default: List[String] = List()) = ifHasPath(path, default) { _.getStringList(path).toList }
 
   private def ifHasPath[T](path: String, default:T)(get: Config => T): T = {
     if (rootConfig.hasPath(path)) get(rootConfig) else default
