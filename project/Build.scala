@@ -227,14 +227,15 @@ object SmlCodebragBuild extends Build {
     settings = buildSettings ++ 
       graphSettings ++ 
       XwpPlugin.jetty() ++ 
-      versionGenSettings ++ 
-      Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig)) ++ 
+      versionGenSettings ++
+      Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig)) ++
       Seq(
         artifactName := { (config: ScalaVersion, module: ModuleID, artifact: Artifact) =>
           "codebrag." + artifact.extension // produces nice war name -> http://stackoverflow.com/questions/8288859/how-do-you-remove-the-scala-version-postfix-from-artifacts-builtpublished-wi
         },
         (copyResources in Compile) <<= (copyResources in Compile) dependsOn (genVersionFile)
-      )
+      ) ++
+      Seq(javaOptions in XwpPlugin.container := Seq("-Dconfig.file=local.conf"))
   ) dependsOn(service % "test->test;compile->compile", domain, common)
 
 
