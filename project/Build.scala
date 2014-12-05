@@ -118,6 +118,9 @@ object Dependencies {
   val c3p0 = "com.mchange" % "c3p0" % "0.9.5-pre6"
 
   val scalaval = "com.softwaremill.scalaval" %% "scalaval" % "0.1"
+
+  val httpClient = "net.databinder.dispatch" %% "dispatch-core" % "0.11.2"
+
 }
 
 object SmlCodebragBuild extends Build {
