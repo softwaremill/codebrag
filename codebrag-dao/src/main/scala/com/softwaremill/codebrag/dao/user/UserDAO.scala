@@ -40,4 +40,7 @@ trait UserDAO {
   def countAll(): Long
 
   def countAllActive(): Long
+
+  def delete(userId: ObjectId)
+
 }
