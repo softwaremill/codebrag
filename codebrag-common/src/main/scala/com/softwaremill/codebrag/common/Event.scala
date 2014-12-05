@@ -24,3 +24,18 @@ trait StatisticEvent extends Event {
   def toEventStream: String
 
 }
+
+/**
+ * Marks event as hookable which means it can be send to remote listeners
+ * check application.config.template how to add listeners
+ */
+trait Hookable {
+
+  /**
+   * This name is used to match hook with list of urls from config
+   *
+   * @see com.softwaremill.codebrag.eventstream.EventHookPropagator
+   */
+  def hookName: String
+
+}
