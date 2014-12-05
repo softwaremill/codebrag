@@ -31,7 +31,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
   }
 
   def findById(userId: ObjectId) = findOneWhere(_.id === userId)
-
+ 
   def findByEmail(email: String) = findOneWhere(_.emailLowerCase === email.toLowerCase)
 
   def findByLowerCasedLogin(login: String) = db.withTransaction { implicit session =>
@@ -125,6 +125,8 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
     userQuery.firstOption.map(queryUserAliases).map(untuple)
   }
 
+
+
   private def queryUserAliases(tuple: (UserTuple, SQLAuth, SQLSettings, SQLLastNotif))(implicit session: Session) = {
     val userId = tuple._1._1
     val aliases = userAliases.where(_.userId === userId).list()
@@ -135,4 +137,11 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
     val aliases = userAliases.where(_.userId === tuple._1).list()
     (tuple._1, tuple._2, tuple._3, tuple._4, UserAliases(aliases.map(_.toUserAlias)))
   }
+
+  def delete(userId: ObjectId) {
+    db.withTransaction { implicit session =>
+      users.filter(_.id === userId).delete
+    }
+  }
+
 }

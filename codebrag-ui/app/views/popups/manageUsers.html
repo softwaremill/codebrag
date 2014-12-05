@@ -21,9 +21,12 @@
                     </th>
                     <th class="cell-centered">
                         <div class="thead">Admin?</div>
-                    </th>
+                    </th>			
                     <th>
                         <div class="thead">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                    </th>
+		<th class="cell-centered">
+                        <div class="thead">&nbsp;&nbsp;</div>
                     </th>
                 </thead>
                 <tbody>
@@ -32,6 +35,7 @@
                         <td class="cell-centered"><input type="checkbox" ng-model="user.active" ng-click="modifyUser(user, 'active')" ng-disabled="user.locked"/></td>
                         <td class="cell-centered"><input type="checkbox" ng-model="user.admin" ng-click="modifyUser(user, 'admin')" ng-disabled="user.locked"/></td>
                         <td><button class="link" ng-disabled="!user.active" ng-click="askForNewPassword(user)">Set&nbsp;password</button></td>
+<td class="cell-centered"><input type="checkbox" ng-hide="user.admin"  ng-click="deleteUser(user.userId)" ng-disabled="user.locked"/></td>
                     </tr>
                 </tbody>
             </table>

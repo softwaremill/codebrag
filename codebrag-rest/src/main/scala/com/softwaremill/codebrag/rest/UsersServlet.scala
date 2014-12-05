@@ -34,8 +34,12 @@ class UsersServlet(
       case _ => scalatra.Ok()
     }
   }
-
+delete("/:id") {
+    haltIfNotAuthenticated()
+    modifyUserUseCase.delete(new ObjectId(params("id")))
+  }
 }
+  
 
 object UsersServlet {
   val MappingPath = "users"
