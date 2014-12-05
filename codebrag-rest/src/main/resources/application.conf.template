@@ -43,3 +43,12 @@ email {
     ssl-connection = true
     verify-ssl-certificate = true
 }
+
+### allows define hooks for different events
+hooks {
+    ### send 'like' events to these listeners
+    like-hook = ["http://localhost:8000"]
+
+    ### send 'unlike' events to these listeners
+    unlike-hook = []
+}

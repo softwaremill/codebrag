@@ -1,8 +1,13 @@
 package com.softwaremill.codebrag.service.config
 
-import org.joda.time._
-import scala.concurrent.duration._
+import java.util.Map.Entry
+
 import com.softwaremill.codebrag.common.config.ConfigWithDefault
+import com.typesafe.config.ConfigValue
+import org.joda.time._
+
+import scala.collection.JavaConversions._
+import scala.concurrent.duration._
 
 trait CodebragConfig extends ConfigWithDefault with StatsConfig with EmailNotificationConfig {
 
@@ -34,4 +39,18 @@ trait StatsConfig extends ConfigWithDefault {
   lazy val statsSendInterval = getMilliseconds("codebrag.stats-send-interval", 24.hours.toMillis).millis
   lazy val dailyStatsServerUrl = getString("codebrag.daily-stats-server-url", "https://stats.codebrag.com:6666")
   lazy val instanceRunStatsServerUrl = getString("codebrag.instance-run-stats-server-url", "https://stats.codebrag.com:6666/instanceRun")
+}
+
+trait HooksConfig extends ConfigWithDefault {
+
+  /**
+   * Holds Map of listeners where key is name of the hook
+   * @see com.softwaremill.codebrag.Hookable#hookName
+   */
+  lazy val eventHooks: Map[String, List[String]] = {
+    rootConfig.getConfig("hooks").entrySet().toSet.map { entry: Entry[String, ConfigValue] =>
+        (entry.getKey, entry.getValue.atKey(entry.getKey).getStringList(entry.getKey).toList)
+    }.toMap
+  }
+
 }
