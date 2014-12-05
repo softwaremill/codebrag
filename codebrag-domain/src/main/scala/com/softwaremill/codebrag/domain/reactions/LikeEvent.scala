@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.domain.reactions
 
-import com.softwaremill.codebrag.common.{StatisticEvent, Clock, Event}
+import com.softwaremill.codebrag.common._
 import com.softwaremill.codebrag.domain.Like
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
@@ -11,7 +11,9 @@ import org.joda.time.DateTime
  * @param like case class describing the liked commit
  * @param clock to obtain when event was created
  */
-case class LikeEvent(like: Like)(implicit clock: Clock) extends Event with StatisticEvent {
+case class LikeEvent(like: Like)(implicit clock: Clock) extends StatisticEvent with Hookable {
+
+  val hookName = "like-hook"
 
   def eventType = LikeEvent.EventType
 
@@ -34,7 +36,9 @@ object LikeEvent {
  * @param like case class describing the disliked commit
  * @param clock to obtain when event was created
  */
-case class UnlikeEvent(like: Like)(implicit clock: Clock) extends Event {
+case class UnlikeEvent(like: Like)(implicit clock: Clock) extends Event with Hookable {
+
+  val hookName: String = "unlike-hook"
 
   def timestamp: DateTime = clock.nowUtc
 
