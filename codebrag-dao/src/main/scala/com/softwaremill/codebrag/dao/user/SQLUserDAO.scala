@@ -124,9 +124,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
     } yield (u, a, s, l)
     userQuery.firstOption.map(queryUserAliases).map(untuple)
   }
-
-
-
+  
   private def queryUserAliases(tuple: (UserTuple, SQLAuth, SQLSettings, SQLLastNotif))(implicit session: Session) = {
     val userId = tuple._1._1
     val aliases = userAliases.where(_.userId === userId).list()

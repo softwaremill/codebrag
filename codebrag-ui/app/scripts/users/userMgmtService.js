@@ -20,8 +20,8 @@ angular.module('codebrag.userMgmt')
         };
 
         this.deleteUser = function(userId) {
-	var modifyUserUrl = [usersApiUrl, '/', userId].join('');
-	return $http.delete(modifyUserUrl).then(null, modifyUserFailed);
+			var modifyUserUrl = [usersApiUrl, '/', userId].join('');
+			return $http.delete(modifyUserUrl).then(null, modifyUserFailed);
         };
 
         function modifyUserFailed(response) {
