@@ -22,7 +22,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   def reviewCommitUseCase: ReviewCommitUseCase
 
   before() {
-    haltIfNotAuthenticated
+    haltIfNotAuthenticated()
   }
 
   get("/:repo/:sha") {
