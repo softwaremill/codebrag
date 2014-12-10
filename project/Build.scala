@@ -1,4 +1,3 @@
-import java.io.PrintWriter
 import java.text.SimpleDateFormat
 import java.util.Date
 import sbt._
@@ -7,6 +6,7 @@ import net.virtualvoid.sbt.graph.Plugin._
 import com.typesafe.sbt.SbtScalariform._
 import sbtassembly.Plugin._
 import AssemblyKeys._
+import sbtbuildinfo.Plugin._
 
 object Resolvers {
   val codebragResolvers = Seq(
@@ -25,8 +25,8 @@ object BuildSettings {
   val buildSettings = Defaults.coreDefaultSettings ++ net.virtualvoid.sbt.graph.Plugin.graphSettings ++
     defaultScalariformSettings ++ Seq(
 
-    organization := "pl.softwaremill",
-    version := "0.0.1-SNAPSHOT",
+    organization := "com.softwaremill",
+    version := "2.3.1",
     scalaVersion := "2.10.4",
 
     resolvers := codebragResolvers,
@@ -126,37 +126,6 @@ object SmlCodebragBuild extends Build {
   import BuildSettings._
   import com.earldouglas.xwp._
 
-  val genVersionFile = TaskKey[Unit](
-    "gen-version-file",
-    "Generates a file in target/classes containing SHA of current git commit"
-  )
-
-  val versionGenSettings = Seq[Setting[_]](genVersionFile <<= VersionFile)
-
-  lazy val VersionFile = {
-    (scalaVersion, baseDirectory, projectID) map { (sv, bd, pid) =>
-      val targetProperties: File = bd / "target" / "scala-2.10" / "classes"
-      val versionIdentifier = List(buildDateString, currentGitCommitSHA).mkString("-")
-      replaceFileContent(targetProperties, "version.id", versionIdentifier)
-      println("Generated version file in: " + targetProperties.getPath)
-    }
-  }
-
-  def currentGitCommitSHA = Process("git rev-parse HEAD")!!
-  def buildDateString = new SimpleDateFormat("yyyyMMddHHmm").format(new Date())
-
-  def replaceFileContent(filePath: File, fileName: String, content: String): Unit = {
-    val file: File = {
-      if (!filePath.exists()) filePath.mkdirs()
-      filePath / fileName
-    }
-    if(file.exists) file.delete()
-    file.createNewFile()
-    val writer = new PrintWriter(file)
-    writer print content
-    writer.close()
-  }
-
   val buildWebClient = TaskKey[Unit](
     "build-web-client",
     "Builds browser client using Grunt.js"
@@ -194,7 +163,17 @@ object SmlCodebragBuild extends Build {
   lazy val common: Project = Project(
     "codebrag-common",
     file("codebrag-common"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies ++ Seq(commonsCodec, typesafeConfig))
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies ++ Seq(commonsCodec, typesafeConfig)) ++ buildInfoSettings ++
+      Seq(
+        sourceGenerators in Compile <+= buildInfo,
+        buildInfoPackage := "com.softwaremill.codebrag.version",
+        buildInfoObject := "CodebragBuildInfo",
+        buildInfoKeys := Seq[BuildInfoKey](
+          version,
+          BuildInfoKey.action("buildDate")(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date())),
+          BuildInfoKey.action("buildSha")((Process("git rev-parse HEAD") !!).stripLineEnd)
+        )
+      )
   )
 
   lazy val domain: Project = Project(
@@ -227,13 +206,11 @@ object SmlCodebragBuild extends Build {
     settings = buildSettings ++ 
       graphSettings ++ 
       XwpPlugin.jetty() ++ 
-      versionGenSettings ++
       Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig)) ++
       Seq(
         artifactName := { (config: ScalaVersion, module: ModuleID, artifact: Artifact) =>
           "codebrag." + artifact.extension // produces nice war name -> http://stackoverflow.com/questions/8288859/how-do-you-remove-the-scala-version-postfix-from-artifacts-builtpublished-wi
-        },
-        (copyResources in Compile) <<= (copyResources in Compile) dependsOn (genVersionFile)
+        }
       ) ++
       Seq(javaOptions in XwpPlugin.container := Seq("-Dconfig.file=local.conf"))
   ) dependsOn(service % "test->test;compile->compile", domain, common)
