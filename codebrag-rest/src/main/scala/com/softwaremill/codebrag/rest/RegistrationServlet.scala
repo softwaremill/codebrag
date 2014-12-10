@@ -40,11 +40,11 @@ class RegistrationServlet(
     }
   }
 
-  post("/repos/:repo/branches/:branch/watch") {
+  post("/repos/:repo/branches/*/watch") {
     val c = extractReqUrlParam("invitationCode")
     val u = extractReqUrlParam("userId")
     val r = extractReqUrlParam("repo")
-    val b = extractReqUrlParam("branch")
+    val b = extractSplatParam(0, "branch")
     val form = WatchedBranchForm(r, b)
     watchBranch.execute(c, new ObjectId(u), form) match {
       case Left(errors) => scalatra.BadRequest(Map("errors" -> errors))
@@ -52,11 +52,11 @@ class RegistrationServlet(
     }
   }
 
-  delete("/repos/:repo/branches/:branch/watch") {
+  delete("/repos/:repo/branches/*/watch") {
     val c = extractReqUrlParam("invitationCode")
     val u = extractReqUrlParam("userId")
     val r = extractReqUrlParam("repo")
-    val b = extractReqUrlParam("branch")
+    val b = extractSplatParam(0, "branch")
     val form = WatchedBranchForm(r, b)
     unwatchBranch.execute(c, new ObjectId(u), form) match {
       case Left(errors) => scalatra.BadRequest(Map("errors" -> errors))

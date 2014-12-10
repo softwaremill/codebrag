@@ -1,12 +1,16 @@
 package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.CodebragServletSpec
+import com.softwaremill.codebrag.domain.UserWatchedBranch
 import com.softwaremill.codebrag.service.user.RegisterService
-import org.mockito.Mockito._
-import org.json4s.JsonDSL._
+import com.softwaremill.codebrag.usecases.branches.WatchedBranchForm
+import com.softwaremill.codebrag.usecases.registration.{ListRepoBranchesAfterRegistration, ListRepositoriesAfterRegistration, UnwatchBranchAfterRegistration, WatchBranchAfterRegistration}
 import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, RegisteredUser, RegistrationForm}
+import com.softwaremill.codebrag.web.CodebragSpecificJSONFormats.SimpleObjectIdSerializer
+import org.bson.types.ObjectId
+import org.json4s.JsonDSL._
+import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import com.softwaremill.codebrag.usecases.registration.{UnwatchBranchAfterRegistration, WatchBranchAfterRegistration, ListRepoBranchesAfterRegistration, ListRepositoriesAfterRegistration}
 
 class RegistrationServletSpec extends CodebragServletSpec with BeforeAndAfterEach {
 
@@ -20,7 +24,7 @@ class RegistrationServletSpec extends CodebragServletSpec with BeforeAndAfterEac
   val servlet = new RegistrationServlet(registerService, registerNewUser, listRepos, listRepoBranches, watchBranch, unwatchBranch)
 
   override def beforeEach {
-    reset(registerNewUser, registerService)
+    reset(registerNewUser, registerService, watchBranch, unwatchBranch)
   }
 
   "GET /first-registration" should "return firstRegistration flag" in {
@@ -31,7 +35,7 @@ class RegistrationServletSpec extends CodebragServletSpec with BeforeAndAfterEac
     get("/first-registration") {
       //then
       status should be(200)
-      body should be("{\"firstRegistration\":true}")
+      body should be(asJson(Map("firstRegistration" -> true)))
     }
   }
 
@@ -71,5 +75,44 @@ class RegistrationServletSpec extends CodebragServletSpec with BeforeAndAfterEac
       verify(registerNewUser).execute(newUser)
     }
   }
+
+  "POST /repos/repo/branches/branch/watch" should "setup branch as watched" in {
+    addServlet(servlet, "/*")
+    val invCode = "123abc"
+    val repo = "codebrag"
+    val branch = "git/flow/style/branch"
+    val userId = new ObjectId
+    val form = WatchedBranchForm(repo, branch)
+    val watched = UserWatchedBranch(new ObjectId, userId, repo, branch)
+    when(watchBranch.execute(invCode, userId, form)).thenReturn(Right(watched))
+
+    post(s"/repos/codebrag/branches/git/flow/style/branch/watch?invitationCode=123abc&userId=${userId.toString}") {
+      status should be(200)
+      body should be(asJson(watched))
+    }
+  }
+
+  "DELETE /repos/repo/branches/branch/watch" should "setup branch as watched" in {
+    addServlet(servlet, "/*")
+    val invCode = "123abc"
+    val repo = "codebrag"
+    val branch = "git/flow/style/branch"
+    val userId = new ObjectId
+    val form = WatchedBranchForm(repo, branch)
+    val watched = UserWatchedBranch(new ObjectId, userId, repo, branch)
+    when(unwatchBranch.execute(invCode, userId, form)).thenReturn(Right())
+
+    delete(s"/repos/codebrag/branches/git/flow/style/branch/watch?invitationCode=123abc&userId=${userId.toString}") {
+      status should be(200)
+    }
+  }
+
+  private def asJson[T <: AnyRef](obj: T) = {
+    import org.json4s._
+    import org.json4s.jackson.Serialization.write
+    implicit val formats = DefaultFormats + SimpleObjectIdSerializer
+    write(obj)
+  }
+
 
 }
