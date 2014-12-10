@@ -26,13 +26,10 @@ angular.module('codebrag.userMgmt')
             });
         };
 
-		$scope.deleteUser = function(userId) {
+		$scope.deleteUser = function(user) {
 		    $scope.flash.clear();
-		    var userData = { userId: userId };		  
-		    userMgmtService.deleteUser(userId).then(deleteSuccess, deleteFailed('active', userId))
-		    userMgmtService.loadUsers().then(function(users) {
-	            $scope.users = users;
-	        });
+		    var userData = { userId: user.userId };		  
+		    userMgmtService.deleteUser(userData).then(deleteSuccess(user), deleteFailed('active', user.userId))
 		};
 
         $scope.askForNewPassword = function(user) {
@@ -42,8 +39,11 @@ angular.module('codebrag.userMgmt')
                 $scope.flash.add('info', 'User password changed');
             });
         };
-        function deleteSuccess() {
-            $scope.flash.add('error', 'User is removed');
+        function deleteSuccess(user) {        	
+            $scope.flash.add('error', 'User ' + user.email + ' is deleted');
+            userMgmtService.loadUsers().then(function(users) {
+ 	            $scope.users = users;
+ 	        });
         }
 
         function modifySuccess() {
@@ -51,7 +51,7 @@ angular.module('codebrag.userMgmt')
         }
 	 function deleteFailed(flag, userId) {
             return function(errorsMap) {              
-                $scope.flash.add('error', 'Could not change user details');
+                $scope.flash.add('error', ' Could not delete user ');
                 flattenErrorsMap(errorsMap).forEach(function(error) {
                     $scope.flash.add('error', error);
                 });

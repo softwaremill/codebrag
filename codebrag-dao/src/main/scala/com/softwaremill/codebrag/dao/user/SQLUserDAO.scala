@@ -141,5 +141,5 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
       users.filter(_.id === userId).delete
     }
   }
-
+  
 }

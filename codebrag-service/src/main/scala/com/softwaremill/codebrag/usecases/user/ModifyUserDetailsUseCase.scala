@@ -51,8 +51,4 @@ class ModifyUserDetailsUseCase(protected val userDao: UserDAO) extends Logging {
     validate(checkUserActive, changeOwnFlagsCheck)
   }
 
- def delete(userId: ObjectId) = {
-	userDao.delete(userId)
-  }
-
 }
