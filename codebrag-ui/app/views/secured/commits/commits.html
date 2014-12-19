@@ -14,7 +14,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="branch-btn" ng-show="showBranchesSelector">
+                        <div class="branch-btn">
                             <dropdown selected="currentRepoContext.branch" icon="assets/images/branch.png">
                                 <ul class="branches-list">
                                     <li ng-repeat="branch in branches" ng-class="{'selected': isSelected(branch)}" ng-click="selectBranch(branch)">
@@ -25,7 +25,7 @@
                             </dropdown>
                         </div>
                     </div>
-                    <div class="columns" ng-class="{'small-5 large-5': showBranchesSelector, 'small-11 large-11': !showBranchesSelector}">
+                    <div class="columns small-5 large-5">
                         <dropdown selected="displaySelectedMode()">
                             <ul>
                                 <li ng-click="switchListView('pending')">

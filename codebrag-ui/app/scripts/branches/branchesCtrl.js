@@ -10,10 +10,6 @@ angular.module('codebrag.branches')
             branchesService.loadBranches(currentRepoContext.repo);
         });
 
-        branchesService.ready().then(function() {
-            $scope.showBranchesSelector = (branchesService.repoType() === 'git');
-        });
-
         $scope.selectBranch = function(selected) {
             currentRepoContext.switchBranch(selected.name);
         };
