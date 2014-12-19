@@ -111,7 +111,7 @@ angular.module('codebrag.commits')
     .config(function ($stateProvider, authenticatedUser) {
         $stateProvider
             .state('commits', {
-                url: '/{repo}/commits',
+                url: '/repository/{repo}/commits',
                 abstract: true,
                 templateUrl: 'views/secured/commits/commits.html',
                 resolve: authenticatedUser,
