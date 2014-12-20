@@ -13,7 +13,7 @@ module.exports = function (grunt) {
                 tasks: ['stylus:compile']
             },
             templates: {
-                files: ['app/views/**/*.html'],
+                files: ['app/**/*.html'],
                 tasks: ['html2js']
             },
             livereload: {
@@ -92,7 +92,7 @@ module.exports = function (grunt) {
                 options: {
                     base: 'app'
                 },
-                src: ['app/views/**/*.html'],
+                src: ['app/views/**/*.html', 'app/scripts/**/*.html'],
                 dest: 'tmp/scripts/templates.js',
                 module: 'codebrag.templates'
             }
