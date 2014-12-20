@@ -5,7 +5,9 @@
 target/
 *.log
 .DS_Store
+nohup.out
 
+# distribution packages
 scripts/dist/codebrag/
 scripts/dist/codebrag.zip
 
