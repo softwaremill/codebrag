@@ -1,0 +1,19 @@
+<div id="commits-tab-content" class="row" auto-fit-height>
+    <div class="small-12 large-12 columns">
+        <div class="row">
+            <div class="items-list small-3 large-3 columns">
+                <div class="items-container">
+                    <div class="commit-container" ng-repeat="i in integrations">
+                        <div class="authored-box">
+                            <div class="author-box"><user-avatar url="commit.authorAvatarUrl"></user-avatar></div>
+                            <div class="info-box">
+                                <div class="commit-name" ng-click="open(i)">{{ i.name }}</div>
+                            </div>
+                        </div >
+                    </div>
+                </div>
+            </div>
+            <div class="small-9 large-9 columns" ui-view></div>
+        </div>
+    </div>
+</div>

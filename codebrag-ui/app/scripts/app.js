@@ -52,7 +52,8 @@ angular.module('codebrag', [
     'codebrag.tour',
     'codebrag.profile',
     'codebrag.invitations',
-    'codebrag.userMgmt']);
+    'codebrag.userMgmt',
+    'codebrag.integrations']);
 
 angular.module('codebrag')
     .config(function ($provide) {

@@ -1,0 +1,66 @@
+<style>
+    .centered {
+        text-align: center;
+    }
+    .integration-details-panel {
+        width: 70%;
+        margin: 0 auto;
+        background: #ddd;
+    }
+
+    input[type="checkbox"] + label {
+        display: inline-block;
+        margin-left: 0.44444rem;
+        margin-right: 0.88889rem;
+        margin-bottom: 0;
+        vertical-align: baseline;
+    }
+</style>
+<div ng-controller="SlackCtrl" class="integration-details-panel">
+    <h2>Slack integrations</h2>
+    <p>Codebrag allows you to set up additional notifications channel (besides email and in-app notifications).</p>
+
+    <input id="enabled" type="checkbox" name="enabled" ng-Model="slack.enabled"><label for="enabled">Enable slack integration</label>
+
+    <section ng-show="slack.enabled">
+        <form>
+            <div class="row">
+                <div class="large-6 columns">
+                    <label>
+                        Your personal Slack API token
+                        <input type="text" ng-model="slack.apiToken" required/>
+                    </label>
+                    <p>Some description what this API token is and how to get one</p>
+                </div>
+            </div>
+            <h2>Notify me on Slack when:</h2>
+
+            <h3 ng-show="err">Could not save</h3>
+            <div class="row">
+                <div class="large-6 columns">
+                    <input id="commitReviewed" type="checkbox" name="commitReviewed" ng-model="slack.notifyOnCommitReviewed" ng-change="saveSettings()"><label for="commitReviewed">Someone marks my commit as reviewed</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-6 columns">
+                    <input id="newComment" type="checkbox" name="newComment" ng-model="slack.notifyOnComment" ng-change="saveSettings()"><label for="newComment">Someone comments on my commit</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-6 columns">
+                    <input id="newLike" type="checkbox" name="newLike" ng-model="slack.notifyOnLike" ng-change="saveSettings()"><label for="newLike">Someone likes my commit</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-6 columns">
+                    <input id="discussionActivity" type="checkbox" name="discussionActivity" ng-model="slack.notifyOnDiscussionReply" ng-change="saveSettings()"><label for="discussionActivity">Someone replies in discussion I'm involved in</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-6 columns">
+                    <input id="newCommits" type="checkbox" name="newCommits" ng-model="slack.notifyOnNewCommits" ng-change="saveSettings()"><label for="newCommits" ng-model="slack.notifyOnCommitReviewed">There are new commits in repositories I watch</label>
+                </div>
+            </div>
+        </form>
+    </section>
+</div>
