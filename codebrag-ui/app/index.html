@@ -126,8 +126,11 @@
     <script type="text/javascript" src="scripts/followups/followupsCtrl.js"></script>
     <script type="text/javascript" src="scripts/followups/allfollowupsCtrl.js"></script>
     <script type="text/javascript" src="scripts/followups/followupListItemCtrl.js"></script>
+        <script type="text/javascript" src="scripts/followups/allfollowupListItemCtrl.js"></script>
     <script type="text/javascript" src="scripts/followups/followupDetailsCtrl.js"></script>
+        <script type="text/javascript" src="scripts/followups/allfollowupDetailsCtrl.js"></script>
     <script type="text/javascript" src="scripts/followups/followupsService.js"></script>
+        <script type="text/javascript" src="scripts/followups/allfollowupsService.js"></script>
 
     <!--invitations-->
     <script type="text/javascript" src="scripts/invitations/inviteFormPopupCtrl.js"></script>
@@ -229,7 +232,7 @@
                 <li ng-hide="!loggedInUser.admin" >
                     <a id="allfollowups-btn" ng-click="openAllFollowups()"  class="button" active-for-states="allfollowups,allfollowups.list,allfollowups.details">
                         <span class="number">
-                            all followups ({{ followupsNotification.count }})
+                            all followups 
                             <span class="ghost-notification" ng-show="followupsNotificationAvailable"></span>
                         </span>
                     </a>

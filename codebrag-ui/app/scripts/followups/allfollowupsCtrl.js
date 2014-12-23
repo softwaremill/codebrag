@@ -1,20 +1,20 @@
-angular.module('codebrag.followups')
+angular.module('codebrag.allfollowups')
 
-    .controller('AllFollowupsCtrl', function ($scope, $http, followupsService, pageTourService, events) {
+    .controller('AllFollowupsCtrl', function ($scope, $http, allfollowupsService, pageTourService, events) {
 
         $scope.$on(events.allfollowupsTabOpened, initCtrl);
 
 
         $scope.pageTourForFollowupsVisible = function() {
-            return pageTourService.stepActive('followups') || pageTourService.stepActive('invites');
+            return pageTourService.stepActive('allfollowups') || pageTourService.stepActive('invites');
         };
 
         function initCtrl() {
-            followupsService.allFollowups().then(function(followups) {
+            allfollowupsService.allFollowups().then(function(followups) {
                 $scope.followupCommits = followups;
             });
-            $scope.hasFollowupsAvailable = followupsService.hasFollowups;
-            $scope.mightHaveFollowups = followupsService.mightHaveFollowups;
+            $scope.hasFollowupsAvailable = allfollowupsService.hasFollowups;
+            $scope.mightHaveFollowups = allfollowupsService.mightHaveFollowups;
         }
 
         initCtrl();

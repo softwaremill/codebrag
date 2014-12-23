@@ -1,11 +1,11 @@
-angular.module('codebrag.followups')
+angular.module('codebrag.allfollowups')
 
-    .factory('followupsService', function($http, $rootScope, events) {
+    .factory('allfollowupsService', function($http, $rootScope, events) {
 
         var followupsListLocal = new codebrag.followups.LocalFollowupsList();
         var listFetched = false;
 
-        function followups() {
+        function allFollowups() {
             return _httpRequest('GET').then(function(response) {
                 followupsListLocal.addAll(response.data.followupsByCommit);
                 listFetched = true;
@@ -37,7 +37,7 @@ angular.module('codebrag.followups')
         }
 
         function _httpRequest(method, id, config) {
-            var followupsUrl = 'rest/followups/' + (id || '');
+            var followupsUrl = 'rest/allfollowups/' + (id || '');
             var reqConfig = angular.extend(config || {}, {method: method, url: followupsUrl});
             return $http(reqConfig);
         }
@@ -47,7 +47,7 @@ angular.module('codebrag.followups')
         }
 
         return {
-            followups: followups,
+            allFollowups: allFollowups,
             removeAndGetNext: removeAndGetNext,
             loadFollowupDetails: loadFollowupDetails,
             hasFollowups: hasFollowups,

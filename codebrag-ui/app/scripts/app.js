@@ -23,6 +23,8 @@ angular.module('codebrag.commits', [
 
 angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.tour']);
 
+angular.module('codebrag.allfollowups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.tour','codebrag.followups']);
+
 angular.module('codebrag.invitations', ['ui.validate', 'ui.keypress']);
 
 angular.module('codebrag.profile', ['codebrag.session']);
@@ -47,6 +49,7 @@ angular.module('codebrag', [
     'codebrag.commits',
     'codebrag.branches',
     'codebrag.followups',
+    'codebrag.allfollowups',
     'codebrag.repostatus',
     'codebrag.favicon',
     'codebrag.tour',
@@ -160,7 +163,7 @@ angular.module('codebrag.userMgmt').run(function(userMgmtService) {
     userMgmtService.initialize();
 });
 
-angular.module('codebrag.followups')
+angular.module('codebrag.allfollowups')
 .config(function ($stateProvider, authenticatedUser) {
     $stateProvider
         .state('allfollowups', {
