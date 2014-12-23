@@ -159,3 +159,22 @@ angular.module('codebrag.common')
 angular.module('codebrag.userMgmt').run(function(userMgmtService) {
     userMgmtService.initialize();
 });
+
+angular.module('codebrag.followups')
+.config(function ($stateProvider, authenticatedUser) {
+    $stateProvider
+        .state('allfollowups', {
+            url: '/allfollowups',
+            abstract: true,
+            templateUrl: 'views/secured/followups/allfollowups.html',
+            resolve: authenticatedUser
+        })
+        .state('allfollowups.list', {
+            url: '',
+            templateUrl: 'views/secured/followups/emptyFollowups.html'
+        })
+        .state('allfollowups.details', {
+            url: '/{followupId}/comments/{commentId}',
+            templateUrl: 'views/secured/followups/allfollowupDetails.html'
+        });
+});

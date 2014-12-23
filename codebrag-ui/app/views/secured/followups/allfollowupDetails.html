@@ -1,0 +1,23 @@
+<div class="diff-wrapper" ng-controller="FollowupDetailsCtrl">
+    <div class="diff-container" ng-hide="currentCommit">
+        <div class="diff-loading">
+            <img src="assets/images/loader-v2.gif"/>
+        </div>
+    </div>
+    <div class="diff-container clearfix" ng-show="currentCommit"  scrollable="scrollTo">
+        <div class="toggle-diff-container-btn"><i class="icon-chevron-left"></i></div>
+        <div class="authored-box">
+            <div class="author-box"><user-avatar url="currentCommit.info.authorAvatarUrl"></user-avatar></div>
+            <div class="info-box">
+                <div class="commit-name" ng-bind-html-unsafe="currentCommit.info.message"></div>
+                <div class="info-line"><span class="username">{{currentCommit.info.authorName}}</span><span class="time">{{currentCommit.info.date | relativeDate}}</span>
+                </div>
+            </div>
+        </div>
+        <ng-include src="'views/secured/commits/diff.html'"></ng-include>
+        <div ng-controller="ReactionControlsCtrl" ng-show="displayEntireCommitControls(currentCommit.reactions)">
+            <a class="okthx accept button" ng-click="markCurrentFollowupAsDone()"><i class="icon-ok-circle"> </i>OK THX</a>
+        </div>
+    </div>
+    <div expand-collapse-list class="toggle-diff-container-btn"><i class="icon-chevron-left"></i></div>
+</div>
