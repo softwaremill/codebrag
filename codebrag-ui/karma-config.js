@@ -20,6 +20,7 @@ module.exports = function(config) {
         files.push('app/vendor/' + file);
     });
 
+    files.push('app/scripts/**/module.js');
     files.push('app/scripts/*.js');
     files.push('app/scripts/**/*.js');
     files.push('tmp/scripts/**/*.js');
