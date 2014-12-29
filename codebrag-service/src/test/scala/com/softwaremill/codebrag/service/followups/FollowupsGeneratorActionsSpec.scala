@@ -14,7 +14,7 @@ import com.softwaremill.codebrag.domain.Followup
 import scala.Some
 import com.softwaremill.codebrag.domain.FollowupWithNoReactions
 import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
-import com.softwaremill.codebrag.common.ClockSpec
+import com.softwaremill.codebrag.common.{EventBus, ClockSpec}
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.followup.{FollowupWithReactionsDAO, FollowupDAO}
@@ -25,8 +25,9 @@ class FollowupsGeneratorActionsSpec
   var generator: FollowupsGeneratorActions = _
   var followupDaoMock: FollowupDAO = _
   var userDaoMock: UserDAO = _
-  var commitDaoMock: CommitInfoDAO = _
+  var commitInfoDaoMock: CommitInfoDAO = _
   var followupWithReactionsDaoMock: FollowupWithReactionsDAO = _
+  var eventBusMock: EventBus = _
 
   val bob = UserAssembler.randomUser.withEmail("bob@smith.com").get
   val john = UserAssembler.randomUser.withEmail("john@doe.com").get
@@ -37,20 +38,22 @@ class FollowupsGeneratorActionsSpec
   override def beforeEach() {
     followupDaoMock = mock[FollowupDAO]
     userDaoMock = mock[UserDAO]
-    commitDaoMock = mock[CommitInfoDAO]
+    commitInfoDaoMock = mock[CommitInfoDAO]
     followupWithReactionsDaoMock = mock[FollowupWithReactionsDAO]
+    eventBusMock = mock[EventBus]
 
     generator = new FollowupsGeneratorActions {
       override def followupDao = followupDaoMock
       override def userDao = userDaoMock
-      override def commitDao = commitDaoMock
+      override def commitInfoDao = commitInfoDaoMock
       override def followupWithReactionsDao = followupWithReactionsDaoMock
+      override def eventBus = eventBusMock
     }
   }
 
   it should "generate a followup for author of liked commit" in {
     // given
-    when(commitDaoMock.findByCommitId(bobsCommit.id)).thenReturn(Some(bobsCommit))
+    when(commitInfoDaoMock.findByCommitId(bobsCommit.id)).thenReturn(Some(bobsCommit))
     when(userDaoMock.findCommitAuthor(bobsCommit)).thenReturn(Some(bob))
 
     // when
@@ -74,7 +77,7 @@ class FollowupsGeneratorActionsSpec
     val commit = CommitInfoAssembler.randomCommit.withAuthorEmail(nonExistingCommitAuthor.emailLowerCase).withAuthorName(nonExistingCommitAuthor.name).get
     val like = LikeAssembler.likeFor(commit.id).withAuthorId(likeAuthor.id).get
     val event = LikeEvent(like)
-    when(commitDaoMock.findByCommitId(commit.id)).thenReturn(Some(commit))
+    when(commitInfoDaoMock.findByCommitId(commit.id)).thenReturn(Some(commit))
     when(userDaoMock.findCommitAuthor(commit)).thenReturn(None)
 
     // when
@@ -124,6 +127,20 @@ class FollowupsGeneratorActionsSpec
     modifiedFollowup.allReactions should be(List(comment))
     modifiedFollowup.lastReaction should be(comment)
     modifiedFollowup.followupId should be(followup.followupId)
+  }
+
+  it should "publish 'followup for user created' event when like happens on user's commit" in {
+    // given
+    val like = LikeAssembler.likeFor(bobsCommit.id).get
+    when(commitInfoDaoMock.findByCommitId(bobsCommit.id)).thenReturn(Some(bobsCommit))
+    when(userDaoMock.findCommitAuthor(bobsCommit)).thenReturn(Some(bob))
+
+    // when
+    generator.handleCommitLiked(LikeEvent(like))
+
+    // then
+    val followupGeneratedEvent = FollowupForUserCreatedEvent(Followup(bob.id, like))
+    verify(eventBusMock).publish(followupGeneratedEvent)
   }
 
 }

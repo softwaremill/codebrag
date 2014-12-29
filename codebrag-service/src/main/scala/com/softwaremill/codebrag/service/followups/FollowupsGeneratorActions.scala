@@ -1,35 +1,32 @@
 package com.softwaremill.codebrag.service.followups
 
-import com.softwaremill.codebrag.dao._
-import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.domain.{FollowupWithNoReactions, FollowupWithReactions, Followup}
-import scala.Some
-import com.softwaremill.codebrag.domain.reactions.LikeEvent
-import com.softwaremill.codebrag.domain.reactions.UnlikeEvent
-import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.common.EventBus
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.dao.followup.{FollowupWithReactionsDAO, FollowupDAO}
+import com.softwaremill.codebrag.dao.followup.{FollowupDAO, FollowupWithReactionsDAO}
+import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.domain.reactions.{LikeEvent, UnlikeEvent}
+import com.softwaremill.codebrag.domain.{Followup, FollowupForUserCreatedEvent, FollowupWithNoReactions, FollowupWithReactions}
+import com.typesafe.scalalogging.slf4j.Logging
+import org.bson.types.ObjectId
 
 trait FollowupsGeneratorActions extends Logging {
 
   def followupDao: FollowupDAO
-
   def userDao: UserDAO
-
-  def commitDao: CommitInfoDAO
-
+  def commitInfoDao: CommitInfoDAO
   def followupWithReactionsDao: FollowupWithReactionsDAO
+  def eventBus: EventBus
 
   def handleCommitLiked(event: LikeEvent) {
     val like = event.like
-    val commit = commitDao.findByCommitId(like.commitId).getOrElse(throw new IllegalStateException(s"Commit not found: ${like.commitId}"))
+    val commit = commitInfoDao.findByCommitId(like.commitId).getOrElse(throw new IllegalStateException(s"Commit not found: ${like.commitId}"))
     val commitAuthorOpt = userDao.findCommitAuthor(commit)
     commitAuthorOpt match {
       case Some(commitAuthor) => {
         val followup = Followup(commitAuthor.id, like)
         logger.debug("Generating follow-up for liked commits")
         followupDao.createOrUpdateExisting(followup)
+        eventBus.publish(FollowupForUserCreatedEvent(followup))
       }
       case None => logger.debug("Cannot find commit author for commit " + commit.id)
     }

@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag
 
 import akka.actor.Props
-import com.softwaremill.codebrag.common.{Event, StatisticEvent}
+import com.softwaremill.codebrag.common.{EventBus, Event, StatisticEvent}
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.dao.events.EventDAO
 import com.softwaremill.codebrag.service.followups.FollowupsGenerator
@@ -20,9 +20,10 @@ trait EventingConfiguration extends ActorSystemSupport {
   def followupDao: FollowupDAO
   def followupWithReactionsDao: FollowupWithReactionsDAO
   def eventDao: EventDAO
+  def eventBus: EventBus
 
   lazy val eventLogger = actorSystem.actorOf(Props(classOf[EventLogger]))
-  lazy val followupGeneratorActor = actorSystem.actorOf(Props(new FollowupsGenerator(followupDao, userDao, commitInfoDao, followupWithReactionsDao: FollowupWithReactionsDAO)))
+  lazy val followupGeneratorActor = actorSystem.actorOf(Props(new FollowupsGenerator(followupDao, userDao, commitInfoDao, followupWithReactionsDao: FollowupWithReactionsDAO, eventBus)))
   lazy val statsEventsCollector = actorSystem.actorOf(Props(new StatisticEventsCollector(eventDao)))
 
   def setupEvents() {
