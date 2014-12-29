@@ -24,23 +24,26 @@ class FollowupService(followupDao: FollowupDAO, commitInfoDao: CommitInfoDAO, co
     }
   }
 
-  def generateFollowupsForComment(currentComment: Comment) {
+  def generateFollowupsForComment(currentComment: Comment): Set[Followup] = {
+    def throwException(message: String) = throw new RuntimeException(message)
     logger.debug(s"Generating followup for comment with ID: ${currentComment.id} and message: ${currentComment.message}")
     findCommitWithCommentsRelatedTo(currentComment) match {
       case (None, _) => throwException(s"Commit ${currentComment.commitId} not found. Cannot createOrUpdateExisting follow-ups for nonexisting commit")
-      case (Some(commit), List()) => throwException(s"No stored comments for commit ${currentComment.commitId}. Cannot createOrUpdateExisting follow-ups for commit without comments")
+      case (Some(commit), Nil) => throwException(s"No stored comments for commit ${currentComment.commitId}. Cannot createOrUpdateExisting follow-ups for commit without comments")
       case (Some(commit), existingComments) => generateFollowUps(commit, existingComments, currentComment)
-      case (commit, comments) => logger.warn(s"Followup not generated. No match for: ${commit} and ${comments}")
+      case (commit, comments) =>
+        logger.warn(s"Followup not generated. No match for: $commit and $comments")
+        Set.empty
     }
-
-    def throwException(message: String) = throw new RuntimeException(message)
   }
 
 
-  private def generateFollowUps(commit: CommitInfo, existingComments: List[Comment], currentComment: Comment) {
-    usersToGenerateFollowUpsFor(commit, existingComments, currentComment).foreach(userId => {
-      logger.debug(s"Saving followup for comment with ID: ${currentComment.id} and user: ${userId}")
-      followupDao.createOrUpdateExisting(Followup(userId, currentComment))
+  private def generateFollowUps(commit: CommitInfo, existingComments: List[Comment], currentComment: Comment): Set[Followup] = {
+    usersToGenerateFollowUpsFor(commit, existingComments, currentComment).map(userId => {
+      logger.debug(s"Saving followup for comment with ID: ${currentComment.id} and user: $userId")
+      val followup = Followup(userId, currentComment)
+      followupDao.createOrUpdateExisting(followup)
+      followup
     })
   }
 

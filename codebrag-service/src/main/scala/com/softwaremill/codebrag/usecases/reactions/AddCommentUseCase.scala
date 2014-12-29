@@ -5,7 +5,7 @@ import com.softwaremill.codebrag.service.followups.FollowupService
 import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.softwaremill.codebrag.domain.reactions.CommentAddedEvent
-import com.softwaremill.codebrag.domain.Comment
+import com.softwaremill.codebrag.domain.{FollowupForUserCreatedEvent, Comment}
 
 class AddCommentUseCase(userReactionService: UserReactionService, followupService: FollowupService, eventBus: EventBus)(implicit clock: Clock) {
 
@@ -14,6 +14,8 @@ class AddCommentUseCase(userReactionService: UserReactionService, followupServic
   def execute(implicit newComment: IncomingComment): AddCommentResult = {
     val addedComment = userReactionService.storeComment(newComment)
     followupService.generateFollowupsForComment(addedComment)
+      .map(FollowupForUserCreatedEvent.apply)
+      .foreach(eventBus.publish)
     eventBus.publish(CommentAddedEvent(addedComment))
     Right(addedComment)
   }

@@ -8,7 +8,7 @@ import com.softwaremill.codebrag.service.followups.FollowupService
 import com.softwaremill.codebrag.common.{ClockSpec, EventBus}
 import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.Comment
+import com.softwaremill.codebrag.domain.{FollowupForUserCreatedEvent, Followup, Comment}
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.domain.reactions.CommentAddedEvent
 
@@ -29,25 +29,29 @@ class AddCommentUseCaseSpec
     activity = new AddCommentUseCase(userReactionService, followupService, eventBus)
   }
 
-  it should "generate commit added event" in {
+  it should "generate comment added event" in {
     // given
     val commitId: ObjectId = ObjectId.get()
     val authorId: ObjectId = ObjectId.get()
+    val commitAuthorId = ObjectId.get()
     val message: String = "Comment"
     
     val newComment = IncomingComment(commitId, authorId, message)
     val expected = Comment(ObjectId.get(), commitId, authorId, clock.now, message)
+    val commitAuthorFollowup = Followup(commitAuthorId, expected)
     
     when(userReactionService.storeComment(newComment)).thenReturn(expected)
+    when(followupService.generateFollowupsForComment(expected)).thenReturn(Set(commitAuthorFollowup))
     
     // when
     val Right(actual) = activity.execute(newComment)
     
     // then
-    verify(userReactionService).storeComment(newComment)
     actual should equal(expected)
-    verify(followupService).generateFollowupsForComment(expected)
+    verify(userReactionService).storeComment(newComment)
     verify(eventBus).publish(CommentAddedEvent(actual))
+    verify(eventBus).publish(FollowupForUserCreatedEvent(commitAuthorFollowup))
+    verifyNoMoreInteractions(eventBus)
   }
 
 }
