@@ -1,8 +1,11 @@
 # Codebrag
 
-Below is a developer guide if you want to hack on Codebrag yourself.
+Below is a **developer guide** if you want to hack on Codebrag yourself.
+
+**If you are looking for general information on the project, [please see the main website](http://codebrag.com/).**
+
 If you are just looking for installation or upgrade instructions,
-please refer to the [wiki](https://github.com/softwaremill/codebrag/wiki)
+please refer to the [wiki](https://github.com/softwaremill/codebrag/wiki).
 
 [Changelog](CHANGELOG.md)
 
