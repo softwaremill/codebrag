@@ -44,9 +44,9 @@ angular.module('codebrag.notifications')
             $scope.followupsNotificationAvailable = false;
         });
         
-        $scope.openAllFollowups = function() {
+        $scope.openDashboard = function() {
             $rootScope.$broadcast(events.allfollowupsTabOpened);
-            $state.transitionTo('allfollowups.list');
+            $state.transitionTo('dashboard.list');
         };
 
     });

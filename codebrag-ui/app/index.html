@@ -124,13 +124,13 @@
 
     <!-- follow-ups -->
     <script type="text/javascript" src="scripts/followups/followupsCtrl.js"></script>
-    <script type="text/javascript" src="scripts/followups/allfollowupsCtrl.js"></script>
     <script type="text/javascript" src="scripts/followups/followupListItemCtrl.js"></script>
-        <script type="text/javascript" src="scripts/followups/allfollowupListItemCtrl.js"></script>
     <script type="text/javascript" src="scripts/followups/followupDetailsCtrl.js"></script>
-        <script type="text/javascript" src="scripts/followups/allfollowupDetailsCtrl.js"></script>
     <script type="text/javascript" src="scripts/followups/followupsService.js"></script>
-        <script type="text/javascript" src="scripts/followups/allfollowupsService.js"></script>
+    <script type="text/javascript" src="scripts/dashboard/dashboardCtrl.js"></script>
+    <script type="text/javascript" src="scripts/dashboard/dashboardListItemCtrl.js"></script>
+    <script type="text/javascript" src="scripts/dashboard/dashboardDetailsCtrl.js"></script>
+    <script type="text/javascript" src="scripts/dashboard/allFollowupsService.js"></script>
 
     <!--invitations-->
     <script type="text/javascript" src="scripts/invitations/inviteFormPopupCtrl.js"></script>
@@ -230,7 +230,7 @@
                     </a>
                 </li>
                 <li>
-                    <a id="allfollowups-btn" ng-click="openAllFollowups()"  class="button" active-for-states="allfollowups,allfollowups.list,allfollowups.details">
+                    <a id="dashboard-btn" ng-click="openDashboard()"  class="button" active-for-states="dashboard,dashboard.list,dashboard.details">
                         <span class="number">
                             Dashboard 
                             <span class="ghost-notification" ng-show="followupsNotificationAvailable"></span>

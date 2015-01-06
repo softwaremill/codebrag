@@ -1,4 +1,4 @@
-<div id="followups-tab-content" class="row" ng-controller="AllFollowupsCtrl" auto-fit-height>
+<div id="followups-tab-content" class="row" ng-controller="DashboardCtrl" auto-fit-height>
     <div class="commits items-list small-3 large-3 columns">
         <div class="items-container">
 
@@ -7,7 +7,7 @@
                     <div class="commit-name" ng-bind-html-unsafe="commit.commit.message"></div>
                     <div class="info-line"><span class="username">{{commit.commit.authorName}}</span><span class="time">{{commit.commit.date | relativeDate}} in {{ commit.commit.repoName }}</span></div>
                 </div>
-                <div class="followup-container" ng-repeat="followup in commit.followups" ng-controller="AllFollowupListItemCtrl" ng-click="openFollowupDetails(followup)" 
+                <div class="followup-container" ng-repeat="followup in commit.followups" ng-controller="DashboardListItemCtrl" ng-click="openFollowupDetails(followup)" 
                      mark-current="followup.followupId" state-param-name="followupId">
                     <div class="authored-box">
                         <div class="author-box"><user-avatar url="followup.lastReaction.reactionAuthorAvatarUrl"></user-avatar></div>

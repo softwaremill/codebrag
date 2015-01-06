@@ -1,6 +1,6 @@
-angular.module('codebrag.allfollowups')
+angular.module('codebrag.dashboard')
 
-    .factory('allfollowupsService', function($http, $rootScope, events) {
+    .factory('allFollowupsService', function($http, $rootScope, events) {
 
         var followupsListLocal = new codebrag.followups.LocalFollowupsList();
         var listFetched = false;

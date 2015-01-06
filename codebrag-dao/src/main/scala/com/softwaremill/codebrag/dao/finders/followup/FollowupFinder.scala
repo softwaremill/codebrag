@@ -10,12 +10,12 @@ trait FollowupFinder {
 
   def findFollowupForUser(userId: ObjectId, followupId: ObjectId): Either[String, SingleFollowupView]
   
-  def findFollowupforAdmin(followupId: ObjectId): Either[String, SingleFollowupView]
+  def findFollowupforDashboard(followupId: ObjectId): Either[String, SingleFollowupView]
 
   def countFollowupsForUser(userId: ObjectId): Long
 
   def countFollowupsForUserSince(date: DateTime, userId: ObjectId): Long
 
-  def findAllFollowupsByCommitForAdmin(): FollowupsByCommitListView
+  def findAllFollowupsByCommitForDashboard(): FollowupsByCommitListView
 }
 

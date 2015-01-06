@@ -15,13 +15,13 @@ class AllFollowupsServlet(val authenticator: Authenticator,
 
   get("/") {
     haltIfNotAuthenticated()
-    followupFinder.findAllFollowupsByCommitForAdmin()
+    followupFinder.findAllFollowupsByCommitForDashboard()
   }
 
   get("/:id") {
     haltIfNotAuthenticated()
     val followupId = params("id")
-    followupFinder.findFollowupforAdmin(new ObjectId(followupId)) match {
+    followupFinder.findFollowupforDashboard(new ObjectId(followupId)) match {
       case Right(followup) => followup
       case Left(msg) => NotFound(msg)
     }

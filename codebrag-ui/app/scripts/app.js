@@ -23,7 +23,7 @@ angular.module('codebrag.commits', [
 
 angular.module('codebrag.followups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.tour']);
 
-angular.module('codebrag.allfollowups', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.tour','codebrag.followups']);
+angular.module('codebrag.dashboard', ['ngResource', 'ui.compat', 'codebrag.auth', 'codebrag.events', 'codebrag.tour','codebrag.followups']);
 
 angular.module('codebrag.invitations', ['ui.validate', 'ui.keypress']);
 
@@ -49,7 +49,7 @@ angular.module('codebrag', [
     'codebrag.commits',
     'codebrag.branches',
     'codebrag.followups',
-    'codebrag.allfollowups',
+    'codebrag.dashboard',
     'codebrag.repostatus',
     'codebrag.favicon',
     'codebrag.tour',
@@ -163,21 +163,21 @@ angular.module('codebrag.userMgmt').run(function(userMgmtService) {
     userMgmtService.initialize();
 });
 
-angular.module('codebrag.allfollowups')
+angular.module('codebrag.dashboard')
 .config(function ($stateProvider, authenticatedUser) {
     $stateProvider
-        .state('allfollowups', {
-            url: '/allfollowups',
+        .state('dashboard', {
+            url: '/dashboard',
             abstract: true,
-            templateUrl: 'views/secured/followups/allfollowups.html',
+            templateUrl: 'views/secured/dashboard/dashboard.html',
             resolve: authenticatedUser
         })
-        .state('allfollowups.list', {
+        .state('dashboard.list', {
             url: '',
             templateUrl: 'views/secured/followups/emptyFollowups.html'
         })
-        .state('allfollowups.details', {
+        .state('dashboard.details', {
             url: '/{followupId}/comments/{commentId}',
-            templateUrl: 'views/secured/followups/allfollowupDetails.html'
+            templateUrl: 'views/secured/dashboard/dashboardDetails.html'
         });
 });

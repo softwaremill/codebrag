@@ -129,7 +129,7 @@ class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends Fol
       case like: Like => FollowupLastLikeView(like.id.toString, author.name, like.postingTime, author.avatarUrl)
     }
   }
- def findAllFollowupsByCommitForAdmin(): FollowupsByCommitListView = db.withTransaction { implicit session =>
+ def findAllFollowupsByCommitForDashboard(): FollowupsByCommitListView = db.withTransaction { implicit session =>
     val followups = findAllFollowups()
     val followupReactions = findFollowupReactions(followups)
     val lastReactions = findLastReactionsForFollowups(followups)
@@ -154,7 +154,7 @@ class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends Fol
   private def findAllFollowups()(implicit session: Session): List[SQLFollowup] = {
     followups.list()
   }
-    def findFollowupforAdmin(followupId: ObjectId) = db.withTransaction { implicit session =>
+    def findFollowupforDashboard(followupId: ObjectId) = db.withTransaction { implicit session =>
     val r = for {
       followup <- followups.filter(f => f.id === followupId).firstOption
       reaction <- findLastReaction(followup.lastReactionId)
