@@ -10,7 +10,7 @@ angular.module('codebrag.followups')
         };
 
         function initCtrl() {
-            followupsService.followups().then(function(followups) {
+            followupsService.allFollowups().then(function(followups) {
                 $scope.followupCommits = followups;
             });
             $scope.hasFollowupsAvailable = followupsService.hasFollowups;
