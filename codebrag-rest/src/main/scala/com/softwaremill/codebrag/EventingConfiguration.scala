@@ -25,7 +25,7 @@ trait EventingConfiguration extends ActorSystemSupport {
   lazy val eventLogger = actorSystem.actorOf(Props(classOf[EventLogger]))
   lazy val followupGeneratorActor = actorSystem.actorOf(Props(new FollowupsGenerator(followupDao, userDao, commitInfoDao, followupWithReactionsDao: FollowupWithReactionsDAO)))
   lazy val statsEventsCollector = actorSystem.actorOf(Props(new StatisticEventsCollector(eventDao)))
-  lazy val eventHookPropagator = actorSystem.actorOf(Props(new EventHookPropagator(config.eventHooks)))
+  lazy val eventHookPropagator = actorSystem.actorOf(Props(new EventHookPropagator(config.eventHooks, commitInfoDao, userDao)))
 
   def setupEvents() {
     actorSystem.eventStream.subscribe(eventLogger, classOf[Event])
