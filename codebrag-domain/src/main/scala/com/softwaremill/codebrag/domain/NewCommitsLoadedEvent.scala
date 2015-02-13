@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.domain
 
-import com.softwaremill.codebrag.common.{Clock, Event}
+import com.softwaremill.codebrag.common.{Hookable, Clock, Event}
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
 
@@ -11,7 +11,14 @@ import org.joda.time.DateTime
  * @param newCommits list of incoming commits
  * @param clock to obtain when event was created
  */
-case class NewCommitsLoadedEvent(firstTime: Boolean, repoName: String, currentSHA: String, newCommits: List[PartialCommitInfo])(implicit clock: Clock) extends Event {
+case class NewCommitsLoadedEvent(
+    firstTime: Boolean,
+    repoName: String,
+    currentSHA: String,
+    newCommits: List[PartialCommitInfo]
+  )(implicit clock: Clock) extends Event with Hookable {
+
+  val hookName = "new-commits-loaded"
 
   def timestamp: DateTime = clock.nowUtc
 

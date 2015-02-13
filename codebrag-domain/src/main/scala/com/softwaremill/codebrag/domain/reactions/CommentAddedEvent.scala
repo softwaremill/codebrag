@@ -1,14 +1,17 @@
 package com.softwaremill.codebrag.domain.reactions
 
-import com.softwaremill.codebrag.common.{StatisticEvent, Clock, Event}
+import com.softwaremill.codebrag.common._
 import com.softwaremill.codebrag.domain.Comment
-import org.bson.types.ObjectId
 import org.joda.time.DateTime
 
 /**
  * Describes event when someone added a comment
  */
-case class CommentAddedEvent(comment: Comment)(implicit clock: Clock) extends Event with StatisticEvent {
+case class CommentAddedEvent(
+    comment: Comment
+  )(implicit clock: Clock) extends Event with StatisticEvent with Hookable {
+
+  val hookName = "comment-added"
 
   def eventType = CommentAddedEvent.EventType
 
