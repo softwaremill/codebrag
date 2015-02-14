@@ -168,7 +168,7 @@ class EventHookPropagatorSpec
             "fileName": "test2.txt",
             "lineNumber": 321
           },
-          "hookName": "comment-added",
+          "hookName": "comment-added-hook",
           "hookDate": "$nowUtcStr"
         }
         """.replaceAll(" ", "").replaceAll("\n", "")
@@ -200,7 +200,7 @@ class EventHookPropagatorSpec
             "emailLowerCase": "test@domain.com",
             "aliases": null
           },
-          "hookName": "commit-reviewed",
+          "hookName": "commit-reviewed-hook",
           "hookDate": "$nowUtcStr"
         }
         """.replaceAll(" ", "").replaceAll("\n", "")
@@ -226,7 +226,7 @@ class EventHookPropagatorSpec
               "date": "$nowUtcStr"
             }
           ],
-          "hookName": "new-commits-loaded",
+          "hookName": "new-commits-loaded-hook",
           "hookDate": "$nowUtcStr"
         }
         """.replaceAll(" ", "").replaceAll("\n", "")
@@ -248,7 +248,7 @@ class EventHookPropagatorSpec
           },
           "login": "super",
           "fullName": "Master-Disaster",
-          "hookName": "new-user-registered",
+          "hookName": "new-user-registered-hook",
           "hookDate": "$nowUtcStr"
         }
         """.replaceAll(" ", "").replaceAll("\n", "")
