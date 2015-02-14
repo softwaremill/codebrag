@@ -8,6 +8,7 @@ If you are just looking for installation or upgrade instructions,
 please refer to the [wiki](https://github.com/softwaremill/codebrag/wiki).
 
 [Changelog](CHANGELOG.md)
+[WebHooks](WEBHOOKS.adoc)
 
 Developer guide
 ---
