@@ -10,15 +10,16 @@ import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain._
-import com.softwaremill.codebrag.domain.reactions.{CommitReviewedEvent, CommentAddedEvent, UnlikeEvent, LikeEvent}
-import com.sun.net.httpserver.{HttpExchange, HttpHandler, HttpServer}
+import reactions._
+import com.sun.net.httpserver._
+
 import org.bson.types.ObjectId
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormatter
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, WordSpec}
 import org.mockito.Mockito._
+
+import scala.collection.convert.Wrappers._
 
 class EventHookPropagatorSpec
   extends TestKit(ActorSystem("testSystem"))
@@ -31,6 +32,7 @@ class EventHookPropagatorSpec
 
   var remoteHost: HttpServer = null
   var remoteHook: StringWriter = null
+  var headers: Headers = null
   var done = false
 
   var mockUserDao = mock[UserDAO]
@@ -256,6 +258,18 @@ class EventHookPropagatorSpec
       remoteHook.toString must include(expected)
     }
 
+    "propagated hook must be UTF-8 encoded" in {
+
+      actorRef ! NewUserRegistered(id, "super", "Master-Disaster", "master@domain.com")
+
+      awaitCond(done)
+
+      val contentType = JListWrapper(headers.get("Content-Type")).mkString(";")
+
+      contentType must include("application/json")
+      contentType must include("UTF-8")
+    }
+
   }
 
   before {
@@ -270,6 +284,8 @@ class EventHookPropagatorSpec
           .continually(in.read)
           .takeWhile(-1 != _)
           .foreach(remoteHook.write)
+
+        headers = t.getRequestHeaders
 
         done = true
 

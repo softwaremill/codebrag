@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.domain.reactions._
 
 import akka.actor.Actor
 import com.ning.http.client.StringPart
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import com.typesafe.scalalogging.slf4j.Logging
 import dispatch._
 import org.json4s.jackson.Serialization.{write => jsonWrite}
@@ -66,12 +66,11 @@ class EventHookPropagator(
 
       case Some(hookUrls) =>
         val json = jsonWrite(hook)
-        val body = new StringPart(hookName, json)
 
         hookUrls.foreach { hookUrl =>
-          val request = url(hookUrl).POST.setHeader("Content-Type", "application/json; charset=UTF-8").addBodyPart(body)
+          val request = url(hookUrl).POST.setHeader("Content-Type", "application/json; charset=UTF-8") << json
 
-          Http(request OK as.String).onComplete((status) =>
+          Http(request OK as.String).onComplete( status =>
             logger.debug(s"Got response: $status from $hookUrl")
           )
         }
