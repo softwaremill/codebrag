@@ -18,7 +18,7 @@ These are the supported hooks:
 
 You can define multiple listeners for every hook, just separate urls by comma
 
-Example configuration
+### Example configuration
 ----
 hooks {
     like-hook = ["http://localhost:8000/", "http://some.other.host:9898/"]
