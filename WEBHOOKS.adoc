@@ -1,0 +1,203 @@
+# WebHooks
+
+Codebrag supports webhooks which can be used to notify external systems about all internal events.
+
+:toc:
+
+## Configuration
+
+Just define the `hooks` section in your `application.conf` file based on the below example.
+These are the supported hooks:
+
+- `like-hook` - occurs when a user likes a given change
+- `unlike-hook` - occurs if a user dislikes the previously liked change
+- `comment-added-hook` - occurs when a user post a comment
+- `commit-reviewed` - occurs when a user hit `Reviewed` button
+- `new-commits-loaded-hook` - occurs after loading by Codebrag new commits from repo
+- `new-user-registered-hook` - occurs on registering a new user in the system
+
+You can define multiple listeners for every hook, just separate urls by comma
+
+Example configuration
+----
+hooks {
+    like-hook = ["http://localhost:8000/", "http://some.other.host:9898/"]
+    unlike-hook = ["http://localhost:8000/"]
+}
+----
+
+## Format
+
+Right now Codebrag sends hooks as JSON encoded as UTF-8, below is the list of formats for each hook:
+
+### like-hook
+
+[source,json]
+----
+{
+  "commitInfo": {
+    "repoName": string,
+    "sha": string,
+    "message": string,
+    "authorName": string,
+    "authorEmail": string,
+    "committerName": string,
+    "committerEmail": string,
+    "authorDate": date,
+    "commitDate": date,
+    "parents": [string, string]
+  },
+  "likedBy": {
+    "name": string,
+    "emailLowerCase": string,
+    "aliases": [{
+      alias: string
+    }]
+  },
+  "like": {
+    "postingTime": date,
+    "fileName": string,
+    "lineNumber": int
+  },
+  "hookName": "like-hook",
+  "hookDate": date
+}
+----
+
+### unlike-hook
+
+[source,json]
+----
+{
+  "commitInfo": {
+    "repoName": string,
+    "sha": string,
+    "message": string,
+    "authorName": string,
+    "authorEmail": string,
+    "committerName": string,
+    "committerEmail": string,
+    "authorDate": date,
+    "commitDate": date,
+    "parents": [string, string]
+  },
+  "unlikedBy": {
+    "name": string,
+    "emailLowerCase": string,
+    "aliases": [{
+      alias: string
+    }]
+  },
+  "like": {
+    "postingTime": date,
+    "fileName": string,
+    "lineNumber": int
+  },
+  "hookName": "unlike-hook",
+  "hookDate": date
+}
+----
+
+### comment-added-hook
+
+[source,json]
+----
+{
+  "commitInfo": {
+    "repoName": string,
+    "sha": string,
+    "message": string,
+    "authorName": string,
+    "authorEmail": string,
+    "committerName": string,
+    "committerEmail": string,
+    "authorDate": date,
+    "commitDate": date,
+    "parents": [string, string]
+  },
+  "commentedBy": {
+    "name": string,
+    "emailLowerCase": string,
+    "aliases": [{
+      alias: string
+    }]
+  },
+  "comment": {
+    "message": string,
+    "postingTime": date,
+    "fileName": string,
+    "lineNumber": int
+  },
+  "hookName": "comment-added-hook",
+  "hookDate": date
+}
+----
+
+### commit-reviewed-hook
+
+[source,json]
+----
+{
+  "commitInfo": {
+    "repoName": string,
+    "sha": string,
+    "message": string,
+    "authorName": string,
+    "authorEmail": string,
+    "committerName": string,
+    "committerEmail": string,
+    "authorDate": date,
+    "commitDate": date,
+    "parents": [string, string]
+  },
+  "reviewedBy": {
+    "name": string,
+    "emailLowerCase": string,
+    "aliases": [{
+      alias: string
+    }]
+  },
+  "hookName": "commit-reviewed-hook",
+  "hookDate": date
+}
+----
+
+### comment-added-hook
+
+[source,json]
+----
+{
+  "repoName": string,
+  "currentSHA": string,
+  "newCommits": [
+    {
+      "sha": string,
+      "message": string,
+      "authorName": string,
+      "authorEmail": string,
+      "date": date
+    }
+  ],
+  "hookName": "new-commits-loaded-hook",
+  "hookDate": date
+}
+----
+
+### new-user-registered-hook
+
+[source,json]
+----
+{
+  "newUser": {
+    "name": string,
+    "emailLowerCase": string,
+    "aliases": [{
+      alias: string
+    }]
+  },
+  "login": string,
+  "fullName": string,
+  "hookName": "new-user-registered-hook",
+  "hookDate": date
+}
+----
