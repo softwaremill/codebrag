@@ -1,7 +1,7 @@
 package com.softwaremill.codebrag
 
 import akka.actor.Props
-import com.softwaremill.codebrag.common.{Hookable, Event, StatisticEvent}
+import com.softwaremill.codebrag.common._
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.dao.events.EventDAO
 import com.softwaremill.codebrag.service.followups.FollowupsGenerator
@@ -14,6 +14,8 @@ import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.followup.{FollowupWithReactionsDAO, FollowupDAO}
 
 trait EventingConfiguration extends ActorSystemSupport {
+
+  implicit val clock: Clock
 
   def userDao: UserDAO
   def commitInfoDao: CommitInfoDAO
