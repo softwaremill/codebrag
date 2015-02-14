@@ -40,6 +40,11 @@ object InternalSerializers {
 
   val UnlikeEventSerializer = FieldSerializer[UnlikeEvent](ignore("clock"))
 
+  val UserAliasSerializer = FieldSerializer[UserAlias](
+    ignore("id") orElse
+    ignore("userId")
+  )
+
   val all =
     DefaultFormats +
     FieldSerializer[Hook]() +
@@ -49,7 +54,8 @@ object InternalSerializers {
     PartialCommitInfoSerializer +
     CommentSerializer +
     LikeEventSerializer +
-    UnlikeEventSerializer ++
+    UnlikeEventSerializer +
+    UserAliasSerializer ++
     JodaTimeSerializers.all
 
 }
