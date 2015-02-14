@@ -51,7 +51,7 @@ Right now Codebrag sends hooks as JSON encoded as UTF-8, below is the list of fo
     "name": string,
     "emailLowerCase": string,
     "aliases": [{
-      alias: string
+      "alias": string
     }]
   },
   "like": {
@@ -85,7 +85,7 @@ Right now Codebrag sends hooks as JSON encoded as UTF-8, below is the list of fo
     "name": string,
     "emailLowerCase": string,
     "aliases": [{
-      alias: string
+      "alias": string
     }]
   },
   "like": {
@@ -119,7 +119,7 @@ Right now Codebrag sends hooks as JSON encoded as UTF-8, below is the list of fo
     "name": string,
     "emailLowerCase": string,
     "aliases": [{
-      alias: string
+      "alias": string
     }]
   },
   "comment": {
@@ -154,7 +154,7 @@ Right now Codebrag sends hooks as JSON encoded as UTF-8, below is the list of fo
     "name": string,
     "emailLowerCase": string,
     "aliases": [{
-      alias: string
+      "alias": string
     }]
   },
   "hookName": "commit-reviewed-hook",
@@ -192,7 +192,7 @@ Right now Codebrag sends hooks as JSON encoded as UTF-8, below is the list of fo
     "name": string,
     "emailLowerCase": string,
     "aliases": [{
-      alias: string
+      "alias": string
     }]
   },
   "login": string,
