@@ -1,99 +1,85 @@
 package com.softwaremill.codebrag.eventstream
 
-import akka.actor.Actor
-import com.ning.http.client.StringPart
-import com.softwaremill.codebrag.common.Hookable
+import com.softwaremill.codebrag.common.Clock
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain._
 import com.softwaremill.codebrag.domain.reactions._
 
+import akka.actor.Actor
+import com.ning.http.client.StringPart
+
 import com.typesafe.scalalogging.slf4j.Logging
 import dispatch._
-import org.joda.time.{DateTime, DateTimeZone}
-import org.json4s.FieldSerializer._
-import org.json4s.ext.JodaTimeSerializers
 import org.json4s.jackson.Serialization.{write => jsonWrite}
-import org.json4s.mongo._
-import org.json4s.{DefaultFormats, FieldSerializer}
-
-sealed trait Hook {
-  def event: Hookable
-  val hookDate: DateTime = DateTime.now(DateTimeZone.UTC)
-}
-
-case class LikeHook(commitInfo: Option[CommitInfo], override val event: Hookable) extends Hook
-case class UnlikeHook(commitInfo: Option[CommitInfo], override val event: Hookable) extends Hook
-case class CommentAddedHook(commitInfo: Option[CommitInfo], user: Option[User], override val event: Hookable) extends Hook
-case class CommitReviewedHook(user: Option[User], override val event: Hookable) extends Hook
-case class NewCommitsLoadedHook(user: Option[User], override val event: Hookable) extends Hook
-case class NewUserRegisteredHook(user: Option[User], override val event: Hookable) extends Hook
 
 class EventHookPropagator(
     hookListeners: Map[String, List[String]],
     commitInfoDao: CommitInfoDAO,
     userDao: UserDAO
-  ) extends Actor with Logging {
+  )(implicit clock: Clock) extends Actor with Logging {
 
-  val LikeEventSerializer = FieldSerializer[LikeEvent](ignore("clock"))
-  val UnlikeEventSerializer = FieldSerializer[UnlikeEvent](ignore("clock"))
-
-  implicit val formats =
-    DefaultFormats +
-    new ObjectIdSerializer() +
-    LikeEventSerializer +
-    UnlikeEventSerializer ++
-    JodaTimeSerializers.all
+  implicit val formats = InternalSerializers.all
 
   def receive = {
     case (event: LikeEvent) =>
       val commitInfo = commitInfoDao.findByCommitId(event.like.commitId)
-      notifyListeners(LikeHook(commitInfo, event))
+      val user = userDao.findById(event.userId)
+      notifyListeners(LikeHook(commitInfo, user, event.like, event.hookName))
 
     case (event: UnlikeEvent) =>
       val commitInfo = commitInfoDao.findByCommitId(event.like.commitId)
-      notifyListeners(UnlikeHook(commitInfo, event))
+      val user = event.userId  match {
+        case Some(userId) => userDao.findById(userId)
+        case _ => None
+      }
+      notifyListeners(UnlikeHook(commitInfo, user, event.like, event.hookName))
 
     case (event: CommentAddedEvent) =>
       val commitInfo = commitInfoDao.findByCommitId(event.comment.commitId)
       val user = userDao.findById(event.userId)
-      notifyListeners(CommentAddedHook(commitInfo, user, event))
+      notifyListeners(CommentAddedHook(commitInfo, user, event.comment, event.hookName))
 
     case (event: CommitReviewedEvent) =>
       val user = userDao.findById(event.userId)
-      notifyListeners(CommitReviewedHook(user, event))
+      notifyListeners(CommitReviewedHook(event.commit, user, event.hookName))
 
     case (event: NewCommitsLoadedEvent) =>
       val user = event.userId match {
         case Some(userId) => userDao.findById(userId)
         case _ => None
       }
-      notifyListeners(NewCommitsLoadedHook(user, event))
+      notifyListeners(NewCommitsLoadedHook(user, event.repoName, event.currentSHA, event.newCommits, event.hookName))
 
     case (event: NewUserRegistered) =>
       val user = userDao.findById(event.userId)
-      notifyListeners(NewUserRegisteredHook(user, event))
+      notifyListeners(NewUserRegisteredHook(user, event.login, event.fullName, event.hookName))
 
   }
 
   private def notifyListeners(hook: Hook) = {
-    val hookName = hook.event.hookName
-
+    val hookName = hook.hookName
     logger.debug(s"Sending $hookName to subscribers...")
 
-    for (hookUrl <- hookListeners(hookName)) {
-      logger.debug(s"Sending $hookName to $hookUrl")
+    hookListeners.get(hookName) match {
 
-      val json = jsonWrite(hook)
-      val body = new StringPart(hookName, json)
-      val request = url(hookUrl).POST.setHeader("Content-Type", "application/json; charset=UTF-8").addBodyPart(body)
+      case Some(hookUrls) =>
+        val json = jsonWrite(hook)
+        val body = new StringPart(hookName, json)
 
-      Http(request OK as.String).onComplete( (status) =>
-        logger.debug(s"Got response: $status")
-      )
+        hookUrls.foreach { hookUrl =>
+          val request = url(hookUrl).POST.setHeader("Content-Type", "application/json; charset=UTF-8").addBodyPart(body)
+
+          Http(request OK as.String).onComplete((status) =>
+            logger.debug(s"Got response: $status from $hookUrl")
+          )
+        }
+
+      case _ =>
+        logger.debug(s"No listeners defined for $hookName")
+
     }
-
   }
 
 }
