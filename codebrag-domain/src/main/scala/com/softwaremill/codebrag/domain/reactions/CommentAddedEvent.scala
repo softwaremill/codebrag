@@ -11,7 +11,7 @@ case class CommentAddedEvent(
     comment: Comment
   )(implicit clock: Clock) extends Event with StatisticEvent with Hookable {
 
-  val hookName = "comment-added"
+  val hookName = "comment-added-hook"
 
   def eventType = CommentAddedEvent.EventType
 

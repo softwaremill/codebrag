@@ -18,7 +18,7 @@ case class NewCommitsLoadedEvent(
     newCommits: List[PartialCommitInfo]
   )(implicit clock: Clock) extends Event with Hookable {
 
-  val hookName = "new-commits-loaded"
+  val hookName = "new-commits-loaded-hook"
 
   def timestamp: DateTime = clock.nowUtc
 
