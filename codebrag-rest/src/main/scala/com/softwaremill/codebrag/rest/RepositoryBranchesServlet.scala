@@ -18,24 +18,27 @@ class RepositoryBranchesServlet(val authenticator: Authenticator,
     listRepositoryBranches.execute(user.id, repo)
   }
 
-  post("/:repo/branches/:branch/watch") {
-    val form = WatchedBranchForm(extractReqUrlParam("repo"), extractReqUrlParam("branch"))
+  post("/:repo/branches/*/watch") {
+    val branchName = extractSplatParam(0, "branch")
+    val form = WatchedBranchForm(extractReqUrlParam("repo"), branchName)
     watchBranch.execute(user.id, form) match {
       case Left(errors) => scalatra.BadRequest(Map("errors" -> errors))
       case Right(observedBranch) => observedBranch
     }
   }
 
-  delete("/:repo/branches/:branch/watch") {
-    val form = WatchedBranchForm(extractReqUrlParam("repo"), extractReqUrlParam("branch"))
+  delete("/:repo/branches/*/watch") {
+    val branchName = extractSplatParam(0, "branch")
+    val form = WatchedBranchForm(extractReqUrlParam("repo"), branchName)
     unwatchBranch.execute(user.id, form) match {
       case Left(errors) => scalatra.BadRequest(Map("errors" -> errors))
       case Right(_) => scalatra.Ok()
     }
   }
 
-  get("/:repo/branches/:branch/count") {
-    val bc = UserBrowsingContext(user.id, extractReqUrlParam("repo"), extractReqUrlParam("branch"))
+  get("/:repo/branches/*/count") {
+    val branchName = extractSplatParam(0, "branch")
+    val bc = UserBrowsingContext(user.id, extractReqUrlParam("repo"), branchName)
     Map("toReviewCount" -> toReviewCommitsFinder.count(bc))
   }
 

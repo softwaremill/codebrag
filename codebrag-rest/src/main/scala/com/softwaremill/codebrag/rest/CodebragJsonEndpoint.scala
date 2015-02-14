@@ -50,6 +50,10 @@ trait CodebragJsonEndpoint extends JacksonJsonSupport with JValueResult with Log
     value
   }
 
+  def extractSplatParam(index: Int, logicalParamName: String) = {
+    multiParams("splat").lift(index).getOrElse(haltWithMissingKey(logicalParamName))
+  }
+
   def extractReqUrlParam(key: String): String = params.getOrElse(key, haltWithMissingKey(key))
 
   def extractReq[T: Manifest](key: String): T = (parsedBody \ key).extractOrElse[T](haltWithMissingKey(key))

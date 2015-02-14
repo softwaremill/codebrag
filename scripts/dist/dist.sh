@@ -9,8 +9,20 @@ if [ $# -eq 1 ] && [ $1 = "--help" ]; then
   exit
 fi
 
-CODEBRAG_ROOT=../..
-DIST_DIR=codebrag-2.3
+# build dist directory name from current jar version in format `codebrag-x.y.z`
+dist_dir_name() {
+  local root_dir=$1
+  local jar_file=$(find $root_dir -iname codebrag-dist-assembly-*.jar)
+  if [ -z $jar_file ]; then
+    echo "Cannot find codebrag jar file in $1"
+    exit 1
+  fi
+  local dist_dir=$(echo ${jar_file##*/} | xargs -I {} basename {} .jar | sed s/-dist-assembly//)
+  echo $dist_dir
+}
+
+CODEBRAG_ROOT=../../
+DIST_DIR=$(dist_dir_name $CODEBRAG_ROOT)
 DIST_ARCHIVE=codebrag.zip
 DIST_ARCHIVE_PREVIEW=codebrag-preview.zip
 WAR_FILE=$CODEBRAG_ROOT/codebrag-dist/target/scala-2.10/codebrag-dist-assembly*.jar

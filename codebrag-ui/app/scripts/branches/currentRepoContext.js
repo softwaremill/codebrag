@@ -1,6 +1,6 @@
 angular.module('codebrag.branches')
 
-    .factory('currentRepoContext', function($state, $stateParams, authService, $rootScope, $q, events, UserBrowsingContext) {
+    .factory('currentRepoContext', function($state, $stateParams, authService, $rootScope, $q, events, UserBrowsingContext, currentCommit) {
 
         var currentContext,
             contextReady = $q.defer(),
@@ -32,6 +32,7 @@ angular.module('codebrag.branches')
                 if(this.repo === newRepo || angular.isUndefined(this.all[newRepo])) return;
                 this.repo = newRepo;
                 this.switchBranch(this.all[newRepo]);
+                currentCommit.empty();
             },
 
             switchCommitsFilter: function (newFilter) {
