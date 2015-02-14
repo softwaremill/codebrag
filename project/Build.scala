@@ -65,7 +65,6 @@ object Dependencies {
   val scalatraJson = "org.scalatra" %% "scalatra-json" % scalatraVersion
   val json4s = "org.json4s" %% "json4s-jackson" % "3.2.10"
   val json4sExt = "org.json4s" %% "json4s-ext" % "3.2.10"
-  val json4sMongo = "org.json4s" %% "json4s-mongo" % "3.2.10"
   val scalatraAuth = "org.scalatra" %% "scalatra-auth" % scalatraVersion  exclude("commons-logging", "commons-logging")
 
   val jodaTime = "joda-time" % "joda-time" % "2.0"
@@ -201,7 +200,7 @@ object SmlCodebragBuild extends Build {
     "codebrag-service",
     file("codebrag-service"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commonsValidator,
-      javaxMail, scalate, egitGithubApi, jGit, jsch, dispatch, json4s, json4sExt, json4sMongo, commonsLang, scalaval, akka, akkaSlf4j))
+      javaxMail, scalate, egitGithubApi, jGit, jsch, dispatch, json4s, json4sExt, commonsLang, scalaval, akka, akkaSlf4j))
   ) dependsOn(domain, common, dao % "test->test;compile->compile")
 
   lazy val rest: Project = Project(
