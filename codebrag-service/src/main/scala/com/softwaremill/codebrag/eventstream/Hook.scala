@@ -11,7 +11,7 @@ sealed trait Hook {
 
 case class LikeHook(
    commitInfo: Option[CommitInfo],
-   user: Option[User],
+   likedBy: Option[User],
    like: Like,
    override val hookName: String
   )(implicit clock: Clock)
@@ -22,7 +22,7 @@ case class LikeHook(
 
 case class UnlikeHook(
   commitInfo: Option[CommitInfo],
-  user: Option[User],
+  unlikedBy: Option[User],
   like: Like,
   override val hookName: String
   ) (implicit clock: Clock)
@@ -33,7 +33,7 @@ case class UnlikeHook(
 
 case class CommentAddedHook(
   commitInfo: Option[CommitInfo],
-  user: Option[User],
+  commentedBy: Option[User],
   comment: Comment,
   override val hookName: String
   ) (implicit clock: Clock)
@@ -44,7 +44,7 @@ case class CommentAddedHook(
 
 case class CommitReviewedHook(
   commitInfo: CommitInfo,
-  user: Option[User],
+  reviewedBy: Option[User],
   override val hookName: String
   ) (implicit clock: Clock)
   extends Hook {
@@ -65,7 +65,7 @@ case class NewCommitsLoadedHook(
 }
 
 case class NewUserRegisteredHook(
-  user: Option[User],
+  newUser: Option[User],
   login: String,
   fullName: String,
   override val hookName: String

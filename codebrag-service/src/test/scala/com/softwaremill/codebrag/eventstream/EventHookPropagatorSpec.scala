@@ -83,7 +83,7 @@ class EventHookPropagatorSpec
             "commitDate": "$nowUtcStr",
             "parents": []
           },
-          "user": {
+          "likedBy": {
             "name": "test",
             "emailLowerCase": "test@domain.com",
             "aliases": null
@@ -120,7 +120,7 @@ class EventHookPropagatorSpec
             "commitDate": "$nowUtcStr",
             "parents": []
           },
-          "user": {
+          "unlikedBy": {
             "name": "test",
             "emailLowerCase": "test@domain.com",
             "aliases": null
@@ -157,7 +157,7 @@ class EventHookPropagatorSpec
             "commitDate": "$nowUtcStr",
             "parents": []
           },
-          "user": {
+          "commentedBy": {
             "name": "test",
             "emailLowerCase": "test@domain.com",
             "aliases": null
@@ -195,7 +195,7 @@ class EventHookPropagatorSpec
             "commitDate": "$nowUtcStr",
             "parents": []
           },
-          "user": {
+          "reviewedBy": {
             "name": "test",
             "emailLowerCase": "test@domain.com",
             "aliases": null
@@ -241,7 +241,7 @@ class EventHookPropagatorSpec
 
       val expected = s"""
         {
-          "user": {
+          "newUser": {
             "name": "test",
             "emailLowerCase": "test@domain.com",
             "aliases": null
