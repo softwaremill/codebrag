@@ -54,10 +54,10 @@ class EventHookPropagatorSpec
   val hooks = Map(
     "like-hook" -> List("http://localhost:8000/"),
     "unlike-hook" -> List("http://localhost:8000/"),
-    "comment-added" -> List("http://localhost:8000/"),
-    "commit-reviewed" -> List("http://localhost:8000/"),
-    "new-commits-loaded" -> List("http://localhost:8000/"),
-    "new-user-registered" -> List("http://localhost:8000/")
+    "comment-added-hook" -> List("http://localhost:8000/"),
+    "commit-reviewed-hook" -> List("http://localhost:8000/"),
+    "new-commits-loaded-hook" -> List("http://localhost:8000/"),
+    "new-user-registered-hook" -> List("http://localhost:8000/")
   )
 
   val actorRef = TestActorRef(new EventHookPropagator(hooks, mockCommitInfoDao, mockUserDao))
