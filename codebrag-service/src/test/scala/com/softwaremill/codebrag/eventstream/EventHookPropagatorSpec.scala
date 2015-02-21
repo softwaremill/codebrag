@@ -270,6 +270,19 @@ class EventHookPropagatorSpec
       contentType must include("UTF-8")
     }
 
+    "must not create hook if no listeners were defined" in {
+      import scala.concurrent.duration._
+
+      reset(mockUserDao)
+      val actorRef = TestActorRef(new EventHookPropagator(Map(), mockCommitInfoDao, mockUserDao))
+
+      actorRef ! NewUserRegistered(id, "super", "Master-Disaster", "master@domain.com")
+
+      receiveOne(1.second)
+
+      verifyZeroInteractions(mockUserDao)
+    }
+
   }
 
   before {
