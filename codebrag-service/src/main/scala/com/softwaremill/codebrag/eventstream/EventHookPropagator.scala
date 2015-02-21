@@ -9,7 +9,7 @@ import com.softwaremill.codebrag.domain.reactions._
 
 import akka.actor.Actor
 import com.ning.http.client.StringPart
-import scala.concurrent.ExecutionContext.Implicits.global
+import akka.dispatch.ExecutionContexts.global
 import com.typesafe.scalalogging.slf4j.Logging
 import dispatch._
 import org.json4s.jackson.Serialization.{write => jsonWrite}
