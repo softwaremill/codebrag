@@ -8,8 +8,7 @@ import com.softwaremill.codebrag.domain._
 import com.softwaremill.codebrag.domain.reactions._
 
 import akka.actor.Actor
-import com.ning.http.client.StringPart
-import akka.dispatch.ExecutionContexts.global
+import akka.dispatch.ExecutionContexts.global // this is need by dispatch._
 import com.typesafe.scalalogging.slf4j.Logging
 import dispatch._
 import org.json4s.jackson.Serialization.{write => jsonWrite}
