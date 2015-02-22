@@ -43,3 +43,25 @@ email {
     ssl-connection = true
     verify-ssl-certificate = true
 }
+
+### allows define hooks for different events
+hooks {
+    ### send 'like' events to these listeners
+    # like-hook = ["http://localhost:8000", "http://some.other.host:9899"]
+
+    ### send 'unlike' events to these listeners
+    # unlike-hook = []
+
+    ### send 'comment added' events to these listeners
+    # comment-added-hook = []
+
+    ### send 'commit reviewed' events to these listeners
+    # commit-reviewed-hook = []
+
+    ### send 'new commits loaded' events to these listeners
+    # new-commits-loaded-hook = []
+
+    ### send 'new user registered' events to these listeners
+    # new-user-registered-hook = []
+
+}

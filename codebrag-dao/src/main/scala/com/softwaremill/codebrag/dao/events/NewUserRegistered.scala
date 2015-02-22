@@ -1,11 +1,18 @@
 package com.softwaremill.codebrag.dao.events
 
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.common.{StatisticEvent, Clock, Event}
+import com.softwaremill.codebrag.common._
 import com.softwaremill.codebrag.domain.{User, UserLike}
 import org.joda.time.DateTime
 
-case class NewUserRegistered(id: ObjectId, login: String, fullName: String, email: String)(implicit clock: Clock) extends Event with StatisticEvent {
+case class NewUserRegistered(
+    id: ObjectId,
+    login: String,
+    fullName: String,
+    email: String
+  )(implicit clock: Clock) extends Event with StatisticEvent with Hookable {
+
+  val hookName = "new-user-registered-hook"
 
   def eventType = NewUserRegistered.EventType
 
