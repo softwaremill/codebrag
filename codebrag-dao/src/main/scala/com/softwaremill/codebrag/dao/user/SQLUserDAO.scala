@@ -15,6 +15,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
       userSettings += toSQLSettings(user.id, user.settings)
       auths += toSQLAuth(user.id, user.authentication)
       userAliases ++= user.aliases.emailAliases.map(toSQLUserAlias)
+      userTokens ++= user.tokens.map(UserToken(user.id, _))
       users += tuple(user)
     }
   }
@@ -27,7 +28,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
       l <- u.lastNotif
     } yield (u, a, s, l)
 
-    q.list().map(queryUserAliases).map(untuple)
+    q.list().map(queryUserAliases).map(queryUserTokens).map(untuple)
   }
 
   def findById(userId: ObjectId) = findOneWhere(_.id === userId)
@@ -42,7 +43,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
       l <- u.lastNotif
     } yield (u, a, s, l)
 
-    q.firstOption.map(queryUserAliases).map(untuple)
+    q.firstOption.map(queryUserAliases).map(queryUserTokens).map(untuple)
   }
 
   def findByLoginOrEmail(login: String, email: String) = db.withTransaction { implicit session =>
@@ -54,10 +55,20 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
       l <- u.lastNotif
     } yield (u, a, s, l)
 
-    q.firstOption.map(queryUserAliases).map(untuple)
+    q.firstOption.map(queryUserAliases).map(queryUserTokens).map(untuple)
   }
 
-  def findByToken(token: String) = findOneWhere(_.token === token)
+  def findByToken(token: String) = db.withTransaction { implicit session =>
+    val q = for {
+      u <- users if u.regular
+      t <- u.tokens if t.userToken === token
+      s <- u.settings
+      l <- u.lastNotif
+      a <- u.auth
+    } yield (u, a, s, l)
+
+    q.firstOption.map(queryUserAliases).map(queryUserTokens).map(untuple)
+  }
 
   def findCommitAuthor(commit: CommitInfo) = db.withSession { implicit session =>
     findAll().find { u =>
@@ -68,6 +79,15 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
   def modifyUser(user: User) = db.withTransaction { implicit session =>
     users.where(_.id === user.id).update(tuple(user))
     auths.where(_.userId === user.id).update(toSQLAuth(user.id, user.authentication))
+
+    val oldTokens = userTokens.where(_.userId === user.id).list()
+    val added = user.tokens.diff(oldTokens.map(_.token).toSet)
+
+    // Remove tokens from database.
+    userTokens.where(_.userId === user.id).filterNot(_.userToken inSet user.tokens).delete
+
+    // Insert new ones
+    userTokens.insertAll(added.map(UserToken(user.id, _)).toSeq:_*)
   }
 
   def changeAuthentication(id: ObjectId, auth: Authentication) = db.withTransaction { implicit session =>
@@ -122,13 +142,19 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
       s <- u.settings
       l <- u.lastNotif
     } yield (u, a, s, l)
-    userQuery.firstOption.map(queryUserAliases).map(untuple)
+    userQuery.firstOption.map(queryUserAliases).map(queryUserTokens).map(untuple)
   }
 
   private def queryUserAliases(tuple: (UserTuple, SQLAuth, SQLSettings, SQLLastNotif))(implicit session: Session) = {
     val userId = tuple._1._1
     val aliases = userAliases.where(_.userId === userId).list()
     (tuple._1, tuple._2, tuple._3, tuple._4, aliases)
+  }
+
+  private def queryUserTokens(tuple: (UserTuple, SQLAuth, SQLSettings, SQLLastNotif, List[UserAliases#TableElementType]))(implicit session: Session) = {
+    val userId = tuple._1._1
+    val tokens = userTokens.where(_.userId === userId).list().toSet
+    (tuple._1, tuple._2, tuple._3, tuple._4, tuple._5, tokens)
   }
 
   private def queryPartialUserAliases(tuple: (ObjectId, String, String, String))(implicit session: Session) = {

@@ -18,7 +18,7 @@ object InternalSerializers {
   val UserSerializer = FieldSerializer[User](
     ignore("id") orElse
     ignore("authentication") orElse
-    ignore("token") orElse
+    ignore("tokens") orElse
     ignore("settings") orElse
     ignore("notifications") orElse
     ignore("active") orElse

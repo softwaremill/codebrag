@@ -19,7 +19,7 @@ class SQLInternalUserDAO(val database: SQLDatabase) extends InternalUserDAO with
       lastNotifs += SQLLastNotif(id, None, None)
       userSettings += SQLSettings(id, "", emailNotificationsEnabled = false, dailyUpdatesEmailEnabled = false, appTourDone = false, toReviewStartDate = None)
       auths += SQLAuth(id, "", "", "", "", "")
-      users += (id, internalUser.name, "", "", false, false, false) // false, false, false => regular, admin, active
+      users += (id, internalUser.name, "", false, false, false) // false, false, false => regular, admin, active
 
       internalUser
     }

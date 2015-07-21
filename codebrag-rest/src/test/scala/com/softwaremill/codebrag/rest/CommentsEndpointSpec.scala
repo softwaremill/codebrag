@@ -1,19 +1,18 @@
 package com.softwaremill.codebrag.rest
 
-import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.AuthenticatableServletSpec
-import org.scalatra.auth.Scentry
-import org.mockito.Mockito._
-import org.mockito.Matchers._
-import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain._
-import org.mockito.ArgumentCaptor
-import org.joda.time.DateTime
-import org.scalatest.BeforeAndAfterEach
-import scala.Some
-import com.softwaremill.codebrag.service.comments.command.IncomingComment
 import com.softwaremill.codebrag.dao.finders.views.CommentView
+import com.softwaremill.codebrag.domain._
+import com.softwaremill.codebrag.service.comments.command.IncomingComment
+import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.usecases.reactions.AddCommentUseCase
+import org.bson.types.ObjectId
+import org.joda.time.DateTime
+import org.mockito.ArgumentCaptor
+import org.mockito.Matchers._
+import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
+import org.scalatra.auth.Scentry
 
 
 class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfterEach {
@@ -91,7 +90,7 @@ class CommentsEndpointSpec extends AuthenticatableServletSpec with BeforeAndAfte
     }
   }
 
-  def currentUser(id: ObjectId) = User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", "abcde")
+  def currentUser(id: ObjectId) = User(id, Authentication.basic("user", "password"), "John Doe", "john@doe.com", Set("abcde"))
 
   class TestableCommentsEndpoint(val authenticator: Authenticator, fakeScentry: Scentry[User], val addCommentUseCase: AddCommentUseCase) extends CommentsEndpoint {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry

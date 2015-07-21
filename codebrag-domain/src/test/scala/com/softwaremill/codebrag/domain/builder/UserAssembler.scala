@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.domain.builder
 
-import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, UserSettings, Authentication, User}
+import com.softwaremill.codebrag.domain.{Authentication, LastUserNotificationDispatch, User}
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
 
@@ -62,7 +62,7 @@ class UserAssembler(var user: User) {
   }
 
   def withToken(token: String) = {
-    user = user.copy(token = token)
+    user = user.copy(tokens = user.tokens + token)
     this
   }
 
@@ -81,5 +81,5 @@ class UserAssembler(var user: User) {
 
 object UserAssembler {
   def randomUser = new UserAssembler(createRandomUser())
-  private def createRandomUser() = User(new ObjectId, Authentication("Basic", "Sofokles", "sofokles", "token", "salt"), "Sofokles Mill", "sofo@sml.com", "token")
+  private def createRandomUser() = User(new ObjectId, Authentication("Basic", "Sofokles", "sofokles", "token", "salt"), "Sofokles Mill", "sofo@sml.com", Set("token"))
 }

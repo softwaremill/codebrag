@@ -39,7 +39,7 @@ trait SQLUserSchema {
   protected def toSQLLastNotif(id: ObjectId, lastNotif: LastUserNotificationDispatch) = SQLLastNotif(id,
     lastNotif.commits, lastNotif.followups)
 
-  protected type UserTuple = (ObjectId, String, String, String, Boolean, Boolean, Boolean)
+  protected type UserTuple = (ObjectId, String, String, Boolean, Boolean, Boolean)
 
   protected class Auths(tag: Tag) extends Table[SQLAuth](tag, "users_authentications") {
     def userId = column[ObjectId]("user_id", O.PrimaryKey)
@@ -81,7 +81,6 @@ trait SQLUserSchema {
     def id                = column[ObjectId]("id", O.PrimaryKey)
     def name              = column[String]("name")
     def emailLowerCase    = column[String]("email_lowercase")
-    def token             = column[String]("token")
     def regular           = column[Boolean]("regular")
     def admin             = column[Boolean]("admin")
     def active            = column[Boolean]("active")
@@ -90,8 +89,9 @@ trait SQLUserSchema {
     def settings = foreignKey("settings_fk", id, userSettings)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
     def lastNotif = foreignKey("last_notifs_fk", id, lastNotifs)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
     def aliases = foreignKey("aliases_fk", id, userAliases)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
+    def tokens = foreignKey("tokens_fk", id, userTokens)(_.userId, ForeignKeyAction.Cascade, ForeignKeyAction.Cascade)
 
-    def * = (id, name, emailLowerCase, token, regular, admin, active)
+    def * = (id, name, emailLowerCase, regular, admin, active)
   }
 
   protected val users = TableQuery[Users]
@@ -102,6 +102,8 @@ trait SQLUserSchema {
 
   protected def toSQLUserAlias(userAlias: UserAlias) = SQLUserAlias(userAlias.id, userAlias.userId, userAlias.alias)
 
+  protected case class UserToken(userId: ObjectId, token: String) {}
+
   protected class UserAliases(tag: Tag) extends Table[SQLUserAlias](tag, "user_aliases") {
     def id = column[ObjectId]("id", O.PrimaryKey)
     def userId = column[ObjectId]("user_id")
@@ -110,12 +112,21 @@ trait SQLUserSchema {
     def * = (id, userId, alias) <> (SQLUserAlias.tupled, SQLUserAlias.unapply)
   }
 
+  protected class UserTokens(tag: Tag) extends Table[UserToken](tag, "user_tokens") {
+    def userId = column[ObjectId]("user_id")
+    def userToken = column[String]("token", O.PrimaryKey)
+
+    def * = (userId, userToken) <>(UserToken.tupled, UserToken.unapply)
+  }
+
   protected val userAliases = TableQuery[UserAliases]
 
-  protected def tuple(user: User): UserTuple = (user.id, user.name, user.emailLowerCase, user.token, true, user.admin, user.active)
+  protected val userTokens = TableQuery[UserTokens]
 
-  protected val untuple: ((UserTuple, SQLAuth, SQLSettings, SQLLastNotif, List[SQLUserAlias])) => User = {
-    case (tuple, sqlAuth, sqlSettings, sqlLastNotif, sqlAliases) =>
-      User(tuple._1, sqlAuth.toAuth, tuple._2, tuple._3, tuple._4, tuple._6, tuple._7, sqlSettings.toSettings, sqlLastNotif.toLastNotif, UserAliases(sqlAliases.map(_.toUserAlias).toSet))
+  protected def tuple(user: User): UserTuple = (user.id, user.name, user.emailLowerCase, true, user.admin, user.active)
+
+  protected val untuple: ((UserTuple, SQLAuth, SQLSettings, SQLLastNotif, List[SQLUserAlias], Set[UserToken])) => User = {
+    case (tuple, sqlAuth, sqlSettings, sqlLastNotif, sqlAliases, sqlUserTokens) =>
+      User(tuple._1, sqlAuth.toAuth, tuple._2, tuple._3, sqlUserTokens.map(_.token), tuple._5, tuple._6, sqlSettings.toSettings, sqlLastNotif.toLastNotif, UserAliases(sqlAliases.map(_.toUserAlias).toSet))
   }
 }

@@ -23,7 +23,7 @@ class RegisterNewUserUseCase(registerService: RegisterService, validator: UserRe
 
 
 case class RegistrationForm(login: String, email: String, password: String, invitationCode: String) {
-  lazy val toUser = User(new ObjectId, Authentication.basic(login, password), login, email.toLowerCase, UUID.randomUUID().toString)
+  lazy val toUser = User(new ObjectId, Authentication.basic(login, password), login, email.toLowerCase, Set(UUID.randomUUID().toString))
 }
 
 case class RegisteredUser(id: ObjectId, login: String, email: String)
@@ -31,4 +31,3 @@ case class RegisteredUser(id: ObjectId, login: String, email: String)
 object RegisteredUser {
   def apply(user: User) = new RegisteredUser(user.id, user.name, user.emailLowerCase)
 }
-

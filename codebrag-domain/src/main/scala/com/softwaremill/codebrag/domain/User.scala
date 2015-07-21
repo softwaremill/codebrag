@@ -5,9 +5,9 @@ import com.softwaremill.codebrag.common.Utils
 import org.joda.time.DateTime
 
 /**
- * @param token Used by "remember me" - set in a cookie.
+ * @param tokens Used by "remember me" - set in a cookie. Multiple, to use on many devices
  */
-case class User(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, token: String,
+case class User(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, tokens: Set[String],
   admin: Boolean, active: Boolean, settings: UserSettings, notifications: LastUserNotificationDispatch, aliases: UserAliases) {
 
   def makeAdmin = this.copy(admin = true)
@@ -15,8 +15,8 @@ case class User(id: ObjectId, authentication: Authentication, name: String, emai
 
 object User {
 
-  def apply(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, token: String, admin: Boolean = false, active: Boolean = true) = {
-    new User(id, authentication, name, emailLowerCase, token, admin, active, UserSettings.defaults(emailLowerCase), LastUserNotificationDispatch.defaults, UserAliases.defaults)
+  def apply(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, tokens: Set[String], admin: Boolean = false, active: Boolean = true) = {
+    new User(id, authentication, name, emailLowerCase, tokens, admin, active, UserSettings.defaults(emailLowerCase), LastUserNotificationDispatch.defaults, UserAliases.defaults)
   }
 
   implicit object UserLikeRegularUser extends UserLike[User] {

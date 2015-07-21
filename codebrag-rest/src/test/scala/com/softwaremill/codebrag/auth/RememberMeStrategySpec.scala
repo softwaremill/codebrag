@@ -20,7 +20,7 @@ class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
   val app = mock[UsersServlet]
   val userService = mock[Authenticator]
   val loggedUser = UserAssembler.randomUser.get
-  when(userService.authenticateWithToken(loggedUser.token)) thenReturn(Option(loggedUser))
+  when(userService.authenticateWithToken(loggedUser.tokens.head)) thenReturn(Option(loggedUser))
 
   val rememberMe = true
   val strategy = new RememberMeStrategy(app, rememberMe, userService) {
@@ -29,7 +29,7 @@ class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
 
   it should "authenticate user base on cookie" in {
     // Given
-    given(app.cookies) willReturn new SweetCookies(Map(("rememberMe", loggedUser.token)), httpResponse)
+    given(app.cookies) willReturn new SweetCookies(Map(("rememberMe", loggedUser.tokens.head)), httpResponse)
 
     // When
     val user = strategy.authenticate()(httpRequest, httpResponse)
@@ -41,7 +41,7 @@ class RememberMeStrategySpec extends ScalatraFlatSpec with MockitoSugar {
 
   it should "not authenticate user with invalid cookie" in {
     // Given
-    given(app.cookies) willReturn new SweetCookies(Map(("rememberMe", loggedUser.token + "X")), httpResponse)
+    given(app.cookies) willReturn new SweetCookies(Map(("rememberMe", loggedUser.tokens.head + "X")), httpResponse)
 
     // When
     val user: Option[User] = strategy.authenticate()(httpRequest, httpResponse)

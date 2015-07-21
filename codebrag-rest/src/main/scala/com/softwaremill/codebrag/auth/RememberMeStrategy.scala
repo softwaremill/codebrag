@@ -13,7 +13,7 @@ class RememberMeStrategy(protected val app: ScalatraBase, rememberMe: Boolean, v
 
   override def afterAuthenticate(winningStrategy: String, user: User)(implicit request: HttpServletRequest, response: HttpServletResponse) {
     if (winningStrategy == name || (winningStrategy == UserPassword.name && rememberMe)) {
-      val token = user.token
+      val token = user.tokens.toList.head
       app.response.addHeader("Set-Cookie",
         Cookie(cookieKey, token)(CookieOptions(path = "/", secure = false, maxAge = Utils.OneWeek, httpOnly = true)).toCookieString)
     }

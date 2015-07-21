@@ -18,7 +18,6 @@ trait Authenticator {
   }
 
   def authenticate(login: String, nonEncryptedPassword: String): Option[User]
-
 }
 
 class UserPasswordAuthenticator(val userDAO: UserDAO, eventBus: EventBus) extends Authenticator with Logging {

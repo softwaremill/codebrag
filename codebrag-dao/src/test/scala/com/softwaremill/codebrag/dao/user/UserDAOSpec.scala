@@ -1,16 +1,15 @@
 package com.softwaremill.codebrag.dao.user
 
-import com.softwaremill.codebrag.domain._
-import org.scalatest.matchers.ShouldMatchers
-import org.bson.types.ObjectId
-import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.domain.builder.{UserAssembler, CommitInfoAssembler}
-import org.joda.time.DateTime
-import com.softwaremill.codebrag.domain.LastUserNotificationDispatch
-import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, RequiresDb}
-import org.scalatest.BeforeAndAfterEach
-import com.softwaremill.codebrag.test.{FlatSpecWithSQL, ClearSQLDataAfterTest}
 import com.softwaremill.codebrag.common.ClockSpec
+import com.softwaremill.codebrag.dao.RequiresDb
+import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, _}
+import com.softwaremill.codebrag.domain.builder.{CommitInfoAssembler, UserAssembler}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
+import com.typesafe.scalalogging.slf4j.Logging
+import org.bson.types.ObjectId
+import org.joda.time.DateTime
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.ShouldMatchers
 
 class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with BeforeAndAfterEach with ShouldMatchers with Logging with ClockSpec {
 
@@ -311,7 +310,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
 
     // Then
     userOpt match {
-      case Some(u) => u.token should be(token)
+      case Some(u) => u.tokens should contain(token)
       case _ => fail("User option should be defined")
     }
   }
@@ -478,5 +477,46 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     // then
     partial should have size (2)
     partial.map(_.name).toSet should be (users.map(_.name).toSet)
+  }
+
+  it should "store user tokens" in {
+    // given
+    val user = UserAssembler.randomUser.withToken("token1").get
+
+    // when
+    userDAO.add(user)
+
+    // then
+    val userFromDb = userDAO.findById(user.id)
+    userFromDb should not be 'empty
+    userFromDb.get.tokens should equal(Set("token1", "token"))
+  }
+
+  it should "add user token" in {
+    // given
+    val user = UserAssembler.randomUser.get
+    userDAO.add(user)
+
+    // when
+    userDAO.modifyUser(user.copy(tokens = user.tokens + "new token"))
+
+    // then
+    val userFromDb = userDAO.findById(user.id)
+    userFromDb should not be 'empty
+    userFromDb.get.tokens should equal(Set("token", "new token"))
+  }
+
+  it should "remove user token" in {
+    // given
+    val user = UserAssembler.randomUser.withToken("token3").get
+    userDAO.add(user)
+
+    // when
+    userDAO.modifyUser(user.copy(tokens = user.tokens.diff(Set("token3"))))
+
+    // then
+    val fromDao = userDAO.findById(user.id)
+    fromDao should not be 'empty
+    fromDao.get.tokens should not contain "token3"
   }
 }
