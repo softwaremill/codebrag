@@ -15,8 +15,8 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
       userSettings += toSQLSettings(user.id, user.settings)
       auths += toSQLAuth(user.id, user.authentication)
       userAliases ++= user.aliases.emailAliases.map(toSQLUserAlias)
-      userTokens ++= user.tokens.map(UserToken(user.id, _))
       users += tuple(user)
+      userTokens ++= user.tokens.map(t => SQLUserToken(user.id, t.token, t.expireDate))
     }
   }
 
@@ -81,13 +81,13 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
     auths.where(_.userId === user.id).update(toSQLAuth(user.id, user.authentication))
 
     val oldTokens = userTokens.where(_.userId === user.id).list()
-    val added = user.tokens.diff(oldTokens.map(_.token).toSet)
+    val added = user.tokens.diff(oldTokens.map(st => UserToken(st.token, st.expireDate)).toSet)
 
     // Remove tokens from database.
-    userTokens.where(_.userId === user.id).filterNot(_.userToken inSet user.tokens).delete
+    userTokens.where(_.userId === user.id).filterNot(_.userToken inSet user.tokens.map(_.token)).delete
 
     // Insert new ones
-    userTokens.insertAll(added.map(UserToken(user.id, _)).toSeq:_*)
+    userTokens.insertAll(added.map(t => SQLUserToken(user.id, t.token, t.expireDate)).toSeq:_*)
   }
 
   def changeAuthentication(id: ObjectId, auth: Authentication) = db.withTransaction { implicit session =>

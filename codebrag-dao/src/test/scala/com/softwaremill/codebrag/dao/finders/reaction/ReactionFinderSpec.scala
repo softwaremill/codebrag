@@ -2,16 +2,14 @@ package com.softwaremill.codebrag.dao.finders.reaction
 
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils._
 import com.softwaremill.codebrag.dao._
-import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, UserSettings, Authentication, User}
-import org.joda.time.DateTime
-import com.softwaremill.codebrag.domain.builder.{UserAssembler, LikeAssembler, CommentAssembler}
-import org.scalatest.BeforeAndAfterEach
-import scala.Some
-import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
-import com.softwaremill.codebrag.dao.finders.views.{CommentView, ReactionsView, CommitReactionsView, ReactionView}
+import com.softwaremill.codebrag.dao.finders.views.{CommentView, CommitReactionsView, ReactionView, ReactionsView}
+import com.softwaremill.codebrag.dao.reaction.{SQLCommitCommentDAO, SQLLikeDAO}
 import com.softwaremill.codebrag.dao.user.SQLUserDAO
-import com.softwaremill.codebrag.dao.reaction.{SQLLikeDAO, SQLCommitCommentDAO}
+import com.softwaremill.codebrag.domain.builder.{CommentAssembler, LikeAssembler, UserAssembler}
+import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
+import org.joda.time.DateTime
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.ShouldMatchers
 
 class ReactionFinderSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with ShouldMatchers
   with ReactionFinderVerifyHelpers with BeforeAndAfterEach {
@@ -24,8 +22,8 @@ class ReactionFinderSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with
 
   val CommitId = oid(1)
 
-  val John = UserAssembler.randomUser.withBasicAuth("john", "pass").withFullName("John").withEmail("john@doe.com").withToken("123123").get
-  val Mary = UserAssembler.randomUser.withBasicAuth("mary", "pass").withFullName("Mary").withEmail("mary@doe.com").withToken("abcabc").get
+  val John = UserAssembler.randomUser.withBasicAuth("john", "pass").withFullName("John").withEmail("john@doe.com").get
+  val Mary = UserAssembler.randomUser.withBasicAuth("mary", "pass").withFullName("Mary").withEmail("mary@doe.com").get
 
   val user = UserAssembler.randomUser.withFullName("John Doe").get
   val commitId = ObjectIdTestUtils.oid(100)
@@ -139,7 +137,7 @@ class ReactionFinderSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with
 
     // then
     val Some(comments) = commentsView.entireCommitReactions.comments
-    val comment = comments(0).asInstanceOf[CommentView]
+    val comment = comments.head.asInstanceOf[CommentView]
     comment.authorId should equal(John.id.toString)
     comment.authorName should equal(John.name)
     comment.authorAvatarUrl should equal(John.settings.avatarUrl)

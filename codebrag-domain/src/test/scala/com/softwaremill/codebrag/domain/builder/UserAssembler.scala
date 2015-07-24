@@ -1,8 +1,10 @@
 package com.softwaremill.codebrag.domain.builder
 
-import com.softwaremill.codebrag.domain.{Authentication, LastUserNotificationDispatch, User}
+import java.util.UUID
+
+import com.softwaremill.codebrag.domain.{Authentication, LastUserNotificationDispatch, User, UserToken}
 import org.bson.types.ObjectId
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, DateTimeZone}
 
 class UserAssembler(var user: User) {
 
@@ -61,8 +63,13 @@ class UserAssembler(var user: User) {
     this
   }
 
-  def withToken(token: String) = {
+  def withToken(token: UserToken) = {
     user = user.copy(tokens = user.tokens + token)
+    this
+  }
+
+  def withToken(token: String) = {
+    user = user.copy(tokens = user.tokens + UserToken(token))
     this
   }
 
@@ -81,5 +88,10 @@ class UserAssembler(var user: User) {
 
 object UserAssembler {
   def randomUser = new UserAssembler(createRandomUser())
-  private def createRandomUser() = User(new ObjectId, Authentication("Basic", "Sofokles", "sofokles", "token", "salt"), "Sofokles Mill", "sofo@sml.com", Set("token"))
+  private def createRandomUser() = User(
+    new ObjectId,
+    Authentication("Basic", "Sofokles", "sofokles", "token", "salt"),
+    "Sofokles Mill",
+    "sofo@sml.com",
+    Set(UserToken(UUID.randomUUID().toString, DateTime.now(DateTimeZone.UTC).plusWeeks(1))))
 }

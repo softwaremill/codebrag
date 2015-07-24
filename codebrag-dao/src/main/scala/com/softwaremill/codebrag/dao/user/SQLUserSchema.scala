@@ -102,7 +102,7 @@ trait SQLUserSchema {
 
   protected def toSQLUserAlias(userAlias: UserAlias) = SQLUserAlias(userAlias.id, userAlias.userId, userAlias.alias)
 
-  protected case class UserToken(userId: ObjectId, token: String) {}
+  protected case class SQLUserToken(userId: ObjectId, token: String, expireDate: DateTime) {}
 
   protected class UserAliases(tag: Tag) extends Table[SQLUserAlias](tag, "user_aliases") {
     def id = column[ObjectId]("id", O.PrimaryKey)
@@ -112,11 +112,12 @@ trait SQLUserSchema {
     def * = (id, userId, alias) <> (SQLUserAlias.tupled, SQLUserAlias.unapply)
   }
 
-  protected class UserTokens(tag: Tag) extends Table[UserToken](tag, "user_tokens") {
+  protected class UserTokens(tag: Tag) extends Table[SQLUserToken](tag, "user_tokens") {
     def userId = column[ObjectId]("user_id")
     def userToken = column[String]("token", O.PrimaryKey)
+    def tokenExpireDate = column[DateTime]("expire_date")
 
-    def * = (userId, userToken) <>(UserToken.tupled, UserToken.unapply)
+    def * = (userId, userToken, tokenExpireDate) <>(SQLUserToken.tupled, SQLUserToken.unapply)
   }
 
   protected val userAliases = TableQuery[UserAliases]
@@ -125,8 +126,18 @@ trait SQLUserSchema {
 
   protected def tuple(user: User): UserTuple = (user.id, user.name, user.emailLowerCase, true, user.admin, user.active)
 
-  protected val untuple: ((UserTuple, SQLAuth, SQLSettings, SQLLastNotif, List[SQLUserAlias], Set[UserToken])) => User = {
+  protected val untuple: ((UserTuple, SQLAuth, SQLSettings, SQLLastNotif, List[SQLUserAlias], Set[SQLUserToken])) => User = {
     case (tuple, sqlAuth, sqlSettings, sqlLastNotif, sqlAliases, sqlUserTokens) =>
-      User(tuple._1, sqlAuth.toAuth, tuple._2, tuple._3, sqlUserTokens.map(_.token), tuple._5, tuple._6, sqlSettings.toSettings, sqlLastNotif.toLastNotif, UserAliases(sqlAliases.map(_.toUserAlias).toSet))
+      User(
+        tuple._1,
+        sqlAuth.toAuth,
+        tuple._2,
+        tuple._3,
+        sqlUserTokens.map(t => UserToken(t.token, t.expireDate)),
+        tuple._5,
+        tuple._6,
+        sqlSettings.toSettings,
+        sqlLastNotif.toLastNotif,
+        UserAliases(sqlAliases.map(_.toUserAlias).toSet))
   }
 }

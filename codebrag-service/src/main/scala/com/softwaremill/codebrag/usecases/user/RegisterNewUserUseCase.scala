@@ -1,11 +1,12 @@
 package com.softwaremill.codebrag.usecases.user
 
-import com.typesafe.scalalogging.slf4j.Logging
+import java.util.UUID
+
+import com.softwaremill.codebrag.domain.{UserToken, Authentication, User}
 import com.softwaremill.codebrag.service.user.RegisterService
 import com.softwaremill.scalaval.Validation
-import com.softwaremill.codebrag.domain.{Authentication, User}
+import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
-import java.util.UUID
 
 class RegisterNewUserUseCase(registerService: RegisterService, validator: UserRegistrationValidator) extends Logging {
 
@@ -23,7 +24,12 @@ class RegisterNewUserUseCase(registerService: RegisterService, validator: UserRe
 
 
 case class RegistrationForm(login: String, email: String, password: String, invitationCode: String) {
-  lazy val toUser = User(new ObjectId, Authentication.basic(login, password), login, email.toLowerCase, Set(UUID.randomUUID().toString))
+  lazy val toUser = User(
+    new ObjectId,
+    Authentication.basic(login, password),
+    login,
+    email.toLowerCase,
+    Set())
 }
 
 case class RegisteredUser(id: ObjectId, login: String, email: String)

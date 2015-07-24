@@ -1,5 +1,7 @@
 package com.softwaremill.codebrag.dao.user
 
+import java.util.UUID
+
 import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.dao.RequiresDb
 import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, _}
@@ -7,7 +9,7 @@ import com.softwaremill.codebrag.domain.builder.{CommitInfoAssembler, UserAssemb
 import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
 import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
-import org.joda.time.DateTime
+import org.joda.time.{DateTimeZone, DateTime}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 
@@ -20,6 +22,8 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
 
   val CreatedUsersSize = 3
 
+  val dateTime = DateTime.now(DateTimeZone.UTC)
+
   implicit def intSuffixToObjectId(suffix: Int): ObjectId = new ObjectId(UserIdPrefix + suffix)
 
   override def beforeEach() {
@@ -28,7 +32,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     for (i <- 1 to CreatedUsersSize) {
       val login = "user" + i
       val password = "pass" + i
-      val token = "token" + i
+      val token = UserToken(UUID.randomUUID().toString + i, DateTime.now().plusWeeks(1))
       val name = s"User Name $i"
       val user = UserAssembler.randomUser.withId(i).withBasicAuth(login, password).withFullName(name).withEmail(s"$login@sml.com").withToken(token).get
       userDAO.add(user)
@@ -41,11 +45,11 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     internalUserDAO.createIfNotExists(internalUser)
 
     // then
-    userDAO.findAll().map(_.name) should not contain ("codebrag")
+    userDAO.findAll().map(_.name) should not contain "codebrag"
     userDAO.findById(internalUser.id) should be('empty)
   }
 
-  it should "add user with admin flag (false by default)" taggedAs(RequiresDb) in {
+  it should "add user with admin flag (false by default)" taggedAs RequiresDb in {
     // given
     val bobUser= UserAssembler.randomUser.get
     val johnAdmin = UserAssembler.randomUser.get.makeAdmin
@@ -62,7 +66,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
 
   }
 
-  it should "add user with existing login" taggedAs (RequiresDb) in {
+  it should "add user with existing login" taggedAs RequiresDb in {
     // Given
     val login = "user1"
     val user = UserAssembler.randomUser.withBasicAuth(login, "pass").withEmail("anotheremail@sml.com").get
@@ -74,7 +78,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     assert(userDAO.findByLoginOrEmail(login).isDefined)
   }
 
-  it should "add user with email aliases" taggedAs (RequiresDb) in {
+  it should "add user with email aliases" taggedAs RequiresDb in {
     // given
     val userId = new ObjectId
     val userAliases = UserAliases(Set(UserAlias(userId, "one@codebrag.com"), UserAlias(userId, "two@codebrag.com")))
@@ -88,7 +92,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     result.get.aliases should be(userAliases)
   }
 
-  it should "count all regular users in db" taggedAs (RequiresDb) in {
+  it should "count all regular users in db" taggedAs RequiresDb in {
     // given
     internalUserDAO.createIfNotExists(InternalUser("codebrag"))
 
@@ -99,7 +103,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     count should be(CreatedUsersSize)
   }
 
-  it should "add user with existing email" taggedAs (RequiresDb) in {
+  it should "add user with existing email" taggedAs RequiresDb in {
     // Given
     val user = UserAssembler.randomUser.withBasicAuth("anotherUser", "pass").withEmail("1email@sml.com").withToken("token").get
 
@@ -110,7 +114,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     assert(userDAO.findByLoginOrEmail("1email@sml.com").isDefined)
   }
 
-  it should "find by email" taggedAs (RequiresDb) in {
+  it should "find by email" taggedAs RequiresDb in {
     // Given
     val email = "user1@sml.com"
 
@@ -124,7 +128,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     }
   }
 
-  it should "not find non-existing user by email" taggedAs (RequiresDb) in {
+  it should "not find non-existing user by email" taggedAs RequiresDb in {
     // Given
     val email: String = "anyEmail@sml.com"
 
@@ -138,7 +142,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     }
   }
 
-  it should "not find non-existing user by login" taggedAs (RequiresDb) in {
+  it should "not find non-existing user by login" taggedAs RequiresDb in {
     // Given
     val login = "non_existing_login"
 
@@ -149,7 +153,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     userOpt should be(None)
   }
 
-  it should "not find non-existing user by login or email" taggedAs (RequiresDb) in {
+  it should "not find non-existing user by login or email" taggedAs RequiresDb in {
     // Given
     val login = "non_existing_login"
 
@@ -160,7 +164,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     userOpt should be(None)
   }
 
-  it should "find by uppercased email" taggedAs (RequiresDb) in {
+  it should "find by uppercased email" taggedAs RequiresDb in {
     // Given
     val email = "user1@sml.com".toUpperCase
 
@@ -174,7 +178,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     }
   }
 
-  it should "find by login" taggedAs (RequiresDb) in {
+  it should "find by login" taggedAs RequiresDb in {
     // Given
     val login = "user1"
 
@@ -188,7 +192,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     }
   }
 
-  it should "find by uppercased login" taggedAs (RequiresDb) in {
+  it should "find by uppercased login" taggedAs RequiresDb in {
     // Given
     val login = "user1".toUpperCase
 
@@ -202,7 +206,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     }
   }
 
-  it should "find using login with findByLoginOrEmail" taggedAs (RequiresDb) in {
+  it should "find using login with findByLoginOrEmail" taggedAs RequiresDb in {
     // Given
     val login = "user1"
 
@@ -211,12 +215,12 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
 
     // Then
     userOpt match {
-      case Some(u) => u.authentication.username should be(login.toLowerCase())
+      case Some(u) => u.authentication.username should be(login.toLowerCase)
       case _ => fail("User option should be defined")
     }
   }
 
-  it should "find using uppercased login with findByLoginOrEmail" taggedAs (RequiresDb) in {
+  it should "find using uppercased login with findByLoginOrEmail" taggedAs RequiresDb in {
     // Given
     val login = "user1".toUpperCase
 
@@ -225,12 +229,12 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
 
     // Then
     userOpt match {
-      case Some(u) => u.authentication.username should be(login.toLowerCase())
+      case Some(u) => u.authentication.username should be(login.toLowerCase)
       case _ => fail("User option should be defined")
     }
   }
 
-  it should "find using email with findByLoginOrEmail" taggedAs (RequiresDb) in {
+  it should "find using email with findByLoginOrEmail" taggedAs RequiresDb in {
     // Given
     val email = "user1@sml.com"
 
@@ -239,12 +243,12 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
 
     // Then
     userOpt match {
-      case Some(u) => u.emailLowerCase should be(email.toLowerCase())
+      case Some(u) => u.emailLowerCase should be(email.toLowerCase)
       case _ => fail("User option should be defined")
     }
   }
 
-  it should "find commit author by email" taggedAs (RequiresDb) in {
+  it should "find commit author by email" taggedAs RequiresDb in {
     // Given
     val commit = CommitInfoAssembler.randomCommit.withAuthorEmail("user1@sml.com").get
 
@@ -258,7 +262,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     }
   }
 
-  it should "find commit author by aliased email" taggedAs (RequiresDb) in {
+  it should "find commit author by aliased email" taggedAs RequiresDb in {
     // Given
     val userId = new ObjectId
     val userAliases = UserAliases(Set(UserAlias(userId, "aliased_email@codebrag.com")))
@@ -273,7 +277,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     found should be(userWithAlias)
   }
 
-  it should "find commit author by name" taggedAs (RequiresDb) in {
+  it should "find commit author by name" taggedAs RequiresDb in {
     // Given
     val commit = CommitInfoAssembler.randomCommit.withAuthorName("User Name 1").get
 
@@ -287,7 +291,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     }
   }
 
-  it should "find using uppercased email with findByLoginOrEmail" taggedAs (RequiresDb) in {
+  it should "find using uppercased email with findByLoginOrEmail" taggedAs RequiresDb in {
     // Given
     val email = "user1@sml.com".toUpperCase
 
@@ -296,26 +300,28 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
 
     // Then
     userOpt match {
-      case Some(u) => u.emailLowerCase should be(email.toLowerCase())
+      case Some(u) => u.emailLowerCase should be(email.toLowerCase)
       case _ => fail("User option should be defined")
     }
   }
 
-  it should "find by token" taggedAs (RequiresDb) in {
+  it should "find by token" taggedAs RequiresDb in {
     // Given
-    val token = "token1"
+    val token = "token"
+    val user = UserAssembler.randomUser.withToken(token).get
+    userDAO.add(user)
 
     // When
     val userOpt = userDAO.findByToken(token)
 
     // Then
     userOpt match {
-      case Some(u) => u.tokens should contain(token)
+      case Some(u) => u.tokens.filter(_.token == token) should not be 'empty
       case _ => fail("User option should be defined")
     }
   }
 
-  it should "replace existing authentication" taggedAs (RequiresDb) in {
+  it should "replace existing authentication" taggedAs RequiresDb in {
     val auth = Authentication.github("u", "at")
 
     userDAO.changeAuthentication(1, auth)
@@ -324,7 +330,6 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
       case Some(u) => u.authentication should equal(auth)
       case None => fail("Authentication didn't change")
     }
-
   }
 
   it should "find user by its Id" taggedAs RequiresDb in {
@@ -475,13 +480,13 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     val partial = userDAO.findPartialUserDetails(ids)
 
     // then
-    partial should have size (2)
+    partial should have size 2
     partial.map(_.name).toSet should be (users.map(_.name).toSet)
   }
 
   it should "store user tokens" in {
     // given
-    val user = UserAssembler.randomUser.withToken("token1").get
+    val user = UserAssembler.randomUser.withToken(UserToken("token1", dateTime)).get
 
     // when
     userDAO.add(user)
@@ -489,7 +494,8 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     // then
     val userFromDb = userDAO.findById(user.id)
     userFromDb should not be 'empty
-    userFromDb.get.tokens should equal(Set("token1", "token"))
+    userFromDb.get.tokens.map(_.token) should contain("token1")
+    userFromDb.get.tokens should contain(UserToken("token1", dateTime))
   }
 
   it should "add user token" in {
@@ -498,25 +504,26 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     userDAO.add(user)
 
     // when
-    userDAO.modifyUser(user.copy(tokens = user.tokens + "new token"))
+    userDAO.modifyUser(user.copy(tokens = user.tokens + UserToken("new token", dateTime)))
 
     // then
     val userFromDb = userDAO.findById(user.id)
     userFromDb should not be 'empty
-    userFromDb.get.tokens should equal(Set("token", "new token"))
+//    userFromDb.get.tokens.map(_.token) should contain("new token")
+    userFromDb.get.tokens should contain(UserToken("new token", dateTime))
   }
 
   it should "remove user token" in {
     // given
-    val user = UserAssembler.randomUser.withToken("token3").get
+    val user = UserAssembler.randomUser.withToken(UserToken("token3", dateTime)).get
     userDAO.add(user)
 
     // when
-    userDAO.modifyUser(user.copy(tokens = user.tokens.diff(Set("token3"))))
+    userDAO.modifyUser(user.copy(tokens = user.tokens.diff(Set(UserToken("token3", dateTime)))))
 
     // then
     val fromDao = userDAO.findById(user.id)
     fromDao should not be 'empty
-    fromDao.get.tokens should not contain "token3"
+    fromDao.get.tokens.map(_.token) should not contain "token3"
   }
 }

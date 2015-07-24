@@ -1,7 +1,10 @@
 CREATE TABLE IF NOT EXISTS "user_tokens"(
     "user_id" VARCHAR NOT NULL,
-    "token" VARCHAR NOT NULL
+    "token" VARCHAR NOT NULL,
+    "expire_date" TIMESTAMP NOT NULL
 );
 ALTER TABLE "user_tokens" ADD CONSTRAINT IF NOT EXISTS "pk" PRIMARY KEY("token");
 
 ALTER TABLE "users" DROP COLUMN IF EXISTS "token";
+
+ALTER TABLE "user_tokens" ADD CONSTRAINT "user_id" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE NOCHECK;

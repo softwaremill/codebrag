@@ -1,11 +1,12 @@
 package com.softwaremill.codebrag.auth
 
-import org.scalatra.{ CookieOptions, Cookie, ScalatraBase }
-import org.scalatra.auth.ScentryStrategy
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+
 import com.softwaremill.codebrag.common.Utils
-import com.softwaremill.codebrag.service.user.Authenticator
-import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.service.user.Authenticator
+import org.scalatra.auth.ScentryStrategy
+import org.scalatra.{Cookie, CookieOptions, ScalatraBase}
 
 class RememberMeStrategy(protected val app: ScalatraBase, rememberMe: Boolean, val authenticator: Authenticator) extends ScentryStrategy[User] {
 
@@ -13,9 +14,12 @@ class RememberMeStrategy(protected val app: ScalatraBase, rememberMe: Boolean, v
 
   override def afterAuthenticate(winningStrategy: String, user: User)(implicit request: HttpServletRequest, response: HttpServletResponse) {
     if (winningStrategy == name || (winningStrategy == UserPassword.name && rememberMe)) {
-      val token = user.tokens.toList.head
+      val usedToken = app.cookies.get(cookieKey).flatMap(to => user.tokens.find(_.token == to))
+
+      val newToken = authenticator.replaceToken(user, usedToken)
+
       app.response.addHeader("Set-Cookie",
-        Cookie(cookieKey, token)(CookieOptions(path = "/", secure = false, maxAge = Utils.OneWeek, httpOnly = true)).toCookieString)
+        Cookie(cookieKey, newToken)(CookieOptions(path = "/", secure = false, maxAge = Utils.OneWeek, httpOnly = true)).toCookieString)
     }
   }
 

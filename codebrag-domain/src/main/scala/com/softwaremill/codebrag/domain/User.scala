@@ -7,7 +7,7 @@ import org.joda.time.DateTime
 /**
  * @param tokens Used by "remember me" - set in a cookie. Multiple, to use on many devices
  */
-case class User(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, tokens: Set[String],
+case class User(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, tokens: Set[UserToken],
   admin: Boolean, active: Boolean, settings: UserSettings, notifications: LastUserNotificationDispatch, aliases: UserAliases) {
 
   def makeAdmin = this.copy(admin = true)
@@ -15,7 +15,7 @@ case class User(id: ObjectId, authentication: Authentication, name: String, emai
 
 object User {
 
-  def apply(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, tokens: Set[String], admin: Boolean = false, active: Boolean = true) = {
+  def apply(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, tokens: Set[UserToken], admin: Boolean = false, active: Boolean = true) = {
     new User(id, authentication, name, emailLowerCase, tokens, admin, active, UserSettings.defaults(emailLowerCase), LastUserNotificationDispatch.defaults, UserAliases.defaults)
   }
 
@@ -92,3 +92,10 @@ object UserAliases {
   def defaults = UserAliases(Set.empty)
 }
 
+case class UserToken(token: String, expireDate: DateTime)
+
+object UserToken {
+  def apply(token: String): UserToken = {
+    UserToken(token, DateTime.now.plusWeeks(1))
+  }
+}

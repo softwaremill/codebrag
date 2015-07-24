@@ -47,7 +47,7 @@ class EventHookPropagatorSpec
   val mockCommitInfo = CommitInfo(id, "test", "szach", "test-message", "mocher", "mocher@domain.com", "mocher", "mocher@domain.com", nowUtc, nowUtc, List())
 
   val userId = id
-  val mockUser = User(userId, null, "test", "test@domain.com", Set("123456789"), false, true, null, null, null)
+  val mockUser = User(userId, null, "test", "test@domain.com", Set(UserToken("123456789")), admin = false, active = true, null, null, null)
 
   val mockLike = Like(id, commitId, userId, nowUtc, Some("test.txt"), Some(123))
   val mockComment = Comment(id, id, id, nowUtc, "test-comment", Some("test2.txt"), Some(321))
@@ -211,7 +211,7 @@ class EventHookPropagatorSpec
     }
 
     "propagate NewCommitsLoadedEvent to remote host" in {
-      actorRef ! NewCommitsLoadedEvent(false, "test", "szach", List(mockPartialCommit))
+      actorRef ! NewCommitsLoadedEvent(firstTime = false, "test", "szach", List(mockPartialCommit))
 
       awaitCond(done)
 
