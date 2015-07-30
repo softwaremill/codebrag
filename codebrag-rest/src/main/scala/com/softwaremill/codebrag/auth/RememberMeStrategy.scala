@@ -16,10 +16,10 @@ class RememberMeStrategy(protected val app: ScalatraBase, rememberMe: Boolean, v
     if (winningStrategy == name || (winningStrategy == UserPassword.name && rememberMe)) {
       val usedToken = app.cookies.get(cookieKey).flatMap(to => user.tokens.find(_.token == to))
 
-      val newToken = authenticator.replaceToken(user, usedToken)
+      val newToken = authenticator.deleteOldSoonAndCreateNewToken(user, usedToken)
 
       app.response.addHeader("Set-Cookie",
-        Cookie(cookieKey, newToken)(CookieOptions(path = "/", secure = false, maxAge = Utils.OneWeek, httpOnly = true)).toCookieString)
+        Cookie(cookieKey, newToken.token)(CookieOptions(path = "/", secure = false, maxAge = Utils.OneWeek, httpOnly = true)).toCookieString)
     }
   }
 

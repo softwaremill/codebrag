@@ -1,13 +1,16 @@
 package com.softwaremill.codebrag.service.user
 
 import java.util.UUID
+import java.util.concurrent.{Executors, TimeUnit}
 
-import com.softwaremill.codebrag.domain.{UserToken, User, Authentication}
 import com.softwaremill.codebrag.common.EventBus
-import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.domain.{Authentication, User, UserToken}
+import com.typesafe.scalalogging.slf4j.Logging
 
 trait Authenticator {
+
+  val scheduledExecutor = Executors.newSingleThreadScheduledExecutor()
 
   def userDAO: UserDAO
 
@@ -19,14 +22,27 @@ trait Authenticator {
     userDAO.findByLowerCasedLogin(login).filter(_.active)
   }
 
-  def replaceToken(user: User, token: Option[UserToken]) = {
-    val newToken = UUID.randomUUID().toString
-    val modifiedUser = token match {
-      case Some(t) => user.copy(tokens = user.tokens.diff(Set(t)) + UserToken(newToken))
-      case None => user.copy(tokens = user.tokens + UserToken(newToken))
-    }
+  def deleteOldSoonAndCreateNewToken(user: User, token: Option[UserToken]) = {
 
-    userDAO.modifyUser(modifiedUser)
+    val newToken = UserToken(UUID.randomUUID().toString)
+    token match {
+      case Some(t) =>
+        // When many requests are fired with the same token,
+        // it's possible that first one replaces token, and the second one hits the
+        // server with old token when it's already replaced.
+        // That's why we don't delete the old token immidiately, but after some time.
+        scheduledExecutor.schedule(new Runnable {
+          override def run() = {
+            val tokensWithoutUsed = user.tokens.diff(Set(t))
+            val userWithoutUsedToken = user.copy(tokens = tokensWithoutUsed + newToken)
+            userDAO.modifyUser(userWithoutUsedToken)
+          }
+        },
+        5,
+        TimeUnit.SECONDS)
+
+      case None => userDAO.modifyUser(user.copy(tokens = user.tokens + newToken))
+    }
 
     newToken
   }
