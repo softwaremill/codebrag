@@ -1,15 +1,17 @@
 package com.softwaremill.codebrag.dao.sql
 
-import scala.slick.driver.JdbcProfile
-import org.joda.time.{DateTimeZone, DateTime}
-import org.bson.types.ObjectId
 import java.io.File
-import scala.slick.jdbc.JdbcBackend._
+import javax.sql.DataSource
+
+import com.googlecode.flyway.core.Flyway
+import com.mchange.v2.c3p0.{ComboPooledDataSource, DataSources}
 import com.softwaremill.codebrag.dao.DaoConfig
 import com.typesafe.scalalogging.slf4j.Logging
-import com.googlecode.flyway.core.Flyway
-import com.mchange.v2.c3p0.{DataSources, PooledDataSource, ComboPooledDataSource}
-import javax.sql.DataSource
+import org.bson.types.ObjectId
+import org.joda.time.{DateTime, DateTimeZone}
+
+import scala.slick.driver.JdbcProfile
+import scala.slick.jdbc.JdbcBackend._
 
 case class SQLDatabase(
   db: scala.slick.jdbc.JdbcBackend.Database,
@@ -44,7 +46,7 @@ object SQLDatabase extends Logging {
     val fullPath = new File(config.embeddedDataDir, "codebrag").getCanonicalPath
     logger.info(s"Using an embedded database, with data files located at: $fullPath")
 
-    s"jdbc:h2:file:$fullPath"
+    s"jdbc:h2:file:$fullPath;AUTO_SERVER=TRUE"
   }
 
   def createEmbedded(config: DaoConfig): SQLDatabase = {
