@@ -1,48 +1,59 @@
 <div class="popup-content" ng-controller="ManageUsersPopupCtrl">
 
-    <h1>Manage team members
+	<h1>
+		Manage team members
 
-        <div class="info-line"> 
-            &nbsp;
-            <span class="text-error" ng-repeat="f in flash.get('error')">{{ f.message }}</span>
-            <span class="success" ng-repeat="f in flash.get('info')">{{ f.message }}</span>
-        </div>
-    </h1>
-    
-    <div class="fake-thead-container">
-        <div class="table-container">
-            <table>
-                <thead>
-                    <th>
-                        <div class="thead">Team member email</div>
-                    </th>
-                    <th class="cell-centered">
-                        <div class="thead">Active?</div>
-                    </th>
-                    <th class="cell-centered">
-                        <div class="thead">Admin?</div>
-                    </th>
-                    <th>
-                        <div class="thead">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-                    </th>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="user in users">
-                        <td class="user-email">{{ user.email}}</td>
-                        <td class="cell-centered"><input type="checkbox" ng-model="user.active" ng-click="modifyUser(user, 'active')" ng-disabled="user.locked"/></td>
-                        <td class="cell-centered"><input type="checkbox" ng-model="user.admin" ng-click="modifyUser(user, 'admin')" ng-disabled="user.locked"/></td>
-                        <td><button class="link" ng-disabled="!user.active" ng-click="askForNewPassword(user)">Set&nbsp;password</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+		<div class="info-line">
+			&nbsp; <span class="text-error" ng-repeat="f in flash.get('error')">{{
+				f.message }}</span> <span class="success"
+				ng-repeat="f in flash.get('info')">{{ f.message }}</span>
+		</div>
+	</h1>
 
-    <section>
-        <button ng-click="invite()">Invite team members</button>
-    </section>
+	<div class="fake-thead-container">
+		<div class="table-container">
+			<table>
+				<thead>
+					<th>
+						<div class="thead">Team member email</div>
+					</th>
+					<th class="cell-centered">
+						<div class="thead">Active?</div>
+					</th>
+					<th class="cell-centered">
+						<div class="thead">Admin?</div>
+					</th>
+					<th>
+						<div class="thead">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+					</th>
+					<th class="cell-centered">
+						<div class="thead">&nbsp;&nbsp;</div>
+					</th>
+				</thead>
+				<tbody>
+					<tr ng-repeat="user in users">
+						<td class="user-email">{{ user.email}}</td>
+						<td class="cell-centered"><input type="checkbox"
+							ng-model="user.active" ng-click="modifyUser(user, 'active')"
+							ng-disabled="user.locked" /></td>
+						<td class="cell-centered"><input type="checkbox"
+							ng-model="user.admin" ng-click="modifyUser(user, 'admin')"
+							ng-disabled="user.locked" /></td>
+						<td><button class="link" ng-disabled="!user.active"
+								ng-click="askForNewPassword(user)">Set&nbsp;password</button></td>
+						<td><i class="icon-remove" ng-hide="user.admin"
+							ng-disabled="user.locked" ng-click="deleteUser(user)"></i></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
 
-    <span class="close-btn" ng-click="$close()">
-        <i class="icon-remove"></i>
-    </span>
+	<section>
+		<button ng-click="invite()">Invite team members</button>
+	</section>
+
+	<span class="close-btn" ng-click="$close()"> <i
+		class="icon-remove"></i>
+	</span>
 </div>

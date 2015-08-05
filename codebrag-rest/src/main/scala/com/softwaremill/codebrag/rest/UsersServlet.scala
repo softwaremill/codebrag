@@ -6,12 +6,13 @@ import org.bson.types.ObjectId
 import org.scalatra
 import com.softwaremill.codebrag.finders.user.UserFinder
 import com.softwaremill.codebrag.finders.user.ManagedUsersListView
-import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, ModifyUserDetailsUseCase, ModifyUserDetailsForm}
+import com.softwaremill.codebrag.usecases.user.{RegisterNewUserUseCase, ModifyUserDetailsUseCase, ModifyUserDetailsForm,DeleteUserUseCase,DeleteUserForm}
 
 class UsersServlet(
   val authenticator: Authenticator,
   userFinder: UserFinder,
   modifyUserUseCase: ModifyUserDetailsUseCase,
+  deleteUserUseCase: DeleteUserUseCase,
   config: CodebragConfig) extends JsonServletWithAuthentication {
 
   get("/") {
@@ -34,8 +35,16 @@ class UsersServlet(
       case _ => scalatra.Ok()
     }
   }
-
+delete("/:userId") {
+  haltIfNotAuthenticated()
+    val targetUserId = new ObjectId(params("userId"))   
+    deleteUserUseCase.execute(user.id, DeleteUserForm(targetUserId)) match {
+      case Left(errors) => scalatra.BadRequest(errors)
+      case _ => scalatra.Ok()
+    }
+  }
 }
+  
 
 object UsersServlet {
   val MappingPath = "users"

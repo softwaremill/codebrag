@@ -19,6 +19,11 @@ angular.module('codebrag.userMgmt')
             return $http.put(modifyUserUrl, userData).then(null, modifyUserFailed);
         };
 
+        this.deleteUser = function(userData) {
+			var deleteUserUrl = [usersApiUrl, '/', userData.userId].join('');
+			return $http.delete(deleteUserUrl).then(null, modifyUserFailed);
+        };
+
         function modifyUserFailed(response) {
             return $q.reject(response.data);
         }

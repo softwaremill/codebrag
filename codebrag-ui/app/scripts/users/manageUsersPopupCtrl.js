@@ -26,6 +26,12 @@ angular.module('codebrag.userMgmt')
             });
         };
 
+		$scope.deleteUser = function(user) {
+		    $scope.flash.clear();
+		    var userData = { userId: user.userId };		  
+		    userMgmtService.deleteUser(userData).then(deleteSuccess(user), deleteFailed('active', user.userId))
+		};
+
         $scope.askForNewPassword = function(user) {
             $scope.flash.clear();
             var modal = popupsService.openSetUserPasswordPopup(user);
@@ -33,9 +39,23 @@ angular.module('codebrag.userMgmt')
                 $scope.flash.add('info', 'User password changed');
             });
         };
+        function deleteSuccess(user) {        	
+            $scope.flash.add('error', 'User ' + user.email + ' is deleted');
+            userMgmtService.loadUsers().then(function(users) {
+ 	            $scope.users = users;
+ 	        });
+        }
 
         function modifySuccess() {
             $scope.flash.add('info', 'User details changed');
+        }
+	 function deleteFailed(flag, userId) {
+            return function(errorsMap) {              
+                $scope.flash.add('error', ' Could not delete user ');
+                flattenErrorsMap(errorsMap).forEach(function(error) {
+                    $scope.flash.add('error', error);
+                });
+            }
         }
 
         function modifyFailed(flag, user) {

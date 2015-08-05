@@ -13,11 +13,12 @@ import com.softwaremill.codebrag.finders.user.ManagedUserView
 import com.softwaremill.codebrag.finders.user.ManagedUsersListView
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.User
-import com.softwaremill.codebrag.usecases.user.ModifyUserDetailsUseCase
+import com.softwaremill.codebrag.usecases.user.{ ModifyUserDetailsUseCase, DeleteUserUseCase }
 
 class UsersServletSpec extends AuthenticatableServletSpec {
 
   val modifyUserUseCase = mock[ModifyUserDetailsUseCase]
+  val deleteUserUseCase = mock[DeleteUserUseCase]
   var userFinder: UserFinder = _
   var config: CodebragConfig = _
 
@@ -50,7 +51,6 @@ class UsersServletSpec extends AuthenticatableServletSpec {
     }
   }
 
-
   def configWithDemo(mode: Boolean) = {
     val p = new Properties()
     p.setProperty("codebrag.demo", mode.toString)
@@ -60,7 +60,7 @@ class UsersServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableUsersServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[User])
-    extends UsersServlet(fakeAuthenticator, userFinder, modifyUserUseCase, config) {
+    extends UsersServlet(fakeAuthenticator, userFinder, modifyUserUseCase, deleteUserUseCase, config) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

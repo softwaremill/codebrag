@@ -370,7 +370,38 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     foundUser.get.notifications.commits.get.getMillis should equal(commitDate.getMillis)
     foundUser.get.notifications.followups.get.getMillis should equal(followupDate.getMillis)
   }
+ it should "deleta a user " taggedAs RequiresDb in {
+    // given
+    val user = UserAssembler.randomUser.withBasicAuth("user", "pass").withAdmin(set = false).withActive(set = false).get
+    userDAO.add(user)
+    val newAuth = Authentication.basic(user.authentication.username, "newpass")
 
+    // when
+    val modifiedUser = user.copy(authentication = newAuth, admin = true, active = true)
+    userDAO.delete(modifiedUser.id)
+    val deletedUser  = userDAO.findById(user.id)
+
+    // then
+    assert(deletedUser === None , "Deletion was attempted but found  " + deletedUser)
+  }
+  it should "deleta a user and should not show in the list  " taggedAs RequiresDb in {
+    // given
+    val user = UserAssembler.randomUser.withBasicAuth("user", "pass").withAdmin(set = false).withActive(set = false).get
+    userDAO.add(user)
+    val newAuth = Authentication.basic(user.authentication.username, "newpass")
+    
+    // when
+    val tobeDeletedUser = user.copy(authentication = newAuth, admin = true, active = true)
+    val userCountBeforeDelete = userDAO.findAll().length
+    userDAO.delete(tobeDeletedUser.id)
+    val deletedUser  = userDAO.findById(user.id)
+    val userCountAfterDelete = userDAO.findAll().length    
+    // then
+    assert(deletedUser === None , "Deletion was attempted but found  " + deletedUser)
+    userCountAfterDelete should be(userCountBeforeDelete -1)
+    
+  }
+  
   "rememberNotifications" should "store dates properly" taggedAs RequiresDb in {
     // given
     val user = UserAssembler.randomUser.get
@@ -479,4 +510,5 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     partial should have size (2)
     partial.map(_.name).toSet should be (users.map(_.name).toSet)
   }
+  
 }
