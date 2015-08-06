@@ -15,7 +15,17 @@ trait Authenticator {
   def userDAO: UserDAO
 
   def authenticateWithToken(token: String): Option[User] = {
-    userDAO.findByToken(token).filter(_.active)
+    userDAO.findByToken(token)
+      .filter(_.active)
+      .map(removeExpiredTokens)
+      //If used token expired, we don't let the user in
+      .filter(_.tokens.exists(_.token == token))
+  }
+
+  private def removeExpiredTokens(user: User) = {
+    val userWithoutExpiredTokens = user.copy(tokens = user.tokens.filterNot(_.expireDate.isBeforeNow))
+    userDAO.modifyUser(userWithoutExpiredTokens)
+    userWithoutExpiredTokens
   }
 
   def findByLogin(login: String): Option[User] = {
@@ -30,7 +40,7 @@ trait Authenticator {
         // When many requests are fired with the same token,
         // it's possible that first one replaces token, and the second one hits the
         // server with old token when it's already replaced.
-        // That's why we don't delete the old token immidiately, but after some time.
+        // That's why we don't delete the old token immediately, but after some time.
         scheduledExecutor.schedule(new Runnable {
           override def run() = {
             val tokensWithoutUsed = user.tokens.diff(Set(t))
