@@ -1,13 +1,13 @@
 package com.softwaremill.codebrag.dao.user
 
+import com.softwaremill.codebrag.dao.sql.SQLDatabase
 import com.softwaremill.codebrag.domain._
 import org.bson.types.ObjectId
-import com.softwaremill.codebrag.dao.sql.SQLDatabase
-import org.joda.time.{DateTimeZone, DateTime}
+import org.joda.time.{DateTime, DateTimeZone}
 
 class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
-  import database.driver.simple._
   import database._
+  import database.driver.simple._
 
   def add(user: User) {
     db.withTransaction { implicit session =>
@@ -81,7 +81,7 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
     auths.where(_.userId === user.id).update(toSQLAuth(user.id, user.authentication))
 
     val oldTokens = userTokens.where(_.userId === user.id).list()
-    val added = user.tokens.diff(oldTokens.map(st => UserToken(st.token, st.expireDate)).toSet)
+    val added = user.tokens.filterNot(token => oldTokens.exists(_.token == token.token))
 
     // Remove tokens from database.
     userTokens.where(_.userId === user.id).filterNot(_.userToken inSet user.tokens.map(_.token)).delete

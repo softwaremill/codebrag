@@ -526,4 +526,18 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     fromDao should not be 'empty
     fromDao.get.tokens.map(_.token) should not contain "token3"
   }
+
+  it should "not change user tokens if they are not changed" taggedAs RequiresDb in {
+    // given
+    val user = UserAssembler.randomUser.withToken("token4").get
+    userDAO.add(user)
+
+    // when
+    userDAO.modifyUser(user)
+
+    //then
+    val fromDao = userDAO.findById(user.id)
+    fromDao should not be 'empty
+    fromDao.get.tokens.map(_.token) should contain ("token4")
+  }
 }
