@@ -4,12 +4,12 @@ import java.util.UUID
 
 import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.dao.RequiresDb
-import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, _}
 import com.softwaremill.codebrag.domain.builder.{CommitInfoAssembler, UserAssembler}
+import com.softwaremill.codebrag.domain.{LastUserNotificationDispatch, _}
 import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
 import com.typesafe.scalalogging.slf4j.Logging
 import org.bson.types.ObjectId
-import org.joda.time.{DateTimeZone, DateTime}
+import org.joda.time.{DateTime, DateTimeZone}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 
@@ -484,7 +484,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     partial.map(_.name).toSet should be (users.map(_.name).toSet)
   }
 
-  it should "store user tokens" in {
+  it should "store user tokens" taggedAs RequiresDb in {
     // given
     val user = UserAssembler.randomUser.withToken(UserToken("token1", dateTime)).get
 
@@ -498,7 +498,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     userFromDb.get.tokens should contain(UserToken("token1", dateTime))
   }
 
-  it should "add user token" in {
+  it should "add user token" taggedAs RequiresDb in {
     // given
     val user = UserAssembler.randomUser.get
     userDAO.add(user)
@@ -513,7 +513,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     userFromDb.get.tokens should contain(UserToken("new token", dateTime))
   }
 
-  it should "remove user token" in {
+  it should "remove user token" taggedAs RequiresDb in {
     // given
     val user = UserAssembler.randomUser.withToken(UserToken("token3", dateTime)).get
     userDAO.add(user)
