@@ -13,6 +13,9 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
 class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with MockEventBus {
 
   var userDAO: UserDAO = _
@@ -21,13 +24,15 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
   val fixtureLogin = "johndoe"
   val fixturePassword = "password"
   val fixtureUserId: ObjectId = ObjectIdTestUtils.oid(123)
-  val fixtureToken = "123abc"
+  val fixtureValidToken = "123abc"
+  val fixtureExpiredToken = UserToken("token", DateTime.now.minusDays(1))
   val ActiveUser = UserAssembler.randomUser
     .withId(fixtureUserId)
     .withBasicAuth(fixtureLogin, fixturePassword)
     .withFullName("John Doe")
     .withEmail("john@doe.com")
-    .withToken(fixtureToken)
+    .withToken(fixtureValidToken)
+    .withToken(fixtureExpiredToken)
     .get
 
   before {
@@ -102,10 +107,10 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
 
   it should "return user if the token matches one of users tokens" in {
     // given
-    given(userDAOMock.findByToken(fixtureToken)).willReturn(Some(ActiveUser))
+    given(userDAOMock.findByToken(fixtureValidToken)).willReturn(Some(ActiveUser))
 
     // when
-    val Some(user) = authenticator.authenticateWithToken(fixtureToken)
+    val Some(user) = authenticator.authenticateWithToken(fixtureValidToken)
 
     // then
     user should be(ActiveUser)
@@ -113,10 +118,10 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
 
   it should "not return user if token doesn't match" in {
     // given
-    given(userDAOMock.findByToken(fixtureToken)).willReturn(None)
+    given(userDAOMock.findByToken(fixtureValidToken)).willReturn(None)
 
     // when
-    val userOpt = authenticator.authenticateWithToken(fixtureToken)
+    val userOpt = authenticator.authenticateWithToken(fixtureValidToken)
 
     // then
     userOpt should be(None)
@@ -125,38 +130,33 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
   it should "return None if user found by token but is not active" in {
     // given
     val inactiveUser = ActiveUser.copy(active = false)
-    given(userDAOMock.findByToken(fixtureToken)).willReturn(Some(inactiveUser))
+    given(userDAOMock.findByToken(fixtureValidToken)).willReturn(Some(inactiveUser))
 
     // when
-    val userOpt = authenticator.authenticateWithToken(fixtureToken)
+    val userOpt = authenticator.authenticateWithToken(fixtureValidToken)
 
     // then
     userOpt should be(None)
-  }
-
-  it should "remove user's expired tokens while authentication" in {
-    // given
-    val expiredToken: UserToken = UserToken("token", DateTime.now.minusDays(1))
-    val userWithExpiredTokens = ActiveUser.copy(tokens = ActiveUser.tokens + expiredToken)
-    given(userDAOMock.findByToken(fixtureToken)).willReturn(Some(userWithExpiredTokens))
-
-    // when
-    val Some(user) = authenticator.authenticateWithToken(fixtureToken)
-
-    // then
-    user should be(ActiveUser)
-    user.tokens should not contain expiredToken
   }
 
   it should "not authenticate the user based on expired token" in {
     // given
-    val userWithExpiredToken = ActiveUser.copy(tokens = Set(UserToken("token", DateTime.now.minusDays(1))))
-    given(userDAOMock.findByToken("token")).willReturn(Some(userWithExpiredToken))
+    given(userDAOMock.findByToken(fixtureExpiredToken.token)).willReturn(Some(ActiveUser))
 
     // when
-    val userOpt = authenticator.authenticateWithToken("token")
+    val userOpt = authenticator.authenticateWithToken(fixtureExpiredToken.token)
 
     // then
     userOpt should be(None)
+  }
+
+  it should "remove user's expired tokens" in {
+    // when
+    val userFuture = authenticator.removeExpiredTokens(ActiveUser)
+    val user = Await.result(userFuture, 100.millis)
+
+    // then
+    user.id should be (ActiveUser.id)
+    user.tokens should not contain fixtureExpiredToken
   }
 }

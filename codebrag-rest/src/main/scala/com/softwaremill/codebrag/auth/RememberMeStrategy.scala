@@ -21,6 +21,8 @@ class RememberMeStrategy(protected val app: ScalatraBase, rememberMe: Boolean, v
       app.response.addHeader("Set-Cookie",
         Cookie(cookieKey, newToken.token)(CookieOptions(path = "/", secure = false, maxAge = Utils.OneWeek, httpOnly = true)).toCookieString)
     }
+
+    authenticator.removeExpiredTokens(user)
   }
 
   override def isValid(implicit request: HttpServletRequest) = {

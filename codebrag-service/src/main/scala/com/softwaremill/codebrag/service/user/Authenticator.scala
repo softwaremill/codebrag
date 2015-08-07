@@ -8,6 +8,9 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain.{Authentication, User, UserToken}
 import com.typesafe.scalalogging.slf4j.Logging
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 trait Authenticator {
 
   val scheduledExecutor = Executors.newSingleThreadScheduledExecutor()
@@ -17,15 +20,11 @@ trait Authenticator {
   def authenticateWithToken(token: String): Option[User] = {
     userDAO.findByToken(token)
       .filter(_.active)
-      .map(removeExpiredTokens)
-      //If used token expired, we don't let the user in
-      .filter(_.tokens.exists(_.token == token))
+      .filterNot(usedTokenExpired(token))
   }
 
-  private def removeExpiredTokens(user: User) = {
-    val userWithoutExpiredTokens = user.copy(tokens = user.tokens.filterNot(_.expireDate.isBeforeNow))
-    userDAO.modifyUser(userWithoutExpiredTokens)
-    userWithoutExpiredTokens
+  private def usedTokenExpired(token: String): (User) => Boolean = {
+    _.tokens.find(_.token == token).exists(_.expireDate.isBeforeNow)
   }
 
   def findByLogin(login: String): Option[User] = {
@@ -55,6 +54,12 @@ trait Authenticator {
     }
 
     newToken
+  }
+
+  def removeExpiredTokens(user: User) = Future {
+    val userWithoutExpiredTokens = user.copy(tokens = user.tokens.filterNot(_.expireDate.isBeforeNow))
+    userDAO.modifyUser(userWithoutExpiredTokens)
+    userWithoutExpiredTokens
   }
 
   def authenticate(login: String, nonEncryptedPassword: String): Option[User]
