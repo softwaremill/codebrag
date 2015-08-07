@@ -16,7 +16,7 @@
                         <li ng-repeat="user in registeredUsers">
                             {{user.email}}
                             <span ng-show="user.pending" class="pending"> - Sending invitation</span>
-                            <span ng-show="user.sendingFailed" class="failed"> - Invitatinon sending failed</span>
+                            <span ng-show="user.sendingFailed" class="failed"> - Invitation sending failed</span>
                             <span ng-show="user.sendingOk" class="success"> - Invitation has been sent</span>
                         </li>
                     </ul>
