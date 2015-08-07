@@ -32,7 +32,7 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     for (i <- 1 to CreatedUsersSize) {
       val login = "user" + i
       val password = "pass" + i
-      val token = UserToken(UUID.randomUUID().toString + i, DateTime.now().plusWeeks(1))
+      val token = PlainUserToken(UUID.randomUUID().toString + i, DateTime.now().plusWeeks(1))
       val name = s"User Name $i"
       val user = UserAssembler.randomUser.withId(i).withBasicAuth(login, password).withFullName(name).withEmail(s"$login@sml.com").withToken(token).get
       userDAO.add(user)
@@ -307,16 +307,16 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
 
   it should "find by token" taggedAs RequiresDb in {
     // Given
-    val token = "token"
+    val token = PlainUserToken("token")
     val user = UserAssembler.randomUser.withToken(token).get
     userDAO.add(user)
 
     // When
-    val userOpt = userDAO.findByToken(token)
+    val userOpt = userDAO.findByToken(token.hashed.token)
 
     // Then
     userOpt match {
-      case Some(u) => u.tokens.filter(_.token == token) should not be 'empty
+      case Some(u) => u.tokens.filter(_.token == token.hashed.token) should not be 'empty
       case _ => fail("User option should be defined")
     }
   }
@@ -485,8 +485,9 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
   }
 
   it should "store user tokens" taggedAs RequiresDb in {
+    val token = PlainUserToken("token1", dateTime)
     // given
-    val user = UserAssembler.randomUser.withToken(UserToken("token1", dateTime)).get
+    val user = UserAssembler.randomUser.withToken(token).get
 
     // when
     userDAO.add(user)
@@ -494,8 +495,8 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     // then
     val userFromDb = userDAO.findById(user.id)
     userFromDb should not be 'empty
-    userFromDb.get.tokens.map(_.token) should contain("token1")
-    userFromDb.get.tokens should contain(UserToken("token1", dateTime))
+    userFromDb.get.tokens.map(_.token) should contain(token.hashed.token)
+    userFromDb.get.tokens should contain(token.hashed)
   }
 
   it should "add user token" taggedAs RequiresDb in {
@@ -504,32 +505,34 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     userDAO.add(user)
 
     // when
-    userDAO.modifyUser(user.copy(tokens = user.tokens + UserToken("new token", dateTime)))
+    val token = PlainUserToken("new token", dateTime).hashed
+    userDAO.modifyUser(user.copy(tokens = user.tokens + token))
 
     // then
     val userFromDb = userDAO.findById(user.id)
     userFromDb should not be 'empty
-//    userFromDb.get.tokens.map(_.token) should contain("new token")
-    userFromDb.get.tokens should contain(UserToken("new token", dateTime))
+    userFromDb.get.tokens should contain(token)
   }
 
   it should "remove user token" taggedAs RequiresDb in {
     // given
-    val user = UserAssembler.randomUser.withToken(UserToken("token3", dateTime)).get
+    val token = PlainUserToken("token3", dateTime)
+    val user = UserAssembler.randomUser.withToken(token).get
     userDAO.add(user)
 
     // when
-    userDAO.modifyUser(user.copy(tokens = user.tokens.diff(Set(UserToken("token3", dateTime)))))
+    userDAO.modifyUser(user.copy(tokens = user.tokens.diff(Set(token.hashed))))
 
     // then
     val fromDao = userDAO.findById(user.id)
     fromDao should not be 'empty
-    fromDao.get.tokens.map(_.token) should not contain "token3"
+    fromDao.get.tokens.map(_.token) should not contain token.hashed.token
   }
 
   it should "not change user tokens if they are not changed" taggedAs RequiresDb in {
     // given
-    val user = UserAssembler.randomUser.withToken("token4").get
+    val token = PlainUserToken("token4")
+    val user = UserAssembler.randomUser.withToken(token).get
     userDAO.add(user)
 
     // when
@@ -538,6 +541,22 @@ class SQLUserDAOSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with Bef
     //then
     val fromDao = userDAO.findById(user.id)
     fromDao should not be 'empty
-    fromDao.get.tokens.map(_.token) should contain ("token4")
+    fromDao.get.tokens.map(_.token) should contain (token.hashed.token)
+  }
+
+  it should "remove user's expired tokens" in {
+    // given
+    val expiredToken = PlainUserToken("token5", DateTime.now.minusDays(1))
+    val user = UserAssembler.randomUser.withToken(expiredToken).get
+    userDAO.add(user)
+
+    // when
+    val fromDAOOpt = userDAO.removeExpiredTokens(user.id)
+
+    // then
+    fromDAOOpt should not be 'empty
+    val fromDAO = fromDAOOpt.get
+    fromDAO.id should be (user.id)
+    fromDAO.tokens should not contain expiredToken.hashed
   }
 }

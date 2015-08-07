@@ -1,19 +1,19 @@
 package com.softwaremill.codebrag.service.followups
 
-import org.scalatest.{BeforeAndAfterEach, FlatSpec}
-import org.scalatest.mock.MockitoSugar
+import com.softwaremill.codebrag.dao._
+import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
+import com.softwaremill.codebrag.dao.followup.FollowupDAO
+import com.softwaremill.codebrag.dao.reaction.CommitCommentDAO
+import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.domain._
+import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
+import org.bson.types.ObjectId
+import org.joda.time.DateTime
 import org.mockito.BDDMockito._
 import org.mockito.Mockito._
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.dao._
-import com.softwaremill.codebrag.domain._
-import org.joda.time.DateTime
-import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
-import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
-import com.softwaremill.codebrag.dao.reaction.CommitCommentDAO
-import com.softwaremill.codebrag.dao.followup.FollowupDAO
+import org.scalatest.mock.MockitoSugar
+import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 
 class FollowupServiceSpec extends FlatSpec with MockitoSugar with ShouldMatchers with BeforeAndAfterEach with FollowupServiceSpecFixture{
 
@@ -150,10 +150,10 @@ trait FollowupServiceSpecFixture {
   val Commit = CommitInfoAssembler.randomCommit.get
   val Commit2 = CommitInfoAssembler.randomCommit.get
 
-  val BettyCommitAuthor = User(BettyCommitAuthorId, Authentication.basic("user", "password"), Commit.authorName, "user@email.com", Set(UserToken("123213")))
-  val JackCommitAuthor = User(JackCommitAuthorId, Authentication.basic("jack", "doe"), "?", Commit2.authorEmail, Set(UserToken("456456")))
+  val BettyCommitAuthor = User(BettyCommitAuthorId, Authentication.basic("user", "password"), Commit.authorName, "user@email.com", Set(PlainUserToken("123213").hashed))
+  val JackCommitAuthor = User(JackCommitAuthorId, Authentication.basic("jack", "doe"), "?", Commit2.authorEmail, Set(PlainUserToken("456456").hashed))
 
-  val JohnCommenter = User(JohnId, Authentication.basic("john", "doe"), "John", "john@doe.com", Set(UserToken("456456")))
+  val JohnCommenter = User(JohnId, Authentication.basic("john", "doe"), "John", "john@doe.com", Set(PlainUserToken("456456").hashed))
 
   val JohnComment = Comment(new ObjectId(), Commit.id, JohnId, CommentDateTime, "user one comment")
   val JohnComment2 = Comment(new ObjectId(), Commit2.id, JohnId, CommentDateTime, "user one comment")

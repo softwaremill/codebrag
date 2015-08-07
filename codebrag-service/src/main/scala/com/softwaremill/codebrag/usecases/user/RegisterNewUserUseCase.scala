@@ -1,8 +1,6 @@
 package com.softwaremill.codebrag.usecases.user
 
-import java.util.UUID
-
-import com.softwaremill.codebrag.domain.{UserToken, Authentication, User}
+import com.softwaremill.codebrag.domain.{Authentication, User}
 import com.softwaremill.codebrag.service.user.RegisterService
 import com.softwaremill.scalaval.Validation
 import com.typesafe.scalalogging.slf4j.Logging

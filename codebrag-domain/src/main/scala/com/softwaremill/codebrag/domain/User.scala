@@ -1,13 +1,13 @@
 package com.softwaremill.codebrag.domain
 
-import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.Utils
+import org.bson.types.ObjectId
 import org.joda.time.DateTime
 
 /**
  * @param tokens Used by "remember me" - set in a cookie. Multiple, to use on many devices
  */
-case class User(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, tokens: Set[UserToken],
+case class User(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, tokens: Set[HashedUserToken],
   admin: Boolean, active: Boolean, settings: UserSettings, notifications: LastUserNotificationDispatch, aliases: UserAliases) {
 
   def makeAdmin = this.copy(admin = true)
@@ -15,7 +15,7 @@ case class User(id: ObjectId, authentication: Authentication, name: String, emai
 
 object User {
 
-  def apply(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, tokens: Set[UserToken], admin: Boolean = false, active: Boolean = true) = {
+  def apply(id: ObjectId, authentication: Authentication, name: String, emailLowerCase: String, tokens: Set[HashedUserToken], admin: Boolean = false, active: Boolean = true) = {
     new User(id, authentication, name, emailLowerCase, tokens, admin, active, UserSettings.defaults(emailLowerCase), LastUserNotificationDispatch.defaults, UserAliases.defaults)
   }
 
@@ -92,10 +92,14 @@ object UserAliases {
   def defaults = UserAliases(Set.empty)
 }
 
-case class UserToken(token: String, expireDate: DateTime)
+case class PlainUserToken(token: String, expireDate: DateTime) {
+  def hashed: HashedUserToken = HashedUserToken(Utils.sha1(token), expireDate)
+}
 
-object UserToken {
-  def apply(token: String): UserToken = {
-    UserToken(token, DateTime.now.plusWeeks(1))
+object PlainUserToken {
+  def apply(token: String): PlainUserToken = {
+    PlainUserToken(token, DateTime.now.plusWeeks(1))
   }
 }
+
+case class HashedUserToken(token: String, expireDate: DateTime)

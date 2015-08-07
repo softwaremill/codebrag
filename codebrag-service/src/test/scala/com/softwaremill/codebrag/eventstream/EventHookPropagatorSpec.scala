@@ -10,14 +10,13 @@ import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.events.NewUserRegistered
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain._
-import reactions._
+import com.softwaremill.codebrag.domain.reactions._
 import com.sun.net.httpserver._
-
 import org.bson.types.ObjectId
+import org.mockito.Mockito._
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, WordSpec}
-import org.mockito.Mockito._
 
 import scala.collection.convert.Wrappers._
 
@@ -47,7 +46,7 @@ class EventHookPropagatorSpec
   val mockCommitInfo = CommitInfo(id, "test", "szach", "test-message", "mocher", "mocher@domain.com", "mocher", "mocher@domain.com", nowUtc, nowUtc, List())
 
   val userId = id
-  val mockUser = User(userId, null, "test", "test@domain.com", Set(UserToken("123456789")), admin = false, active = true, null, null, null)
+  val mockUser = User(userId, null, "test", "test@domain.com", Set(PlainUserToken("123456789").hashed), admin = false, active = true, null, null, null)
 
   val mockLike = Like(id, commitId, userId, nowUtc, Some("test.txt"), Some(123))
   val mockComment = Comment(id, id, id, nowUtc, "test-comment", Some("test2.txt"), Some(321))

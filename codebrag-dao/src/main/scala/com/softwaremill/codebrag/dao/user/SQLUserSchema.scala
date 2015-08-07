@@ -1,16 +1,17 @@
 package com.softwaremill.codebrag.dao.user
 
-import org.bson.types.ObjectId
-import com.softwaremill.codebrag.domain._
-import org.joda.time.DateTime
-import scala.slick.model.ForeignKeyAction
 import com.softwaremill.codebrag.dao.sql.SQLDatabase
+import com.softwaremill.codebrag.domain._
+import org.bson.types.ObjectId
+import org.joda.time.DateTime
+
+import scala.slick.model.ForeignKeyAction
 
 trait SQLUserSchema {
   val database: SQLDatabase
 
-  import database.driver.simple._
   import database._
+  import database.driver.simple._
 
   protected case class SQLAuth(id: ObjectId, provider: String, username: String, usernameLowerCase: String, token: String, salt: String) {
     def toAuth = Authentication(provider, username, usernameLowerCase, token, salt)
@@ -133,7 +134,7 @@ trait SQLUserSchema {
         sqlAuth.toAuth,
         tuple._2,
         tuple._3,
-        sqlUserTokens.map(t => UserToken(t.token, t.expireDate)),
+        sqlUserTokens.map(t => HashedUserToken(t.token, t.expireDate)),
         tuple._5,
         tuple._6,
         sqlSettings.toSettings,

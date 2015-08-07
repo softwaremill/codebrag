@@ -3,7 +3,7 @@ package com.softwaremill.codebrag.auth
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 import com.softwaremill.codebrag.common.Utils
-import com.softwaremill.codebrag.domain.User
+import com.softwaremill.codebrag.domain.{PlainUserToken, User}
 import com.softwaremill.codebrag.service.user.Authenticator
 import org.scalatra.auth.ScentryStrategy
 import org.scalatra.{Cookie, CookieOptions, ScalatraBase}
@@ -14,7 +14,7 @@ class RememberMeStrategy(protected val app: ScalatraBase, rememberMe: Boolean, v
 
   override def afterAuthenticate(winningStrategy: String, user: User)(implicit request: HttpServletRequest, response: HttpServletResponse) {
     if (winningStrategy == name || (winningStrategy == UserPassword.name && rememberMe)) {
-      val usedToken = app.cookies.get(cookieKey).flatMap(to => user.tokens.find(_.token == to))
+      val usedToken = app.cookies.get(cookieKey).flatMap(to => user.tokens.find(_.token == PlainUserToken(to).hashed.token))
 
       val newToken = authenticator.deleteOldSoonAndCreateNewToken(user, usedToken)
 

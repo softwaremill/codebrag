@@ -40,4 +40,6 @@ trait UserDAO {
   def countAll(): Long
 
   def countAllActive(): Long
+
+  def removeExpiredTokens(userId: ObjectId): Option[User]
 }

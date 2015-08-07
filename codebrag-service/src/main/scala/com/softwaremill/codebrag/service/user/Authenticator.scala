@@ -5,7 +5,7 @@ import java.util.concurrent.{Executors, TimeUnit}
 
 import com.softwaremill.codebrag.common.EventBus
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.domain.{Authentication, User, UserToken}
+import com.softwaremill.codebrag.domain._
 import com.typesafe.scalalogging.slf4j.Logging
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -18,9 +18,10 @@ trait Authenticator {
   def userDAO: UserDAO
 
   def authenticateWithToken(token: String): Option[User] = {
-    userDAO.findByToken(token)
+    val hashedToken = PlainUserToken(token).hashed
+    userDAO.findByToken(hashedToken.token)
       .filter(_.active)
-      .filterNot(usedTokenExpired(token))
+      .filterNot(usedTokenExpired(hashedToken.token))
   }
 
   private def usedTokenExpired(token: String): (User) => Boolean = {
@@ -31,9 +32,8 @@ trait Authenticator {
     userDAO.findByLowerCasedLogin(login).filter(_.active)
   }
 
-  def deleteOldSoonAndCreateNewToken(user: User, token: Option[UserToken]) = {
-
-    val newToken = UserToken(UUID.randomUUID().toString)
+  def deleteOldSoonAndCreateNewToken(user: User, token: Option[HashedUserToken]) = {
+    val newToken = PlainUserToken(UUID.randomUUID().toString)
     token match {
       case Some(t) =>
         // When many requests are fired with the same token,
@@ -43,23 +43,21 @@ trait Authenticator {
         scheduledExecutor.schedule(new Runnable {
           override def run() = {
             val tokensWithoutUsed = user.tokens.diff(Set(t))
-            val userWithoutUsedToken = user.copy(tokens = tokensWithoutUsed + newToken)
+            val userWithoutUsedToken = user.copy(tokens = tokensWithoutUsed + newToken.hashed)
             userDAO.modifyUser(userWithoutUsedToken)
           }
         },
         5,
         TimeUnit.SECONDS)
 
-      case None => userDAO.modifyUser(user.copy(tokens = user.tokens + newToken))
+      case None => userDAO.modifyUser(user.copy(tokens = user.tokens + newToken.hashed))
     }
 
     newToken
   }
 
   def removeExpiredTokens(user: User) = Future {
-    val userWithoutExpiredTokens = user.copy(tokens = user.tokens.filterNot(_.expireDate.isBeforeNow))
-    userDAO.modifyUser(userWithoutExpiredTokens)
-    userWithoutExpiredTokens
+    userDAO.removeExpiredTokens(user.id)
   }
 
   def authenticate(login: String, nonEncryptedPassword: String): Option[User]

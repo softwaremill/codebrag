@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.domain.builder
 
 import java.util.UUID
 
-import com.softwaremill.codebrag.domain.{Authentication, LastUserNotificationDispatch, User, UserToken}
+import com.softwaremill.codebrag.domain._
 import org.bson.types.ObjectId
 import org.joda.time.{DateTime, DateTimeZone}
 
@@ -63,13 +63,13 @@ class UserAssembler(var user: User) {
     this
   }
 
-  def withToken(token: UserToken) = {
-    user = user.copy(tokens = user.tokens + token)
+  def withToken(token: PlainUserToken) = {
+    user = user.copy(tokens = user.tokens + token.hashed)
     this
   }
 
   def withToken(token: String) = {
-    user = user.copy(tokens = user.tokens + UserToken(token))
+    user = user.copy(tokens = user.tokens + PlainUserToken(token).hashed)
     this
   }
 
@@ -93,5 +93,5 @@ object UserAssembler {
     Authentication("Basic", "Sofokles", "sofokles", "token", "salt"),
     "Sofokles Mill",
     "sofo@sml.com",
-    Set(UserToken(UUID.randomUUID().toString, DateTime.now(DateTimeZone.UTC).plusWeeks(1))))
+    Set(PlainUserToken(UUID.randomUUID().toString, DateTime.now(DateTimeZone.UTC).plusWeeks(1)).hashed))
 }

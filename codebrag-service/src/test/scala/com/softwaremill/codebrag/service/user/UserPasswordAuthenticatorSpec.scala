@@ -2,7 +2,7 @@ package com.softwaremill.codebrag.service.user
 
 import com.softwaremill.codebrag.dao.ObjectIdTestUtils
 import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.domain.UserToken
+import com.softwaremill.codebrag.domain.PlainUserToken
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.service.events.MockEventBus
 import org.bson.types.ObjectId
@@ -13,9 +13,6 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
-
 class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with MockEventBus {
 
   var userDAO: UserDAO = _
@@ -24,8 +21,8 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
   val fixtureLogin = "johndoe"
   val fixturePassword = "password"
   val fixtureUserId: ObjectId = ObjectIdTestUtils.oid(123)
-  val fixtureValidToken = "123abc"
-  val fixtureExpiredToken = UserToken("token", DateTime.now.minusDays(1))
+  val fixtureValidToken = PlainUserToken("123abc", DateTime.now.plusDays(1))
+  val fixtureExpiredToken = PlainUserToken("token", DateTime.now.minusDays(1))
   val ActiveUser = UserAssembler.randomUser
     .withId(fixtureUserId)
     .withBasicAuth(fixtureLogin, fixturePassword)
@@ -107,10 +104,10 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
 
   it should "return user if the token matches one of users tokens" in {
     // given
-    given(userDAOMock.findByToken(fixtureValidToken)).willReturn(Some(ActiveUser))
+    given(userDAOMock.findByToken(fixtureValidToken.hashed.token)).willReturn(Some(ActiveUser))
 
     // when
-    val Some(user) = authenticator.authenticateWithToken(fixtureValidToken)
+    val Some(user) = authenticator.authenticateWithToken(fixtureValidToken.token)
 
     // then
     user should be(ActiveUser)
@@ -118,10 +115,10 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
 
   it should "not return user if token doesn't match" in {
     // given
-    given(userDAOMock.findByToken(fixtureValidToken)).willReturn(None)
+    given(userDAOMock.findByToken(fixtureValidToken.hashed.token)).willReturn(None)
 
     // when
-    val userOpt = authenticator.authenticateWithToken(fixtureValidToken)
+    val userOpt = authenticator.authenticateWithToken(fixtureValidToken.token)
 
     // then
     userOpt should be(None)
@@ -130,10 +127,10 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
   it should "return None if user found by token but is not active" in {
     // given
     val inactiveUser = ActiveUser.copy(active = false)
-    given(userDAOMock.findByToken(fixtureValidToken)).willReturn(Some(inactiveUser))
+    given(userDAOMock.findByToken(fixtureValidToken.hashed.token)).willReturn(Some(inactiveUser))
 
     // when
-    val userOpt = authenticator.authenticateWithToken(fixtureValidToken)
+    val userOpt = authenticator.authenticateWithToken(fixtureValidToken.token)
 
     // then
     userOpt should be(None)
@@ -141,22 +138,12 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
 
   it should "not authenticate the user based on expired token" in {
     // given
-    given(userDAOMock.findByToken(fixtureExpiredToken.token)).willReturn(Some(ActiveUser))
+    given(userDAOMock.findByToken(fixtureExpiredToken.hashed.token)).willReturn(Some(ActiveUser))
 
     // when
     val userOpt = authenticator.authenticateWithToken(fixtureExpiredToken.token)
 
     // then
     userOpt should be(None)
-  }
-
-  it should "remove user's expired tokens" in {
-    // when
-    val userFuture = authenticator.removeExpiredTokens(ActiveUser)
-    val user = Await.result(userFuture, 100.millis)
-
-    // then
-    user.id should be (ActiveUser.id)
-    user.tokens should not contain fixtureExpiredToken
   }
 }

@@ -126,6 +126,14 @@ class SQLUserDAO(val database: SQLDatabase) extends UserDAO with SQLUserSchema {
     }
   }
 
+  def removeExpiredTokens(userId: ObjectId) = db.withTransaction { implicit session =>
+    findById(userId).map { user =>
+        val userWithoutExpiredTokens = user.copy(tokens = user.tokens.filterNot(_.expireDate.isBeforeNow))
+        modifyUser(userWithoutExpiredTokens)
+        userWithoutExpiredTokens
+    }
+  }
+
   private def findPartialUserDetails(condition: Users => Column[Boolean]) = db.withTransaction { implicit session =>
     val q = for {
       u <- users if condition(u)

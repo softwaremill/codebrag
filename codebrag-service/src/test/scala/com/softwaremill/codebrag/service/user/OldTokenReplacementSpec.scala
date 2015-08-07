@@ -4,7 +4,7 @@ import java.util.concurrent._
 
 import com.softwaremill.codebrag.dao.user.SQLUserDAO
 import com.softwaremill.codebrag.dao.{ObjectIdTestUtils, RequiresDb}
-import com.softwaremill.codebrag.domain.UserToken
+import com.softwaremill.codebrag.domain.PlainUserToken
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.service.events.MockEventBus
 import com.softwaremill.codebrag.test.{ClearSQLDataAfterTest, FlatSpecWithSQL}
@@ -28,7 +28,7 @@ class OldTokenReplacementSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest
   }
 
   val fixtureId = ObjectIdTestUtils.oid(1234)
-  val fixtureToken = UserToken("oldToken", DateTime.now)
+  val fixtureToken = PlainUserToken("oldToken", DateTime.now)
   val ActiveUser = UserAssembler.randomUser
     .withId(fixtureId)
     .withToken(fixtureToken)
@@ -41,32 +41,32 @@ class OldTokenReplacementSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest
 
   it should "create new token if there is no old token" taggedAs RequiresDb in {
     // when
-    val UserToken(token, _) = authenticator.deleteOldSoonAndCreateNewToken(ActiveUser, None)
+    val token = authenticator.deleteOldSoonAndCreateNewToken(ActiveUser, None)
 
     //then
     val Some(user) = userDAO.findById(fixtureId)
-    user.tokens.map(_.token) should contain (token)
+    user.tokens.map(_.token) should contain (token.hashed.token)
   }
 
   it should "not replace old token immediately" taggedAs RequiresDb in {
     // when
-    val UserToken(newToken, _) = authenticator.deleteOldSoonAndCreateNewToken(ActiveUser, Some(fixtureToken))
+    val newToken = authenticator.deleteOldSoonAndCreateNewToken(ActiveUser, Some(fixtureToken.hashed))
 
     //then
     val Some(oldUser) = userDAO.findById(fixtureId)
-    oldUser.tokens.map(_.token) should not contain newToken
-    oldUser.tokens.map(_.token) should contain ("oldToken")
+    oldUser.tokens.map(_.token) should not contain newToken.hashed.token
+    oldUser.tokens.map(_.token) should contain (fixtureToken.hashed.token)
   }
   
   it should "replace old token when the time comes" taggedAs RequiresDb in {
     // when
-    val UserToken(newToken, _) = authenticator.deleteOldSoonAndCreateNewToken(ActiveUser, Some(fixtureToken))
+    val newToken = authenticator.deleteOldSoonAndCreateNewToken(ActiveUser, Some(fixtureToken.hashed))
 
     //then
     authenticator.scheduledExecutor.runTask()
     val Some(newUser) = userDAO.findById(fixtureId)
-    newUser.tokens.map(_.token) should contain (newToken)
-    newUser.tokens.map(_.token) should not contain "oldToken"
+    newUser.tokens.map(_.token) should contain (newToken.hashed.token)
+    newUser.tokens.map(_.token) should not contain fixtureToken.hashed.token
   }
 
 }
