@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 trait Authenticator {
 
   val scheduledExecutor = Executors.newSingleThreadScheduledExecutor()
-  implicit val ec: ExecutionContext
+  implicit def ec: ExecutionContext
 
   def userDAO: UserDAO
 
