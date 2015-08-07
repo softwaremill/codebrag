@@ -1,11 +1,12 @@
 import java.text.SimpleDateFormat
 import java.util.Date
-import sbt._
-import Keys._
-import net.virtualvoid.sbt.graph.Plugin._
+
 import com.typesafe.sbt.SbtScalariform._
+import net.virtualvoid.sbt.graph.Plugin._
+import sbt.Keys._
+import sbt._
+import sbtassembly.Plugin.AssemblyKeys._
 import sbtassembly.Plugin._
-import AssemblyKeys._
 import sbtbuildinfo.Plugin._
 
 object Resolvers {
@@ -26,7 +27,7 @@ object BuildSettings {
     defaultScalariformSettings ++ Seq(
 
     organization := "com.softwaremill",
-    version := "2.3.1",
+    version := "2.3.2",
     scalaVersion := "2.10.4",
 
     resolvers := codebragResolvers,
@@ -125,8 +126,8 @@ object Dependencies {
 
 object SmlCodebragBuild extends Build {
 
-  import Dependencies._
   import BuildSettings._
+  import Dependencies._
   import com.earldouglas.xwp._
 
   val buildWebClient = TaskKey[Unit](
