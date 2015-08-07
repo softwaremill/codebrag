@@ -13,6 +13,8 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 
+import scala.concurrent.ExecutionContext
+
 class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with MockEventBus {
 
   var userDAO: UserDAO = _
@@ -35,7 +37,7 @@ class UserPasswordAuthenticatorSpec extends FlatSpec with ShouldMatchers with Mo
   before {
     eventBus.clear()
     userDAOMock = mock[UserDAO]
-    authenticator = new UserPasswordAuthenticator(userDAOMock, eventBus)
+    authenticator = new UserPasswordAuthenticator(userDAOMock, eventBus, mock[ExecutionContext])
   }
 
   it should "call dao to authenticate user" in {

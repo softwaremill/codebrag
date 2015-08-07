@@ -8,12 +8,12 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain._
 import com.typesafe.scalalogging.slf4j.Logging
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait Authenticator {
 
   val scheduledExecutor = Executors.newSingleThreadScheduledExecutor()
+  implicit val ec: ExecutionContext
 
   def userDAO: UserDAO
 
@@ -63,7 +63,9 @@ trait Authenticator {
   def authenticate(login: String, nonEncryptedPassword: String): Option[User]
 }
 
-class UserPasswordAuthenticator(val userDAO: UserDAO, eventBus: EventBus) extends Authenticator with Logging {
+class UserPasswordAuthenticator(val userDAO: UserDAO, eventBus: EventBus, executionContext: ExecutionContext) extends Authenticator with Logging {
+
+  val ec = executionContext
 
   def authenticate(login: String, nonEncryptedPassword: String): Option[User] = {
     userDAO.findByLoginOrEmail(login).filter { user =>

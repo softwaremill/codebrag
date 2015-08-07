@@ -13,10 +13,12 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 
+import scala.concurrent.ExecutionContext
+
 class OldTokenReplacementSpec extends FlatSpecWithSQL with ClearSQLDataAfterTest with BeforeAndAfterEach with ShouldMatchers with MockitoSugar with MockEventBus {
 
   val userDAO = new SQLUserDAO(sqlDatabase)
-  val authenticator = new UserPasswordAuthenticator(userDAO, eventBus) {
+  val authenticator = new UserPasswordAuthenticator(userDAO, eventBus, mock[ExecutionContext]) {
     override val scheduledExecutor = new ScheduledThreadPoolExecutor(1) {
       var task: Runnable = _
       override def schedule(command: Runnable, delay: Long, unit: TimeUnit): ScheduledFuture[_] = {

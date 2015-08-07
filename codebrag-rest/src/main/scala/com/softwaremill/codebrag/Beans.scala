@@ -1,33 +1,33 @@
 package com.softwaremill.codebrag
 
-import com.softwaremill.codebrag.usecases._
-import com.softwaremill.codebrag.common.{RealTimeClock, ObjectIdGenerator, IdGenerator}
-import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
-import com.softwaremill.codebrag.service.diff.{DiffWithCommentsService, DiffService}
-import com.softwaremill.codebrag.service.followups.{FollowupsGeneratorForReactionsPriorUserRegistration, WelcomeFollowupsGenerator, FollowupService}
-import service.commits._
-import com.softwaremill.codebrag.service.user._
-import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
+import com.softwaremill.codebrag.cache.{PersistentBackendForCache, RepositoriesCache, UserReviewedCommitsCache}
+import com.softwaremill.codebrag.common.{IdGenerator, ObjectIdGenerator, RealTimeClock}
+import com.softwaremill.codebrag.dao.Daos
+import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFinder
+import com.softwaremill.codebrag.finders.commits.all.{AllCommitsFinder, AllCommitsViewBuilder}
+import com.softwaremill.codebrag.finders.commits.toreview.{ToReviewBranchCommitsFilter, ToReviewCommitsFinder, ToReviewCommitsViewBuilder}
+import com.softwaremill.codebrag.finders.user.UserFinder
+import com.softwaremill.codebrag.instance.InstanceParamsService
+import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
+import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
+import com.softwaremill.codebrag.service.commits._
+import com.softwaremill.codebrag.service.diff.{DiffService, DiffWithCommentsService}
+import com.softwaremill.codebrag.service.email.{EmailScheduler, EmailService}
+import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
+import com.softwaremill.codebrag.service.followups.{FollowupService, FollowupsGeneratorForReactionsPriorUserRegistration, WelcomeFollowupsGenerator}
 import com.softwaremill.codebrag.service.invitations.{DefaultUniqueHashGenerator, InvitationService}
-import com.softwaremill.codebrag.service.email.{EmailService, EmailScheduler}
 import com.softwaremill.codebrag.service.notification.NotificationService
 import com.softwaremill.codebrag.service.templates.TemplateEngine
-import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsHTTPRequestSender, StatsAggregator}
-import com.softwaremill.codebrag.dao.Daos
-import com.softwaremill.codebrag.repository.Repository
-import com.softwaremill.codebrag.cache.{RepositoriesCache, UserReviewedCommitsCache, PersistentBackendForCache}
-import com.softwaremill.codebrag.instance.InstanceParamsService
-import com.softwaremill.codebrag.finders.commits.toreview.{ToReviewCommitsViewBuilder, ToReviewBranchCommitsFilter, ToReviewCommitsFinder}
-import com.softwaremill.codebrag.finders.commits.all.{AllCommitsViewBuilder, AllCommitsFinder}
-import com.softwaremill.codebrag.finders.user.UserFinder
-import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContextFinder
-import com.softwaremill.codebrag.usecases.branches.{StopWatchingBranch, StartWatchingBranch, ListRepositoryBranches}
-import com.softwaremill.codebrag.usecases.reactions._
-import com.softwaremill.codebrag.usecases.emailaliases.{DeleteUserAliasUseCase, AddUserAliasUseCase}
-import com.softwaremill.codebrag.usecases.user._
+import com.softwaremill.codebrag.service.user._
+import com.softwaremill.codebrag.stats.{InstanceRunStatsSender, StatsAggregator, StatsHTTPRequestSender}
+import com.softwaremill.codebrag.usecases._
+import com.softwaremill.codebrag.usecases.branches.{ListRepositoryBranches, StartWatchingBranch, StopWatchingBranch}
+import com.softwaremill.codebrag.usecases.emailaliases.{AddUserAliasUseCase, DeleteUserAliasUseCase}
 import com.softwaremill.codebrag.usecases.notifications.FindUserNotifications
-import com.softwaremill.codebrag.usecases.registration.{UnwatchBranchAfterRegistration, WatchBranchAfterRegistration, ListRepoBranchesAfterRegistration, ListRepositoriesAfterRegistration}
+import com.softwaremill.codebrag.usecases.reactions._
+import com.softwaremill.codebrag.usecases.registration.{ListRepoBranchesAfterRegistration, ListRepositoriesAfterRegistration, UnwatchBranchAfterRegistration, WatchBranchAfterRegistration}
+import com.softwaremill.codebrag.usecases.user._
 
 trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
@@ -51,7 +51,7 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
   lazy val welcomeFollowupsGenerator = new WelcomeFollowupsGenerator(internalUserDao, commentDao, likeDao, followupDao, commitInfoDao, templateEngine)
   lazy val followupGeneratorForPriorReactions = new FollowupsGeneratorForReactionsPriorUserRegistration(commentDao, likeDao, followupDao, commitInfoDao, config)
 
-  lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus)
+  lazy val authenticator = new UserPasswordAuthenticator(userDao, eventBus, actorSystem.dispatcher)
 
   lazy val afterUserRegistered = new AfterUserRegistered(repositoriesCache, reviewedCommitsCache,userRepoDetailsDao, config)
 
