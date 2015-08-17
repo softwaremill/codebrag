@@ -15,10 +15,10 @@ object Resolvers {
     "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
     "SotwareMill Public Releases" at "https://nexus.softwaremill.com/content/repositories/releases/",
     "SotwareMill Public Snapshots" at "https://nexus.softwaremill.com/content/repositories/snapshots/",
-    "TorqueBox Releases" at "http://rubygems-proxy.torquebox.org/releases"
+    "TorqueBox Releases" at "http://rubygems-proxy.torquebox.org/releases",
+    "RoundEights" at "http://maven.spikemark.net/roundeights"
   )
 }
-
 object BuildSettings {
 
   import Resolvers._
@@ -122,6 +122,8 @@ object Dependencies {
 
   val httpClient = "net.databinder.dispatch" %% "dispatch-core" % "0.11.2"
 
+  val crypto = "com.roundeights" %% "hasher" % "1.0.0"
+
 }
 
 object SmlCodebragBuild extends Build {
@@ -167,7 +169,7 @@ object SmlCodebragBuild extends Build {
   lazy val common: Project = Project(
     "codebrag-common",
     file("codebrag-common"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies ++ Seq(commonsCodec, typesafeConfig)) ++ buildInfoSettings ++
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(bson) ++ jodaDependencies ++ Seq(commonsCodec, typesafeConfig, crypto)) ++ buildInfoSettings ++
       Seq(
         sourceGenerators in Compile <+= buildInfo,
         buildInfoPackage := "com.softwaremill.codebrag.version",

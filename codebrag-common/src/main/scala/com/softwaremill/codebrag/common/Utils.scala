@@ -1,10 +1,11 @@
 package com.softwaremill.codebrag.common
 
+import java.io.File
+import java.util.Random
+
+import com.roundeights.hasher.Implicits._
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
-import java.util.Random
-import org.apache.commons.codec.binary.Hex
-import java.io.File
 
 object Utils {
 
@@ -12,24 +13,15 @@ object Utils {
   val DateFormat = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
 
   def md5(s: String): String = {
-    val m = java.security.MessageDigest.getInstance("MD5")
-    val b = s.getBytes("UTF-8")
-    m.update(b, 0, b.length)
-    Hex.encodeHexString(m.digest())
+    s.md5
   }
 
   def sha1(s: String): String = {
-    val m = java.security.MessageDigest.getInstance("SHA-1")
-    val b = s.getBytes("UTF-8")
-    m.update(b, 0, b.length)
-    new java.math.BigInteger(1, m.digest()).toString(16)
+    s.sha1
   }
 
   def sha256(password: String, salt: String): String = {
-    val md = java.security.MessageDigest.getInstance("SHA-256")
-    md.reset()
-    md.update(salt.getBytes("UTF-8"))
-    new java.math.BigInteger(1, md.digest(password.getBytes("UTF-8"))).toString(16)
+    password.salt(salt).sha256
   }
 
   def checkbox(s: String): Boolean = {
