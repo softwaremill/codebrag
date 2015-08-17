@@ -1,5 +1,7 @@
 # Codebrag
 
+[![Build Status](https://travis-ci.org/softwaremill/codebrag.svg)](https://travis-ci.org/softwaremill/codebrag)
+
 Below is a **developer guide** if you want to hack on Codebrag yourself.
 
 **If you are looking for general information on the project, [please see the main website](http://codebrag.com/).**

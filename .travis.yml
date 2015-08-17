@@ -1,0 +1,8 @@
+node_js:
+    - 0.10.13
+scala:
+    - 2.10.4
+before_script:
+    - npm install -g grunt-cli
+script:
+    - cd codebrag-ui && npm install && grunt test:teamcity && cd .. && sbt -Dsbt.log.noformat=true ";clean;test"
