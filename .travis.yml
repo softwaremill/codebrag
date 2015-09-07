@@ -1,4 +1,9 @@
 language: scala
+sudo: false
+cache:
+    directories:
+        - codebrag-ui/node_modules
+        - $HOME/.ivy2
 node_js:
     - 0.10.13
 scala:
