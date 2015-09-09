@@ -1,6 +1,6 @@
 package com.softwaremill.codebrag.service.commits
 
-import com.softwaremill.codebrag.common.EventBus
+import com.softwaremill.codebrag.common.{Clock, EventBus}
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.domain.{MultibranchLoadCommitsResult, PartialCommitInfo, NewCommitsLoadedEvent, RepositoryStatus}
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
@@ -9,7 +9,13 @@ import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
 import com.softwaremill.codebrag.cache.RepositoriesCache
 import com.softwaremill.codebrag.service.config.CommitCacheConfig
 
-class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: BranchStateDAO, repositoriesCache: RepositoriesCache, config: CommitCacheConfig, eventBus: EventBus) extends Logging {
+class CommitImportService(
+  repoStatusDao: RepositoryStatusDAO,
+  branchStateDao: BranchStateDAO,
+  repositoriesCache: RepositoriesCache,
+  config: CommitCacheConfig,
+  eventBus: EventBus
+)(implicit clock: Clock) extends Logging {
 
   def importRepoCommits(repository: Repository) {
     try {
