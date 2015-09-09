@@ -1,21 +1,31 @@
 package com.softwaremill.codebrag.service.commits
 
-import com.softwaremill.codebrag.common.ClockSpec
-import com.softwaremill.codebrag.service.events.MockEventBus
-import org.eclipse.jgit.lib.ObjectId
-import org.scalatest.{BeforeAndAfterEach, FlatSpec, BeforeAndAfter}
+import org.scalatest._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.matchers.ShouldMatchers
-import com.softwaremill.codebrag.domain.{CommitInfo, CommitsForBranch, RepositoryStatus, MultibranchLoadCommitsResult}
+
 import org.mockito.Mockito._
+import org.mockito.Matchers
+
+import org.eclipse.jgit.lib.ObjectId
+
+import com.softwaremill.codebrag.common.ClockSpec
+import com.softwaremill.codebrag.service.events.MockEventBus
+import com.softwaremill.codebrag.domain._
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 import com.softwaremill.codebrag.repository.Repository
-import org.mockito.Matchers
 import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
 import com.softwaremill.codebrag.cache.RepositoriesCache
 import com.softwaremill.codebrag.service.config.CommitCacheConfig
 
-class CommitImportServiceSpec extends FlatSpec with MockitoSugar with BeforeAndAfter with BeforeAndAfterEach with ShouldMatchers with ClockSpec with MockEventBus {
+class CommitImportServiceSpec
+  extends FlatSpec
+  with MockitoSugar
+  with BeforeAndAfter
+  with BeforeAndAfterEach
+  with ShouldMatchers
+  with ClockSpec
+  with MockEventBus {
 
   var repoStatusDao: RepositoryStatusDAO = _
   var branchStateDao: BranchStateDAO = _
