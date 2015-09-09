@@ -1,14 +1,15 @@
 package com.softwaremill.codebrag.service.commits
 
+import com.softwaremill.codebrag.common.EventBus
 import com.typesafe.scalalogging.slf4j.Logging
-import com.softwaremill.codebrag.domain.RepositoryStatus
+import com.softwaremill.codebrag.domain.{MultibranchLoadCommitsResult, PartialCommitInfo, NewCommitsLoadedEvent, RepositoryStatus}
 import com.softwaremill.codebrag.dao.repositorystatus.RepositoryStatusDAO
 import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.dao.branchsnapshot.BranchStateDAO
 import com.softwaremill.codebrag.cache.RepositoriesCache
 import com.softwaremill.codebrag.service.config.CommitCacheConfig
 
-class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: BranchStateDAO, repositoriesCache: RepositoriesCache, config: CommitCacheConfig) extends Logging {
+class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: BranchStateDAO, repositoriesCache: RepositoriesCache, config: CommitCacheConfig, eventBus: EventBus) extends Logging {
 
   def importRepoCommits(repository: Repository) {
     try {
@@ -19,6 +20,9 @@ class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: Br
     }
     try {
       val loaded = repository.loadCommitsSince(branchStateDao.loadBranchesStateAsMap(repository.repoName), config.maxCommitsCachedPerBranch)
+      if (loaded.commits.nonEmpty) {
+        publishNewCommitsLoaded(repository, loaded)
+      }
       repositoriesCache.addCommitsToRepo(repository.repoName, loaded)
       updateRepoReadyStatus(repository)
     } catch {
@@ -45,4 +49,14 @@ class CommitImportService(repoStatusDao: RepositoryStatusDAO, branchStateDao: Br
     repoStatusDao.updateRepoStatus(repoReadyStatus)
   }
 
+  private def publishNewCommitsLoaded(repository: Repository, loaded: MultibranchLoadCommitsResult): Unit = {
+    eventBus.publish(NewCommitsLoadedEvent(
+      !repositoriesCache.hasRepo(repository.repoName),
+      repository.repoName,
+      repository.currentHead.toString,
+      loaded.uniqueCommits.map { commit =>
+        PartialCommitInfo(commit)
+      }.toList
+    ))
+  }
 }
