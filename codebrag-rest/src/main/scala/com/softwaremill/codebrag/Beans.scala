@@ -12,6 +12,7 @@ import com.softwaremill.codebrag.repository.Repository
 import com.softwaremill.codebrag.service.actors.ActorSystemSupport
 import com.softwaremill.codebrag.service.comments.{LikeValidator, UserReactionService}
 import com.softwaremill.codebrag.service.commits._
+import com.softwaremill.codebrag.service.commits.jgit.JgitDiffLoader
 import com.softwaremill.codebrag.service.diff.{DiffService, DiffWithCommentsService}
 import com.softwaremill.codebrag.service.email.{EmailScheduler, EmailService}
 import com.softwaremill.codebrag.service.events.akka.AkkaEventBus
@@ -29,7 +30,7 @@ import com.softwaremill.codebrag.usecases.reactions._
 import com.softwaremill.codebrag.usecases.registration.{ListRepoBranchesAfterRegistration, ListRepositoriesAfterRegistration, UnwatchBranchAfterRegistration, WatchBranchAfterRegistration}
 import com.softwaremill.codebrag.usecases.user._
 
-trait Beans extends ActorSystemSupport with CommitsModule with Daos {
+trait Beans extends ActorSystemSupport with Daos {
 
   def config: AllConfig
   def repository: Repository
@@ -114,5 +115,8 @@ trait Beans extends ActorSystemSupport with CommitsModule with Daos {
 
   lazy val userBrowsingContextFinder = new UserBrowsingContextFinder(userRepoDetailsDao, repositoriesCache)
   lazy val userFinder = new UserFinder(userDao, userBrowsingContextFinder)
+
+  lazy val commitImportService = new CommitImportService(repoStatusDao, branchStateDao, repositoriesCache, config, eventBus)
+  lazy val diffLoader = new JgitDiffLoader()
 
 }
