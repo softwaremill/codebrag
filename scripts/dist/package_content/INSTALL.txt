@@ -8,7 +8,6 @@ Welcome to Codebrag v2.2!
 
 Need help? Questions? We are here:
 
-* ask@codebrag.com
 * http://codebrag.com
 
 * Twitter -> https://twitter.com/codebrag
