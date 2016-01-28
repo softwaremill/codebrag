@@ -6,7 +6,7 @@ import org.bson.types.ObjectId
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.domain.UserRepoDetails
 
-case class UserBrowsingContext(userId: ObjectId, repoName: String, branchName: String)
+case class UserBrowsingContext(userId: ObjectId, repoName: String, branchName: String, visibleUsers : Set[ObjectId] = Set.empty[ObjectId])
 
 object UserBrowsingContext {
   def apply(d: UserRepoDetails) = new UserBrowsingContext(d.userId, d.repoName, d.branchName)
@@ -63,4 +63,5 @@ class UserBrowsingContextFinder(val userRepoDetailsDao: UserRepoDetailsDAO, val 
     logger.debug(s"Building system default context from $repoName and $branchName")
     UserBrowsingContext(userId, repoName, branchName)
   }
+
 }

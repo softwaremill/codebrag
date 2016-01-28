@@ -57,5 +57,25 @@ angular.module('codebrag.common.services')
             };
             return $modal.open(modalConfig(config));
         };
+        
+        this.openAddTeamPopup = function() {
+        	var config = {
+        			templateUrl: 'views/popups/addTeam.html',
+        			controller: 'AddTeamPopupCtrl'
+        	};
+        	return $modal.open(modalConfig(config));
+        };
+        
+        this.openManageTeamMembersPopup = function(targetTeam) {
+        	var config = {
+        			templateUrl: 'views/popups/manageTeamMembers.html',
+        			windowClass: 'manage-teams',
+        			controller: 'ManageTeamMembersPopupCtrl',
+        			resolve: {
+        				team: function() { return targetTeam; }
+        			}
+        	};
+        	return $modal.open(modalConfig(config));
+        };
 
     });

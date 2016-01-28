@@ -1,0 +1,22 @@
+<div class="popup-content">
+
+    <section class="form-group">
+        <form name="addTeamForm" novalidate class="form-group" ng-submit="addTeam(name)">
+
+            <h1 class="text-center">Add team</h1>
+            <div class="text-error" ng-repeat="error in flash.get('error')">{{ error.message }}</div>
+            <ul>
+                <li>
+                    <label>Name:</label><input type="text" ng-model="name" required set-focus>
+                </li>
+
+            </ul>
+            <button type="submit" ng-disabled="addTeamForm.$invalid">Add team</button>
+            <button class="secondary" ng-click="$dismiss()">Cancel</button>
+        </form>
+    </section>
+
+    <span class="close-btn" ng-click="$dismiss()">
+        <i class="icon-remove"></i>
+    </span>
+</div>

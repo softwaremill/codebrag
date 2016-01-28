@@ -4,7 +4,7 @@ import org.bson.types.ObjectId
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.finders.views.CommitListView
-import com.softwaremill.codebrag.dao.user.UserDAO
+import com.softwaremill.codebrag.dao.user.{UserDAO, TeamDAO}
 import com.typesafe.scalalogging.slf4j.Logging
 import com.softwaremill.codebrag.cache.RepositoriesCache
 import com.softwaremill.codebrag.finders.commits.UserLoader
@@ -29,6 +29,6 @@ class AllCommitsFinder(
       case None => Left("Commit not found")
     }
   }
-
+  
 }
 

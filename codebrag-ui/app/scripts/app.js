@@ -35,6 +35,8 @@ angular.module('codebrag.notifications', ['codebrag.branches', 'codebrag.events'
 
 angular.module('codebrag.userMgmt', ['ui.bootstrap.modal']);
 
+angular.module('codebrag.teamMgmt', ['ui.bootstrap.modal']);
+
 angular.module('codebrag.registration', ['codebrag.branches']);
 
 angular.module('codebrag', [
@@ -52,7 +54,8 @@ angular.module('codebrag', [
     'codebrag.tour',
     'codebrag.profile',
     'codebrag.invitations',
-    'codebrag.userMgmt']);
+    'codebrag.userMgmt',
+    'codebrag.teamMgmt']);
 
 angular.module('codebrag')
     .config(function ($provide) {
@@ -158,4 +161,8 @@ angular.module('codebrag.common')
 
 angular.module('codebrag.userMgmt').run(function(userMgmtService) {
     userMgmtService.initialize();
+});
+
+angular.module('codebrag.teamMgmt').run(function(teamMgmtService) {
+	teamMgmtService.initialize();
 });

@@ -29,6 +29,8 @@ import com.softwaremill.codebrag.usecases.notifications.FindUserNotifications
 import com.softwaremill.codebrag.usecases.reactions._
 import com.softwaremill.codebrag.usecases.registration.{ListRepoBranchesAfterRegistration, ListRepositoriesAfterRegistration, UnwatchBranchAfterRegistration, WatchBranchAfterRegistration}
 import com.softwaremill.codebrag.usecases.user._
+import com.softwaremill.codebrag.usecases.team.{AddTeamUseCase, DeleteTeamUseCase, AddTeamMemberUseCase, DeleteTeamMemberUseCase, ModifyTeamMemberUseCase}
+import com.softwaremill.codebrag.finders.team.TeamFinder
 
 trait Beans extends ActorSystemSupport with Daos {
 
@@ -101,6 +103,7 @@ trait Beans extends ActorSystemSupport with Daos {
   lazy val toReviewCommitsFinder = new ToReviewCommitsFinder(
     repositoriesCache,
     userDao,
+    teamDao,
     userBrowsingContextFinder,
     new ToReviewBranchCommitsFilter(reviewedCommitsCache, config),
     new ToReviewCommitsViewBuilder(userDao, commitInfoDao)
@@ -119,4 +122,10 @@ trait Beans extends ActorSystemSupport with Daos {
   lazy val commitImportService = new CommitImportService(repoStatusDao, branchStateDao, repositoriesCache, config, eventBus)
   lazy val diffLoader = new JgitDiffLoader()
 
+  lazy val teamFinder = new TeamFinder(userDao, teamDao)
+  lazy val addTeamUseCase = new AddTeamUseCase(teamDao)
+  lazy val deleteTeamUseCase = new DeleteTeamUseCase(teamDao)
+  lazy val addTeamMemberUseCase = new AddTeamMemberUseCase(teamDao)
+  lazy val deleteTeamMemberUseCase = new DeleteTeamMemberUseCase(teamDao)
+  lazy val modifyTeamMemberUseCase = new ModifyTeamMemberUseCase(teamDao)
 }

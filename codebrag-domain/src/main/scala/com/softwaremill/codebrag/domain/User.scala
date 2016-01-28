@@ -79,7 +79,6 @@ object UserSettings {
 
 }
 
-
 case class UserAlias(id: ObjectId, userId: ObjectId, alias: String)
 
 object UserAlias {

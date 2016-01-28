@@ -82,7 +82,8 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     context.mount(new RepoStatusServlet(authenticator, repositories.head, repoStatusDao), Prefix + RepoStatusServlet.Mapping)
     context.mount(new RepositoryBranchesServlet(authenticator, toReviewCommitsFinder, listRepoBranches, addBranchToObserved, removeBranchFromObserved), Prefix + RepositoryBranchesServlet.MountPath)
     context.mount(new BrowsingContextServlet(authenticator, userBrowsingContextFinder, updateUserBrowsingContextUseCase), Prefix + BrowsingContextServlet.MappingPath)
-
+    context.mount(new TeamsServlet(authenticator, teamFinder, addTeamUseCase, deleteTeamUseCase, addTeamMemberUseCase, deleteTeamMemberUseCase, modifyTeamMemberUseCase, config), Prefix + "teams")
+    
     context.mount(new TimingFilter, "/*")
 
     InstanceContext.put(context, beans)

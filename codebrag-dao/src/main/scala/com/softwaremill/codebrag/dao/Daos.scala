@@ -22,6 +22,7 @@ import com.softwaremill.codebrag.dao.branch.SQLWatchedBranchesDao
 
 trait Daos {
   lazy val userDao = new SQLUserDAO(sqlDatabase)
+  lazy val teamDao = new SQLTeamDAO(sqlDatabase)
   lazy val internalUserDao = new SQLInternalUserDAO(sqlDatabase)
   lazy val commitInfoDao = new SQLCommitInfoDAO(sqlDatabase)
   lazy val followupDao = new SQLFollowupDAO(sqlDatabase)

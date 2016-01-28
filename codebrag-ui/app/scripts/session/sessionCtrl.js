@@ -45,6 +45,10 @@ angular.module('codebrag.session')
             $rootScope.$broadcast('openUserMgmtPopup');
         };
 
+        $scope.openTeamMgmtPopup = function () {
+            $rootScope.$broadcast('openTeamMgmtPopup');
+        };
+        
         $scope.openAboutPopup = popupsService.openAboutPopup;
         $scope.openInvitePopup = popupsService.openInvitePopup;
 

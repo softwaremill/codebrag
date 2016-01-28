@@ -6,19 +6,21 @@ import com.softwaremill.codebrag.domain.User
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.softwaremill.codebrag.domain.CommitAuthorClassification._
+import com.softwaremill.codebrag.domain.PartialUserDetails
 
 class ToReviewBranchCommitsFilter(reviewedCommitsCache: UserReviewedCommitsCache, config: ReviewProcessConfig) {
 
-   def filterCommitsToReview(branchCommits: List[BranchCommitCacheEntry], user: User, repoName: String) = {
+   def filterCommitsToReview(branchCommits: List[BranchCommitCacheEntry], user: User, teamMembers: List[PartialUserDetails], repoName: String) = {
      val userBoundaryDate = reviewedCommitsCache.getEntry(user.id, repoName).toReviewStartDate
-     filterCommitsToReviewSince(userBoundaryDate, branchCommits, user, repoName)
+     filterCommitsToReviewSince(userBoundaryDate, branchCommits, user, teamMembers, repoName)
    }
 
-   def filterCommitsToReviewSince(date: DateTime, branchCommits: List[BranchCommitCacheEntry], user: User, repoName: String) = {
+   def filterCommitsToReviewSince(date: DateTime, branchCommits: List[BranchCommitCacheEntry], user: User, teamMembers: List[PartialUserDetails], repoName: String) = {
      branchCommits
        .filterNot(userOrDoneCommits(repoName, _, user))
        .filterNot(commitTooOld(_, date))
        .filter(notYetFullyReviewed(repoName, _))
+       .filter(teamCommits(repoName, _, teamMembers))
        .map(_.sha)
        .reverse
    }
@@ -39,4 +41,9 @@ class ToReviewBranchCommitsFilter(reviewedCommitsCache: UserReviewedCommitsCache
      val commitsReviewedByUser = reviewedCommitsCache.getEntry(userId, repoName).commits
      commitsReviewedByUser.find(_.sha == commit.sha).nonEmpty
    }
+      
+   private def teamCommits(repoName: String, commitEntry: BranchCommitCacheEntry, teamMembers: List[PartialUserDetails]): Boolean = {
+     teamMembers.filter(m => commitAuthoredByUser(commitEntry, m)).size > 0
+   }
+
 }
