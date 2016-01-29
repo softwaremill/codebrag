@@ -3,13 +3,14 @@ package com.softwaremill.codebrag.finders.commits.toreview
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
-import com.softwaremill.codebrag.dao.user.UserDAO
-import com.softwaremill.codebrag.domain.builder.UserAssembler
+import com.softwaremill.codebrag.dao.user.{UserDAO, TeamDAO}
+import com.softwaremill.codebrag.domain.builder.{UserAssembler, TeamAssembler}
 import com.softwaremill.codebrag.cache.{RepositoriesCache, BranchCommitCacheEntry, UserReviewedCommitsCacheEntry}
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.common.ClockSpec
 import com.softwaremill.codebrag.finders.browsingcontext.{UserBrowsingContext, UserBrowsingContextFinder}
+import com.softwaremill.codebrag.domain.PartialUserDetails
 
 class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with MockitoSugar with BeforeAndAfter with ClockSpec {
 
@@ -17,6 +18,7 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
 
   var repositoriesCache: RepositoriesCache = _
   var userDao: UserDAO = _
+  var teamDao: TeamDAO = _
   var browsingContextFinder: UserBrowsingContextFinder = _
   var toReviewFilter: ToReviewBranchCommitsFilter = _
   var toReviewViewBuilder: ToReviewCommitsViewBuilder = _
@@ -25,7 +27,9 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
   val CodebragRepo = "codebrag"
 
   val Bob = UserAssembler.randomUser.get
+  val BobsTeam = TeamAssembler.randomTeam(Bob).get
   val BobCacheEntry = UserReviewedCommitsCacheEntry(Bob.id, CodebragRepo, Set.empty, clock.now)
+  val BobUserDetails = PartialUserDetails(Bob.id, Bob.name, Bob.emailLowerCase, null, Bob.aliases)
 
   val Page = PagingCriteria.fromBeginning[String](10)
   val NoCommitsInBranch = List.empty[BranchCommitCacheEntry]
@@ -33,19 +37,22 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
   before {
     repositoriesCache = mock[RepositoriesCache]
     userDao = mock[UserDAO]
+		teamDao = mock[TeamDAO]
     browsingContextFinder = mock[UserBrowsingContextFinder]
     toReviewFilter = mock[ToReviewBranchCommitsFilter]
     toReviewViewBuilder = mock[ToReviewCommitsViewBuilder]
 
-    finder = new ToReviewCommitsFinder(repositoriesCache, userDao, browsingContextFinder, toReviewFilter, toReviewViewBuilder)
+    finder = new ToReviewCommitsFinder(repositoriesCache, userDao, teamDao, browsingContextFinder, toReviewFilter, toReviewViewBuilder)
 
     when(userDao.findById(Bob.id)).thenReturn(Some(Bob))
+    when(teamDao.findByUser(Bob.id)).thenReturn(List(BobsTeam))
+    when(userDao.findPartialUserDetails(List(Bob.id))).thenReturn(List(BobUserDetails))
   }
 
   it should "use provided branch and repo to find commits" in {
     // given
     when(repositoriesCache.getBranchCommits(CodebragRepo, MasterBranch)).thenReturn(NoCommitsInBranch)
-    when(toReviewFilter.filterCommitsToReview(NoCommitsInBranch, Bob, CodebragRepo)).thenReturn(List.empty)
+    when(toReviewFilter.filterCommitsToReview(NoCommitsInBranch, Bob, List(BobUserDetails), CodebragRepo)).thenReturn(List.empty)
 
     // when
     val context = UserBrowsingContext(Bob.id, CodebragRepo, MasterBranch)
@@ -61,7 +68,7 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
     val defaultContext = UserBrowsingContext(Bob.id, CodebragRepo, MasterBranch)
     when(browsingContextFinder.findUserDefaultContext(Bob.id)).thenReturn(defaultContext)
     when(repositoriesCache.getBranchCommits(CodebragRepo, MasterBranch)).thenReturn(NoCommitsInBranch)
-    when(toReviewFilter.filterCommitsToReview(NoCommitsInBranch, Bob, CodebragRepo)).thenReturn(List.empty)
+    when(toReviewFilter.filterCommitsToReview(NoCommitsInBranch, Bob, List(BobUserDetails), CodebragRepo)).thenReturn(List.empty)
 
     // when
     finder.countForUserRepoAndBranch(Bob.id)
