@@ -2,7 +2,7 @@
 
 function java_not_installed {
   local JAVA_VERSION_REQUIRED=7
-  local JAVA_VERSION_CURRENT=`java -version 2>&1 | grep --color=never "java version" | awk '{print $3}' | tr -d \" | awk '{split($0,numbers,"."); print numbers[2]}'`
+  local JAVA_VERSION_CURRENT=`java -version 2>&1 | grep --color=never "version" | awk '{print $3}' | tr -d \" | awk '{split($0,numbers,"."); print numbers[2]}'`
   if [[ -z $JAVA_VERSION_CURRENT || $JAVA_VERSION_CURRENT -lt $JAVA_VERSION_REQUIRED ]]; then
     echo "ERROR: Java in required version $JAVA_VERSION_REQUIRED not found" >&2
     echo 0
