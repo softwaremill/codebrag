@@ -19,7 +19,7 @@ repositories {
 codebrag {
     data-dir = "./data"
     repos-root = "./repos"
-    send-anon-usage-data = true
+    send-anon-usage-data = false
     web-server-port = 8080
     application-url = "http://localhost:8080"
 
