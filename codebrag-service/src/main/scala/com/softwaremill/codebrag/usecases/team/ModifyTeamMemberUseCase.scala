@@ -1,18 +1,17 @@
 package com.softwaremill.codebrag.usecases.team
 
-import com.typesafe.scalalogging.slf4j.Logging
-import org.bson.types.ObjectId
-import com.softwaremill.scalaval.Validation._
 import com.softwaremill.codebrag.dao.user.TeamDAO
 import com.softwaremill.codebrag.domain.Team
-import com.softwaremill.codebrag.domain.TeamMember
+import com.softwaremill.scalaval.Validation._
+import com.typesafe.scalalogging.slf4j.Logging
+import org.bson.types.ObjectId
 
 class ModifyTeamMemberUseCase(val teamDao: TeamDAO) extends Logging {
 
   def execute(teamId: ObjectId, userId: ObjectId, contributor: Option[Boolean]): Either[Errors, Team] = {
     validateTeam(teamId).whenOk {
       var team = teamDao.findById(teamId).get
-      if (contributor != None) {
+      if (contributor.isDefined) {
         val teamMembers = team.teamMembers
         val teamMember = teamMembers.find(_.user_id == userId).get
         val newTeamMember = teamMember.copy(contributor = contributor.get)

@@ -43,7 +43,7 @@ class ToReviewBranchCommitsFilter(reviewedCommitsCache: UserReviewedCommitsCache
    }
       
    private def teamCommits(repoName: String, commitEntry: BranchCommitCacheEntry, teamMembers: List[PartialUserDetails]): Boolean = {
-     teamMembers.filter(m => commitAuthoredByUser(commitEntry, m)).size > 0
+     teamMembers.isEmpty || teamMembers.filter(m => commitAuthoredByUser(commitEntry, m)).nonEmpty
    }
 
 }

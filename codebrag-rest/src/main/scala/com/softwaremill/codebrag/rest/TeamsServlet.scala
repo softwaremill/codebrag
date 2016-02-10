@@ -43,11 +43,11 @@ class TeamsServlet(
 
   get("/:teamId/members") {
     haltIfNotAuthenticated()
-    if (!config.demo) {
-      var team = teamFinder.findTeam(new ObjectId(params("teamId")));
-      teamFinder.findAllAsManagedTeamMembers(team)
-    } else {
+    if (config.demo) {
       ManagedTeamMembersListView(List.empty)
+    } else {
+      val team = teamFinder.findTeam(new ObjectId(params("teamId")));
+      teamFinder.findAllAsManagedTeamMembers(team)
     }
   }
 
