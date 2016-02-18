@@ -1,6 +1,8 @@
 package com.softwaremill.codebrag.repository
 
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.api.ResetCommand.ResetType
+import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.transport.{URIish, CredentialItem, UsernamePasswordCredentialsProvider, CredentialsProvider}
 import com.softwaremill.codebrag.repository.config.{RepoData, UserPassCredentials, PassphraseCredentials}
 
@@ -22,13 +24,14 @@ class GitRepository(val repoData: RepoData) extends Repository with RepositoryAu
   protected def pullChangesForRepo() {
     val git = new Git(repo)
     val fetchCommand = git.fetch().setRemoveDeletedRefs(true) // need co call fetch first as pull doesn't have an option to purge removed branches
-    val pullCommand = git.pull()
+    val updateCommand = git.reset()
+        .setMode(ResetType.HARD)
+        .setRef(Constants.FETCH_HEAD)
     credentialsProvider.foreach { p =>
       fetchCommand.setCredentialsProvider(p)
-      pullCommand.setCredentialsProvider(p)
     }
     fetchCommand.call()
-    pullCommand.call()
+    updateCommand.call()
   }
 
   private class SshPassphraseCredentialsProvider(passphrase: String) extends CredentialsProvider {
