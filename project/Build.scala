@@ -109,8 +109,8 @@ object Dependencies {
   val bson = "org.mongodb" % "bson" % "2.7.1"
 
   val egitGithubApi = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.3"
-  val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "2.3.1.201302201838-r"
-  val jsch = "com.jcraft" % "jsch" % "0.1.51"
+  val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "4.2.0.201601211800-r"
+  val jsch = "com.jcraft" % "jsch" % "0.1.53"
   val dispatch = "net.databinder.dispatch" %% "dispatch-core" % "0.9.5"
 
   val slick = "com.typesafe.slick" %% "slick" % "2.0.3"

@@ -1,17 +1,15 @@
 package com.softwaremill.codebrag.repository
 
-import com.typesafe.scalalogging.slf4j.Logging
-import org.eclipse.jgit.lib.{ObjectId, Constants}
-import org.eclipse.jgit.revwalk.{RevWalk, RevCommit}
-import org.eclipse.jgit.storage.file.FileRepository
-import org.eclipse.jgit.errors.MissingObjectException
 import com.softwaremill.codebrag.repository.config.RepoData
-import org.eclipse.jgit.api.Git
+import com.typesafe.scalalogging.slf4j.Logging
+import org.eclipse.jgit.errors.MissingObjectException
+import org.eclipse.jgit.lib.{Constants, ObjectId}
+import org.eclipse.jgit.revwalk.{RevCommit, RevWalk}
 
 trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDeltaLoader with BranchesModel {
 
   def repoData: RepoData
-  def repo: FileRepository
+  def repo: org.eclipse.jgit.lib.Repository
   val repoName = repoData.repoName
 
   def pullChanges() {
