@@ -48,6 +48,7 @@ angular.module('codebrag.commits')
         function markAllAsReviewed() {
             Commits.removeAll({repo: currentRepoContext.repo, branch: currentRepoContext.branch});   // fire and don't wait for response
             eventsEmitter.triggerAllCommitsReviewedEvent();
+            return $q.when(commits.last());
         }
 
         function loadNextCommits() {
