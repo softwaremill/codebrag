@@ -18,7 +18,7 @@ import com.softwaremill.codebrag.finders.commits.all.AllCommitsFinder
 import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 import com.softwaremill.codebrag.domain.builder.UserAssembler
 import com.softwaremill.codebrag.domain.User
-import com.softwaremill.codebrag.usecases.reactions.{ReviewCommitUseCase, UnlikeUseCase, LikeUseCase, AddCommentUseCase}
+import com.softwaremill.codebrag.usecases.reactions._
 
 class CommitsServletSpec extends AuthenticatableServletSpec {
 
@@ -34,6 +34,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var userReactionFinder = mock[ReactionFinder]
   var userDao = mock[UserDAO]
   var reviewCommitUseCase = mock[ReviewCommitUseCase]
+  var reviewAllCommitsUseCase = mock[ReviewAllCommitsUseCase]
   val User = UserAssembler.randomUser.get
   val userReactionService = mock[UserReactionService]
   val unlikeUseCaseFactory = mock[UnlikeUseCase]
@@ -65,6 +66,14 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
     delete(s"/$repoName/$commitSha") {
       verify(reviewCommitUseCase).execute(repoName, commitSha, userId)
+    }
+  }
+
+  "DELETE /:repo?branch=:branch&filter=to_review" should "remove all commits from to review tasks" in {
+    val userId = givenStandardAuthenticatedUser()
+
+    delete(s"/$repoName?branch=master&filter=to_review") {
+      verify(reviewAllCommitsUseCase).execute(repoName, "master", userId)
     }
   }
 
@@ -130,7 +139,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[User])
     extends CommitsServlet(fakeAuthenticator, toReviewCommitsFinder, allCommitsFinder, userReactionFinder, commentActivity,
-      reviewCommitUseCase, userReactionService, userDao, diffService, unlikeUseCaseFactory, likeUseCase) {
+      reviewCommitUseCase, reviewAllCommitsUseCase, userReactionService, userDao, diffService, unlikeUseCaseFactory, likeUseCase) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }
 

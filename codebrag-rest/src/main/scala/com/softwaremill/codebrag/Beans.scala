@@ -66,6 +66,7 @@ trait Beans extends ActorSystemSupport with Daos {
   lazy val loginUserUseCase = new LoginUserUseCase(userDao, userFinder)
   lazy val addCommentUseCase = new AddCommentUseCase(userReactionService, followupService, eventBus)
   lazy val reviewCommitUseCase = new ReviewCommitUseCase(commitInfoDao, reviewedCommitsCache, eventBus)
+  lazy val reviewAllCommitsUseCase = new ReviewAllCommitsUseCase
   lazy val unlikeUseCaseFactory = new UnlikeUseCase(likeValidator, userReactionService)
   lazy val likeUseCase = new LikeUseCase(userReactionService)
   lazy val changeUserSettingsUseCase = new ChangeUserSettingsUseCase(userDao)
