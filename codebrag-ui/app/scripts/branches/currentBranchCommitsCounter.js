@@ -19,6 +19,7 @@ Updates dynamically when commits are loaded, branch changed, commit is reviewed 
             $rootScope.$on(events.commitsListFilterChanged, reloadCounter);
             $rootScope.$on(events.profile.emailAliasesChanged, reloadCounter);
             $rootScope.$on(events.commitReviewed, reloadCounter);
+            $rootScope.$on(events.allCommitsReviewed, reloadCounter);
             $rootScope.$on(events.nextCommitsLoaded, reloadCounter);
             $rootScope.$on(events.previousCommitsLoaded, reloadCounter);
         }
