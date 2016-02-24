@@ -55,18 +55,10 @@ angular.module('codebrag.commits')
         }
 
       function markAllAsReviewed() {
-        function removeAllAndLoadNextCommits() {
-          loadNextCommits();
-          eventsEmitter.triggerAllCommitsReviewedEvent();
+        return Commits.removeAll({repo: currentRepoContext.repo, branch: currentRepoContext.branch}).$then(function() {
+          commits.replaceWith([]);
           return commits;
-        }
-
-        var allCommitsMarkedAsReviewed = Commits.removeAll({repo: currentRepoContext.repo, branch: currentRepoContext.branch}).$then(function() {
-          return prefetchedCommitPromise;
-        });
-        var nextCommitToReview = allCommitsMarkedAsReviewed.then(removeAllAndLoadNextCommits());
-        nextCommitToReview.then(_prefetchOneMoreCommit);
-        return nextCommitToReview;
+        }).then(loadCommits).then(eventsEmitter.triggerAllCommitsReviewedEvent);
       }
 
       function loadNextCommits() {
