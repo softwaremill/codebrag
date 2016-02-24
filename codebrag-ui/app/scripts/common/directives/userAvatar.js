@@ -2,7 +2,7 @@ angular.module('codebrag.common.directives')
 
     .directive('userAvatar', function (authService, events) {
         //public avatar to be used by gravatar.com (if as default avatar)
-        var defaultPublicAvatar = "http://codebrag.com/stylesheets/images/avatar.png";
+        var defaultPublicAvatar = "https://raw.githubusercontent.com/softwaremill/codebrag/master/codebrag-ui/app/assets/images/avatar.png";
 
         var defaultAvatarUrl = 'assets/images/avatar.png';
 

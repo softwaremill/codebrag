@@ -12,7 +12,7 @@ Need help? Questions? We are here:
 
 * Twitter -> https://twitter.com/codebrag
 
-* FAQ -> http://codebrag.com/faq.html
+* FAQ -> https://github.com/softwaremill/codebrag/wiki/FAQ
 * User Group -> https://groups.google.com/forum/#!forum/codebrag-users
 
 ==================================
