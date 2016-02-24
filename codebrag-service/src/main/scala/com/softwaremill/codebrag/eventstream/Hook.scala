@@ -52,6 +52,17 @@ case class CommitReviewedHook(
   override val hookDate: DateTime = clock.nowUtc
 }
 
+case class AllCommitsReviewedHook(
+  repoName: String,
+  branchName: String,
+  reviewedBy: Option[User],
+  override val hookName: String
+  ) (implicit clock: Clock)
+  extends Hook {
+
+  override val hookDate: DateTime = clock.nowUtc
+}
+
 case class NewCommitsLoadedHook(
   user: Option[User],
   repoName: String,

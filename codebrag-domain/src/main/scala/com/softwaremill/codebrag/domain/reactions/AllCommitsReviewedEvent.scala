@@ -8,15 +8,15 @@ import org.joda.time.DateTime
   * Describes event when someone reviewed all commits for given branch at once (hit Mark All Reviewed)
   */
 case class AllCommitsReviewedEvent(
-  repo: String,
-  branch: String,
+  repoName: String,
+  branchName: String,
   userIdArg: ObjectId
 )(implicit clock: Clock)
   extends Event
   with StatisticEvent
   with Hookable {
 
-  val hookName = "all-commitx-reviewed-hook"
+  val hookName = "all-commits-reviewed-hook"
 
   def eventType = AllCommitsReviewedEvent.EventType
 
@@ -24,7 +24,7 @@ case class AllCommitsReviewedEvent(
 
   def userId = userIdArg
 
-  def toEventStream: String = s"User $userIdArg reviewed all commits on branch $branch"
+  def toEventStream: String = s"User $userIdArg reviewed all commits on branch $branchName"
 
 }
 
