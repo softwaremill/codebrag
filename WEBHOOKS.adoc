@@ -12,8 +12,8 @@ These are the supported hooks:
 - `like-hook` - occurs when a user likes a given change
 - `unlike-hook` - occurs if a user dislikes the previously liked change
 - `comment-added-hook` - occurs when a user post a comment
-- `commit-reviewed` - occurs when a user hit `Reviewed` button
-- `all-commits-reviewed` - occurs when a user hit a button and marked all commits to be reviewed as reviewed at once in current repo for current branch
+- `commit-reviewed-hook` - occurs when a user hit `Reviewed` button
+- `all-commits-reviewed-hook` - occurs when a user hit a button and marked all commits to be reviewed as reviewed at once in current repo for current branch
 - `new-commits-loaded-hook` - occurs after loading by Codebrag new commits from repo
 - `new-user-registered-hook` - occurs on registering a new user in the system
 
