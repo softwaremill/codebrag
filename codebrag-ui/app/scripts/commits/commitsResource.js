@@ -14,6 +14,7 @@ angular.module('codebrag.commits')
             queryAll: {method: 'GET', isArray: false, requestType: commitsListLoadingRequest, params: loadAllCommits},
             query: {method: 'GET', isArray: false, requestType: commitsListLoadingRequest},
             querySilent: {method: 'GET', isArray: false},
-            get: {method: 'GET', isArray: false}
+            get: {method: 'GET', isArray: false},
+            removeAll: { method: 'DELETE', isArray: false, requestType: commitsListLoadingRequest, params: loadCommitsToReviewParams}
         });
     });

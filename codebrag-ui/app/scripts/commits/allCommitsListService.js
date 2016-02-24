@@ -45,6 +45,11 @@ angular.module('codebrag.commits')
             return $q.when(commits.elementAtIndex(indexReviewed + 1));
         }
 
+        function markAllAsReviewed() {
+            Commits.removeAll({repo: currentRepoContext.repo, branch: currentRepoContext.branch});   // fire and don't wait for response
+            eventsEmitter.triggerAllCommitsReviewedEvent();
+        }
+
         function loadNextCommits() {
             if(!commits.length) return;
             var options = {};
@@ -103,6 +108,7 @@ angular.module('codebrag.commits')
             loadNextCommits: loadNextCommits,
             loadPreviousCommits: loadPreviousCommits,
             markAsReviewed: markAsReviewed,
+            markAllAsReviewed: markAllAsReviewed,
             hasNextCommits: hasNextCommits,
             hasPreviousCommits: hasPreviousCommits
         }

@@ -89,6 +89,9 @@ codebrag.commitsList.mixin.eventsEmitter = function($rootScope, events) {
         },
         triggerCommitReviewedEvent: function() {
             $rootScope.$broadcast(events.commitReviewed);
+        },
+        triggerAllCommitsReviewedEvent: function() {
+            $rootScope.$broadcast(events.allCommitsReviewed);
         }
     }
 
