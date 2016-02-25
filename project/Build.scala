@@ -2,7 +2,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 import com.typesafe.sbt.SbtScalariform._
-import net.virtualvoid.sbt.graph.Plugin._
 import sbt.Keys._
 import sbt._
 import sbtassembly.Plugin.AssemblyKeys._
@@ -23,9 +22,7 @@ object BuildSettings {
 
   import Resolvers._
 
-  val buildSettings = Defaults.coreDefaultSettings ++ net.virtualvoid.sbt.graph.Plugin.graphSettings ++
-    defaultScalariformSettings ++ Seq(
-
+  val buildSettings = Defaults.coreDefaultSettings ++ defaultScalariformSettings ++ Seq(
     organization := "com.softwaremill",
     version := "2.3.2",
     scalaVersion := "2.10.4",
@@ -210,7 +207,6 @@ object SmlCodebragBuild extends Build {
     "codebrag-rest",
     file("codebrag-rest"),
     settings = buildSettings ++ 
-      graphSettings ++ 
       XwpPlugin.jetty() ++ 
       Seq(libraryDependencies ++= scalatraStack ++ jodaDependencies ++ Seq(servletApiProvided, typesafeConfig)) ++
       Seq(
