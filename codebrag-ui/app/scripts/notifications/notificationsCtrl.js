@@ -43,5 +43,10 @@ angular.module('codebrag.notifications')
         $rootScope.$on('followupsNotificationRead', function() {
             $scope.followupsNotificationAvailable = false;
         });
+        
+        $scope.openDashboard = function() {
+            $rootScope.$broadcast(events.allfollowupsTabOpened);
+            $state.transitionTo('dashboard.list');
+        };
 
     });

@@ -129,4 +129,39 @@ class SQLFollowupFinder(val database: SQLDatabase, userDAO: UserDAO) extends Fol
       case like: Like => FollowupLastLikeView(like.id.toString, author.name, like.postingTime, author.avatarUrl)
     }
   }
+ def findAllFollowupsByCommitForDashboard(): FollowupsByCommitListView = db.withTransaction { implicit session =>
+    val followups = findAllFollowups()
+    val followupReactions = findFollowupReactions(followups)
+    val lastReactions = findLastReactionsForFollowups(followups)
+    val reactionAuthors = findReactionAuthors(lastReactions)
+    val commits = findCommitsForFollowups(followups)
+
+    val followupsGroupedByCommit = followups.groupBy(_.threadCommitId)
+
+    val sortFollowupsForCommitByDate = (f1: FollowupReactionsView, f2: FollowupReactionsView) => f1.lastReaction.date.isAfter(f2.lastReaction.date)
+
+    val followupsForCommits = followupsGroupedByCommit.map {
+      case (commitId, commitFollowups) =>
+        val followupsForCommitViews = commitFollowups
+          .map(f => followupToReactionsView(f, followupReactions.getOrElse(f.id, Nil), lastReactions, reactionAuthors))
+          .sortWith(sortFollowupsForCommitByDate)
+        val commit = commits(commitId)
+        val commitView = FollowupCommitView(commit.id.toString, commit.sha, commit.repoName, commit.authorName, commit.message, commit.authorDate)
+        FollowupsByCommitView(commitView, followupsForCommitViews)
+    }
+    FollowupsByCommitListView(sortFollowupGroupsByNewest(followupsForCommits))
+  }
+  private def findAllFollowups()(implicit session: Session): List[SQLFollowup] = {
+    followups.list()
+  }
+    def findFollowupforDashboard(followupId: ObjectId) = db.withTransaction { implicit session =>
+    val r = for {
+      followup <- followups.filter(f => f.id === followupId).firstOption
+      reaction <- findLastReaction(followup.lastReactionId)
+      author <- userDAO.findPartialUserDetails(List(reaction.authorId)).headOption
+      commit <- commitInfos.filter(_.id === followup.threadCommitId).firstOption()
+    } yield recordsToFollowupView(commit, reaction, author, followup)
+
+    r.fold[Either[String, SingleFollowupView]](Left("No such followup"))(Right(_))
+  }
 }

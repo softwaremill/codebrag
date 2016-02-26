@@ -130,6 +130,10 @@
     <script type="text/javascript" src="scripts/followups/followupListItemCtrl.js"></script>
     <script type="text/javascript" src="scripts/followups/followupDetailsCtrl.js"></script>
     <script type="text/javascript" src="scripts/followups/followupsService.js"></script>
+    <script type="text/javascript" src="scripts/dashboard/dashboardCtrl.js"></script>
+    <script type="text/javascript" src="scripts/dashboard/dashboardListItemCtrl.js"></script>
+    <script type="text/javascript" src="scripts/dashboard/dashboardDetailsCtrl.js"></script>
+    <script type="text/javascript" src="scripts/dashboard/allFollowupsService.js"></script>
 
     <!--invitations-->
     <script type="text/javascript" src="scripts/invitations/inviteFormPopupCtrl.js"></script>
@@ -221,6 +225,14 @@
                     <a id="followups-btn" ng-click="openFollowups()" class="button" active-for-states="followups,followups.list,followups.details">
                         <span class="number">
                             followups ({{ followupsNotification.count }})
+                            <span class="ghost-notification" ng-show="followupsNotificationAvailable"></span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a id="dashboard-btn" ng-click="openDashboard()"  class="button" active-for-states="dashboard,dashboard.list,dashboard.details">
+                        <span class="number">
+                            Dashboard 
                             <span class="ghost-notification" ng-show="followupsNotificationAvailable"></span>
                         </span>
                     </a>

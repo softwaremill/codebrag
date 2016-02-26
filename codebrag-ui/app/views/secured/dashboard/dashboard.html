@@ -1,0 +1,29 @@
+<div id="followups-tab-content" class="row" ng-controller="DashboardCtrl" auto-fit-height>
+    <div class="commits items-list small-3 large-3 columns">
+        <div class="items-container">
+
+            <div class="followups-container" ng-repeat="commit in followupCommits">
+                <div class="info-box">
+                    <div class="commit-name" ng-bind-html-unsafe="commit.commit.message"></div>
+                    <div class="info-line"><span class="username">{{commit.commit.authorName}}</span><span class="time">{{commit.commit.date | relativeDate}} in {{ commit.commit.repoName }}</span></div>
+                </div>
+                <div class="followup-container" ng-repeat="followup in commit.followups" ng-controller="DashboardListItemCtrl" ng-click="openFollowupDetails(followup)" 
+                     mark-current="followup.followupId" state-param-name="followupId">
+                    <div class="authored-box">
+                        <div class="author-box"><user-avatar url="followup.lastReaction.reactionAuthorAvatarUrl"></user-avatar></div>
+                        <div class="info-box">
+                            <div class="comment"><reaction-message-summary reaction="followup.lastReaction"></reaction-message-summary></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="no-more-items ng-cloak" ng-show="!mightHaveFollowups()">
+                Yay!<br> No follow-ups!
+            </div>
+
+        </div>
+    </div>
+    <div class="diff large-9 columns" ui-view>
+    </div>
+</div>

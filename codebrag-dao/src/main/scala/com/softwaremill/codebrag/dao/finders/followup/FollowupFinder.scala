@@ -9,9 +9,13 @@ trait FollowupFinder {
   def findAllFollowupsByCommitForUser(userId: ObjectId): FollowupsByCommitListView
 
   def findFollowupForUser(userId: ObjectId, followupId: ObjectId): Either[String, SingleFollowupView]
+  
+  def findFollowupforDashboard(followupId: ObjectId): Either[String, SingleFollowupView]
 
   def countFollowupsForUser(userId: ObjectId): Long
 
   def countFollowupsForUserSince(date: DateTime, userId: ObjectId): Long
+
+  def findAllFollowupsByCommitForDashboard(): FollowupsByCommitListView
 }
 
