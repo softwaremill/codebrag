@@ -336,6 +336,8 @@
 
     var managedUsers = {"users":[{"userId":"53904574e4b00a9960b690f8","email":"abcd@sml.com","name":"abcd","active":false,"admin":true},{"userId":"52fddfb6e4b0f2b59c95b2f4","email":"adam@warski.org","name":"adamw","active":true,"admin":false},{"userId":"528cdde6e4b021de8e4afbc9","email":"michal.ostruszka@gmail.com","name":"mostr","active":true,"admin":true},{"userId":"539aad14e4b0f71eba4eac00","email":"pawel+12@codebrag.com","name":"pawel12","active":true,"admin":false},{"userId":"5346538ee4b06569d00c26b7","email":"pawel+4@softwaremill.com","name":"pawel4","active":false,"admin":true},{"userId":"529f358ce4b0434b62c3e2a2","email":"pawel@codebrag.com","name":"pawel2","active":true,"admin":true},{"userId":"529f3535e4b0434b62c3e293","email":"pawel@softwaremill.com","name":"pawel","active":true,"admin":true},{"userId":"528d0d66e4b052cc0a66ba68","email":"pawel@softwaremill.pl","name":"pawel.wrzeszcz","active":true,"admin":true},{"userId":"52a03c7ce4b0434b62c3e2b6","email":"test@test.pl","name":"test","active":true,"admin":true},{"userId":"52ce88d3e4b0e6126a8d1e38","email":"test@test.tt","name":"Michal Ostruszka","active":false,"admin":true},{"userId":"53905e77e4b00a9960b69107","email":"uu@uu.pl","name":"uu","active":true,"admin":false}]};
 
+    var managedTeams = {"teams":[{teamId:"53904574e4b00a9960b690f9", name:"test team 1", teamMembers:[{teamId:"53904574e4b00a9960b690f9", userId:"53904574e4b00a9960b690f8", committer:true}]}]}
+    
     var invitation = {"invitationCode":"94eb81294a6dbe93f7677de83c606f161cccdcc7"};
 
     function initialize() {
@@ -380,6 +382,8 @@
                 $httpBackend.whenGET('rest/repos/codebrag/branches').respond(branches);
 
                 $httpBackend.whenGET('rest/users').respond(managedUsers);
+                
+                $httpBackend.whenGET('rest/teams').respond(managedTeams);
 
                 $httpBackend.whenGET('rest/invitation').respond(invitation);
 

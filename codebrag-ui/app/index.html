@@ -155,6 +155,12 @@
     <script type="text/javascript" src="scripts/users/manageUsersPopupCtrl.js"></script>
     <script type="text/javascript" src="scripts/users/setUserPasswordPopupCtrl.js"></script>
     <script type="text/javascript" src="scripts/users/userMgmtService.js"></script>
+    
+    <!-- teamMgmt -->
+    <script type="text/javascript" src="scripts/teams/addTeamPopupCtrl.js"></script>
+    <script type="text/javascript" src="scripts/teams/manageTeamsPopupCtrl.js"></script>
+    <script type="text/javascript" src="scripts/teams/manageTeamMembersPopupCtrl.js"></script>    
+    <script type="text/javascript" src="scripts/teams/teamMgmtService.js"></script>
 
     <!--commons -->
     <script type="text/javascript" src="scripts/common/events.js"></script>
@@ -236,6 +242,7 @@
                     <li class="username" ng-click="openUserProfilePopup()">{{loggedInUser.fullName}} - profile</li>
                     <li class="invite" ng-click="openInvitePopup()" ng-show="loggedInUser.isAdmin()">Invite team members</li>
                     <li class="invite" ng-click="openUserMgmtPopup()" ng-show="loggedInUser.isAdmin()">Manage users</li>
+                    <li class="invite" ng-click="openTeamMgmtPopup()" ng-show="loggedInUser.isAdmin()">Manage teams</li>
                     <li class="invite" ng-click="openAboutPopup()">About Codebrag</li>
                     <li class="logout" ng-click="logout()">Logout</li>
                 </ul>

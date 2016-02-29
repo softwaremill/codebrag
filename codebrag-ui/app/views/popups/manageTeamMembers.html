@@ -1,0 +1,40 @@
+<div class="popup-content">
+
+    <h1>Manage team members
+
+        <div class="info-line"> 
+            &nbsp;
+            <span class="text-error" ng-repeat="f in flash.get('error')">{{ f.message }}</span>
+            <span class="success" ng-repeat="f in flash.get('info')">{{ f.message }}</span>
+        </div>
+    </h1>
+    
+    <div class="fake-thead-container">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <th>
+                        <div class="thead">Name</div>
+                    </th>
+                    <th class="cell-centered">
+                        <div class="thead">Member?</div>
+                    </th>
+                    <th class="cell-centered">
+                        <div class="thead">Contributor?</div>
+                    </th>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="user in users">
+                        <td class="user-email">{{ user.email }}</td>
+                        <td class="cell-centered" style="min-width:6em;"><input type="checkbox" ng-model="user.member" ng-click="modifyTeamMember(user, 'member')" ng-disabled="user.locked"/></td>
+                        <td class="cell-centered" style="min-width:8em;"><input type="checkbox" ng-model="user.contributor" ng-click="modifyTeamMember(user, 'contributor')" ng-disabled="user.locked||!user.member"/></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <span class="close-btn" ng-click="$close()">
+        <i class="icon-remove"></i>
+    </span>
+</div>

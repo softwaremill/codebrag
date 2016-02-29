@@ -229,7 +229,7 @@ object SmlCodebragBuild extends Build {
         List(bd.getParentFile() / rest.base.getName / "src" / "main", bd.getParentFile() / ui.base.getName / "dist")
       },
       mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) => {
-        // There are two of such files in jgit and javax.servlet - but we don't really care about them (I guess ... ;) )
+        // There are two of such files in jgit and javax.servlet - but we don't really care about them (I guess ... ;) 
         // Probably some OSGi stuff.
         case "plugin.properties" => MergeStrategy.discard
         case PathList("META-INF", "eclipse.inf") => MergeStrategy.discard

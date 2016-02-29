@@ -1,0 +1,44 @@
+<div class="popup-content" ng-controller="ManageTeamsPopupCtrl">
+
+    <h1>Manage teams
+
+        <div class="info-line"> 
+            &nbsp;
+            <span class="text-error" ng-repeat="f in flash.get('error')">{{ f.message }}</span>
+            <span class="success" ng-repeat="f in flash.get('info')">{{ f.message }}</span>
+        </div>
+    </h1>
+    
+    <div class="fake-thead-container">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <th>
+                        <div class="thead">Team&nbsp;Name</div>
+                    </th>
+                    <th class="cell-centered">
+                        <div class="thead">Members</div>
+                    </th>
+                    <th>
+                        <div class="thead">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                    </th>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="team in teams">
+                        <td class="user-email">{{ team.name }}</td>
+                        <td class="cell-centered" style="min-width:6em;">{{ team.teamMembers.length }}</td>
+                        <td class="button-group"><button class="link" ng-click="deleteTeam(team)"><fa class="icon-remove"></fa></button><button class="link" ng-click="manageMembers(team)"><fa class="icon-circle-arrow-right"></fa></button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <section>
+        <button ng-click="add()">Add team</button>
+    </section>
+
+    <span class="close-btn" ng-click="$close()">
+        <i class="icon-remove"></i>
+    </span>
+</div>
