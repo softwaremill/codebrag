@@ -36,6 +36,10 @@ angular.module('codebrag.commits')
             return emptyList && noMoreCommitsOnServer;
         };
 
+        $scope.markAllCommitsReviewed = function() {
+            commitsService.allCommitsReviewed()
+        };
+
         $scope.pageTourForCommitsVisible = function() {
             return pageTourService.stepActive('commits') || pageTourService.stepActive('invites');
         };

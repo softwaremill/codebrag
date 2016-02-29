@@ -10,6 +10,13 @@ angular.module('codebrag.commits')
             })
         };
 
+        $scope.markAllCommitsAsReviewed = function () {
+            commitsService.markAllAsReviewed().then(function(nextCommit) {
+                currentCommit.empty();
+                goTo(nextCommit);
+            })
+        };
+
         var commitAvailable = function() {
             return currentCommit.get();
         };

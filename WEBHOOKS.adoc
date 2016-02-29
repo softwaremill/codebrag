@@ -12,7 +12,8 @@ These are the supported hooks:
 - `like-hook` - occurs when a user likes a given change
 - `unlike-hook` - occurs if a user dislikes the previously liked change
 - `comment-added-hook` - occurs when a user post a comment
-- `commit-reviewed` - occurs when a user hit `Reviewed` button
+- `commit-reviewed-hook` - occurs when a user hit `Reviewed` button
+- `all-commits-reviewed-hook` - occurs when a user hit a button and marked all commits to be reviewed as reviewed at once in current repo for current branch
 - `new-commits-loaded-hook` - occurs after loading by Codebrag new commits from repo
 - `new-user-registered-hook` - occurs on registering a new user in the system
 
@@ -158,6 +159,25 @@ Right now Codebrag sends hooks as JSON encoded as UTF-8, below is the list of fo
     }]
   },
   "hookName": "commit-reviewed-hook",
+  "hookDate": date
+}
+----
+
+### all-commits-reviewed-hook
+
+[source,json]
+----
+{
+  "repoName": string,
+  "branchName": string,
+  "reviewedBy": {
+    "name": string,
+    "emailLowerCase": string,
+    "aliases": [{
+      "alias": string
+    }]
+  },
+  "hookName": "all-commitc-reviewed-hook",
   "hookDate": date
 }
 ----

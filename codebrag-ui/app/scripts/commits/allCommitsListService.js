@@ -45,6 +45,16 @@ angular.module('codebrag.commits')
             return $q.when(commits.elementAtIndex(indexReviewed + 1));
         }
 
+        function markAllAsReviewed() {
+            Commits.removeAll({repo: currentRepoContext.repo, branch: currentRepoContext.branch}).$then(function() {
+              var lastCommitSha = commits.last().sha;
+              commits.replaceWith([]);
+              return lastCommitSha;
+            }).then(loadCommits).then(eventsEmitter.triggerAllCommitsReviewedEvent);
+
+            return $q.when(commits.last());
+        }
+
         function loadNextCommits() {
             if(!commits.length) return;
             var options = {};
@@ -103,6 +113,7 @@ angular.module('codebrag.commits')
             loadNextCommits: loadNextCommits,
             loadPreviousCommits: loadPreviousCommits,
             markAsReviewed: markAsReviewed,
+            markAllAsReviewed: markAllAsReviewed,
             hasNextCommits: hasNextCommits,
             hasPreviousCommits: hasPreviousCommits
         }

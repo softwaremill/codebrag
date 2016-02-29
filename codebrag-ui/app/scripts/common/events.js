@@ -10,6 +10,7 @@ angular.module('codebrag.events', []).constant('events', {
 
     commitsListFilterChanged: 'codebrag:commitsListFilterChanged',
     commitReviewed: 'codebrag:commitReviewed',
+    allCommitsReviewed: 'codebrag:allCommitsReviewed',
     followupDone: 'codebrag:followupDone',
 
     closeForm: 'codebrag:closeForm',

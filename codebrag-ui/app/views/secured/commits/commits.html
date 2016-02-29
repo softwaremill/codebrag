@@ -46,6 +46,9 @@
                     <a class="to-review accept button" title="Mark commit as reviewed" ng-show="currentCommit.info.isToReview()" ng-click="markCurrentCommitAsReviewed()">
                         <i class="icon-ok-circle"> </i>{{ readableCommitStatus }}
                     </a>
+                    <a class="review-all button" title="Mark all commits as reviewed" ng-show="currentCommit.info.isToReview()" ng-click="markAllCommitsAsReviewed()">
+                        <i class="icon-ok-circle"> </i>Mark all commits as reviewed
+                    </a>
                     <span class="reviewed-inactive secondary button" ng-hide="currentCommit.info.isToReview() || currentCommit.info.isNotApplicable()">
                         <i class="icon-ok-circle"> </i>{{ readableCommitStatus }}
                     </span>

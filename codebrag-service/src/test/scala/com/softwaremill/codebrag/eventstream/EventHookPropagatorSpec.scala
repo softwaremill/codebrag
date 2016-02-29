@@ -52,11 +52,15 @@ class EventHookPropagatorSpec
   val mockComment = Comment(id, id, id, nowUtc, "test-comment", Some("test2.txt"), Some(321))
   val mockPartialCommit = PartialCommitInfo(id, "szach", "commit-loaded", "mocher", "mocher@domain.com", nowUtc)
 
+  val repoName = "codebrag"
+  val branchName = "master"
+
   val hooks = Map(
     "like-hook" -> List("http://localhost:8000/"),
     "unlike-hook" -> List("http://localhost:8000/"),
     "comment-added-hook" -> List("http://localhost:8000/"),
     "commit-reviewed-hook" -> List("http://localhost:8000/"),
+    "all-commits-reviewed-hook" -> List("http://localhost:8000/"),
     "new-commits-loaded-hook" -> List("http://localhost:8000/"),
     "new-user-registered-hook" -> List("http://localhost:8000/")
   )
@@ -202,6 +206,28 @@ class EventHookPropagatorSpec
             "aliases": null
           },
           "hookName": "commit-reviewed-hook",
+          "hookDate": "$nowUtcStr"
+        }
+        """.replaceAll(" ", "").replaceAll("\n", "")
+
+      remoteHook.toString must include(expected)
+    }
+
+    "propagate AllCommitsReviewed to remote host" in {
+      actorRef ! AllCommitsReviewedEvent(repoName, branchName, userId)
+
+      awaitCond(done)
+
+      val expected = s"""
+        {
+          "repoName": "codebrag",
+          "branchName": "master",
+          "reviewedBy": {
+            "name": "test",
+            "emailLowerCase": "test@domain.com",
+            "aliases": null
+            },
+          "hookName": "all-commits-reviewed-hook",
           "hookDate": "$nowUtcStr"
         }
         """.replaceAll(" ", "").replaceAll("\n", "")

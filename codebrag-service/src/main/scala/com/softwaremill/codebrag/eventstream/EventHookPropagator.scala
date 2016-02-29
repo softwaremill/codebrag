@@ -44,6 +44,10 @@ class EventHookPropagator(
       val user = userDao.findById(event.userId)
       notifyListeners(CommitReviewedHook(event.commit, user, event.hookName))
 
+    case (event: AllCommitsReviewedEvent) if hasListeners(event) =>
+      val user = userDao.findById(event.userId)
+      notifyListeners(AllCommitsReviewedHook(event.repoName, event.branchName, user, event.hookName))
+
     case (event: NewCommitsLoadedEvent) if hasListeners(event) =>
       val user = event.userId match {
         case Some(userId) => userDao.findById(userId)

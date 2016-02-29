@@ -2,7 +2,6 @@ package com.softwaremill.codebrag.rest
 
 import org.scalatra.{BadRequest, NotFound}
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
-import org.bson.types.ObjectId
 import CommitsEndpoint._
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import PagingCriteria.Direction
@@ -10,7 +9,7 @@ import com.softwaremill.codebrag.common.paging.PagingCriteria
 import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
 import com.softwaremill.codebrag.finders.commits.all.AllCommitsFinder
 import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
-import com.softwaremill.codebrag.usecases.reactions.ReviewCommitUseCase
+import com.softwaremill.codebrag.usecases.reactions.{ReviewAllCommitsUseCase, ReviewCommitUseCase}
 
 trait CommitsEndpoint extends JsonServletWithAuthentication {
 
@@ -20,6 +19,7 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   def allCommitsFinder: AllCommitsFinder
 
   def reviewCommitUseCase: ReviewCommitUseCase
+  def reviewAllCommitsUseCase: ReviewAllCommitsUseCase
 
   before() {
     haltIfNotAuthenticated()
@@ -36,6 +36,13 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
 
   delete("/:repo/:sha") {
     reviewCommitUseCase.execute(params("repo"), params("sha"), user.id).left.map { err =>
+      BadRequest(Map("err" -> err))
+    }
+  }
+
+  delete("/:repo", commitsToReview) {
+    val context = extractBrowsingContext
+    reviewAllCommitsUseCase.execute(context.repoName, context.branchName, context.userId).left.map { err =>
       BadRequest(Map("err" -> err))
     }
   }
