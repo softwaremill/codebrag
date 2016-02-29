@@ -8,11 +8,12 @@ import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
 import com.softwaremill.codebrag.service.comments.UserReactionService
 import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
-import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.finders.commits.toreview.{ToReviewCommitsViewBuilder, ToReviewCommitsFinder}
 import com.softwaremill.codebrag.finders.commits.all.AllCommitsFinder
 import com.softwaremill.codebrag.usecases.reactions._
 
 class CommitsServlet(val authenticator: Authenticator,
+                     val toReviewCommitsViewBuilder: ToReviewCommitsViewBuilder,
                      val reviewableCommitsListFinder: ToReviewCommitsFinder,
                      val allCommitsFinder: AllCommitsFinder,
                      val reactionFinder: ReactionFinder,

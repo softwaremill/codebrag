@@ -7,7 +7,7 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.domain.{User, PartialCommitInfo, ReviewedCommit}
 import com.softwaremill.codebrag.domain.builder.CommitInfoAssembler
 import com.softwaremill.codebrag.domain.reactions.AllCommitsReviewedEvent
-import com.softwaremill.codebrag.finders.commits.toreview.ToReviewBranchCommitsFilter
+import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 import org.bson.types.ObjectId
 import org.mockito.Mockito._
 import org.scalatest.matchers.ShouldMatchers
@@ -21,7 +21,6 @@ class ReviewAllCommitsUseCaseSpec
   var userDAO: UserDAO = _
   var commitInfoDao: CommitInfoDAO = _
   var repositoriesCache: RepositoriesCache = _
-  var toReviewBranchCommitsFilter: ToReviewBranchCommitsFilter = _
   var reviewedCommitsCache: UserReviewedCommitsCache = _
 
   val userId = ObjectId.get
@@ -32,6 +31,8 @@ class ReviewAllCommitsUseCaseSpec
   val RepoName = "codebrag"
   val BranchName = "master"
 
+  val context = UserBrowsingContext(userId, RepoName, BranchName, Set())
+
   val commit = CommitInfoAssembler.randomCommit.withRepo(RepoName).get
   val commitCache = BranchCommitCacheEntry(commit.sha, commit.authorName, commit.authorEmail, commit.authorDate)
 
@@ -40,24 +41,22 @@ class ReviewAllCommitsUseCaseSpec
     userDAO = mock[UserDAO]
     commitInfoDao = mock[CommitInfoDAO]
     repositoriesCache = mock[RepositoriesCache]
-    toReviewBranchCommitsFilter = mock[ToReviewBranchCommitsFilter]
     reviewedCommitsCache = mock[UserReviewedCommitsCache]
 
     user = mock[User]
     when(user.id).thenReturn(userId)
 
-    useCase = new ReviewAllCommitsUseCase(userDAO, eventBus, commitInfoDao, repositoriesCache, toReviewBranchCommitsFilter, reviewedCommitsCache)
+    useCase = new ReviewAllCommitsUseCase(userDAO, eventBus, commitInfoDao, reviewedCommitsCache)
 
     // given
     when(userDAO.findById(userId)).thenReturn(Option(user))
     when(repositoriesCache.getBranchCommits(RepoName, BranchName)).thenReturn(List(commitCache))
-    when(toReviewBranchCommitsFilter.filterCommitsToReview(List(commitCache), user, RepoName)).thenReturn(List(commit.sha))
     when(commitInfoDao.findByShaList(RepoName, List(commit.sha))).thenReturn(List(PartialCommitInfo(commit)))
   }
 
   it should "generate all commits reviewed event" in {
     // when
-    useCase.execute(RepoName, BranchName, userId)
+    useCase.execute(context, List(commit.sha))
 
     // then
     verify(eventBus).publish(AllCommitsReviewedEvent(RepoName, BranchName, user.id))
@@ -65,7 +64,7 @@ class ReviewAllCommitsUseCaseSpec
 
   it should "mark all commits as reviewed if commits were found" in {
     // when
-    useCase.execute(RepoName, BranchName, userId)
+    useCase.execute(context, List(commit.sha))
 
     // then
     val expectedCommitReviewed = ReviewedCommit(commit.sha, user.id, RepoName, clock.nowUtc)

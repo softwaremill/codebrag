@@ -21,7 +21,6 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
   var teamDao: TeamDAO = _
   var browsingContextFinder: UserBrowsingContextFinder = _
   var toReviewFilter: ToReviewBranchCommitsFilter = _
-  var toReviewViewBuilder: ToReviewCommitsViewBuilder = _
 
   val MasterBranch = "master"
   val CodebragRepo = "codebrag"
@@ -31,7 +30,6 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
   val BobCacheEntry = UserReviewedCommitsCacheEntry(Bob.id, CodebragRepo, Set.empty, clock.now)
   val BobUserDetails = PartialUserDetails(Bob.id, Bob.name, Bob.emailLowerCase, null, Bob.aliases)
 
-  val Page = PagingCriteria.fromBeginning[String](10)
   val NoCommitsInBranch = List.empty[BranchCommitCacheEntry]
 
   before {
@@ -40,9 +38,8 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
 		teamDao = mock[TeamDAO]
     browsingContextFinder = mock[UserBrowsingContextFinder]
     toReviewFilter = mock[ToReviewBranchCommitsFilter]
-    toReviewViewBuilder = mock[ToReviewCommitsViewBuilder]
 
-    finder = new ToReviewCommitsFinder(repositoriesCache, userDao, teamDao, browsingContextFinder, toReviewFilter, toReviewViewBuilder)
+    finder = new ToReviewCommitsFinder(repositoriesCache, userDao, teamDao, browsingContextFinder, toReviewFilter)
 
     when(userDao.findById(Bob.id)).thenReturn(Some(Bob))
     when(teamDao.findByUser(Bob.id)).thenReturn(List(BobsTeam))
@@ -56,7 +53,7 @@ class ToReviewCommitsFinderSpec extends FlatSpec with ShouldMatchers with Mockit
 
     // when
     val context = UserBrowsingContext(Bob.id, CodebragRepo, MasterBranch)
-    finder.find(context, Page)
+    finder.find(context)
     finder.count(context)
 
     // then

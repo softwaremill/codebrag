@@ -6,7 +6,7 @@ import CommitsEndpoint._
 import com.softwaremill.codebrag.common.paging.PagingCriteria
 import PagingCriteria.Direction
 import com.softwaremill.codebrag.common.paging.PagingCriteria
-import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.finders.commits.toreview.{ToReviewCommitsViewBuilder, ToReviewCommitsFinder}
 import com.softwaremill.codebrag.finders.commits.all.AllCommitsFinder
 import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 import com.softwaremill.codebrag.usecases.reactions.{ReviewAllCommitsUseCase, ReviewCommitUseCase}
@@ -20,6 +20,8 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
 
   def reviewCommitUseCase: ReviewCommitUseCase
   def reviewAllCommitsUseCase: ReviewAllCommitsUseCase
+
+  def toReviewCommitsViewBuilder: ToReviewCommitsViewBuilder
 
   before() {
     haltIfNotAuthenticated()
@@ -42,7 +44,10 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
 
   delete("/:repo", commitsToReview) {
     val context = extractBrowsingContext
-    reviewAllCommitsUseCase.execute(context.repoName, context.branchName, context.userId).left.map { err =>
+
+    val toReviewBranchCommits = reviewableCommitsListFinder.find(context)
+
+    reviewAllCommitsUseCase.execute(context, toReviewBranchCommits).left.map { err =>
       BadRequest(Map("err" -> err))
     }
   }
@@ -57,8 +62,11 @@ trait CommitsEndpoint extends JsonServletWithAuthentication {
   get("/:repo", commitsToReview) {
     val paging = extractPagingCriteria
     val context = extractBrowsingContext
+
     logger.debug(s"Attempting to fetch commits to review with context $context and paging: $paging")
-    reviewableCommitsListFinder.find(context, paging)
+
+    val toReviewBranchCommits = reviewableCommitsListFinder.find(context)
+    toReviewCommitsViewBuilder.toPageView(context.repoName, toReviewBranchCommits, paging)
   }
 
   get("/:repo", contextualCommits) {

@@ -16,15 +16,19 @@ class ToReviewCommitsFinder(
   protected val userDao: UserDAO,
   protected val teamDao: TeamDAO,
   userBrowsingContextFinder: UserBrowsingContextFinder,
-  toReviewCommitsFilter: ToReviewBranchCommitsFilter,
-  toReviewCommitsViewBuilder: ToReviewCommitsViewBuilder) extends Logging with UserLoader with TeamMemberLoader {
+  toReviewCommitsFilter: ToReviewBranchCommitsFilter
+)
+  extends Logging
+  with UserLoader
+  with TeamMemberLoader
+{
 
-  def find(browsingContext: UserBrowsingContext, pagingCriteria: PagingCriteria[String]): CommitListView = {
+  def find(browsingContext: UserBrowsingContext): List[String] = {
     val user = loadUser(browsingContext.userId)
     val teamMembers = loadTeamMembersWithDetails(browsingContext.userId)
     val allBranchCommits = repoCache.getBranchCommits(browsingContext.repoName, browsingContext.branchName)
-    val toReviewBranchCommits = toReviewCommitsFilter.filterCommitsToReview(allBranchCommits, user, teamMembers, browsingContext.repoName)
-    toReviewCommitsViewBuilder.toPageView(browsingContext.repoName, toReviewBranchCommits, pagingCriteria)
+
+    toReviewCommitsFilter.filterCommitsToReview(allBranchCommits, user, teamMembers, browsingContext.repoName)
   }
 
   def count(browsingContext: UserBrowsingContext): Long = {

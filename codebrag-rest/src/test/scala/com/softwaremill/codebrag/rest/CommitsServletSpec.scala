@@ -2,6 +2,7 @@ package com.softwaremill.codebrag.rest
 
 import com.softwaremill.codebrag.service.user.Authenticator
 import com.softwaremill.codebrag.AuthenticatableServletSpec
+import org.hamcrest.core.AnyOf
 import org.scalatra.auth.Scentry
 import org.mockito.Mockito._
 import com.softwaremill.codebrag.service.diff.DiffWithCommentsService
@@ -13,7 +14,7 @@ import com.softwaremill.codebrag.dao.user.UserDAO
 import com.softwaremill.codebrag.dao.commitinfo.CommitInfoDAO
 import com.softwaremill.codebrag.dao.finders.reaction.ReactionFinder
 import com.softwaremill.codebrag.common.paging.PagingCriteria
-import com.softwaremill.codebrag.finders.commits.toreview.ToReviewCommitsFinder
+import com.softwaremill.codebrag.finders.commits.toreview.{ToReviewCommitsViewBuilder, ToReviewCommitsFinder}
 import com.softwaremill.codebrag.finders.commits.all.AllCommitsFinder
 import com.softwaremill.codebrag.finders.browsingcontext.UserBrowsingContext
 import com.softwaremill.codebrag.domain.builder.UserAssembler
@@ -28,6 +29,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   var commitsInfoDao = mock[CommitInfoDAO]
 
   var toReviewCommitsFinder = mock[ToReviewCommitsFinder]
+  var toReviewCommitsViewBuilder = mock[ToReviewCommitsViewBuilder]
   var allCommitsFinder = mock[AllCommitsFinder]
 
   var diffService = mock[DiffWithCommentsService]
@@ -45,9 +47,13 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
 
   override def beforeEach {
     super.beforeEach
+    val userId = givenStandardAuthenticatedUser()
+    val context = UserBrowsingContext(userId, repoName, branchName)
+
     diffService = mock[DiffWithCommentsService]
     allCommitsFinder = mock[AllCommitsFinder]
     toReviewCommitsFinder = mock[ToReviewCommitsFinder]
+    when(toReviewCommitsFinder.find(context)).thenReturn(List())
     addServlet(new TestableCommitsServlet(fakeAuthenticator, fakeScentry), "/*")
   }
 
@@ -73,7 +79,8 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val userId = givenStandardAuthenticatedUser()
 
     delete(s"/$repoName?branch=master&filter=to_review") {
-      verify(reviewAllCommitsUseCase).execute(repoName, "master", userId)
+      val context = UserBrowsingContext(userId, repoName, branchName)
+      verify(reviewAllCommitsUseCase).execute(context, List())
     }
   }
 
@@ -92,7 +99,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val context = UserBrowsingContext(userId, repoName, branchName)
 
     get(s"/$repoName?$BranchParamName=$branchName&$FilterParamName=$ToReviewCommitsFilter") {
-      verify(toReviewCommitsFinder).find(context, criteria)
+      verify(toReviewCommitsFinder).find(context)
     }
   }
 
@@ -122,12 +129,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
     val context = UserBrowsingContext(userId, repoName, branchName)
     val lastKnownCommitId = "123456"
     get(s"/$repoName?$BranchParamName=$branchName&$FilterParamName=$ToReviewCommitsFilter&$LimitParamName=10&$MinShaParamName=" + lastKnownCommitId.toString) {
-      val criteria = PagingCriteria(lastKnownCommitId, Direction.Right, 10)
-      verify(toReviewCommitsFinder).find(context, criteria)
-    }
-    get(s"/$repoName?$BranchParamName=$branchName&$FilterParamName=$ToReviewCommitsFilter&$LimitParamName=10&$MaxShaParamName=" + lastKnownCommitId.toString) {
-      val criteria = PagingCriteria(lastKnownCommitId, Direction.Left, 10)
-      verify(toReviewCommitsFinder).find(context, criteria)
+      verify(toReviewCommitsFinder).find(context)
     }
   }
 
@@ -138,7 +140,7 @@ class CommitsServletSpec extends AuthenticatableServletSpec {
   }
 
   class TestableCommitsServlet(fakeAuthenticator: Authenticator, fakeScentry: Scentry[User])
-    extends CommitsServlet(fakeAuthenticator, toReviewCommitsFinder, allCommitsFinder, userReactionFinder, commentActivity,
+    extends CommitsServlet(fakeAuthenticator, toReviewCommitsViewBuilder, toReviewCommitsFinder, allCommitsFinder, userReactionFinder, commentActivity,
       reviewCommitUseCase, reviewAllCommitsUseCase, userReactionService, userDao, diffService, unlikeUseCaseFactory, likeUseCase) {
     override def scentry(implicit request: javax.servlet.http.HttpServletRequest) = fakeScentry
   }

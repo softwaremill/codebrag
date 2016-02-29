@@ -73,8 +73,6 @@ trait Beans extends ActorSystemSupport with Daos {
     userDao,
     eventBus,
     commitInfoDao,
-    repositoriesCache,
-    new ToReviewBranchCommitsFilter(reviewedCommitsCache, config),
     reviewedCommitsCache
   )
 
@@ -115,8 +113,12 @@ trait Beans extends ActorSystemSupport with Daos {
     userDao,
     teamDao,
     userBrowsingContextFinder,
-    new ToReviewBranchCommitsFilter(reviewedCommitsCache, config),
-    new ToReviewCommitsViewBuilder(userDao, commitInfoDao)
+    new ToReviewBranchCommitsFilter(reviewedCommitsCache, config)
+  )
+
+  lazy val toReviewCommitsViewBuilder = new ToReviewCommitsViewBuilder(
+    userDao,
+    commitInfoDao
   )
 
   lazy val allCommitsFinder = new AllCommitsFinder(
