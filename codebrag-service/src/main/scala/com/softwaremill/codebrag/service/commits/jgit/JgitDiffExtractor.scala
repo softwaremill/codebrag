@@ -39,7 +39,7 @@ trait JgitDiffExtractor {
       }
     }
     finally {
-      formatter.release()
+      formatter.close()
     }
   }
 
@@ -73,7 +73,7 @@ trait JgitDiffExtractor {
       newTreeId
     }
     finally {
-      inserter.release()
+      inserter.close()
     }
   }
 }
