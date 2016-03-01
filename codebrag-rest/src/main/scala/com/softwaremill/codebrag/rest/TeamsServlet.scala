@@ -46,7 +46,7 @@ class TeamsServlet(
     if (config.demo) {
       ManagedTeamMembersListView(List.empty)
     } else {
-      val team = teamFinder.findTeam(new ObjectId(params("teamId")));
+      val team = teamFinder.findTeam(new ObjectId(params("teamId")))
       teamFinder.findAllAsManagedTeamMembers(team)
     }
   }
