@@ -7,6 +7,7 @@ import com.softwaremill.codebrag.repository.config.{RepoData, UserPassCredential
 
 class GitSvnRepository(val repoData: RepoData) extends Repository with RepositoryAutoBuilder with GitSvnBranchesModel {
 
+  private val CommandBaseReset = "git reset --hard"
   private val CommandBase = "git svn rebase --quiet"
 
   protected def pullChangesForRepo() {
@@ -15,6 +16,7 @@ class GitSvnRepository(val repoData: RepoData) extends Repository with Repositor
 
   private def runPullCommand() {
     val repoPath = Paths.get(repoData.repoLocation)
+    Process(CommandBaseReset, repoPath.toFile) !< ProcessLogger(logger info _)
     if(repoData.repoCredentials.isDefined) {
       repoData.repoCredentials.get match {
         case c: UserPassCredentials => runWithUserPassCredentials(repoPath, c)
