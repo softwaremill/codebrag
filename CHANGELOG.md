@@ -13,4 +13,5 @@
 ## v2.3.3 (20.02.2016)
  - Support for `teams` was added
  - It is possible to mark all commits as reviewed at once
+ - Rest Subversion repo before rebasing (#69)
  - Other small things (#48)
