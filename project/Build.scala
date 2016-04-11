@@ -89,7 +89,7 @@ object Dependencies {
 
   val javaxMail = "javax.mail" % "mail" % "1.4.5"
 
-  val scalate = "org.fusesource.scalate" %% "scalate-core" % "1.6.1"
+  val scalate = "org.scalatra.scalate" %% "scalate-core" % "1.7.0"
 
   val seleniumVer = "2.33.0"
   val seleniumJava = "org.seleniumhq.selenium" % "selenium-java" % seleniumVer % "test"
