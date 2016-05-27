@@ -79,5 +79,5 @@ H2 console
 When using the embedded SQL storage, it may be useful to browse the tables. H2 provides consoles, which can be run
 as follows:
 
-1. For a web console, run from sbt: `codebrag-dao/run-h2-console`
+1. For a web console, run from sbt: `codebrag-dao/runH2Console`
 2. For a command line console, run `java -Dconfig.file=codebrag.conf -cp [path to the fat JAR] com.softwaremill.codebrag.dao.sql.H2ShellConsole`
