@@ -19,7 +19,7 @@ trait CodebragConfig extends ConfigWithDefault with StatsConfig with EmailNotifi
 
   lazy val pullSleepPeriodEnabled = getBoolean("codebrag.pull-sleep-period.enabled", default = false)
   lazy val pullSleepPeriodStart = getInt("codebrag.pull-sleep-period.from", 22)
-  lazy val pullSleepPeriodEnd = getInt("codebrag.pull-sleep-period.from", 5)
+  lazy val pullSleepPeriodEnd = getInt("codebrag.pull-sleep-period.to", 5)
 }
 
 trait EmailNotificationConfig extends ConfigWithDefault {
