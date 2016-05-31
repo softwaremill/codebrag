@@ -23,7 +23,7 @@ trait CodebragConfig extends ConfigWithDefault with StatsConfig with EmailNotifi
 }
 
 trait EmailNotificationConfig extends ConfigWithDefault {
-  lazy val userNotifications: Boolean = getBoolean("email-notifications.enabled", default = false)
+  lazy val userNotifications: Boolean = getBoolean("email-notifications.enabled", default = true)
   lazy val notificationsCheckInterval = getMilliseconds("email-notifications.check-interval", 15.minutes.toMillis).millis
   lazy val userOfflinePeriod = Period.millis(getMilliseconds("email-notifications.user-offline-after", 5.minutes.toMillis).toInt)
 
