@@ -10,19 +10,18 @@ import org.eclipse.jgit.errors.MissingObjectException
 import org.eclipse.jgit.lib.{Constants, ObjectId}
 import org.eclipse.jgit.revwalk.{RevCommit, RevWalk}
 
-trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDeltaLoader with BranchesModel {
+trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDeltaLoader with BranchesModel
+  with CodebragConfig {
 
+  def rootConfig: Config = ConfigFactory.load()
   def repoData: RepoData
   def repo: org.eclipse.jgit.lib.Repository
-  val repoName = repoData.repoName
-  val config: CodebragConfig = new CodebragConfig {
-    def rootConfig = ConfigFactory.load()
-  }
 
+  val repoName = repoData.repoName
   def pullChanges() {
-    logger.debug(s"Pulling changes for ${repoData.repoLocation}")
 
     if(canPullAtThisTime()) {
+      logger.debug(s"Pulling changes for ${repoData.repoLocation}")
       try {
         pullChangesForRepo()
         logger.debug(s"Changes pulled succesfully")
@@ -56,9 +55,9 @@ trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDe
   protected def branchNameToSHA(objId: ObjectId) = ObjectId.toString(objId)
 
   protected def canPullAtThisTime(): Boolean = {
-    if(config.pullSleepPeriodEnabled) {
+    if(this.pullSleepPeriodEnabled) {
       val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-      currentHour >= config.pullSleepPeriodEnd && currentHour < config.pullSleepPeriodStart
+      currentHour >= this.pullSleepPeriodEnd && currentHour < this.pullSleepPeriodStart
     } else {
       true
     }

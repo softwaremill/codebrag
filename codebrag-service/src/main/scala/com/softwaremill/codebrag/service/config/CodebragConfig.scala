@@ -17,13 +17,13 @@ trait CodebragConfig extends ConfigWithDefault with StatsConfig with EmailNotifi
 
   lazy val invitationExpiryTime: ReadablePeriod = Period.millis(getMilliseconds("codebrag.invitation-expiry-time", 24.hours.toMillis).toInt)
 
-  lazy val pullSleepPeriodEnabled = getBoolean("codebrag.pull-sleep-period.enabled", default = true)
+  lazy val pullSleepPeriodEnabled = getBoolean("codebrag.pull-sleep-period.enabled", default = false)
   lazy val pullSleepPeriodStart = getInt("codebrag.pull-sleep-period.from", 22)
   lazy val pullSleepPeriodEnd = getInt("codebrag.pull-sleep-period.from", 5)
 }
 
 trait EmailNotificationConfig extends ConfigWithDefault {
-  lazy val userNotifications: Boolean = getBoolean("email-notifications.enabled", default = true)
+  lazy val userNotifications: Boolean = getBoolean("email-notifications.enabled", default = false)
   lazy val notificationsCheckInterval = getMilliseconds("email-notifications.check-interval", 15.minutes.toMillis).millis
   lazy val userOfflinePeriod = Period.millis(getMilliseconds("email-notifications.user-offline-after", 5.minutes.toMillis).toInt)
 

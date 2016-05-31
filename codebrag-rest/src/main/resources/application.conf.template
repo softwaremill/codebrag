@@ -28,7 +28,7 @@ codebrag {
 
     # Period during within the repositories won't be fetch
     pull-sleep-period {
-        enabled = true
+        enabled = false
         from = 22
         to = 5
     }
