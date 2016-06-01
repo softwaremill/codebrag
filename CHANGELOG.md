@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ## v2.3.4 (01.06.2016)
- - It is possible to mute pulling changes (#76)
+ - It is possible to mute pulling changes [#76](../../pull/76)
 
 ## v2.3.3 (15.03.2016)
  - Support for `teams` was added
