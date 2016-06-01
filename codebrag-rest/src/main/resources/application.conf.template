@@ -25,6 +25,13 @@ codebrag {
 
     # number of people who need to review a commit (1, 2, ..., all)
     required-reviewers-count = 1
+
+    # Period during within the repositories won't be fetch
+    pull-sleep-period {
+        enabled = false
+        from = 22
+        to = 5
+    }
 }
 
 email-notifications {

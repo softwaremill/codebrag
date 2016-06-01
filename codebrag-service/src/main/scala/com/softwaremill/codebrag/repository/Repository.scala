@@ -1,27 +1,38 @@
 package com.softwaremill.codebrag.repository
 
+import java.util.Calendar
+
 import com.softwaremill.codebrag.repository.config.RepoData
+import com.softwaremill.codebrag.service.config.CodebragConfig
+import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.slf4j.Logging
 import org.eclipse.jgit.errors.MissingObjectException
 import org.eclipse.jgit.lib.{Constants, ObjectId}
 import org.eclipse.jgit.revwalk.{RevCommit, RevWalk}
 
-trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDeltaLoader with BranchesModel {
+trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDeltaLoader with BranchesModel
+  with CodebragConfig {
 
+  def rootConfig: Config = ConfigFactory.load()
   def repoData: RepoData
   def repo: org.eclipse.jgit.lib.Repository
-  val repoName = repoData.repoName
 
+  val repoName = repoData.repoName
   def pullChanges() {
-    logger.debug(s"Pulling changes for ${repoData.repoLocation}")
-    try {
-      pullChangesForRepo()
-      logger.debug(s"Changes pulled succesfully")
-    } catch {
-      case e: Exception => {
-        logger.error(s"Cannot pull changes for repo ${repoData.repoLocation} because of: ${e.getMessage}")
-        throw e
+
+    if(canPullAtThisTime()) {
+      logger.debug(s"Pulling changes for ${repoData.repoLocation}")
+      try {
+        pullChangesForRepo()
+        logger.debug(s"Changes pulled succesfully")
+      } catch {
+        case e: Exception => {
+          logger.error(s"Cannot pull changes for repo ${repoData.repoLocation} because of: ${e.getMessage}")
+          throw e
+        }
       }
+    } else {
+      logger.debug("Current time configuration doesn't allow to pull changes.")
     }
   }
 
@@ -42,6 +53,15 @@ trait Repository extends Logging with RepositorySnapshotLoader with RepositoryDe
   protected def pullChangesForRepo()
 
   protected def branchNameToSHA(objId: ObjectId) = ObjectId.toString(objId)
+
+  protected def canPullAtThisTime(): Boolean = {
+    if(this.pullSleepPeriodEnabled) {
+      val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+      currentHour >= this.pullSleepPeriodEnd && currentHour < this.pullSleepPeriodStart
+    } else {
+      true
+    }
+  }
 }
 
 object Repository {
