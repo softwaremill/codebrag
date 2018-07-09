@@ -1,5 +1,7 @@
 # Codebrag
 
+THIS PROJECT IS NOT MAINTAINED! FEEL FREE TO FORK :)
+
 [![Build Status](https://travis-ci.org/softwaremill/codebrag.svg)](https://travis-ci.org/softwaremill/codebrag)
 
 Below is a **developer guide** if you want to hack on Codebrag yourself.
